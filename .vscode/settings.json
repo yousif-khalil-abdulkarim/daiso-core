@@ -1,0 +1,46 @@
+{
+    // vscode options
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": false,
+    "editor.formatOnType": false,
+    "editor.formatOnSaveMode": "file",
+    "files.eol": "\n",
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
+
+    // eslint options
+    "eslint.enable": true,
+    "eslint.lintTask.enable": true,
+    "eslint.format.enable": true,
+    "[typescript]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[typescriptreact]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[javascript]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[javascriptreact]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+
+    // prettier options
+    "prettier.enable": true,
+    "[json]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[yaml]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}

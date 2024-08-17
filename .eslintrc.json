@@ -1,0 +1,50 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    },
+    "overrides": [
+        {
+            "files": ["src/**/*.ts", "vite.config.ts"],
+            "plugins": [
+                "@typescript-eslint",
+                "vitest",
+                "typescript-enum",
+                "no-relative-import-paths",
+                "eslint-plugin-tsdoc",
+                "only-error"
+            ],
+            "extends": [
+                "eslint:recommended",
+                "plugin:@typescript-eslint/strict-type-checked",
+                "plugin:@vitest/legacy-recommended",
+                "prettier",
+                "plugin:prettier/recommended"
+            ],
+            "rules": {
+                "@typescript-eslint/no-unnecessary-type-parameters": "off",
+                "@typescript-eslint/no-unused-vars": [
+                    "error",
+                    {
+                        "args": "all",
+                        "argsIgnorePattern": "^_",
+                        "caughtErrors": "all",
+                        "caughtErrorsIgnorePattern": "^_",
+                        "destructuredArrayIgnorePattern": "^_",
+                        "varsIgnorePattern": "^_"
+                    }
+                ],
+                "typescript-enum/no-const-enum": "off",
+                "typescript-enum/no-enum": "off",
+                "no-relative-import-paths/no-relative-import-paths": [
+                    "error",
+                    {
+                        "rootDir": "src",
+                        "prefix": "@"
+                    }
+                ]
+            }
+        }
+    ]
+}

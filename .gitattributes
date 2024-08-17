@@ -1,0 +1,4 @@
+* code.editor=vim
+* autocrlf=false
+* eol=lf
+* core.longpaths=true

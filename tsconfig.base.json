@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "lib": ["ES2022"],
+        "baseUrl": "./src",
+        "paths": {
+            "@/*": ["./*"]
+        },
+        "downlevelIteration": true,
+        "isolatedModules": true,
+        "useDefineForClassFields": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "strictPropertyInitialization": true,
+        "noImplicitThis": true,
+        "useUnknownInCatchVariables": true,
+        "alwaysStrict": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "skipLibCheck": true
+    }
+}
