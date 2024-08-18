@@ -1,0 +1,41 @@
+import {
+    AsyncIterableValue,
+    type IAsyncCollection,
+} from "@/contracts/collection/_module";
+
+/**
+ * @internal
+ */
+export class AsyncPadEndIterable<TInput, TExtended>
+    implements AsyncIterable<TInput | TExtended>
+{
+    constructor(
+        private collection: IAsyncCollection<TInput>,
+        private maxLength: number,
+        private fillItems: Iterable<TExtended>,
+        private makeCollection: <TInput>(
+            iterable: AsyncIterableValue<TInput>,
+        ) => IAsyncCollection<TInput>,
+    ) {}
+
+    async *[Symbol.asyncIterator](): AsyncIterator<TInput | TExtended> {
+        const fillCollections = this.makeCollection(this.fillItems);
+        const fillSize = await fillCollections.size();
+        const size = await this.collection.size();
+        const repeat = Math.floor((this.maxLength - size) / fillSize);
+        let resultCollection: IAsyncCollection<TInput | TExtended> =
+            this.makeCollection<TInput | TExtended>([]);
+        for (let index = 0; index < repeat; index++) {
+            resultCollection = resultCollection.append(fillCollections);
+        }
+        const restAmount = this.maxLength - (repeat * fillSize + size);
+        resultCollection = resultCollection.append(
+            fillCollections.slice({
+                start: 0,
+                end: restAmount,
+            }),
+        );
+        resultCollection = resultCollection.prepend(this.collection);
+        yield* resultCollection;
+    }
+}
