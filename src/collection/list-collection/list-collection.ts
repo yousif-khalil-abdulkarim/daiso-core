@@ -36,20 +36,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     private array: TInput[];
 
     constructor(iterable: Iterable<TInput>) {
-        try {
-            this.array = [...iterable];
-        } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeError
-            ) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        this.array = [...iterable];
     }
 
     *[Symbol.iterator](): Iterator<TInput> {
