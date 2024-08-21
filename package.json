@@ -18,7 +18,7 @@
         "build:esm": "npx tsc --project \"./tsconfig.esm.json\" && npx tsc-alias -p \"./tsconfig.esm.json\"",
         "build:types": "npx tsc --project \"./tsconfig.types.json\" && npx tsc-alias -p \"./tsconfig.types.json\"",
         "docs:api": "npx typedoc --categorizeByGroup \"./src/_module.ts\" --out \"./docs-api\"",
-        "publish": "echo \"Script not implemented\" && exit 1"
+        "release": "npm run build && npx changeset publish"
     },
     "devDependencies": {
         "@changesets/cli": "^2.27.7",
