@@ -12,7 +12,7 @@ export class AsyncPadEndIterable<TInput, TExtended>
     constructor(
         private collection: IAsyncCollection<TInput>,
         private maxLength: number,
-        private fillItems: Iterable<TExtended>,
+        private fillItems: AsyncIterableValue<TExtended>,
         private makeCollection: <TInput>(
             iterable: AsyncIterableValue<TInput>,
         ) => IAsyncCollection<TInput>,
