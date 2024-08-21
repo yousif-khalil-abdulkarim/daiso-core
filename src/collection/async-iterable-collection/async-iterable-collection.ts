@@ -495,7 +495,7 @@ export class AsyncIterableCollection<TInput>
         throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput> {
         return this.takeUntil(
-            (...arguments_) => !filter(...arguments_),
+            async (...arguments_) => !(await filter(...arguments_)),
             throwOnNumberLimit,
         );
     }
@@ -523,7 +523,7 @@ export class AsyncIterableCollection<TInput>
         throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput> {
         return this.skipUntil(
-            (...arguments_) => !filter(...arguments_),
+            async (...arguments_) => !(await filter(...arguments_)),
             throwOnNumberLimit,
         );
     }
@@ -749,7 +749,7 @@ export class AsyncIterableCollection<TInput>
 
     padStart<TExtended = TInput>(
         maxLength: number,
-        fillItems: Iterable<TExtended>,
+        fillItems: AsyncIterableValue<TExtended>,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
             new AsyncPadStartIterable(
@@ -763,7 +763,7 @@ export class AsyncIterableCollection<TInput>
 
     padEnd<TExtended = TInput>(
         maxLength: number,
-        fillItems: Iterable<TExtended>,
+        fillItems: AsyncIterableValue<TExtended>,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
             new AsyncPadEndIterable(
