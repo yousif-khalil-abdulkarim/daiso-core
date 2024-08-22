@@ -1,7 +1,7 @@
 {
     "name": "@daiso-tech/core",
     "private": false,
-    "version": "0.1.0",
+    "version": "0.0.1",
     "author": "Yousif Abdulkarim",
     "license": "Apache-2.0",
     "main": "./dist/cjs/_module.js",
@@ -19,7 +19,7 @@
         "build:esm": "npx tsc --project \"./tsconfig.esm.json\" && npx tsc-alias -p \"./tsconfig.esm.json\"",
         "build:types": "npx tsc --project \"./tsconfig.types.json\" && npx tsc-alias -p \"./tsconfig.types.json\"",
         "docs:api": "npx typedoc --categorizeByGroup \"./src/_module.ts\" --out \"./docs-api\"",
-        "release": "npm run build && npx changeset publish"
+        "release": "npm run build && npx changeset publish --otp=1"
     },
     "devDependencies": {
         "@changesets/cli": "^2.27.7",
