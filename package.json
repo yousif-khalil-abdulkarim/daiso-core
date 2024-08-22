@@ -34,14 +34,12 @@
         "eslint-plugin-prettier": "^5.2.1",
         "eslint-plugin-tsdoc": "^0.3.0",
         "eslint-plugin-typescript-enum": "^2.1.0",
+        "eslint-plugin-vitest": "^0.5.4",
         "rimraf": "^6.0.1",
         "tsc-alias": "^1.8.10",
         "typedoc": "^0.26.5",
         "typescript": "^5.5.4",
         "vite-tsconfig-paths": "^4.3.2",
         "vitest": "^2.0.5"
-    },
-    "dependencies": {
-        "eslint-plugin-vitest": "^0.5.4"
     }
 }
