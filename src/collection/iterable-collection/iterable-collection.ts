@@ -72,7 +72,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     private static DEFAULT_CHUNK_SIZE = 1024;
 
     private static makeCollection = <TInput>(
-        iterable: Iterable<TInput>,
+        iterable: Iterable<TInput> = [],
     ): ICollection<TInput> => {
         return new IterableCollection<TInput>(iterable);
     };

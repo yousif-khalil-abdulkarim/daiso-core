@@ -83,7 +83,7 @@ export class AsyncIterableCollection<TInput>
         return new AsyncIterableCollection<TInput>(iterable);
     };
 
-    constructor(private iterable: AsyncIterableValue<TInput>) {}
+    constructor(private iterable: AsyncIterableValue<TInput> = []) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
         yield* this.iterable;

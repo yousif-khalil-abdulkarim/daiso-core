@@ -35,7 +35,7 @@ import { EnsureType } from "@/types";
 export class ListCollection<TInput> implements ICollection<TInput> {
     private array: TInput[];
 
-    constructor(iterable: Iterable<TInput>) {
+    constructor(iterable: Iterable<TInput> = []) {
         this.array = [...iterable];
     }
 
