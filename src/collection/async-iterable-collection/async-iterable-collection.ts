@@ -219,15 +219,10 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
-    async sum(
-        throwOnNumberLimit?: boolean,
-    ): Promise<EnsureType<TInput, number>> {
+    async sum(): Promise<EnsureType<TInput, number>> {
         try {
             let sum = 0;
             for await (const item of this) {
-                if (throwOnNumberLimit && sum === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Sum has overflowed");
-                }
                 if (typeof item !== "number") {
                     throw new TypeError("Item type is invalid must be number");
                 }
@@ -248,19 +243,11 @@ export class AsyncIterableCollection<TInput>
         }
     }
 
-    async average(
-        throwOnNumberLimit?: boolean,
-    ): Promise<EnsureType<TInput, number>> {
+    async average(): Promise<EnsureType<TInput, number>> {
         try {
             let size = 0,
                 sum = 0;
             for await (const item of this) {
-                if (throwOnNumberLimit && sum === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("The sum has overflowed");
-                }
-                if (throwOnNumberLimit && size === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("The size has overflowed");
-                }
                 if (typeof item !== "number") {
                     throw new TypeError("Item type is invalid must be number");
                 }

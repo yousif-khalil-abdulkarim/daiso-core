@@ -173,10 +173,9 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 6
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
      * @throws {TypeError} {@link TypeError}
      */
-    sum(throwOnNumberLimit?: boolean): Promise<EnsureType<TInput, number>>;
+    sum(): Promise<EnsureType<TInput, number>>;
 
     /**
      * The average method returns the average of all items in the collection. If the collection contains nested arrays or objects,
@@ -188,10 +187,9 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
      * @throws {TypeError} {@link TypeError}
      */
-    average(throwOnNumberLimit?: boolean): Promise<EnsureType<TInput, number>>;
+    average(): Promise<EnsureType<TInput, number>>;
 
     /**
      * The median method returns the median of all items in the collection. If the collection contains nested arrays or objects,
@@ -956,10 +954,37 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     nth(step: number): IAsyncCollection<TInput>;
 
+    /**
+     * The delay method will delay collection such that each value is returned after the specified number of seconds.
+     * This method is especially useful for situations where you may be interacting with external APIs that rate limit incoming requests:
+     * @example
+     * // An iterator that will fetch all users from a specific api
+     * class ApiIterator implements AsyncIterable<IUser> { ... }
+     * const apiIterator = new ApiIterator();
+     * const collection = new AsyncIterableCollection(apiIterator);
+     * await collection.delay(1000).forEach(user => console.log(user))
+     */
     delay(timeInMs: number): IAsyncCollection<TInput>;
 
     abort(signal: AbortSignal): IAsyncCollection<TInput>;
 
+    /**
+     * The timeout method returns a new collection that will iterate values until the specified time.
+     * After that time, the collection will then stop iterating:
+     * @example
+     * class AsyncInfiniteIterable implements AsyncIterable<number> {
+     *  async *[Symbol.asyncIterator]() {
+     *      while(true) {
+     *          yield 1;
+     *      }
+     *  }
+     * }
+     * const asyncInfiniteIterable = new AsyncInfiniteIterable();
+     * const collection = new AsyncIterableCollection(asyncInfiniteIterable);
+     * collection
+     *  .timeout(1000)
+     *  .forEach(nbr => console.log(nbr))
+     */
     timeout(timeInMs: number): IAsyncCollection<TInput>;
 
     /**

@@ -159,10 +159,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 6
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
      * @throws {TypeError} {@link TypeError}
      */
-    sum(throwOnNumberLimit?: boolean): EnsureType<TInput, number>;
+    sum(): EnsureType<TInput, number>;
 
     /**
      * The average method returns the average of all items in the collection. If the collection contains nested arrays or objects,
@@ -174,10 +173,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
      * @throws {TypeError} {@link TypeError}
      */
-    average(throwOnNumberLimit?: boolean): EnsureType<TInput, number>;
+    average(): EnsureType<TInput, number>;
 
     /**
      * The median method returns the median of all items in the collection. If the collection contains nested arrays or objects,
