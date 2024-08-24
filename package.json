@@ -7,6 +7,7 @@
     "main": "./dist/cjs/_module.js",
     "module": "./dist/esm/_module.js",
     "types": "./dist/types/_module.d.ts",
+    "files": ["./dist"],
     "scripts": {
         "test": "npx vitest run",
         "test:watch": "npm run test -- watch",

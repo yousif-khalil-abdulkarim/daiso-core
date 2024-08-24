@@ -35,7 +35,7 @@ import { EnsureType } from "@/types";
 export class ListCollection<TInput> implements ICollection<TInput> {
     private array: TInput[];
 
-    constructor(iterable: Iterable<TInput>) {
+    constructor(iterable: Iterable<TInput> = []) {
         this.array = [...iterable];
     }
 
@@ -283,7 +283,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         return this.skip((page - 1) * pageSize).take(page * pageSize);
     }
 
-    sum(_throwOnNumberLimit?: boolean): EnsureType<TInput, number> {
+    sum(): EnsureType<TInput, number> {
         return this.reduce({
             reduceFn: (sum, item) => {
                 if (typeof item !== "number") {
@@ -295,7 +295,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }) as EnsureType<TInput, number>;
     }
 
-    average(_throwOnNumberLimit?: boolean): EnsureType<TInput, number> {
+    average(): EnsureType<TInput, number> {
         return ((this.sum() as number) / this.size()) as EnsureType<
             TInput,
             number

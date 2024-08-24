@@ -72,7 +72,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     private static DEFAULT_CHUNK_SIZE = 1024;
 
     private static makeCollection = <TInput>(
-        iterable: Iterable<TInput>,
+        iterable: Iterable<TInput> = [],
     ): ICollection<TInput> => {
         return new IterableCollection<TInput>(iterable);
     };
@@ -265,15 +265,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         );
     }
 
-    sum(
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
-    ): EnsureType<TInput, number> {
+    sum(): EnsureType<TInput, number> {
         try {
             let sum = 0;
             for (const item of this) {
-                if (throwOnNumberLimit && sum === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Sum has overflowed");
-                }
                 if (typeof item !== "number") {
                     throw new TypeError("Item type is invalid must be number");
                 }
@@ -294,19 +289,11 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    average(
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
-    ): EnsureType<TInput, number> {
+    average(): EnsureType<TInput, number> {
         try {
             let size = 0,
                 sum = 0;
             for (const item of this) {
-                if (throwOnNumberLimit && sum === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("The sum has overflowed");
-                }
-                if (throwOnNumberLimit && size === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("The size has overflowed");
-                }
                 if (typeof item !== "number") {
                     throw new TypeError("Item type is invalid must be number");
                 }

@@ -10,10 +10,17 @@ export class AsyncDelayIterable<TInput> implements AsyncIterable<TInput> {
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
+        let isFirstIteration = true;
         for await (const item of this.collection) {
+            if (!isFirstIteration) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, this.timeInMs),
+                );
+            }
+            if (isFirstIteration) {
+                isFirstIteration = false;
+            }
             yield item;
-
-            await new Promise((resolve) => setTimeout(resolve, this.timeInMs));
         }
     }
 }
