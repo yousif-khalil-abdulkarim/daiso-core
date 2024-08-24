@@ -1,6 +1,4 @@
 *code.editor=vim
-*autocrlf=false
-*eol=lf
-*text=unset
-*core.longpaths=true
-*push.autoSetupRemote=true
+*core.eol=lf
+core.longpaths=true
+push.autoSetupRemote=true
