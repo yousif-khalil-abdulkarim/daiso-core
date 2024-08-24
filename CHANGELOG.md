@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.1.2
+
+### Patch Changes
+
+-   a10193f: Empty collection class instances can be created without passing in empty arrays
+
 ## 0.1.1
 
 ### Patch Changes
