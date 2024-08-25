@@ -1,6 +1,10 @@
+/**
+ * @module Collections
+ */
+
 import {
     type AsyncCollapse,
-    type AsyncFilter,
+    type AsyncPredicate,
     type AsyncFindOrSettings,
     type AsyncFindSettings,
     type AsyncForEach,
@@ -63,12 +67,12 @@ import {
     AsyncAbortIterable,
     AsyncDelayIterable,
     AsyncTimeoutIterable,
-} from "@/collection/async-iterable-collection/async-iterable-helpers/_module";
-import { EnsureType } from "@/types";
+} from "@/collection/async-iterable-collection/_shared/_module";
+import { EnsureType } from "@/_shared/types";
 
 /**
  * Most methods in AsyncIterableCollection are lazy and will only execute when calling methods return values or iterating through an IterableCollection by using for of loop
- * @group Collections
+ * @group Adapters
  */
 export class AsyncIterableCollection<TInput>
     implements IAsyncCollection<TInput>
@@ -89,22 +93,22 @@ export class AsyncIterableCollection<TInput>
         yield* this.iterable;
     }
 
-    iterator(): AsyncIterator<TInput, void> {
+    toIterator(): AsyncIterator<TInput, void> {
         return this[Symbol.asyncIterator]() as AsyncIterator<TInput, void>;
     }
 
     entries(
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<RecordItem<number, TInput>> {
         return new AsyncIterableCollection(
-            new AsyncEntriesIterable(this, throwOnNumberLimit),
+            new AsyncEntriesIterable(this, throwOnIndexOverflow),
         );
     }
 
     keys(
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<number> {
-        return this.entries(throwOnNumberLimit).map(([key]) => key);
+        return this.entries(throwOnIndexOverflow).map(([key]) => key);
     }
 
     values(): IAsyncCollection<TInput> {
@@ -112,20 +116,20 @@ export class AsyncIterableCollection<TInput>
     }
 
     filter<TOutput extends TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TOutput> {
         return new AsyncIterableCollection<TOutput>(
-            new AsyncFilterIterable(this, filter, throwOnNumberLimit),
+            new AsyncFilterIterable(this, filter, throwOnIndexOverflow),
         );
     }
 
     map<TOutput>(
-        map: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        mapFn: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TOutput> {
         return new AsyncIterableCollection(
-            new AsyncMapIterable(this, map, throwOnNumberLimit),
+            new AsyncMapIterable(this, mapFn, throwOnIndexOverflow),
         );
     }
 
@@ -136,7 +140,11 @@ export class AsyncIterableCollection<TInput>
             TOutput
         >,
     ): Promise<TOutput> {
-        const { reduceFn: reduce, initialValue, throwOnNumberLimit } = settings;
+        const {
+            reduceFn: reduce,
+            initialValue,
+            throwOnIndexOverflow,
+        } = settings;
         if (initialValue === undefined && (await this.empty())) {
             throw new TypeError(
                 "Reduce of empty array must be inputed a initial value",
@@ -156,7 +164,7 @@ export class AsyncIterableCollection<TInput>
             isFirstIteration = true;
         for await (const item of this) {
             if (!isFirstIteration) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
                 output = await reduce(output, item, index, this);
@@ -176,8 +184,8 @@ export class AsyncIterableCollection<TInput>
                 const separator = settings?.seperator ?? ",";
                 return str + separator + item;
             },
-            throwOnNumberLimit:
-                settings?.throwOnNumberLimit ??
+            throwOnIndexOverflow:
+                settings?.throwOnIndexOverflow ??
                 AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
         });
     }
@@ -187,35 +195,35 @@ export class AsyncIterableCollection<TInput>
     }
 
     flatMap<TOutput>(
-        map: AsyncMap<TInput, IAsyncCollection<TInput>, Iterable<TOutput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        mapFn: AsyncMap<TInput, IAsyncCollection<TInput>, Iterable<TOutput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TOutput> {
         return new AsyncIterableCollection(
-            new AsyncFlatMapIterable(this, map, throwOnNumberLimit),
+            new AsyncFlatMapIterable(this, mapFn, throwOnIndexOverflow),
         );
     }
 
     update<TFilterOutput extends TInput, TMapOutput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TFilterOutput>,
-        map: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>, TFilterOutput>,
+        mapFn: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>> {
         return new AsyncIterableCollection(
-            new AsyncUpdateIterable(this, filter, map, throwOnNumberLimit),
+            new AsyncUpdateIterable(this, filter, mapFn, throwOnIndexOverflow),
         );
     }
 
     page(settings: PageSettings): IAsyncCollection<TInput> {
-        const { page, pageSize, throwOnNumberLimit } = settings;
+        const { page, pageSize, throwOnIndexOverflow } = settings;
         if (page < 0) {
-            return this.skip(page * pageSize, throwOnNumberLimit).take(
+            return this.skip(page * pageSize, throwOnIndexOverflow).take(
                 pageSize,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             );
         }
-        return this.skip((page - 1) * pageSize, throwOnNumberLimit).take(
+        return this.skip((page - 1) * pageSize, throwOnIndexOverflow).take(
             page * pageSize,
-            throwOnNumberLimit,
+            throwOnIndexOverflow,
         );
     }
 
@@ -270,12 +278,12 @@ export class AsyncIterableCollection<TInput>
     }
 
     async median(
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): Promise<EnsureType<TInput, number>> {
         if (await this.empty()) {
             return 0 as EnsureType<TInput, number>;
         }
-        const size = await this.size(throwOnNumberLimit);
+        const size = await this.size(throwOnIndexOverflow);
         if (size === 0) {
             return 0 as EnsureType<TInput, number>;
         }
@@ -285,13 +293,13 @@ export class AsyncIterableCollection<TInput>
                     throw new TypeError("Item type is invalid must be number");
                 }
                 return item;
-            }, throwOnNumberLimit)
+            }, throwOnIndexOverflow)
                 .filter((_item, index) => {
                     if (isEven) {
                         return index === size / 2 || index === size / 2 - 1;
                     }
                     return index === Math.floor(size / 2);
-                }, throwOnNumberLimit)
+                }, throwOnIndexOverflow)
 
                 .toArray();
         if (isEven) {
@@ -368,8 +376,8 @@ export class AsyncIterableCollection<TInput>
     }
 
     async percentage(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<number> {
         try {
             if (await this.empty()) {
@@ -378,7 +386,7 @@ export class AsyncIterableCollection<TInput>
             let part = 0,
                 total = 0;
             for await (const item of this) {
-                if (throwOnNumberLimit && total === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && total === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError(
                         "The total amount has overflowed",
                     );
@@ -404,12 +412,12 @@ export class AsyncIterableCollection<TInput>
     }
 
     async some<TOutput extends TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<boolean> {
         try {
             for await (const [index, item] of this.entries(
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             )) {
                 if (await filter(item, index, this)) {
                     return true;
@@ -431,13 +439,13 @@ export class AsyncIterableCollection<TInput>
     }
 
     async every<TOutput extends TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<boolean> {
         try {
             let isTrue = true;
             for await (const [index, item] of this.entries(
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             )) {
                 isTrue &&= await filter(item, index, this);
                 if (!isTrue) {
@@ -461,57 +469,57 @@ export class AsyncIterableCollection<TInput>
 
     take(
         limit: number,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
-            new AsyncTakeIterable(this, limit, throwOnNumberLimit),
+            new AsyncTakeIterable(this, limit, throwOnIndexOverflow),
         );
     }
 
     takeUntil(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
-            new AsyncTakeUntilIterable(this, filter, throwOnNumberLimit),
+            new AsyncTakeUntilIterable(this, filter, throwOnIndexOverflow),
         );
     }
 
     takeWhile(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput> {
         return this.takeUntil(
             async (...arguments_) => !(await filter(...arguments_)),
-            throwOnNumberLimit,
+            throwOnIndexOverflow,
         );
     }
 
     skip(
         offset: number,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
-            new AsyncSkipIterable(this, offset, throwOnNumberLimit),
+            new AsyncSkipIterable(this, offset, throwOnIndexOverflow),
         );
     }
 
     skipUntil(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
-            new AsyncSkipUntilIterable(this, filter, throwOnNumberLimit),
+            new AsyncSkipUntilIterable(this, filter, throwOnIndexOverflow),
         );
     }
 
     skipWhile(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput> {
         return this.skipUntil(
             async (...arguments_) => !(await filter(...arguments_)),
-            throwOnNumberLimit,
+            throwOnIndexOverflow,
         );
     }
 
@@ -599,14 +607,14 @@ export class AsyncIterableCollection<TInput>
     }
 
     chunkWhile(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<IAsyncCollection<TInput>> {
         return new AsyncIterableCollection(
             new AsyncChunkWhileIterable(
                 this,
                 filter,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
                 AsyncIterableCollection.makeCollection,
             ),
         );
@@ -614,27 +622,27 @@ export class AsyncIterableCollection<TInput>
 
     split(
         chunkAmount: number,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<IAsyncCollection<TInput>> {
         return new AsyncIterableCollection(
             new AsyncSplitIterable(
                 this,
                 chunkAmount,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
                 AsyncIterableCollection.makeCollection,
             ),
         );
     }
 
     partition(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<IAsyncCollection<TInput>> {
         return new AsyncIterableCollection(
             new AsyncPartionIterable(
                 this,
                 filter,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
                 AsyncIterableCollection.makeCollection,
             ),
         );
@@ -646,10 +654,15 @@ export class AsyncIterableCollection<TInput>
         const {
             chunkSize,
             step = chunkSize - 1,
-            throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+            throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
         } = settings;
         return new AsyncIterableCollection(
-            new AsyncSlidingIteralbe(this, chunkSize, step, throwOnNumberLimit),
+            new AsyncSlidingIteralbe(
+                this,
+                chunkSize,
+                step,
+                throwOnIndexOverflow,
+            ),
         );
     }
 
@@ -663,8 +676,8 @@ export class AsyncIterableCollection<TInput>
         return new AsyncIterableCollection(
             new AsyncGroupByIterable(
                 this,
-                settings?.mapFn,
-                settings?.throwOnNumberLimit ??
+                settings?.selectFn,
+                settings?.throwOnIndexOverflow ??
                     AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
                 AsyncIterableCollection.makeCollection,
             ),
@@ -681,8 +694,8 @@ export class AsyncIterableCollection<TInput>
         return new AsyncIterableCollection(
             new AsyncCountByIterable(
                 this,
-                settings?.mapFn,
-                settings?.throwOnNumberLimit ??
+                settings?.selectFn,
+                settings?.throwOnIndexOverflow ??
                     AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
             ),
         );
@@ -698,8 +711,8 @@ export class AsyncIterableCollection<TInput>
         return new AsyncIterableCollection(
             new AsyncUniqueIterable(
                 this,
-                settings?.mapFn,
-                settings?.throwOnNumberLimit ??
+                settings?.selectFn,
+                settings?.throwOnIndexOverflow ??
                     AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
             ),
         );
@@ -707,7 +720,9 @@ export class AsyncIterableCollection<TInput>
 
     difference<TOutput = TInput>(
         iterable: AsyncIterableValue<TInput>,
-        map: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput> = (item) =>
+        selectFn: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput> = (
+            item,
+        ) =>
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
             item as any,
     ): IAsyncCollection<TInput> {
@@ -716,8 +731,8 @@ export class AsyncIterableCollection<TInput>
             return !(await differenceCollection.some(
                 async (matchItem, matchIndex, matchCollection) => {
                     return (
-                        (await map(item, index, collection)) ===
-                        (await map(matchItem, matchIndex, matchCollection))
+                        (await selectFn(item, index, collection)) ===
+                        (await selectFn(matchItem, matchIndex, matchCollection))
                     );
                 },
             ));
@@ -768,7 +783,7 @@ export class AsyncIterableCollection<TInput>
                 this,
                 settings?.start,
                 settings?.end,
-                settings?.throwOnNumberLimit ??
+                settings?.throwOnIndexOverflow ??
                     AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
             ),
         );
@@ -791,31 +806,31 @@ export class AsyncIterableCollection<TInput>
     }
 
     insertBefore<TExtended = TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
         iterable: AsyncIterableValue<TInput | TExtended>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
             new AsyncInsertBeforeIterable(
                 this,
                 filter,
                 iterable,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             ),
         );
     }
 
     insertAfter<TExtended = TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
         iterable: AsyncIterableValue<TInput | TExtended>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
             new AsyncInsertAfterIterable(
                 this,
                 filter,
                 iterable,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             ),
         );
     }
@@ -852,7 +867,7 @@ export class AsyncIterableCollection<TInput>
                 this,
                 settings?.chunkSize ??
                     AsyncIterableCollection.DEFAULT_CHUNK_SIZE,
-                settings?.throwOnNumberLimit ??
+                settings?.throwOnIndexOverflow ??
                     AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
                 AsyncIterableCollection.makeCollection,
             ),
@@ -881,13 +896,13 @@ export class AsyncIterableCollection<TInput>
         >,
     ): Promise<TOutput | TExtended> {
         try {
-            const throwOnNumberLimit =
-                settings.throwOnNumberLimit ??
+            const throwOnIndexOverflow =
+                settings.throwOnIndexOverflow ??
                 AsyncIterableCollection.THROW_ON_NUMBER_LIMIT;
 
-            const filter = settings.filterFn ?? (() => true);
+            const filter = settings.predicateFn ?? (() => true);
             for await (const [index, item] of this.entries(
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             )) {
                 if (await filter(item, index, this)) {
                     return item as TOutput;
@@ -940,14 +955,14 @@ export class AsyncIterableCollection<TInput>
         >,
     ): Promise<TOutput | TExtended> {
         try {
-            const throwOnNumberLimit =
-                settings.throwOnNumberLimit ??
+            const throwOnIndexOverflow =
+                settings.throwOnIndexOverflow ??
                 AsyncIterableCollection.THROW_ON_NUMBER_LIMIT;
 
-            const filter = settings.filterFn ?? (() => true);
+            const filter = settings.predicateFn ?? (() => true);
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries(
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             )) {
                 if (await filter(item, index, this)) {
                     matchedItem = item as TOutput;
@@ -986,22 +1001,22 @@ export class AsyncIterableCollection<TInput>
     }
 
     async before(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<TInput | null> {
-        return this.beforeOr(null, filter, throwOnNumberLimit);
+        return this.beforeOr(null, filter, throwOnIndexOverflow);
     }
 
     async beforeOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<TInput | TExtended> {
         try {
             let beforeItem: TInput | null = null,
                 index = 0;
             for await (const item of this) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
                 if ((await filter(item, index, this)) && beforeItem) {
@@ -1030,10 +1045,10 @@ export class AsyncIterableCollection<TInput>
     }
 
     async beforeOrFail(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<TInput> {
-        const item = await this.before(filter, throwOnNumberLimit);
+        const item = await this.before(filter, throwOnIndexOverflow);
         if (item === null) {
             throw new ItemNotFoundError("Item was not found");
         }
@@ -1041,16 +1056,16 @@ export class AsyncIterableCollection<TInput>
     }
 
     async after(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<TInput | null> {
-        return this.afterOr(null, filter, throwOnNumberLimit);
+        return this.afterOr(null, filter, throwOnIndexOverflow);
     }
 
     async afterOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<TInput | TExtended> {
         try {
             let hasMatched = false,
@@ -1059,7 +1074,7 @@ export class AsyncIterableCollection<TInput>
                 if (hasMatched) {
                     return item;
                 }
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
                 hasMatched = await filter(item, index, this);
@@ -1079,10 +1094,10 @@ export class AsyncIterableCollection<TInput>
     }
 
     async afterOrFail(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<TInput> {
-        const item = await this.after(filter, throwOnNumberLimit);
+        const item = await this.after(filter, throwOnIndexOverflow);
         if (item === null) {
             throw new ItemNotFoundError("Item was not found");
         }
@@ -1090,13 +1105,13 @@ export class AsyncIterableCollection<TInput>
     }
 
     async sole<TOutput extends TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<TOutput> {
         try {
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries(
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             )) {
                 if (await filter(item, index, this)) {
                     if (matchedItem !== null) {
@@ -1148,13 +1163,13 @@ export class AsyncIterableCollection<TInput>
     }
 
     async count(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<number> {
         try {
             let size = 0;
             for await (const item of this) {
-                if (throwOnNumberLimit && size === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && size === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Size has overflowed");
                 }
                 if (await filter(item, size, this)) {
@@ -1176,8 +1191,8 @@ export class AsyncIterableCollection<TInput>
         }
     }
 
-    async size(throwOnNumberLimit?: boolean): Promise<number> {
-        return this.count(() => true, throwOnNumberLimit);
+    async size(throwOnIndexOverflow?: boolean): Promise<number> {
+        return this.count(() => true, throwOnIndexOverflow);
     }
 
     async empty(): Promise<boolean> {
@@ -1205,12 +1220,12 @@ export class AsyncIterableCollection<TInput>
     }
 
     async search(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<number> {
         try {
             for await (const [index, item] of this.entries(
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             )) {
                 if (await filter(item, index, this)) {
                     return index;
@@ -1233,9 +1248,9 @@ export class AsyncIterableCollection<TInput>
 
     async forEach(
         callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<void> {
-        for await (const [index, item] of this.entries(throwOnNumberLimit)) {
+        for await (const [index, item] of this.entries(throwOnIndexOverflow)) {
             await callback(item, index, this);
         }
     }

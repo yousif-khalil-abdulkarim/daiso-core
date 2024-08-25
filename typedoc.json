@@ -1,0 +1,27 @@
+{
+    "out": "./docs",
+    "entryPoints": ["./src/**/*.ts"],
+    "exclude": [
+        "./src/**/*.test.ts",
+        "./src/**/_module.ts",
+        "./src/collection/iterable-collection/_shared/**/*.ts",
+        "./src/collection/async-iterable-collection/_shared/**/*.ts"
+    ],
+    "navigation": {
+        "includeGroups": true,
+        "includeFolders": true
+    },
+    "categorizeByGroup": true,
+    "includeVersion": true,
+    "excludeInternal": true,
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "cleanOutputDir": true,
+    "githubPages": true,
+    "plugin": [
+        "typedoc-material-theme",
+        "typedoc-plugin-merge-modules"
+    ],
+    "themeColor": "#2089cb",
+    "mergeModulesMergeMode": "module",
+}

@@ -13,13 +13,13 @@ describe("class: AsyncIterableCollection", () => {
         test(`Should filter out all "a" of ["a", "bc", "c", "a", "d", "a"]`, async () => {
             const arr = ["a", "bc", "c", "a", "d", "a"],
                 collection = new AsyncIterableCollection(arr),
-                filterFunction = (item: string): boolean => item === "a",
-                newCollection = collection.filter(filterFunction);
+                predicateFn = (item: string): boolean => item === "a",
+                newCollection = collection.filter(predicateFn);
             expect(await newCollection.toArray()).toEqual(
-                arr.filter(filterFunction),
+                arr.filter(predicateFn),
             );
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "bc",
@@ -29,23 +29,23 @@ describe("class: AsyncIterableCollection", () => {
                     "a",
                 ]),
                 indexes: number[] = [],
-                filterFunction = (item: string, index: number): boolean => {
+                predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
                 };
-            await collection.filter(filterFunction).toArray();
+            await collection.filter(predicateFn).toArray();
             expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const arr = ["a", "bc", "c", "a", "d", "a"],
                 collection = new AsyncIterableCollection(arr),
-                filterFunction = (item: string): boolean => item === "a",
+                predicateFn = (item: string): boolean => item === "a",
                 // eslint-disable-next-line @typescript-eslint/require-await
                 newCollection = collection.filter(async (item) =>
-                    filterFunction(item),
+                    predicateFn(item),
                 );
             expect(await newCollection.toArray()).toEqual(
-                arr.filter(filterFunction),
+                arr.filter(predicateFn),
             );
         });
     });
@@ -281,7 +281,7 @@ describe("class: AsyncIterableCollection", () => {
         });
     });
     describe("method: update", () => {
-        test("Should change all the items that match the filter function", async () => {
+        test("Should change all the items that match the predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "aa",
@@ -303,7 +303,7 @@ describe("class: AsyncIterableCollection", () => {
                 "ccc",
             ]);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "aa",
@@ -550,7 +550,7 @@ describe("class: AsyncIterableCollection", () => {
                 50,
             );
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "bc",
@@ -560,11 +560,11 @@ describe("class: AsyncIterableCollection", () => {
                     "a",
                 ]),
                 indexes: number[] = [],
-                filterFunction = (item: string, index: number): boolean => {
+                predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
                 };
-            await collection.percentage(filterFunction);
+            await collection.percentage(predicateFn);
             expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
         });
         test("Should return the same value when called more than 1 times", async () => {
@@ -581,7 +581,7 @@ describe("class: AsyncIterableCollection", () => {
                 50,
             );
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection([
                 "a",
                 "b",
@@ -595,7 +595,7 @@ describe("class: AsyncIterableCollection", () => {
         });
     });
     describe("method: some", () => {
-        test("Should return true when at least 1 item match the filter function", async () => {
+        test("Should return true when at least 1 item match the predicate function", async () => {
             const collection = new AsyncIterableCollection([
                 "a",
                 "b",
@@ -605,7 +605,7 @@ describe("class: AsyncIterableCollection", () => {
             ]);
             expect(await collection.some((item) => item === "b")).toBe(true);
         });
-        test("Should return false when all of the items does not match the filter function", async () => {
+        test("Should return false when all of the items does not match the predicate function", async () => {
             const collection = new AsyncIterableCollection([
                 "a",
                 "b",
@@ -615,7 +615,7 @@ describe("class: AsyncIterableCollection", () => {
             ]);
             expect(await collection.some((item) => item === "d")).toBe(false);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "bc",
@@ -625,11 +625,11 @@ describe("class: AsyncIterableCollection", () => {
                     "a",
                 ]),
                 indexes: number[] = [],
-                filterFunction = (item: string, index: number): boolean => {
+                predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
                 };
-            await collection.some(filterFunction);
+            await collection.some(predicateFn);
             expect(indexes).toEqual([0]);
         });
         test("Should return the same value when called more than 1 times", async () => {
@@ -643,7 +643,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.some((item) => item === "b")).toBe(true);
             expect(await collection.some((item) => item === "b")).toBe(true);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection([
                 "a",
                 "b",
@@ -658,7 +658,7 @@ describe("class: AsyncIterableCollection", () => {
         });
     });
     describe("method: every", () => {
-        test("Should return true when all items match the filter function", async () => {
+        test("Should return true when all items match the predicate function", async () => {
             const collection = new AsyncIterableCollection([
                 "a",
                 "b",
@@ -670,7 +670,7 @@ describe("class: AsyncIterableCollection", () => {
                 true,
             );
         });
-        test("Should return false when one item does not match the filter function", async () => {
+        test("Should return false when one item does not match the predicate function", async () => {
             const collection = new AsyncIterableCollection([
                 "a",
                 "b",
@@ -682,7 +682,7 @@ describe("class: AsyncIterableCollection", () => {
                 false,
             );
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "b",
@@ -712,7 +712,7 @@ describe("class: AsyncIterableCollection", () => {
                 true,
             );
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection([
                 "a",
                 "b",
@@ -752,7 +752,7 @@ describe("class: AsyncIterableCollection", () => {
                 newCollection = collection.takeUntil((item) => item >= 3);
             expect(await newCollection.toArray()).toEqual([1, 2]);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             await collection
@@ -763,7 +763,7 @@ describe("class: AsyncIterableCollection", () => {
                 .toArray();
             expect(indexes).toEqual([0, 1, 2]);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
                 // eslint-disable-next-line @typescript-eslint/require-await
                 newCollection = collection.takeUntil(async (item) => item >= 3);
@@ -776,7 +776,7 @@ describe("class: AsyncIterableCollection", () => {
                 newCollection = collection.takeWhile((item) => item < 3);
             expect(await newCollection.toArray()).toEqual([1, 2]);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             await collection
@@ -787,7 +787,7 @@ describe("class: AsyncIterableCollection", () => {
                 .toArray();
             expect(indexes).toEqual([0, 1, 2]);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
                 // eslint-disable-next-line @typescript-eslint/require-await
                 newCollection = collection.takeWhile(async (item) => item < 3);
@@ -820,7 +820,7 @@ describe("class: AsyncIterableCollection", () => {
                 newCollection = collection.skipUntil((item) => item >= 3);
             expect(await newCollection.toArray()).toEqual([3, 4]);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             await collection
@@ -831,7 +831,7 @@ describe("class: AsyncIterableCollection", () => {
                 .toArray();
             expect(indexes).toEqual([0, 1, 2]);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
                 // eslint-disable-next-line @typescript-eslint/require-await
                 newCollection = collection.skipUntil(async (item) => item >= 3);
@@ -844,7 +844,7 @@ describe("class: AsyncIterableCollection", () => {
                 newCollection = collection.skipWhile((item) => item <= 3);
             expect(await newCollection.toArray()).toEqual([4]);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             await collection
@@ -855,7 +855,7 @@ describe("class: AsyncIterableCollection", () => {
                 .toArray();
             expect(indexes).toEqual([0, 1, 2, 3]);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
                 // eslint-disable-next-line @typescript-eslint/require-await
                 newCollection = collection.skipWhile(async (item) => item <= 3);
@@ -1095,7 +1095,7 @@ describe("class: AsyncIterableCollection", () => {
                 arr.filter((item) => typeof item === "number"),
             ]);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const arr = ["a", 1, "b", 2, "c", 3, "d", 4, "e", 5],
                 collection = new AsyncIterableCollection(arr),
                 indexes: number[] = [];
@@ -1107,7 +1107,7 @@ describe("class: AsyncIterableCollection", () => {
                 .toArray();
             expect(indexes).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const arr = ["a", 1, "b", 2, "c", 3, "d", 4, "e", 5],
                 collection = new AsyncIterableCollection(arr),
                 newCollection = collection.partition(
@@ -1355,7 +1355,7 @@ describe("class: AsyncIterableCollection", () => {
                 ],
                 collection = new AsyncIterableCollection<Person>(arr),
                 newCollection = collection.groupBy({
-                    mapFn(item) {
+                    selectFn(item) {
                         return item.name;
                     },
                 });
@@ -1373,7 +1373,7 @@ describe("class: AsyncIterableCollection", () => {
                 ["Ibra", arr.filter((item) => item.name === "Ibra")],
             ]);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "b",
@@ -1387,7 +1387,7 @@ describe("class: AsyncIterableCollection", () => {
                 indexes: number[] = [];
             await collection
                 .groupBy({
-                    mapFn: (item, index) => {
+                    selectFn: (item, index) => {
                         indexes.push(index);
                         return item;
                     },
@@ -1429,7 +1429,7 @@ describe("class: AsyncIterableCollection", () => {
                 collection = new AsyncIterableCollection<Person>(arr),
                 newCollection = collection.groupBy({
                     // eslint-disable-next-line @typescript-eslint/require-await
-                    mapFn: async (item) => {
+                    selectFn: async (item) => {
                         return item.name;
                     },
                 });
@@ -1493,7 +1493,7 @@ describe("class: AsyncIterableCollection", () => {
                 ],
                 collection = new AsyncIterableCollection<Person>(arr),
                 newCollection = collection.countBy({
-                    mapFn(item) {
+                    selectFn(item) {
                         return item.name;
                     },
                 });
@@ -1503,7 +1503,7 @@ describe("class: AsyncIterableCollection", () => {
                 ["Ibra", arr.filter((item) => item.name === "Ibra").length],
             ]);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "b",
@@ -1517,7 +1517,7 @@ describe("class: AsyncIterableCollection", () => {
                 indexes: number[] = [];
             await collection
                 .countBy({
-                    mapFn: (item, index) => {
+                    selectFn: (item, index) => {
                         indexes.push(index);
                         return item;
                     },
@@ -1549,7 +1549,7 @@ describe("class: AsyncIterableCollection", () => {
                     "cccc",
                 ]),
                 newCollection = collection.unique({
-                    mapFn(item) {
+                    selectFn(item) {
                         return item.length;
                     },
                 });
@@ -1560,7 +1560,7 @@ describe("class: AsyncIterableCollection", () => {
                 "cccc",
             ]);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "b",
@@ -1574,7 +1574,7 @@ describe("class: AsyncIterableCollection", () => {
                 indexes: number[] = [];
             await collection
                 .unique({
-                    mapFn: (item, index) => {
+                    selectFn: (item, index) => {
                         indexes.push(index);
                         return item;
                     },
@@ -1582,7 +1582,7 @@ describe("class: AsyncIterableCollection", () => {
                 .toArray();
             expect(indexes).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "bb",
@@ -1593,7 +1593,7 @@ describe("class: AsyncIterableCollection", () => {
                 ]),
                 newCollection = collection.unique({
                     // eslint-disable-next-line @typescript-eslint/require-await
-                    mapFn: async (item) => {
+                    selectFn: async (item) => {
                         return item.length;
                     },
                 });
@@ -2058,7 +2058,7 @@ describe("class: AsyncIterableCollection", () => {
         });
     });
     describe("method: first", () => {
-        test("Should return first item that matches the filter function", async () => {
+        test("Should return first item that matches the predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2083,7 +2083,7 @@ describe("class: AsyncIterableCollection", () => {
                 ],
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.first({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
@@ -2095,15 +2095,15 @@ describe("class: AsyncIterableCollection", () => {
         test("Should return null when item not found", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 item = await collection.first({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             await collection.first({
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -2115,7 +2115,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.first()).toBe(1);
             expect(await collection.first()).toBe(1);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2141,13 +2141,13 @@ describe("class: AsyncIterableCollection", () => {
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.first({
                     // eslint-disable-next-line @typescript-eslint/require-await
-                    filterFn: async (person) => person.name === "Joe",
+                    predicateFn: async (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
     });
     describe("method: firstOr", () => {
-        test("Should return first item that matches the filter function", async () => {
+        test("Should return first item that matches the predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2173,7 +2173,7 @@ describe("class: AsyncIterableCollection", () => {
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.firstOr({
                     defaultValue: null,
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
@@ -2188,16 +2188,16 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 item = await collection.firstOr({
                     defaultValue: "a",
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe("a");
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             await collection.firstOr({
                 defaultValue: null,
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -2217,7 +2217,7 @@ describe("class: AsyncIterableCollection", () => {
                 }),
             ).toBe(1);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2244,13 +2244,13 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.firstOr({
                     defaultValue: null,
                     // eslint-disable-next-line @typescript-eslint/require-await
-                    filterFn: async (person) => person.name === "Joe",
+                    predicateFn: async (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
     });
     describe("method: firstOrFail", () => {
-        test("Should return first item that matches the filter function", async () => {
+        test("Should return first item that matches the predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2275,7 +2275,7 @@ describe("class: AsyncIterableCollection", () => {
                 ],
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.firstOrFail({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
@@ -2288,7 +2288,7 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
             await expect(async () => {
                 await collection.firstOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).rejects.toThrowError(CollectionError);
         });
@@ -2296,16 +2296,16 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
             await expect(async () => {
                 await collection.firstOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).rejects.toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             try {
                 await collection.firstOrFail({
-                    filterFn: (item, index) => {
+                    predicateFn: (item, index) => {
                         indexes.push(index);
                         return item === 6;
                     },
@@ -2320,7 +2320,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.firstOrFail()).toBe(1);
             expect(await collection.firstOrFail()).toBe(1);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2346,13 +2346,13 @@ describe("class: AsyncIterableCollection", () => {
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.firstOrFail({
                     // eslint-disable-next-line @typescript-eslint/require-await
-                    filterFn: async (person) => person.name === "Joe",
+                    predicateFn: async (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
     });
     describe("method: last", () => {
-        test("Should return last item that matches the filter function", async () => {
+        test("Should return last item that matches the predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2377,7 +2377,7 @@ describe("class: AsyncIterableCollection", () => {
                 ],
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.last({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -2389,15 +2389,15 @@ describe("class: AsyncIterableCollection", () => {
         test("Should return null when item not found", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 item = await collection.last({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             await collection.last({
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -2409,7 +2409,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.last()).toBe(5);
             expect(await collection.last()).toBe(5);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2435,13 +2435,13 @@ describe("class: AsyncIterableCollection", () => {
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.last({
                     // eslint-disable-next-line @typescript-eslint/require-await
-                    filterFn: async (person) => person.name === "Joe",
+                    predicateFn: async (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
     });
     describe("method: lastOr", () => {
-        test("Should return last item that matches the filter function", async () => {
+        test("Should return last item that matches the predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2467,7 +2467,7 @@ describe("class: AsyncIterableCollection", () => {
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.lastOr({
                     defaultValue: null,
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -2482,16 +2482,16 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 item = await collection.lastOr({
                     defaultValue: "a",
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe("a");
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             await collection.lastOr({
                 defaultValue: null,
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -2511,7 +2511,7 @@ describe("class: AsyncIterableCollection", () => {
                 }),
             ).toBe(5);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2538,13 +2538,13 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.lastOr({
                     defaultValue: null,
                     // eslint-disable-next-line @typescript-eslint/require-await
-                    filterFn: async (person) => person.name === "Joe",
+                    predicateFn: async (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
     });
     describe("method: lastOrFail", () => {
-        test("Should return last item that matches the filter function", async () => {
+        test("Should return last item that matches the predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2569,7 +2569,7 @@ describe("class: AsyncIterableCollection", () => {
                 ],
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.lastOrFail({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -2582,7 +2582,7 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
             await expect(async () => {
                 await collection.lastOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).rejects.toThrowError(CollectionError);
         });
@@ -2590,16 +2590,16 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
             await expect(async () => {
                 await collection.lastOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).rejects.toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             try {
                 await collection.lastOrFail({
-                    filterFn: (item, index) => {
+                    predicateFn: (item, index) => {
                         indexes.push(index);
                         return item === 6;
                     },
@@ -2614,7 +2614,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.lastOrFail()).toBe(5);
             expect(await collection.lastOrFail()).toBe(5);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2640,7 +2640,7 @@ describe("class: AsyncIterableCollection", () => {
                 collection = new AsyncIterableCollection(persons),
                 item = await collection.lastOrFail({
                     // eslint-disable-next-line @typescript-eslint/require-await
-                    filterFn: async (person) => person.name === "Joe",
+                    predicateFn: async (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -2666,7 +2666,7 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.before((item) => item === "d");
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             await collection.before((item, index) => {
@@ -2680,7 +2680,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.before((item) => item === "c")).toBe("b");
             expect(await collection.before((item) => item === "c")).toBe("b");
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 // eslint-disable-next-line @typescript-eslint/require-await
                 item = await collection.before(async (item) => item === "b");
@@ -2708,7 +2708,7 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.beforeOr(-1, (item) => item === "d");
             expect(item).toBe(-1);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             await collection.beforeOr(null, (item, index) => {
@@ -2726,7 +2726,7 @@ describe("class: AsyncIterableCollection", () => {
                 "b",
             );
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 item = await collection.beforeOr(
                     -1,
@@ -2759,7 +2759,7 @@ describe("class: AsyncIterableCollection", () => {
                 await collection.beforeOrFail((item) => item === "d");
             }).rejects.toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             try {
@@ -2781,7 +2781,7 @@ describe("class: AsyncIterableCollection", () => {
                 "b",
             );
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 item = await collection.beforeOrFail(
                     // eslint-disable-next-line @typescript-eslint/require-await
@@ -2811,7 +2811,7 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.after((item) => item === "d");
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             await collection.after((item, index) => {
@@ -2825,7 +2825,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.after((item) => item === "a")).toBe("b");
             expect(await collection.after((item) => item === "a")).toBe("b");
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 // eslint-disable-next-line @typescript-eslint/require-await
                 item = await collection.after(async (item) => item === "b");
@@ -2853,7 +2853,7 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.afterOr(-1, (item) => item === "d");
             expect(item).toBe(-1);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             await collection.afterOr(null, (item, index) => {
@@ -2871,7 +2871,7 @@ describe("class: AsyncIterableCollection", () => {
                 "b",
             );
         });
-        test("Should work async filter function", async () => {
+        test("Should work async predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 item = await collection.afterOr(
                     -1,
@@ -2904,7 +2904,7 @@ describe("class: AsyncIterableCollection", () => {
                 await collection.afterOrFail((item) => item === "d");
             }).rejects.toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             try {
@@ -2926,7 +2926,7 @@ describe("class: AsyncIterableCollection", () => {
                 "b",
             );
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 item = await collection.afterOrFail(
                     // eslint-disable-next-line @typescript-eslint/require-await
@@ -2970,7 +2970,7 @@ describe("class: AsyncIterableCollection", () => {
             ]);
             expect(await collection.sole((item) => item === "c")).toBe("c");
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "a",
@@ -2996,7 +2996,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.sole((item) => item === "c")).toBe("c");
             expect(await collection.sole((item) => item === "c")).toBe("c");
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection([
                 "a",
                 "a",
@@ -3039,7 +3039,7 @@ describe("class: AsyncIterableCollection", () => {
             ]);
             expect(await collection.count((item) => item === "a")).toBe(3);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
                     "a",
@@ -3065,7 +3065,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.count((item) => item === "a")).toBe(3);
             expect(await collection.count((item) => item === "a")).toBe(3);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection(["b", "b"]);
             // eslint-disable-next-line @typescript-eslint/require-await
             expect(await collection.count(async (item) => item === "b")).toBe(
@@ -3136,7 +3136,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.search((item) => item === "b")).toBe(1);
             expect(await collection.search((item) => item === "b")).toBe(1);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]);
             // eslint-disable-next-line @typescript-eslint/require-await
             expect(await collection.search(async (item) => item === "b")).toBe(
@@ -3152,7 +3152,7 @@ describe("class: AsyncIterableCollection", () => {
             await collection.forEach((item) => arr2.push(item));
             expect(arr2).toEqual(arr1);
         });
-        test("Should input correct indexes to filter function", async () => {
+        test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3]),
                 indexes: number[] = [];
             await collection.forEach((_item, index) => {
@@ -3168,7 +3168,7 @@ describe("class: AsyncIterableCollection", () => {
             expect(arr2).toEqual(arr1);
             expect(arr2).toEqual(arr1);
         });
-        test("Should work with async filter function", async () => {
+        test("Should work with async predicate function", async () => {
             const arr1 = [1, 2, 3],
                 collection = new AsyncIterableCollection(arr1),
                 arr2: number[] = [];

@@ -1,10 +1,14 @@
+/**
+ * @module Collections
+ */
+
 import {
     type SliceSettings,
     type SlidingSettings,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type CollectionError,
     type Comparator,
-    type Filter,
+    type Predicate,
     type FindOrSettings,
     type FindSettings,
     type ForEach,
@@ -29,11 +33,8 @@ import {
     type UnexpectedCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_shared";
-import { type EnsureType } from "@/types";
+import { type EnsureType } from "@/_shared/types";
 
-/**
- * @group Collections
- */
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
     | Iterable<infer TItem>
@@ -49,16 +50,19 @@ export type Collapse<TValue> = TValue extends
  * @throws {ItemNotFoundError}
  * @throws {MultipleItemsFoundError}
  * @throws {TypeError}
- * @group Collections
+ * @group Contracts
  */
 export type ICollection<TInput> = Iterable<TInput> & {
-    iterator(): Iterator<TInput, void>;
+    /**
+     * Returns an iterator
+     */
+    toIterator(): Iterator<TInput, void>;
 
     entries(
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<RecordItem<number, TInput>>;
 
-    keys(throwOnNumberLimit?: boolean): ICollection<number>;
+    keys(throwOnIndexOverflow?: boolean): ICollection<number>;
 
     values(): ICollection<TInput>;
 
@@ -71,8 +75,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [3, 4]
      */
     filter<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput>;
 
     /**
@@ -85,8 +89,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [2, 4, 6, 8, 10]
      */
     map<TOutput>(
-        map: Map<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        mapFn: Map<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput>;
 
     reduce<TOutput = TInput>(
@@ -117,8 +121,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [2, "a", "b", 2, "c", "d"]
      */
     flatMap<TOutput>(
-        map: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
-        throwOnNumberLimit?: boolean,
+        mapFn: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput>;
 
     /**
@@ -130,9 +134,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [1, 4, 3, 8, 5]
      */
     update<TFilterOutput extends TInput, TMapOutput>(
-        filter: Filter<TInput, ICollection<TInput>, TFilterOutput>,
-        map: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
+        mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>>;
 
     /**
@@ -190,7 +194,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      * @throws {TypeError} {@link TypeError}
      */
-    median(throwOnNumberLimit?: boolean): EnsureType<TInput, number>;
+    median(throwOnIndexOverflow?: boolean): EnsureType<TInput, number>;
 
     /**
      * The min method returns the min of all items in the collection. If the collection contains nested arrays or objects,
@@ -231,8 +235,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     percentage(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): number;
 
     /**
@@ -247,8 +251,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     some<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): boolean;
 
     /**
@@ -262,8 +266,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     every<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): boolean;
 
     /**
@@ -279,7 +283,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * chunk.toArray();
      * // [4, 5]
      */
-    take(limit: number, throwOnNumberLimit?: boolean): ICollection<TInput>;
+    take(limit: number, throwOnIndexOverflow?: boolean): ICollection<TInput>;
 
     /**
      * The takeUntil method returns items in the collection until the given callback returns true:
@@ -290,8 +294,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [1, 2]
      */
     takeUntil(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput>;
 
     /**
@@ -303,8 +307,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [1, 2]
      */
     takeWhile(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput>;
 
     /**
@@ -314,7 +318,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.toArray();
      * // [5, 6, 7, 8, 9, 10]
      */
-    skip(offset: number, throwOnNumberLimit?: boolean): ICollection<TInput>;
+    skip(offset: number, throwOnIndexOverflow?: boolean): ICollection<TInput>;
 
     /**
      * The skipUntil method skips over items from the collection until the given callback returns true
@@ -325,8 +329,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [3, 4]
      */
     skipUntil(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput>;
 
     /**
@@ -337,8 +341,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [4]
      */
     skipWhile(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput>;
 
     /**
@@ -451,8 +455,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * //  [["A", "A"], ["B", "B"], ["C", "C", "C"], ["D"]]
      */
     chunkWhile(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<ICollection<TInput>>;
 
     /**
@@ -465,7 +469,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     split(
         chunkAmount: number,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<ICollection<TInput>>;
 
     /**
@@ -476,13 +480,12 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [[1, 2], [3, 4, 5, 6]]
      */
     partition(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<ICollection<TInput>>;
 
     /**
      * The sliding method returns a new collection of chunks representing a "sliding window" view of the items in the collection:
-     * @experimental
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5]).sliding(2);
      * collection.toArray();
@@ -560,7 +563,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     difference<TOutput = TInput>(
         iterable: Iterable<TInput>,
-        map?: Map<TInput, ICollection<TInput>, TOutput>,
+        selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<TInput>;
 
     /**
@@ -616,8 +619,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The slice is the same as Array.slice method. Se documentation on mdn:
-     * @link {https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice}
+     * The slice is the same as Array.slice method. Se documentation on [mdn](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice):
      */
     slice(settings?: SliceSettings): ICollection<TInput>;
 
@@ -651,9 +653,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [1, -1, 20, 2, 2, 3, 4, 5]
      */
     insertBefore<TExtended = TInput>(
-        filter: Filter<TInput, ICollection<TInput>>,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput | TExtended>;
 
     /**
@@ -664,9 +666,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // [1, 2, -1, 20, 2, 3, 4, 5]
      */
     insertAfter<TExtended = TInput>(
-        filter: Filter<TInput, ICollection<TInput>>,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput | TExtended>;
 
     /**
@@ -813,8 +815,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     before(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): TInput | null;
 
     /**
@@ -825,8 +827,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     beforeOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): TInput | TExtended;
 
     /**
@@ -837,8 +839,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     beforeOrFail(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): TInput;
 
     /**
@@ -856,8 +858,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     after(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): TInput | null;
 
     /**
@@ -868,8 +870,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     afterOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): TInput | TExtended;
 
     /**
@@ -880,8 +882,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     afterOrFail(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): TInput;
 
     /**
@@ -897,8 +899,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     sole<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): TOutput;
 
     /**
@@ -921,8 +923,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     count(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): number;
 
     /**
@@ -930,7 +932,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
-    size(throwOnNumberLimit?: boolean): number;
+    size(throwOnIndexOverflow?: boolean): number;
 
     /**
      * @throws {CollectionError} {@link CollectionError}
@@ -953,8 +955,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     search(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): number;
 
     /**
@@ -964,7 +966,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     forEach(
         callback: ForEach<TInput, ICollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): void;
 
     /**

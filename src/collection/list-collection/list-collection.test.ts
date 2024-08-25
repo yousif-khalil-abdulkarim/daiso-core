@@ -13,11 +13,11 @@ describe("class: ListCollection", () => {
         test(`Should filter out all "a" of ["a", "bc", "c", "a", "d", "a"]`, () => {
             const arr = ["a", "bc", "c", "a", "d", "a"],
                 collection = new ListCollection(arr),
-                filterFunction = (item: string): boolean => item === "a",
-                newCollection = collection.filter(filterFunction);
-            expect(newCollection.toArray()).toEqual(arr.filter(filterFunction));
+                predicateFn = (item: string): boolean => item === "a",
+                newCollection = collection.filter(predicateFn);
+            expect(newCollection.toArray()).toEqual(arr.filter(predicateFn));
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to ion", () => {
             const collection = new ListCollection([
                     "a",
                     "bc",
@@ -27,11 +27,11 @@ describe("class: ListCollection", () => {
                     "a",
                 ]),
                 indexes: number[] = [],
-                filterFunction = (item: string, index: number): boolean => {
+                predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
                 };
-            collection.filter(filterFunction).toArray();
+            collection.filter(predicateFn).toArray();
             expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
         });
     });
@@ -177,7 +177,7 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: update", () => {
-        test("Should change all the items that match the filter function", () => {
+        test("Should change all the items that match the predicate function", () => {
             const collection = new ListCollection([
                     "a",
                     "aa",
@@ -199,7 +199,7 @@ describe("class: ListCollection", () => {
                 "ccc",
             ]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([
                     "a",
                     "aa",
@@ -401,7 +401,7 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection(["a", "b", "a", "b"]);
             expect(collection.percentage((item) => item === "a")).toBe(50);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([
                     "a",
                     "bc",
@@ -411,11 +411,11 @@ describe("class: ListCollection", () => {
                     "a",
                 ]),
                 indexes: number[] = [],
-                filterFunction = (item: string, index: number): boolean => {
+                predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
                 };
-            collection.percentage(filterFunction);
+            collection.percentage(predicateFn);
             expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
         });
         test("Should return the same value when called more than 1 times", () => {
@@ -425,15 +425,15 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: some", () => {
-        test("Should return true when at least 1 item match the filter function", () => {
+        test("Should return true when at least 1 item match the predicate function", () => {
             const collection = new ListCollection(["a", "b", "c", "c", "a"]);
             expect(collection.some((item) => item === "b")).toBe(true);
         });
-        test("Should return false when all of the items does not match the filter function", () => {
+        test("Should return false when all of the items does not match the predicate function", () => {
             const collection = new ListCollection(["a", "b", "c", "c", "a"]);
             expect(collection.some((item) => item === "d")).toBe(false);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([
                     "a",
                     "bc",
@@ -443,11 +443,11 @@ describe("class: ListCollection", () => {
                     "a",
                 ]),
                 indexes: number[] = [],
-                filterFunction = (item: string, index: number): boolean => {
+                predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
                 };
-            collection.every(filterFunction);
+            collection.every(predicateFn);
             expect(indexes).toEqual([0, 1]);
         });
         test("Should return the same value when called more than 1 times", () => {
@@ -457,15 +457,15 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: every", () => {
-        test("Should return true when all items match the filter function", () => {
+        test("Should return true when all items match the predicate function", () => {
             const collection = new ListCollection(["a", "b", "c", "c", "a"]);
             expect(collection.every((item) => item.length === 1)).toBe(true);
         });
-        test("Should return false when one item does not match the filter function", () => {
+        test("Should return false when one item does not match the predicate function", () => {
             const collection = new ListCollection(["a", "b", "c", "c", "aa"]);
             expect(collection.every((item) => item.length === 1)).toBe(false);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c", "c", "aa"]),
                 indexes: number[] = [];
             collection.every((item, index) => {
@@ -506,7 +506,7 @@ describe("class: ListCollection", () => {
                 newCollection = collection.takeUntil((item) => item >= 3);
             expect(newCollection.toArray()).toEqual([1, 2]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             collection
@@ -524,7 +524,7 @@ describe("class: ListCollection", () => {
                 newCollection = collection.takeWhile((item) => item < 3);
             expect(newCollection.toArray()).toEqual([1, 2]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             collection
@@ -562,7 +562,7 @@ describe("class: ListCollection", () => {
                 newCollection = collection.skipUntil((item) => item >= 3);
             expect(newCollection.toArray()).toEqual([3, 4]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             collection
@@ -580,7 +580,7 @@ describe("class: ListCollection", () => {
                 newCollection = collection.skipWhile((item) => item <= 3);
             expect(newCollection.toArray()).toEqual([4]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             collection
@@ -766,7 +766,7 @@ describe("class: ListCollection", () => {
                 arr.filter((item) => typeof item === "number"),
             ]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const arr = ["a", 1, "b", 2, "c", 3, "d", 4, "e", 5],
                 collection = new ListCollection(arr),
                 indexes: number[] = [];
@@ -1013,7 +1013,7 @@ describe("class: ListCollection", () => {
                 ],
                 collection = new ListCollection<Person>(arr),
                 newCollection = collection.groupBy({
-                    mapFn(item) {
+                    selectFn(item) {
                         return item.name;
                     },
                 });
@@ -1032,7 +1032,7 @@ describe("class: ListCollection", () => {
                 ["Ibra", arr.filter((item) => item.name === "Ibra")],
             ]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([
                     "a",
                     "b",
@@ -1046,7 +1046,7 @@ describe("class: ListCollection", () => {
                 indexes: number[] = [];
             collection
                 .groupBy({
-                    mapFn: (item, index) => {
+                    selectFn: (item, index) => {
                         indexes.push(index);
                         return item;
                     },
@@ -1100,7 +1100,7 @@ describe("class: ListCollection", () => {
                 ],
                 collection = new ListCollection<Person>(arr),
                 newCollection = collection.countBy({
-                    mapFn(item) {
+                    selectFn(item) {
                         return item.name;
                     },
                 });
@@ -1110,7 +1110,7 @@ describe("class: ListCollection", () => {
                 ["Ibra", arr.filter((item) => item.name === "Ibra").length],
             ]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([
                     "a",
                     "b",
@@ -1124,7 +1124,7 @@ describe("class: ListCollection", () => {
                 indexes: number[] = [];
             collection
                 .countBy({
-                    mapFn: (item, index) => {
+                    selectFn: (item, index) => {
                         indexes.push(index);
                         return item;
                     },
@@ -1156,13 +1156,13 @@ describe("class: ListCollection", () => {
                     "cccc",
                 ]),
                 newCollection = collection.unique({
-                    mapFn(item) {
+                    selectFn(item) {
                         return item.length;
                     },
                 });
             expect(newCollection.toArray()).toEqual(["a", "bb", "acc", "cccc"]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([
                     "a",
                     "b",
@@ -1176,7 +1176,7 @@ describe("class: ListCollection", () => {
                 indexes: number[] = [];
             collection
                 .unique({
-                    mapFn: (item, index) => {
+                    selectFn: (item, index) => {
                         indexes.push(index);
                         return item;
                     },
@@ -1470,7 +1470,7 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: first", () => {
-        test("Should return first item that matches the filter function", () => {
+        test("Should return first item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1495,7 +1495,7 @@ describe("class: ListCollection", () => {
                 ],
                 collection = new ListCollection(persons),
                 item = collection.first({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
@@ -1507,15 +1507,15 @@ describe("class: ListCollection", () => {
         test("Should return null when item not found", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 item = collection.first({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             collection.first({
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -1529,7 +1529,7 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: firstOr", () => {
-        test("Should return first item that matches the filter function", () => {
+        test("Should return first item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1555,7 +1555,7 @@ describe("class: ListCollection", () => {
                 collection = new ListCollection(persons),
                 item = collection.firstOr({
                     defaultValue: null,
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
@@ -1570,16 +1570,16 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 item = collection.firstOr({
                     defaultValue: "a",
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe("a");
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             collection.firstOr({
                 defaultValue: null,
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -1601,7 +1601,7 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: firstOrFail", () => {
-        test("Should return first item that matches the filter function", () => {
+        test("Should return first item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1626,7 +1626,7 @@ describe("class: ListCollection", () => {
                 ],
                 collection = new ListCollection(persons),
                 item = collection.firstOrFail({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
@@ -1639,7 +1639,7 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]);
             expect(() => {
                 collection.firstOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).toThrowError(CollectionError);
         });
@@ -1647,16 +1647,16 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]);
             expect(() => {
                 collection.firstOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             try {
                 collection.firstOrFail({
-                    filterFn: (item, index) => {
+                    predicateFn: (item, index) => {
                         indexes.push(index);
                         return item === 6;
                     },
@@ -1673,7 +1673,7 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: last", () => {
-        test("Should return last item that matches the filter function", () => {
+        test("Should return last item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1698,7 +1698,7 @@ describe("class: ListCollection", () => {
                 ],
                 collection = new ListCollection(persons),
                 item = collection.last({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -1710,15 +1710,15 @@ describe("class: ListCollection", () => {
         test("Should return null when item not found", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 item = collection.last({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             collection.last({
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -1732,7 +1732,7 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: lastOr", () => {
-        test("Should return last item that matches the filter function", () => {
+        test("Should return last item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1758,7 +1758,7 @@ describe("class: ListCollection", () => {
                 collection = new ListCollection(persons),
                 item = collection.lastOr({
                     defaultValue: null,
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -1773,16 +1773,16 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 item = collection.lastOr({
                     defaultValue: "a",
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe("a");
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             collection.lastOr({
                 defaultValue: null,
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -1804,7 +1804,7 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: lastOrFail", () => {
-        test("Should return last item that matches the filter function", () => {
+        test("Should return last item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1829,7 +1829,7 @@ describe("class: ListCollection", () => {
                 ],
                 collection = new ListCollection(persons),
                 item = collection.lastOrFail({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -1842,7 +1842,7 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]);
             expect(() => {
                 collection.lastOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).toThrowError(CollectionError);
         });
@@ -1850,16 +1850,16 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]);
             expect(() => {
                 collection.lastOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             try {
                 collection.lastOrFail({
-                    filterFn: (item, index) => {
+                    predicateFn: (item, index) => {
                         indexes.push(index);
                         return item === 6;
                     },
@@ -1896,7 +1896,7 @@ describe("class: ListCollection", () => {
                 item = collection.before((item) => item === "d");
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             collection.before((item, index) => {
@@ -1932,7 +1932,7 @@ describe("class: ListCollection", () => {
                 item = collection.beforeOr(-1, (item) => item === "d");
             expect(item).toBe(-1);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             collection.beforeOr(null, (item, index) => {
@@ -1970,7 +1970,7 @@ describe("class: ListCollection", () => {
                 collection.beforeOrFail((item) => item === "d");
             }).toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             try {
@@ -2010,7 +2010,7 @@ describe("class: ListCollection", () => {
                 item = collection.after((item) => item === "d");
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             collection.after((item, index) => {
@@ -2046,7 +2046,7 @@ describe("class: ListCollection", () => {
                 item = collection.afterOr(-1, (item) => item === "d");
             expect(item).toBe(-1);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             collection.afterOr(null, (item, index) => {
@@ -2084,7 +2084,7 @@ describe("class: ListCollection", () => {
                 collection.afterOrFail((item) => item === "d");
             }).toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             try {
@@ -2120,7 +2120,7 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection(["a", "a", "b", "c", "b"]);
             expect(collection.sole((item) => item === "c")).toBe("c");
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "a", "b", "c", "b"]),
                 indexes: number[] = [];
             collection.sole((item, index) => {
@@ -2158,7 +2158,7 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection(["a", "b", "a", "b", "a"]);
             expect(collection.count((item) => item === "a")).toBe(3);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "a", "b", "c", "b"]),
                 indexes: number[] = [];
             collection.count((_item, index) => {
@@ -2245,7 +2245,7 @@ describe("class: ListCollection", () => {
             collection.forEach((item) => arr2.push(item));
             expect(arr2).toEqual(arr1);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3]),
                 indexes: number[] = [];
             collection.forEach((_item, index) => {

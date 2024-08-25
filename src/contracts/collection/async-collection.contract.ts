@@ -1,7 +1,11 @@
+/**
+ * @module Collections
+ */
+
 import {
     type SliceSettings,
     type SlidingSettings,
-    type AsyncFilter,
+    type AsyncPredicate,
     type AsyncFindOrSettings,
     type AsyncFindSettings,
     type AsyncForEach,
@@ -29,17 +33,12 @@ import {
     type UnexpectedCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_shared";
-import { type EnsureType } from "@/types";
+import { type EnsureType } from "@/_shared/types";
 
-/**
- * @group Collections
- */
 export type AsyncIterableValue<TInput> =
     | Iterable<TInput>
     | AsyncIterable<TInput>;
-/**
- * @group Collections
- */
+
 export type AsyncCollapse<TValue> = TValue extends
     | Array<infer TItem>
     | Iterable<infer TItem>
@@ -55,16 +54,16 @@ export type AsyncCollapse<TValue> = TValue extends
  * @throws {ItemNotFoundError}
  * @throws {MultipleItemsFoundError}
  * @throws {TypeError}
- * @group Collections
+ * @group Contracts
  */
 export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
-    iterator(): AsyncIterator<TInput, void>;
+    toIterator(): AsyncIterator<TInput, void>;
 
     entries(
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<RecordItem<number, TInput>>;
 
-    keys(throwOnNumberLimit?: boolean): IAsyncCollection<number>;
+    keys(throwOnIndexOverflow?: boolean): IAsyncCollection<number>;
 
     values(): IAsyncCollection<TInput>;
 
@@ -77,8 +76,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [3, 4]
      */
     filter<TOutput extends TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TOutput>;
 
     /**
@@ -91,8 +90,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [2, 4, 6, 8, 10]
      */
     map<TOutput>(
-        map: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        mapFn: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TOutput>;
 
     reduce<TOutput = TInput>(
@@ -127,12 +126,12 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [2, "a", "b", 2, "c", "d"]
      */
     flatMap<TOutput>(
-        map: AsyncMap<
+        mapFn: AsyncMap<
             TInput,
             IAsyncCollection<TInput>,
             AsyncIterableValue<TOutput>
         >,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TOutput>;
 
     /**
@@ -144,9 +143,13 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [1, 4, 3, 8, 5]
      */
     update<TFilterOutput extends TInput, TMapOutput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TFilterOutput>,
-        map: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<
+            TInput,
+            IAsyncCollection<TInput>,
+            TFilterOutput
+        >,
+        mapFn: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>>;
 
     /**
@@ -204,7 +207,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      * @throws {TypeError} {@link TypeError}
      */
-    median(throwOnNumberLimit?: boolean): Promise<EnsureType<TInput, number>>;
+    median(throwOnIndexOverflow?: boolean): Promise<EnsureType<TInput, number>>;
 
     /**
      * The min method returns the min of all items in the collection. If the collection contains nested arrays or objects,
@@ -245,8 +248,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     percentage(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<number>;
 
     /**
@@ -261,8 +264,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     some<TOutput extends TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<boolean>;
 
     /**
@@ -276,8 +279,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     every<TOutput extends TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<boolean>;
 
     /**
@@ -293,7 +296,10 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await chunk.toArray();
      * // [4, 5]
      */
-    take(limit: number, throwOnNumberLimit?: boolean): IAsyncCollection<TInput>;
+    take(
+        limit: number,
+        throwOnIndexOverflow?: boolean,
+    ): IAsyncCollection<TInput>;
 
     /**
      * The takeUntil method returns items in the collection until the given callback returns true:
@@ -304,8 +310,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [1, 2]
      */
     takeUntil(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TInput>;
 
     /**
@@ -317,8 +323,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [1, 2]
      */
     takeWhile(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TInput>;
 
     /**
@@ -330,7 +336,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     skip(
         offset: number,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TInput>;
 
     /**
@@ -342,8 +348,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [3, 4]
      */
     skipUntil(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TInput>;
 
     /**
@@ -354,8 +360,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [4]
      */
     skipWhile(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TInput>;
 
     /**
@@ -480,8 +486,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * //  [["A", "A"], ["B", "B"], ["C", "C", "C"], ["D"]]
      */
     chunkWhile(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<IAsyncCollection<TInput>>;
 
     /**
@@ -494,7 +500,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     split(
         chunkAmount: number,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<IAsyncCollection<TInput>>;
 
     /**
@@ -506,13 +512,12 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [[1, 2], [3, 4, 5, 6]]
      */
     partition(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<IAsyncCollection<TInput>>;
 
     /**
      * The sliding method returns a new collection of chunks representing a "sliding window" view of the items in the collection:
-     * @experimental
      * @example
      * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]).sliding(2);
      * await collection.toArray();
@@ -604,7 +609,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     difference<TOutput = TInput>(
         iterable: AsyncIterableValue<TInput>,
-        map?: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
+        selectFn?: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
     ): IAsyncCollection<TInput>;
 
     /**
@@ -660,8 +665,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     ): IAsyncCollection<TInput | TExtended>;
 
     /**
-     * The slice is the same as Array.slice method. Se documentation on mdn:
-     * @link {https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice}
+     * The slice is the same as Array.slice method. Se documentation on [mdn](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice):
      */
     slice(settings?: SliceSettings): IAsyncCollection<TInput>;
 
@@ -695,9 +699,9 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [1, -1, 20, 2, 2, 3, 4, 5]
      */
     insertBefore<TExtended = TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
         iterable: AsyncIterableValue<TInput | TExtended>,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TInput | TExtended>;
 
     /**
@@ -708,9 +712,9 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // [1, 2, -1, 20, 2, 3, 4, 5]
      */
     insertAfter<TExtended = TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
         iterable: AsyncIterableValue<TInput | TExtended>,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): IAsyncCollection<TInput | TExtended>;
 
     /**
@@ -857,8 +861,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     before(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<TInput | null>;
 
     /**
@@ -869,8 +873,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     beforeOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<TInput | TExtended>;
 
     /**
@@ -881,8 +885,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     beforeOrFail(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<TInput>;
 
     /**
@@ -900,8 +904,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     after(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<TInput | null>;
 
     /**
@@ -912,8 +916,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     afterOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<TInput | TExtended>;
 
     /**
@@ -924,8 +928,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     afterOrFail(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<TInput>;
 
     /**
@@ -941,8 +945,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     sole<TOutput extends TInput>(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>, TOutput>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<TOutput>;
 
     /**
@@ -998,8 +1002,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     count(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<number>;
 
     /**
@@ -1007,7 +1011,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
-    size(throwOnNumberLimit?: boolean): Promise<number>;
+    size(throwOnIndexOverflow?: boolean): Promise<number>;
 
     /**
      * @throws {CollectionError} {@link CollectionError}
@@ -1030,8 +1034,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
     search(
-        filter: AsyncFilter<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
     ): Promise<number>;
 
     /**
@@ -1041,7 +1045,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     forEach(
         callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
-        throwOnNumberLimit?: boolean,
+        throwOnIndexOverflow?: boolean,
     ): Promise<void>;
 
     /**
