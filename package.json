@@ -7,6 +7,18 @@
     "main": "./dist/cjs/_module.js",
     "module": "./dist/esm/_module.js",
     "types": "./dist/types/_module.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yousif-khalil-abdulkarim/daiso-core.git"
+    },
+    "keywords": [
+        "Collections",
+        "Arrays",
+        "Iterables",
+        "Iterable",
+        "Async iterables",
+        "AsyncIterable"
+    ],
     "files": [
         "./dist"
     ],

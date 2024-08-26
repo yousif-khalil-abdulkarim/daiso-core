@@ -28,4 +28,4 @@ In the future the following components will be added:
 
 This library is heavily inspired laravel but built in modular way where you can choose which part to use.
 
-[Link to the documentation website]()
+## Visit the [docs](https://yousif-khalil-abdulkarim.github.io/daiso-core/docs/) for more information!
