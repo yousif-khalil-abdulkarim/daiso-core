@@ -1,13 +1,19 @@
+/**
+ * @module Collections
+ */
+
 import { isIterable } from "@/collection/_shared";
 import {
     type Collapse,
     CollectionError,
     type Comparator,
-    type Filter,
+    type Predicate,
     type FindOrSettings,
     type FindSettings,
     type ForEach,
     type GroupBySettings,
+    type CountBySettings,
+    type UniqueSettings,
     type ICollection,
     ItemNotFoundError,
     type JoinSettings,
@@ -26,15 +32,18 @@ import {
     UnexpectedCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_module";
-import { EnsureType } from "@/types";
+import { EnsureType } from "@/_shared/types";
 
 /**
- * All methods in ListCollection are eager and therefore will run immediately.
- * @group Collections
+ * All methods in <i>ListCollection</i> are executed eagerly. The <i>throwOnIndexOverflow</i> parameter in the <i>ListCollection</i> methods doesnt have any affect.
+ * @group Adapters
  */
 export class ListCollection<TInput> implements ICollection<TInput> {
     private array: TInput[];
 
+    /**
+     * The <i>constructor</i> takes an <i>{@link Iterable}</i>.
+     */
     constructor(iterable: Iterable<TInput> = []) {
         this.array = [...iterable];
     }
@@ -43,12 +52,12 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         yield* this.array;
     }
 
-    iterator(): Iterator<TInput, void> {
+    toIterator(): Iterator<TInput, void> {
         return this[Symbol.iterator]() as Iterator<TInput, void>;
     }
 
     entries(
-        _throwOnNumberLimit?: boolean,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<RecordItem<number, TInput>> {
         try {
             return new ListCollection(this.array.entries());
@@ -66,7 +75,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    keys(_throwOnNumberLimit?: boolean): ICollection<number> {
+    keys(_throwOnIndexOverflow?: boolean): ICollection<number> {
         try {
             return new ListCollection(this.array.keys());
         } catch (error: unknown) {
@@ -88,13 +97,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     filter<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput> {
         try {
             return new ListCollection(
                 this.array.filter((item, index) =>
-                    filter(item, index, this),
+                    predicateFn(item, index, this),
                 ) as TOutput[],
             );
         } catch (error: unknown) {
@@ -111,13 +120,37 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
+    reject<TOutput extends TInput>(
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        _throwOnIndexOverflow?: boolean,
+    ): ICollection<Exclude<TInput, TOutput>> {
+        try {
+            return new ListCollection(
+                this.array.filter(
+                    (item, index) => !predicateFn(item, index, this),
+                ) as Exclude<TInput, TOutput>[],
+            );
+        } catch (error: unknown) {
+            if (
+                error instanceof CollectionError ||
+                error instanceof TypeError
+            ) {
+                throw error;
+            }
+            throw new UnexpectedCollectionError(
+                `Unexpected error "${String(error)}" occured`,
+                error,
+            );
+        }
+    }
+
     map<TOutput>(
-        map: Map<TInput, ICollection<TInput>, TOutput>,
-        _throwOnNumberLimit?: boolean,
+        mapFn: Map<TInput, ICollection<TInput>, TOutput>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput> {
         try {
             return new ListCollection(
-                this.array.map((item, index) => map(item, index, this)),
+                this.array.map((item, index) => mapFn(item, index, this)),
             );
         } catch (error: unknown) {
             if (
@@ -137,7 +170,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         settings: ReduceSettings<TInput, ICollection<TInput>, TOutput>,
     ): TOutput {
         try {
-            if (settings.initialValue === undefined && this.empty()) {
+            if (settings.initialValue === undefined && this.isEmpty()) {
                 throw new TypeError(
                     "Reduce of empty array must be inputed a initial value",
                 );
@@ -171,9 +204,9 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    join(settings?: JoinSettings): string {
+    join(settings?: JoinSettings): EnsureType<TInput, string> {
         try {
-            return this.reduce({
+            return this.reduce<string>({
                 reduceFn(str, item) {
                     if (typeof item !== "string") {
                         throw new TypeError(
@@ -183,7 +216,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                     const separator = settings?.seperator ?? ",";
                     return str + separator + item;
                 },
-            });
+            }) as EnsureType<TInput, string>;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -224,13 +257,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     flatMap<TOutput>(
-        map: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
-        _throwOnNumberLimit?: boolean,
+        mapFn: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput> {
         try {
             return new ListCollection(
                 this.array.flatMap((item, index) => [
-                    ...map(item, index, this),
+                    ...mapFn(item, index, this),
                 ]),
             );
         } catch (error: unknown) {
@@ -248,15 +281,15 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     update<TFilterOutput extends TInput, TMapOutput>(
-        filter: Filter<TInput, ICollection<TInput>, TFilterOutput>,
-        map: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
+        mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>> {
         try {
             return new ListCollection(
                 this.array.map((item, index) => {
-                    if (filter(item, index, this)) {
-                        return map(item as TFilterOutput, index, this);
+                    if (predicateFn(item, index, this)) {
+                        return mapFn(item as TFilterOutput, index, this);
                     }
                     return item;
                 }),
@@ -302,7 +335,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         >;
     }
 
-    median(_throwOnNumberLimit?: boolean): EnsureType<TInput, number> {
+    median(_throwOnIndexOverflow?: boolean): EnsureType<TInput, number> {
         try {
             const nbrs = this.array.map((item) => {
                     if (typeof item !== "number") {
@@ -397,11 +430,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     percentage(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): number {
         try {
-            return (this.count(filter) / this.size()) * 100;
+            return (this.count(predicateFn) / this.size()) * 100;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -417,11 +450,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     some<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        _throwOnIndexOverflow?: boolean,
     ): boolean {
         try {
-            return this.array.some((item, index) => filter(item, index, this));
+            return this.array.some((item, index) =>
+                predicateFn(item, index, this),
+            );
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -437,11 +472,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     every<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        _throwOnIndexOverflow?: boolean,
     ): boolean {
         try {
-            return this.array.every((item, index) => filter(item, index, this));
+            return this.array.every((item, index) =>
+                predicateFn(item, index, this),
+            );
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -456,7 +493,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    take(limit: number, _throwOnNumberLimit?: boolean): ICollection<TInput> {
+    take(limit: number, _throwOnIndexOverflow?: boolean): ICollection<TInput> {
         try {
             return new ListCollection(this.array.slice(0, limit));
         } catch (error: unknown) {
@@ -474,13 +511,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     takeUntil(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<TInput> {
         try {
             const items: TInput[] = [];
             for (const [index, item] of this.array.entries()) {
-                if (filter(item, index, this)) {
+                if (predicateFn(item, index, this)) {
                     break;
                 }
                 items.push(item);
@@ -501,11 +538,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     takeWhile(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<TInput> {
         try {
-            return this.takeUntil((...arguments_) => !filter(...arguments_));
+            return this.takeUntil(
+                (...arguments_) => !predicateFn(...arguments_),
+            );
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -520,7 +559,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    skip(offset: number, _throwOnNumberLimit?: boolean): ICollection<TInput> {
+    skip(offset: number, _throwOnIndexOverflow?: boolean): ICollection<TInput> {
         try {
             return new ListCollection(this.array.slice(offset));
         } catch (error: unknown) {
@@ -538,15 +577,15 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     skipUntil(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<TInput> {
         try {
             let hasMatched = false;
             const items: TInput[] = [];
             for (const [index, item] of this.array.entries()) {
                 if (!hasMatched) {
-                    hasMatched = filter(item, index, this);
+                    hasMatched = predicateFn(item, index, this);
                 }
                 if (hasMatched) {
                     items.push(item);
@@ -568,11 +607,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     skipWhile(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<TInput> {
         try {
-            return this.skipUntil((...arguments_) => !filter(...arguments_));
+            return this.skipUntil(
+                (...arguments_) => !predicateFn(...arguments_),
+            );
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -614,7 +655,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
     ): ICollection<TInput | TExtended> {
         try {
-            return this.when(this.empty(), callback);
+            return this.when(this.isEmpty(), callback);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -653,7 +694,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
     ): ICollection<TInput | TExtended> {
         try {
-            return this.when(this.notEmpty(), callback);
+            return this.when(this.isNotEmpty(), callback);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -731,8 +772,8 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     chunkWhile(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<ICollection<TInput>> {
         try {
             let currentChunk: ICollection<TInput> = new ListCollection<TInput>(
@@ -742,7 +783,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             for (const [index, item] of this.array.entries()) {
                 if (index === 0) {
                     currentChunk = currentChunk.append([item]);
-                } else if (filter(item, index, currentChunk)) {
+                } else if (predicateFn(item, index, currentChunk)) {
                     currentChunk = currentChunk.append([item]);
                 } else {
                     chunks.push(currentChunk);
@@ -767,7 +808,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     split(
         chunkAmount: number,
-        _throwOnNumberLimit?: boolean,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<ICollection<TInput>> {
         try {
             const size = this.size(),
@@ -809,14 +850,14 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     partition(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<ICollection<TInput>> {
         try {
             const chunkA: TInput[] = [],
                 chunkB: TInput[] = [];
             for (const [index, item] of this.array.entries()) {
-                if (filter(item, index, this)) {
+                if (predicateFn(item, index, this)) {
                     chunkA.push(item);
                 } else {
                     chunkB.push(item);
@@ -882,7 +923,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     ): ICollection<RecordItem<TOutput, ICollection<TInput>>> {
         try {
             const map = new Map<TOutput, ICollection<TInput>>(),
-                callback = (settings?.mapFn ?? ((item) => item)) as Map<
+                callback = (settings?.selectFn ?? ((item) => item)) as Map<
                     TInput,
                     ICollection<TInput>,
                     TOutput
@@ -914,11 +955,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     countBy<TOutput = TInput>(
-        settings?: GroupBySettings<TInput, ICollection<TInput>, TOutput>,
+        settings?: CountBySettings<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<RecordItem<TOutput, number>> {
         try {
             const map = new Map<TOutput, number>(),
-                callback = (settings?.mapFn ?? ((item) => item)) as Map<
+                callback = (settings?.selectFn ?? ((item) => item)) as Map<
                     TInput,
                     ICollection<TInput>,
                     TOutput
@@ -949,11 +990,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     unique<TOutput = TInput>(
-        settings?: GroupBySettings<TInput, ICollection<TInput>, TOutput>,
+        settings?: UniqueSettings<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<TInput> {
         try {
             const set = new Set<TOutput>([]),
-                callback = (settings?.mapFn ?? ((item) => item)) as Map<
+                callback = (settings?.selectFn ?? ((item) => item)) as Map<
                     TInput,
                     ICollection<TInput>,
                     TOutput
@@ -983,8 +1024,9 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     difference<TOutput = TInput>(
         iterable: Iterable<TInput>,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-        map: Map<TInput, ICollection<TInput>, TOutput> = (item) => item as any,
+        selectFn: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+            item as any,
     ): ICollection<TInput> {
         try {
             const differenceCollection = new ListCollection(iterable);
@@ -992,8 +1034,8 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 return !differenceCollection.some(
                     (matchItem, matchIndex, matchCollection) => {
                         return (
-                            map(item, index, collection) ===
-                            map(matchItem, matchIndex, matchCollection)
+                            selectFn(item, index, collection) ===
+                            selectFn(matchItem, matchIndex, matchCollection)
                         );
                     },
                 );
@@ -1169,13 +1211,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     insertBefore<TExtended = TInput>(
-        filter: Filter<TInput, ICollection<TInput>>,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
-        _throwOnNumberLimit?: boolean,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<TInput | TExtended> {
         try {
             const index = this.array.findIndex((item, index) =>
-                filter(item, index, this),
+                predicateFn(item, index, this),
             );
             if (index === -1) {
                 return new ListCollection<TInput | TExtended>(this.array);
@@ -1198,13 +1240,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     insertAfter<TExtended = TInput>(
-        filter: Filter<TInput, ICollection<TInput>>,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
-        _throwOnNumberLimit?: boolean,
+        _throwOnIndexOverflow?: boolean,
     ): ICollection<TInput | TExtended> {
         try {
             const index = this.array.findIndex((item, index) =>
-                filter(item, index, this),
+                predicateFn(item, index, this),
             );
             if (index === -1) {
                 return new ListCollection(this.array) as ICollection<
@@ -1307,9 +1349,9 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    sort(compare?: Comparator<TInput>): ICollection<TInput> {
+    sort(comparator?: Comparator<TInput>): ICollection<TInput> {
         try {
-            return new ListCollection(this.array.sort(compare));
+            return new ListCollection(this.array.sort(comparator));
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -1400,7 +1442,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         >,
     ): TOutput | TExtended {
         try {
-            const { filterFn: filter } = settings;
+            const { predicateFn: filter } = settings;
             if (filter) {
                 for (const [index, item] of this.array.entries()) {
                     if (filter(item, index, this)) {
@@ -1487,7 +1529,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         >,
     ): TOutput | TExtended {
         try {
-            const { filterFn: filter } = settings;
+            const { predicateFn: filter } = settings;
             if (filter) {
                 let matchedItem: TOutput | null = null;
                 for (const [index, item] of this.array.entries()) {
@@ -1548,11 +1590,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     before(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): TInput | null {
         try {
-            return this.beforeOr(null, filter);
+            return this.beforeOr(null, predicateFn);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -1569,13 +1611,16 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     beforeOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): TInput | TExtended {
         try {
             for (const [index, item] of this.array.entries()) {
                 const beforeItem = this.array[index - 1];
-                if (filter(item, index, this) && beforeItem !== undefined) {
+                if (
+                    predicateFn(item, index, this) &&
+                    beforeItem !== undefined
+                ) {
                     return beforeItem;
                 }
             }
@@ -1599,11 +1644,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     beforeOrFail(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): TInput {
         try {
-            const item = this.before(filter);
+            const item = this.before(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundError("Item was not found");
             }
@@ -1623,11 +1668,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     after(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): TInput | null {
         try {
-            return this.afterOr(null, filter);
+            return this.afterOr(null, predicateFn);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -1644,13 +1689,16 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     afterOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): TInput | TExtended {
         try {
             for (const [index, item] of this.array.entries()) {
                 const beforeItem = this.array[index + 1];
-                if (filter(item, index, this) && beforeItem !== undefined) {
+                if (
+                    predicateFn(item, index, this) &&
+                    beforeItem !== undefined
+                ) {
                     return beforeItem;
                 }
             }
@@ -1674,11 +1722,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     afterOrFail(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): TInput {
         try {
-            const item = this.after(filter);
+            const item = this.after(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundError("Item was not found");
             }
@@ -1698,13 +1746,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     sole<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        _throwOnIndexOverflow?: boolean,
     ): TOutput {
         try {
             const matchedItems: TInput[] = [];
             for (const [index, item] of this.array.entries()) {
-                if (filter(item, index, this)) {
+                if (predicateFn(item, index, this)) {
                     matchedItems.push(item);
                 }
                 if (matchedItems.length > 1) {
@@ -1750,11 +1798,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     count(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): number {
         try {
-            return this.filter(filter).size();
+            return this.filter(predicateFn).size();
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -1769,7 +1817,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    size(_throwOnNumberLimit?: boolean): number {
+    size(_throwOnIndexOverflow?: boolean): number {
         try {
             return this.array.length;
         } catch (error: unknown) {
@@ -1786,7 +1834,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    empty(): boolean {
+    isEmpty(): boolean {
         try {
             return this.array.length === 0;
         } catch (error: unknown) {
@@ -1803,7 +1851,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    notEmpty(): boolean {
+    isNotEmpty(): boolean {
         try {
             return this.array.length !== 0;
         } catch (error: unknown) {
@@ -1820,14 +1868,40 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    search(
-        filter: Filter<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+    searchFirst(
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
     ): number {
         try {
             return this.array.findIndex((item, index) =>
-                filter(item, index, this),
+                predicateFn(item, index, this),
             );
+        } catch (error: unknown) {
+            if (
+                error instanceof CollectionError ||
+                error instanceof TypeError
+            ) {
+                throw error;
+            }
+            throw new UnexpectedCollectionError(
+                `Unexpected error "${String(error)}" occured`,
+                error,
+            );
+        }
+    }
+
+    searchLast(
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        _throwOnIndexOverflow?: boolean,
+    ): number {
+        try {
+            let matchedIndex = -1;
+            for (const [index, item] of this.array.entries()) {
+                if (predicateFn(item, index, this)) {
+                    matchedIndex = index;
+                }
+            }
+            return matchedIndex;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -1844,7 +1918,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     forEach(
         callback: ForEach<TInput, ICollection<TInput>>,
-        _throwOnNumberLimit?: boolean,
+        _throwOnIndexOverflow?: boolean,
     ): void {
         try {
             for (const [index, item] of this.array.entries()) {

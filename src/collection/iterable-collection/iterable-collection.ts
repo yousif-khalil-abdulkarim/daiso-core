@@ -1,12 +1,18 @@
+/**
+ * @module Collections
+ */
+
 import {
     type Collapse,
     CollectionError,
     type Comparator,
-    type Filter,
+    type Predicate,
     type FindOrSettings,
     type FindSettings,
     type ForEach,
     type GroupBySettings,
+    type CountBySettings,
+    type UniqueSettings,
     type ICollection,
     ItemNotFoundError,
     type JoinSettings,
@@ -59,12 +65,13 @@ import {
     ReverseIterable,
     SliceIterable,
     RepeatIterable,
-} from "@/collection/iterable-collection/iterable-helpers/_module";
-import { type EnsureType } from "@/types";
+} from "@/collection/iterable-collection/_shared/_module";
+import { type EnsureType } from "@/_shared/types";
 
 /**
- * Most methods in IterableCollection are lazy and will only execute when calling methods return values or iterating through an IterableCollection by using for of loop.
- * @group Collections
+ * All methods that return <i>{@link ICollection}</i> are executed lazly which means they will be executed when the <i>IterableCollection</i> is iterated with <i>forEach</i> method or "for of" loop.
+ * The rest of the methods are executed eagerly.
+ * @group Adapters
  */
 export class IterableCollection<TInput> implements ICollection<TInput> {
     private static THROW_ON_NUMBER_LIMIT = false;
@@ -77,6 +84,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         return new IterableCollection<TInput>(iterable);
     };
 
+    /**
+     * The <i>constructor</i> takes an <i>{@link Iterable}</i>.
+     */
     constructor(private iterable: Iterable<TInput>) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
@@ -96,22 +106,22 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    iterator(): Iterator<TInput, void> {
+    toIterator(): Iterator<TInput, void> {
         return this[Symbol.iterator]() as Iterator<TInput, void>;
     }
 
     entries(
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<RecordItem<number, TInput>> {
         return new IterableCollection(
-            new EntriesIterable(this, throwOnNumberLimit),
+            new EntriesIterable(this, throwOnIndexOverflow),
         );
     }
 
     keys(
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<number> {
-        return this.entries(throwOnNumberLimit).map(([key]) => key);
+        return this.entries(throwOnIndexOverflow).map(([key]) => key);
     }
 
     values(): ICollection<TInput> {
@@ -119,20 +129,30 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     filter<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TOutput> {
         return new IterableCollection<TOutput>(
-            new FilterIterable(this, filter, throwOnNumberLimit),
+            new FilterIterable(this, predicateFn, throwOnIndexOverflow),
+        );
+    }
+
+    reject<TOutput extends TInput>(
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
+    ): ICollection<Exclude<TInput, TOutput>> {
+        return this.filter(
+            (...arguments_) => !predicateFn(...arguments_),
+            throwOnIndexOverflow,
         );
     }
 
     map<TOutput>(
-        map: Map<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        mapFn: Map<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TOutput> {
         return new IterableCollection(
-            new MapIterable(this, map, throwOnNumberLimit),
+            new MapIterable(this, mapFn, throwOnIndexOverflow),
         );
     }
 
@@ -143,9 +163,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             const {
                 reduceFn: reduce,
                 initialValue,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             } = settings;
-            if (initialValue === undefined && this.empty()) {
+            if (initialValue === undefined && this.isEmpty()) {
                 throw new TypeError(
                     "Reduce of empty array must be inputed a initial value",
                 );
@@ -155,7 +175,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                     index = 0;
                 for (const item of this) {
                     if (
-                        throwOnNumberLimit &&
+                        throwOnIndexOverflow &&
                         index === Number.MAX_SAFE_INTEGER
                     ) {
                         throw new IndexOverflowError("Index has overflowed");
@@ -173,7 +193,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             for (const item of this) {
                 if (!isFirstIteration) {
                     if (
-                        throwOnNumberLimit &&
+                        throwOnIndexOverflow &&
                         index === Number.MAX_SAFE_INTEGER
                     ) {
                         throw new IndexOverflowError("Index has overflowed");
@@ -198,9 +218,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    join(settings?: JoinSettings): string {
+    join(settings?: JoinSettings): EnsureType<TInput, string> {
         try {
-            return this.reduce({
+            return this.reduce<string>({
                 reduceFn(str, item) {
                     if (typeof item !== "string") {
                         throw new TypeError(
@@ -210,10 +230,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                     const separator = settings?.seperator ?? ",";
                     return str + separator + item;
                 },
-                throwOnNumberLimit:
-                    settings?.throwOnNumberLimit ??
+                throwOnIndexOverflow:
+                    settings?.throwOnIndexOverflow ??
                     IterableCollection.THROW_ON_NUMBER_LIMIT,
-            });
+            }) as EnsureType<TInput, string>;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -233,35 +253,35 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     flatMap<TOutput>(
-        map: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        mapFn: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TOutput> {
         return new IterableCollection(
-            new FlatMapIterable(this, map, throwOnNumberLimit),
+            new FlatMapIterable(this, mapFn, throwOnIndexOverflow),
         );
     }
 
     update<TFilterOutput extends TInput, TMapOutput>(
-        filter: Filter<TInput, ICollection<TInput>, TFilterOutput>,
-        map: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
+        mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>> {
         return new IterableCollection(
-            new UpdateIterable(this, filter, map, throwOnNumberLimit),
+            new UpdateIterable(this, predicateFn, mapFn, throwOnIndexOverflow),
         );
     }
 
     page(settings: PageSettings): ICollection<TInput> {
-        const { page, pageSize, throwOnNumberLimit } = settings;
+        const { page, pageSize, throwOnIndexOverflow } = settings;
         if (page < 0) {
-            return this.skip(page * pageSize, throwOnNumberLimit).take(
+            return this.skip(page * pageSize, throwOnIndexOverflow).take(
                 pageSize,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             );
         }
-        return this.skip((page - 1) * pageSize, throwOnNumberLimit).take(
+        return this.skip((page - 1) * pageSize, throwOnIndexOverflow).take(
             page * pageSize,
-            throwOnNumberLimit,
+            throwOnIndexOverflow,
         );
     }
 
@@ -316,12 +336,12 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     median(
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): EnsureType<TInput, number> {
-        if (this.empty()) {
+        if (this.isEmpty()) {
             return 0 as EnsureType<TInput, number>;
         }
-        const size = this.size(throwOnNumberLimit);
+        const size = this.size(throwOnIndexOverflow);
         if (size === 0) {
             return 0 as EnsureType<TInput, number>;
         }
@@ -331,13 +351,13 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                     throw new TypeError("Item type is invalid must be number");
                 }
                 return item;
-            }, throwOnNumberLimit)
+            }, throwOnIndexOverflow)
                 .filter((_item, index) => {
                     if (isEven) {
                         return index === size / 2 || index === size / 2 - 1;
                     }
                     return index === Math.floor(size / 2);
-                }, throwOnNumberLimit)
+                }, throwOnIndexOverflow)
 
                 .toArray();
         if (isEven) {
@@ -414,22 +434,22 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     percentage(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): number {
         try {
-            if (this.empty()) {
+            if (this.isEmpty()) {
                 return 0;
             }
             let part = 0,
                 total = 0;
             for (const item of this) {
-                if (throwOnNumberLimit && total === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && total === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError(
                         "The total amount has overflowed",
                     );
                 }
-                if (filter(item, total, this)) {
+                if (predicateFn(item, total, this)) {
                     part++;
                 }
                 total++;
@@ -450,16 +470,16 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     some<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): boolean {
         try {
             let index = 0;
             for (const item of this) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
-                if (filter(item, index, this)) {
+                if (predicateFn(item, index, this)) {
                     return true;
                 }
                 index++;
@@ -480,17 +500,17 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     every<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): boolean {
         try {
             let index = 0,
                 isTrue = true;
             for (const item of this) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
-                isTrue &&= filter(item, index, this);
+                isTrue &&= predicateFn(item, index, this);
                 if (!isTrue) {
                     break;
                 }
@@ -513,57 +533,57 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     take(
         limit: number,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TInput> {
         return new IterableCollection(
-            new TakeIterable(this, limit, throwOnNumberLimit),
+            new TakeIterable(this, limit, throwOnIndexOverflow),
         );
     }
 
     takeUntil(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TInput> {
         return new IterableCollection(
-            new TakeUntilIterable(this, filter, throwOnNumberLimit),
+            new TakeUntilIterable(this, predicateFn, throwOnIndexOverflow),
         );
     }
 
     takeWhile(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TInput> {
         return this.takeUntil(
-            (...arguments_) => !filter(...arguments_),
-            throwOnNumberLimit,
+            (...arguments_) => !predicateFn(...arguments_),
+            throwOnIndexOverflow,
         );
     }
 
     skip(
         offset: number,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TInput> {
         return new IterableCollection(
-            new SkipIterable(this, offset, throwOnNumberLimit),
+            new SkipIterable(this, offset, throwOnIndexOverflow),
         );
     }
 
     skipUntil(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TInput> {
         return new IterableCollection(
-            new SkipUntilIterable(this, filter, throwOnNumberLimit),
+            new SkipUntilIterable(this, predicateFn, throwOnIndexOverflow),
         );
     }
 
     skipWhile<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TInput> {
         return this.skipUntil(
-            (...arguments_) => !filter(...arguments_),
-            throwOnNumberLimit,
+            (...arguments_) => !predicateFn(...arguments_),
+            throwOnIndexOverflow,
         );
     }
 
@@ -580,7 +600,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
     ): ICollection<TInput | TExtended> {
         return new IterableCollection(
-            new WhenIterable(this, () => this.empty(), callback),
+            new WhenIterable(this, () => this.isEmpty(), callback),
         );
     }
 
@@ -595,7 +615,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
     ): ICollection<TInput | TExtended> {
         return new IterableCollection(
-            new WhenIterable(this, () => this.notEmpty(), callback),
+            new WhenIterable(this, () => this.isNotEmpty(), callback),
         );
     }
 
@@ -633,14 +653,14 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     chunkWhile(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<ICollection<TInput>> {
         return new IterableCollection(
             new ChunkWhileIterable(
                 this,
-                filter,
-                throwOnNumberLimit,
+                predicateFn,
+                throwOnIndexOverflow,
                 (iterable) => new IterableCollection(iterable),
             ),
         );
@@ -648,27 +668,27 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     split(
         chunkAmount: number,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<ICollection<TInput>> {
         return new IterableCollection(
             new SplitIterable(
                 this,
                 chunkAmount,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
                 IterableCollection.makeCollection,
             ),
         );
     }
 
     partition(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<ICollection<TInput>> {
         return new IterableCollection(
             new PartionIterable(
                 this,
-                filter,
-                throwOnNumberLimit,
+                predicateFn,
+                throwOnIndexOverflow,
                 IterableCollection.makeCollection,
             ),
         );
@@ -678,10 +698,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         const {
             chunkSize,
             step = chunkSize - 1,
-            throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+            throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
         } = settings;
         return new IterableCollection(
-            new SlidingIteralbe(this, chunkSize, step, throwOnNumberLimit),
+            new SlidingIteralbe(this, chunkSize, step, throwOnIndexOverflow),
         );
     }
 
@@ -691,8 +711,8 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         return new IterableCollection(
             new GroupByIterable(
                 this,
-                settings?.mapFn,
-                settings?.throwOnNumberLimit ??
+                settings?.selectFn,
+                settings?.throwOnIndexOverflow ??
                     IterableCollection.THROW_ON_NUMBER_LIMIT,
                 (iterable) => new IterableCollection(iterable),
             ),
@@ -700,26 +720,26 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     countBy<TOutput = TInput>(
-        settings?: GroupBySettings<TInput, ICollection<TInput>, TOutput>,
+        settings?: CountBySettings<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<RecordItem<TOutput, number>> {
         return new IterableCollection(
             new CountByIterable(
                 this,
-                settings?.mapFn,
-                settings?.throwOnNumberLimit ??
+                settings?.selectFn,
+                settings?.throwOnIndexOverflow ??
                     IterableCollection.THROW_ON_NUMBER_LIMIT,
             ),
         );
     }
 
     unique<TOutput>(
-        settings?: GroupBySettings<TInput, ICollection<TInput>, TOutput>,
+        settings?: UniqueSettings<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<TInput> {
         return new IterableCollection(
             new UniqueIterable(
                 this,
-                settings?.mapFn,
-                settings?.throwOnNumberLimit ??
+                settings?.selectFn,
+                settings?.throwOnIndexOverflow ??
                     IterableCollection.THROW_ON_NUMBER_LIMIT,
             ),
         );
@@ -727,16 +747,17 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     difference<TOutput = TInput>(
         iterable: Iterable<TInput>,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-        map: Map<TInput, ICollection<TInput>, TOutput> = (item) => item as any,
+        mapFn: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+            item as any,
     ): ICollection<TInput> {
         const differenceCollection = new IterableCollection(iterable);
         return this.filter((item, index, collection) => {
             return !differenceCollection.some(
                 (matchItem, matchIndex, matchCollection) => {
                     return (
-                        map(item, index, collection) ===
-                        map(matchItem, matchIndex, matchCollection)
+                        mapFn(item, index, collection) ===
+                        mapFn(matchItem, matchIndex, matchCollection)
                     );
                 },
             );
@@ -783,7 +804,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 this,
                 settings?.start,
                 settings?.end,
-                settings?.throwOnNumberLimit ??
+                settings?.throwOnIndexOverflow ??
                     IterableCollection.THROW_ON_NUMBER_LIMIT,
             ),
         );
@@ -802,27 +823,32 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     insertBefore<TExtended = TInput>(
-        filter: Filter<TInput, ICollection<TInput>>,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TInput | TExtended> {
         return new IterableCollection(
             new InsertBeforeIterable(
                 this,
-                filter,
+                predicateFn,
                 iterable,
-                throwOnNumberLimit,
+                throwOnIndexOverflow,
             ),
         );
     }
 
     insertAfter<TExtended = TInput>(
-        filter: Filter<TInput, ICollection<TInput>>,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): ICollection<TInput | TExtended> {
         return new IterableCollection(
-            new InsertAfterIterable(this, filter, iterable, throwOnNumberLimit),
+            new InsertAfterIterable(
+                this,
+                predicateFn,
+                iterable,
+                throwOnIndexOverflow,
+            ),
         );
     }
 
@@ -844,8 +870,8 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         return new IterableCollection(new ZipIterable(this, iterable));
     }
 
-    sort(compare?: Comparator<TInput>): ICollection<TInput> {
-        return new IterableCollection(new SortIterable(this, compare));
+    sort(comparator?: Comparator<TInput>): ICollection<TInput> {
+        return new IterableCollection(new SortIterable(this, comparator));
     }
 
     reverse(settings?: ReverseSettings): ICollection<TInput> {
@@ -853,7 +879,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             new ReverseIterable(
                 this,
                 settings?.chunkSize ?? IterableCollection.DEFAULT_CHUNK_SIZE,
-                settings?.throwOnNumberLimit ??
+                settings?.throwOnIndexOverflow ??
                     IterableCollection.THROW_ON_NUMBER_LIMIT,
                 (iterable) => new IterableCollection(iterable),
             ),
@@ -895,16 +921,16 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         >,
     ): TOutput | TExtended {
         try {
-            const throwOnNumberLimit =
-                settings.throwOnNumberLimit ??
+            const throwOnIndexOverflow =
+                settings.throwOnIndexOverflow ??
                 IterableCollection.THROW_ON_NUMBER_LIMIT;
             let index = 0;
-            const filter = settings.filterFn ?? (() => true);
+            const predicateFn = settings.predicateFn ?? (() => true);
             for (const item of this) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
-                if (filter(item, index, this)) {
+                if (predicateFn(item, index, this)) {
                     return item as TOutput;
                 }
                 index++;
@@ -969,17 +995,17 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         >,
     ): TOutput | TExtended {
         try {
-            const throwOnNumberLimit =
-                settings.throwOnNumberLimit ??
+            const throwOnIndexOverflow =
+                settings.throwOnIndexOverflow ??
                 IterableCollection.THROW_ON_NUMBER_LIMIT;
             let index = 0;
-            const filter = settings.filterFn ?? (() => true);
+            const predicateFn = settings.predicateFn ?? (() => true);
             let matchedItem: TOutput | null = null;
             for (const item of this) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
-                if (filter(item, index, this)) {
+                if (predicateFn(item, index, this)) {
                     matchedItem = item as TOutput;
                 }
                 index++;
@@ -1017,25 +1043,25 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     before(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): TInput | null {
-        return this.beforeOr(null, filter, throwOnNumberLimit);
+        return this.beforeOr(null, predicateFn, throwOnIndexOverflow);
     }
 
     beforeOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): TInput | TExtended {
         try {
             let beforeItem: TInput | null = null,
                 index = 0;
             for (const item of this) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
-                if (filter(item, index, this) && beforeItem) {
+                if (predicateFn(item, index, this) && beforeItem) {
                     return beforeItem;
                 }
                 index++;
@@ -1061,10 +1087,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     beforeOrFail(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): TInput {
-        const item = this.before(filter, throwOnNumberLimit);
+        const item = this.before(predicateFn, throwOnIndexOverflow);
         if (item === null) {
             throw new ItemNotFoundError("Item was not found");
         }
@@ -1072,16 +1098,16 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     after(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): TInput | null {
-        return this.afterOr(null, filter, throwOnNumberLimit);
+        return this.afterOr(null, predicateFn, throwOnIndexOverflow);
     }
 
     afterOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): TInput | TExtended {
         try {
             let hasMatched = false,
@@ -1090,10 +1116,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 if (hasMatched) {
                     return item;
                 }
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
-                hasMatched = filter(item, index, this);
+                hasMatched = predicateFn(item, index, this);
                 index++;
             }
             if (typeof defaultValue === "function") {
@@ -1116,10 +1142,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     afterOrFail(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): TInput {
-        const item = this.after(filter, throwOnNumberLimit);
+        const item = this.after(predicateFn, throwOnIndexOverflow);
         if (item === null) {
             throw new ItemNotFoundError("Item was not found");
         }
@@ -1127,17 +1153,17 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     sole<TOutput extends TInput>(
-        filter: Filter<TInput, ICollection<TInput>, TOutput>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): TOutput {
         try {
             let index = 0,
                 matchedItem: TOutput | null = null;
             for (const item of this) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
-                if (filter(item, index, this)) {
+                if (predicateFn(item, index, this)) {
                     if (matchedItem !== null) {
                         throw new MultipleItemsFoundError(
                             "Multiple items were found",
@@ -1170,16 +1196,16 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     count(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): number {
         try {
             let size = 0;
             for (const item of this) {
-                if (throwOnNumberLimit && size === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && size === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Size has overflowed");
                 }
-                if (filter(item, size, this)) {
+                if (predicateFn(item, size, this)) {
                     size++;
                 }
             }
@@ -1199,12 +1225,12 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     size(
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): number {
-        return this.count(() => true, throwOnNumberLimit);
+        return this.count(() => true, throwOnIndexOverflow);
     }
 
-    empty(): boolean {
+    isEmpty(): boolean {
         try {
             for (const _ of this) {
                 return false;
@@ -1224,21 +1250,21 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    notEmpty(): boolean {
-        return !this.empty();
+    isNotEmpty(): boolean {
+        return !this.isEmpty();
     }
 
-    search(
-        filter: Filter<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+    searchFirst(
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): number {
         try {
             let index = 0;
             for (const item of this) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
-                if (filter(item, index, this)) {
+                if (predicateFn(item, index, this)) {
                     return index;
                 }
                 index++;
@@ -1258,14 +1284,45 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         }
     }
 
+    searchLast(
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
+    ): number {
+        try {
+            let index = 0;
+            let matchedIndex = -1;
+            for (const item of this) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
+                    throw new IndexOverflowError("Index has overflowed");
+                }
+                if (predicateFn(item, index, this)) {
+                    matchedIndex = index;
+                }
+                index++;
+            }
+            return matchedIndex;
+        } catch (error: unknown) {
+            if (
+                error instanceof CollectionError ||
+                error instanceof TypeError
+            ) {
+                throw error;
+            }
+            throw new UnexpectedCollectionError(
+                `Unexpected error "${String(error)}" occured`,
+                error,
+            );
+        }
+    }
+
     forEach(
         callback: ForEach<TInput, ICollection<TInput>>,
-        throwOnNumberLimit = IterableCollection.THROW_ON_NUMBER_LIMIT,
+        throwOnIndexOverflow = IterableCollection.THROW_ON_NUMBER_LIMIT,
     ): void {
         try {
             let index = 0;
             for (const item of this) {
-                if (throwOnNumberLimit && index === Number.MAX_SAFE_INTEGER) {
+                if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
                     throw new IndexOverflowError("Index has overflowed");
                 }
                 callback(item, index, this);

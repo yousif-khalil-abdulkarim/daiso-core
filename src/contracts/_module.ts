@@ -1,1 +1,1 @@
-export * from "@/collection/_module";
+export * from "@/contracts/collection/_module";

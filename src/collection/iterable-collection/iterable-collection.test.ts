@@ -13,11 +13,11 @@ describe("class: IterableCollection", () => {
         test(`Should filter out all "a" of ["a", "bc", "c", "a", "d", "a"]`, () => {
             const arr = ["a", "bc", "c", "a", "d", "a"],
                 collection = new IterableCollection(arr),
-                filterFunction = (item: string): boolean => item === "a",
-                newCollection = collection.filter(filterFunction);
-            expect(newCollection.toArray()).toEqual(arr.filter(filterFunction));
+                predicateFn = (item: string): boolean => item === "a",
+                newCollection = collection.filter(predicateFn);
+            expect(newCollection.toArray()).toEqual(arr.filter(predicateFn));
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "bc",
@@ -27,11 +27,39 @@ describe("class: IterableCollection", () => {
                     "a",
                 ]),
                 indexes: number[] = [],
-                filterFunction = (item: string, index: number): boolean => {
+                predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
                 };
-            collection.filter(filterFunction).toArray();
+            collection.filter(predicateFn).toArray();
+            expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
+        });
+    });
+    describe("method: reject", () => {
+        test(`Should filter out all "a" of ["a", "bc", "c", "a", "d", "a"]`, () => {
+            const arr = ["a", "bc", "c", "a", "d", "a"],
+                collection = new IterableCollection(arr),
+                predicateFn = (item: string): boolean => item === "a",
+                newCollection = collection.reject(predicateFn);
+            expect(newCollection.toArray()).toEqual(
+                arr.filter((item) => !predicateFn(item)),
+            );
+        });
+        test("Should input correct indexes to ion", () => {
+            const collection = new IterableCollection([
+                    "a",
+                    "bc",
+                    "c",
+                    "a",
+                    "d",
+                    "a",
+                ]),
+                indexes: number[] = [],
+                predicateFn = (item: string, index: number): boolean => {
+                    indexes.push(index);
+                    return item === "a";
+                };
+            collection.reject(predicateFn).toArray();
             expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
         });
     });
@@ -177,7 +205,7 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: update", () => {
-        test("Should change all the items that match the filter function", () => {
+        test("Should change all the items that match the predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "aa",
@@ -199,7 +227,7 @@ describe("class: IterableCollection", () => {
                 "ccc",
             ]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "aa",
@@ -401,7 +429,7 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection(["a", "b", "a", "b"]);
             expect(collection.percentage((item) => item === "a")).toBe(50);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "bc",
@@ -411,11 +439,11 @@ describe("class: IterableCollection", () => {
                     "a",
                 ]),
                 indexes: number[] = [],
-                filterFunction = (item: string, index: number): boolean => {
+                predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
                 };
-            collection.percentage(filterFunction);
+            collection.percentage(predicateFn);
             expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
         });
         test("Should return the same value when called more than 1 times", () => {
@@ -425,7 +453,7 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: some", () => {
-        test("Should return true when at least 1 item match the filter function", () => {
+        test("Should return true when at least 1 item match the predicate function", () => {
             const collection = new IterableCollection([
                 "a",
                 "b",
@@ -435,7 +463,7 @@ describe("class: IterableCollection", () => {
             ]);
             expect(collection.some((item) => item === "b")).toBe(true);
         });
-        test("Should return false when all of the items does not match the filter function", () => {
+        test("Should return false when all of the items does not match the predicate function", () => {
             const collection = new IterableCollection([
                 "a",
                 "b",
@@ -445,7 +473,7 @@ describe("class: IterableCollection", () => {
             ]);
             expect(collection.some((item) => item === "d")).toBe(false);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "bc",
@@ -455,11 +483,11 @@ describe("class: IterableCollection", () => {
                     "a",
                 ]),
                 indexes: number[] = [],
-                filterFunction = (item: string, index: number): boolean => {
+                predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
                 };
-            collection.some(filterFunction);
+            collection.some(predicateFn);
             expect(indexes).toEqual([0]);
         });
         test("Should return the same value when called more than 1 times", () => {
@@ -475,7 +503,7 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: every", () => {
-        test("Should return true when all items match the filter function", () => {
+        test("Should return true when all items match the predicate function", () => {
             const collection = new IterableCollection([
                 "a",
                 "b",
@@ -485,7 +513,7 @@ describe("class: IterableCollection", () => {
             ]);
             expect(collection.every((item) => item.length === 1)).toBe(true);
         });
-        test("Should return false when one item does not match the filter function", () => {
+        test("Should return false when one item does not match the predicate function", () => {
             const collection = new IterableCollection([
                 "a",
                 "b",
@@ -495,7 +523,7 @@ describe("class: IterableCollection", () => {
             ]);
             expect(collection.every((item) => item.length === 1)).toBe(false);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "b",
@@ -548,7 +576,7 @@ describe("class: IterableCollection", () => {
                 newCollection = collection.takeUntil((item) => item >= 3);
             expect(newCollection.toArray()).toEqual([1, 2]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             collection
@@ -566,7 +594,7 @@ describe("class: IterableCollection", () => {
                 newCollection = collection.takeWhile((item) => item < 3);
             expect(newCollection.toArray()).toEqual([1, 2]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             collection
@@ -604,7 +632,7 @@ describe("class: IterableCollection", () => {
                 newCollection = collection.skipUntil((item) => item >= 3);
             expect(newCollection.toArray()).toEqual([3, 4]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             collection
@@ -622,7 +650,7 @@ describe("class: IterableCollection", () => {
                 newCollection = collection.skipWhile((item) => item <= 3);
             expect(newCollection.toArray()).toEqual([4]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4]),
                 indexes: number[] = [];
             collection
@@ -813,7 +841,7 @@ describe("class: IterableCollection", () => {
                 arr.filter((item) => typeof item === "number"),
             ]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const arr = ["a", 1, "b", 2, "c", 3, "d", 4, "e", 5],
                 collection = new IterableCollection(arr),
                 indexes: number[] = [];
@@ -1060,7 +1088,7 @@ describe("class: IterableCollection", () => {
                 ],
                 collection = new IterableCollection<Person>(arr),
                 newCollection = collection.groupBy({
-                    mapFn(item) {
+                    selectFn(item) {
                         return item.name;
                     },
                 });
@@ -1079,7 +1107,7 @@ describe("class: IterableCollection", () => {
                 ["Ibra", arr.filter((item) => item.name === "Ibra")],
             ]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "b",
@@ -1093,7 +1121,7 @@ describe("class: IterableCollection", () => {
                 indexes: number[] = [];
             collection
                 .groupBy({
-                    mapFn: (item, index) => {
+                    selectFn: (item, index) => {
                         indexes.push(index);
                         return item;
                     },
@@ -1147,7 +1175,7 @@ describe("class: IterableCollection", () => {
                 ],
                 collection = new IterableCollection<Person>(arr),
                 newCollection = collection.countBy({
-                    mapFn(item) {
+                    selectFn(item) {
                         return item.name;
                     },
                 });
@@ -1157,7 +1185,7 @@ describe("class: IterableCollection", () => {
                 ["Ibra", arr.filter((item) => item.name === "Ibra").length],
             ]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "b",
@@ -1171,7 +1199,7 @@ describe("class: IterableCollection", () => {
                 indexes: number[] = [];
             collection
                 .countBy({
-                    mapFn: (item, index) => {
+                    selectFn: (item, index) => {
                         indexes.push(index);
                         return item;
                     },
@@ -1203,13 +1231,13 @@ describe("class: IterableCollection", () => {
                     "cccc",
                 ]),
                 newCollection = collection.unique({
-                    mapFn(item) {
+                    selectFn(item) {
                         return item.length;
                     },
                 });
             expect(newCollection.toArray()).toEqual(["a", "bb", "acc", "cccc"]);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "b",
@@ -1223,7 +1251,7 @@ describe("class: IterableCollection", () => {
                 indexes: number[] = [];
             collection
                 .unique({
-                    mapFn: (item, index) => {
+                    selectFn: (item, index) => {
                         indexes.push(index);
                         return item;
                     },
@@ -1233,10 +1261,34 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: difference", () => {
-        test("Should remove all elements matches the given iterable elements", () => {
-            const collection = new IterableCollection([1, 2, 3, 4, 5]);
+        test("Should remove all elements matches the given iterable elements with default selectFn function", () => {
+            const collection = new IterableCollection([1, 2, 2, 3, 4, 5]);
             const difference = collection.difference([2, 4, 6, 8]);
             expect(difference.toArray()).toEqual([1, 3, 5]);
+        });
+        test("Should remove all elements matches the given iterable elements with custom selectFn function", () => {
+            type Product = {
+                name: string;
+                brand: string;
+                type: string;
+            };
+            const items: Product[] = [
+                { name: "iPhone 6", brand: "Apple", type: "phone" },
+                { name: "iPhone 5", brand: "Apple", type: "phone" },
+                { name: "Apple Watch", brand: "Apple", type: "watch" },
+                { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+                { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+            ];
+            const collection = new IterableCollection<Product>(items);
+            const difference = collection.difference(
+                [{ name: "Apple Watch", brand: "Apple", type: "watch" }],
+                (product) => product.type,
+            );
+            expect(difference.toArray()).toStrictEqual([
+                { name: "iPhone 6", brand: "Apple", type: "phone" },
+                { name: "iPhone 5", brand: "Apple", type: "phone" },
+                { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+            ]);
         });
     });
     describe("method: repeat", () => {
@@ -1521,7 +1573,7 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: first", () => {
-        test("Should return first item that matches the filter function", () => {
+        test("Should return first item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1546,7 +1598,7 @@ describe("class: IterableCollection", () => {
                 ],
                 collection = new IterableCollection(persons),
                 item = collection.first({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
@@ -1558,15 +1610,15 @@ describe("class: IterableCollection", () => {
         test("Should return null when item not found", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 item = collection.first({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             collection.first({
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -1580,7 +1632,7 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: firstOr", () => {
-        test("Should return first item that matches the filter function", () => {
+        test("Should return first item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1606,7 +1658,7 @@ describe("class: IterableCollection", () => {
                 collection = new IterableCollection(persons),
                 item = collection.firstOr({
                     defaultValue: null,
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
@@ -1621,16 +1673,16 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 item = collection.firstOr({
                     defaultValue: "a",
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe("a");
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             collection.firstOr({
                 defaultValue: null,
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -1652,7 +1704,7 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: firstOrFail", () => {
-        test("Should return first item that matches the filter function", () => {
+        test("Should return first item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1677,7 +1729,7 @@ describe("class: IterableCollection", () => {
                 ],
                 collection = new IterableCollection(persons),
                 item = collection.firstOrFail({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[0]);
         });
@@ -1690,7 +1742,7 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]);
             expect(() => {
                 collection.firstOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).toThrowError(CollectionError);
         });
@@ -1698,16 +1750,16 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]);
             expect(() => {
                 collection.firstOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             try {
                 collection.firstOrFail({
-                    filterFn: (item, index) => {
+                    predicateFn: (item, index) => {
                         indexes.push(index);
                         return item === 6;
                     },
@@ -1724,7 +1776,7 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: last", () => {
-        test("Should return last item that matches the filter function", () => {
+        test("Should return last item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1749,7 +1801,7 @@ describe("class: IterableCollection", () => {
                 ],
                 collection = new IterableCollection(persons),
                 item = collection.last({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -1761,15 +1813,15 @@ describe("class: IterableCollection", () => {
         test("Should return null when item not found", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 item = collection.last({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             collection.last({
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -1783,7 +1835,7 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: lastOr", () => {
-        test("Should return last item that matches the filter function", () => {
+        test("Should return last item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1809,7 +1861,7 @@ describe("class: IterableCollection", () => {
                 collection = new IterableCollection(persons),
                 item = collection.lastOr({
                     defaultValue: null,
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -1824,16 +1876,16 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 item = collection.lastOr({
                     defaultValue: "a",
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             expect(item).toBe("a");
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             collection.lastOr({
                 defaultValue: null,
-                filterFn: (item, index) => {
+                predicateFn: (item, index) => {
                     indexes.push(index);
                     return item === 6;
                 },
@@ -1855,7 +1907,7 @@ describe("class: IterableCollection", () => {
         });
     });
     describe("method: lastOrFail", () => {
-        test("Should return last item that matches the filter function", () => {
+        test("Should return last item that matches the predicate function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1880,7 +1932,7 @@ describe("class: IterableCollection", () => {
                 ],
                 collection = new IterableCollection(persons),
                 item = collection.lastOrFail({
-                    filterFn: (person) => person.name === "Joe",
+                    predicateFn: (person) => person.name === "Joe",
                 });
             expect(item).toEqual(persons[2]);
         });
@@ -1893,7 +1945,7 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]);
             expect(() => {
                 collection.lastOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).toThrowError(CollectionError);
         });
@@ -1901,16 +1953,16 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]);
             expect(() => {
                 collection.lastOrFail({
-                    filterFn: (item) => item === 6,
+                    predicateFn: (item) => item === 6,
                 });
             }).toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
                 indexes: number[] = [];
             try {
                 collection.lastOrFail({
-                    filterFn: (item, index) => {
+                    predicateFn: (item, index) => {
                         indexes.push(index);
                         return item === 6;
                     },
@@ -1947,7 +1999,7 @@ describe("class: IterableCollection", () => {
                 item = collection.before((item) => item === "d");
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             collection.before((item, index) => {
@@ -1983,7 +2035,7 @@ describe("class: IterableCollection", () => {
                 item = collection.beforeOr(-1, (item) => item === "d");
             expect(item).toBe(-1);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             collection.beforeOr(null, (item, index) => {
@@ -2021,7 +2073,7 @@ describe("class: IterableCollection", () => {
                 collection.beforeOrFail((item) => item === "d");
             }).toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             try {
@@ -2061,7 +2113,7 @@ describe("class: IterableCollection", () => {
                 item = collection.after((item) => item === "d");
             expect(item).toBe(null);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             collection.after((item, index) => {
@@ -2097,7 +2149,7 @@ describe("class: IterableCollection", () => {
                 item = collection.afterOr(-1, (item) => item === "d");
             expect(item).toBe(-1);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             collection.afterOr(null, (item, index) => {
@@ -2135,7 +2187,7 @@ describe("class: IterableCollection", () => {
                 collection.afterOrFail((item) => item === "d");
             }).toThrowError(ItemNotFoundError);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
                 indexes: number[] = [];
             try {
@@ -2189,7 +2241,7 @@ describe("class: IterableCollection", () => {
             ]);
             expect(collection.sole((item) => item === "c")).toBe("c");
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "a",
@@ -2245,7 +2297,7 @@ describe("class: IterableCollection", () => {
             ]);
             expect(collection.count((item) => item === "a")).toBe(3);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([
                     "a",
                     "a",
@@ -2291,49 +2343,64 @@ describe("class: IterableCollection", () => {
             expect(collection.size()).toBe(3);
         });
     });
-    describe("method: empty", () => {
+    describe("method: isEmpty", () => {
         test("Should return true when empty", () => {
             const collection = new IterableCollection([]);
-            expect(collection.empty()).toBe(true);
+            expect(collection.isEmpty()).toBe(true);
         });
         test("Should return false when not empty", () => {
             const collection = new IterableCollection([""]);
-            expect(collection.empty()).toBe(false);
+            expect(collection.isEmpty()).toBe(false);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new IterableCollection([]);
-            expect(collection.empty()).toBe(true);
-            expect(collection.empty()).toBe(true);
+            expect(collection.isEmpty()).toBe(true);
+            expect(collection.isEmpty()).toBe(true);
         });
     });
-    describe("method: notEmpty", () => {
+    describe("method: isNotEmpty", () => {
         test("Should return true when not empty", () => {
             const collection = new IterableCollection([""]);
-            expect(collection.notEmpty()).toBe(true);
+            expect(collection.isNotEmpty()).toBe(true);
         });
         test("Should return false when empty", () => {
             const collection = new IterableCollection([]);
-            expect(collection.notEmpty()).toBe(false);
+            expect(collection.isNotEmpty()).toBe(false);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new IterableCollection([""]);
-            expect(collection.notEmpty()).toBe(true);
-            expect(collection.notEmpty()).toBe(true);
+            expect(collection.isNotEmpty()).toBe(true);
+            expect(collection.isNotEmpty()).toBe(true);
         });
     });
-    describe("method: search", () => {
+    describe("method: searchFirst", () => {
         test("Should return -1 when searching for value that does not exist in collection", () => {
             const collection = new IterableCollection(["a", "b", "c"]);
-            expect(collection.search((item) => item === "d")).toBe(-1);
+            expect(collection.searchFirst((item) => item === "d")).toBe(-1);
         });
-        test(`Should return 1 when searching for string "b" of ["a", "b", "c"]`, () => {
-            const collection = new IterableCollection(["a", "b", "c"]);
-            expect(collection.search((item) => item === "b")).toBe(1);
+        test(`Should return 1 when searching for string "b" of ["a", "b", "b", "c"]`, () => {
+            const collection = new IterableCollection(["a", "b", "b", "c"]);
+            expect(collection.searchFirst((item) => item === "b")).toBe(1);
         });
         test("Should return the same value when called more than 1 times", () => {
+            const collection = new IterableCollection(["a", "b", "b", "c"]);
+            expect(collection.searchFirst((item) => item === "b")).toBe(1);
+            expect(collection.searchFirst((item) => item === "b")).toBe(1);
+        });
+    });
+    describe("method: searchLast", () => {
+        test("Should return -1 when searching for value that does not exist in collection", () => {
             const collection = new IterableCollection(["a", "b", "c"]);
-            expect(collection.search((item) => item === "b")).toBe(1);
-            expect(collection.search((item) => item === "b")).toBe(1);
+            expect(collection.searchLast((item) => item === "d")).toBe(-1);
+        });
+        test(`Should return 2 when searching for string "b" of ["a", "b", "b", "c"]`, () => {
+            const collection = new IterableCollection(["a", "b", "b", "c"]);
+            expect(collection.searchLast((item) => item === "b")).toBe(2);
+        });
+        test("Should return the same value when called more than 1 times", () => {
+            const collection = new IterableCollection(["a", "b", "b", "c"]);
+            expect(collection.searchLast((item) => item === "b")).toBe(2);
+            expect(collection.searchLast((item) => item === "b")).toBe(2);
         });
     });
     describe("method: forEach", () => {
@@ -2344,7 +2411,7 @@ describe("class: IterableCollection", () => {
             collection.forEach((item) => arr2.push(item));
             expect(arr2).toEqual(arr1);
         });
-        test("Should input correct indexes to filter function", () => {
+        test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3]),
                 indexes: number[] = [];
             collection.forEach((_item, index) => {
