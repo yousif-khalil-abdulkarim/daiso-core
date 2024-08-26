@@ -2,7 +2,7 @@
 
 ## Install
 ```bash
-npm install @daios/core
+npm install @daiso-tech/core
 ```
 
 ## Description
@@ -27,3 +27,5 @@ In the future the following components will be added:
 * Notification adapters that provides a single interface for quickly notifications to your users via email, Slack, SMS and in-app.
 
 This library is heavily inspired laravel but built in modular way where you can choose which part to use.
+
+[Link to the documentation website]()
