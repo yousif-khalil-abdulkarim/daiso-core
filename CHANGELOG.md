@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.1.4
+
+### Patch Changes
+
+-   218a64c: Added link to docs in readme
+
 ## 0.1.3
 
 ### Patch Changes
