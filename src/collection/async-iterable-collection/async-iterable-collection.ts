@@ -9,6 +9,8 @@ import {
     type AsyncFindSettings,
     type AsyncForEach,
     type AsyncGroupBySettings,
+    type AsyncCountBySettings,
+    type AsyncUniqueSettings,
     type AsyncIterableValue,
     type AsyncLazyable,
     type AsyncMap,
@@ -71,7 +73,8 @@ import {
 import { EnsureType } from "@/_shared/types";
 
 /**
- * Most methods in AsyncIterableCollection are lazy and will only execute when calling methods return values or iterating through an IterableCollection by using for of loop
+ * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly which means they will be executed when the <i>AsyncIterableCollection</i> is iterated with <i>forEach</i> method or "for await of" loop.
+ * The rest of the methods are executed eagerly.
  * @group Adapters
  */
 export class AsyncIterableCollection<TInput>
@@ -87,6 +90,9 @@ export class AsyncIterableCollection<TInput>
         return new AsyncIterableCollection<TInput>(iterable);
     };
 
+    /**
+     * The <i>constructor</i> takes an <i>{@link Iterable}</i> or <i>{@link AsyncIterable}</i>.
+     */
     constructor(private iterable: AsyncIterableValue<TInput> = []) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
@@ -124,6 +130,16 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
+    reject<TOutput extends TInput>(
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+    ): IAsyncCollection<Exclude<TInput, TOutput>> {
+        return this.filter(
+            async (...arguments_) => !(await filter(...arguments_)),
+            throwOnIndexOverflow,
+        );
+    }
+
     map<TOutput>(
         mapFn: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
         throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
@@ -145,7 +161,7 @@ export class AsyncIterableCollection<TInput>
             initialValue,
             throwOnIndexOverflow,
         } = settings;
-        if (initialValue === undefined && (await this.empty())) {
+        if (initialValue === undefined && (await this.isEmpty())) {
             throw new TypeError(
                 "Reduce of empty array must be inputed a initial value",
             );
@@ -175,8 +191,8 @@ export class AsyncIterableCollection<TInput>
         return output;
     }
 
-    async join(settings?: JoinSettings): Promise<string> {
-        return this.reduce({
+    async join(settings?: JoinSettings): Promise<EnsureType<TInput, string>> {
+        return this.reduce<string>({
             reduceFn(str, item) {
                 if (typeof item !== "string") {
                     throw new TypeError("Item type is invalid must be string");
@@ -187,7 +203,7 @@ export class AsyncIterableCollection<TInput>
             throwOnIndexOverflow:
                 settings?.throwOnIndexOverflow ??
                 AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
-        });
+        }) as Promise<EnsureType<TInput, string>>;
     }
 
     collapse(): IAsyncCollection<AsyncCollapse<TInput>> {
@@ -280,7 +296,7 @@ export class AsyncIterableCollection<TInput>
     async median(
         throwOnIndexOverflow?: boolean,
     ): Promise<EnsureType<TInput, number>> {
-        if (await this.empty()) {
+        if (await this.isEmpty()) {
             return 0 as EnsureType<TInput, number>;
         }
         const size = await this.size(throwOnIndexOverflow);
@@ -380,7 +396,7 @@ export class AsyncIterableCollection<TInput>
         throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<number> {
         try {
-            if (await this.empty()) {
+            if (await this.isEmpty()) {
                 return 0;
             }
             let part = 0,
@@ -542,7 +558,7 @@ export class AsyncIterableCollection<TInput>
         >,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
-            new AsyncWhenIterable(this, () => this.empty(), callback),
+            new AsyncWhenIterable(this, () => this.isEmpty(), callback),
         );
     }
 
@@ -565,7 +581,7 @@ export class AsyncIterableCollection<TInput>
         >,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
-            new AsyncWhenIterable(this, () => this.notEmpty(), callback),
+            new AsyncWhenIterable(this, () => this.isNotEmpty(), callback),
         );
     }
 
@@ -685,7 +701,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     countBy<TOutput = TInput>(
-        settings?: AsyncGroupBySettings<
+        settings?: AsyncCountBySettings<
             TInput,
             IAsyncCollection<TInput>,
             TOutput
@@ -702,7 +718,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     unique<TOutput = TInput>(
-        settings?: AsyncGroupBySettings<
+        settings?: AsyncUniqueSettings<
             TInput,
             IAsyncCollection<TInput>,
             TOutput
@@ -855,9 +871,11 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
-    sort(compare?: Comparator<TInput> | undefined): IAsyncCollection<TInput> {
+    sort(
+        comparator?: Comparator<TInput> | undefined,
+    ): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
-            new AsyncSortIterable(this, compare),
+            new AsyncSortIterable(this, comparator),
         );
     }
 
@@ -1195,7 +1213,7 @@ export class AsyncIterableCollection<TInput>
         return this.count(() => true, throwOnIndexOverflow);
     }
 
-    async empty(): Promise<boolean> {
+    async isEmpty(): Promise<boolean> {
         try {
             for await (const _ of this) {
                 return false;
@@ -1215,11 +1233,11 @@ export class AsyncIterableCollection<TInput>
         }
     }
 
-    async notEmpty(): Promise<boolean> {
-        return !(await this.empty());
+    async isNotEmpty(): Promise<boolean> {
+        return !(await this.isEmpty());
     }
 
-    async search(
+    async searchFirst(
         filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
         throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
     ): Promise<number> {
@@ -1232,6 +1250,34 @@ export class AsyncIterableCollection<TInput>
                 }
             }
             return -1;
+        } catch (error: unknown) {
+            if (
+                error instanceof CollectionError ||
+                error instanceof TypeError
+            ) {
+                throw error;
+            }
+            throw new UnexpectedCollectionError(
+                `Unexpected error "${String(error)}" occured`,
+                error,
+            );
+        }
+    }
+
+    async searchLast(
+        filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+        throwOnIndexOverflow = AsyncIterableCollection.THROW_ON_NUMBER_LIMIT,
+    ): Promise<number> {
+        try {
+            let matchedIndex = -1;
+            for await (const [index, item] of this.entries(
+                throwOnIndexOverflow,
+            )) {
+                if (await filter(item, index, this)) {
+                    matchedIndex = index;
+                }
+            }
+            return matchedIndex;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||

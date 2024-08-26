@@ -11,6 +11,7 @@
         "includeGroups": true,
         "includeFolders": true
     },
+    "projectDocuments": ["src/**/*.doc.md"],
     "categorizeByGroup": true,
     "includeVersion": true,
     "excludeInternal": true,

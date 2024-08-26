@@ -10,7 +10,7 @@ import { ListCollection } from "@/collection/list-collection/_module";
 
 describe("class: ListCollection", () => {
     describe("method: filter", () => {
-        test(`Should filter out all "a" of ["a", "bc", "c", "a", "d", "a"]`, () => {
+        test(`Should filter in all "a" of ["a", "bc", "c", "a", "d", "a"]`, () => {
             const arr = ["a", "bc", "c", "a", "d", "a"],
                 collection = new ListCollection(arr),
                 predicateFn = (item: string): boolean => item === "a",
@@ -32,6 +32,34 @@ describe("class: ListCollection", () => {
                     return item === "a";
                 };
             collection.filter(predicateFn).toArray();
+            expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
+        });
+    });
+    describe("method: reject", () => {
+        test(`Should filter out all "a" of ["a", "bc", "c", "a", "d", "a"]`, () => {
+            const arr = ["a", "bc", "c", "a", "d", "a"],
+                collection = new ListCollection(arr),
+                predicateFn = (item: string): boolean => item === "a",
+                newCollection = collection.reject(predicateFn);
+            expect(newCollection.toArray()).toEqual(
+                arr.filter((item) => !predicateFn(item)),
+            );
+        });
+        test("Should input correct indexes to ion", () => {
+            const collection = new ListCollection([
+                    "a",
+                    "bc",
+                    "c",
+                    "a",
+                    "d",
+                    "a",
+                ]),
+                indexes: number[] = [],
+                predicateFn = (item: string, index: number): boolean => {
+                    indexes.push(index);
+                    return item === "a";
+                };
+            collection.reject(predicateFn).toArray();
             expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
         });
     });
@@ -960,7 +988,7 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: groupBy", () => {
-        test("Should group by with default map function", () => {
+        test("Should group by with default selectFn function", () => {
             const arr = ["a", "b", "c", "a", "b", "c", "b", "d"],
                 collection = new ListCollection(arr),
                 newCollection = collection.groupBy();
@@ -980,7 +1008,7 @@ describe("class: ListCollection", () => {
                 ["d", arr.filter((item) => item === "d")],
             ]);
         });
-        test("Should group by with custom map function", () => {
+        test("Should group by with custom selectFn function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1056,7 +1084,7 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: countBy", () => {
-        test("Should count by with default map function", () => {
+        test("Should count by with default selectFn function", () => {
             const arr = ["a", "b", "c", "a", "b", "c", "b", "d"],
                 collection = new ListCollection(arr),
                 newCollection = collection.countBy();
@@ -1067,7 +1095,7 @@ describe("class: ListCollection", () => {
                 ["d", arr.filter((item) => item === "d").length],
             ]);
         });
-        test("Should count by with custom map function", () => {
+        test("Should count by with custom selectFn function", () => {
             type Person = {
                 name: string;
                 age: number;
@@ -1110,7 +1138,7 @@ describe("class: ListCollection", () => {
                 ["Ibra", arr.filter((item) => item.name === "Ibra").length],
             ]);
         });
-        test("Should input correct indexes to predicate function", () => {
+        test("Should input correct indexes to selectFn function", () => {
             const collection = new ListCollection([
                     "a",
                     "b",
@@ -1186,10 +1214,34 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: difference", () => {
-        test("Should remove all elements matches the given iterable elements", () => {
-            const collection = new ListCollection([1, 2, 3, 4, 5]);
+        test("Should remove all elements matches the given iterable elements with default selectFn function", () => {
+            const collection = new ListCollection([1, 2, 2, 3, 4, 5]);
             const difference = collection.difference([2, 4, 6, 8]);
             expect(difference.toArray()).toEqual([1, 3, 5]);
+        });
+        test("Should remove all elements matches the given iterable elements with custom selectFn function", () => {
+            type Product = {
+                name: string;
+                brand: string;
+                type: string;
+            };
+            const items: Product[] = [
+                { name: "iPhone 6", brand: "Apple", type: "phone" },
+                { name: "iPhone 5", brand: "Apple", type: "phone" },
+                { name: "Apple Watch", brand: "Apple", type: "watch" },
+                { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+                { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+            ];
+            const collection = new ListCollection<Product>(items);
+            const difference = collection.difference(
+                [{ name: "Apple Watch", brand: "Apple", type: "watch" }],
+                (product) => product.type,
+            );
+            expect(difference.toArray()).toStrictEqual([
+                { name: "iPhone 6", brand: "Apple", type: "phone" },
+                { name: "iPhone 5", brand: "Apple", type: "phone" },
+                { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+            ]);
         });
     });
     describe("method: repeat", () => {
@@ -2192,49 +2244,64 @@ describe("class: ListCollection", () => {
             expect(collection.size()).toBe(3);
         });
     });
-    describe("method: empty", () => {
+    describe("method: isEmpty", () => {
         test("Should return true when empty", () => {
             const collection = new ListCollection([]);
-            expect(collection.empty()).toBe(true);
+            expect(collection.isEmpty()).toBe(true);
         });
         test("Should return false when not empty", () => {
             const collection = new ListCollection([""]);
-            expect(collection.empty()).toBe(false);
+            expect(collection.isEmpty()).toBe(false);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new ListCollection([]);
-            expect(collection.empty()).toBe(true);
-            expect(collection.empty()).toBe(true);
+            expect(collection.isEmpty()).toBe(true);
+            expect(collection.isEmpty()).toBe(true);
         });
     });
-    describe("method: notEmpty", () => {
+    describe("method: isNotEmpty", () => {
         test("Should return true when not empty", () => {
             const collection = new ListCollection([""]);
-            expect(collection.notEmpty()).toBe(true);
+            expect(collection.isNotEmpty()).toBe(true);
         });
         test("Should return false when empty", () => {
             const collection = new ListCollection([]);
-            expect(collection.notEmpty()).toBe(false);
+            expect(collection.isNotEmpty()).toBe(false);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new ListCollection([""]);
-            expect(collection.notEmpty()).toBe(true);
-            expect(collection.notEmpty()).toBe(true);
+            expect(collection.isNotEmpty()).toBe(true);
+            expect(collection.isNotEmpty()).toBe(true);
         });
     });
-    describe("method: search", () => {
+    describe("method: searchFirst", () => {
         test("Should return -1 when searching for value that does not exist in collection", () => {
             const collection = new ListCollection(["a", "b", "c"]);
-            expect(collection.search((item) => item === "d")).toBe(-1);
+            expect(collection.searchFirst((item) => item === "d")).toBe(-1);
         });
-        test(`Should return 1 when searching for string "b" of ["a", "b", "c"]`, () => {
-            const collection = new ListCollection(["a", "b", "c"]);
-            expect(collection.search((item) => item === "b")).toBe(1);
+        test(`Should return 1 when searching for string "b" of ["a", "b", "b", "c"]`, () => {
+            const collection = new ListCollection(["a", "b", "b", "c"]);
+            expect(collection.searchFirst((item) => item === "b")).toBe(1);
         });
         test("Should return the same value when called more than 1 times", () => {
+            const collection = new ListCollection(["a", "b", "b", "c"]);
+            expect(collection.searchFirst((item) => item === "b")).toBe(1);
+            expect(collection.searchFirst((item) => item === "b")).toBe(1);
+        });
+    });
+    describe("method: searchLast", () => {
+        test("Should return -1 when searching for value that does not exist in collection", () => {
             const collection = new ListCollection(["a", "b", "c"]);
-            expect(collection.search((item) => item === "b")).toBe(1);
-            expect(collection.search((item) => item === "b")).toBe(1);
+            expect(collection.searchLast((item) => item === "d")).toBe(-1);
+        });
+        test(`Should return 2 when searching for string "b" of ["a", "b", "b", "c"]`, () => {
+            const collection = new ListCollection(["a", "b", "b", "c"]);
+            expect(collection.searchLast((item) => item === "b")).toBe(2);
+        });
+        test("Should return the same value when called more than 1 times", () => {
+            const collection = new ListCollection(["a", "b", "b", "c"]);
+            expect(collection.searchLast((item) => item === "b")).toBe(2);
+            expect(collection.searchLast((item) => item === "b")).toBe(2);
         });
     });
     describe("method: forEach", () => {

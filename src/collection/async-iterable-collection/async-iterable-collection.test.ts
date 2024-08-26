@@ -10,7 +10,7 @@ import { AsyncIterableCollection } from "@/collection/async-iterable-collection/
 
 describe("class: AsyncIterableCollection", () => {
     describe("method: filter", () => {
-        test(`Should filter out all "a" of ["a", "bc", "c", "a", "d", "a"]`, async () => {
+        test(`Should filter in all "a" of ["a", "bc", "c", "a", "d", "a"]`, async () => {
             const arr = ["a", "bc", "c", "a", "d", "a"],
                 collection = new AsyncIterableCollection(arr),
                 predicateFn = (item: string): boolean => item === "a",
@@ -46,6 +46,46 @@ describe("class: AsyncIterableCollection", () => {
                 );
             expect(await newCollection.toArray()).toEqual(
                 arr.filter(predicateFn),
+            );
+        });
+    });
+    describe("method: reject", () => {
+        test(`Should filter out all "a" of ["a", "bc", "c", "a", "d", "a"]`, async () => {
+            const arr = ["a", "bc", "c", "a", "d", "a"],
+                collection = new AsyncIterableCollection(arr),
+                predicateFn = (item: string): boolean => item === "a",
+                newCollection = collection.reject(predicateFn);
+            expect(await newCollection.toArray()).toEqual(
+                arr.filter((item) => !predicateFn(item)),
+            );
+        });
+        test("Should input correct indexes to predicate function", async () => {
+            const collection = new AsyncIterableCollection([
+                    "a",
+                    "bc",
+                    "c",
+                    "a",
+                    "d",
+                    "a",
+                ]),
+                indexes: number[] = [],
+                predicateFn = (item: string, index: number): boolean => {
+                    indexes.push(index);
+                    return item === "a";
+                };
+            await collection.reject(predicateFn).toArray();
+            expect(indexes).toEqual([0, 1, 2, 3, 4, 5]);
+        });
+        test("Should work with async predicate function", async () => {
+            const arr = ["a", "bc", "c", "a", "d", "a"],
+                collection = new AsyncIterableCollection(arr),
+                predicateFn = (item: string): boolean => item === "a",
+                // eslint-disable-next-line @typescript-eslint/require-await
+                newCollection = collection.reject(async (item) =>
+                    predicateFn(item),
+                );
+            expect(await newCollection.toArray()).toEqual(
+                arr.filter((item) => !predicateFn(item)),
             );
         });
     });
@@ -1606,10 +1646,34 @@ describe("class: AsyncIterableCollection", () => {
         });
     });
     describe("method: difference", () => {
-        test("Should remove all elements matches the given Iterable", async () => {
-            const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
+        test("Should remove all elements matches the given iterable elements with default selectFn function", async () => {
+            const collection = new AsyncIterableCollection([1, 2, 2, 3, 4, 5]);
             const difference = collection.difference([2, 4, 6, 8]);
             expect(await difference.toArray()).toEqual([1, 3, 5]);
+        });
+        test("Should remove all elements matches the given iterable elements with custom selectFn function", async () => {
+            type Product = {
+                name: string;
+                brand: string;
+                type: string;
+            };
+            const items: Product[] = [
+                { name: "iPhone 6", brand: "Apple", type: "phone" },
+                { name: "iPhone 5", brand: "Apple", type: "phone" },
+                { name: "Apple Watch", brand: "Apple", type: "watch" },
+                { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+                { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+            ];
+            const collection = new AsyncIterableCollection<Product>(items);
+            const difference = collection.difference(
+                [{ name: "Apple Watch", brand: "Apple", type: "watch" }],
+                (product) => product.type,
+            );
+            expect(await difference.toArray()).toStrictEqual([
+                { name: "iPhone 6", brand: "Apple", type: "phone" },
+                { name: "iPhone 5", brand: "Apple", type: "phone" },
+                { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+            ]);
         });
         test("Should remove all elements matches the given AsyncIterable", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
@@ -3092,56 +3156,128 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.size()).toBe(3);
         });
     });
-    describe("method: empty", () => {
+    describe("method: isEmpty", () => {
         test("Should return true when empty", async () => {
             const collection = new AsyncIterableCollection([]);
-            expect(await collection.empty()).toBe(true);
+            expect(await collection.isEmpty()).toBe(true);
         });
         test("Should return false when not empty", async () => {
             const collection = new AsyncIterableCollection([""]);
-            expect(await collection.empty()).toBe(false);
+            expect(await collection.isEmpty()).toBe(false);
         });
         test("Should return the same value when called more than 1 times", async () => {
             const collection = new AsyncIterableCollection([]);
-            expect(await collection.empty()).toBe(true);
-            expect(await collection.empty()).toBe(true);
+            expect(await collection.isEmpty()).toBe(true);
+            expect(await collection.isEmpty()).toBe(true);
         });
     });
-    describe("method: notEmpty", () => {
+    describe("method: isNotEmpty", () => {
         test("Should return true when not empty", async () => {
             const collection = new AsyncIterableCollection([""]);
-            expect(await collection.notEmpty()).toBe(true);
+            expect(await collection.isNotEmpty()).toBe(true);
         });
         test("Should return false when empty", async () => {
             const collection = new AsyncIterableCollection([]);
-            expect(await collection.notEmpty()).toBe(false);
+            expect(await collection.isNotEmpty()).toBe(false);
         });
         test("Should return the same value when called more than 1 times", async () => {
             const collection = new AsyncIterableCollection([""]);
-            expect(await collection.notEmpty()).toBe(true);
-            expect(await collection.notEmpty()).toBe(true);
+            expect(await collection.isNotEmpty()).toBe(true);
+            expect(await collection.isNotEmpty()).toBe(true);
         });
     });
-    describe("method: search", () => {
+    describe("method: searchFirst", () => {
         test("Should return -1 when searching for value that does not exist in collection", async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]);
-            expect(await collection.search((item) => item === "d")).toBe(-1);
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "b",
+                "c",
+            ]);
+            expect(await collection.searchFirst((item) => item === "d")).toBe(
+                -1,
+            );
         });
-        test(`Should return 1 when searching for string "b" of ["a", "b", "c"]`, async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]);
-            expect(await collection.search((item) => item === "b")).toBe(1);
-        });
-        test("Should return the same value when called more than 1 times", async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]);
-            expect(await collection.search((item) => item === "b")).toBe(1);
-            expect(await collection.search((item) => item === "b")).toBe(1);
-        });
-        test("Should work with async predicate function", async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]);
-            // eslint-disable-next-line @typescript-eslint/require-await
-            expect(await collection.search(async (item) => item === "b")).toBe(
+        test(`Should return 1 when searching for string "b" of ["a", "b", "b", "c"]`, async () => {
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "b",
+                "c",
+            ]);
+            expect(await collection.searchFirst((item) => item === "b")).toBe(
                 1,
             );
+        });
+        test("Should return the same value when called more than 1 times", async () => {
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "b",
+                "c",
+            ]);
+            expect(await collection.searchFirst((item) => item === "b")).toBe(
+                1,
+            );
+            expect(await collection.searchFirst((item) => item === "b")).toBe(
+                1,
+            );
+        });
+        test("Should work with async predicate function", async () => {
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "b",
+                "c",
+            ]);
+            expect(
+                // eslint-disable-next-line @typescript-eslint/require-await
+                await collection.searchFirst(async (item) => item === "b"),
+            ).toBe(1);
+        });
+    });
+    describe("method: searchLast", () => {
+        test("Should return -1 when searching for value that does not exist in collection", async () => {
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "b",
+                "c",
+            ]);
+            expect(await collection.searchLast((item) => item === "d")).toBe(
+                -1,
+            );
+        });
+        test(`Should return 1 when searching for string "b" of ["a", "b", "b", "c"]`, async () => {
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "b",
+                "c",
+            ]);
+            expect(await collection.searchLast((item) => item === "b")).toBe(2);
+        });
+        test("Should return the same value when called more than 1 times", async () => {
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "b",
+                "c",
+            ]);
+            expect(await collection.searchLast((item) => item === "b")).toBe(2);
+            expect(await collection.searchLast((item) => item === "b")).toBe(2);
+        });
+        test("Should work with async predicate function", async () => {
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "b",
+                "c",
+            ]);
+            expect(
+                // eslint-disable-next-line @typescript-eslint/require-await
+                await collection.searchLast(async (item) => item === "b"),
+            ).toBe(2);
         });
     });
     describe("method: forEach", () => {

@@ -1,5 +1,10 @@
 # @daiso-tech/core
 
+## Install
+```bash
+npm install @daios/core
+```
+
 ## Description
 The library provides modular solutions for the essential features needed in modern web applications. Stop wasting time searching for packages or reinventing the wheel — this framework-agnostic library, built on adaptable components, works well with popular frameworks like Express.js, Fastify, Nest.js, Next.js, Nuxt.js, SvelteKit, and Remix.
 

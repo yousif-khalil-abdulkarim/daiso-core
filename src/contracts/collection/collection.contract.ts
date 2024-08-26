@@ -13,6 +13,8 @@ import {
     type FindSettings,
     type ForEach,
     type GroupBySettings,
+    type CountBySettings,
+    type UniqueSettings,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type ItemNotFoundError,
     type JoinSettings,
@@ -43,7 +45,7 @@ export type Collapse<TValue> = TValue extends
     : TValue;
 
 /**
- * ICollection is immutable and all the methods return new copies
+ * <i>ICollection</i> is immutable. The <i>throwOnIndexOverflow</i> parameter in the <i>ICollection</i> methods is used for preventing the index to overflow by throwing an error.
  * @throws {CollectionError}
  * @throws {UnexpectedCollectionError}
  * @throws {IndexOverflowError}
@@ -54,20 +56,29 @@ export type Collapse<TValue> = TValue extends
  */
 export type ICollection<TInput> = Iterable<TInput> & {
     /**
-     * Returns an iterator
+     * The <i>toIterator</i> method converts the collection to a new iterator.
      */
     toIterator(): Iterator<TInput, void>;
 
+    /**
+     * The <i>entries</i> returns an ICollection of key, value pairs for every entry in the collection.
+     */
     entries(
         throwOnIndexOverflow?: boolean,
     ): ICollection<RecordItem<number, TInput>>;
 
+    /**
+     * The <i>keys</i> method returns an ICollection of keys in the collection.
+     */
     keys(throwOnIndexOverflow?: boolean): ICollection<number>;
 
+    /**
+     * The <i>values</i> method returns a copy of the collection.
+     */
     values(): ICollection<TInput>;
 
     /**
-     * The filter method filters the collection using the given callback, keeping only those items that pass a given truth test:
+     * The <i>filter</i> method filters the collection using <i>predicateFn</i>, keeping only those items that pass <i>predicateFn</i>.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
      * const filtered = collection.filter(item => 2 < item && item < 5);
@@ -80,8 +91,21 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TOutput>;
 
     /**
-     * The map method iterates through the collection and passes each value to the given callback.
-     * The mapFunction is free to modify the item and return it, thus forming a new collection of modified items:
+     * The <i>reject</i> method filters the collection using <i>predicateFn</i>, keeping only those items that not pass <i>predicateFn</i>.
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
+     * const filtered = collection.reject(item => 2 < item && item < 5);
+     * filtered.toArray();
+     * // [1, 2, 5, 6]
+     */
+    reject<TOutput extends TInput>(
+        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        throwOnIndexOverflow?: boolean,
+    ): ICollection<Exclude<TInput, TOutput>>;
+
+    /**
+     * The <i>map</i> method iterates through the collection and passes each item to <i>mapFn</i>.
+     * The <i>mapFn</i> is free to modify the item and return it, thus forming a new collection of modified items.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5]);
      * const mapped = collection.map(item => item * 2);
@@ -93,17 +117,48 @@ export type ICollection<TInput> = Iterable<TInput> & {
         throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput>;
 
+    /**
+     * The <i>reduce</i> method executes <i> {@link ReduceSettings | ReduceSettings.reduceFn} </i> function on each item of the array, passing in the return value from the calculation on the preceding item.
+     * The final result of running the reducer across all items of the array is a single value.
+     * @example
+     * const collection = new ListCollection([1, 2, 3]);
+     * collection.reduce({
+     *   reduceFn: (sum, item) => sum + item
+     * });
+     * // 6
+     * @example
+     * const collection = new ListCollection(["a", "b", "c"]);
+     * collection.entries().reduce({
+     *   reduceFn: (record, [key, value]) => ({
+     *     ...record,
+     *     [key]: value
+     *   }),
+     *   initialValue: {} as Record<number, string>
+     * });
+     * // { 0: "a", 1: "b", 2: "c" }
+     */
     reduce<TOutput = TInput>(
         settings: ReduceSettings<TInput, ICollection<TInput>, TOutput>,
     ): TOutput;
 
     /**
+     * The <i>join</i> method joins the collection's items with {@link JoinSettings | JoinSettings.seperator}. An error will be thrown when if a none string item is encounterd.
      * @throws {TypeError}
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.map(item => item.toString()).join();
+     * // "1,2,3,4"
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.map(item => item.toString()).join({
+     *   seperator: "_"
+     * });
+     * // "1_2_3_4"
      */
-    join(settings?: JoinSettings): string;
+    join(settings?: JoinSettings): EnsureType<TInput, string>;
 
     /**
-     * The collapse method collapses a collection of arrays into a single, flat collection:
+     * The <i>collapse</i> method collapses a collection of iterables into a single, flat collection.
      * @example
      * const collection = new ListCollection([[1, 2], [3, 4]]);
      * const collapsed = collection.collapse();
@@ -113,8 +168,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     collapse(): ICollection<Collapse<TInput>>;
 
     /**
-     * The flatMap method returns a new array formed by applying a given callback function to each element of the array, and then collapses the result by one level.
-     * It is identical to a map() followed by a collapse()
+     * The <i>flatMap</i> method returns a new array formed by applying <i>mapFn</i> to each item of the array, and then collapses the result by one level.
+     * It is identical to a <i>map</i> method followed by a <i>collapse</i> method.
      * @example
      * const collection = new ListCollection([["a", "b"], ["c", "d"]]).flatMap(item => [item.length, ...item]);
      * collection.toArray();
@@ -126,7 +181,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TOutput>;
 
     /**
-     * The update method filters the collection using the given callback, keeping only those items that pass a given truth test and thereafter updates the filtered items:
+     * The <i>update</i> method updates only the items that passes <i>predicateFn</i> using <i>mapFn</i>.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5]);
      * const updateCollection = collection.update(item => item % 2 === 0, item => item * 2);
@@ -140,13 +195,12 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>>;
 
     /**
-     * The page method returns a new collection containing the items that would be present on a given page number.
-     * The method accepts the page number as its first argument and the number of items to show per page as its second argument:
+     * The <i>page</i> method returns a new collection containing the items that would be present on <i>{@link PageSettings | PageSettings.page}</i> with custom <i>{@link PageSettings | PageSettings.pageSize}</i>.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5, 6, 7, 8, 9]);
      * const page = collection.page({
-     *  page: 2,
-     *  pageSize: 3
+     *   page: 2,
+     *   pageSize: 3
      * });
      * page.toArray();
      * // [4, 5, 6]
@@ -154,9 +208,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     page(settings: PageSettings): ICollection<TInput>;
 
     /**
-     * The sum method returns the sum of all items in the collection. If the collection contains nested arrays or objects,
-     * you should pass a map function that returns a number to be used in sum calculation.
-     * You can only pass filter to filter out the items you want:
+     * The <i>sum</i> method returns the sum of all items in the collection. If the collection includes other than number items an error will be thrown.
      * @example
      * const collection = new ListCollection([1, 2, 3]);
      * collection.sum();
@@ -168,9 +220,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     sum(): EnsureType<TInput, number>;
 
     /**
-     * The average method returns the average of all items in the collection. If the collection contains nested arrays or objects,
-     * you should pass a map function that returns a number to be used in average calculation.
-     * You can only pass filter to filter out the items you want:
+     * The <i>average</i> method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
      * @example
      * const collection = new ListCollection([1, 2, 3]);
      * collection.average();
@@ -182,9 +232,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     average(): EnsureType<TInput, number>;
 
     /**
-     * The median method returns the median of all items in the collection. If the collection contains nested arrays or objects,
-     * you should pass a map function that returns a number to be used in median calculation.
-     * You can only pass filter to filter out the items you want:
+     * The <i>median</i> method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
      * @example
      * const collection = new ListCollection([1, 2, 3]);
      * collection.median();
@@ -197,9 +245,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     median(throwOnIndexOverflow?: boolean): EnsureType<TInput, number>;
 
     /**
-     * The min method returns the min of all items in the collection. If the collection contains nested arrays or objects,
-     * you should pass a map function that returns a number to be used in min calculation.
-     * You can only pass filter to filter out the items you want:
+     * The <i>min</i> method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
      * @example
      * const collection = new ListCollection([1, 2, 3]);
      * collection.min();
@@ -211,9 +257,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     min(): EnsureType<TInput, number>;
 
     /**
-     * The max method returns the max of all items in the collection. If the collection contains nested arrays or objects,
-     * you should pass a map function that returns a number to be used in max calculation.
-     * You can only pass filter to filter out the items you want:
+     * The <i>max</i> method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
      * @example
      * const collection = new ListCollection([1, 2, 3]);
      * collection.max();
@@ -225,7 +269,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     max(): EnsureType<TInput, number>;
 
     /**
-     * The percentage method may be used to quickly determine the percentage of items in the collection that pass a given truth test
+     * The <i>percentage</i> method may be used to quickly determine the percentage of items in the collection that pass <i>predicateFn</i>.
      * @example
      * const collection = new ListCollection([1, 1, 2, 2, 2, 3]);
      * collection.percentage(value => value === 1);
@@ -240,8 +284,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): number;
 
     /**
-     * The some method determines whether the collection has a given item.
-     * You must pass a closure to the some method to determine if an element exists in the collection matching a given truth test:
+     * The <i>some</i> method determines whether at least one item in the collection matches <i>predicateFn</i>.
      * @example
      * const collection = new ListCollection([0, 1, 2, 3, 4, 5]);
      * collection.some(item => item === 1);
@@ -256,7 +299,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): boolean;
 
     /**
-     * The every method may be used to verify that all elements of a collection pass a given truth test:
+     * The <i>every</i> method determines whether all items in the collection matches <i>predicateFn</i>.
      * @example
      * const collection = new ListCollection([0, 1, 2, 3, 4, 5]);
      * collection.every(item => item < 6);
@@ -271,7 +314,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): boolean;
 
     /**
-     * The take method returns items in the collection until the given callback returns true:
+     * The <i>take</i> method takes the first <i>limit</i> items.
      * @example
      * const collection = new ListCollection([0, 1, 2, 3, 4, 5]);
      * const chunk = collection.take(3);
@@ -286,7 +329,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     take(limit: number, throwOnIndexOverflow?: boolean): ICollection<TInput>;
 
     /**
-     * The takeUntil method returns items in the collection until the given callback returns true:
+     * The <i>takeUntil</i> method takes items until <i>predicateFn</i> returns true.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * const chunk = collection.takeUntil(item => item >= 3);
@@ -299,12 +342,12 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput>;
 
     /**
-     * The takeWhile method returns items in the collection until the given callback returns false:
+     * The <i>takeWhile</i> method takes items until <i>predicateFn</i> returns false.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
-     * const chunk = collection.takeWhile(item => item < 3);
+     * const chunk = collection.takeWhile(item => item < 4);
      * chunk.toArray();
-     * // [1, 2]
+     * // [1, 2, 3]
      */
     takeWhile(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
@@ -312,7 +355,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput>;
 
     /**
-     * The skip method returns a new collection, with the given number of elements removed from the beginning of the collection:
+     * The <i>skip</i> method skips the first <i>offset</i> items.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).skip(4);
      * collection.toArray();
@@ -321,8 +364,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     skip(offset: number, throwOnIndexOverflow?: boolean): ICollection<TInput>;
 
     /**
-     * The skipUntil method skips over items from the collection until the given callback returns true
-     * and then returns the remaining items in the collection as a new collection instance:
+     * The <i>skipUntil</i> method skips items until <i>predicateFn</i> returns true.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]).skipUntil(item => item >= 3);
      * collection.toArray();
@@ -334,7 +376,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput>;
 
     /**
-     * The skipWhile method skips over items from the collection while the given callback returns false and then returns the remaining items in the collection as a new collection:
+     * The <i>skipWhile</i> method skips items until <i>predicateFn</i> returns false.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]).skipWhile(item => item <= 3);
      * collection.toArray();
@@ -346,7 +388,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput>;
 
     /**
-     * The when method will execute the given callback when the first argument given to the method evaluates to true:
+     * The <i>when</i> method will execute <i>callback</i> when <i>condition</i> evaluates to true.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4])
      *  .when(true, collection => collection.append([-3]))
@@ -360,7 +402,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The whenEmpty method will execute the given callback when the collection is empty:
+     * The <i>whenEmpty</i> method will execute <i>callback</i> when the collection is empty.
      * @example
      * const collection = new ListCollection([])
      *  .whenEmpty(collection => collection.append([-3]))
@@ -377,7 +419,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The whenNot method will execute the given callback when the first argument given to the method evaluates to false:
+     * The <i>whenNot</i> method will execute <i>callback</i> when <i>condition</i> evaluates to false.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4])
      *  .whenNot(true, collection => collection.append([-3]))
@@ -391,7 +433,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The whenNotEmpty method will execute the given callback when the collection is empty:
+     * The <i>whenNotEmpty</i> method will execute <i>callback</i> when the collection is not empty.
      * @example
      * const collection = new ListCollection([])
      *  .whenNotEmpty(collection => collection.append([-3]))
@@ -408,19 +450,29 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The pipe method passes the collection to the given closure and returns the result of the executed closure:
+     * The <i>pipe</i> method passes the orignal collection to <i>callback</i> and returns the result from <i>callback</i>.
+     * This method is useful when you want compose multiple smaller functions.
      * @example
-     * const collection = new ListCollection([1, 2, 3]);
-     * const piped = collection.pipe(collection => collection.sum());
-     * // 6
+     * const collection = new ListCollection([1, "2", "a", 1, 3, {}]);
+     *
+     * function toNbrs<TInput>(collection: ICollection<TInput>): ICollection<number> {
+     *   return collection.map(item => Number(item)).reject(nbr => Number.isNaN(nbr)))
+     * }
+     * function nbrToStr(collection: ICollection<number>): ICollection<string> {
+     *   return collection.map(nbr => String.fromCharCode(nbr)).repeat(2).join("_")
+     * }
+     *
+     * const piped = collection
+     *   .pipe(toNbrs)
+     *   .pipe(nbrToStr);
+     * // "\x01_\x02_\x01_\x03_\x01_\x02_\x01_\x03"
      */
     pipe<TOutput = TInput>(
         callback: Transform<ICollection<TInput>, TOutput>,
     ): TOutput;
 
     /**
-     * The tap method passes the collection to the given callback, allowing you to "tap" into the collection at a specific point
-     * and do something with the items while not affecting the collection itself.The collection is then returned by the tap method:
+     * The <i>tap</i> method passes a copy of the original collection to <i>callback</i>, allowing you to do something with the items while not affecting the original collection.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5, 6])
      *   .tap(collection => {
@@ -434,7 +486,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     tap(callback: Tap<ICollection<TInput>>): ICollection<TInput>;
 
     /**
-     * The chunk method breaks the collection into multiple, smaller collections of a given size:
+     * The <i>chunk</i> method breaks the collection into multiple, smaller collections of size <i>chunkSize</i>.
+     * If <i>chunkSize</i> is not divisible with total number of items then the last chunk will contain the remaining items.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5, 6, 7]);
      * const chunks = collection.chunk(4);
@@ -444,8 +497,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     chunk(chunkSize: number): ICollection<ICollection<TInput>>;
 
     /**
-     * The chunkWhile method breaks the collection into multiple, smaller collections based on the evaluation of the given callback.
-     * The chunk variable passed to the closure may be used to inspect the previous element:
+     * The <i>chunkWhile</i> method breaks the collection into multiple, smaller collections based on the evaluation of <i>predicateFn</i>.
+     * The chunk variable passed to the <i>predicateFn</i> may be used to inspect the previous item.
      * @example
      * const collection = new ListCollection("AABBCCCD");
      * const chunks = collection.chunkWhile((value, index, chunk) => {
@@ -460,12 +513,22 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<ICollection<TInput>>;
 
     /**
-     * The split method breaks a collection into the given number of groups:
+     * The <i>split</i> method breaks a collection evenly into <i>chunkAmount</i> of chunks.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5]);
      * const chunks = collection.split(3);
      * chunks.toArray();
      * // [[1, 2], [3, 4], [5]]
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
+     * const chunks = collection.split(3);
+     * chunks.toArray();
+     * // [[1, 2], [3, 4], [5, 6]]
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4, 5, 6, 7]);
+     * const chunks = collection.split(3);
+     * chunks.toArray();
+     * // [[1, 2, 7], [3, 4], [5, 6]]
      */
     split(
         chunkAmount: number,
@@ -473,10 +536,11 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<ICollection<TInput>>;
 
     /**
-     * The partition method is used to separate elements that pass a given truth test from those that do not:
+     * The <i>partition</i> method is used to separate items that pass <i>predicateFn</i> from those that do not.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
      * collection.partition(item => item < 3);
+     * collection.toArray();
      * // [[1, 2], [3, 4, 5, 6]]
      */
     partition(
@@ -485,7 +549,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<ICollection<TInput>>;
 
     /**
-     * The sliding method returns a new collection of chunks representing a "sliding window" view of the items in the collection:
+     * The <i>sliding</i> method returns a new collection of chunks representing a "sliding window" view of the items in the collection.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5]).sliding(2);
      * collection.toArray();
@@ -494,42 +558,85 @@ export type ICollection<TInput> = Iterable<TInput> & {
     sliding(settings: SlidingSettings): ICollection<ICollection<TInput>>;
 
     /**
-     * The groupBy method groups the collection's items by a given map function:
+     * The <i>groupBy</i> method groups the collection's items by {@link GroupBySettings | GroupBySettings.selectFn}.
+     * By default the equality check occurs on the item.
      * @example
      * const collection = new ListCollection(["a", "a", "a", "b", "b", "c"]);
      * const group = collection
      *   .groupBy()
-     *   .map(([key, value]) => [key, value.toArray()]);
-     * // [["a", ["a", "a", "a"]], ["b", ["b", "b", "b"]], ["c", ["c"]]]
+     *   .map(([key, collection]) => [key, collection.toArray()])
+     *   .toArray();
+     * // [
+     * //  [
+     * //    "a",
+     * //    ["a", "a", "a"]
+     * //  ],
+     * //  [
+     * //    "b",
+     * //    ["b", "b"]
+     * //  ],
+     * //  [
+     * //    "c",
+     * //    ["c"]
+     * //  ]
+     * // ]
      * @example
      * const collection = new ListCollection(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"]);
      * const group = collection
-     *   .groupBy(item => item.split("@")[1])
-     *   .map(([key, value]) => [key, value.toArray()]);
-     * // [["gmail.com", ["alice@gmail.com", "carlos@gmail.com"]], ["yahoo.com", ["bob@yahoo.com"]]]
+     *   .groupBy({
+     *     selectFn: item => item.split("@")[1]
+     *   })
+     *   .map(([key, collection]) => [key, collection.toArray()])
+     *   .toArray();
+     * // [
+     * //   [
+     * //     "gmail.com",
+     * //     ["alice@gmail.com", "carlos@gmail.com"]
+     * //   ],
+     * //   [
+     * //     "yahoo.com",
+     * //     ["bob@yahoo.com"]
+     * //   ]
+     * // ]
      */
     groupBy<TOutput = TInput>(
         settings?: GroupBySettings<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<RecordItem<TOutput, ICollection<TInput>>>;
 
     /**
-     * The countBy method counts the occurrences of values in the collection.
-     * By default, the method counts the occurrences of every element, allowing you to count certain "types" of elements in the collection:
+     * The <i>countBy</i> method counts the occurrences of values in the collection by {@link CountBySettings | CountBySettings.selectFn}.
+     * By default the equality check occurs on the item.
      * @example
      * const collection = new ListCollection(["a", "a", "a", "b", "b", "c"]);
-     * const count = collection.countBy();
-     * // [["a", 3], ["b", 2], ["c", 1]]
+     * const count = collection
+     *   .countBy()
+     *   .map(([key, collection]) => [key, collection.toArray()])
+     *   .toArray();
+     * // [
+     * //  ["a", 3],
+     * //  ["b", 2],
+     * //  ["c", 1]
+     * // ]
      * @example
      * const collection = new ListCollection(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"]);
-     * const count = collection.countBy(item => item.split("@")[1])
-     * // [["gmail.com", 2], ["yahoo.com", 1]]
+     * const count = collection
+     *   .countBy({
+     *     selectFn: item => item.split("@")[1]
+     *   })
+     *   .map(([key, collection]) => [key, collection.toArray()])
+     *   .toArray();
+     * // [
+     * //   ["gmail.com", 2],
+     * //   ["yahoo.com", 1]
+     * // ]
      */
     countBy<TOutput = TInput>(
-        settings?: GroupBySettings<TInput, ICollection<TInput>, TOutput>,
+        settings?: CountBySettings<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<RecordItem<TOutput, number>>;
 
     /**
-     * The unique method removes all duplicate values from the collection:
+     * The <i>unique</i> method removes all duplicate values from the collection by {@link UniqueSettings | UniqueSettings.selectFn}.
+     * By default the equality check occurs on the item.
      * @example
      * const collection = new ListCollection([1, 1, 2, 2, 3, 4, 2]);
      * collection.unique().toArray();
@@ -542,24 +649,46 @@ export type ICollection<TInput> = Iterable<TInput> & {
      *   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
      *   { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
      * ]);
-     * const unique = collection.unique(item => item.brand);
-     * unique.toArray();
+     * const unique = collection.unique({
+     *   selectFn: item => item.brand
+     * }).toArray();
      * // [
-     *   { name: "iPhone 6", brand: "Apple", type: "phone" },
-     *   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-     * ]
+     * //   { name: "iPhone 6", brand: "Apple", type: "phone" },
+     * //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     * // ]
      */
     unique<TOutput = TInput>(
-        settings?: GroupBySettings<TInput, ICollection<TInput>, TOutput>,
+        settings?: UniqueSettings<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<TInput>;
 
     /**
-     * The diff method will return the values in the original collection that are not present in the given iterable:
+     * The <i>difference</i> method will return the values in the original collection that are not present in <i>iterable</i>.
+     * By default the equality check occurs on the item.
      * @example
-     * const collection = new ListCollection([1, 2, 3, 4, 5]);
+     * const collection = new ListCollection([1, 2, 2, 3, 4, 5]);
      * const difference = collection.difference([2, 4, 6, 8]);
      * difference.toArray();
      * // [1, 3, 5]
+     * @example
+     * const collection = new ListCollection([
+     *   { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *   { name: "iPhone 5", brand: "Apple", type: "phone" },
+     *   { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *   { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+     * ]);
+     * const difference = collection.difference(
+     *   [
+     *     { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *   ],
+     *   (product) => product.type
+     * );
+     * difference.toArray();
+     * // [
+     * //   { name: "iPhone 6", brand: "Apple", type: "phone" },
+     * //   { name: "iPhone 5", brand: "Apple", type: "phone" },
+     * //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     * // ]
      */
     difference<TOutput = TInput>(
         iterable: Iterable<TInput>,
@@ -567,7 +696,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput>;
 
     /**
-     * The repeat method will repat the current collection given amount
+     * The <i>repeat</i> method will repeat the original collection <i>amount</i> times.
      * @example
      * const collection = new ListCollection([1, 2, 3]);
      * const newCollection = collection.repeat(3);
@@ -577,8 +706,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     repeat(amount: number): ICollection<TInput>;
 
     /**
-     * The padStart method pads this collection with another item (multiple times, if needed) until the resulting collection reaches the given length.
-     * The padding is applied from the start of this collection:
+     * The <i>padStart</i> method pads this collection with <i>fillItems</i> until the resulting collection size reaches <i>maxLength</i>.
+     * The padding is applied from the start of this collection.
      * @example
      * new ListCollection("abc").padStart(10, "foo").join({ seperator: ""});
      * // "foofoofabc"
@@ -598,8 +727,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The padEnd method pads this collection with another item (multiple times, if needed) until the resulting collection reaches the given length.
-     * The padding is applied from the end of this collection:
+     * The <i>padEnd</i> method pads this collection with <i>fillItems</i> until the resulting collection size reaches <i>maxLength</i>.
+     * The padding is applied from the end of this collection.
      * @example
      * new ListCollection("abc").padEnd(10, "foo").join({ seperator: ""});
      * // "abcfoofoof"
@@ -619,12 +748,51 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The slice is the same as Array.slice method. Se documentation on [mdn](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice):
+     * The <i>slice</i> method creates porition of the original collection selected from {@link SliceSettings | SliceSettings.start} and {@link SliceSettings | SliceSettings.end}
+     * where {@link  SliceSettings | SliceSettings.start} and {@link SliceSettings | SliceSettings.end} (end not included) represent the index of items in the collection.
+     * @example
+     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
+     * collection.slice({
+     *   start: 3
+     * }).toArray();
+     * // ["d", "e", "f"]
+     * @example
+     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
+     * collection.slice({
+     *   end: 2,
+     * }).toArray();
+     * // ["a", "b"]
+     * @example
+     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
+     * collection.slice({
+     *   start: 2
+     *   end: 5,
+     * }).toArray();
+     * // ["c", "d", "e"]
+     * @example
+     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
+     * collection.slice({
+     *   start: -2
+     * }).toArray();
+     * // ["e", "f"]
+     * @example
+     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
+     * collection.slice({
+     *   end: -2
+     * }).toArray();
+     * // ["a", "b", "c", "d"]
+     * @example
+     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
+     * collection.slice({
+     *   start: -4,
+     *   end: -2
+     * }).toArray();
+     * // ["c", "d"]
      */
     slice(settings?: SliceSettings): ICollection<TInput>;
 
     /**
-     * The prepend method adds items to the beginning of the collection:
+     * The <i>prepend</i> method adds <i>iterable</i> to the beginning of the collection.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5]).prepend([-1, 20]);
      * collection.toArray();
@@ -635,7 +803,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The append method adds items to the end of the collection:
+     * The <i>append</i> method adds <i>iterable</i> to the end of the collection.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5]).append([-1, -2]);
      * collection.toArray();
@@ -646,7 +814,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The insertBefore method adds items before a specific filtered item:
+     * The <i>insertBefore</i> method adds <i>iterable</i> before the first item that matches <i>predicateFn</i>.
      * @example
      * const collection = new ListCollection([1, 2, 2, 3, 4, 5]).insertBefore(item => item === 2, [-1, 20]);
      * collection.toArray();
@@ -659,7 +827,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The insertAfter method adds items after a specific filtered item:
+     * The <i>insertAfter</i> method adds <i>iterable</i> after the first item that matches <i>predicateFn</i>.
      * @example
      * const collection = new ListCollection([1, 2, 2, 3, 4, 5]).insertAfter(item => item === 2, [-1, 20]);
      * collection.toArray();
@@ -672,7 +840,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The crossJoin method cross joins the collection's values among the given arrays or collections, returning a Cartesian product with all possible permutations:
+     * The <i>crossJoin</i> method cross joins the collection's values among <i>iterables</i>, returning a Cartesian product with all possible permutations.
      * @example
      * const collection = new ListCollection([1, 2]);
      * const matrix = collection.crossJoin(["a", "b"]);
@@ -703,10 +871,21 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<ICollection<TInput | TExtended>>;
 
     /**
-     * The zip method merges together the values of the given array with the values of the original collection at their corresponding index:
+     * The <i>zip</i> method merges together the values of <i>iterable</i> with the values of the collection at their corresponding index.
+     * The returned collection has size of the shortest collection.
      * @example
      * const collection = new ListCollection(["Chair", "Desk"]);
      * const zipped = collection.zip([100, 200]);
+     * zipped.toArray();
+     * // [["Chari", 100], ["Desk", 200]]
+     * @example
+     * const collection = new ListCollection(["Chair", "Desk", "Couch"]);
+     * const zipped = collection.zip([100, 200]);
+     * zipped.toArray();
+     * // [["Chari", 100], ["Desk", 200]]
+     * @example
+     * const collection = new ListCollection(["Chair", "Desk"]);
+     * const zipped = collection.zip([100, 200, 300]);
      * zipped.toArray();
      * // [["Chari", 100], ["Desk", 200]]
      */
@@ -714,17 +893,63 @@ export type ICollection<TInput> = Iterable<TInput> & {
         iterable: Iterable<TExtended>,
     ): ICollection<RecordItem<TInput, TExtended>>;
 
-    sort(compare?: Comparator<TInput>): ICollection<TInput>;
+    /**
+     * The <i>sort</i> method sorts the collection. You can provide a <i>comparator</i> function.
+     * @example
+     * const collection = new ListCollection([-1, 2, 4, 3]);
+     * collection.sort().toArray();
+     * // [-1, 2, 3, 4]
+     * @example
+     * const collection = new ListCollection([
+     *   { name: "Anders", age: 30 },
+     *   { name: "Joe", age: 20 },
+     *   { name: "Hasan", age: 25 },
+     *   { name: "Linda", age: 19 }
+     * ]);
+     * collection.sort(({ age: ageA }, { age: ageB }) => ageA - ageB).toArray();
+     * // [
+     * //   { name: "Linda", age: 19 }
+     * //   { name: "Joe", age: 20 },
+     * //   { name: "Hasan", age: 25 },
+     * //   { name: "Anders", age: 30 },
+     * // ]
+     */
+    sort(comparator?: Comparator<TInput>): ICollection<TInput>;
 
+    /**
+     * The <i>reverse</i> method will reverse the order of the collection.
+     * The reversing of the collection will be applied in chunks that are the size of <i>{@link ReverseSettings | ReverseSettings.chunkSize}</i>.
+     * @example
+     * const collection = new ListCollection([-1, 2, 4, 3]);
+     * collection.reverse().toArray();
+     * // [3, 4, 2, -1]
+     */
     reverse(settings?: ReverseSettings): ICollection<TInput>;
 
+    /**
+     * The <i>shuffle</i> method randomly shuffles the items in the collection.
+     */
     shuffle(): ICollection<TInput>;
 
     /**
-     * The first method returns the first element in the collection that passes a given truth test. By default it will get the first element:
+     * The <i>first</i> method returns the first item in the collection that passes <i>{@link FindSettings | FindSettings.predicateFn}</i>.
+     * By default it will get the first item. If the collection is empty or no items passes <i>{@link FindSettings | FindSettings.predicateFn}</i> than null i returned.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.first({ filter: item => item > 2 });
+     * collection.first();
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.first({
+     *   predicateFn: item => item > 2
+     * });
+     * // 3
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.first({
+     *   predicateFn: item => item > 10
+     * });
+     * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
@@ -735,7 +960,35 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TOutput | null;
 
     /**
-     * The firstOr method is the same as first method but will return a provided default value if not found
+     * The <i>firstOr</i> method returns the first item in the collection that passes <i>{@link FindOrSettings | FindOrSettings.predicateFn}</i>
+     * By default it will get the first item. If the collection is empty or no items passes <i>{@link FindOrSettings | FindOrSettings.predicateFn}</i> than  {@link FindOrSettings | FindOrSettings.defaultValue}.
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.firstOr({
+     *   defaultValue: -1
+     * });
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.firstOr({
+     *   predicateFn: item => item > 2,
+     *   defaultValue: -1
+     * });
+     * // 3
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.firstOr({
+     *   predicateFn: item => item > 10,
+     *   defaultValue: -1
+     * });
+     * // -1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.firstOr({
+     *   predicateFn: item => item > 10,
+     *   defaultValue: () => -1
+     * });
+     * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
@@ -750,7 +1003,24 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TOutput | TExtended;
 
     /**
-     * The firstOrFail method is the same as first method but will throw an Error if not found
+     * The <i>firstOrFail</i> method returns the first item in the collection that passes <i>{@link FindSettings | FindSettings.predicateFn}</i>.
+     * By default it will get the first item. If the collection is empty or no items passes <i>{@link FindSettings | FindSettings.predicateFn}</i> than error is thrown.
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.firstOrFail();
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.firstOrFail({
+     *   predicateFn: item => item > 2
+     * });
+     * // 3
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.firstOrFail({
+     *   predicateFn: item => item > 10
+     * });
+     * // throws an error
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundError} {@link ItemNotFoundError}
@@ -761,21 +1031,63 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TOutput;
 
     /**
-     * The last method returns the last element in the collection that passes a given truth test. By default it will get the last element:
+     * The <i>last</i> method returns the last item in the collection that passes <i>{@link FindSettings | FindSettings.predicateFn}</i>.
+     * By default it will get the last item. If the collection is empty or no items passes <i>{@link FindSettings | FindSettings.predicateFn}</i> than null i returned.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.last({ filter: item => item > 2 });
-     * // 4
+     * collection.last();
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.last({
+     *   predicateFn: item => item > 2
+     * });
+     * // 3
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.last({
+     *   predicateFn: item => item > 10
+     * });
+     * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * // 3
      */
     last<TOutput extends TInput>(
         settings?: FindSettings<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | null;
 
     /**
-     * The lastOr method is the same as last method but will return a provided default value if not found
+     * The <i>lastOr</i> method returns the last item in the collection that passes <i>{@link FindOrSettings | FindOrSettings.predicateFn}</i>.
+     * By default it will get the last item. If the collection is empty or no items passes <i>{@link FindOrSettings | FindOrSettings.predicateFn}</i> than {@link FindOrSettings | FindOrSettings.defaultValue}.
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.lastOr({
+     *   defaultValue: -1
+     * });
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.lastOr({
+     *   predicateFn: item => item > 2,
+     *   defaultValue: -1
+     * });
+     * // 3
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.lastOr({
+     *   predicateFn: item => item > 10,
+     *   defaultValue: -1
+     * });
+     * // -1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.lastOr({
+     *   predicateFn: item => item > 10,
+     *   defaultValue: () => -1
+     * });
+     * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
@@ -790,7 +1102,24 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TOutput | TExtended;
 
     /**
-     * The lastOrFail method is the same as last method but will throw an Error if not found
+     * The <i>lastOrFail</i> method returns the last item in the collection that passes <i>{@link FindSettings | FindSettings.predicateFn}</i>.
+     * By default it will get the last item. If the collection is empty or no items passes <i>{@link FindSettings | FindSettings.predicateFn}</i> than error is thrown.
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.lastOrFail();
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.lastOrFail({
+     *   predicateFn: item => item > 2
+     * });
+     * // 3
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.lastOrFail({
+     *   predicateFn: item => item > 10
+     * });
+     * // throws an error
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundError} {@link ItemNotFoundError}
@@ -801,7 +1130,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TOutput;
 
     /**
-     * The before method is the opposite of the after method. It returns the item before the given item. null is returned if the given item is not found or is the first item:
+     * The <i>before</i> method returns the item that comes before the first item that matches <i>predicateFn</i>.
+     * If the <i>predicateFn</i> does not match or matches the first item then null is returned.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * collection.before(item => item === 2);
@@ -820,7 +1150,20 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TInput | null;
 
     /**
-     * The beforeOr method is the same as before method but will return a provided default value if not found
+     * The <i>beforeOr</i> method returns the item that comes before the first item that matches <i>predicateFn</i>.
+     * If the collection is empty or the <i>predicateFn</i> does not match or matches the first item then <i>defaultValue</i> is returned.
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.beforeOr(-1, item => item === 2);
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.beforeOr(-1, item => item === 1);
+     * // -1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.beforeOr(() => -1, item => item === 1);
+     * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
@@ -832,7 +1175,16 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TInput | TExtended;
 
     /**
-     * The beforeOrFail method is the same as before method but will throw an Error if not found
+     * The <i>beforeOrFail</i> method returns the item that comes before the first item that matches <i>predicateFn</i>.
+     * If the collection is empty or the <i>predicateFn</i> does not match or matches the first item then an error is thrown.
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.beforeOrFail(item => item === 2);
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.beforeOrFail(item => item === 1);
+     * // error is thrown
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundError} {@link ItemNotFoundError}
@@ -844,14 +1196,15 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TInput;
 
     /**
-     * The after method returns the item after the given item. null is returned if the given item is not found or is the last item:
+     * The <i>after</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
+     * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then null is returned.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * collection.after(item => item === 2);
-     * // 3
+     * // 1
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.after(item => item === 4);
+     * collection.after(item => item === 1);
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
@@ -863,7 +1216,20 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TInput | null;
 
     /**
-     * The afterOr method is the same as after method but will return a provided default value if not found
+     * The <i>afterOr</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
+     * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then <i>defaultValue</i> is returned.
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.afterOr(-1, item => item === 2);
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.afterOr(-1, item => item === 1);
+     * // -1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.afterOr(() => -1, item => item === 1);
+     * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
@@ -875,7 +1241,16 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TInput | TExtended;
 
     /**
-     * The afterOrFail method is the same as after method but will throw an Error if not found
+     * The <i>afterOrFail</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
+     * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then an error is thrown.
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.afterOrFail(item => item === 2);
+     * // 1
+     * @example
+     * const collection = new ListCollection([1, 2, 3, 4]);
+     * collection.afterOrFail(item => item === 1);
+     * // error is thrown
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundError} {@link ItemNotFoundError}
@@ -887,7 +1262,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TInput;
 
     /**
-     * The sole method returns the first element in the collection that passes a given truth test, but only if the truth test matches exactly one element:
+     * The <i>sole</i> method returns the first item in the collection that passes <i>predicateFn</i>, but only if <i>predicateFn</i> matches exactly one item.
+     * If no items matches or multiple items are found an error will be thrown.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5]);
      * collection.sole(item => item === 4);
@@ -904,7 +1280,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): TOutput;
 
     /**
-     * The nth method creates a new collection consisting of every n-th element:
+     * The <i>nth</i> method creates a new collection consisting of every n-th item.
      * @example
      * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]).nth(4);
      * collection.toArray();
@@ -913,7 +1289,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     nth(step: number): ICollection<TInput>;
 
     /**
-     * The count method returns the total number of items in the collection:
+     * The <i>count</i> method returns the total number of items in the collection that passes <i>predicateFn</i>.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
      * collection.count(value => value % 2 === 0);
@@ -928,6 +1304,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): number;
 
     /**
+     * The <i>size</i> returns the size of the collection.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
@@ -935,31 +1312,53 @@ export type ICollection<TInput> = Iterable<TInput> & {
     size(throwOnIndexOverflow?: boolean): number;
 
     /**
+     * The <i>isEmpty</i> returns true if the collection is empty.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
-    empty(): boolean;
+    isEmpty(): boolean;
 
     /**
+     * The <i>isNotEmpty</i> returns true if the collection is not empty.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
-    notEmpty(): boolean;
+    isNotEmpty(): boolean;
 
     /**
-     * The search method searches the collection for the given value and returns its index if found. If the item is not found, -1 is returned:
+     * The <i>searchFirst</i> return the index of the first item that matches <i>predicateFn</i>.
+     * @example
+     * const collection = new ListCollection(["a", "b", "b", "c"]);
+     * collection.searchFirst(item => item === "b");
+     * // 1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
      */
-    search(
+    searchFirst(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
         throwOnIndexOverflow?: boolean,
     ): number;
 
     /**
+     * The <i>searchLast</i> return the index of the last item that matches <i>predicateFn</i>.
+     * @example
+     * const collection = new ListCollection(["a", "b", "b", "c"]);
+     * collection.searchLast(item => item === "b");
+     * // 2
+     * @throws {CollectionError} {@link CollectionError}
+     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
+     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     */
+    searchLast(
+        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        throwOnIndexOverflow?: boolean,
+    ): number;
+
+    /**
+     * The <i>forEach</i> method iterates through all items in the collection.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}
@@ -970,6 +1369,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): void;
 
     /**
+     * The <i>toArray</i> method converts the collection to a new array.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {IndexOverflowError} {@link IndexOverflowError}

@@ -18,6 +18,7 @@ class RangeIterable implements Iterable<number> {
     }
 }
 /**
+ * The <i>range</i> function return a <i>{@link Iterable}</i> of numbers, starting from <i>from</i>,increments by 1 and stops at <i>to</i>.
  * @example
  * const collection = new ListCollection(range(1, 10))
  * collection.toArray();
@@ -29,6 +30,7 @@ export function range(from: number, to: number): Iterable<number> {
 }
 
 /**
+ * The <i>isIterable</i> returns true if the value is <i>{@link Iterable}</i>.
  * @group Utilities
  */
 export function isIterable<TItem>(
@@ -40,6 +42,7 @@ export function isIterable<TItem>(
 }
 
 /**
+ * The <i>isAsyncIterable</i> returns true if the value is <i>{@link AsyncIterable}</i>.
  * @group Utilities
  */
 export function isAsyncIterable<TItem>(

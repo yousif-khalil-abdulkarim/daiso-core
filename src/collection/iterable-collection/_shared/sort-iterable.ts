@@ -10,12 +10,12 @@ import {
 export class SortIterable<TInput> implements Iterable<TInput> {
     constructor(
         private iterable: Iterable<TInput>,
-        private compare?: Comparator<TInput>,
+        private comparator?: Comparator<TInput>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
         try {
-            yield* [...this.iterable].sort(this.compare);
+            yield* [...this.iterable].sort(this.comparator);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||

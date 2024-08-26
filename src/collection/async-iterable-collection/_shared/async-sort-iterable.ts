@@ -9,10 +9,10 @@ import {
 export class AsyncSortIterable<TInput> implements AsyncIterable<TInput> {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private compare?: Comparator<TInput>,
+        private comparator?: Comparator<TInput>,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
-        yield* [...(await this.collection.toArray())].sort(this.compare);
+        yield* [...(await this.collection.toArray())].sort(this.comparator);
     }
 }

@@ -60,30 +60,60 @@ export type UpdatedItem<TInput, TFilterOutput, TMapOutput> =
 export type RecordItem<TKey, TValue> = [key: TKey, value: TValue];
 
 export type ReverseSettings = {
+    /**
+     * @defaultValue 1024
+     */
     chunkSize?: number;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
 export type PageSettings = {
     page: number;
     pageSize: number;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
 export type JoinSettings = {
+    /**
+     * @defaultValue ","
+     */
     seperator?: string;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
 export type SliceSettings = {
+    /**
+     * @defaultValue 0
+     */
     start?: number;
+    /**
+     * @defaultValue the size of the collection
+     */
     end?: number;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
 export type SlidingSettings = {
     chunkSize: number;
+    /**
+     * @defaultValue SlidingSettings.chunkSize - 1
+     */
     step?: number;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
@@ -115,6 +145,9 @@ export type Reduce<TInput, TCollection, TOutput> = (
 export type ReduceSettings<TInput, TCollection, TOutput> = {
     reduceFn: Reduce<TInput, TCollection, TOutput>;
     initialValue?: TOutput;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
@@ -140,6 +173,9 @@ export type Lazyable<TValue> = TValue | (() => TValue);
 
 export type FindSettings<TInput, TCollection, TOutput extends TInput> = {
     predicateFn?: Predicate<TInput, TCollection, TOutput>;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
@@ -153,7 +189,33 @@ export type FindOrSettings<
 };
 
 export type GroupBySettings<TInput, TCollection, TOutput> = {
+    /**
+     * @defaultValue (item: TInput) => item
+     */
     selectFn?: Map<TInput, TCollection, TOutput>;
+    /**
+     * @defaultValue false
+     */
+    throwOnIndexOverflow?: boolean;
+};
+export type CountBySettings<TInput, TCollection, TOutput> = {
+    /**
+     * @defaultValue (item: TInput) => item
+     */
+    selectFn?: Map<TInput, TCollection, TOutput>;
+    /**
+     * @defaultValue false
+     */
+    throwOnIndexOverflow?: boolean;
+};
+export type UniqueSettings<TInput, TCollection, TOutput> = {
+    /**
+     * @defaultValue (item: TInput) => item
+     */
+    selectFn?: Map<TInput, TCollection, TOutput>;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
@@ -185,6 +247,9 @@ export type AsyncReduce<TInput, TCollection, TOutput> =
 export type AsyncReduceSettings<TInput, TCollection, TOutput> = {
     reduceFn: AsyncReduce<TInput, TCollection, TOutput>;
     initialValue?: TOutput;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
@@ -234,6 +299,9 @@ export type AsyncLazyable<TValue> = AsyncLazyable_<TValue> | Lazyable<TValue>;
 
 export type AsyncFindSettings<TInput, TCollection, TOutput extends TInput> = {
     predicateFn?: AsyncPredicate<TInput, TCollection, TOutput>;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
 
@@ -247,7 +315,33 @@ export type AsyncFindOrSettings<
 };
 
 export type AsyncGroupBySettings<TInput, TCollection, TOutput> = {
+    /**
+     * @defaultValue (item: TInput) => item
+     */
     selectFn?: AsyncMap<TInput, TCollection, TOutput>;
     chunkSize?: number;
+    /**
+     * @defaultValue false
+     */
+    throwOnIndexOverflow?: boolean;
+};
+export type AsyncCountBySettings<TInput, TCollection, TOutput> = {
+    /**
+     * @defaultValue (item: TInput) => item
+     */
+    selectFn?: AsyncMap<TInput, TCollection, TOutput>;
+    /**
+     * @defaultValue false
+     */
+    throwOnIndexOverflow?: boolean;
+};
+export type AsyncUniqueSettings<TInput, TCollection, TOutput> = {
+    /**
+     * @defaultValue (item: TInput) => item
+     */
+    selectFn?: AsyncMap<TInput, TCollection, TOutput>;
+    /**
+     * @defaultValue false
+     */
     throwOnIndexOverflow?: boolean;
 };
