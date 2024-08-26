@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.1.3
+
+### Patch Changes
+
+-   60c686d: Added proper documentation, changed som method names, added 2 new methods
+
 ## 0.1.2
 
 ### Patch Changes
