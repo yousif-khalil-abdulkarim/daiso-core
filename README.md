@@ -2,7 +2,7 @@
 
 ## Install
 ```bash
-npm install @daios/core
+npm install @daiso-tech/core
 ```
 
 ## Description
