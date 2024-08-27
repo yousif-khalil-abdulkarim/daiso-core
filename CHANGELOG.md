@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.1.5
+
+### Patch Changes
+
+-   7206c93: Updated the docs
+
 ## 0.1.4
 
 ### Patch Changes
