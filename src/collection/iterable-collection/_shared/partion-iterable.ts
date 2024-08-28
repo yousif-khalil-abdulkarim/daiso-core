@@ -3,6 +3,7 @@ import {
     type Predicate,
     type ICollection,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -36,7 +37,7 @@ export class PartionIterable<TInput> implements Iterable<ICollection<TInput>> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

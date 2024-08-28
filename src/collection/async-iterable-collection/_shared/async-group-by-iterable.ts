@@ -1,9 +1,8 @@
 import {
-    type AsyncIterableValue,
     type AsyncMap,
     type IAsyncCollection,
-    type RecordItem,
 } from "@/contracts/collection/_module";
+import { type AsyncIterableValue, type RecordItem } from "@/_shared/types";
 
 /**
  * @internal

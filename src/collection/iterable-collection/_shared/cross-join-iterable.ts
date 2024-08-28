@@ -2,6 +2,7 @@ import {
     CollectionError,
     type ICollection,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -47,7 +48,7 @@ export class CrossJoinIterable<TInput, TExtended = TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

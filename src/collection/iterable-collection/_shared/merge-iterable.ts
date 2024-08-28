@@ -1,6 +1,7 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -21,7 +22,7 @@ export class MergeIterable<TInput, TExtended>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

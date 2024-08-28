@@ -4,6 +4,7 @@ import {
     CollectionError,
     type IAsyncCollection,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -27,7 +28,7 @@ export class AsyncCollapseIterable<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

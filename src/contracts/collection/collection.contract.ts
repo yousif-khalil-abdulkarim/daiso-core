@@ -16,26 +16,30 @@ import {
     type CountBySettings,
     type UniqueSettings,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type ItemNotFoundError,
+    type ItemNotFoundCollectionError,
     type JoinSettings,
-    type Lazyable,
     type Map,
     type Modifier,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type MultipleItemsFoundError,
+    type MultipleItemsFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IndexOverflowError,
+    type IndexOverflowCollectionError,
     type PageSettings,
-    type RecordItem,
     type ReduceSettings,
     type ReverseSettings,
     type Tap,
     type Transform,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type UnexpectedCollectionError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type TypeCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_shared";
-import { type EnsureType } from "@/_shared/types";
+import {
+    type Lazyable,
+    type RecordItem,
+    type EnsureType,
+} from "@/_shared/types";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -48,10 +52,10 @@ export type Collapse<TValue> = TValue extends
  * <i>ICollection</i> is immutable. The <i>throwOnIndexOverflow</i> parameter in the <i>ICollection</i> methods is used for preventing the index to overflow by throwing an error.
  * @throws {CollectionError}
  * @throws {UnexpectedCollectionError}
- * @throws {IndexOverflowError}
- * @throws {ItemNotFoundError}
- * @throws {MultipleItemsFoundError}
- * @throws {TypeError}
+ * @throws {IndexOverflowCollectionError}
+ * @throws {ItemNotFoundCollectionError}
+ * @throws {MultipleItemsFoundCollectionError}
+ * @throws {TypeCollectionError}
  * @group Contracts
  */
 export type ICollection<TInput> = Iterable<TInput> & {
@@ -143,7 +147,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
 
     /**
      * The <i>join</i> method joins the collection's items with {@link JoinSettings | JoinSettings.seperator}. An error will be thrown when if a none string item is encounterd.
-     * @throws {TypeError}
+     * @throws {TypeCollectionError}
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * collection.map(item => item.toString()).join();
@@ -215,7 +219,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 6
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     sum(): EnsureType<TInput, number>;
 
@@ -227,7 +231,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     average(): EnsureType<TInput, number>;
 
@@ -239,8 +243,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     median(throwOnIndexOverflow?: boolean): EnsureType<TInput, number>;
 
@@ -252,7 +256,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     min(): EnsureType<TInput, number>;
 
@@ -264,7 +268,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 3
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     max(): EnsureType<TInput, number>;
 
@@ -276,7 +280,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 33.333
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     percentage(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
@@ -291,7 +295,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // true
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     some<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
@@ -306,7 +310,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // true
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     every<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
@@ -952,7 +956,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      * // 3
      */
     first<TOutput extends TInput>(
@@ -991,7 +995,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     firstOr<TOutput extends TInput, TExtended = TInput>(
         settings: FindOrSettings<
@@ -1023,8 +1027,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // throws an error
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     firstOrFail<TOutput extends TInput>(
         settings?: FindSettings<TInput, ICollection<TInput>, TOutput>,
@@ -1051,7 +1055,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      * // 3
      */
     last<TOutput extends TInput>(
@@ -1090,7 +1094,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     lastOr<TOutput extends TInput, TExtended = TInput>(
         settings: FindOrSettings<
@@ -1122,8 +1126,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // throws an error
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     lastOrFail<TOutput extends TInput>(
         settings?: FindSettings<TInput, ICollection<TInput>, TOutput>,
@@ -1142,7 +1146,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     before(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
@@ -1166,7 +1170,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     beforeOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
@@ -1187,8 +1191,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // error is thrown
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     beforeOrFail(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
@@ -1208,7 +1212,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     after(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
@@ -1232,7 +1236,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     afterOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
@@ -1253,8 +1257,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // error is thrown
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     afterOrFail(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
@@ -1270,9 +1274,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 4
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {MultipleItemsFoundError} {@link MultipleItemsFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     sole<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
@@ -1296,7 +1300,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 3
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     count(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
@@ -1307,7 +1311,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * The <i>size</i> returns the size of the collection.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     size(throwOnIndexOverflow?: boolean): number;
 
@@ -1315,7 +1319,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * The <i>isEmpty</i> returns true if the collection is empty.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     isEmpty(): boolean;
 
@@ -1323,7 +1327,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * The <i>isNotEmpty</i> returns true if the collection is not empty.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     isNotEmpty(): boolean;
 
@@ -1335,7 +1339,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     searchFirst(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
@@ -1350,7 +1354,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     searchLast(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
@@ -1361,7 +1365,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * The <i>forEach</i> method iterates through all items in the collection.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     forEach(
         callback: ForEach<TInput, ICollection<TInput>>,
@@ -1372,7 +1376,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * The <i>toArray</i> method converts the collection to a new array.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     toArray(): TInput[];
 };

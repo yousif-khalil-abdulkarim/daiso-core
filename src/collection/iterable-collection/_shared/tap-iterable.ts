@@ -3,6 +3,7 @@ import {
     type ICollection,
     type Tap,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -21,7 +22,7 @@ export class TapIterable<TInput> implements Iterable<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

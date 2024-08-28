@@ -1,11 +1,12 @@
 import {
     type AsyncPredicate,
-    type AsyncIterableValue,
     CollectionError,
     type IAsyncCollection,
-    IndexOverflowError,
+    IndexOverflowCollectionError,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
+import { type AsyncIterableValue } from "@/_shared/types";
 
 /**
  * @internal
@@ -36,7 +37,9 @@ export class AsyncPartionIterable<TInput>
                     this.throwOnIndexOverflow &&
                     index === Number.MAX_SAFE_INTEGER
                 ) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 if (await this.filter(item, index, this.collection)) {
                     chunkA = chunkA.append([item]);
@@ -50,7 +53,7 @@ export class AsyncPartionIterable<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

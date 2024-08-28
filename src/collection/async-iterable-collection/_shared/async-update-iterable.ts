@@ -4,6 +4,7 @@ import {
     CollectionError,
     type IAsyncCollection,
     UnexpectedCollectionError,
+    TypeCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_module";
 
@@ -51,7 +52,7 @@ export class AsyncUpdateIterable<
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

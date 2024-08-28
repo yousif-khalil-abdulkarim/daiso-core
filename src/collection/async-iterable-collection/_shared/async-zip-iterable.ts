@@ -1,8 +1,6 @@
 import { isIterable } from "@/collection/_shared";
-import {
-    type AsyncIterableValue,
-    type RecordItem,
-} from "@/contracts/collection/_module";
+import { type AsyncIterableValue } from "@/_shared/types";
+import { type RecordItem } from "@/_shared/types";
 
 /**
  * @internal

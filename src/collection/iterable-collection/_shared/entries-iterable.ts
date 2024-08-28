@@ -1,9 +1,10 @@
 import {
-    type RecordItem,
     CollectionError,
-    IndexOverflowError,
+    IndexOverflowCollectionError,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_shared";
+import { type RecordItem } from "@/_shared/types";
 
 /**
  * @internal
@@ -24,7 +25,9 @@ export class EntriesIterable<TInput>
                     this.throwOnIndexOverflow &&
                     index === Number.MAX_SAFE_INTEGER
                 ) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 yield [index, item];
                 index++;
@@ -32,7 +35,7 @@ export class EntriesIterable<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

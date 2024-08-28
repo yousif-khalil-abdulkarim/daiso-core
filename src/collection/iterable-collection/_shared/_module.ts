@@ -1,5 +1,5 @@
 export * from "@/collection/iterable-collection/_shared/chunk-iterable";
-export * from "@/collection/iterable-collection/_shared/chunk-whilte-iterable";
+export * from "@/collection/iterable-collection/_shared/chunk-while-iterable";
 export * from "@/collection/iterable-collection/_shared/collapse-iterable";
 export * from "@/collection/iterable-collection/_shared/count-by-iterable";
 export * from "@/collection/iterable-collection/_shared/cross-join-iterable";

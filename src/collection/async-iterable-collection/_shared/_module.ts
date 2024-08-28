@@ -1,5 +1,5 @@
 export * from "@/collection/async-iterable-collection/_shared/async-chunk-iterable";
-export * from "@/collection/async-iterable-collection/_shared/async-chunk-whilte-iterable";
+export * from "@/collection/async-iterable-collection/_shared/async-chunk-while-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-collapse-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-count-by-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-cross-join-iterable";

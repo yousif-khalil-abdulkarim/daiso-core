@@ -14,15 +14,13 @@ import {
     type CountBySettings,
     type UniqueSettings,
     type ICollection,
-    ItemNotFoundError,
+    ItemNotFoundCollectionError,
     type JoinSettings,
-    type Lazyable,
     type Map,
     type Modifier,
-    MultipleItemsFoundError,
-    IndexOverflowError,
+    MultipleItemsFoundCollectionError,
+    IndexOverflowCollectionError,
     type PageSettings,
-    type RecordItem,
     type ReduceSettings,
     type ReverseSettings,
     type SliceSettings,
@@ -30,6 +28,7 @@ import {
     type Tap,
     type Transform,
     UnexpectedCollectionError,
+    TypeCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_module";
 import {
@@ -66,7 +65,8 @@ import {
     SliceIterable,
     RepeatIterable,
 } from "@/collection/iterable-collection/_shared/_module";
-import { type EnsureType } from "@/_shared/types";
+import { type Lazyable, type EnsureType } from "@/_shared/types";
+import { type RecordItem } from "@/_shared/types";
 
 /**
  * All methods that return <i>{@link ICollection}</i> are executed lazly which means they will be executed when the <i>IterableCollection</i> is iterated with <i>forEach</i> method or "for of" loop.
@@ -95,7 +95,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -166,7 +166,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 throwOnIndexOverflow,
             } = settings;
             if (initialValue === undefined && this.isEmpty()) {
-                throw new TypeError(
+                throw new TypeCollectionError(
                     "Reduce of empty array must be inputed a initial value",
                 );
             }
@@ -178,7 +178,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                         throwOnIndexOverflow &&
                         index === Number.MAX_SAFE_INTEGER
                     ) {
-                        throw new IndexOverflowError("Index has overflowed");
+                        throw new IndexOverflowCollectionError(
+                            "Index has overflowed",
+                        );
                     }
                     output = reduce(output, item, index, this);
                     index++;
@@ -196,7 +198,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                         throwOnIndexOverflow &&
                         index === Number.MAX_SAFE_INTEGER
                     ) {
-                        throw new IndexOverflowError("Index has overflowed");
+                        throw new IndexOverflowCollectionError(
+                            "Index has overflowed",
+                        );
                     }
                     output = reduce(output, item, index, this);
                 }
@@ -207,7 +211,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -223,7 +227,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             return this.reduce<string>({
                 reduceFn(str, item) {
                     if (typeof item !== "string") {
-                        throw new TypeError(
+                        throw new TypeCollectionError(
                             "Item type is invalid must be string",
                         );
                     }
@@ -237,7 +241,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -290,7 +294,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             let sum = 0;
             for (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 sum += item;
             }
@@ -298,7 +304,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -315,7 +321,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 sum = 0;
             for (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 size++;
                 sum += item;
@@ -324,7 +332,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -348,7 +356,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         const isEven = size % 2 === 0,
             items = this.map((item) => {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 return item;
             }, throwOnIndexOverflow)
@@ -382,7 +392,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             let min = 0;
             for (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 if (min === 0) {
                     min = item;
@@ -394,7 +406,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -410,7 +422,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             let max = 0;
             for (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 if (max === 0) {
                     max = item;
@@ -422,7 +436,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -445,7 +459,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 total = 0;
             for (const item of this) {
                 if (throwOnIndexOverflow && total === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError(
+                    throw new IndexOverflowCollectionError(
                         "The total amount has overflowed",
                     );
                 }
@@ -458,7 +472,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -477,7 +491,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             let index = 0;
             for (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 if (predicateFn(item, index, this)) {
                     return true;
@@ -488,7 +504,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -508,7 +524,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 isTrue = true;
             for (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 isTrue &&= predicateFn(item, index, this);
                 if (!isTrue) {
@@ -520,7 +538,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -627,7 +645,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -901,7 +919,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -928,7 +946,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             const predicateFn = settings.predicateFn ?? (() => true);
             for (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 if (predicateFn(item, index, this)) {
                     return item as TOutput;
@@ -943,7 +963,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -959,7 +979,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     ): TOutput {
         const item = this.first(settings);
         if (item === null) {
-            throw new ItemNotFoundError("Item was not found");
+            throw new ItemNotFoundCollectionError("Item was not found");
         }
         return item;
     }
@@ -975,7 +995,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1003,7 +1023,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             let matchedItem: TOutput | null = null;
             for (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 if (predicateFn(item, index, this)) {
                     matchedItem = item as TOutput;
@@ -1021,7 +1043,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1037,7 +1059,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     ): TOutput {
         const item = this.last(settings);
         if (item === null) {
-            throw new ItemNotFoundError("Item was not found");
+            throw new ItemNotFoundCollectionError("Item was not found");
         }
         return item;
     }
@@ -1059,7 +1081,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 index = 0;
             for (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 if (predicateFn(item, index, this) && beforeItem) {
                     return beforeItem;
@@ -1075,7 +1099,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1092,7 +1116,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     ): TInput {
         const item = this.before(predicateFn, throwOnIndexOverflow);
         if (item === null) {
-            throw new ItemNotFoundError("Item was not found");
+            throw new ItemNotFoundCollectionError("Item was not found");
         }
         return item;
     }
@@ -1117,7 +1141,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                     return item;
                 }
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 hasMatched = predicateFn(item, index, this);
                 index++;
@@ -1130,7 +1156,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1147,7 +1173,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     ): TInput {
         const item = this.after(predicateFn, throwOnIndexOverflow);
         if (item === null) {
-            throw new ItemNotFoundError("Item was not found");
+            throw new ItemNotFoundCollectionError("Item was not found");
         }
         return item;
     }
@@ -1161,11 +1187,13 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 matchedItem: TOutput | null = null;
             for (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 if (predicateFn(item, index, this)) {
                     if (matchedItem !== null) {
-                        throw new MultipleItemsFoundError(
+                        throw new MultipleItemsFoundCollectionError(
                             "Multiple items were found",
                         );
                     }
@@ -1174,13 +1202,13 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 index++;
             }
             if (matchedItem === null) {
-                throw new ItemNotFoundError("Item was not found");
+                throw new ItemNotFoundCollectionError("Item was not found");
             }
             return matchedItem;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1203,7 +1231,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             let size = 0;
             for (const item of this) {
                 if (throwOnIndexOverflow && size === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Size has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Size has overflowed",
+                    );
                 }
                 if (predicateFn(item, size, this)) {
                     size++;
@@ -1213,7 +1243,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1239,7 +1269,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1262,7 +1292,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             let index = 0;
             for (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 if (predicateFn(item, index, this)) {
                     return index;
@@ -1273,7 +1305,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1293,7 +1325,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             let matchedIndex = -1;
             for (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 if (predicateFn(item, index, this)) {
                     matchedIndex = index;
@@ -1304,7 +1338,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1323,7 +1357,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             let index = 0;
             for (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 callback(item, index, this);
                 index++;
@@ -1331,7 +1367,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1348,7 +1384,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

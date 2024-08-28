@@ -11,8 +11,6 @@ import {
     type AsyncGroupBySettings,
     type AsyncCountBySettings,
     type AsyncUniqueSettings,
-    type AsyncIterableValue,
-    type AsyncLazyable,
     type AsyncMap,
     type AsyncModifier,
     type AsyncReduceSettings,
@@ -21,16 +19,16 @@ import {
     CollectionError,
     type Comparator,
     type IAsyncCollection,
-    ItemNotFoundError,
+    ItemNotFoundCollectionError,
     type JoinSettings,
-    MultipleItemsFoundError,
-    IndexOverflowError,
+    MultipleItemsFoundCollectionError,
+    IndexOverflowCollectionError,
     type PageSettings,
-    type RecordItem,
     type ReverseSettings,
     type SliceSettings,
     type SlidingSettings,
     UnexpectedCollectionError,
+    TypeCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_module";
 import {
@@ -70,8 +68,12 @@ import {
     AsyncDelayIterable,
     AsyncTimeoutIterable,
 } from "@/collection/async-iterable-collection/_shared/_module";
-import { EnsureType } from "@/_shared/types";
-
+import {
+    type AsyncIterableValue,
+    type AsyncLazyable,
+    type EnsureType,
+} from "@/_shared/types";
+import { type RecordItem } from "@/_shared/types";
 /**
  * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly which means they will be executed when the <i>AsyncIterableCollection</i> is iterated with <i>forEach</i> method or "for await of" loop.
  * The rest of the methods are executed eagerly.
@@ -162,7 +164,7 @@ export class AsyncIterableCollection<TInput>
             throwOnIndexOverflow,
         } = settings;
         if (initialValue === undefined && (await this.isEmpty())) {
-            throw new TypeError(
+            throw new TypeCollectionError(
                 "Reduce of empty array must be inputed a initial value",
             );
         }
@@ -181,7 +183,9 @@ export class AsyncIterableCollection<TInput>
         for await (const item of this) {
             if (!isFirstIteration) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 output = await reduce(output, item, index, this);
             }
@@ -195,7 +199,9 @@ export class AsyncIterableCollection<TInput>
         return this.reduce<string>({
             reduceFn(str, item) {
                 if (typeof item !== "string") {
-                    throw new TypeError("Item type is invalid must be string");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be string",
+                    );
                 }
                 const separator = settings?.seperator ?? ",";
                 return str + separator + item;
@@ -248,7 +254,9 @@ export class AsyncIterableCollection<TInput>
             let sum = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 sum += item;
             }
@@ -256,7 +264,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -273,7 +281,9 @@ export class AsyncIterableCollection<TInput>
                 sum = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 size++;
                 sum += item;
@@ -282,7 +292,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -306,7 +316,9 @@ export class AsyncIterableCollection<TInput>
         const isEven = size % 2 === 0,
             items = await this.map((item) => {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 return item;
             }, throwOnIndexOverflow)
@@ -340,7 +352,9 @@ export class AsyncIterableCollection<TInput>
             let min = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 if (min === 0) {
                     min = item;
@@ -352,7 +366,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -368,7 +382,9 @@ export class AsyncIterableCollection<TInput>
             let max = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 if (max === 0) {
                     max = item;
@@ -380,7 +396,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -403,7 +419,7 @@ export class AsyncIterableCollection<TInput>
                 total = 0;
             for await (const item of this) {
                 if (throwOnIndexOverflow && total === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError(
+                    throw new IndexOverflowCollectionError(
                         "The total amount has overflowed",
                     );
                 }
@@ -416,7 +432,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -443,7 +459,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -472,7 +488,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -593,7 +609,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -934,7 +950,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -950,7 +966,7 @@ export class AsyncIterableCollection<TInput>
     ): Promise<TOutput> {
         const item = await this.first(settings);
         if (item === null) {
-            throw new ItemNotFoundError("Item was not found");
+            throw new ItemNotFoundCollectionError("Item was not found");
         }
         return item;
     }
@@ -997,7 +1013,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1013,7 +1029,7 @@ export class AsyncIterableCollection<TInput>
     ): Promise<TOutput> {
         const item = await this.last(settings);
         if (item === null) {
-            throw new ItemNotFoundError("Item was not found");
+            throw new ItemNotFoundCollectionError("Item was not found");
         }
         return item;
     }
@@ -1035,7 +1051,9 @@ export class AsyncIterableCollection<TInput>
                 index = 0;
             for await (const item of this) {
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 if ((await filter(item, index, this)) && beforeItem) {
                     return beforeItem;
@@ -1051,7 +1069,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1068,7 +1086,7 @@ export class AsyncIterableCollection<TInput>
     ): Promise<TInput> {
         const item = await this.before(filter, throwOnIndexOverflow);
         if (item === null) {
-            throw new ItemNotFoundError("Item was not found");
+            throw new ItemNotFoundCollectionError("Item was not found");
         }
         return item;
     }
@@ -1093,7 +1111,9 @@ export class AsyncIterableCollection<TInput>
                     return item;
                 }
                 if (throwOnIndexOverflow && index === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Index has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Index has overflowed",
+                    );
                 }
                 hasMatched = await filter(item, index, this);
                 index++;
@@ -1117,7 +1137,7 @@ export class AsyncIterableCollection<TInput>
     ): Promise<TInput> {
         const item = await this.after(filter, throwOnIndexOverflow);
         if (item === null) {
-            throw new ItemNotFoundError("Item was not found");
+            throw new ItemNotFoundCollectionError("Item was not found");
         }
         return item;
     }
@@ -1133,7 +1153,7 @@ export class AsyncIterableCollection<TInput>
             )) {
                 if (await filter(item, index, this)) {
                     if (matchedItem !== null) {
-                        throw new MultipleItemsFoundError(
+                        throw new MultipleItemsFoundCollectionError(
                             "Multiple items were found",
                         );
                     }
@@ -1141,13 +1161,13 @@ export class AsyncIterableCollection<TInput>
                 }
             }
             if (matchedItem === null) {
-                throw new ItemNotFoundError("Item was not found");
+                throw new ItemNotFoundCollectionError("Item was not found");
             }
             return matchedItem;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1188,7 +1208,9 @@ export class AsyncIterableCollection<TInput>
             let size = 0;
             for await (const item of this) {
                 if (throwOnIndexOverflow && size === Number.MAX_SAFE_INTEGER) {
-                    throw new IndexOverflowError("Size has overflowed");
+                    throw new IndexOverflowCollectionError(
+                        "Size has overflowed",
+                    );
                 }
                 if (await filter(item, size, this)) {
                     size++;
@@ -1198,7 +1220,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1222,7 +1244,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1253,7 +1275,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1281,7 +1303,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1311,7 +1333,7 @@ export class AsyncIterableCollection<TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

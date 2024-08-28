@@ -1,8 +1,9 @@
 import {
-    type AsyncIterableValue,
     CollectionError,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
+import { type AsyncIterableValue } from "@/_shared/types";
 
 /**
  * @internal
@@ -22,7 +23,7 @@ export class AsyncMergeIterable<TInput, TExtended>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

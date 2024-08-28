@@ -1,7 +1,5 @@
-import {
-    AsyncIterableValue,
-    type IAsyncCollection,
-} from "@/contracts/collection/_module";
+import { type IAsyncCollection } from "@/contracts/collection/_module";
+import { type AsyncIterableValue } from "@/_shared/types";
 
 /**
  * @internal

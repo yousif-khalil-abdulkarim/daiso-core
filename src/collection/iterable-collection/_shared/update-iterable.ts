@@ -4,6 +4,7 @@ import {
     type ICollection,
     type Map,
     UnexpectedCollectionError,
+    TypeCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_module";
 
@@ -44,7 +45,7 @@ export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

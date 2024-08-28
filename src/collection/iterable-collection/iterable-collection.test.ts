@@ -2,11 +2,12 @@ import { describe, expect, test } from "vitest";
 
 import {
     CollectionError,
-    ItemNotFoundError,
-    MultipleItemsFoundError,
-    RecordItem,
+    TypeCollectionError,
+    ItemNotFoundCollectionError,
+    MultipleItemsFoundCollectionError,
 } from "@/contracts/collection/_module";
 import { IterableCollection } from "@/collection/iterable-collection/_module";
+import { type RecordItem } from "@/_shared/types";
 
 describe("class: IterableCollection", () => {
     describe("method: filter", () => {
@@ -120,13 +121,13 @@ describe("class: IterableCollection", () => {
             });
             expect(indexes).toEqual([0, 1, 2, 3]);
         });
-        test("Should throw TypeError when given an empty array without initial value", () => {
+        test("Should throw TypeCollectionError when given an empty array without initial value", () => {
             const collection = new IterableCollection<string>([]);
             expect(() => {
                 collection.reduce({
                     reduceFn: (a, b) => a + b,
                 });
-            }).toThrowError(TypeError);
+            }).toThrowError(TypeCollectionError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const arr = ["a", "b", "c", "d"],
@@ -340,11 +341,11 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4]);
             expect(collection.sum()).toBe(10);
         });
-        test("Should throw TypeError when containg a none number item", () => {
+        test("Should throw TypeCollectionError when containg a none number item", () => {
             const collection = new IterableCollection([1, 2, 3, 4, "a"]);
             expect(() => {
                 collection.sum();
-            }).toThrowError(TypeError);
+            }).toThrowError(TypeCollectionError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new IterableCollection([1, 2, 3, 4]);
@@ -357,11 +358,11 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4]);
             expect(collection.average()).toBe(2.5);
         });
-        test("Should throw TypeError when containg a none number item", () => {
+        test("Should throw TypeCollectionError when containg a none number item", () => {
             const collection = new IterableCollection([1, 2, 3, 4, "a"]);
             expect(() => {
                 collection.average();
-            }).toThrowError(TypeError);
+            }).toThrowError(TypeCollectionError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new IterableCollection([1, 2, 3, 4]);
@@ -378,11 +379,11 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]);
             expect(collection.median()).toBe(3);
         });
-        test("Should throw TypeError when containg a none number item", () => {
+        test("Should throw TypeCollectionError when containg a none number item", () => {
             const collection = new IterableCollection([1, 2, 3, 4, "a"]);
             expect(() => {
                 collection.median();
-            }).toThrowError(TypeError);
+            }).toThrowError(TypeCollectionError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]);
@@ -395,11 +396,11 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([2, 1, 3, -2, 4]);
             expect(collection.min()).toBe(-2);
         });
-        test("Should throw TypeError when containg a none number item", () => {
+        test("Should throw TypeCollectionError when containg a none number item", () => {
             const collection = new IterableCollection([2, 1, 3, -2, 4, "-4"]);
             expect(() => {
                 collection.min();
-            }).toThrowError(TypeError);
+            }).toThrowError(TypeCollectionError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new IterableCollection([2, 1, 3, -2, 4]);
@@ -412,11 +413,11 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([2, 1, 3, -2, 4]);
             expect(collection.max()).toBe(4);
         });
-        test("Should throw TypeError when containg a none number item", () => {
+        test("Should throw TypeCollectionError when containg a none number item", () => {
             const collection = new IterableCollection([2, 1, 3, -2, 4, "-4"]);
             expect(() => {
                 collection.max();
-            }).toThrowError(TypeError);
+            }).toThrowError(TypeCollectionError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new IterableCollection([2, 1, 3, -2, 4]);
@@ -1752,7 +1753,7 @@ describe("class: IterableCollection", () => {
                 collection.firstOrFail({
                     predicateFn: (item) => item === 6,
                 });
-            }).toThrowError(ItemNotFoundError);
+            }).toThrowError(ItemNotFoundCollectionError);
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
@@ -1955,7 +1956,7 @@ describe("class: IterableCollection", () => {
                 collection.lastOrFail({
                     predicateFn: (item) => item === 6,
                 });
-            }).toThrowError(ItemNotFoundError);
+            }).toThrowError(ItemNotFoundCollectionError);
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
@@ -2071,7 +2072,7 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection(["a", "b", "c"]);
             expect(() => {
                 collection.beforeOrFail((item) => item === "d");
-            }).toThrowError(ItemNotFoundError);
+            }).toThrowError(ItemNotFoundCollectionError);
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
@@ -2185,7 +2186,7 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection(["a", "b", "c"]);
             expect(() => {
                 collection.afterOrFail((item) => item === "d");
-            }).toThrowError(ItemNotFoundError);
+            }).toThrowError(ItemNotFoundCollectionError);
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
@@ -2217,7 +2218,7 @@ describe("class: IterableCollection", () => {
             ]);
             expect(() => {
                 collection.sole((item) => item === "f");
-            }).toThrowError(ItemNotFoundError);
+            }).toThrowError(ItemNotFoundCollectionError);
         });
         test("Should throw MultipleItemsFoundError when multiple item of same sort does exist", () => {
             const collection = new IterableCollection([
@@ -2229,7 +2230,7 @@ describe("class: IterableCollection", () => {
             ]);
             expect(() => {
                 collection.sole((item) => item === "a");
-            }).toThrowError(MultipleItemsFoundError);
+            }).toThrowError(MultipleItemsFoundCollectionError);
         });
         test("Should return item when only one item of the same sort exist", () => {
             const collection = new IterableCollection([

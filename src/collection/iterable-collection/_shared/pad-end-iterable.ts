@@ -1,6 +1,7 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
+    TypeCollectionError,
     type ICollection,
 } from "@/contracts/collection/_module";
 
@@ -42,7 +43,7 @@ export class PadEndIterable<TInput, TExtended>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

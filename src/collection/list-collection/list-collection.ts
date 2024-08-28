@@ -15,14 +15,12 @@ import {
     type CountBySettings,
     type UniqueSettings,
     type ICollection,
-    ItemNotFoundError,
+    ItemNotFoundCollectionError,
     type JoinSettings,
-    type Lazyable,
     type Map,
     type Modifier,
-    MultipleItemsFoundError,
+    MultipleItemsFoundCollectionError,
     type PageSettings,
-    type RecordItem,
     type ReduceSettings,
     type ReverseSettings,
     type SliceSettings,
@@ -30,9 +28,11 @@ import {
     type Tap,
     type Transform,
     UnexpectedCollectionError,
+    TypeCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_module";
-import { EnsureType } from "@/_shared/types";
+import { type EnsureType, type Lazyable } from "@/_shared/types";
+import { type RecordItem } from "@/_shared/types";
 
 /**
  * All methods in <i>ListCollection</i> are executed eagerly. The <i>throwOnIndexOverflow</i> parameter in the <i>ListCollection</i> methods doesnt have any affect.
@@ -64,7 +64,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -81,7 +81,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -109,7 +109,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -133,7 +133,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -155,7 +155,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -171,7 +171,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     ): TOutput {
         try {
             if (settings.initialValue === undefined && this.isEmpty()) {
-                throw new TypeError(
+                throw new TypeCollectionError(
                     "Reduce of empty array must be inputed a initial value",
                 );
             }
@@ -193,7 +193,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -209,7 +209,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             return this.reduce<string>({
                 reduceFn(str, item) {
                     if (typeof item !== "string") {
-                        throw new TypeError(
+                        throw new TypeCollectionError(
                             "Item type is invalid must be string",
                         );
                     }
@@ -220,7 +220,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -245,7 +245,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -269,7 +269,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -297,7 +297,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -320,7 +320,9 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         return this.reduce({
             reduceFn: (sum, item) => {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 return sum + item;
             },
@@ -339,7 +341,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             const nbrs = this.array.map((item) => {
                     if (typeof item !== "number") {
-                        throw new TypeError(
+                        throw new TypeCollectionError(
                             "Item type is invalid must be number",
                         );
                     }
@@ -362,7 +364,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -378,7 +380,9 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             let min = 0;
             for (const item of this.array) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 if (min === 0) {
                     min = item;
@@ -390,7 +394,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -406,7 +410,9 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             let max = 0;
             for (const item of this.array) {
                 if (typeof item !== "number") {
-                    throw new TypeError("Item type is invalid must be number");
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be number",
+                    );
                 }
                 if (max === 0) {
                     max = item;
@@ -418,7 +424,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -438,7 +444,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -460,7 +466,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -482,7 +488,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -499,7 +505,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -526,7 +532,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -548,7 +554,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -565,7 +571,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -595,7 +601,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -617,7 +623,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -640,7 +646,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -659,7 +665,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -679,7 +685,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -698,7 +704,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -717,7 +723,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -735,7 +741,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -760,7 +766,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -795,7 +801,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -838,7 +844,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -870,7 +876,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -907,7 +913,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -943,7 +949,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -978,7 +984,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1011,7 +1017,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1043,7 +1049,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1066,7 +1072,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1104,7 +1110,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1142,7 +1148,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1161,7 +1167,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1180,7 +1186,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1199,7 +1205,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1228,7 +1234,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1263,7 +1269,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1305,7 +1311,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1338,7 +1344,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1355,7 +1361,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1372,7 +1378,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1400,7 +1406,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1422,7 +1428,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1464,7 +1470,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1481,13 +1487,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             const item = this.first(settings);
             if (item === null) {
-                throw new ItemNotFoundError("Item was not found");
+                throw new ItemNotFoundCollectionError("Item was not found");
             }
             return item;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1509,7 +1515,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1555,7 +1561,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1572,13 +1578,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             const item = this.last(settings);
             if (item === null) {
-                throw new ItemNotFoundError("Item was not found");
+                throw new ItemNotFoundCollectionError("Item was not found");
             }
             return item;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1598,7 +1604,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1632,7 +1638,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1650,13 +1656,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             const item = this.before(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundError("Item was not found");
+                throw new ItemNotFoundCollectionError("Item was not found");
             }
             return item;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1676,7 +1682,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1710,7 +1716,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1728,13 +1734,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             const item = this.after(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundError("Item was not found");
+                throw new ItemNotFoundCollectionError("Item was not found");
             }
             return item;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1756,20 +1762,20 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                     matchedItems.push(item);
                 }
                 if (matchedItems.length > 1) {
-                    throw new MultipleItemsFoundError(
+                    throw new MultipleItemsFoundCollectionError(
                         "Multiple items were found",
                     );
                 }
             }
             const [matchedItem] = matchedItems;
             if (matchedItem === undefined) {
-                throw new ItemNotFoundError("Item was not found");
+                throw new ItemNotFoundCollectionError("Item was not found");
             }
             return matchedItem as TOutput;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1786,7 +1792,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1806,7 +1812,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1823,7 +1829,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1840,7 +1846,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1857,7 +1863,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1879,7 +1885,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1905,7 +1911,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1927,7 +1933,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
@@ -1944,7 +1950,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

@@ -1,8 +1,9 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
-    type RecordItem,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
+import { type RecordItem } from "@/_shared/types";
 
 /**
  * @internal
@@ -31,7 +32,7 @@ export class ZipIterable<TInput, TExtended>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

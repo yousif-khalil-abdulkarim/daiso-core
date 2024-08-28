@@ -3,6 +3,7 @@ import {
     type ICollection,
     type Map,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -33,7 +34,7 @@ export class UniqueIterable<TInput, TOutput> implements Iterable<TInput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

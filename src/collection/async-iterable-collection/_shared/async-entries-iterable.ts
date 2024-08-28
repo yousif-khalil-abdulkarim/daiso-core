@@ -1,8 +1,6 @@
-import {
-    type RecordItem,
-    IndexOverflowError,
-} from "@/contracts/collection/_shared";
-import type { AsyncIterableValue } from "@/contracts/collection/async-collection.contract";
+import { IndexOverflowCollectionError } from "@/contracts/collection/_shared";
+import { type AsyncIterableValue } from "@/_shared/types";
+import { type RecordItem } from "@/_shared/types";
 
 /**
  * @internal
@@ -22,7 +20,7 @@ export class AsyncEntriesIterable<TInput>
                 this.throwOnIndexOverflow &&
                 index === Number.MAX_SAFE_INTEGER
             ) {
-                throw new IndexOverflowError("Index has overflowed");
+                throw new IndexOverflowCollectionError("Index has overflowed");
             }
             yield [index, item];
             index++;

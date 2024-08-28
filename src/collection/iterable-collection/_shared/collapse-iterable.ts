@@ -4,6 +4,7 @@ import {
     CollectionError,
     type ICollection,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -25,7 +26,7 @@ export class CollapseIterable<TInput> implements Iterable<Collapse<TInput>> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

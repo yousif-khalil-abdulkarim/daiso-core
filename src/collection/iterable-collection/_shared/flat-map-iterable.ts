@@ -3,6 +3,7 @@ import {
     type ICollection,
     type Map,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -25,7 +26,7 @@ export class FlatMapIterable<TInput, TOutput> implements Iterable<TOutput> {
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

@@ -37,8 +37,11 @@ export function isIterable<TItem>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any,
 ): value is Iterable<TItem> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    return typeof value[Symbol.iterator] === "function";
+    return (
+        typeof value === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        typeof value[Symbol.iterator] === "function"
+    );
 }
 
 /**
@@ -49,6 +52,9 @@ export function isAsyncIterable<TItem>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any,
 ): value is AsyncIterable<TItem> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    return typeof value[Symbol.asyncIterator] === "function";
+    return (
+        typeof value === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        typeof value[Symbol.asyncIterator] === "function"
+    );
 }

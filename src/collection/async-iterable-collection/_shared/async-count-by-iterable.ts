@@ -2,10 +2,10 @@ import {
     type AsyncMap,
     CollectionError,
     type IAsyncCollection,
-    type RecordItem,
     UnexpectedCollectionError,
+    TypeCollectionError,
 } from "@/contracts/collection/_module";
-
+import { type RecordItem } from "@/_shared/types";
 /**
  * @internal
  */
@@ -45,7 +45,7 @@ export class AsyncCountByIterable<TInput, TOutput = TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }

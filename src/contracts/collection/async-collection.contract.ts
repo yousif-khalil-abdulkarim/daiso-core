@@ -12,7 +12,6 @@ import {
     type AsyncGroupBySettings,
     type AsyncCountBySettings,
     type AsyncUniqueSettings,
-    type AsyncLazyable,
     type AsyncMap,
     type AsyncModifier,
     type AsyncReduceSettings,
@@ -22,24 +21,26 @@ import {
     type CollectionError,
     type Comparator,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type ItemNotFoundError,
+    type ItemNotFoundCollectionError,
     type JoinSettings,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type MultipleItemsFoundError,
+    type MultipleItemsFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IndexOverflowError,
+    type IndexOverflowCollectionError,
     type PageSettings,
-    type RecordItem,
     type ReverseSettings,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type UnexpectedCollectionError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type TypeCollectionError,
     type UpdatedItem,
 } from "@/contracts/collection/_shared";
-import { type EnsureType } from "@/_shared/types";
-
-export type AsyncIterableValue<TInput> =
-    | Iterable<TInput>
-    | AsyncIterable<TInput>;
+import {
+    type RecordItem,
+    type AsyncLazyable,
+    type EnsureType,
+    type AsyncIterableValue,
+} from "@/_shared/types";
 
 export type AsyncCollapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -52,10 +53,10 @@ export type AsyncCollapse<TValue> = TValue extends
  * <i>IAsyncCollection</i> is immutable. The <i>throwOnIndexOverflow</i> parameter in the <i>ICollection</i> methods is used for preventing the index to overflow by throwing an error.
  * @throws {CollectionError}
  * @throws {UnexpectedCollectionError}
- * @throws {IndexOverflowError}
- * @throws {ItemNotFoundError}
- * @throws {MultipleItemsFoundError}
- * @throws {TypeError}
+ * @throws {IndexOverflowCollectionError}
+ * @throws {ItemNotFoundCollectionError}
+ * @throws {MultipleItemsFoundCollectionError}
+ * @throws {TypeCollectionError}
  * @group Contracts
  */
 export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
@@ -151,7 +152,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
 
     /**
      * The <i>join</i> method joins the collection's items with {@link JoinSettings | JoinSettings.seperator}. An error will be thrown when if a none string item is encounterd.
-     * @throws {TypeError}
+     * @throws {TypeCollectionError}
      * @example
      * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
      * await collection.map(item => item.toString()).join();
@@ -227,7 +228,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 6
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     sum(): Promise<EnsureType<TInput, number>>;
 
@@ -239,7 +240,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     average(): Promise<EnsureType<TInput, number>>;
 
@@ -251,8 +252,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     median(throwOnIndexOverflow?: boolean): Promise<EnsureType<TInput, number>>;
 
@@ -264,7 +265,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     min(): Promise<EnsureType<TInput, number>>;
 
@@ -276,7 +277,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 3
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeError} {@link TypeError}
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     max(): Promise<EnsureType<TInput, number>>;
 
@@ -288,7 +289,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 33.333
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     percentage(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -303,7 +304,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // true
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     some<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -318,7 +319,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // true
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     every<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -1004,7 +1005,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      * // 3
      */
     first<TOutput extends TInput>(
@@ -1043,7 +1044,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     firstOr<TOutput extends TInput, TExtended = TInput>(
         settings: AsyncFindOrSettings<
@@ -1075,8 +1076,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // throws an error
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     firstOrFail<TOutput extends TInput>(
         settings?: AsyncFindSettings<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -1103,7 +1104,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      * // 3
      */
     last<TOutput extends TInput>(
@@ -1142,7 +1143,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     lastOr<TOutput extends TInput, TExtended = TInput>(
         settings: AsyncFindOrSettings<
@@ -1174,8 +1175,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // throws an error
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     lastOrFail<TOutput extends TInput>(
         settings?: AsyncFindSettings<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -1194,7 +1195,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     before(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1218,7 +1219,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     beforeOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
@@ -1239,8 +1240,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // error is thrown
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     beforeOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1260,7 +1261,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     after(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1284,7 +1285,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     afterOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
@@ -1305,8 +1306,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // error is thrown
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     afterOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1322,9 +1323,9 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 4
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundError} {@link ItemNotFoundError}
-     * @throws {MultipleItemsFoundError} {@link MultipleItemsFoundError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     sole<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -1348,7 +1349,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 3
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     count(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1359,7 +1360,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>size</i> returns the size of the collection.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     size(throwOnIndexOverflow?: boolean): Promise<number>;
 
@@ -1367,7 +1368,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>isEmpty</i> returns true if the collection is empty.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     isEmpty(): Promise<boolean>;
 
@@ -1375,7 +1376,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>isNotEmpty</i> returns true if the collection is not empty.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     isNotEmpty(): Promise<boolean>;
 
@@ -1387,7 +1388,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     searchFirst(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1402,7 +1403,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     searchLast(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1413,7 +1414,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>forEach</i> method iterates through all items in the collection.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     forEach(
         callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
@@ -1424,7 +1425,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>toArray</i> method converts the collection to a new array.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowError} {@link IndexOverflowError}
+     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     toArray(): Promise<TInput[]>;
 

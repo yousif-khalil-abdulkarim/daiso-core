@@ -1,10 +1,11 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
+    TypeCollectionError,
     type ICollection,
     type Map,
-    type RecordItem,
 } from "@/contracts/collection/_module";
+import { type RecordItem } from "@/_shared/types";
 
 /**
  * @internal
@@ -42,7 +43,7 @@ export class GroupByIterable<TInput, TOutput = TInput>
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
-                error instanceof TypeError
+                error instanceof TypeCollectionError
             ) {
                 throw error;
             }
