@@ -22,16 +22,13 @@ export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
             TFilterOutput
         >,
         private mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     *[Symbol.iterator](): Iterator<
         UpdatedItem<TInput, TFilterOutput, TMapOutput>
     > {
         try {
-            for (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for (const [index, item] of this.collection.entries()) {
                 if (this.predicateFn(item, index, this.collection)) {
                     yield this.mapFn(
                         item as TFilterOutput,

@@ -13,7 +13,7 @@ export class PartionIterable<TInput> implements Iterable<ICollection<TInput>> {
     constructor(
         private collection: ICollection<TInput>,
         private predicateFn: Predicate<TInput, ICollection<TInput>>,
-        private throwOnIndexOverflow: boolean,
+
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
         ) => ICollection<TInput>,
@@ -23,9 +23,7 @@ export class PartionIterable<TInput> implements Iterable<ICollection<TInput>> {
         try {
             let chunkA: ICollection<TInput> = this.makeCollection<TInput>([]),
                 chunkB: ICollection<TInput> = this.makeCollection<TInput>([]);
-            for (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for (const [index, item] of this.collection.entries()) {
                 if (this.predicateFn(item, index, this.collection)) {
                     chunkA = chunkA.append([item]);
                 } else {

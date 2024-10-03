@@ -8,7 +8,6 @@ export class AsyncSliceIterable<TInput> implements AsyncIterable<TInput> {
         private collection: IAsyncCollection<TInput>,
         private start: number | undefined,
         private end: number | undefined,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
@@ -28,6 +27,6 @@ export class AsyncSliceIterable<TInput> implements AsyncIterable<TInput> {
         }
         yield* this.collection.filter((_item, index) => {
             return start <= index && index < end;
-        }, this.throwOnIndexOverflow);
+        });
     }
 }

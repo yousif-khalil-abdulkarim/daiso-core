@@ -2,7 +2,6 @@ import {
     type AsyncPredicate,
     CollectionError,
     type IAsyncCollection,
-    IndexOverflowCollectionError,
     UnexpectedCollectionError,
     TypeCollectionError,
 } from "@/contracts/collection/_module";
@@ -13,8 +12,7 @@ import {
 export class AsyncSkipUntilIterable<TInput> implements AsyncIterable<TInput> {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-        private throwOnIndexOverflow: boolean,
+        private predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
@@ -22,16 +20,8 @@ export class AsyncSkipUntilIterable<TInput> implements AsyncIterable<TInput> {
             let hasMatched = false,
                 index = 0;
             for await (const item of this.collection) {
-                if (
-                    this.throwOnIndexOverflow &&
-                    index === Number.MAX_SAFE_INTEGER
-                ) {
-                    throw new IndexOverflowCollectionError(
-                        "Index has overflowed",
-                    );
-                }
                 if (!hasMatched) {
-                    hasMatched = await this.filter(
+                    hasMatched = await this.predicateFn(
                         item,
                         index,
                         this.collection,

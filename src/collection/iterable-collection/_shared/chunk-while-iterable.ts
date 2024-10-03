@@ -15,7 +15,7 @@ export class ChunkWhileIterable<TInput>
     constructor(
         private collection: ICollection<TInput>,
         private predicateFn: Predicate<TInput, ICollection<TInput>>,
-        private throwOnIndexOverflow: boolean,
+
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
         ) => ICollection<TInput>,
@@ -26,9 +26,7 @@ export class ChunkWhileIterable<TInput>
             let collection: ICollection<TInput> = this.makeCollection<TInput>(
                 [],
             );
-            for (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for (const [index, item] of this.collection.entries()) {
                 if (index === 0) {
                     collection = collection.append([item]);
                 } else if (this.predicateFn(item, index, collection)) {

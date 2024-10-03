@@ -13,7 +13,6 @@ export class SliceIterable<TInput> implements Iterable<TInput> {
         private collection: ICollection<TInput>,
         private start: number | undefined,
         private end: number | undefined,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
@@ -34,7 +33,7 @@ export class SliceIterable<TInput> implements Iterable<TInput> {
             }
             yield* this.collection.filter((_item, index) => {
                 return start <= index && index < end;
-            }, this.throwOnIndexOverflow);
+            });
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||

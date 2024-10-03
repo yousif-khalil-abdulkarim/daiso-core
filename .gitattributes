@@ -1,5 +1,5 @@
 *code.editor=vim
-*core.eol=lf
+*core.autocrlf=false
 core.longpaths=true
 hooks.protected-branch.refs=main
 push.autoSetupRemote=true

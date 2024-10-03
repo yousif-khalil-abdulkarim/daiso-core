@@ -1,6 +1,5 @@
 import {
     CollectionError,
-    IndexOverflowCollectionError,
     UnexpectedCollectionError,
     TypeCollectionError,
 } from "@/contracts/collection/_shared";
@@ -12,23 +11,12 @@ import { type RecordItem } from "@/_shared/types";
 export class EntriesIterable<TInput>
     implements Iterable<RecordItem<number, TInput>>
 {
-    constructor(
-        private iterable: Iterable<TInput>,
-        private throwOnIndexOverflow: boolean,
-    ) {}
+    constructor(private iterable: Iterable<TInput>) {}
 
     *[Symbol.iterator](): Iterator<RecordItem<number, TInput>> {
         try {
             let index = 0;
             for (const item of this.iterable) {
-                if (
-                    this.throwOnIndexOverflow &&
-                    index === Number.MAX_SAFE_INTEGER
-                ) {
-                    throw new IndexOverflowCollectionError(
-                        "Index has overflowed",
-                    );
-                }
                 yield [index, item];
                 index++;
             }

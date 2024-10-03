@@ -18,15 +18,12 @@ export class CountByIterable<TInput, TOutput = TInput>
         private selectFn: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             item as any,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     *[Symbol.iterator](): Iterator<RecordItem<TOutput, number>> {
         try {
             const map = new Map<TOutput, number>();
-            for (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for (const [index, item] of this.collection.entries()) {
                 const key = this.selectFn(item, index, this.collection);
                 if (!map.has(key)) {
                     map.set(key, 0);

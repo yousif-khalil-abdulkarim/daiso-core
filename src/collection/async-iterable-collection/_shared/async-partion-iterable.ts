@@ -2,7 +2,6 @@ import {
     type AsyncPredicate,
     CollectionError,
     type IAsyncCollection,
-    IndexOverflowCollectionError,
     UnexpectedCollectionError,
     TypeCollectionError,
 } from "@/contracts/collection/_module";
@@ -16,8 +15,7 @@ export class AsyncPartionIterable<TInput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-        private throwOnIndexOverflow: boolean,
+        private predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
         private makeCollection: <TInput>(
             iterable: AsyncIterableValue<TInput>,
         ) => IAsyncCollection<TInput>,
@@ -33,15 +31,7 @@ export class AsyncPartionIterable<TInput>
                 ),
                 index = 0;
             for await (const item of this.collection) {
-                if (
-                    this.throwOnIndexOverflow &&
-                    index === Number.MAX_SAFE_INTEGER
-                ) {
-                    throw new IndexOverflowCollectionError(
-                        "Index has overflowed",
-                    );
-                }
-                if (await this.filter(item, index, this.collection)) {
+                if (await this.predicateFn(item, index, this.collection)) {
                     chunkA = chunkA.append([item]);
                 } else {
                     chunkB = chunkB.append([item]);

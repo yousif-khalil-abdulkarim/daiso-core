@@ -19,7 +19,7 @@ export class AsyncGroupByIterable<TInput, TOutput = TInput>
         > = (item) =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             item as any,
-        private throwOnIndexOverflow: boolean,
+
         private makeCollection: <TInput>(
             iterable: AsyncIterableValue<TInput>,
         ) => IAsyncCollection<TInput>,
@@ -30,9 +30,7 @@ export class AsyncGroupByIterable<TInput, TOutput = TInput>
     > {
         const map = new Map<TOutput, IAsyncCollection<TInput>>();
 
-        for await (const [index, item] of this.collection.entries(
-            this.throwOnIndexOverflow,
-        )) {
+        for await (const [index, item] of this.collection.entries()) {
             const key = await this.callback(item, index, this.collection);
             let collection: IAsyncCollection<TInput> | undefined = map.get(key);
             if (collection === undefined) {

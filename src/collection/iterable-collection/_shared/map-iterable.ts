@@ -13,14 +13,11 @@ export class MapIterable<TInput, TOutput> implements Iterable<TOutput> {
     constructor(
         private collection: ICollection<TInput>,
         private mapFn: Map<TInput, ICollection<TInput>, TOutput>,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     *[Symbol.iterator](): Iterator<TOutput> {
         try {
-            for (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for (const [index, item] of this.collection.entries()) {
                 yield this.mapFn(item, index, this.collection);
             }
         } catch (error: unknown) {

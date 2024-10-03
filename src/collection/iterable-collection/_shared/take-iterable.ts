@@ -12,19 +12,15 @@ export class TakeIterable<TInput> implements Iterable<TInput> {
     constructor(
         private collection: ICollection<TInput>,
         private limit: number,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
         try {
             if (this.limit < 0) {
-                this.limit =
-                    this.collection.size(this.throwOnIndexOverflow) +
-                    this.limit;
+                this.limit = this.collection.size() + this.limit;
             }
             yield* this.collection.takeWhile(
                 (_item, index) => index < this.limit,
-                this.throwOnIndexOverflow,
             );
         } catch (error: unknown) {
             if (

@@ -15,8 +15,8 @@ export class AsyncChunkWhileIterable<TInput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-        private throwOnIndexOverflow: boolean,
+        private predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+
         private makeCollection: <TInput>(
             iterable: AsyncIterableValue<TInput>,
         ) => IAsyncCollection<TInput>,
@@ -26,12 +26,10 @@ export class AsyncChunkWhileIterable<TInput>
         try {
             let collection: IAsyncCollection<TInput> =
                 this.makeCollection<TInput>([]);
-            for await (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for await (const [index, item] of this.collection.entries()) {
                 if (index === 0) {
                     collection = collection.append([item]);
-                } else if (await this.filter(item, index, collection)) {
+                } else if (await this.predicateFn(item, index, collection)) {
                     collection = collection.append([item]);
                 } else {
                     yield collection;

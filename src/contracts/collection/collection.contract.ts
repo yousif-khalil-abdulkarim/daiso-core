@@ -3,30 +3,17 @@
  */
 
 import {
-    type SliceSettings,
-    type SlidingSettings,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type CollectionError,
     type Comparator,
     type Predicate,
-    type FindOrSettings,
-    type FindSettings,
     type ForEach,
-    type GroupBySettings,
-    type CountBySettings,
-    type UniqueSettings,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type ItemNotFoundCollectionError,
-    type JoinSettings,
     type Map,
     type Modifier,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type MultipleItemsFoundCollectionError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IndexOverflowCollectionError,
-    type PageSettings,
-    type ReduceSettings,
-    type ReverseSettings,
     type Tap,
     type Transform,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -34,6 +21,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type TypeCollectionError,
     type UpdatedItem,
+    type Reduce,
 } from "@/contracts/collection/_shared";
 import {
     type Lazyable,
@@ -49,10 +37,9 @@ export type Collapse<TValue> = TValue extends
     : TValue;
 
 /**
- * <i>ICollection</i> is immutable. The <i>throwOnIndexOverflow</i> parameter in the <i>ICollection</i> methods is used for preventing the index to overflow by throwing an error.
+ * <i>ICollection</i> is immutable.
  * @throws {CollectionError}
  * @throws {UnexpectedCollectionError}
- * @throws {IndexOverflowCollectionError}
  * @throws {ItemNotFoundCollectionError}
  * @throws {MultipleItemsFoundCollectionError}
  * @throws {TypeCollectionError}
@@ -67,14 +54,12 @@ export type ICollection<TInput> = Iterable<TInput> & {
     /**
      * The <i>entries</i> returns an ICollection of key, value pairs for every entry in the collection.
      */
-    entries(
-        throwOnIndexOverflow?: boolean,
-    ): ICollection<RecordItem<number, TInput>>;
+    entries(): ICollection<RecordItem<number, TInput>>;
 
     /**
      * The <i>keys</i> method returns an ICollection of keys in the collection.
      */
-    keys(throwOnIndexOverflow?: boolean): ICollection<number>;
+    keys(): ICollection<number>;
 
     /**
      * The <i>values</i> method returns a copy of the collection.
@@ -91,7 +76,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     filter<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput>;
 
     /**
@@ -104,7 +88,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     reject<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<Exclude<TInput, TOutput>>;
 
     /**
@@ -118,11 +101,10 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     map<TOutput>(
         mapFn: Map<TInput, ICollection<TInput>, TOutput>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput>;
 
     /**
-     * The <i>reduce</i> method executes <i> {@link ReduceSettings | ReduceSettings.reduceFn} </i> function on each item of the array, passing in the return value from the calculation on the preceding item.
+     * The <i>reduce</i> method executes <i> reduceFn </i> function on each item of the array, passing in the return value from the calculation on the preceding item.
      * The final result of running the reducer across all items of the array is a single value.
      * @example
      * const collection = new ListCollection([1, 2, 3]);
@@ -142,11 +124,12 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // { 0: "a", 1: "b", 2: "c" }
      */
     reduce<TOutput = TInput>(
-        settings: ReduceSettings<TInput, ICollection<TInput>, TOutput>,
+        reduceFn: Reduce<TInput, ICollection<TInput>, TOutput>,
+        initialValue?: TOutput,
     ): TOutput;
 
     /**
-     * The <i>join</i> method joins the collection's items with {@link JoinSettings | JoinSettings.seperator}. An error will be thrown when if a none string item is encounterd.
+     * The <i>join</i> method joins the collection's items with <i> seperator </i>. An error will be thrown when if a none string item is encounterd.
      * @throws {TypeCollectionError}
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
@@ -159,7 +142,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * });
      * // "1_2_3_4"
      */
-    join(settings?: JoinSettings): EnsureType<TInput, string>;
+    join(separator?: string): EnsureType<TInput, string>;
 
     /**
      * The <i>collapse</i> method collapses a collection of iterables into a single, flat collection.
@@ -181,25 +164,23 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     flatMap<TOutput>(
         mapFn: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<TOutput>;
 
     /**
-     * The <i>update</i> method updates only the items that passes <i>predicateFn</i> using <i>mapFn</i>.
+     * The <i>change</i> method changes only the items that passes <i>predicateFn</i> using <i>mapFn</i>.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5]);
-     * const updateCollection = collection.update(item => item % 2 === 0, item => item * 2);
-     * updateCollection.toArray();
+     * const changedCollection = collection.change(item => item % 2 === 0, item => item * 2);
+     * changedCollection.toArray();
      * // [1, 4, 3, 8, 5]
      */
     update<TFilterOutput extends TInput, TMapOutput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>>;
 
     /**
-     * The <i>page</i> method returns a new collection containing the items that would be present on <i>{@link PageSettings | PageSettings.page}</i> with custom <i>{@link PageSettings | PageSettings.pageSize}</i>.
+     * The <i>page</i> method returns a new collection containing the items that would be present on <i> page </i> with custom <i> pageSize </i>.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4, 5, 6, 7, 8, 9]);
      * const page = collection.page({
@@ -209,7 +190,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * page.toArray();
      * // [4, 5, 6]
      */
-    page(settings: PageSettings): ICollection<TInput>;
+    page(page: number, pageSize: number): ICollection<TInput>;
 
     /**
      * The <i>sum</i> method returns the sum of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -243,10 +224,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
-    median(throwOnIndexOverflow?: boolean): EnsureType<TInput, number>;
+    median(): EnsureType<TInput, number>;
 
     /**
      * The <i>min</i> method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -280,12 +260,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 33.333
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    percentage(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
-    ): number;
+    percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
 
     /**
      * The <i>some</i> method determines whether at least one item in the collection matches <i>predicateFn</i>.
@@ -295,11 +271,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // true
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     some<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
-        throwOnIndexOverflow?: boolean,
     ): boolean;
 
     /**
@@ -310,11 +284,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // true
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     every<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
-        throwOnIndexOverflow?: boolean,
     ): boolean;
 
     /**
@@ -330,7 +302,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * chunk.toArray();
      * // [4, 5]
      */
-    take(limit: number, throwOnIndexOverflow?: boolean): ICollection<TInput>;
+    take(limit: number): ICollection<TInput>;
 
     /**
      * The <i>takeUntil</i> method takes items until <i>predicateFn</i> returns true.
@@ -342,7 +314,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     takeUntil(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput>;
 
     /**
@@ -355,7 +326,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     takeWhile(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput>;
 
     /**
@@ -365,7 +335,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.toArray();
      * // [5, 6, 7, 8, 9, 10]
      */
-    skip(offset: number, throwOnIndexOverflow?: boolean): ICollection<TInput>;
+    skip(offset: number): ICollection<TInput>;
 
     /**
      * The <i>skipUntil</i> method skips items until <i>predicateFn</i> returns true.
@@ -376,7 +346,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     skipUntil(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput>;
 
     /**
@@ -388,7 +357,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     skipWhile(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput>;
 
     /**
@@ -513,7 +481,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     chunkWhile(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<ICollection<TInput>>;
 
     /**
@@ -534,10 +501,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * chunks.toArray();
      * // [[1, 2, 7], [3, 4], [5, 6]]
      */
-    split(
-        chunkAmount: number,
-        throwOnIndexOverflow?: boolean,
-    ): ICollection<ICollection<TInput>>;
+    split(chunkAmount: number): ICollection<ICollection<TInput>>;
 
     /**
      * The <i>partition</i> method is used to separate items that pass <i>predicateFn</i> from those that do not.
@@ -549,7 +513,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     partition(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<ICollection<TInput>>;
 
     /**
@@ -559,10 +522,10 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.toArray();
      * // [[1, 2], [2, 3], [3, 4], [4, 5]]
      */
-    sliding(settings: SlidingSettings): ICollection<ICollection<TInput>>;
+    sliding(chunkSize: number, step?: number): ICollection<ICollection<TInput>>;
 
     /**
-     * The <i>groupBy</i> method groups the collection's items by {@link GroupBySettings | GroupBySettings.selectFn}.
+     * The <i>groupBy</i> method groups the collection's items by <i> selectFn </i>.
      * By default the equality check occurs on the item.
      * @example
      * const collection = new ListCollection(["a", "a", "a", "b", "b", "c"]);
@@ -604,11 +567,11 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // ]
      */
     groupBy<TOutput = TInput>(
-        settings?: GroupBySettings<TInput, ICollection<TInput>, TOutput>,
+        selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<RecordItem<TOutput, ICollection<TInput>>>;
 
     /**
-     * The <i>countBy</i> method counts the occurrences of values in the collection by {@link CountBySettings | CountBySettings.selectFn}.
+     * The <i>countBy</i> method counts the occurrences of values in the collection by <i> selectFn </i>.
      * By default the equality check occurs on the item.
      * @example
      * const collection = new ListCollection(["a", "a", "a", "b", "b", "c"]);
@@ -635,11 +598,11 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // ]
      */
     countBy<TOutput = TInput>(
-        settings?: CountBySettings<TInput, ICollection<TInput>, TOutput>,
+        selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<RecordItem<TOutput, number>>;
 
     /**
-     * The <i>unique</i> method removes all duplicate values from the collection by {@link UniqueSettings | UniqueSettings.selectFn}.
+     * The <i>unique</i> method removes all duplicate values from the collection by <i> selectFn </i>.
      * By default the equality check occurs on the item.
      * @example
      * const collection = new ListCollection([1, 1, 2, 2, 3, 4, 2]);
@@ -662,7 +625,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // ]
      */
     unique<TOutput = TInput>(
-        settings?: UniqueSettings<TInput, ICollection<TInput>, TOutput>,
+        selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<TInput>;
 
     /**
@@ -752,8 +715,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     ): ICollection<TInput | TExtended>;
 
     /**
-     * The <i>slice</i> method creates porition of the original collection selected from {@link SliceSettings | SliceSettings.start} and {@link SliceSettings | SliceSettings.end}
-     * where {@link  SliceSettings | SliceSettings.start} and {@link SliceSettings | SliceSettings.end} (end not included) represent the index of items in the collection.
+     * The <i>slice</i> method creates porition of the original collection selected from <i>start</i> and <i>end</i>
+     * where <i>start</i> and <i>end</i> (end not included) represent the index of items in the collection.
      * @example
      * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
      * collection.slice({
@@ -793,7 +756,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * }).toArray();
      * // ["c", "d"]
      */
-    slice(settings?: SliceSettings): ICollection<TInput>;
+    slice(start?: number, end?: number): ICollection<TInput>;
 
     /**
      * The <i>prepend</i> method adds <i>iterable</i> to the beginning of the collection.
@@ -827,7 +790,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
     insertBefore<TExtended = TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput | TExtended>;
 
     /**
@@ -840,7 +802,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
     insertAfter<TExtended = TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
-        throwOnIndexOverflow?: boolean,
     ): ICollection<TInput | TExtended>;
 
     /**
@@ -922,13 +883,13 @@ export type ICollection<TInput> = Iterable<TInput> & {
 
     /**
      * The <i>reverse</i> method will reverse the order of the collection.
-     * The reversing of the collection will be applied in chunks that are the size of <i>{@link ReverseSettings | ReverseSettings.chunkSize}</i>.
+     * The reversing of the collection will be applied in chunks that are the size of <i> chunkSize </i>.
      * @example
      * const collection = new ListCollection([-1, 2, 4, 3]);
      * collection.reverse().toArray();
      * // [3, 4, 2, -1]
      */
-    reverse(settings?: ReverseSettings): ICollection<TInput>;
+    reverse(chunkSize?: number): ICollection<TInput>;
 
     /**
      * The <i>shuffle</i> method randomly shuffles the items in the collection.
@@ -936,8 +897,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     shuffle(): ICollection<TInput>;
 
     /**
-     * The <i>first</i> method returns the first item in the collection that passes <i>{@link FindSettings | FindSettings.predicateFn}</i>.
-     * By default it will get the first item. If the collection is empty or no items passes <i>{@link FindSettings | FindSettings.predicateFn}</i> than null i returned.
+     * The <i>first</i> method returns the first item in the collection that passes <i> predicateFn </i>.
+     * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than null i returned.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * collection.first();
@@ -956,16 +917,15 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      * // 3
      */
     first<TOutput extends TInput>(
-        settings?: FindSettings<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | null;
 
     /**
-     * The <i>firstOr</i> method returns the first item in the collection that passes <i>{@link FindOrSettings | FindOrSettings.predicateFn}</i>
-     * By default it will get the first item. If the collection is empty or no items passes <i>{@link FindOrSettings | FindOrSettings.predicateFn}</i> than  {@link FindOrSettings | FindOrSettings.defaultValue}.
+     * The <i>firstOr</i> method returns the first item in the collection that passes <i> predicateFn </i>
+     * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than <i> defaultValue </i>.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * collection.firstOr({
@@ -995,20 +955,15 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     firstOr<TOutput extends TInput, TExtended = TInput>(
-        settings: FindOrSettings<
-            TInput,
-            ICollection<TInput>,
-            TOutput,
-            TExtended
-        >,
+        defaultValue: Lazyable<TExtended>,
+        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | TExtended;
 
     /**
-     * The <i>firstOrFail</i> method returns the first item in the collection that passes <i>{@link FindSettings | FindSettings.predicateFn}</i>.
-     * By default it will get the first item. If the collection is empty or no items passes <i>{@link FindSettings | FindSettings.predicateFn}</i> than error is thrown.
+     * The <i>firstOrFail</i> method returns the first item in the collection that passes <i> predicateFn </i>.
+     * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than error is thrown.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * collection.firstOrFail();
@@ -1028,15 +983,14 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     firstOrFail<TOutput extends TInput>(
-        settings?: FindSettings<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput;
 
     /**
-     * The <i>last</i> method returns the last item in the collection that passes <i>{@link FindSettings | FindSettings.predicateFn}</i>.
-     * By default it will get the last item. If the collection is empty or no items passes <i>{@link FindSettings | FindSettings.predicateFn}</i> than null i returned.
+     * The <i>last</i> method returns the last item in the collection that passes <i> predicateFn </i>.
+     * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than null i returned.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * collection.last();
@@ -1055,16 +1009,15 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      * // 3
      */
     last<TOutput extends TInput>(
-        settings?: FindSettings<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | null;
 
     /**
-     * The <i>lastOr</i> method returns the last item in the collection that passes <i>{@link FindOrSettings | FindOrSettings.predicateFn}</i>.
-     * By default it will get the last item. If the collection is empty or no items passes <i>{@link FindOrSettings | FindOrSettings.predicateFn}</i> than {@link FindOrSettings | FindOrSettings.defaultValue}.
+     * The <i>lastOr</i> method returns the last item in the collection that passes <i> predicateFn </i>.
+     * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than <i> defaultValue </i>.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * collection.lastOr({
@@ -1094,20 +1047,15 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     lastOr<TOutput extends TInput, TExtended = TInput>(
-        settings: FindOrSettings<
-            TInput,
-            ICollection<TInput>,
-            TOutput,
-            TExtended
-        >,
+        defaultValue: Lazyable<TExtended>,
+        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | TExtended;
 
     /**
-     * The <i>lastOrFail</i> method returns the last item in the collection that passes <i>{@link FindSettings | FindSettings.predicateFn}</i>.
-     * By default it will get the last item. If the collection is empty or no items passes <i>{@link FindSettings | FindSettings.predicateFn}</i> than error is thrown.
+     * The <i>lastOrFail</i> method returns the last item in the collection that passes <i> predicateFn </i>.
+     * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than error is thrown.
      * @example
      * const collection = new ListCollection([1, 2, 3, 4]);
      * collection.lastOrFail();
@@ -1127,10 +1075,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     lastOrFail<TOutput extends TInput>(
-        settings?: FindSettings<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput;
 
     /**
@@ -1146,12 +1093,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    before(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
-    ): TInput | null;
+    before(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput | null;
 
     /**
      * The <i>beforeOr</i> method returns the item that comes before the first item that matches <i>predicateFn</i>.
@@ -1170,12 +1113,10 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     beforeOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
     ): TInput | TExtended;
 
     /**
@@ -1192,12 +1133,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    beforeOrFail(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
-    ): TInput;
+    beforeOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput;
 
     /**
      * The <i>after</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
@@ -1212,12 +1149,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // null
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    after(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
-    ): TInput | null;
+    after(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput | null;
 
     /**
      * The <i>afterOr</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
@@ -1236,12 +1169,10 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // -1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     afterOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
     ): TInput | TExtended;
 
     /**
@@ -1258,12 +1189,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    afterOrFail(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
-    ): TInput;
+    afterOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput;
 
     /**
      * The <i>sole</i> method returns the first item in the collection that passes <i>predicateFn</i>, but only if <i>predicateFn</i> matches exactly one item.
@@ -1276,11 +1203,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     sole<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
-        throwOnIndexOverflow?: boolean,
     ): TOutput;
 
     /**
@@ -1300,26 +1225,20 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 3
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    count(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
-    ): number;
+    count(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
 
     /**
      * The <i>size</i> returns the size of the collection.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    size(throwOnIndexOverflow?: boolean): number;
+    size(): number;
 
     /**
      * The <i>isEmpty</i> returns true if the collection is empty.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     isEmpty(): boolean;
 
@@ -1327,7 +1246,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * The <i>isNotEmpty</i> returns true if the collection is not empty.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     isNotEmpty(): boolean;
 
@@ -1339,12 +1257,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 1
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    searchFirst(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
-    ): number;
+    searchFirst(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
 
     /**
      * The <i>searchLast</i> return the index of the last item that matches <i>predicateFn</i>.
@@ -1354,29 +1268,20 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 2
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    searchLast(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
-    ): number;
+    searchLast(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
 
     /**
      * The <i>forEach</i> method iterates through all items in the collection.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
-    forEach(
-        callback: ForEach<TInput, ICollection<TInput>>,
-        throwOnIndexOverflow?: boolean,
-    ): void;
+    forEach(callback: ForEach<TInput, ICollection<TInput>>): void;
 
     /**
      * The <i>toArray</i> method converts the collection to a new array.
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {IndexOverflowCollectionError} {@link IndexOverflowCollectionError}
      */
     toArray(): TInput[];
 };

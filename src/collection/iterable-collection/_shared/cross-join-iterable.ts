@@ -26,25 +26,25 @@ export class CrossJoinIterable<TInput, TExtended = TInput>
                 ...this.iterables.map<ICollection<TExtended>>((iterable) =>
                     this.makeCollection(iterable),
                 ),
-            ]).reduce<ICollection<ICollection<TInput | TExtended>>>({
-                reduceFn: (a, b) => {
+            ]).reduce<ICollection<ICollection<TInput | TExtended>>>(
+                (a, b) => {
                     return a
                         .map((x) =>
                             b.map((y) => {
                                 return x.append([y]);
                             }),
                         )
-                        .reduce<ICollection<ICollection<TInput | TExtended>>>({
-                            reduceFn: (c, b) => c.append(b),
-                            initialValue: this.makeCollection<
+                        .reduce<ICollection<ICollection<TInput | TExtended>>>(
+                            (c, b) => c.append(b),
+                            this.makeCollection<
                                 ICollection<TInput | TExtended>
                             >([]),
-                        });
+                        );
                 },
-                initialValue: this.makeCollection<
-                    ICollection<TInput | TExtended>
-                >([this.makeCollection<TInput | TExtended>([])]),
-            });
+                this.makeCollection<ICollection<TInput | TExtended>>([
+                    this.makeCollection<TInput | TExtended>([]),
+                ]),
+            );
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||

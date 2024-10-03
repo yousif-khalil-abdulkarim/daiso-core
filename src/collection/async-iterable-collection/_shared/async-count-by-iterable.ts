@@ -21,7 +21,6 @@ export class AsyncCountByIterable<TInput, TOutput = TInput>
         > = (item) =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             item as any,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<
@@ -29,9 +28,7 @@ export class AsyncCountByIterable<TInput, TOutput = TInput>
     > {
         try {
             const map = new Map<TOutput, number>();
-            for await (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for await (const [index, item] of this.collection.entries()) {
                 const key = await this.callback(item, index, this.collection);
                 if (!map.has(key)) {
                     map.set(key, 0);

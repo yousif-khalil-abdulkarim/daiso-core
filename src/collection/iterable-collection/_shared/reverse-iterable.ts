@@ -12,7 +12,7 @@ export class ReverseIterable<TInput> implements Iterable<TInput> {
     constructor(
         private collection: ICollection<TInput>,
         private chunkSize: number,
-        private throwOnIndexOverflow: boolean,
+
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
         ) => ICollection<TInput>,
@@ -25,15 +25,11 @@ export class ReverseIterable<TInput> implements Iterable<TInput> {
             );
             yield* this.collection
                 .chunk(this.chunkSize)
-                .map(
-                    (item) => this.makeCollection<TInput>([...item].reverse()),
-                    this.throwOnIndexOverflow,
-                )
-                .reduce({
-                    reduceFn: (collection, item) => collection.prepend(item),
-                    initialValue: collection,
-                    throwOnIndexOverflow: this.throwOnIndexOverflow,
-                });
+                .map((item) => this.makeCollection<TInput>([...item].reverse()))
+                .reduce(
+                    (collection, item) => collection.prepend(item),
+                    collection,
+                );
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||

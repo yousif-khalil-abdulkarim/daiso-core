@@ -15,16 +15,13 @@ export class UniqueIterable<TInput, TOutput> implements Iterable<TInput> {
         private callback: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             item as any,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
         try {
             const set = new Set<TOutput>([]);
 
-            for (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for (const [index, item] of this.collection.entries()) {
                 const item_ = this.callback(item, index, this.collection);
                 if (!set.has(item_)) {
                     yield item;

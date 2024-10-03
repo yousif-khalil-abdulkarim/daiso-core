@@ -15,7 +15,7 @@ export class AsyncSplitIterable<TInput>
     constructor(
         private collection: IAsyncCollection<TInput>,
         private chunkAmount: number,
-        private throwOnIndexOverflow: boolean,
+
         private makeCollection: <TInput>(
             iterable: AsyncIterableValue<TInput>,
         ) => IAsyncCollection<TInput>,
@@ -23,7 +23,7 @@ export class AsyncSplitIterable<TInput>
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
         try {
-            const size = await this.collection.size(this.throwOnIndexOverflow),
+            const size = await this.collection.size(),
                 minChunkSize = Math.floor(size / this.chunkAmount),
                 restSize = size % this.chunkAmount,
                 chunkSizes = Array.from<number>({

@@ -31,8 +31,8 @@ export class AsyncCrossJoinIterable<TInput, TExtended>
                 ...this.iterables.map<IAsyncCollection<TExtended>>((iterable) =>
                     this.makeCollection(iterable),
                 ),
-            ]).reduce<IAsyncCollection<IAsyncCollection<TInput | TExtended>>>({
-                reduceFn: (a, b) => {
+            ]).reduce<IAsyncCollection<IAsyncCollection<TInput | TExtended>>>(
+                (a, b) => {
                     return a
                         .map((x) =>
                             b.map((y) => {
@@ -43,17 +43,17 @@ export class AsyncCrossJoinIterable<TInput, TExtended>
                             IAsyncCollection<
                                 IAsyncCollection<TInput | TExtended>
                             >
-                        >({
-                            reduceFn: (c, b) => c.append(b),
-                            initialValue: this.makeCollection<
+                        >(
+                            (c, b) => c.append(b),
+                            this.makeCollection<
                                 IAsyncCollection<TInput | TExtended>
                             >([]),
-                        });
+                        );
                 },
-                initialValue: this.makeCollection<
-                    IAsyncCollection<TInput | TExtended>
-                >([this.makeCollection<TInput | TExtended>([])]),
-            });
+                this.makeCollection<IAsyncCollection<TInput | TExtended>>([
+                    this.makeCollection<TInput | TExtended>([]),
+                ]),
+            );
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||

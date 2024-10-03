@@ -12,7 +12,7 @@ export class SplitIterable<TInput> implements Iterable<ICollection<TInput>> {
     constructor(
         private collection: ICollection<TInput>,
         private chunkAmount: number,
-        private throwOnIndexOverflow: boolean,
+
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
         ) => ICollection<TInput>,
@@ -20,7 +20,7 @@ export class SplitIterable<TInput> implements Iterable<ICollection<TInput>> {
 
     *[Symbol.iterator](): Iterator<ICollection<TInput>> {
         try {
-            const size = this.collection.size(this.throwOnIndexOverflow),
+            const size = this.collection.size(),
                 minChunkSize = Math.floor(size / this.chunkAmount),
                 restSize = size % this.chunkAmount,
                 chunkSizes = Array.from<number>({

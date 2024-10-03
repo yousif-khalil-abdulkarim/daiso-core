@@ -33,10 +33,7 @@ export class PadStartIterable<TInput, TExtended>
             }
             const restAmount = this.maxLength - (repeat * fillSize + size);
             resultCollection = resultCollection.append(
-                fillCollections.slice({
-                    start: 0,
-                    end: restAmount,
-                }),
+                fillCollections.slice(0, restAmount),
             );
             resultCollection = resultCollection.append(this.collection);
             yield* resultCollection;

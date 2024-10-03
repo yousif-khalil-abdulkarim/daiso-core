@@ -19,7 +19,7 @@ export class AsyncUpdateIterable<
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private filter: AsyncPredicate<
+        private predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
             TFilterOutput
@@ -29,17 +29,14 @@ export class AsyncUpdateIterable<
             IAsyncCollection<TInput>,
             TMapOutput
         >,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<
         UpdatedItem<TInput, TFilterOutput, TMapOutput>
     > {
         try {
-            for await (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
-                if (await this.filter(item, index, this.collection)) {
+            for await (const [index, item] of this.collection.entries()) {
+                if (await this.predicateFn(item, index, this.collection)) {
                     yield this.mapFn(
                         item as TFilterOutput,
                         index,

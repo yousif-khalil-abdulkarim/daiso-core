@@ -13,7 +13,6 @@ export class SlidingIteralbe<TInput> implements Iterable<ICollection<TInput>> {
         private collection: ICollection<TInput>,
         private chunkSize: number,
         private step: number,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     *[Symbol.iterator](): Iterator<ICollection<TInput>> {
@@ -21,17 +20,13 @@ export class SlidingIteralbe<TInput> implements Iterable<ICollection<TInput>> {
             if (this.step <= 0) {
                 return;
             }
-            const size = this.collection.size(this.throwOnIndexOverflow);
+            const size = this.collection.size();
 
             for (let index = 0; index < size; index += this.step) {
                 const start = index;
                 const end = index + this.chunkSize;
 
-                yield this.collection.slice({
-                    start,
-                    end,
-                    throwOnIndexOverflow: this.throwOnIndexOverflow,
-                });
+                yield this.collection.slice(start, end);
 
                 if (end >= size) {
                     break;

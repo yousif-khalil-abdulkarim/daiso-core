@@ -2,8 +2,6 @@
  * @module Collections
  */
 
-import { AsyncLazyable, Lazyable } from "@/_shared/types";
-
 /**
  * @group Errors
  */
@@ -21,16 +19,6 @@ export class UnexpectedCollectionError extends CollectionError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = UnexpectedCollectionError.name;
-    }
-}
-
-/**
- * @group Errors
- */
-export class IndexOverflowCollectionError extends CollectionError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = IndexOverflowCollectionError.name;
     }
 }
 
@@ -66,64 +54,6 @@ export type UpdatedItem<TInput, TFilterOutput, TMapOutput> =
     | TFilterOutput
     | TMapOutput;
 
-export type ReverseSettings = {
-    /**
-     * @defaultValue 1024
-     */
-    chunkSize?: number;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-
-export type PageSettings = {
-    page: number;
-    pageSize: number;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-
-export type JoinSettings = {
-    /**
-     * @defaultValue ","
-     */
-    seperator?: string;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-
-export type SliceSettings = {
-    /**
-     * @defaultValue 0
-     */
-    start?: number;
-    /**
-     * @defaultValue the size of the collection
-     */
-    end?: number;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-
-export type SlidingSettings = {
-    chunkSize: number;
-    /**
-     * @defaultValue SlidingSettings.chunkSize - 1
-     */
-    step?: number;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-
 export type Comparator<TItem> = (itemA: TItem, itemB: TItem) => number;
 
 export type Predicate_<TInput, TCollection> = (
@@ -149,15 +79,6 @@ export type Reduce<TInput, TCollection, TOutput> = (
     collection: TCollection,
 ) => TOutput;
 
-export type ReduceSettings<TInput, TCollection, TOutput> = {
-    reduceFn: Reduce<TInput, TCollection, TOutput>;
-    initialValue?: TOutput;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-
 export type Map<TInput, TCollection, TOutput> = (
     item: TInput,
     index: number,
@@ -175,54 +96,6 @@ export type Modifier<TInput, TOutput> = (collection: TInput) => TOutput;
 export type Tap<TCollection> = (collection: TCollection) => void;
 
 export type Transform<TInput, TOutput> = (value: TInput) => TOutput;
-
-export type FindSettings<TInput, TCollection, TOutput extends TInput> = {
-    predicateFn?: Predicate<TInput, TCollection, TOutput>;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-
-export type FindOrSettings<
-    TInput,
-    TCollection,
-    TOutput extends TInput,
-    TDefault,
-> = FindSettings<TInput, TCollection, TOutput> & {
-    defaultValue: Lazyable<TDefault>;
-};
-
-export type GroupBySettings<TInput, TCollection, TOutput> = {
-    /**
-     * @defaultValue (item: TInput) => item
-     */
-    selectFn?: Map<TInput, TCollection, TOutput>;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-export type CountBySettings<TInput, TCollection, TOutput> = {
-    /**
-     * @defaultValue (item: TInput) => item
-     */
-    selectFn?: Map<TInput, TCollection, TOutput>;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-export type UniqueSettings<TInput, TCollection, TOutput> = {
-    /**
-     * @defaultValue (item: TInput) => item
-     */
-    selectFn?: Map<TInput, TCollection, TOutput>;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
 
 export type AsyncPredicate_<TInput, TCollection> = (
     item: TInput,
@@ -248,15 +121,6 @@ export type AsyncReduce_<TInput, TCollection, TOutput> = (
 export type AsyncReduce<TInput, TCollection, TOutput> =
     | AsyncReduce_<TInput, TCollection, TOutput>
     | Reduce<TInput, TCollection, TOutput>;
-
-export type AsyncReduceSettings<TInput, TCollection, TOutput> = {
-    reduceFn: AsyncReduce<TInput, TCollection, TOutput>;
-    initialValue?: TOutput;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
 
 export type AsyncMap_<TInput, TCollection, TOutput> = (
     item: TInput,
@@ -297,52 +161,3 @@ export type AsyncTransform_<TInput, TOutput> = (
 export type AsyncTransform<TInput, TOutput> =
     | Transform<TInput, TOutput>
     | AsyncTransform_<TInput, TOutput>;
-
-export type AsyncFindSettings<TInput, TCollection, TOutput extends TInput> = {
-    predicateFn?: AsyncPredicate<TInput, TCollection, TOutput>;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-
-export type AsyncFindOrSettings<
-    TInput,
-    TCollection,
-    TOutput extends TInput,
-    TDefault,
-> = AsyncFindSettings<TInput, TCollection, TOutput> & {
-    defaultValue: AsyncLazyable<TDefault>;
-};
-
-export type AsyncGroupBySettings<TInput, TCollection, TOutput> = {
-    /**
-     * @defaultValue (item: TInput) => item
-     */
-    selectFn?: AsyncMap<TInput, TCollection, TOutput>;
-    chunkSize?: number;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-export type AsyncCountBySettings<TInput, TCollection, TOutput> = {
-    /**
-     * @defaultValue (item: TInput) => item
-     */
-    selectFn?: AsyncMap<TInput, TCollection, TOutput>;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
-export type AsyncUniqueSettings<TInput, TCollection, TOutput> = {
-    /**
-     * @defaultValue (item: TInput) => item
-     */
-    selectFn?: AsyncMap<TInput, TCollection, TOutput>;
-    /**
-     * @defaultValue false
-     */
-    throwOnIndexOverflow?: boolean;
-};
