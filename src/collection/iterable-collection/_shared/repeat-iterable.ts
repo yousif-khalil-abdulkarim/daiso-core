@@ -20,7 +20,7 @@ export class RepeatIterable<TInput> implements Iterable<TInput> {
     *[Symbol.iterator](): Iterator<TInput> {
         try {
             let collection = this.makeCollection<TInput>([]);
-            for (let index = 0; index < this.amount - 1; index++) {
+            for (let index = 0; index < this.amount; index++) {
                 collection = collection.append(this.collection);
             }
             yield* collection;

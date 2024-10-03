@@ -17,7 +17,7 @@ import {
     MultipleItemsFoundCollectionError,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type UpdatedItem,
+    type ChangendItem,
     type AsyncReduce,
 } from "@/contracts/collection/_module";
 import {
@@ -128,6 +128,18 @@ export class AsyncIterableCollection<TInput>
         return new AsyncIterableCollection(new AsyncMapIterable(this, mapFn));
     }
 
+    reduce(
+        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
+    ): Promise<TInput>;
+    reduce(
+        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
+        // eslint-disable-next-line @typescript-eslint/unified-signatures
+        initialValue: TInput,
+    ): Promise<TInput>;
+    reduce<TOutput>(
+        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
+        initialValue: TOutput,
+    ): Promise<TOutput>;
     async reduce<TOutput = TInput>(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue?: TOutput,
@@ -160,14 +172,20 @@ export class AsyncIterableCollection<TInput>
     }
 
     async join(separator = ","): Promise<EnsureType<TInput, string>> {
-        return this.reduce<string>((str, item) => {
+        let str: string | null = null;
+        for await (const item of this) {
             if (typeof item !== "string") {
                 throw new TypeCollectionError(
                     "Item type is invalid must be string",
                 );
             }
-            return str + separator + item;
-        }) as Promise<EnsureType<TInput, string>>;
+            if (str === null) {
+                str = item;
+            } else {
+                str = str + separator + item;
+            }
+        }
+        return str as EnsureType<TInput, string>;
     }
 
     collapse(): IAsyncCollection<AsyncCollapse<TInput>> {
@@ -182,14 +200,14 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
-    update<TFilterOutput extends TInput, TMapOutput>(
+    change<TFilterOutput extends TInput, TMapOutput>(
         predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
             TFilterOutput
         >,
         mapFn: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
-    ): IAsyncCollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>> {
+    ): IAsyncCollection<ChangendItem<TInput, TFilterOutput, TMapOutput>> {
         return new AsyncIterableCollection(
             new AsyncUpdateIterable(this, predicateFn, mapFn),
         );
@@ -199,7 +217,7 @@ export class AsyncIterableCollection<TInput>
         if (page < 0) {
             return this.skip(page * pageSize).take(pageSize);
         }
-        return this.skip((page - 1) * pageSize).take(page * pageSize);
+        return this.skip((page - 1) * pageSize).take(pageSize);
     }
 
     async sum(): Promise<EnsureType<TInput, number>> {

@@ -17,7 +17,7 @@ import {
     type Transform,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type UpdatedItem,
+    type ChangendItem,
     type Reduce,
 } from "@/contracts/collection/_module";
 import {
@@ -130,6 +130,16 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         return new IterableCollection(new MapIterable(this, mapFn));
     }
 
+    reduce(reduceFn: Reduce<TInput, ICollection<TInput>, TInput>): TInput;
+    reduce(
+        reduceFn: Reduce<TInput, ICollection<TInput>, TInput>,
+        // eslint-disable-next-line @typescript-eslint/unified-signatures
+        initialValue: TInput,
+    ): TInput;
+    reduce<TOutput>(
+        reduceFn: Reduce<TInput, ICollection<TInput>, TOutput>,
+        initialValue: TOutput,
+    ): TOutput;
     reduce<TOutput = TInput>(
         reduceFn: Reduce<TInput, ICollection<TInput>, TOutput>,
         initialValue?: TOutput,
@@ -178,14 +188,20 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     join(separator = ","): EnsureType<TInput, string> {
         try {
-            return this.reduce<string>((str, item) => {
+            let str: string | null = null;
+            for (const item of this) {
                 if (typeof item !== "string") {
                     throw new TypeCollectionError(
                         "Item type is invalid must be string",
                     );
                 }
-                return str + separator + item;
-            }) as EnsureType<TInput, string>;
+                if (str === null) {
+                    str = item as string;
+                } else {
+                    str = str + separator + (item as string);
+                }
+            }
+            return str as EnsureType<TInput, string>;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -210,10 +226,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         return new IterableCollection(new FlatMapIterable(this, mapFn));
     }
 
-    update<TFilterOutput extends TInput, TMapOutput>(
+    change<TFilterOutput extends TInput, TMapOutput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-    ): ICollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>> {
+    ): ICollection<ChangendItem<TInput, TFilterOutput, TMapOutput>> {
         return new IterableCollection(
             new UpdateIterable(this, predicateFn, mapFn),
         );
@@ -223,7 +239,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         if (page < 0) {
             return this.skip(page * pageSize).take(pageSize);
         }
-        return this.skip((page - 1) * pageSize).take(page * pageSize);
+        return this.skip((page - 1) * pageSize).take(pageSize);
     }
 
     sum(): EnsureType<TInput, number> {

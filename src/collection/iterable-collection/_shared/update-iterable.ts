@@ -5,14 +5,14 @@ import {
     type Map,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type UpdatedItem,
+    type ChangendItem,
 } from "@/contracts/collection/_module";
 
 /**
  * @internal
  */
 export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
-    implements Iterable<UpdatedItem<TInput, TFilterOutput, TMapOutput>>
+    implements Iterable<ChangendItem<TInput, TFilterOutput, TMapOutput>>
 {
     constructor(
         private collection: ICollection<TInput>,
@@ -25,7 +25,7 @@ export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
     ) {}
 
     *[Symbol.iterator](): Iterator<
-        UpdatedItem<TInput, TFilterOutput, TMapOutput>
+        ChangendItem<TInput, TFilterOutput, TMapOutput>
     > {
         try {
             for (const [index, item] of this.collection.entries()) {

@@ -17,7 +17,7 @@ import {
     type Transform,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type UpdatedItem,
+    type ChangendItem,
     type Reduce,
     type ForEach,
 } from "@/contracts/collection/_module";
@@ -152,6 +152,16 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
+    reduce(reduceFn: Reduce<TInput, ICollection<TInput>, TInput>): TInput;
+    reduce(
+        reduceFn: Reduce<TInput, ICollection<TInput>, TInput>,
+        // eslint-disable-next-line @typescript-eslint/unified-signatures
+        initialValue: TInput,
+    ): TInput;
+    reduce<TOutput>(
+        reduceFn: Reduce<TInput, ICollection<TInput>, TOutput>,
+        initialValue: TOutput,
+    ): TOutput;
     reduce<TOutput = TInput>(
         reduceFn: Reduce<TInput, ICollection<TInput>, TOutput>,
         initialValue?: TOutput,
@@ -193,14 +203,14 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     join(separator = ","): EnsureType<TInput, string> {
         try {
-            return this.reduce<string>((str, item) => {
+            for (const item of this) {
                 if (typeof item !== "string") {
                     throw new TypeCollectionError(
                         "Item type is invalid must be string",
                     );
                 }
-                return str + separator + item;
-            }) as EnsureType<TInput, string>;
+            }
+            return this.array.join(separator) as EnsureType<TInput, string>;
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -216,11 +226,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     collapse(): ICollection<Collapse<TInput>> {
-        const items: TInput[] = [];
         try {
+            const items: TInput[] = [];
             for (const item of this.array) {
                 if (isIterable<TInput>(item)) {
-                    items.push(...items);
+                    items.push(...item);
                 } else {
                     items.push(item);
                 }
@@ -263,10 +273,10 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    update<TFilterOutput extends TInput, TMapOutput>(
+    change<TFilterOutput extends TInput, TMapOutput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-    ): ICollection<UpdatedItem<TInput, TFilterOutput, TMapOutput>> {
+    ): ICollection<ChangendItem<TInput, TFilterOutput, TMapOutput>> {
         try {
             return new ListCollection(
                 this.array.map((item, index) => {
@@ -294,7 +304,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         if (page < 0) {
             return this.skip(page * pageSize).take(pageSize);
         }
-        return this.skip((page - 1) * pageSize).take(page * pageSize);
+        return this.skip((page - 1) * pageSize).take(pageSize);
     }
 
     sum(): EnsureType<TInput, number> {
@@ -1017,7 +1027,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             let collection: ICollection<TInput> = new ListCollection<TInput>(
                 [],
             );
-            for (let index = 0; index < amount - 1; index++) {
+            for (let index = 0; index < amount; index++) {
                 collection = collection.append(this);
             }
             return collection;

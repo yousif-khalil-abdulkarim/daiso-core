@@ -196,6 +196,16 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.join()).toBe("a,b,c");
         });
     });
+    describe("method: collapse", () => {
+        test("Should flatten one level", async () => {
+            const collection = new AsyncIterableCollection([
+                [1, 2],
+                [3, 4],
+            ]);
+            const collapsed = collection.collapse();
+            expect(await collapsed.toArray()).toEqual([1, 2, 3, 4]);
+        });
+    });
     describe("method: flatMap", () => {
         test("Should apply flatmap when given an Iterable", async () => {
             const collection = new AsyncIterableCollection([
@@ -302,7 +312,7 @@ describe("class: AsyncIterableCollection", () => {
             ]);
         });
     });
-    describe("method: update", () => {
+    describe("method: change", () => {
         test("Should change all the items that match the predicate function", async () => {
             const collection = new AsyncIterableCollection([
                     "a",
@@ -312,7 +322,7 @@ describe("class: AsyncIterableCollection", () => {
                     "c",
                     "cccc",
                 ]),
-                newCollection = collection.update(
+                newCollection = collection.change(
                     (item) => item.length >= 2,
                     (item) => item.slice(0, -1),
                 );
@@ -336,7 +346,7 @@ describe("class: AsyncIterableCollection", () => {
                 ]),
                 indexes: number[] = [];
             await collection
-                .update(
+                .change(
                     (item, index) => {
                         indexes.push(index);
                         return item.length >= 2;
@@ -357,7 +367,7 @@ describe("class: AsyncIterableCollection", () => {
                 ]),
                 indexes: number[] = [];
             await collection
-                .update(
+                .change(
                     (item) => item.length >= 2,
                     (item, index) => {
                         indexes.push(index);
@@ -376,7 +386,7 @@ describe("class: AsyncIterableCollection", () => {
                     "c",
                     "cccc",
                 ]),
-                newCollection = collection.update(
+                newCollection = collection.change(
                     // eslint-disable-next-line @typescript-eslint/require-await
                     async (item) => item.length >= 2,
                     // eslint-disable-next-line @typescript-eslint/require-await
@@ -434,6 +444,13 @@ describe("class: AsyncIterableCollection", () => {
                 collection = new AsyncIterableCollection(arr),
                 newCollection = collection.page(-2, 2);
             expect(await newCollection.toArray()).toEqual(arr.slice(-4, -2));
+        });
+        test("Should return the 4:nth, 5:nth, 6:nth items when page is 2 and pageSize 3", async () => {
+            const collection = new AsyncIterableCollection([
+                1, 2, 3, 4, 5, 6, 7, 8, 9,
+            ]);
+            const page = collection.page(2, 3);
+            expect(await page.toArray()).toEqual([4, 5, 6]);
         });
     });
     describe("method: sum", () => {
@@ -1643,7 +1660,7 @@ describe("class: AsyncIterableCollection", () => {
         test("Should repeath all elements 2 times when input is 3", async () => {
             const arr = [1, 2, 3];
             const collection = new AsyncIterableCollection(arr);
-            const newCollection = collection.repeat(4);
+            const newCollection = collection.repeat(3);
             expect(await newCollection.toArray()).toEqual([
                 ...arr,
                 ...arr,

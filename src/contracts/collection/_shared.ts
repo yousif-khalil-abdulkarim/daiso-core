@@ -49,7 +49,7 @@ export class TypeCollectionError extends CollectionError {
     }
 }
 
-export type UpdatedItem<TInput, TFilterOutput, TMapOutput> =
+export type ChangendItem<TInput, TFilterOutput, TMapOutput> =
     | TInput
     | TFilterOutput
     | TMapOutput;

@@ -31,7 +31,9 @@ export class AsyncCrossJoinIterable<TInput, TExtended>
                 ...this.iterables.map<IAsyncCollection<TExtended>>((iterable) =>
                     this.makeCollection(iterable),
                 ),
-            ]).reduce<IAsyncCollection<IAsyncCollection<TInput | TExtended>>>(
+            ] as IAsyncCollection<TInput | TExtended>[]).reduce<
+                IAsyncCollection<IAsyncCollection<TInput | TExtended>>
+            >(
                 (a, b) => {
                     return a
                         .map((x) =>

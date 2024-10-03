@@ -21,7 +21,7 @@ export class AsyncRepeatIterable<TInput> implements AsyncIterable<TInput> {
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
         try {
             let collection = this.makeAsyncCollection<TInput>([]);
-            for (let index = 0; index < this.amount - 1; index++) {
+            for (let index = 0; index < this.amount; index++) {
                 collection = collection.append(this.collection);
             }
             yield* collection;

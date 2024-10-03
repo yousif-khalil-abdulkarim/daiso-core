@@ -5,7 +5,7 @@ import {
     type IAsyncCollection,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type UpdatedItem,
+    type ChangendItem,
 } from "@/contracts/collection/_module";
 
 /**
@@ -15,7 +15,7 @@ export class AsyncUpdateIterable<
     TInput,
     TFilterOutput extends TInput,
     TMapOutput,
-> implements AsyncIterable<UpdatedItem<TInput, TFilterOutput, TMapOutput>>
+> implements AsyncIterable<ChangendItem<TInput, TFilterOutput, TMapOutput>>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
@@ -32,7 +32,7 @@ export class AsyncUpdateIterable<
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<
-        UpdatedItem<TInput, TFilterOutput, TMapOutput>
+        ChangendItem<TInput, TFilterOutput, TMapOutput>
     > {
         try {
             for await (const [index, item] of this.collection.entries()) {
