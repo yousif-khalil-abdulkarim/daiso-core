@@ -21,6 +21,8 @@ import {
     type UnexpectedCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type TypeCollectionError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type EmptyCollectionError,
     type ChangendItem,
     AsyncReduce,
 } from "@/contracts/collection/_shared";
@@ -40,11 +42,12 @@ export type AsyncCollapse<TValue> = TValue extends
 
 /**
  * <i>IAsyncCollection</i> is immutable. The <i>throwOnIndexOverflow</i> parameter in the <i>IAsyncCollection</i> methods is used for preventing the index to overflow by throwing an error.
- * @throws {CollectionError}
+ * @throws {CollectionError} {@link CollectionError}
  * @throws {UnexpectedCollectionError}
  * @throws {ItemNotFoundCollectionError}
  * @throws {MultipleItemsFoundCollectionError}
  * @throws {TypeCollectionError}
+ * @throws {EmptyCollectionError}
  * @group Contracts
  */
 export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
@@ -232,6 +235,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     sum(): Promise<EnsureType<TInput, number>>;
 
@@ -246,6 +250,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     average(): Promise<EnsureType<TInput, number>>;
 
@@ -260,6 +265,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     median(): Promise<EnsureType<TInput, number>>;
 
@@ -274,6 +280,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     min(): Promise<EnsureType<TInput, number>>;
 
@@ -288,6 +295,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     max(): Promise<EnsureType<TInput, number>>;
 
@@ -301,6 +309,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // 33.333
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     percentage(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,

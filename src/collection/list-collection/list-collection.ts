@@ -20,6 +20,7 @@ import {
     type ChangendItem,
     type Reduce,
     type ForEach,
+    EmptyCollectionError,
 } from "@/contracts/collection/_module";
 import { type EnsureType, type Lazyable } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
@@ -308,6 +309,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     sum(): EnsureType<TInput, number> {
+        if (this.isEmpty()) {
+            throw new EmptyCollectionError(
+                "Collection is empty therby operation cannot be performed",
+            );
+        }
         return this.reduce((sum, item) => {
             if (typeof item !== "number") {
                 throw new TypeCollectionError(
@@ -319,6 +325,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     average(): EnsureType<TInput, number> {
+        if (this.isEmpty()) {
+            throw new EmptyCollectionError(
+                "Collection is empty therby operation cannot be performed",
+            );
+        }
         return ((this.sum() as number) / this.size()) as EnsureType<
             TInput,
             number
@@ -327,6 +338,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     median(): EnsureType<TInput, number> {
         try {
+            if (this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             const nbrs = this.array.map((item) => {
                     if (typeof item !== "number") {
                         throw new TypeCollectionError(
@@ -365,6 +381,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     min(): EnsureType<TInput, number> {
         try {
+            if (this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let min = 0;
             for (const item of this.array) {
                 if (typeof item !== "number") {
@@ -395,6 +416,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     max(): EnsureType<TInput, number> {
         try {
+            if (this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let max = 0;
             for (const item of this.array) {
                 if (typeof item !== "number") {
@@ -425,6 +451,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
         try {
+            if (this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             return (this.count(predicateFn) / this.size()) * 100;
         } catch (error: unknown) {
             if (

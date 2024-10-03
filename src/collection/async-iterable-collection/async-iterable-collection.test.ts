@@ -469,6 +469,16 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.sum()).toBe(10);
             expect(await collection.sum()).toBe(10);
         });
+        test("Should throw CollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.sum();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.sum();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+        });
     });
     describe("method: average", () => {
         test("Should calculate average Iterable of [1, 2, 3, 4] to 2.5", async () => {
@@ -485,6 +495,16 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]);
             expect(await collection.average()).toBe(2.5);
             expect(await collection.average()).toBe(2.5);
+        });
+        test("Should throw CollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.average();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.average();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
         });
     });
     describe("method: median", () => {
@@ -506,6 +526,16 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
             expect(await collection.median()).toBe(3);
             expect(await collection.median()).toBe(3);
+        });
+        test("Should throw CollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.median();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.median();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
         });
     });
     describe("method: min", () => {
@@ -531,6 +561,16 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.min()).toBe(-2);
             expect(await collection.min()).toBe(-2);
         });
+        test("Should throw CollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.min();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.min();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+        });
     });
     describe("method: max", () => {
         test("Should return the largest number", async () => {
@@ -554,6 +594,16 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection([2, 1, 3, -2, 4]);
             expect(await collection.max()).toBe(4);
             expect(await collection.max()).toBe(4);
+        });
+        test("Should throw CollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.max();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.max();
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
         });
     });
     describe("method: percentage", () => {
@@ -610,6 +660,16 @@ describe("class: AsyncIterableCollection", () => {
                 // eslint-disable-next-line @typescript-eslint/require-await
                 await collection.percentage(async (item) => item === "a"),
             ).toBe(50);
+        });
+        test("Should throw CollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.percentage((item) => item === "a");
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", async () => {
+            const collection = new AsyncIterableCollection([]);
+            const promise = collection.percentage((item) => item === "a");
+            await expect(promise).rejects.toBeInstanceOf(CollectionError);
         });
     });
     describe("method: some", () => {

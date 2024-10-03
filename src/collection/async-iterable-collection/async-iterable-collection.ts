@@ -19,6 +19,7 @@ import {
     TypeCollectionError,
     type ChangendItem,
     type AsyncReduce,
+    EmptyCollectionError,
 } from "@/contracts/collection/_module";
 import {
     AsyncCrossJoinIterable,
@@ -222,6 +223,11 @@ export class AsyncIterableCollection<TInput>
 
     async sum(): Promise<EnsureType<TInput, number>> {
         try {
+            if (await this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let sum = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
@@ -248,6 +254,11 @@ export class AsyncIterableCollection<TInput>
 
     async average(): Promise<EnsureType<TInput, number>> {
         try {
+            if (await this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let size = 0,
                 sum = 0;
             for await (const item of this) {
@@ -276,7 +287,9 @@ export class AsyncIterableCollection<TInput>
 
     async median(): Promise<EnsureType<TInput, number>> {
         if (await this.isEmpty()) {
-            return 0 as EnsureType<TInput, number>;
+            throw new EmptyCollectionError(
+                "Collection is empty therby operation cannot be performed",
+            );
         }
         const size = await this.size();
         if (size === 0) {
@@ -318,6 +331,11 @@ export class AsyncIterableCollection<TInput>
 
     async min(): Promise<EnsureType<TInput, number>> {
         try {
+            if (await this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let min = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
@@ -348,6 +366,11 @@ export class AsyncIterableCollection<TInput>
 
     async max(): Promise<EnsureType<TInput, number>> {
         try {
+            if (await this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let max = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
@@ -381,7 +404,9 @@ export class AsyncIterableCollection<TInput>
     ): Promise<number> {
         try {
             if (await this.isEmpty()) {
-                return 0;
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
             }
             let part = 0,
                 total = 0;

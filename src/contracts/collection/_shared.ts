@@ -42,10 +42,23 @@ export class MultipleItemsFoundCollectionError extends CollectionError {
     }
 }
 
+/**
+ * @group Errors
+ */
 export class TypeCollectionError extends CollectionError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = TypeCollectionError.name;
+    }
+}
+
+/**
+ * @group Errors
+ */
+export class EmptyCollectionError extends CollectionError {
+    constructor(message: string, cause?: unknown) {
+        super(message, { cause });
+        this.name = EmptyCollectionError.name;
     }
 }
 

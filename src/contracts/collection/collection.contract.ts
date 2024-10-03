@@ -20,6 +20,8 @@ import {
     type UnexpectedCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type TypeCollectionError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type EmptyCollectionError,
     type ChangendItem,
     type Reduce,
 } from "@/contracts/collection/_shared";
@@ -43,6 +45,7 @@ export type Collapse<TValue> = TValue extends
  * @throws {ItemNotFoundCollectionError}
  * @throws {MultipleItemsFoundCollectionError}
  * @throws {TypeCollectionError}
+ * @throws {EmptyCollectionError}
  * @group Contracts
  */
 export type ICollection<TInput> = Iterable<TInput> & {
@@ -215,6 +218,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
 
     /**
      * The <i>sum</i> method returns the sum of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * If the collection is empty an error will also be thrown.
      * @example
      * import { ListCollection } from "@daiso-tech/core";;
      *
@@ -224,11 +228,13 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     sum(): EnsureType<TInput, number>;
 
     /**
      * The <i>average</i> method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * If the collection is empty an error will also be thrown.
      * @example
      * import { ListCollection } from "@daiso-tech/core";;
      *
@@ -238,11 +244,13 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     average(): EnsureType<TInput, number>;
 
     /**
      * The <i>median</i> method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * If the collection is empty an error will also be thrown.
      * @example
      * import { ListCollection } from "@daiso-tech/core";;
      *
@@ -252,11 +260,13 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     median(): EnsureType<TInput, number>;
 
     /**
      * The <i>min</i> method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * If the collection is empty an error will also be thrown.
      * @example
      * import { ListCollection } from "@daiso-tech/core";;
      *
@@ -266,11 +276,13 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     min(): EnsureType<TInput, number>;
 
     /**
      * The <i>max</i> method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * If the collection is empty an error will also be thrown.
      * @example
      * import { ListCollection } from "@daiso-tech/core";;
      *
@@ -280,11 +292,13 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     max(): EnsureType<TInput, number>;
 
     /**
      * The <i>percentage</i> method may be used to quickly determine the percentage of items in the collection that pass <i>predicateFn</i>.
+     * If the collection is empty an error will also be thrown.
      * @example
      * import { ListCollection } from "@daiso-tech/core";;
      *
@@ -293,6 +307,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * // 33.333
      * @throws {CollectionError} {@link CollectionError}
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
 

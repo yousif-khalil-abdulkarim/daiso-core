@@ -19,6 +19,7 @@ import {
     TypeCollectionError,
     type ChangendItem,
     type Reduce,
+    EmptyCollectionError,
 } from "@/contracts/collection/_module";
 import {
     CrossJoinIterable,
@@ -244,6 +245,11 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     sum(): EnsureType<TInput, number> {
         try {
+            if (this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let sum = 0;
             for (const item of this) {
                 if (typeof item !== "number") {
@@ -270,6 +276,11 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     average(): EnsureType<TInput, number> {
         try {
+            if (this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let size = 0,
                 sum = 0;
             for (const item of this) {
@@ -298,7 +309,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     median(): EnsureType<TInput, number> {
         if (this.isEmpty()) {
-            return 0 as EnsureType<TInput, number>;
+            throw new EmptyCollectionError(
+                "Collection is empty therby operation cannot be performed",
+            );
         }
         const size = this.size();
         if (size === 0) {
@@ -340,6 +353,11 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     min(): EnsureType<TInput, number> {
         try {
+            if (this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let min = 0;
             for (const item of this) {
                 if (typeof item !== "number") {
@@ -370,6 +388,11 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     max(): EnsureType<TInput, number> {
         try {
+            if (this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
             let max = 0;
             for (const item of this) {
                 if (typeof item !== "number") {
@@ -401,7 +424,9 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
         try {
             if (this.isEmpty()) {
-                return 0;
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
             }
             let part = 0,
                 total = 0;

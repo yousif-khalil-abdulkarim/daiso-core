@@ -330,6 +330,18 @@ describe("class: IterableCollection", () => {
             expect(collection.sum()).toBe(10);
             expect(collection.sum()).toBe(10);
         });
+        test("Should throw CollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.sum();
+            }).toThrowError(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.sum();
+            }).toThrowError(CollectionError);
+        });
     });
     describe("method: average", () => {
         test("Should calculate average iterable of [1, 2, 3, 4] to 2.5", () => {
@@ -346,6 +358,18 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([1, 2, 3, 4]);
             expect(collection.average()).toBe(2.5);
             expect(collection.average()).toBe(2.5);
+        });
+        test("Should throw CollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.average();
+            }).toThrowError(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.average();
+            }).toThrowError(CollectionError);
         });
     });
     describe("method: median", () => {
@@ -368,6 +392,18 @@ describe("class: IterableCollection", () => {
             expect(collection.median()).toBe(3);
             expect(collection.median()).toBe(3);
         });
+        test("Should throw CollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.median();
+            }).toThrowError(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.median();
+            }).toThrowError(CollectionError);
+        });
     });
     describe("method: min", () => {
         test("Should return the smallest number", () => {
@@ -385,6 +421,18 @@ describe("class: IterableCollection", () => {
             expect(collection.min()).toBe(-2);
             expect(collection.min()).toBe(-2);
         });
+        test("Should throw CollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.min();
+            }).toThrowError(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.min();
+            }).toThrowError(CollectionError);
+        });
     });
     describe("method: max", () => {
         test("Should return the largest number", () => {
@@ -401,6 +449,18 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection([2, 1, 3, -2, 4]);
             expect(collection.max()).toBe(4);
             expect(collection.max()).toBe(4);
+        });
+        test("Should throw CollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.max();
+            }).toThrowError(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.max();
+            }).toThrowError(CollectionError);
         });
     });
     describe("method: percentage", () => {
@@ -429,6 +489,18 @@ describe("class: IterableCollection", () => {
             const collection = new IterableCollection(["a", "b", "a", "b"]);
             expect(collection.percentage((item) => item === "a")).toBe(50);
             expect(collection.percentage((item) => item === "a")).toBe(50);
+        });
+        test("Should throw CollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.percentage((item) => item === "a");
+            }).toThrowError(CollectionError);
+        });
+        test("Should throw EmptyCollectionError when collection is empty", () => {
+            const collection = new IterableCollection([]);
+            expect(() => {
+                collection.percentage((item) => item === "a");
+            }).toThrowError(CollectionError);
         });
     });
     describe("method: some", () => {
