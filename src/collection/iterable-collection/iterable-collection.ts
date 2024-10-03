@@ -765,8 +765,8 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         );
     }
 
-    shuffle(): ICollection<TInput> {
-        return new IterableCollection(new ShuffleIterable(this));
+    shuffle(mathRandom = Math.random): ICollection<TInput> {
+        return new IterableCollection(new ShuffleIterable(this, mathRandom));
     }
 
     first<TOutput extends TInput>(

@@ -1039,9 +1039,9 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     reverse(chunkSize?: number): IAsyncCollection<TInput>;
 
     /**
-     * The <i>shuffle</i> method randomly shuffles the items in the collection.
+     * The <i>shuffle</i> method randomly shuffles the items in the collection. You can provide a custom Math.random function by passing in <i>mathRandom</i>.
      */
-    shuffle(): IAsyncCollection<TInput>;
+    shuffle(mathRandom?: () => number): IAsyncCollection<TInput>;
 
     /**
      * The <i>first</i> method returns the first item in the collection that passes <i> predicateFn </i>.

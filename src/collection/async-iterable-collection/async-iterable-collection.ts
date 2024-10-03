@@ -787,8 +787,10 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
-    shuffle(): IAsyncCollection<TInput> {
-        return new AsyncIterableCollection(new AsyncShuffleIterable(this));
+    shuffle(mathRandom = Math.random): IAsyncCollection<TInput> {
+        return new AsyncIterableCollection(
+            new AsyncShuffleIterable(this, mathRandom),
+        );
     }
 
     async first<TOutput extends TInput>(

@@ -1347,11 +1347,11 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    shuffle(): ICollection<TInput> {
+    shuffle(mathRandom = Math.random): ICollection<TInput> {
         try {
             const newArray = [...this.array];
             for (let i = newArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
+                const j = Math.floor(mathRandom() * (i + 1));
                 const temp = newArray[i];
                 if (newArray[j] !== undefined) {
                     newArray[i] = newArray[j];

@@ -1014,9 +1014,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
     reverse(chunkSize?: number): ICollection<TInput>;
 
     /**
-     * The <i>shuffle</i> method randomly shuffles the items in the collection.
+     * The <i>shuffle</i> method randomly shuffles the items in the collection. You can provide a custom Math.random function by passing in <i>mathRandom</i>.
      */
-    shuffle(): ICollection<TInput>;
+    shuffle(mathRandom?: () => number): ICollection<TInput>;
 
     /**
      * The <i>first</i> method returns the first item in the collection that passes <i> predicateFn </i>.
