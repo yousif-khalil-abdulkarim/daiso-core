@@ -56,6 +56,7 @@ import {
 } from "@/collection/iterable-collection/_shared/_module";
 import { type Lazyable, type EnsureType } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
+import { simplifyLazyable } from "@/_shared/utilities";
 
 /**
  * All methods that return <i>{@link ICollection}</i> are executed lazly which means they will be executed when the <i>IterableCollection</i> is iterated with <i>forEach</i> method or "for of" loop.
@@ -784,11 +785,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 }
                 index++;
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TOutput;
-                return defaultFn();
-            }
-            return defaultValue;
+            return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -849,11 +846,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             if (matchedItem) {
                 return matchedItem;
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TOutput;
-                return defaultFn();
-            }
-            return defaultValue;
+            return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -896,11 +889,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 index++;
                 beforeItem = item;
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TExtended;
-                return defaultFn();
-            }
-            return defaultValue;
+            return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -941,11 +930,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 hasMatched = predicateFn(item, index, this);
                 index++;
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TExtended;
-                return defaultFn();
-            }
-            return defaultValue;
+            return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||

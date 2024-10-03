@@ -63,6 +63,8 @@ import {
     type EnsureType,
 } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
+import { simplifyAsyncLazyable } from "@/_shared/utilities";
+
 /**
  * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly which means they will be executed when the <i>AsyncIterableCollection</i> is iterated with <i>forEach</i> method or "for await of" loop.
  * The rest of the methods are executed eagerly.
@@ -791,11 +793,7 @@ export class AsyncIterableCollection<TInput>
                     return item as TOutput;
                 }
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TOutput;
-                return defaultFn();
-            }
-            return defaultValue;
+            return await simplifyAsyncLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -844,11 +842,7 @@ export class AsyncIterableCollection<TInput>
             if (matchedItem) {
                 return matchedItem;
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TOutput;
-                return defaultFn();
-            }
-            return defaultValue;
+            return await simplifyAsyncLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -893,11 +887,7 @@ export class AsyncIterableCollection<TInput>
                 index++;
                 beforeItem = item;
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TExtended;
-                return defaultFn();
-            }
-            return defaultValue;
+            return await simplifyAsyncLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -942,11 +932,7 @@ export class AsyncIterableCollection<TInput>
                 hasMatched = await predicateFn(item, index, this);
                 index++;
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TExtended;
-                return defaultFn();
-            }
-            return defaultValue;
+            return await simplifyAsyncLazyable(defaultValue);
         } catch (error: unknown) {
             if (error instanceof CollectionError) {
                 throw error;

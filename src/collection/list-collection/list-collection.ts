@@ -23,6 +23,7 @@ import {
 } from "@/contracts/collection/_module";
 import { type EnsureType, type Lazyable } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
+import { simplifyLazyable } from "@/_shared/utilities";
 
 /**
  * All methods in <i>ListCollection</i> are executed eagerly. The <i>throwOnIndexOverflow</i> parameter in the <i>ListCollection</i> methods doesnt have any affect.
@@ -1400,11 +1401,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                     return firstItem as TOutput;
                 }
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TOutput;
-                return defaultFn();
-            }
-            return defaultValue;
+            return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -1482,11 +1479,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                     return lastItem as TOutput;
                 }
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TOutput;
-                return defaultFn();
-            }
-            return defaultValue;
+            return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -1555,11 +1548,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                     return beforeItem;
                 }
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TExtended;
-                return defaultFn();
-            }
-            return defaultValue;
+            return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
@@ -1626,11 +1615,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                     return beforeItem;
                 }
             }
-            if (typeof defaultValue === "function") {
-                const defaultFn = defaultValue as () => TExtended;
-                return defaultFn();
-            }
-            return defaultValue;
+            return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
             if (
                 error instanceof CollectionError ||
