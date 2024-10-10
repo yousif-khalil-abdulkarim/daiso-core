@@ -20,6 +20,7 @@ import {
     type ChangendItem,
     type Reduce,
     EmptyCollectionError,
+    type CrossJoinResult,
 } from "@/contracts/collection/_module";
 import {
     CrossJoinIterable,
@@ -82,10 +83,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         try {
             yield* this.iterable;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -174,10 +172,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return output;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -204,10 +199,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return str as EnsureType<TInput, string>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -261,10 +253,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return sum as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -294,10 +283,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return (sum / size) as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -373,10 +359,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return min as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -408,10 +391,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return max as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -438,10 +418,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return (part / total) * 100;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -464,10 +441,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return false;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -492,10 +466,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return isTrue;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -575,10 +546,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         try {
             return callback(this);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -756,13 +724,13 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         );
     }
 
-    crossJoin<TExtended = TInput>(
-        ...iterables: Array<Iterable<TExtended>>
-    ): ICollection<ICollection<TInput | TExtended>> {
+    crossJoin<TExtended>(
+        iterable: Iterable<TExtended>,
+    ): ICollection<CrossJoinResult<TInput, TExtended>> {
         return new IterableCollection(
             new CrossJoinIterable(
-                this as ICollection<TInput>,
-                iterables,
+                this,
+                iterable,
                 IterableCollection.makeCollection,
             ),
         );
@@ -800,10 +768,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         try {
             return this.firstOr(null, predicateFn);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -828,10 +793,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -857,10 +819,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         try {
             return this.lastOr(null, predicateFn);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -889,10 +848,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -932,10 +888,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -973,10 +926,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1016,10 +966,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return matchedItem;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1043,10 +990,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return size;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1067,10 +1011,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return true;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1095,10 +1036,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return -1;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1120,10 +1058,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             return matchedIndex;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1141,10 +1076,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 index++;
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1158,10 +1090,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         try {
             return [...this];
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
