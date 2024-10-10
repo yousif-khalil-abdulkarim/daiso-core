@@ -21,13 +21,14 @@ import {
     type Reduce,
     type ForEach,
     EmptyCollectionError,
+    type CrossJoinResult,
 } from "@/contracts/collection/_module";
 import { type EnsureType, type Lazyable } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
 import { simplifyLazyable } from "@/_shared/utilities";
 
 /**
- * All methods in <i>ListCollection</i> are executed eagerly. The <i>throwOnIndexOverflow</i> parameter in the <i>ListCollection</i> methods doesnt have any affect.
+ * All methods in <i>ListCollection</i> are executed eagerly.
  * @group Adapters
  */
 export class ListCollection<TInput> implements ICollection<TInput> {
@@ -52,10 +53,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return new ListCollection(this.array.entries());
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -69,10 +67,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return new ListCollection(this.array.keys());
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -96,10 +91,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 ) as TOutput[],
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -119,10 +111,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 ) as Exclude<TInput, TOutput>[],
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -140,10 +129,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 this.array.map((item, index) => mapFn(item, index, this)),
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -189,10 +175,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
             }) as any;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -213,10 +196,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return this.array.join(separator) as EnsureType<TInput, string>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -238,10 +218,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return new ListCollection(items as Collapse<TInput>[]);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -261,10 +238,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 ]),
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -288,10 +262,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 }),
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -366,10 +337,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return a as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -401,10 +369,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return min as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -436,10 +401,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return max as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -458,10 +420,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return (this.count(predicateFn) / this.size()) * 100;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -479,10 +438,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 predicateFn(item, index, this),
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -500,10 +456,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 predicateFn(item, index, this),
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -517,10 +470,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return new ListCollection(this.array.slice(0, limit));
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -543,10 +493,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return new ListCollection(items);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -564,10 +511,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 (...arguments_) => !predicateFn(...arguments_),
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -581,10 +525,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return new ListCollection(this.array.slice(offset));
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -610,10 +551,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return new ListCollection(items);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -631,10 +569,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 (...arguments_) => !predicateFn(...arguments_),
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -654,10 +589,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return this as ICollection<TInput | TExtended>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -673,10 +605,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.when(this.isEmpty(), callback);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -693,10 +622,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.when(!condition, callback);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -712,10 +638,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.when(this.isNotEmpty(), callback);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -731,10 +654,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return callback(this);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -749,10 +669,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             callback(this);
             return new ListCollection(this);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -774,10 +691,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return new ListCollection(chunks);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -808,10 +722,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             chunks.push(currentChunk);
             return new ListCollection(chunks);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -848,10 +759,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
             return new ListCollection<ICollection<TInput>>(chunks);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -879,10 +787,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 new ListCollection(chunkB),
             ]);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -913,10 +818,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return chunks;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -946,10 +848,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
             return new ListCollection(map as any);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -978,10 +877,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return new ListCollection(map);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1008,10 +904,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return new ListCollection(items);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1040,10 +933,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 );
             });
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1063,10 +953,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return collection;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1101,10 +988,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             resultItemsArray.push(...this);
             return new ListCollection<TInput | TExtended>(resultItemsArray);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1139,10 +1023,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             resultItemsArray.unshift(...this);
             return new ListCollection<TInput | TExtended>(resultItemsArray);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1156,10 +1037,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return new ListCollection(this.array.slice(start, end));
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1175,10 +1053,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return new ListCollection([...iterable, ...this.array]);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1194,10 +1069,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return new ListCollection([...this.array, ...iterable]);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1222,10 +1094,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             newArray.splice(index, 0, ...iterable);
             return new ListCollection(newArray);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1256,10 +1125,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 ...lastPart,
             ]) as ICollection<TInput | TExtended>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1269,39 +1135,47 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
     }
 
-    crossJoin<TExtended = TInput>(
-        ...iterables: Array<Iterable<TExtended>>
-    ): ICollection<ICollection<TInput | TExtended>> {
+    crossJoin<TExtended>(
+        iterable: Iterable<TExtended>,
+    ): ICollection<CrossJoinResult<TInput, TExtended>> {
         try {
-            return new ListCollection<ICollection<TInput | TExtended>>([
-                this as ICollection<TInput>,
-                ...iterables.map<ICollection<TExtended>>(
-                    (iterable) => new ListCollection(iterable),
-                ),
-            ]).reduce<ICollection<ICollection<TInput | TExtended>>>(
-                (a, b) => {
-                    return a
-                        .map((x) =>
-                            b.map((y) => {
-                                return x.append([y]);
-                            }),
-                        )
-                        .reduce<ICollection<ICollection<TInput | TExtended>>>(
-                            (c, b) => c.append(b),
-                            new ListCollection<ICollection<TInput | TExtended>>(
+            const array: Array<Array<TInput | TExtended>> = [
+                [...this],
+                [...iterable],
+            ]
+                .reduce<Array<Array<TInput | TExtended>>>(
+                    (a, b) => {
+                        return a
+                            .map((x) => {
+                                return b.map((y) => {
+                                    return [...x, y];
+                                });
+                            })
+                            .reduce<Array<Array<TInput | TExtended>>>(
+                                (c, b) => [...c, ...b],
                                 [],
-                            ),
-                        );
-                },
-                new ListCollection<ICollection<TInput | TExtended>>([
-                    new ListCollection<TInput | TExtended>([]),
-                ]),
+                            );
+                    },
+                    [[] as Array<TInput | TExtended>],
+                )
+                .map((combination) => {
+                    // Flatting the array
+                    return combination.reduce<Array<TInput | TExtended>>(
+                        (a, b) => {
+                            return [
+                                ...a,
+                                ...(isIterable(b) ? b : [b]),
+                            ] as Array<TInput | TExtended>;
+                        },
+                        [],
+                    );
+                });
+
+            return new ListCollection(
+                array as Array<CrossJoinResult<TInput, TExtended>>,
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1331,10 +1205,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return new ListCollection(items);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1348,10 +1219,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return new ListCollection(this.array.sort(comparator));
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1365,10 +1233,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return new ListCollection([...this.array].reverse());
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1393,10 +1258,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return new ListCollection(newArray);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1412,10 +1274,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.firstOr(null, predicateFn);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1444,10 +1303,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1467,10 +1323,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return item;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1486,10 +1339,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.lastOr(null, predicateFn);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1522,10 +1372,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1545,10 +1392,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return item;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1562,10 +1406,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.beforeOr(null, predicateFn);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1591,10 +1432,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1612,10 +1450,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return item;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1629,10 +1464,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.afterOr(null, predicateFn);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1658,10 +1490,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return simplifyLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1679,10 +1508,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return item;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1713,10 +1539,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return matchedItem as TOutput;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1730,10 +1553,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.filter((_item, index) => index % step === 0);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1747,10 +1567,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.filter(predicateFn).size();
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1764,10 +1581,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.array.length;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1781,10 +1595,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.array.length === 0;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1798,10 +1609,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return this.array.length !== 0;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1817,10 +1625,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 predicateFn(item, index, this),
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1840,10 +1645,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             }
             return matchedIndex;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1859,10 +1661,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 callback(item, index, this);
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1876,10 +1675,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         try {
             return [...this.array];
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

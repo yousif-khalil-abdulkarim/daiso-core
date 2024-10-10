@@ -1463,9 +1463,7 @@ describe("class: ListCollection", () => {
         test(`Should return 4 combinations when input iterable is [1, 2] and ["a", "b"]`, () => {
             const collection = new ListCollection([1, 2]);
             const matrix = collection.crossJoin(["a", "b"]);
-            expect(
-                matrix.map((collection) => collection.toArray()).toArray(),
-            ).toEqual([
+            expect(matrix.toArray()).toEqual([
                 [1, "a"],
                 [1, "b"],
                 [2, "a"],
@@ -1474,10 +1472,10 @@ describe("class: ListCollection", () => {
         });
         test(`Should return 8 combinations when input iterable is [1, 2], ["a", "b"] and ["I", "II"]`, () => {
             const collection = new ListCollection([1, 2]);
-            const matrix = collection.crossJoin(["a", "b"], ["I", "II"]);
-            expect(
-                matrix.map((collection) => collection.toArray()).toArray(),
-            ).toEqual([
+            const matrix = collection
+                .crossJoin(["a", "b"])
+                .crossJoin(["I", "II"]);
+            expect(matrix.toArray()).toEqual([
                 [1, "a", "I"],
                 [1, "a", "II"],
                 [1, "b", "I"],
