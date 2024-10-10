@@ -24,6 +24,7 @@ import {
     type EmptyCollectionError,
     type ChangendItem,
     type Reduce,
+    type CrossJoinResult,
 } from "@/contracts/collection/_shared";
 import {
     type Lazyable,
@@ -931,8 +932,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * import { ListCollection } from "@daiso-tech/core";;
      *
      * const collection = new ListCollection([1, 2]);
-     * const matrix = collection.crossJoin(["a", "b"]);
-     * matrix.map(collection => collection.toArray()).toArray();
+     * const matrix = collection.cross(["a", "b"]);
+     * matrix.toArray();
      * // [
      * //  [1, "a"],
      * //  [1, "b"],
@@ -943,8 +944,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * import { ListCollection } from "@daiso-tech/core";;
      *
      * const collection = new ListCollection([1, 2]);
-     * const matrix = collection.crossJoin(["a", "b"], ["I", "II"]);
-     * matrix.map(collection => collection.toArray()).toArray();
+     * const matrix = collection.cross(["a", "b"]).cross(["I", "II"]);
+     * matrix.toArray();
      * // [
      * //  [1, "a", "I"],
      * //  [1, "a", "II"],
@@ -956,9 +957,9 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * //  [2, "b", "II"],
      * // ]
      */
-    crossJoin<TExtended = TInput>(
-        ...iterables: Array<Iterable<TExtended>>
-    ): ICollection<ICollection<TInput | TExtended>>;
+    crossJoin<TExtended>(
+        iterable: Iterable<TExtended>,
+    ): ICollection<CrossJoinResult<TInput, TExtended>>;
 
     /**
      * The <i>zip</i> method merges together the values of <i>iterable</i> with the values of the collection at their corresponding index.

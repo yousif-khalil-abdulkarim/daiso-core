@@ -174,3 +174,10 @@ export type AsyncTransform_<TInput, TOutput> = (
 export type AsyncTransform<TInput, TOutput> =
     | Transform<TInput, TOutput>
     | AsyncTransform_<TInput, TOutput>;
+
+export type CrossJoinResult<TInput, TExtended> = TInput extends [
+    infer R,
+    ...infer L,
+]
+    ? [R, ...L, TExtended]
+    : [TInput, TExtended];

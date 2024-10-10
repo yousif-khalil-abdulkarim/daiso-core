@@ -25,6 +25,7 @@ import {
     type EmptyCollectionError,
     type ChangendItem,
     AsyncReduce,
+    CrossJoinResult,
 } from "@/contracts/collection/_shared";
 import {
     type RecordItem,
@@ -947,11 +948,11 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     /**
      * The <i>crossJoin</i> method cross joins the collection's values among <i>iterables</i>, returning a Cartesian product with all possible permutations.
      * @example
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import { ListCollection } from "@daiso-tech/core";;
      *
-     * const collection = new AsyncIterableCollection([1, 2]);
-     * const matrix = collection.crossJoin(["a", "b"]);
-     * await matrix.map(collection => collection.toArray()).toArray();
+     * const collection = new ListCollection([1, 2]);
+     * const matrix = collection.cross(["a", "b"]);
+     * await matrix.toArray();
      * // [
      * //  [1, "a"],
      * //  [1, "b"],
@@ -959,11 +960,11 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * //  [2, "b"],
      * // ]
      * @example
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import { ListCollection } from "@daiso-tech/core";;
      *
-     * const collection = new AsyncIterableCollection([1, 2]);
-     * const matrix = collection.crossJoin(["a", "b"], ["I", "II"]);
-     * await matrix.map(collection => collection.toArray()).toArray();
+     * const collection = new ListCollection([1, 2]);
+     * const matrix = collection.cross(["a", "b"]).cross(["I", "II"]);
+     * await matrix.toArray();
      * // [
      * //  [1, "a", "I"],
      * //  [1, "a", "II"],
@@ -975,9 +976,9 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * //  [2, "b", "II"],
      * // ]
      */
-    crossJoin<TExtended = TInput>(
-        ...iterables: Array<AsyncIterableValue<TExtended>>
-    ): IAsyncCollection<IAsyncCollection<TInput | TExtended>>;
+    crossJoin<TExtended>(
+        iterable: AsyncIterableValue<TExtended>,
+    ): IAsyncCollection<CrossJoinResult<TInput, TExtended>>;
 
     /**
      * The <i>zip</i> method merges together the values of <i>iterable</i> with the values of the collection at their corresponding index.
