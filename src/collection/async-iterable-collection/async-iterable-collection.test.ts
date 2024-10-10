@@ -2007,51 +2007,22 @@ describe("class: AsyncIterableCollection", () => {
         });
     });
     describe("method: crossJoin", () => {
-        test(`Should return 4 combinations when input Iterable is [1, 2] and ["a", "b"]`, async () => {
+        test(`Should return 4 combinations when input iterable is [1, 2] and ["a", "b"]`, async () => {
             const collection = new AsyncIterableCollection([1, 2]);
             const matrix = collection.crossJoin(["a", "b"]);
-
-            expect(
-                await matrix
-                    .map((collection) => collection.toArray())
-                    .toArray(),
-            ).toEqual([
+            expect(await matrix.toArray()).toEqual([
                 [1, "a"],
                 [1, "b"],
                 [2, "a"],
                 [2, "b"],
             ]);
         });
-        test("Should work with AsyncIterables", async () => {
+        test(`Should return 8 combinations when input iterable is [1, 2], ["a", "b"] and ["I", "II"]`, async () => {
             const collection = new AsyncIterableCollection([1, 2]);
-            const asyncIterable: AsyncIterable<string> = {
-                // eslint-disable-next-line @typescript-eslint/require-await
-                async *[Symbol.asyncIterator](): AsyncIterator<string> {
-                    yield "a";
-                    yield "b";
-                },
-            };
-            const matrix = collection.crossJoin(asyncIterable);
-
-            expect(
-                await matrix
-                    .map((collection) => collection.toArray())
-                    .toArray(),
-            ).toEqual([
-                [1, "a"],
-                [1, "b"],
-                [2, "a"],
-                [2, "b"],
-            ]);
-        });
-        test(`Should return 8 combinations when input Iterable is [1, 2], ["a", "b"] and ["I", "II"]`, async () => {
-            const collection = new AsyncIterableCollection([1, 2]);
-            const matrix = collection.crossJoin(["a", "b"], ["I", "II"]);
-            expect(
-                await matrix
-                    .map((collection) => collection.toArray())
-                    .toArray(),
-            ).toEqual([
+            const matrix = collection
+                .crossJoin(["a", "b"])
+                .crossJoin(["I", "II"]);
+            expect(await matrix.toArray()).toEqual([
                 [1, "a", "I"],
                 [1, "a", "II"],
                 [1, "b", "I"],

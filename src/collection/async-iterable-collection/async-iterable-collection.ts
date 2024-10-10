@@ -20,6 +20,7 @@ import {
     type ChangendItem,
     type AsyncReduce,
     EmptyCollectionError,
+    type CrossJoinResult,
 } from "@/contracts/collection/_module";
 import {
     AsyncCrossJoinIterable,
@@ -239,10 +240,7 @@ export class AsyncIterableCollection<TInput>
             }
             return sum as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -272,10 +270,7 @@ export class AsyncIterableCollection<TInput>
             }
             return (sum / size) as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -351,10 +346,7 @@ export class AsyncIterableCollection<TInput>
             }
             return min as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -386,10 +378,7 @@ export class AsyncIterableCollection<TInput>
             }
             return max as EnsureType<TInput, number>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -418,10 +407,7 @@ export class AsyncIterableCollection<TInput>
             }
             return (part / total) * 100;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -442,10 +428,7 @@ export class AsyncIterableCollection<TInput>
             }
             return false;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -468,10 +451,7 @@ export class AsyncIterableCollection<TInput>
             }
             return isTrue;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -573,10 +553,7 @@ export class AsyncIterableCollection<TInput>
         try {
             return await callback(this);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -774,13 +751,13 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
-    crossJoin<TExtended = TInput>(
-        ...iterables: Array<AsyncIterableValue<TExtended>>
-    ): IAsyncCollection<IAsyncCollection<TInput | TExtended>> {
+    crossJoin<TExtended>(
+        iterable: AsyncIterableValue<TExtended>,
+    ): IAsyncCollection<CrossJoinResult<TInput, TExtended>> {
         return new AsyncIterableCollection(
             new AsyncCrossJoinIterable(
-                this as IAsyncCollection<TInput>,
-                iterables,
+                this,
+                iterable,
                 AsyncIterableCollection.makeCollection,
             ),
         );
@@ -840,10 +817,7 @@ export class AsyncIterableCollection<TInput>
             }
             return await simplifyAsyncLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -889,10 +863,7 @@ export class AsyncIterableCollection<TInput>
             }
             return await simplifyAsyncLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -934,10 +905,7 @@ export class AsyncIterableCollection<TInput>
             }
             return await simplifyAsyncLazyable(defaultValue);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1016,10 +984,7 @@ export class AsyncIterableCollection<TInput>
             }
             return matchedItem;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1063,10 +1028,7 @@ export class AsyncIterableCollection<TInput>
             }
             return size;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1087,10 +1049,7 @@ export class AsyncIterableCollection<TInput>
             }
             return true;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1115,10 +1074,7 @@ export class AsyncIterableCollection<TInput>
             }
             return -1;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1140,10 +1096,7 @@ export class AsyncIterableCollection<TInput>
             }
             return matchedIndex;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
@@ -1169,10 +1122,7 @@ export class AsyncIterableCollection<TInput>
             }
             return items;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
