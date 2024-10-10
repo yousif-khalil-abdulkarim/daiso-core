@@ -2,7 +2,6 @@ import {
     CollectionError,
     type ICollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -23,10 +22,7 @@ export class TakeIterable<TInput> implements Iterable<TInput> {
                 (_item, index) => index < this.limit,
             );
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

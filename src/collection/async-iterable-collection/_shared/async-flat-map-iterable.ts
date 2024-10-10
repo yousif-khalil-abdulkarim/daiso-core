@@ -3,7 +3,6 @@ import {
     CollectionError,
     type IAsyncCollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -27,10 +26,7 @@ export class AsyncFlatMapIterable<TInput, TOutput>
                 yield* await this.mapFn(item, index, this.collection);
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

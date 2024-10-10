@@ -3,7 +3,6 @@ import {
     type ICollection,
     type Map,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -21,10 +20,7 @@ export class MapIterable<TInput, TOutput> implements Iterable<TOutput> {
                 yield this.mapFn(item, index, this.collection);
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

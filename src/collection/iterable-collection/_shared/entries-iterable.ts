@@ -1,7 +1,6 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_shared";
 import { type RecordItem } from "@/_shared/types";
 
@@ -21,10 +20,7 @@ export class EntriesIterable<TInput>
                 index++;
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

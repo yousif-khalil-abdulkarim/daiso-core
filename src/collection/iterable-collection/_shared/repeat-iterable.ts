@@ -1,7 +1,6 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
-    TypeCollectionError,
     type ICollection,
 } from "@/contracts/collection/_module";
 
@@ -25,10 +24,7 @@ export class RepeatIterable<TInput> implements Iterable<TInput> {
             }
             yield* collection;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

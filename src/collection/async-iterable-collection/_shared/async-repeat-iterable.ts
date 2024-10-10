@@ -2,7 +2,6 @@ import {
     CollectionError,
     type IAsyncCollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 import { type AsyncIterableValue } from "@/_shared/types";
 
@@ -26,10 +25,7 @@ export class AsyncRepeatIterable<TInput> implements AsyncIterable<TInput> {
             }
             yield* collection;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

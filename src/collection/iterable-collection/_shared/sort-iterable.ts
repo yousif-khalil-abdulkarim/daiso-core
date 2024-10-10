@@ -1,7 +1,6 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
-    TypeCollectionError,
     type Comparator,
 } from "@/contracts/collection/_module";
 
@@ -18,10 +17,7 @@ export class SortIterable<TInput> implements Iterable<TInput> {
         try {
             yield* [...this.iterable].sort(this.comparator);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

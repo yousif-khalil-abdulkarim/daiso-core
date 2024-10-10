@@ -3,7 +3,6 @@ import {
     type Predicate,
     type ICollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -24,10 +23,7 @@ export class TakeUntilIterable<TInput> implements Iterable<TInput> {
                 yield item;
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

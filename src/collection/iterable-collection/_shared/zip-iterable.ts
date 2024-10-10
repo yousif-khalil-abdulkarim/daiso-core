@@ -1,7 +1,6 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 import { type RecordItem } from "@/_shared/types";
 
@@ -30,10 +29,7 @@ export class ZipIterable<TInput, TExtended>
                 yield [itemA.value, itemB.value];
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

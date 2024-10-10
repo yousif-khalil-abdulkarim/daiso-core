@@ -1,7 +1,6 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
-    TypeCollectionError,
     type ICollection,
 } from "@/contracts/collection/_module";
 
@@ -35,10 +34,7 @@ export class SliceIterable<TInput> implements Iterable<TInput> {
                 return start <= index && index < end;
             });
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(
