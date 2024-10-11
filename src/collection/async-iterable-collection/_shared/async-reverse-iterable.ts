@@ -15,13 +15,14 @@ export class AsyncReverseIterable<TInput> implements AsyncIterable<TInput> {
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
-        const collection: IAsyncCollection<TInput> =
-            this.makeCollection<TInput>([]);
         yield* await this.collection
             .chunk(this.chunkSize)
             .map(async (item) =>
                 this.makeCollection([...(await item.toArray())].reverse()),
             )
-            .reduce((collection, item) => collection.prepend(item), collection);
+            .reduce(
+                (collection, item) => collection.prepend(item),
+                this.makeCollection<TInput>([]),
+            );
     }
 }

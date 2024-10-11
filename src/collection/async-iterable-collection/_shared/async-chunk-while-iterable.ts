@@ -23,19 +23,25 @@ export class AsyncChunkWhileIterable<TInput>
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
         try {
-            let collection: IAsyncCollection<TInput> =
-                this.makeCollection<TInput>([]);
+            const array: TInput[] = [];
             for await (const [index, item] of this.collection.entries()) {
                 if (index === 0) {
-                    collection = collection.append([item]);
-                } else if (await this.predicateFn(item, index, collection)) {
-                    collection = collection.append([item]);
+                    array.push(item);
+                } else if (
+                    await this.predicateFn(
+                        item,
+                        index,
+                        this.makeCollection(array),
+                    )
+                ) {
+                    array.push(item);
                 } else {
-                    yield collection;
-                    collection = this.makeCollection<TInput>([item]);
+                    yield this.makeCollection(array);
+                    array.length = 0;
+                    array.push(item);
                 }
             }
-            yield collection;
+            yield this.makeCollection(array);
         } catch (error: unknown) {
             if (error instanceof CollectionError) {
                 throw error;

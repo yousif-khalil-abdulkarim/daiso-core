@@ -14,7 +14,6 @@ export class ChunkWhileIterable<TInput>
     constructor(
         private collection: ICollection<TInput>,
         private predicateFn: Predicate<TInput, ICollection<TInput>>,
-
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
         ) => ICollection<TInput>,
@@ -22,20 +21,21 @@ export class ChunkWhileIterable<TInput>
 
     *[Symbol.iterator](): Iterator<ICollection<TInput>> {
         try {
-            let collection: ICollection<TInput> = this.makeCollection<TInput>(
-                [],
-            );
+            const array: TInput[] = [];
             for (const [index, item] of this.collection.entries()) {
                 if (index === 0) {
-                    collection = collection.append([item]);
-                } else if (this.predicateFn(item, index, collection)) {
-                    collection = collection.append([item]);
+                    array.push(item);
+                } else if (
+                    this.predicateFn(item, index, this.makeCollection(array))
+                ) {
+                    array.push(item);
                 } else {
-                    yield collection;
-                    collection = this.makeCollection<TInput>([item]);
+                    yield this.makeCollection(array);
+                    array.length = 0;
+                    array.push(item);
                 }
             }
-            yield collection;
+            yield this.makeCollection(array);
         } catch (error: unknown) {
             if (error instanceof CollectionError) {
                 throw error;

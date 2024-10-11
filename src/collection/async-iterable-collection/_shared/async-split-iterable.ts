@@ -37,16 +37,16 @@ export class AsyncSplitIterable<TInput>
             }
 
             const iterator = this.collection.toIterator();
+            const array: TInput[] = [];
             for (const chunkSize of chunkSizes) {
-                let collection: IAsyncCollection<TInput> =
-                    this.makeCollection<TInput>([]);
                 for (let i = 0; i < chunkSize; i++) {
                     const item = await iterator.next();
                     if (item.value !== undefined) {
-                        collection = collection.append([item.value]);
+                        array.push(item.value);
                     }
                 }
-                yield collection;
+                yield this.makeCollection(array);
+                array.length = 0;
             }
         } catch (error: unknown) {
             if (error instanceof CollectionError) {

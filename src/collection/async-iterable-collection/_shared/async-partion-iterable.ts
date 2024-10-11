@@ -22,23 +22,17 @@ export class AsyncPartionIterable<TInput>
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
         try {
-            let chunkA: IAsyncCollection<TInput> = this.makeCollection<TInput>(
-                    [],
-                ),
-                chunkB: IAsyncCollection<TInput> = this.makeCollection<TInput>(
-                    [],
-                ),
-                index = 0;
-            for await (const item of this.collection) {
+            const arrayA: TInput[] = [];
+            const arrayB: TInput[] = [];
+            for await (const [index, item] of this.collection.entries()) {
                 if (await this.predicateFn(item, index, this.collection)) {
-                    chunkA = chunkA.append([item]);
+                    arrayA.push(item);
                 } else {
-                    chunkB = chunkB.append([item]);
+                    arrayB.push(item);
                 }
-                index++;
             }
-            yield chunkA;
-            yield chunkB;
+            yield this.makeCollection(arrayA);
+            yield this.makeCollection(arrayB);
         } catch (error: unknown) {
             if (error instanceof CollectionError) {
                 throw error;

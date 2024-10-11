@@ -25,18 +25,20 @@ export class GroupByIterable<TInput, TOutput = TInput>
 
     *[Symbol.iterator](): Iterator<RecordItem<TOutput, ICollection<TInput>>> {
         try {
-            const map = new Map<TOutput, ICollection<TInput>>();
+            const map = new Map<TOutput, Array<TInput>>();
             for (const [index, item] of this.collection.entries()) {
                 const key = this.selectFn(item, index, this.collection);
-                let collection: ICollection<TInput> | undefined = map.get(key);
-                if (collection === undefined) {
-                    collection = this.makeCollection<TInput>([]);
-                    map.set(key, collection);
+                let array = map.get(key);
+                if (array === undefined) {
+                    array = [];
+                    map.set(key, array);
                 }
-
-                map.set(key, collection.append([item]));
+                array.push(item);
+                map.set(key, array);
             }
-            yield* map;
+            yield* this.makeCollection(map).map<
+                RecordItem<TOutput, ICollection<TInput>>
+            >(([key, value]) => [key, this.makeCollection(value)]);
         } catch (error: unknown) {
             if (error instanceof CollectionError) {
                 throw error;

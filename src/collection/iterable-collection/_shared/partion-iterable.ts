@@ -20,17 +20,17 @@ export class PartionIterable<TInput> implements Iterable<ICollection<TInput>> {
 
     *[Symbol.iterator](): Iterator<ICollection<TInput>> {
         try {
-            let chunkA: ICollection<TInput> = this.makeCollection<TInput>([]),
-                chunkB: ICollection<TInput> = this.makeCollection<TInput>([]);
+            const arrayA: TInput[] = [];
+            const arrayB: TInput[] = [];
             for (const [index, item] of this.collection.entries()) {
                 if (this.predicateFn(item, index, this.collection)) {
-                    chunkA = chunkA.append([item]);
+                    arrayA.push(item);
                 } else {
-                    chunkB = chunkB.append([item]);
+                    arrayB.push(item);
                 }
             }
-            yield chunkA;
-            yield chunkB;
+            yield this.makeCollection(arrayA);
+            yield this.makeCollection(arrayB);
         } catch (error: unknown) {
             if (error instanceof CollectionError) {
                 throw error;
