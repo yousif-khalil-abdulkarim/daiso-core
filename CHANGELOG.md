@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.2.1
+
+### Patch Changes
+
+-   fad301c: Removed documentation for internal functions
+
 ## 0.2.0
 
 ### Minor Changes
