@@ -1,6 +1,7 @@
 ---
 "@daiso-tech/core": minor
 ---
+## ICollection and IAsyncCollection changes
 Removed the <i>throwOnIndexOverflow</i> setting from all ICollection and IAsyncCollection methods. This change was made because the setting <i>throwOnIndexOverflow</i> was unnecessary; it only applied to very large collections, where using JavaScript is not advisable.
 
 Changed the <i>slice</i> method signature to align with the JavaScript version.
