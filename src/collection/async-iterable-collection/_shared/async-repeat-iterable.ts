@@ -2,7 +2,6 @@ import {
     CollectionError,
     type IAsyncCollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 import { type AsyncIterableValue } from "@/_shared/types";
 
@@ -21,15 +20,12 @@ export class AsyncRepeatIterable<TInput> implements AsyncIterable<TInput> {
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
         try {
             let collection = this.makeAsyncCollection<TInput>([]);
-            for (let index = 0; index < this.amount - 1; index++) {
+            for (let index = 0; index < this.amount; index++) {
                 collection = collection.append(this.collection);
             }
             yield* collection;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

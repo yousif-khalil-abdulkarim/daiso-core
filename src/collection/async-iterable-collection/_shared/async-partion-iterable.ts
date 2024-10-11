@@ -2,9 +2,7 @@ import {
     type AsyncPredicate,
     CollectionError,
     type IAsyncCollection,
-    IndexOverflowCollectionError,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 import { type AsyncIterableValue } from "@/_shared/types";
 
@@ -16,8 +14,7 @@ export class AsyncPartionIterable<TInput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private filter: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-        private throwOnIndexOverflow: boolean,
+        private predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
         private makeCollection: <TInput>(
             iterable: AsyncIterableValue<TInput>,
         ) => IAsyncCollection<TInput>,
@@ -25,36 +22,19 @@ export class AsyncPartionIterable<TInput>
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
         try {
-            let chunkA: IAsyncCollection<TInput> = this.makeCollection<TInput>(
-                    [],
-                ),
-                chunkB: IAsyncCollection<TInput> = this.makeCollection<TInput>(
-                    [],
-                ),
-                index = 0;
-            for await (const item of this.collection) {
-                if (
-                    this.throwOnIndexOverflow &&
-                    index === Number.MAX_SAFE_INTEGER
-                ) {
-                    throw new IndexOverflowCollectionError(
-                        "Index has overflowed",
-                    );
-                }
-                if (await this.filter(item, index, this.collection)) {
-                    chunkA = chunkA.append([item]);
+            const arrayA: TInput[] = [];
+            const arrayB: TInput[] = [];
+            for await (const [index, item] of this.collection.entries()) {
+                if (await this.predicateFn(item, index, this.collection)) {
+                    arrayA.push(item);
                 } else {
-                    chunkB = chunkB.append([item]);
+                    arrayB.push(item);
                 }
-                index++;
             }
-            yield chunkA;
-            yield chunkB;
+            yield this.makeCollection(arrayA);
+            yield this.makeCollection(arrayB);
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

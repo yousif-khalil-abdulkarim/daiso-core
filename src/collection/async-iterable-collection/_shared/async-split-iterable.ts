@@ -2,7 +2,6 @@ import {
     CollectionError,
     type IAsyncCollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 import { type AsyncIterableValue } from "@/_shared/types";
 
@@ -15,7 +14,7 @@ export class AsyncSplitIterable<TInput>
     constructor(
         private collection: IAsyncCollection<TInput>,
         private chunkAmount: number,
-        private throwOnIndexOverflow: boolean,
+
         private makeCollection: <TInput>(
             iterable: AsyncIterableValue<TInput>,
         ) => IAsyncCollection<TInput>,
@@ -23,7 +22,7 @@ export class AsyncSplitIterable<TInput>
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
         try {
-            const size = await this.collection.size(this.throwOnIndexOverflow),
+            const size = await this.collection.size(),
                 minChunkSize = Math.floor(size / this.chunkAmount),
                 restSize = size % this.chunkAmount,
                 chunkSizes = Array.from<number>({
@@ -38,22 +37,19 @@ export class AsyncSplitIterable<TInput>
             }
 
             const iterator = this.collection.toIterator();
+            const array: TInput[] = [];
             for (const chunkSize of chunkSizes) {
-                let collection: IAsyncCollection<TInput> =
-                    this.makeCollection<TInput>([]);
                 for (let i = 0; i < chunkSize; i++) {
                     const item = await iterator.next();
                     if (item.value !== undefined) {
-                        collection = collection.append([item.value]);
+                        array.push(item.value);
                     }
                 }
-                yield collection;
+                yield this.makeCollection(array);
+                array.length = 0;
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

@@ -3,7 +3,6 @@ import {
     type ICollection,
     type Modifier,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -26,10 +25,7 @@ export class WhenIterable<TInput, TExtended>
             }
             yield* this.collection as ICollection<TInput | TExtended>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

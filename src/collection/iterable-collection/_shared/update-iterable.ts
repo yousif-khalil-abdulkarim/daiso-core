@@ -4,15 +4,14 @@ import {
     type ICollection,
     type Map,
     UnexpectedCollectionError,
-    TypeCollectionError,
-    type UpdatedItem,
+    type ChangendItem,
 } from "@/contracts/collection/_module";
 
 /**
  * @internal
  */
 export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
-    implements Iterable<UpdatedItem<TInput, TFilterOutput, TMapOutput>>
+    implements Iterable<ChangendItem<TInput, TFilterOutput, TMapOutput>>
 {
     constructor(
         private collection: ICollection<TInput>,
@@ -22,16 +21,13 @@ export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
             TFilterOutput
         >,
         private mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     *[Symbol.iterator](): Iterator<
-        UpdatedItem<TInput, TFilterOutput, TMapOutput>
+        ChangendItem<TInput, TFilterOutput, TMapOutput>
     > {
         try {
-            for (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for (const [index, item] of this.collection.entries()) {
                 if (this.predicateFn(item, index, this.collection)) {
                     yield this.mapFn(
                         item as TFilterOutput,
@@ -43,10 +39,7 @@ export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
                 }
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

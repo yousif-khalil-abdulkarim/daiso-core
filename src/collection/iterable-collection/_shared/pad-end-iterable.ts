@@ -1,7 +1,6 @@
 import {
     CollectionError,
     UnexpectedCollectionError,
-    TypeCollectionError,
     type ICollection,
 } from "@/contracts/collection/_module";
 
@@ -33,18 +32,12 @@ export class PadEndIterable<TInput, TExtended>
             }
             const restAmount = this.maxLength - (repeat * fillSize + size);
             resultCollection = resultCollection.append(
-                fillCollections.slice({
-                    start: 0,
-                    end: restAmount,
-                }),
+                fillCollections.slice(0, restAmount),
             );
             resultCollection = resultCollection.prepend(this.collection);
             yield* resultCollection;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

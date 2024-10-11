@@ -3,7 +3,6 @@ import {
     CollectionError,
     type IAsyncCollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -19,21 +18,15 @@ export class AsyncFlatMapIterable<TInput, TOutput>
             IAsyncCollection<TInput>,
             Iterable<TOutput>
         >,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TOutput> {
         try {
-            for await (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for await (const [index, item] of this.collection.entries()) {
                 yield* await this.mapFn(item, index, this.collection);
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

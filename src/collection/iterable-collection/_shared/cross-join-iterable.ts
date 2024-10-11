@@ -1,55 +1,60 @@
+import { isIterable } from "@/collection/_module";
 import {
+    CrossJoinResult,
+    ICollection,
     CollectionError,
-    type ICollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
-/**
- * @internal
- */
 export class CrossJoinIterable<TInput, TExtended = TInput>
-    implements Iterable<ICollection<TInput | TExtended>>
+    implements Iterable<CrossJoinResult<TInput, TExtended>>
 {
     constructor(
         private collection: ICollection<TInput>,
-        private iterables: Array<Iterable<TExtended>>,
+        private iterable: Iterable<TExtended>,
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
         ) => ICollection<TInput>,
     ) {}
 
-    *[Symbol.iterator](): Iterator<ICollection<TInput | TExtended>> {
+    *[Symbol.iterator](): Iterator<CrossJoinResult<TInput, TExtended>> {
         try {
-            yield* this.makeCollection<ICollection<TInput | TExtended>>([
+            const combinations = this.makeCollection([
                 this.collection,
-                ...this.iterables.map<ICollection<TExtended>>((iterable) =>
-                    this.makeCollection(iterable),
-                ),
-            ]).reduce<ICollection<ICollection<TInput | TExtended>>>({
-                reduceFn: (a, b) => {
-                    return a
-                        .map((x) =>
-                            b.map((y) => {
-                                return x.append([y]);
-                            }),
-                        )
-                        .reduce<ICollection<ICollection<TInput | TExtended>>>({
-                            reduceFn: (c, b) => c.append(b),
-                            initialValue: this.makeCollection<
-                                ICollection<TInput | TExtended>
-                            >([]),
-                        });
-                },
-                initialValue: this.makeCollection<
-                    ICollection<TInput | TExtended>
-                >([this.makeCollection<TInput | TExtended>([])]),
-            });
+                this.makeCollection(this.iterable),
+            ] as ICollection<TInput | TExtended>[])
+                .reduce<ICollection<Array<TInput | TExtended>>>(
+                    (a, b) => {
+                        return a
+                            .map((x) => {
+                                return b.map((y) => {
+                                    return [...x, y];
+                                });
+                            })
+                            .reduce<ICollection<Array<TInput | TExtended>>>(
+                                (c, b) => c.append(b),
+                                this.makeCollection<Array<TInput | TExtended>>(
+                                    [],
+                                ),
+                            );
+                    },
+                    this.makeCollection([[] as Array<TInput | TExtended>]),
+                )
+                .map((combination) => {
+                    // Flatting the array
+                    return combination.reduce<Array<TInput | TExtended>>(
+                        (a, b) => {
+                            return [
+                                ...a,
+                                ...(isIterable(b) ? b : [b]),
+                            ] as Array<TInput | TExtended>;
+                        },
+                        [],
+                    );
+                });
+            yield* combinations as Iterable<CrossJoinResult<TInput, TExtended>>;
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

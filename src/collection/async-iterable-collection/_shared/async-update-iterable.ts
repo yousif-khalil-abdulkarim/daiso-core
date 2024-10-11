@@ -4,8 +4,7 @@ import {
     CollectionError,
     type IAsyncCollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
-    type UpdatedItem,
+    type ChangendItem,
 } from "@/contracts/collection/_module";
 
 /**
@@ -15,11 +14,11 @@ export class AsyncUpdateIterable<
     TInput,
     TFilterOutput extends TInput,
     TMapOutput,
-> implements AsyncIterable<UpdatedItem<TInput, TFilterOutput, TMapOutput>>
+> implements AsyncIterable<ChangendItem<TInput, TFilterOutput, TMapOutput>>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private filter: AsyncPredicate<
+        private predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
             TFilterOutput
@@ -29,17 +28,14 @@ export class AsyncUpdateIterable<
             IAsyncCollection<TInput>,
             TMapOutput
         >,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<
-        UpdatedItem<TInput, TFilterOutput, TMapOutput>
+        ChangendItem<TInput, TFilterOutput, TMapOutput>
     > {
         try {
-            for await (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
-                if (await this.filter(item, index, this.collection)) {
+            for await (const [index, item] of this.collection.entries()) {
+                if (await this.predicateFn(item, index, this.collection)) {
                     yield this.mapFn(
                         item as TFilterOutput,
                         index,
@@ -50,10 +46,7 @@ export class AsyncUpdateIterable<
                 }
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

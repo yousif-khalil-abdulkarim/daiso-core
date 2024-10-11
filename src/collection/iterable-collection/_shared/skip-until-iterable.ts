@@ -3,7 +3,6 @@ import {
     type Predicate,
     type ICollection,
     UnexpectedCollectionError,
-    TypeCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -13,15 +12,12 @@ export class SkipUntilIterable<TInput> implements Iterable<TInput> {
     constructor(
         private collection: ICollection<TInput>,
         private predicateFn: Predicate<TInput, ICollection<TInput>>,
-        private throwOnIndexOverflow: boolean,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
         try {
             let hasMatched = false;
-            for (const [index, item] of this.collection.entries(
-                this.throwOnIndexOverflow,
-            )) {
+            for (const [index, item] of this.collection.entries()) {
                 if (!hasMatched) {
                     hasMatched = this.predicateFn(item, index, this.collection);
                 }
@@ -30,10 +26,7 @@ export class SkipUntilIterable<TInput> implements Iterable<TInput> {
                 }
             }
         } catch (error: unknown) {
-            if (
-                error instanceof CollectionError ||
-                error instanceof TypeCollectionError
-            ) {
+            if (error instanceof CollectionError) {
                 throw error;
             }
             throw new UnexpectedCollectionError(

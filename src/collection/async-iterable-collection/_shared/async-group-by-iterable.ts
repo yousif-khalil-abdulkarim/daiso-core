@@ -12,14 +12,14 @@ export class AsyncGroupByIterable<TInput, TOutput = TInput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private callback: AsyncMap<
+        private selectFn: AsyncMap<
             TInput,
             IAsyncCollection<TInput>,
             TOutput
         > = (item) =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
             item as any,
-        private throwOnIndexOverflow: boolean,
+
         private makeCollection: <TInput>(
             iterable: AsyncIterableValue<TInput>,
         ) => IAsyncCollection<TInput>,
@@ -28,20 +28,19 @@ export class AsyncGroupByIterable<TInput, TOutput = TInput>
     async *[Symbol.asyncIterator](): AsyncIterator<
         RecordItem<TOutput, IAsyncCollection<TInput>>
     > {
-        const map = new Map<TOutput, IAsyncCollection<TInput>>();
-
-        for await (const [index, item] of this.collection.entries(
-            this.throwOnIndexOverflow,
-        )) {
-            const key = await this.callback(item, index, this.collection);
-            let collection: IAsyncCollection<TInput> | undefined = map.get(key);
-            if (collection === undefined) {
-                collection = this.makeCollection<TInput>([]);
-                map.set(key, collection);
+        const map = new Map<TOutput, Array<TInput>>();
+        for await (const [index, item] of this.collection.entries()) {
+            const key = await this.selectFn(item, index, this.collection);
+            let array = map.get(key);
+            if (array === undefined) {
+                array = [];
+                map.set(key, array);
             }
-
-            map.set(key, collection.append([item]));
+            array.push(item);
+            map.set(key, array);
         }
-        yield* map;
+        yield* this.makeCollection(map).map<
+            RecordItem<TOutput, IAsyncCollection<TInput>>
+        >(([key, value]) => [key, this.makeCollection(value)]);
     }
 }
