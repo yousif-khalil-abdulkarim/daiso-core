@@ -10,3 +10,5 @@ export type AsyncLazyable<TValue> = AsyncLazyable_<TValue> | Lazyable<TValue>;
 export type AsyncIterableValue<TInput> =
     | Iterable<TInput>
     | AsyncIterable<TInput>;
+
+export type AnyFunction = (...parameters: unknown[]) => unknown;
