@@ -3,7 +3,7 @@
  */
 
 import {
-    type InserItem,
+    type ValueWithTTL,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type CacheError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,6 +20,7 @@ import {
  */
 export type ICacheAdapter<TType> = {
     /**
+     * Returns true for the keys that are found otherwise false will be returned.
      * @throws {CacheError} {@link CacheError}
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
@@ -28,6 +29,7 @@ export type ICacheAdapter<TType> = {
     ): Promise<Record<TKeys, boolean>>;
 
     /**
+     * Returns the value for the keys that are found otherwise null will be returned.
      * @throws {CacheError} {@link CacheError}
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
@@ -35,27 +37,26 @@ export type ICacheAdapter<TType> = {
         keys: TKeys[],
     ): Promise<Record<TKeys, TValues | null>>;
 
-    insertMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, Required<InserItem<TValues>>>,
-    ): Promise<Record<TKeys, boolean>>;
-
     /**
+     * Adds the keys that doesn't exists. Returns true for the keys that doesn't exists otherwise false will be returned.
      * @throws {CacheError} {@link CacheError}
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
-    upsertMany?<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, Required<InserItem<TValues>>>,
+    addMany<TValues extends TType, TKeys extends string>(
+        values: Record<TKeys, Required<ValueWithTTL<TValues>>>,
     ): Promise<Record<TKeys, boolean>>;
 
     /**
+     * Replaces the keys that are found. Adds keys that are not found. Returns true for all the keys that are found otherwise false is returned.
      * @throws {CacheError} {@link CacheError}
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
-    updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    putMany?<TValues extends TType, TKeys extends string>(
+        values: Record<TKeys, Required<ValueWithTTL<TValues>>>,
     ): Promise<Record<TKeys, boolean>>;
 
     /**
+     * Removes the keys that are found. Returns true for the keys that are found otherwise false is returned.
      * @throws {CacheError} {@link CacheError}
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
@@ -64,42 +65,34 @@ export type ICacheAdapter<TType> = {
     ): Promise<Record<TKeys, boolean>>;
 
     /**
+     * If the key is found the value be returned and key will be removed otherwise null will be returned.
      * @throws {CacheError} {@link CacheError}
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     getAndRemove?<TValue extends TType>(key: string): Promise<TValue | null>;
 
     /**
+     * If the key is found the value be returned otherwise valueToAdd will be added and returned.
      * @throws {CacheError} {@link CacheError}
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
-    getOrInsert?<TValue extends TType, TExtended extends TType = TValue>(
+    getOrAdd?<TValue extends TType, TExtended extends TType>(
         key: string,
-        insertValue: TExtended,
+        valueToAdd: TExtended,
         ttlInMs: number | null,
     ): Promise<TValue | TExtended>;
 
     /**
+     * Will increment the existing key with value if found otherwise key will be set to 0. Returns true if key exists otherwise false will be returned.
      * @throws {CacheError} {@link CacheError}
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
-    updateIncrement?(key: string, value: number): Promise<boolean>;
-
-    /**
-     * @throws {CacheError} {@link CacheError}
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
-     * @throws {TypeCacheError} {@link TypeCacheError}
-     */
-    upsertIncrement?(
-        key: string,
-        value: number,
-        ttlInMs: number | null,
-    ): Promise<boolean>;
+    increment?(key: string, value: number): Promise<boolean>;
 
     /**
      * @throws {CacheError} {@link CacheError}
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
-    clear(): Promise<void>;
+    clear(namespace: string): Promise<void>;
 };

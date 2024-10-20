@@ -32,7 +32,17 @@ export class TypeCacheError extends CacheError {
     }
 }
 
-export type InserItem<TValue> = {
+/**
+ * @group Errors
+ */
+export class InvalidValueCacheError extends CacheError {
+    constructor(message: string, cause?: unknown) {
+        super(message, { cause });
+        this.name = TypeCacheError.name;
+    }
+}
+
+export type ValueWithTTL<TValue> = {
     value: TValue;
     ttlInMs?: number | null;
 };

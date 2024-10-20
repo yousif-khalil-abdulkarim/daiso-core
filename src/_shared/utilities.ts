@@ -22,3 +22,11 @@ export async function simplifyAsyncLazyable<TValue>(
     }
     return lazyable;
 }
+
+export async function delay(timeInMs: number): Promise<void> {
+    await new Promise<void>((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, timeInMs);
+    });
+}

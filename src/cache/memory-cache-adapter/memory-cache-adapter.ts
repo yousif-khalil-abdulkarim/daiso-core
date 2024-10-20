@@ -1,151 +1,68 @@
-/* eslint-disable @typescript-eslint/require-await */
-import {
-    CacheError,
-    type InserItem,
-    UnexpectedCacheError,
-} from "@/contracts/cache/_shared";
-import { ICacheAdapter } from "@/contracts/cache/cache-adapter.contract";
+import { type ValueWithTTL } from "@/contracts/cache/_shared";
+import { type ICacheAdapter } from "@/contracts/cache/cache-adapter.contract";
 
-export type MemoryCacheAdapterSettings = {
-    namespace: string;
-};
 export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
-    private setTimeoutIds: Map<string, ReturnType<typeof setTimeout>> =
-        new Map();
+    private setTimeoutIds = new Map<string, ReturnType<typeof setTimeout>>();
 
-    constructor(
-        private readonly map: Map<string, TType>,
-        private readonly settings: MemoryCacheAdapterSettings,
-    ) {}
+    constructor(private readonly map: Map<string, TType>) {}
 
-    private withNamespace(key: string): string {
-        return `${this.settings.namespace}${key}`;
-    }
-
-    private isNamespaceKey(rawKey: string): boolean {
-        return rawKey.startsWith(this.settings.namespace);
-    }
-
-    async getMany<TValues extends TType, TKeys extends string>(
+    getMany<TValues extends TType, TKeys extends string>(
         keys: TKeys[],
     ): Promise<Record<TKeys, TValues | null>> {
-        try {
-            const result = {} as Record<TKeys, TValues | null>;
-            for (const key of keys) {
-                result[key] = (this.map.get(this.withNamespace(key)) ??
-                    null) as TValues;
-            }
-            return result;
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+        const values = {} as Record<TKeys, TValues | null>;
+        for (const key of keys) {
+            const value = this.map.get(key) ?? null;
+            values[key] = value as TValues | null;
         }
+        return Promise.resolve(values);
     }
 
-    async insertMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, Required<InserItem<TValues>>>,
+    addMany<TValues extends TType, TKeys extends string>(
+        values: Record<TKeys, Required<ValueWithTTL<TValues>>>,
     ): Promise<Record<TKeys, boolean>> {
-        try {
-            const result = {} as Record<TKeys, boolean>;
-            for (const key in values) {
-                if (this.map.has(this.withNamespace(key))) {
-                    result[key] = false;
-                    continue;
+        const result = {} as Record<TKeys, boolean>;
+        for (const key in values) {
+            const {
+                [key]: { value, ttlInMs },
+            } = values;
+            const hasKey = this.map.has(key);
+            if (!hasKey) {
+                if (ttlInMs) {
+                    const setTimeoutId = setTimeout(() => {
+                        this.map.delete(key);
+                        this.setTimeoutIds.delete(key);
+                    }, ttlInMs);
+                    this.setTimeoutIds.set(key, setTimeoutId);
                 }
-                const { value, ttlInMs } = values[key];
-                this.map.set(this.withNamespace(key), value);
-                result[key] = true;
-                if (ttlInMs == null) {
-                    continue;
-                }
-                const setTimeoutId = setTimeout(() => {
-                    this.map.delete(this.withNamespace(key));
-                    this.setTimeoutIds.delete(this.withNamespace(key));
-                }, ttlInMs);
-                this.setTimeoutIds.set(this.withNamespace(key), setTimeoutId);
+                this.map.set(key, value);
             }
-            return result;
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            result[key] = !hasKey;
         }
+        return Promise.resolve(result);
     }
 
-    async updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
-    ): Promise<Record<TKeys, boolean>> {
-        try {
-            const result = {} as Record<TKeys, boolean>;
-            for (const key in values) {
-                const hasKey = this.map.has(this.withNamespace(key));
-                if (!hasKey) {
-                    continue;
-                }
-                const value = values[key];
-                result[key] = hasKey;
-                this.map.set(this.withNamespace(key), value);
-            }
-            return result;
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
-    }
-
-    async removeMany<TKeys extends string>(
+    removeMany<TKeys extends string>(
         keys: TKeys[],
     ): Promise<Record<TKeys, boolean>> {
-        try {
-            const result = {} as Record<TKeys, boolean>;
-            for (const key of keys) {
-                result[key] = this.map.delete(this.withNamespace(key));
-
-                const setTimeoutId = this.setTimeoutIds.get(key);
-                clearTimeout(setTimeoutId);
-                this.setTimeoutIds.delete(this.withNamespace(key));
+        const result = {} as Record<TKeys, boolean>;
+        for (const key of keys) {
+            result[key] = this.map.delete(key);
+            const timeoutId = this.setTimeoutIds.get(key);
+            if (timeoutId) {
+                clearTimeout(timeoutId);
             }
-            return result;
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            this.setTimeoutIds.delete(key);
         }
+        return Promise.resolve(result);
     }
 
-    async clear(): Promise<void> {
-        try {
-            for (const key of this.map.keys()) {
-                if (this.isNamespaceKey(key)) {
-                    this.map.delete(key);
-                }
+    async clear(namespace: string): Promise<void> {
+        const keys: string[] = [];
+        for (const key of this.map.keys()) {
+            if (key.startsWith(namespace)) {
+                keys.push(key);
             }
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
+        await this.removeMany(keys);
     }
 }

@@ -1,37 +1,51 @@
-/**
- * @module Cache
- */
-
-import { type CacheValue, type ICache } from "@/contracts/cache/cache.contract";
-import { type ICacheAdapter } from "@/contracts/cache/cache-adapter.contract";
-import { type RecordItem, type AsyncLazyable } from "@/_shared/types";
+import { AsyncLazyable } from "@/_shared/types";
 import {
     CacheError,
-    type InserItem,
+    InvalidValueCacheError,
     UnexpectedCacheError,
+    ValueWithTTL,
 } from "@/contracts/cache/_shared";
-import { simplifyAsyncLazyable } from "@/_shared/utilities";
+import { ICacheAdapter } from "@/contracts/cache/cache-adapter.contract";
+import { CacheValue, ICache } from "@/contracts/cache/cache.contract";
 import { UsableCacheAdapter } from "@/cache/usable-cache-adapter";
+import { NamespaceCacheAdapter } from "@/cache/namespace-cache-adapter";
+import { simplifyAsyncLazyable } from "@/_shared/utilities";
 
-/**
- * @group Adapters
- */
-export class Cache<TType = unknown> implements ICache<TType> {
-    private static readonly DEFAULT_TTL: number | null = null;
+export type CacheSettings = {
+    namespace?: string;
+};
+export class Cache<TType> implements ICache<TType> {
+    private readonly cacheAdapter: NamespaceCacheAdapter<TType>;
 
-    private readonly cacheAdapter: Required<ICacheAdapter<TType>>;
+    private readonly namespace: string;
 
-    constructor(cacheAdapter: ICacheAdapter<TType>) {
-        this.cacheAdapter = new UsableCacheAdapter(cacheAdapter);
+    constructor(
+        cacheAdapter: ICacheAdapter<TType>,
+        { namespace = "" }: CacheSettings = {},
+    ) {
+        this.cacheAdapter = new NamespaceCacheAdapter<TType>(
+            new UsableCacheAdapter(cacheAdapter),
+            namespace,
+        );
+        this.namespace = namespace;
+    }
+
+    private abra<TValue>(
+        values: Record<string, ValueWithTTL<CacheValue<TValue>>>,
+    ): Record<string, Required<ValueWithTTL<CacheValue<TValue>>>> {
+        return Object.fromEntries(
+            Object.entries(values).map(([key, { value, ttlInMs = null }]) => [
+                key,
+                { value, ttlInMs },
+            ]),
+        );
     }
 
     async has(key: string): Promise<boolean> {
         try {
             const { [key]: hasKey } = await this.cacheAdapter.hasMany([key]);
             if (hasKey === undefined) {
-                throw new UnexpectedCacheError(
-                    `Destructed field "key" does not exist`,
-                );
+                throw new UnexpectedCacheError("!!__message__!!");
             }
             return hasKey;
         } catch (error: unknown) {
@@ -68,9 +82,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 string
             >([key]);
             if (value === undefined) {
-                throw new UnexpectedCacheError(
-                    `Destructed field "key" does not exist`,
-                );
+                throw new UnexpectedCacheError("!!__message__!!");
             }
             return value;
         } catch (error: unknown) {
@@ -88,7 +100,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         keys: TKeys[],
     ): Promise<Record<TKeys, TValues | null>> {
         try {
-            return await this.cacheAdapter.getMany<TValues, TKeys>(keys);
+            return await this.cacheAdapter.getMany(keys);
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;
@@ -100,33 +112,16 @@ export class Cache<TType = unknown> implements ICache<TType> {
         }
     }
 
-    async getOrMany<TValues extends TType, TKeys extends string>(
-        keysWithDefaults: Record<TKeys, AsyncLazyable<TValues>>,
-    ): Promise<Record<TKeys, TValues>> {
+    async getOr<TValue extends TType, TExtended extends TType>(
+        key: string,
+        defaultValue: AsyncLazyable<TExtended>,
+    ): Promise<TValue | TExtended> {
         try {
-            const keys = Object.keys(keysWithDefaults) as TKeys[];
-            const result = await this.cacheAdapter.getMany<TValues, TKeys>(
-                keys,
-            );
-            const resultWithDefaults = Object.fromEntries(
-                await Promise.all(
-                    Object.entries<TValues | null>(result).map<
-                        Promise<RecordItem<TKeys, TValues>>
-                    >(async ([key, value]) => {
-                        if (value === null) {
-                            const defaultValue = keysWithDefaults[key as TKeys];
-                            return [
-                                key as TKeys,
-                                (await simplifyAsyncLazyable(
-                                    defaultValue,
-                                )) as TValues,
-                            ];
-                        }
-                        return [key as TKeys, value];
-                    }),
-                ),
-            ) as Record<TKeys, TValues>;
-            return resultWithDefaults;
+            const value = await this.get<TValue>(key);
+            if (value === null) {
+                return await simplifyAsyncLazyable(defaultValue);
+            }
+            return value;
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;
@@ -138,70 +133,54 @@ export class Cache<TType = unknown> implements ICache<TType> {
         }
     }
 
-    async insert<TValue extends TType>(
+    async getOrMany<
+        TValues extends TType,
+        TExtended extends TType,
+        TKeys extends string,
+    >(
+        keysWithDefaults: Record<TKeys, AsyncLazyable<TExtended>>,
+    ): Promise<Record<TKeys, TValues | TExtended>> {
+        try {
+            const getManyResult = await this.getMany(
+                Object.keys(keysWithDefaults),
+            );
+            const result = {} as Record<string, TValues | TExtended>;
+            for (const key in getManyResult) {
+                const { [key]: value } = getManyResult;
+                if (value === undefined) {
+                    throw new UnexpectedCacheError("!!__message__!!");
+                }
+                if (value === null) {
+                    const defaultValue = keysWithDefaults[key as TKeys];
+                    result[key] = (await simplifyAsyncLazyable(
+                        defaultValue,
+                    )) as TExtended;
+                } else {
+                    result[key] = value as TValues;
+                }
+            }
+            return result;
+        } catch (error: unknown) {
+            if (error instanceof CacheError) {
+                throw error;
+            }
+            throw new UnexpectedCacheError(
+                `Unexpected error "${String(error)}" occured`,
+                error,
+            );
+        }
+    }
+
+    async add<TValue extends TType>(
         key: string,
         value: CacheValue<TValue>,
         ttlInMs: number | null = null,
     ): Promise<boolean> {
         try {
-            const { [key]: hasInserted } = await this.cacheAdapter.insertMany({
-                [key]: {
-                    value,
-                    ttlInMs,
-                },
-            });
-            if (hasInserted === undefined) {
-                throw new UnexpectedCacheError(
-                    `Destructed field "key" does not exist`,
-                );
+            if (Number.isNaN(value)) {
+                throw new InvalidValueCacheError("!!__message__!!");
             }
-            return hasInserted;
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
-    }
-
-    async insertMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, InserItem<CacheValue<TValues>>>,
-    ): Promise<Record<TKeys, boolean>> {
-        try {
-            const valuesWithDefault = Object.fromEntries(
-                Object.entries<InserItem<TValues>>(values).map<
-                    RecordItem<TKeys, Required<InserItem<TType>>>
-                >(([key, { value, ttlInMs = Cache.DEFAULT_TTL }]) => [
-                    key as TKeys,
-                    {
-                        value,
-                        ttlInMs,
-                    },
-                ]),
-            ) as Record<TKeys, Required<InserItem<TValues>>>;
-
-            return await this.cacheAdapter.insertMany(valuesWithDefault);
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
-    }
-
-    async upsert<TValue extends TType>(
-        key: string,
-        value: CacheValue<TValue>,
-        ttlInMs: number | null = null,
-    ): Promise<boolean> {
-        try {
-            const { [key]: hasInserted } = await this.cacheAdapter.upsertMany<
+            const { [key]: hasAdded } = await this.cacheAdapter.addMany<
                 TValue,
                 string
             >({
@@ -210,12 +189,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     ttlInMs,
                 },
             });
-            if (hasInserted === undefined) {
-                throw new UnexpectedCacheError(
-                    `Destructed field "key" does not exist`,
-                );
+            if (hasAdded === undefined) {
+                throw new UnexpectedCacheError("!!__message__!!");
             }
-            return hasInserted;
+            return hasAdded;
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;
@@ -227,23 +204,19 @@ export class Cache<TType = unknown> implements ICache<TType> {
         }
     }
 
-    async upsertMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, InserItem<CacheValue<TValues>>>,
+    async addMany<TValues extends TType, TKeys extends string>(
+        values: Record<TKeys, ValueWithTTL<CacheValue<TValues>>>,
     ): Promise<Record<TKeys, boolean>> {
         try {
-            const valuesWithDefault = Object.fromEntries(
-                Object.entries<InserItem<TValues>>(values).map<
-                    RecordItem<TKeys, Required<InserItem<TType>>>
-                >(([key, { value, ttlInMs = Cache.DEFAULT_TTL }]) => [
-                    key as TKeys,
-                    {
-                        value,
-                        ttlInMs,
-                    },
-                ]),
-            ) as Record<TKeys, Required<InserItem<TValues>>>;
-
-            return await this.cacheAdapter.upsertMany(valuesWithDefault);
+            for (const key in values) {
+                const {
+                    [key]: { value },
+                } = values;
+                if (Number.isNaN(value)) {
+                    throw new InvalidValueCacheError("!!__message__!!");
+                }
+            }
+            return await this.cacheAdapter.addMany(this.abra(values));
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;
@@ -255,20 +228,28 @@ export class Cache<TType = unknown> implements ICache<TType> {
         }
     }
 
-    async update<TValue extends TType>(
+    async put<TValue extends TType>(
         key: string,
         value: CacheValue<TValue>,
+        ttlInMs: number | null = null,
     ): Promise<boolean> {
         try {
-            const { [key]: hasUpdated } = await this.cacheAdapter.updateMany({
-                [key]: value,
-            });
-            if (hasUpdated === undefined) {
-                throw new UnexpectedCacheError(
-                    `Destructed field "key" does not exist`,
-                );
+            if (Number.isNaN(value)) {
+                throw new InvalidValueCacheError("!!__message__!!");
             }
-            return hasUpdated;
+            const { [key]: hasAdded } = await this.cacheAdapter.putMany<
+                TValue,
+                string
+            >({
+                [key]: {
+                    value,
+                    ttlInMs,
+                },
+            });
+            if (hasAdded === undefined) {
+                throw new UnexpectedCacheError("!!__message__!!");
+            }
+            return hasAdded;
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;
@@ -280,11 +261,19 @@ export class Cache<TType = unknown> implements ICache<TType> {
         }
     }
 
-    async updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, CacheValue<TValues>>,
+    async putMany<TValues extends TType, TKeys extends string>(
+        values: Record<TKeys, ValueWithTTL<CacheValue<TValues>>>,
     ): Promise<Record<TKeys, boolean>> {
         try {
-            return await this.cacheAdapter.updateMany(values);
+            for (const key in values) {
+                const {
+                    [key]: { value },
+                } = values;
+                if (Number.isNaN(value)) {
+                    throw new InvalidValueCacheError("!!__message__!!");
+                }
+            }
+            return await this.cacheAdapter.putMany(this.abra(values));
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;
@@ -298,15 +287,13 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     async remove(key: string): Promise<boolean> {
         try {
-            const { [key]: hasRemoved } = await this.cacheAdapter.removeMany([
+            const { [key]: hasAdded } = await this.cacheAdapter.removeMany([
                 key,
             ]);
-            if (hasRemoved === undefined) {
-                throw new UnexpectedCacheError(
-                    `Destructed field "key" does not exist`,
-                );
+            if (hasAdded === undefined) {
+                throw new UnexpectedCacheError("!!__message__!!");
             }
-            return hasRemoved;
+            return hasAdded;
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;
@@ -334,35 +321,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
         }
     }
 
-    async getOr<TValue extends TType, TExtended extends TType = TValue>(
-        key: string,
-        defaultValue: AsyncLazyable<TExtended>,
-    ): Promise<TValue | TExtended> {
-        try {
-            const { [key]: value } = await this.cacheAdapter.getMany<
-                TValue,
-                string
-            >([key]);
-            if (value === undefined) {
-                throw new UnexpectedCacheError(
-                    `Destructed field "key" does not exist`,
-                );
-            }
-            if (value === null) {
-                return await simplifyAsyncLazyable(defaultValue);
-            }
-            return value;
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
-    }
-
     async getAndRemove<TValue extends TType>(
         key: string,
     ): Promise<TValue | null> {
@@ -379,48 +337,33 @@ export class Cache<TType = unknown> implements ICache<TType> {
         }
     }
 
-    async getAndRemoveOr<
-        TValue extends TType,
-        TExtended extends TType = TValue,
-    >(
+    async getOrAdd<TValue extends TType, TExtended extends TType>(
         key: string,
-        defaultValue: AsyncLazyable<TExtended>,
-    ): Promise<TValue | TExtended> {
-        try {
-            const value = await this.cacheAdapter.getAndRemove<TValue>(key);
-            if (value === null) {
-                return await simplifyAsyncLazyable(defaultValue);
-            }
-            return value;
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
-    }
-
-    async getOrInsert<TValue extends TType, TExtended extends TType = TValue>(
-        key: string,
-        insertValue: AsyncLazyable<CacheValue<TExtended>>,
+        valueToAdd: AsyncLazyable<CacheValue<TExtended>>,
         ttlInMs: number | null = null,
     ): Promise<TValue | TExtended> {
         try {
-            if (typeof insertValue !== "function") {
-                return await this.cacheAdapter.getOrInsert<TValue, TExtended>(
+            if (typeof valueToAdd !== "function") {
+                if (Number.isNaN(valueToAdd)) {
+                    throw new InvalidValueCacheError("!!__message__!!");
+                }
+                return await this.cacheAdapter.getOrAdd(
                     key,
-                    insertValue,
+                    valueToAdd,
                     ttlInMs,
                 );
             }
-            return await this.cacheAdapter.getOrInsert<TValue, TExtended>(
-                key,
-                await simplifyAsyncLazyable(insertValue),
-                ttlInMs,
-            );
+            const value = await this.get(key);
+            if (value === null) {
+                const simpleValueToAdd =
+                    await simplifyAsyncLazyable(valueToAdd);
+                if (Number.isNaN(simpleValueToAdd)) {
+                    throw new InvalidValueCacheError("!!__message__!!");
+                }
+                await this.add(key, simpleValueToAdd, ttlInMs);
+                return simpleValueToAdd;
+            }
+            return value as TValue;
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;
@@ -432,9 +375,12 @@ export class Cache<TType = unknown> implements ICache<TType> {
         }
     }
 
-    async updateIncrement(key: string, value: number): Promise<boolean> {
+    async increment(key: string, value: number): Promise<boolean> {
         try {
-            return await this.cacheAdapter.updateIncrement(key, value);
+            if (Number.isNaN(value)) {
+                throw new InvalidValueCacheError("!!__message__!!");
+            }
+            return await this.cacheAdapter.increment(key, value);
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;
@@ -446,49 +392,12 @@ export class Cache<TType = unknown> implements ICache<TType> {
         }
     }
 
-    async upsertIncrement(
-        key: string,
-        value: number,
-        ttlInMs: number | null = null,
-    ): Promise<boolean> {
+    async decrement(key: string, value: number): Promise<boolean> {
         try {
-            return await this.cacheAdapter.upsertIncrement(key, value, ttlInMs);
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
+            if (Number.isNaN(value)) {
+                throw new InvalidValueCacheError("!!__message__!!");
             }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
-    }
-
-    async updateDecrement(key: string, value: number): Promise<boolean> {
-        try {
-            return await this.cacheAdapter.updateIncrement(key, -value);
-        } catch (error: unknown) {
-            if (error instanceof CacheError) {
-                throw error;
-            }
-            throw new UnexpectedCacheError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
-    }
-
-    async upsertDecrement(
-        key: string,
-        value: number,
-        ttlInMs: number | null = null,
-    ): Promise<boolean> {
-        try {
-            return await this.cacheAdapter.upsertIncrement(
-                key,
-                -value,
-                ttlInMs,
-            );
+            return await this.cacheAdapter.increment(key, -value);
         } catch (error: unknown) {
             if (error instanceof CacheError) {
                 throw error;

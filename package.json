@@ -59,5 +59,9 @@
         "typescript": "^5.5.4",
         "vite-tsconfig-paths": "^4.3.2",
         "vitest": "^2.0.5"
+    },
+    "dependencies": {
+        "cache-manager": "^6.1.1",
+        "keyv": "^5.1.0"
     }
 }
