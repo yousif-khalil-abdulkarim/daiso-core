@@ -62,5 +62,25 @@
         "typescript": "^5.5.4",
         "vite-tsconfig-paths": "^4.3.2",
         "vitest": "^2.0.5"
+    },
+    "peerDependencies": {
+        "cache-manager": "^6.1.1",
+        "ioredis": "^5.4.1",
+        "keyv": "^5.1.2",
+        "superjson": "^2.2.1"
+    },
+    "peerDependenciesMeta": {
+        "cache-manager": {
+            "optional": true
+        },
+        "ioredis": {
+            "optional": true
+        },
+        "keyv": {
+            "optional": true
+        },
+        "superjson": {
+            "optional": true
+        }
     }
 }
