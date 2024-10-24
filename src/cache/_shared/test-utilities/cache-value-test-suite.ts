@@ -1,7 +1,7 @@
 /**
  * @module Cache
  */
-import { RecordItem } from "@/_shared/types";
+import { Promisable, RecordItem } from "@/_shared/types";
 import { Cache } from "@/cache/cache";
 
 import { type ICacheAdapter } from "@/contracts/cache/_module";
@@ -21,7 +21,7 @@ export type CacheValueTestSuite = {
     expect: ExpectStatic;
     beforeEach: typeof beforeEach;
     test: TestAPI;
-    createAdapter: () => ICacheAdapter<unknown>;
+    createAdapter: () => Promisable<ICacheAdapter<unknown>>;
 };
 /**
  * @group Utilities
@@ -29,8 +29,9 @@ export type CacheValueTestSuite = {
 export function cacheValueTestSuite(settings: CacheValueTestSuite) {
     const { test, expect, describe, beforeEach, createAdapter } = settings;
     let cache: ICache;
-    beforeEach(() => {
-        cache = new Cache(createAdapter());
+    beforeEach(async () => {
+        const adapter = await createAdapter();
+        cache = new Cache(adapter);
     });
     describe("Value tests", () => {
         describe("method: get / add", () => {

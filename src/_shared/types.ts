@@ -4,8 +4,8 @@ export type EnsureType<TValue, TType> =
 export type RecordItem<TKey, TValue> = [key: TKey, value: TValue];
 
 export type Lazyable<TValue> = TValue | (() => TValue);
-export type AsyncLazyable_<TValue> = TValue | (() => Promise<TValue>);
-export type AsyncLazyable<TValue> = AsyncLazyable_<TValue> | Lazyable<TValue>;
+export type Promisable<TValue> = TValue | Promise<TValue>;
+export type AsyncLazyable<TValue> = TValue | (() => Promisable<TValue>);
 
 export type AsyncIterableValue<TInput> =
     | Iterable<TInput>

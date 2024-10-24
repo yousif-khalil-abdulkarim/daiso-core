@@ -1,6 +1,7 @@
 /**
  * @module Cache
  */
+import { Promisable } from "@/_shared/types";
 import { Cache } from "@/cache/cache";
 
 import { type ICacheAdapter } from "@/contracts/cache/_module";
@@ -20,7 +21,7 @@ export type CacheNamespaceTestSuite = {
     expect: ExpectStatic;
     beforeEach: typeof beforeEach;
     test: TestAPI;
-    createAdapter: () => ICacheAdapter<unknown>;
+    createAdapter: () => Promisable<ICacheAdapter<unknown>>;
 };
 /**
  * @group Utilities
@@ -29,11 +30,12 @@ export function cacheNamespaceTestSuite(settings: CacheNamespaceTestSuite) {
     const { test, expect, describe, beforeEach, createAdapter } = settings;
     let cacheA: ICache;
     let cacheB: ICache;
-    beforeEach(() => {
-        cacheA = new Cache(createAdapter(), {
+    beforeEach(async () => {
+        const adapter = await createAdapter();
+        cacheA = new Cache(adapter, {
             namespace: "@namespace-a",
         });
-        cacheB = new Cache(createAdapter(), {
+        cacheB = new Cache(adapter, {
             namespace: "@namespace-b",
         });
     });

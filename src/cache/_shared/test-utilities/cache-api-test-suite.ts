@@ -2,6 +2,7 @@
  * @module Cache
  */
 
+import { Promisable } from "@/_shared/types";
 import { delay } from "@/_shared/utilities";
 import { Cache } from "@/cache/cache";
 import {
@@ -25,7 +26,7 @@ export type CacheApiTestSuite = {
     expect: ExpectStatic;
     beforeEach: typeof beforeEach;
     test: TestAPI;
-    createAdapter: () => ICacheAdapter<unknown>;
+    createAdapter: () => Promisable<ICacheAdapter<unknown>>;
 };
 /**
  * @group Utilities
@@ -33,8 +34,9 @@ export type CacheApiTestSuite = {
 export function cacheApiTestSuite(settings: CacheApiTestSuite) {
     const { test, expect, describe, beforeEach, createAdapter } = settings;
     let cache: ICache;
-    beforeEach(() => {
-        cache = new Cache(createAdapter());
+    beforeEach(async () => {
+        const adapter = await createAdapter();
+        cache = new Cache(adapter);
     });
     describe("Api tests", () => {
         describe("method: has", () => {
@@ -670,7 +672,7 @@ export function cacheApiTestSuite(settings: CacheApiTestSuite) {
                 await cache.add("a", 1);
                 expect(await cache.getOrAdd("a", -1)).toBe(1);
             });
-            test("Should persiust insertion value when key doesnt exists", async () => {
+            test("Should persist insertion value when key doesnt exists", async () => {
                 await cache.getOrAdd("a", -1);
                 expect(await cache.get("a")).toBe(-1);
             });
@@ -706,7 +708,7 @@ export function cacheApiTestSuite(settings: CacheApiTestSuite) {
                 await cache.increment("a", 1);
                 expect(await cache.get("a")).toBe(2);
             });
-            test("Should do nothing key doesn't exists", async () => {
+            test("Should do nothing when key doesn't exists", async () => {
                 await cache.increment("a", 1);
                 expect(await cache.get("a")).toBeNull();
             });
@@ -736,7 +738,7 @@ export function cacheApiTestSuite(settings: CacheApiTestSuite) {
                 await cache.decrement("a", 1);
                 expect(await cache.get("a")).toBe(0);
             });
-            test("Should do nothing key doesn't exists", async () => {
+            test("Should do nothing when key doesn't exists", async () => {
                 await cache.decrement("a", 1);
                 expect(await cache.get("a")).toBeNull();
             });
