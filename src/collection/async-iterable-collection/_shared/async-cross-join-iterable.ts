@@ -1,6 +1,6 @@
+import type { CrossJoinResult } from "@/contracts/collection/_module";
 import {
     CollectionError,
-    CrossJoinResult,
     type IAsyncCollection,
     UnexpectedCollectionError,
 } from "@/contracts/collection/_module";

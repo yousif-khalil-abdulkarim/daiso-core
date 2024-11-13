@@ -1,36 +1,32 @@
 /**
- * @module Collections
+ * @module Collection
  */
 
-import {
+import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type CollectionError,
-    type Comparator,
-    type Predicate,
-    type ForEach,
+    CollectionError,
+    Comparator,
+    Predicate,
+    ForEach,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type ItemNotFoundCollectionError,
-    type Map,
-    type Modifier,
+    ItemNotFoundCollectionError,
+    Map,
+    Modifier,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type MultipleItemsFoundCollectionError,
-    type Tap,
-    type Transform,
+    MultipleItemsFoundCollectionError,
+    Tap,
+    Transform,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type UnexpectedCollectionError,
+    UnexpectedCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type TypeCollectionError,
+    TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type EmptyCollectionError,
-    type ChangendItem,
-    type Reduce,
-    type CrossJoinResult,
+    EmptyCollectionError,
+    ChangendItem,
+    Reduce,
+    CrossJoinResult,
 } from "@/contracts/collection/_shared";
-import {
-    type Lazyable,
-    type RecordItem,
-    type EnsureType,
-} from "@/_shared/types";
+import type { Lazyable, RecordItem, EnsureType } from "@/_shared/types";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>

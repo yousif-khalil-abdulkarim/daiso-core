@@ -1,37 +1,37 @@
 /**
- * @module Collections
+ * @module Collection
  */
 
-import {
-    type AsyncPredicate,
-    type AsyncForEach,
-    type AsyncMap,
-    type AsyncModifier,
-    type AsyncTap,
-    type AsyncTransform,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type CollectionError,
-    type Comparator,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type ItemNotFoundCollectionError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type MultipleItemsFoundCollectionError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type UnexpectedCollectionError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type TypeCollectionError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type EmptyCollectionError,
-    type ChangendItem,
+import type {
     AsyncReduce,
     CrossJoinResult,
+    AsyncPredicate,
+    AsyncForEach,
+    AsyncMap,
+    AsyncModifier,
+    AsyncTap,
+    AsyncTransform,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    CollectionError,
+    Comparator,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ItemNotFoundCollectionError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    MultipleItemsFoundCollectionError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UnexpectedCollectionError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    TypeCollectionError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    EmptyCollectionError,
+    ChangendItem,
 } from "@/contracts/collection/_shared";
-import {
-    type RecordItem,
-    type AsyncLazyable,
-    type EnsureType,
-    type AsyncIterableValue,
+import type {
+    RecordItem,
+    AsyncLazyable,
+    EnsureType,
+    AsyncIterableValue,
 } from "@/_shared/types";
 
 export type AsyncCollapse<TValue> = TValue extends

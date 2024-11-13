@@ -1,5 +1,5 @@
 /**
- * @module Collections
+ * @module Collection
  */
 
 import {
@@ -771,9 +771,7 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
-    sort(
-        comparator?: Comparator<TInput> | undefined,
-    ): IAsyncCollection<TInput> {
+    sort(comparator?: Comparator<TInput>): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
             new AsyncSortIterable(this, comparator),
         );

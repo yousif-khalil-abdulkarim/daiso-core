@@ -1,0 +1,47 @@
+/**
+ * @module Serializer
+ */
+import {
+    DeserializationError,
+    SerializationError,
+    type ISerializer,
+} from "@/contracts/serializer/_module";
+
+/**
+ * @internal
+ */
+export class RedisSerializer implements ISerializer<string> {
+    constructor(private readonly serializer: ISerializer<string>) {}
+
+    async serialize<TValue>(value: TValue): Promise<string> {
+        try {
+            if (
+                typeof value === "number" &&
+                !Number.isNaN(value) &&
+                isFinite(value)
+            ) {
+                return String(value);
+            }
+            return await this.serializer.serialize(value);
+        } catch (error: unknown) {
+            throw new SerializationError(
+                `Serialization error "${String(error)}" occured`,
+                error,
+            );
+        }
+    }
+    async deserialize<TValue>(value: string): Promise<TValue> {
+        try {
+            const isNumberRegex = /^(-?([0-9]+)(\.[0-5]+)?)$/g;
+            if (isNumberRegex.test(value)) {
+                return Number(value) as TValue;
+            }
+            return await this.serializer.deserialize(value);
+        } catch (error: unknown) {
+            throw new DeserializationError(
+                `Deserialization error "${String(error)}" occured`,
+                error,
+            );
+        }
+    }
+}

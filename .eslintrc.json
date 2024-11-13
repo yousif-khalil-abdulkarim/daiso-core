@@ -9,7 +9,6 @@
             "files": ["src/**/*.ts", "vite.config.ts"],
             "plugins": [
                 "@typescript-eslint",
-                "vitest",
                 "typescript-enum",
                 "no-relative-import-paths",
                 "eslint-plugin-tsdoc",
@@ -18,11 +17,12 @@
             "extends": [
                 "eslint:recommended",
                 "plugin:@typescript-eslint/strict-type-checked",
-                "plugin:@vitest/legacy-recommended",
                 "prettier",
                 "plugin:prettier/recommended"
             ],
             "rules": {
+                "@typescript-eslint/explicit-module-boundary-types": "error",
+                "@typescript-eslint/consistent-type-imports": "error",
                 "@typescript-eslint/no-unnecessary-type-parameters": "off",
                 "@typescript-eslint/no-unused-vars": [
                     "error",
@@ -44,6 +44,16 @@
                         "prefix": "@"
                     }
                 ]
+            }
+        },
+        {
+            "files": ["src/**/*.test-suite.ts", "src/**/*.test.ts"],
+            "plugins": ["vitest"],
+            "extends": ["plugin:@vitest/legacy-recommended"],
+            "rules": {
+                "@vitest/no-disabled-tests": "error",
+                "@vitest/no-focused-tests": "error",
+                "@vitest/no-commented-out-tests": "error"
             }
         }
     ]
