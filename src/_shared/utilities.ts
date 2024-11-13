@@ -1,4 +1,9 @@
-import { AsyncLazyable, Lazyable } from "@/_shared/types";
+/**
+ * @module Shared
+ */
+
+import type { Lazyable } from "@/_shared/types";
+import { type AsyncLazyable } from "@/_shared/types";
 
 /**
  * @internal

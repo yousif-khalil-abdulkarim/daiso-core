@@ -1,5 +1,5 @@
 /**
- * @module Collections
+ * @module Collection
  */
 
 /**
@@ -34,7 +34,7 @@ export function range(from: number, to: number): Iterable<number> {
  * @group Utilities
  */
 export function isIterable<TItem>(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     value: any,
 ): value is Iterable<TItem> {
     return (
@@ -49,7 +49,7 @@ export function isIterable<TItem>(
  * @group Utilities
  */
 export function isAsyncIterable<TItem>(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     value: any,
 ): value is AsyncIterable<TItem> {
     return (

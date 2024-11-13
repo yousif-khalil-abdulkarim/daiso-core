@@ -1,5 +1,5 @@
 /**
- * @module Collections
+ * @module Collection
  */
 
 import { isIterable } from "@/collection/_shared";

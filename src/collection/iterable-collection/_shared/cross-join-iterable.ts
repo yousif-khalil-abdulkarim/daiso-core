@@ -1,7 +1,9 @@
 import { isIterable } from "@/collection/_module";
-import {
+import type {
     CrossJoinResult,
     ICollection,
+} from "@/contracts/collection/_module";
+import {
     CollectionError,
     UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
