@@ -50,5 +50,5 @@ jobs:
             - name: Install Dependencies
               run: npm ci
 
-            - name: Linting
+            - name: Testing
               run: npm run test
