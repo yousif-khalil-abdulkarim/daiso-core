@@ -1,5 +1,15 @@
 # @daiso-tech/core
 
+## 0.4.0
+
+### Minor Changes
+
+-   d070f85: Introduced a new namespace feature for the Storage contract. This enhancement enables the creation of a new Storage instance with a specified prefixed namespace, derived from the current Storage.
+
+### Patch Changes
+
+-   d070f85: Removed AsyncDispose for StorageContract
+
 ## 0.3.0
 
 ### Minor Changes
