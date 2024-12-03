@@ -17,21 +17,31 @@ import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
 export type StorageSettings = {
     namespace?: string;
 };
-export class Storage<TType> implements IStorage<TType> {
-    private readonly storageAdapter: NamespaceStorageAdapter<TType>;
+export class Storage<TType = unknown> implements IStorage<TType> {
+    private readonly namespaceStorageAdapter: NamespaceStorageAdapter<TType>;
+    private readonly settings: Required<StorageSettings>;
 
     constructor(
-        storageAdapter: IStorageAdapter<TType>,
-        { namespace = "" }: StorageSettings = {},
+        private readonly storageAdapter: IStorageAdapter<TType>,
+        settings: StorageSettings = {},
     ) {
-        this.storageAdapter = new NamespaceStorageAdapter<TType>(
-            new UsableStorageAdapter(storageAdapter),
-            namespace,
+        this.settings = {
+            namespace: "",
+            ...settings,
+        };
+        this.namespaceStorageAdapter = new NamespaceStorageAdapter<TType>(
+            new UsableStorageAdapter(this.storageAdapter),
+            this.settings.namespace,
         );
     }
 
-    async [Symbol.asyncDispose](): Promise<void> {
-        await this.clear();
+    namespace<TNamespaceType extends TType>(
+        name: string,
+    ): IStorage<TNamespaceType> {
+        return new Storage<TNamespaceType>(this.storageAdapter, {
+            ...this.settings,
+            namespace: `${this.settings.namespace}${name}`,
+        });
     }
 
     async exists(key: string): Promise<boolean> {
@@ -58,7 +68,7 @@ export class Storage<TType> implements IStorage<TType> {
         keys: TKeys[],
     ): Promise<Record<TKeys, boolean>> {
         try {
-            return await this.storageAdapter.existsMany(keys);
+            return await this.namespaceStorageAdapter.existsMany(keys);
         } catch (error: unknown) {
             if (error instanceof StorageError) {
                 throw error;
@@ -115,7 +125,7 @@ export class Storage<TType> implements IStorage<TType> {
         keys: TKeys[],
     ): Promise<Record<TKeys, TValues | null>> {
         try {
-            return await this.storageAdapter.getMany(keys);
+            return await this.namespaceStorageAdapter.getMany(keys);
         } catch (error: unknown) {
             if (error instanceof StorageError) {
                 throw error;
@@ -243,7 +253,7 @@ export class Storage<TType> implements IStorage<TType> {
         values: Record<TKeys, StorageValue<TValues>>,
     ): Promise<Record<TKeys, boolean>> {
         try {
-            return await this.storageAdapter.addMany(values);
+            return await this.namespaceStorageAdapter.addMany(values);
         } catch (error: unknown) {
             if (error instanceof StorageError) {
                 throw error;
@@ -273,7 +283,7 @@ export class Storage<TType> implements IStorage<TType> {
     async updateMany<TValues extends TType, TKeys extends string>(
         values: Record<TKeys, TValues>,
     ): Promise<Record<TKeys, boolean>> {
-        return await this.storageAdapter.updateMany(values);
+        return await this.namespaceStorageAdapter.updateMany(values);
     }
 
     async put<TValue extends TType>(
@@ -305,7 +315,7 @@ export class Storage<TType> implements IStorage<TType> {
         values: Record<TKeys, StorageValue<TValues>>,
     ): Promise<Record<TKeys, boolean>> {
         try {
-            return await this.storageAdapter.putMany(values);
+            return await this.namespaceStorageAdapter.putMany(values);
         } catch (error: unknown) {
             if (error instanceof StorageError) {
                 throw error;
@@ -341,7 +351,7 @@ export class Storage<TType> implements IStorage<TType> {
         keys: TKeys[],
     ): Promise<Record<TKeys, boolean>> {
         try {
-            return await this.storageAdapter.removeMany(keys);
+            return await this.namespaceStorageAdapter.removeMany(keys);
         } catch (error: unknown) {
             if (error instanceof StorageError) {
                 throw error;
@@ -357,7 +367,7 @@ export class Storage<TType> implements IStorage<TType> {
         key: string,
     ): Promise<TValue | null> {
         try {
-            return await this.storageAdapter.getAndRemove(key);
+            return await this.namespaceStorageAdapter.getAndRemove(key);
         } catch (error: unknown) {
             if (error instanceof StorageError) {
                 throw error;
@@ -374,10 +384,10 @@ export class Storage<TType> implements IStorage<TType> {
         valueToAdd: AsyncLazyable<StorageValue<GetOrAddValue<TExtended>>>,
     ): Promise<TValue | TExtended> {
         try {
-            const value = await this.storageAdapter.getOrAdd<TValue, TExtended>(
-                key,
-                valueToAdd as AsyncLazyable<TExtended>,
-            );
+            const value = await this.namespaceStorageAdapter.getOrAdd<
+                TValue,
+                TExtended
+            >(key, valueToAdd as AsyncLazyable<TExtended>);
             return value;
         } catch (error: unknown) {
             if (error instanceof StorageError) {
@@ -392,7 +402,7 @@ export class Storage<TType> implements IStorage<TType> {
 
     async increment(key: string, value: number = 1): Promise<boolean> {
         try {
-            return await this.storageAdapter.increment(key, value);
+            return await this.namespaceStorageAdapter.increment(key, value);
         } catch (error: unknown) {
             if (error instanceof StorageError) {
                 throw error;
@@ -406,7 +416,7 @@ export class Storage<TType> implements IStorage<TType> {
 
     async decrement(key: string, value: number = 1): Promise<boolean> {
         try {
-            return await this.storageAdapter.increment(key, -value);
+            return await this.namespaceStorageAdapter.increment(key, -value);
         } catch (error: unknown) {
             if (error instanceof StorageError) {
                 throw error;
@@ -420,7 +430,7 @@ export class Storage<TType> implements IStorage<TType> {
 
     async clear(): Promise<void> {
         try {
-            await this.storageAdapter.clear();
+            await this.namespaceStorageAdapter.clear();
         } catch (error: unknown) {
             if (error instanceof StorageError) {
                 throw error;
