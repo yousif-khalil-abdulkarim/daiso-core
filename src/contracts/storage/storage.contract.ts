@@ -26,7 +26,11 @@ export type StorageValue<T> = Exclude<T, AnyFunction | undefined | null>;
  * @throws {TypeStorageError} {@link TypeStorageError}
  * @group Contracts
  */
-export type IStorage<TType = unknown> = AsyncDisposable & {
+export type IStorage<TType = unknown> = {
+    namespace<TNamespaceType extends TType>(
+        name: string,
+    ): IStorage<TNamespaceType>;
+
     /**
      * Returns true when key is found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
