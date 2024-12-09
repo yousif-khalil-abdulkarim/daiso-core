@@ -948,7 +948,10 @@ export class AsyncIterableCollection<TInput>
             if (error instanceof CollectionError) {
                 throw error;
             }
-            throw new UnexpectedCollectionError("!!__messge__!!", error);
+            throw new UnexpectedCollectionError(
+                `Unexpected error "${String(error)}" occured`,
+                error,
+            );
         }
     }
 

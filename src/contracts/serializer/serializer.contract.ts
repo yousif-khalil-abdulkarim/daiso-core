@@ -1,36 +1,11 @@
-/**
- * @module Serializer
- */
-
-/**
- * @group Errors
- */
-export class SerializerError extends Error {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = SerializerError.name;
-    }
-}
-
-/**
- * @group Errors
- */
-export class SerializationError extends SerializerError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = SerializationError.name;
-    }
-}
-
-/**
- * @group Errors
- */
-export class DeserializationError extends SerializerError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = DeserializationError.name;
-    }
-}
+import type {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    SerializationError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    SerializerError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    DeserializationError,
+} from "@/contracts/serializer/_shared";
 
 /**
  * @group Contracts
