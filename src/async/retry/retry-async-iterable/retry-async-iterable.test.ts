@@ -1,5 +1,5 @@
 import { describe, test } from "vitest";
 
-describe("function: delay", () => {
+describe("function: retryAsyncIterable", () => {
     test.todo("Write tests!!!");
 });
