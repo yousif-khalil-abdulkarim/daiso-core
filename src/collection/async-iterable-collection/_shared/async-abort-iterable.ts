@@ -6,12 +6,12 @@ import { type IAsyncCollection } from "@/contracts/collection/_module";
 export class AsyncAbortIterable<TInput> implements AsyncIterable<TInput> {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private signal: AbortSignal,
+        private cancelSignal: AbortSignal,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
         let hasAborted = false;
-        this.signal.addEventListener("abort", () => {
+        this.cancelSignal.addEventListener("abort", () => {
             hasAborted = true;
         });
         for await (const item of this.collection) {

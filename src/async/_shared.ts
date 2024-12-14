@@ -15,16 +15,6 @@ export class AsyncError extends Error {
 /**
  * @group Errors
  */
-export class UnexpectedAsyncError extends AsyncError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = UnexpectedAsyncError.name;
-    }
-}
-
-/**
- * @group Errors
- */
 export class AbortAsyncError extends AsyncError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
@@ -32,22 +22,19 @@ export class AbortAsyncError extends AsyncError {
     }
 }
 
-/**
- * @group Errors
- */
-export class TimeoutAsyncError extends AbortAsyncError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = TimeoutAsyncError.name;
-    }
-}
-
+export type RetryAsyncErrorData = {
+    cause?: unknown;
+    maxAttempts: number;
+};
 /**
  * @group Errors
  */
 export class RetryAsyncError extends AsyncError {
-    constructor(message: string, cause?: unknown) {
+    public readonly maxAttempts: number;
+
+    constructor(message: string, { cause, maxAttempts }: RetryAsyncErrorData) {
         super(message, { cause });
         this.name = RetryAsyncError.name;
+        this.maxAttempts = maxAttempts;
     }
 }

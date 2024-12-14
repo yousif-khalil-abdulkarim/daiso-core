@@ -1,5 +1,5 @@
 import { describe, test } from "vitest";
 
-describe("function: retry", () => {
+describe("function: constantBackoffPolicy", () => {
     test.todo("Write tests!!!");
 });

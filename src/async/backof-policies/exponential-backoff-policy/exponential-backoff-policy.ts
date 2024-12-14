@@ -2,7 +2,8 @@
  * @module Async
  */
 
-export type BackoffPolicy = (attempt: number, error: unknown) => number;
+import type { BackoffPolicy } from "@/async/backof-policies/_shared";
+import { withJitter } from "@/async/backof-policies/_shared";
 
 export type ExponentialBackoffPolicySettings = {
     /**
@@ -18,9 +19,14 @@ export type ExponentialBackoffPolicySettings = {
      */
     multiplier?: number;
     /**
-     * @default {1}
+     * @default {0.5}
      */
     jitter?: number;
+    /**
+     * Used only for testing
+     * @internal
+     */
+    _mathRandom?: () => number;
 };
 
 /**
@@ -39,12 +45,13 @@ export function exponentialBackoffPolicy(
             maxDelayInMs = 60_000,
             minDelayInMs = 1_000,
             multiplier = 2,
-            jitter = 1,
+            jitter = 0.5,
+            _mathRandom = Math.random,
         } = settings;
-        const exp = Math.min(
+        const exponential = Math.min(
             maxDelayInMs,
             minDelayInMs * Math.pow(multiplier, attempt),
         );
-        return (1 - jitter * Math.random()) * exp;
+        return withJitter(jitter, exponential, _mathRandom);
     };
 }

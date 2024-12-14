@@ -1,5 +1,5 @@
 import { describe, test } from "vitest";
 
-describe("function: abortable", () => {
+describe("function: polynomialBackoffPolicy", () => {
     test.todo("Write tests!!!");
 });
