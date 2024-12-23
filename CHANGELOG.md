@@ -1,5 +1,34 @@
 # @daiso-tech/core
 
+## 0.4.0
+
+### Minor Changes
+
+-   e2031da: # New features
+
+    ## Async utilities
+
+    -   Added <i>abortable</i> async utility function.
+    -   Added <i>abortableIterable</i> utility function.
+    -   Added <i>delay</i> async utility function.
+    -   Added <i>delayIterable</i> utility function.
+    -   Added <i>retry</i> async utility function.
+    -   Added <i>retryIterable</i> utility function.
+    -   Added <i>timeout</i> async utility function.
+    -   Added <i>timeoutIterable</i> utility function.
+    -   Added <i>LazyPromise</i> class utility.
+    -   Added <i>constant</i>, <i>exponential</i>, <i>linear</i> and <i>polynomial</i> backoff policies.
+
+    ## Utilities
+
+    -   Added TimeSpan class that makes easy to work time intervals.
+
+-   d070f85: Introduced a new namespace feature for the Storage contract. This enhancement enables the creation of a new Storage instance with a specified prefixed namespace, derived from the current Storage.
+
+### Patch Changes
+
+-   d070f85: Removed AsyncDispose for StorageContract
+
 ## 0.3.0
 
 ### Minor Changes
