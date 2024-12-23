@@ -1,8 +1,6 @@
 import {
-    CollectionError,
     type Predicate,
     type ICollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -15,21 +13,11 @@ export class TakeUntilIterable<TInput> implements Iterable<TInput> {
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
-        try {
-            for (const [index, item] of this.collection.entries()) {
-                if (this.predicateFn(item, index, this.collection)) {
-                    break;
-                }
-                yield item;
+        for (const [index, item] of this.collection.entries()) {
+            if (this.predicateFn(item, index, this.collection)) {
+                break;
             }
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            yield item;
         }
     }
 }

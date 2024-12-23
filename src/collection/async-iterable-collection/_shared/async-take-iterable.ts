@@ -1,8 +1,4 @@
-import {
-    CollectionError,
-    type IAsyncCollection,
-    UnexpectedCollectionError,
-} from "@/contracts/collection/_module";
+import { type IAsyncCollection } from "@/contracts/collection/_module";
 
 /**
  * @internal
@@ -14,21 +10,9 @@ export class AsyncTakeIterable<TInput> implements AsyncIterable<TInput> {
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
-        try {
-            if (this.limit < 0) {
-                this.limit = (await this.collection.size()) + this.limit;
-            }
-            yield* this.collection.takeWhile(
-                (_item, index) => index < this.limit,
-            );
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+        if (this.limit < 0) {
+            this.limit = (await this.collection.size()) + this.limit;
         }
+        yield* this.collection.takeWhile((_item, index) => index < this.limit);
     }
 }

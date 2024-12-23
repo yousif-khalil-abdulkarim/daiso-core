@@ -1,9 +1,4 @@
-import {
-    CollectionError,
-    type ICollection,
-    type Map,
-    UnexpectedCollectionError,
-} from "@/contracts/collection/_module";
+import { type ICollection, type Map } from "@/contracts/collection/_module";
 
 /**
  * @internal
@@ -17,24 +12,14 @@ export class UniqueIterable<TInput, TOutput> implements Iterable<TInput> {
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
-        try {
-            const set = new Set<TOutput>([]);
+        const set = new Set<TOutput>([]);
 
-            for (const [index, item] of this.collection.entries()) {
-                const item_ = this.callback(item, index, this.collection);
-                if (!set.has(item_)) {
-                    yield item;
-                }
-                set.add(item_);
+        for (const [index, item] of this.collection.entries()) {
+            const item_ = this.callback(item, index, this.collection);
+            if (!set.has(item_)) {
+                yield item;
             }
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            set.add(item_);
         }
     }
 }

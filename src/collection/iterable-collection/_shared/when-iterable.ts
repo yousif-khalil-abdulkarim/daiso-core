@@ -1,8 +1,6 @@
 import {
-    CollectionError,
     type ICollection,
     type Modifier,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -18,20 +16,10 @@ export class WhenIterable<TInput, TExtended>
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput | TExtended> {
-        try {
-            if (this.condition()) {
-                yield* this.callback(this.collection);
-                return;
-            }
-            yield* this.collection as ICollection<TInput | TExtended>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+        if (this.condition()) {
+            yield* this.callback(this.collection);
+            return;
         }
+        yield* this.collection as ICollection<TInput | TExtended>;
     }
 }

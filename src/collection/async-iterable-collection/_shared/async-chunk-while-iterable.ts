@@ -1,8 +1,6 @@
 import {
     type AsyncPredicate,
-    CollectionError,
     type IAsyncCollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 import { type AsyncIterableValue } from "@/_shared/types";
 
@@ -22,34 +20,20 @@ export class AsyncChunkWhileIterable<TInput>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
-        try {
-            const array: TInput[] = [];
-            for await (const [index, item] of this.collection.entries()) {
-                if (index === 0) {
-                    array.push(item);
-                } else if (
-                    await this.predicateFn(
-                        item,
-                        index,
-                        this.makeCollection(array),
-                    )
-                ) {
-                    array.push(item);
-                } else {
-                    yield this.makeCollection(array);
-                    array.length = 0;
-                    array.push(item);
-                }
+        const array: TInput[] = [];
+        for await (const [index, item] of this.collection.entries()) {
+            if (index === 0) {
+                array.push(item);
+            } else if (
+                await this.predicateFn(item, index, this.makeCollection(array))
+            ) {
+                array.push(item);
+            } else {
+                yield this.makeCollection(array);
+                array.length = 0;
+                array.push(item);
             }
-            yield this.makeCollection(array);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
+        yield this.makeCollection(array);
     }
 }

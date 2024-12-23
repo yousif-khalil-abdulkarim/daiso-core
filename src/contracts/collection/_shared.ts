@@ -114,7 +114,7 @@ export type AsyncPredicate_<TInput, TCollection> = (
     item: TInput,
     index: number,
     collection: TCollection,
-) => Promise<boolean>;
+) => PromiseLike<boolean>;
 
 export type AsyncPredicate<
     TInput,
@@ -129,7 +129,7 @@ export type AsyncReduce_<TInput, TCollection, TOutput> = (
     item: TInput,
     index: number,
     collection: TCollection,
-) => Promise<TOutput>;
+) => PromiseLike<TOutput>;
 
 export type AsyncReduce<TInput, TCollection, TOutput> =
     | AsyncReduce_<TInput, TCollection, TOutput>
@@ -139,7 +139,7 @@ export type AsyncMap_<TInput, TCollection, TOutput> = (
     item: TInput,
     index: number,
     collection: TCollection,
-) => Promise<TOutput>;
+) => PromiseLike<TOutput>;
 
 export type AsyncMap<TInput, TCollection, TOutput> =
     | AsyncMap_<TInput, TCollection, TOutput>
@@ -149,7 +149,7 @@ export type AsyncForEach_<TInput, TCollection> = (
     item: TInput,
     index: number,
     collection: TCollection,
-) => Promise<void>;
+) => PromiseLike<void>;
 
 export type AsyncForEach<TInput, TCollection> =
     | ForEach<TInput, TCollection>
@@ -157,19 +157,21 @@ export type AsyncForEach<TInput, TCollection> =
 
 export type AsyncModifier_<TInput, TOutput> = (
     collection: TInput,
-) => Promise<TOutput>;
+) => PromiseLike<TOutput>;
 
 export type AsyncModifier<TInput, TOutput> =
     | Modifier<TInput, TOutput>
     | AsyncModifier_<TInput, TOutput>;
 
-export type AsyncTap_<TCollection> = (collection: TCollection) => Promise<void>;
+export type AsyncTap_<TCollection> = (
+    collection: TCollection,
+) => PromiseLike<void>;
 
 export type AsyncTap<TCollection> = Tap<TCollection> | AsyncTap_<TCollection>;
 
 export type AsyncTransform_<TInput, TOutput> = (
     value: TInput,
-) => Promise<TOutput>;
+) => PromiseLike<TOutput>;
 
 export type AsyncTransform<TInput, TOutput> =
     | Transform<TInput, TOutput>

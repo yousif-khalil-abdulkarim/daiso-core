@@ -1,8 +1,4 @@
-import {
-    CollectionError,
-    type IAsyncCollection,
-    UnexpectedCollectionError,
-} from "@/contracts/collection/_module";
+import { type IAsyncCollection } from "@/contracts/collection/_module";
 import { type AsyncIterableValue } from "@/_shared/types";
 
 /**
@@ -20,33 +16,23 @@ export class AsyncChunkIterable<TInput>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
-        try {
-            const array: TInput[] = [];
-            let currentChunkSize = 0;
-            let isFirstIteration = true;
-            for await (const item of this.collection) {
-                currentChunkSize %= this.chunkSize;
-                const isFilled = currentChunkSize === 0;
-                if (!isFirstIteration && isFilled) {
-                    yield this.makeCollection(array);
-                    array.length = 0;
-                }
-                array.push(item);
-                currentChunkSize++;
-                isFirstIteration = false;
-            }
-            const hasRest = currentChunkSize !== 0;
-            if (hasRest) {
+        const array: TInput[] = [];
+        let currentChunkSize = 0;
+        let isFirstIteration = true;
+        for await (const item of this.collection) {
+            currentChunkSize %= this.chunkSize;
+            const isFilled = currentChunkSize === 0;
+            if (!isFirstIteration && isFilled) {
                 yield this.makeCollection(array);
+                array.length = 0;
             }
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            array.push(item);
+            currentChunkSize++;
+            isFirstIteration = false;
+        }
+        const hasRest = currentChunkSize !== 0;
+        if (hasRest) {
+            yield this.makeCollection(array);
         }
     }
 }

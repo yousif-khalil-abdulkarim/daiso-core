@@ -10,7 +10,6 @@ import {
     type AsyncModifier,
     type AsyncTap,
     type AsyncTransform,
-    CollectionError,
     type Comparator,
     type IAsyncCollection,
     ItemNotFoundCollectionError,
@@ -55,8 +54,6 @@ import {
     AsyncReverseIterable,
     AsyncSliceIterable,
     AsyncRepeatIterable,
-    AsyncAbortIterable,
-    AsyncDelayIterable,
     AsyncTimeoutIterable,
 } from "@/collection/async-iterable-collection/_shared/_module";
 import {
@@ -66,6 +63,8 @@ import {
 } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
+import type { TimeSpan } from "@/_module";
+import { abortableIterable, delayIterable, LazyPromise } from "@/_module";
 
 /**
  * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly which means they will be executed when the <i>AsyncIterableCollection</i> is iterated with <i>forEach</i> method or "for await of" loop.
@@ -132,62 +131,66 @@ export class AsyncIterableCollection<TInput>
 
     reduce(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
-    ): Promise<TInput>;
+    ): LazyPromise<TInput>;
     reduce(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
         // eslint-disable-next-line @typescript-eslint/unified-signatures
         initialValue: TInput,
-    ): Promise<TInput>;
+    ): LazyPromise<TInput>;
     reduce<TOutput>(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue: TOutput,
-    ): Promise<TOutput>;
-    async reduce<TOutput = TInput>(
+    ): LazyPromise<TOutput>;
+    reduce<TOutput = TInput>(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue?: TOutput,
-    ): Promise<TOutput> {
-        if (initialValue === undefined && (await this.isEmpty())) {
-            throw new TypeCollectionError(
-                "Reduce of empty array must be inputed a initial value",
-            );
-        }
-        if (initialValue !== undefined) {
-            let output = initialValue as TOutput;
-
-            for await (const [index, item] of this.entries()) {
-                output = await reduceFn(output, item, index, this);
-            }
-            return output;
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-        let output: TOutput = (await this.firstOrFail()) as any,
-            index = 0,
-            isFirstIteration = true;
-        for await (const item of this) {
-            if (!isFirstIteration) {
-                output = await reduceFn(output, item, index, this);
-            }
-            isFirstIteration = false;
-            index++;
-        }
-        return output;
-    }
-
-    async join(separator = ","): Promise<EnsureType<TInput, string>> {
-        let str: string | null = null;
-        for await (const item of this) {
-            if (typeof item !== "string") {
+    ): LazyPromise<TOutput> {
+        return new LazyPromise(async () => {
+            if (initialValue === undefined && (await this.isEmpty())) {
                 throw new TypeCollectionError(
-                    "Item type is invalid must be string",
+                    "Reduce of empty array must be inputed a initial value",
                 );
             }
-            if (str === null) {
-                str = item;
-            } else {
-                str = str + separator + item;
+            if (initialValue !== undefined) {
+                let output = initialValue as TOutput;
+
+                for await (const [index, item] of this.entries()) {
+                    output = await reduceFn(output, item, index, this);
+                }
+                return output;
             }
-        }
-        return str as EnsureType<TInput, string>;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+            let output: TOutput = (await this.firstOrFail()) as any,
+                index = 0,
+                isFirstIteration = true;
+            for await (const item of this) {
+                if (!isFirstIteration) {
+                    output = await reduceFn(output, item, index, this);
+                }
+                isFirstIteration = false;
+                index++;
+            }
+            return output;
+        });
+    }
+
+    join(separator = ","): LazyPromise<EnsureType<TInput, string>> {
+        return new LazyPromise(async () => {
+            let str: string | null = null;
+            for await (const item of this) {
+                if (typeof item !== "string") {
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be string",
+                    );
+                }
+                if (str === null) {
+                    str = item;
+                } else {
+                    str = str + separator + item;
+                }
+            }
+            return str as EnsureType<TInput, string>;
+        });
     }
 
     collapse(): IAsyncCollection<AsyncCollapse<TInput>> {
@@ -222,8 +225,8 @@ export class AsyncIterableCollection<TInput>
         return this.skip((page - 1) * pageSize).take(pageSize);
     }
 
-    async sum(): Promise<EnsureType<TInput, number>> {
-        try {
+    sum(): LazyPromise<EnsureType<TInput, number>> {
+        return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -239,19 +242,11 @@ export class AsyncIterableCollection<TInput>
                 sum += item;
             }
             return sum as EnsureType<TInput, number>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async average(): Promise<EnsureType<TInput, number>> {
-        try {
+    average(): LazyPromise<EnsureType<TInput, number>> {
+        return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -269,63 +264,57 @@ export class AsyncIterableCollection<TInput>
                 sum += item;
             }
             return (sum / size) as EnsureType<TInput, number>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async median(): Promise<EnsureType<TInput, number>> {
-        if (await this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
-        }
-        const size = await this.size();
-        if (size === 0) {
-            return 0 as EnsureType<TInput, number>;
-        }
-        const isEven = size % 2 === 0,
-            items = await this.map((item) => {
-                if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
-                }
-                return item;
-            })
-                .filter((_item, index) => {
-                    if (isEven) {
-                        return index === size / 2 || index === size / 2 - 1;
+    median(): LazyPromise<EnsureType<TInput, number>> {
+        return new LazyPromise(async () => {
+            if (await this.isEmpty()) {
+                throw new EmptyCollectionError(
+                    "Collection is empty therby operation cannot be performed",
+                );
+            }
+            const size = await this.size();
+            if (size === 0) {
+                return 0 as EnsureType<TInput, number>;
+            }
+            const isEven = size % 2 === 0,
+                items = await this.map((item) => {
+                    if (typeof item !== "number") {
+                        throw new TypeCollectionError(
+                            "Item type is invalid must be number",
+                        );
                     }
-                    return index === Math.floor(size / 2);
+                    return item;
                 })
+                    .filter((_item, index) => {
+                        if (isEven) {
+                            return index === size / 2 || index === size / 2 - 1;
+                        }
+                        return index === Math.floor(size / 2);
+                    })
 
-                .toArray();
-        if (isEven) {
-            const [a, b] = items;
-            if (a === undefined) {
+                    .toArray();
+            if (isEven) {
+                const [a, b] = items;
+                if (a === undefined) {
+                    throw new UnexpectedCollectionError("Is in invalid state");
+                }
+                if (b === undefined) {
+                    throw new UnexpectedCollectionError("Is in invalid state");
+                }
+                return ((a + b) / 2) as EnsureType<TInput, number>;
+            }
+            const [median] = items;
+            if (median === undefined) {
                 throw new UnexpectedCollectionError("Is in invalid state");
             }
-            if (b === undefined) {
-                throw new UnexpectedCollectionError("Is in invalid state");
-            }
-            return ((a + b) / 2) as EnsureType<TInput, number>;
-        }
-        const [median] = items;
-        if (median === undefined) {
-            throw new UnexpectedCollectionError("Is in invalid state");
-        }
-        return median as EnsureType<TInput, number>;
+            return median as EnsureType<TInput, number>;
+        });
     }
 
-    async min(): Promise<EnsureType<TInput, number>> {
-        try {
+    min(): LazyPromise<EnsureType<TInput, number>> {
+        return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -345,19 +334,11 @@ export class AsyncIterableCollection<TInput>
                 }
             }
             return min as EnsureType<TInput, number>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async max(): Promise<EnsureType<TInput, number>> {
-        try {
+    max(): LazyPromise<EnsureType<TInput, number>> {
+        return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -377,21 +358,13 @@ export class AsyncIterableCollection<TInput>
                 }
             }
             return max as EnsureType<TInput, number>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async percentage(
+    percentage(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<number> {
-        try {
+    ): LazyPromise<number> {
+        return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -406,42 +379,26 @@ export class AsyncIterableCollection<TInput>
                 total++;
             }
             return (part / total) * 100;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async some<TOutput extends TInput>(
+    some<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Promise<boolean> {
-        try {
+    ): LazyPromise<boolean> {
+        return new LazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
                     return true;
                 }
             }
             return false;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async every<TOutput extends TInput>(
+    every<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Promise<boolean> {
-        try {
+    ): LazyPromise<boolean> {
+        return new LazyPromise(async () => {
             let isTrue = true;
             for await (const [index, item] of this.entries()) {
                 isTrue &&= await predicateFn(item, index, this);
@@ -450,15 +407,7 @@ export class AsyncIterableCollection<TInput>
                 }
             }
             return isTrue;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
     take(limit: number): IAsyncCollection<TInput> {
@@ -547,20 +496,12 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
-    async pipe<TOutput = TInput>(
+    pipe<TOutput = TInput>(
         callback: AsyncTransform<IAsyncCollection<TInput>, TOutput>,
-    ): Promise<TOutput> {
-        try {
+    ): LazyPromise<TOutput> {
+        return new LazyPromise(async () => {
             return await callback(this);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
     tap(
@@ -793,63 +734,57 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
-    async first<TOutput extends TInput>(
+    first<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Promise<TOutput | null> {
+    ): LazyPromise<TOutput | null> {
         return this.firstOr(null, predicateFn);
     }
 
-    async firstOr<TOutput extends TInput, TExtended = TInput>(
+    firstOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
             TOutput
         > = () => true,
-    ): Promise<TOutput | TExtended> {
-        try {
+    ): LazyPromise<TOutput | TExtended> {
+        return new LazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
                     return item as TOutput;
                 }
             }
             return await simplifyAsyncLazyable(defaultValue);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
+        });
+    }
+
+    firstOrFail<TOutput extends TInput>(
+        predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+    ): LazyPromise<TOutput> {
+        return new LazyPromise(async () => {
+            const item = await this.first(predicateFn);
+            if (item === null) {
+                throw new ItemNotFoundCollectionError("Item was not found");
             }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+            return item;
+        });
     }
 
-    async firstOrFail<TOutput extends TInput>(
+    last<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Promise<TOutput> {
-        const item = await this.first(predicateFn);
-        if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
-        }
-        return item;
-    }
-
-    async last<TOutput extends TInput>(
-        predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Promise<TOutput | null> {
+    ): LazyPromise<TOutput | null> {
         return this.lastOr(null, predicateFn);
     }
 
-    async lastOr<TOutput extends TInput, TExtended = TInput>(
+    lastOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
             TOutput
         > = () => true,
-    ): Promise<TOutput | TExtended> {
-        try {
+    ): LazyPromise<TOutput | TExtended> {
+        return new LazyPromise(async () => {
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
@@ -860,38 +795,32 @@ export class AsyncIterableCollection<TInput>
                 return matchedItem;
             }
             return await simplifyAsyncLazyable(defaultValue);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async lastOrFail<TOutput extends TInput>(
+    lastOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Promise<TOutput> {
-        const item = await this.last(predicateFn);
-        if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
-        }
-        return item;
+    ): LazyPromise<TOutput> {
+        return new LazyPromise(async () => {
+            const item = await this.last(predicateFn);
+            if (item === null) {
+                throw new ItemNotFoundCollectionError("Item was not found");
+            }
+            return item;
+        });
     }
 
-    async before(
+    before(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<TInput | null> {
+    ): LazyPromise<TInput | null> {
         return this.beforeOr(null, predicateFn);
     }
 
-    async beforeOr<TExtended = TInput>(
+    beforeOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<TInput | TExtended> {
-        try {
+    ): LazyPromise<TInput | TExtended> {
+        return new LazyPromise(async () => {
             let beforeItem: TInput | null = null,
                 index = 0;
             for await (const item of this) {
@@ -902,38 +831,32 @@ export class AsyncIterableCollection<TInput>
                 beforeItem = item;
             }
             return await simplifyAsyncLazyable(defaultValue);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
+        });
+    }
+
+    beforeOrFail(
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
+    ): LazyPromise<TInput> {
+        return new LazyPromise(async () => {
+            const item = await this.before(predicateFn);
+            if (item === null) {
+                throw new ItemNotFoundCollectionError("Item was not found");
             }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+            return item;
+        });
     }
 
-    async beforeOrFail(
+    after(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<TInput> {
-        const item = await this.before(predicateFn);
-        if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
-        }
-        return item;
-    }
-
-    async after(
-        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<TInput | null> {
+    ): LazyPromise<TInput | null> {
         return this.afterOr(null, predicateFn);
     }
 
-    async afterOr<TExtended = TInput>(
+    afterOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<TInput | TExtended> {
-        try {
+    ): LazyPromise<TInput | TExtended> {
+        return new LazyPromise(async () => {
             let hasMatched = false,
                 index = 0;
             for await (const item of this) {
@@ -944,28 +867,25 @@ export class AsyncIterableCollection<TInput>
                 index++;
             }
             return await simplifyAsyncLazyable(defaultValue);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError("!!__messge__!!", error);
-        }
+        });
     }
 
-    async afterOrFail(
+    afterOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<TInput> {
-        const item = await this.after(predicateFn);
-        if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
-        }
-        return item;
+    ): LazyPromise<TInput> {
+        return new LazyPromise(async () => {
+            const item = await this.after(predicateFn);
+            if (item === null) {
+                throw new ItemNotFoundCollectionError("Item was not found");
+            }
+            return item;
+        });
     }
 
-    async sole<TOutput extends TInput>(
+    sole<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Promise<TOutput> {
-        try {
+    ): LazyPromise<TOutput> {
+        return new LazyPromise(async () => {
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
@@ -981,30 +901,20 @@ export class AsyncIterableCollection<TInput>
                 throw new ItemNotFoundCollectionError("Item was not found");
             }
             return matchedItem;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
     nth(step: number): IAsyncCollection<TInput> {
         return this.filter((_item, index) => index % step === 0);
     }
 
-    delay(timeInMs: number): IAsyncCollection<TInput> {
-        return new AsyncIterableCollection(
-            new AsyncDelayIterable(this, timeInMs),
-        );
+    delay(time: TimeSpan): IAsyncCollection<TInput> {
+        return new AsyncIterableCollection(delayIterable(this, time));
     }
 
-    abort(signal: AbortSignal): IAsyncCollection<TInput> {
+    abort(abortSignal: AbortSignal): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
-            new AsyncAbortIterable(this, signal),
+            abortableIterable(this, abortSignal),
         );
     }
 
@@ -1014,10 +924,10 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
-    async count(
+    count(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<number> {
-        try {
+    ): LazyPromise<number> {
+        return new LazyPromise(async () => {
             let size = 0;
             for await (const item of this) {
                 if (await predicateFn(item, size, this)) {
@@ -1025,67 +935,45 @@ export class AsyncIterableCollection<TInput>
                 }
             }
             return size;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async size(): Promise<number> {
+    size(): LazyPromise<number> {
         return this.count(() => true);
     }
 
-    async isEmpty(): Promise<boolean> {
-        try {
+    isEmpty(): LazyPromise<boolean> {
+        return new LazyPromise(async () => {
             for await (const _ of this) {
                 return false;
             }
             return true;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async isNotEmpty(): Promise<boolean> {
-        return !(await this.isEmpty());
+    isNotEmpty(): LazyPromise<boolean> {
+        return new LazyPromise(async () => {
+            return !(await this.isEmpty());
+        });
     }
 
-    async searchFirst(
+    searchFirst(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<number> {
-        try {
+    ): LazyPromise<number> {
+        return new LazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
                     return index;
                 }
             }
             return -1;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async searchLast(
+    searchLast(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Promise<number> {
-        try {
+    ): LazyPromise<number> {
+        return new LazyPromise(async () => {
             let matchedIndex = -1;
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
@@ -1093,40 +981,26 @@ export class AsyncIterableCollection<TInput>
                 }
             }
             return matchedIndex;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 
-    async forEach(
+    forEach(
         callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
-    ): Promise<void> {
-        for await (const [index, item] of this.entries()) {
-            await callback(item, index, this);
-        }
+    ): LazyPromise<void> {
+        return new LazyPromise(async () => {
+            for await (const [index, item] of this.entries()) {
+                await callback(item, index, this);
+            }
+        });
     }
 
-    async toArray(): Promise<TInput[]> {
-        try {
+    toArray(): LazyPromise<TInput[]> {
+        return new LazyPromise(async () => {
             const items: TInput[] = [];
             for await (const item of this) {
                 items.push(item);
             }
             return items;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        });
     }
 }

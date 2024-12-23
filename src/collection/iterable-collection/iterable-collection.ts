@@ -4,7 +4,6 @@
 
 import {
     type Collapse,
-    CollectionError,
     type Comparator,
     type Predicate,
     type ForEach,
@@ -80,17 +79,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     constructor(private iterable: Iterable<TInput>) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
-        try {
-            yield* this.iterable;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        yield* this.iterable;
     }
 
     toIterator(): Iterator<TInput, void> {
@@ -143,70 +132,50 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         reduceFn: Reduce<TInput, ICollection<TInput>, TOutput>,
         initialValue?: TOutput,
     ): TOutput {
-        try {
-            if (initialValue === undefined && this.isEmpty()) {
-                throw new TypeCollectionError(
-                    "Reduce of empty array must be inputed a initial value",
-                );
-            }
-            if (initialValue !== undefined) {
-                let output = initialValue as TOutput,
-                    index = 0;
-                for (const item of this) {
-                    output = reduceFn(output, item, index, this);
-                    index++;
-                }
-                return output;
-            }
-
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
-            let output: TOutput = this.firstOrFail() as any,
-                index = 0,
-                isFirstIteration = true;
+        if (initialValue === undefined && this.isEmpty()) {
+            throw new TypeCollectionError(
+                "Reduce of empty array must be inputed a initial value",
+            );
+        }
+        if (initialValue !== undefined) {
+            let output = initialValue as TOutput,
+                index = 0;
             for (const item of this) {
-                if (!isFirstIteration) {
-                    output = reduceFn(output, item, index, this);
-                }
-                isFirstIteration = false;
+                output = reduceFn(output, item, index, this);
                 index++;
             }
             return output;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-explicit-any
+        let output: TOutput = this.firstOrFail() as any,
+            index = 0,
+            isFirstIteration = true;
+        for (const item of this) {
+            if (!isFirstIteration) {
+                output = reduceFn(output, item, index, this);
+            }
+            isFirstIteration = false;
+            index++;
+        }
+        return output;
     }
 
     join(separator = ","): EnsureType<TInput, string> {
-        try {
-            let str: string | null = null;
-            for (const item of this) {
-                if (typeof item !== "string") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be string",
-                    );
-                }
-                if (str === null) {
-                    str = item as string;
-                } else {
-                    str = str + separator + (item as string);
-                }
+        let str: string | null = null;
+        for (const item of this) {
+            if (typeof item !== "string") {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be string",
+                );
             }
-            return str as EnsureType<TInput, string>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
+            if (str === null) {
+                str = item as string;
+            } else {
+                str = str + separator + (item as string);
             }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
+        return str as EnsureType<TInput, string>;
     }
 
     collapse(): ICollection<Collapse<TInput>> {
@@ -236,61 +205,41 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     sum(): EnsureType<TInput, number> {
-        try {
-            if (this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
-            }
-            let sum = 0;
-            for (const item of this) {
-                if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
-                }
-                sum += item;
-            }
-            return sum as EnsureType<TInput, number>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
+        if (this.isEmpty()) {
+            throw new EmptyCollectionError(
+                "Collection is empty therby operation cannot be performed",
             );
         }
+        let sum = 0;
+        for (const item of this) {
+            if (typeof item !== "number") {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be number",
+                );
+            }
+            sum += item;
+        }
+        return sum as EnsureType<TInput, number>;
     }
 
     average(): EnsureType<TInput, number> {
-        try {
-            if (this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
-            }
-            let size = 0,
-                sum = 0;
-            for (const item of this) {
-                if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
-                }
-                size++;
-                sum += item;
-            }
-            return (sum / size) as EnsureType<TInput, number>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
+        if (this.isEmpty()) {
+            throw new EmptyCollectionError(
+                "Collection is empty therby operation cannot be performed",
             );
         }
+        let size = 0,
+            sum = 0;
+        for (const item of this) {
+            if (typeof item !== "number") {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be number",
+                );
+            }
+            size++;
+            sum += item;
+        }
+        return (sum / size) as EnsureType<TInput, number>;
     }
 
     median(): EnsureType<TInput, number> {
@@ -338,142 +287,92 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     min(): EnsureType<TInput, number> {
-        try {
-            if (this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
-            }
-            let min = 0;
-            for (const item of this) {
-                if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
-                }
-                if (min === 0) {
-                    min = item;
-                } else if (min > item) {
-                    min = item;
-                }
-            }
-            return min as EnsureType<TInput, number>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
+        if (this.isEmpty()) {
+            throw new EmptyCollectionError(
+                "Collection is empty therby operation cannot be performed",
             );
         }
+        let min = 0;
+        for (const item of this) {
+            if (typeof item !== "number") {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be number",
+                );
+            }
+            if (min === 0) {
+                min = item;
+            } else if (min > item) {
+                min = item;
+            }
+        }
+        return min as EnsureType<TInput, number>;
     }
 
     max(): EnsureType<TInput, number> {
-        try {
-            if (this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
-            }
-            let max = 0;
-            for (const item of this) {
-                if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
-                }
-                if (max === 0) {
-                    max = item;
-                } else if (max < item) {
-                    max = item;
-                }
-            }
-            return max as EnsureType<TInput, number>;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
+        if (this.isEmpty()) {
+            throw new EmptyCollectionError(
+                "Collection is empty therby operation cannot be performed",
             );
         }
+        let max = 0;
+        for (const item of this) {
+            if (typeof item !== "number") {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be number",
+                );
+            }
+            if (max === 0) {
+                max = item;
+            } else if (max < item) {
+                max = item;
+            }
+        }
+        return max as EnsureType<TInput, number>;
     }
 
     percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
-        try {
-            if (this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
-            }
-            let part = 0,
-                total = 0;
-            for (const item of this) {
-                if (predicateFn(item, total, this)) {
-                    part++;
-                }
-                total++;
-            }
-            return (part / total) * 100;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
+        if (this.isEmpty()) {
+            throw new EmptyCollectionError(
+                "Collection is empty therby operation cannot be performed",
             );
         }
+        let part = 0,
+            total = 0;
+        for (const item of this) {
+            if (predicateFn(item, total, this)) {
+                part++;
+            }
+            total++;
+        }
+        return (part / total) * 100;
     }
 
     some<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): boolean {
-        try {
-            let index = 0;
-            for (const item of this) {
-                if (predicateFn(item, index, this)) {
-                    return true;
-                }
-                index++;
+        let index = 0;
+        for (const item of this) {
+            if (predicateFn(item, index, this)) {
+                return true;
             }
-            return false;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            index++;
         }
+        return false;
     }
 
     every<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): boolean {
-        try {
-            let index = 0,
-                isTrue = true;
-            for (const item of this) {
-                isTrue &&= predicateFn(item, index, this);
-                if (!isTrue) {
-                    break;
-                }
-                index++;
+        let index = 0,
+            isTrue = true;
+        for (const item of this) {
+            isTrue &&= predicateFn(item, index, this);
+            if (!isTrue) {
+                break;
             }
-            return isTrue;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            index++;
         }
+        return isTrue;
     }
 
     take(limit: number): ICollection<TInput> {
@@ -543,17 +442,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     pipe<TOutput = TInput>(
         callback: Transform<ICollection<TInput>, TOutput>,
     ): TOutput {
-        try {
-            return callback(this);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        return callback(this);
     }
 
     tap(callback: Tap<ICollection<TInput>>): ICollection<TInput> {
@@ -765,17 +654,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     first<TOutput extends TInput>(
         predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | null {
-        try {
-            return this.firstOr(null, predicateFn);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        return this.firstOr(null, predicateFn);
     }
 
     firstOr<TOutput extends TInput, TExtended = TInput>(
@@ -783,24 +662,14 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput> = () =>
             true,
     ): TOutput | TExtended {
-        try {
-            let index = 0;
-            for (const item of this) {
-                if (predicateFn(item, index, this)) {
-                    return item as TOutput;
-                }
-                index++;
+        let index = 0;
+        for (const item of this) {
+            if (predicateFn(item, index, this)) {
+                return item as TOutput;
             }
-            return simplifyLazyable(defaultValue);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            index++;
         }
+        return simplifyLazyable(defaultValue);
     }
 
     firstOrFail<TOutput extends TInput>(
@@ -816,17 +685,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     last<TOutput extends TInput>(
         predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | null {
-        try {
-            return this.lastOr(null, predicateFn);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        return this.lastOr(null, predicateFn);
     }
 
     lastOr<TOutput extends TInput, TExtended = TInput>(
@@ -834,28 +693,18 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput> = () =>
             true,
     ): TOutput | TExtended {
-        try {
-            let index = 0;
-            let matchedItem: TOutput | null = null;
-            for (const item of this) {
-                if (predicateFn(item, index, this)) {
-                    matchedItem = item as TOutput;
-                }
-                index++;
+        let index = 0;
+        let matchedItem: TOutput | null = null;
+        for (const item of this) {
+            if (predicateFn(item, index, this)) {
+                matchedItem = item as TOutput;
             }
-            if (matchedItem) {
-                return matchedItem;
-            }
-            return simplifyLazyable(defaultValue);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            index++;
         }
+        if (matchedItem) {
+            return matchedItem;
+        }
+        return simplifyLazyable(defaultValue);
     }
 
     lastOrFail<TOutput extends TInput>(
@@ -876,26 +725,16 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         defaultValue: Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>>,
     ): TInput | TExtended {
-        try {
-            let beforeItem: TInput | null = null,
-                index = 0;
-            for (const item of this) {
-                if (predicateFn(item, index, this) && beforeItem) {
-                    return beforeItem;
-                }
-                index++;
-                beforeItem = item;
+        let beforeItem: TInput | null = null,
+            index = 0;
+        for (const item of this) {
+            if (predicateFn(item, index, this) && beforeItem) {
+                return beforeItem;
             }
-            return simplifyLazyable(defaultValue);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            index++;
+            beforeItem = item;
         }
+        return simplifyLazyable(defaultValue);
     }
 
     beforeOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput {
@@ -914,26 +753,16 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         defaultValue: Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>>,
     ): TInput | TExtended {
-        try {
-            let hasMatched = false,
-                index = 0;
-            for (const item of this) {
-                if (hasMatched) {
-                    return item;
-                }
-                hasMatched = predicateFn(item, index, this);
-                index++;
+        let hasMatched = false,
+            index = 0;
+        for (const item of this) {
+            if (hasMatched) {
+                return item;
             }
-            return simplifyLazyable(defaultValue);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            hasMatched = predicateFn(item, index, this);
+            index++;
         }
+        return simplifyLazyable(defaultValue);
     }
 
     afterOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput {
@@ -947,33 +776,23 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     sole<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput {
-        try {
-            let index = 0,
-                matchedItem: TOutput | null = null;
-            for (const item of this) {
-                if (predicateFn(item, index, this)) {
-                    if (matchedItem !== null) {
-                        throw new MultipleItemsFoundCollectionError(
-                            "Multiple items were found",
-                        );
-                    }
-                    matchedItem = item as TOutput;
+        let index = 0,
+            matchedItem: TOutput | null = null;
+        for (const item of this) {
+            if (predicateFn(item, index, this)) {
+                if (matchedItem !== null) {
+                    throw new MultipleItemsFoundCollectionError(
+                        "Multiple items were found",
+                    );
                 }
-                index++;
+                matchedItem = item as TOutput;
             }
-            if (matchedItem === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
-            }
-            return matchedItem;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            index++;
         }
+        if (matchedItem === null) {
+            throw new ItemNotFoundCollectionError("Item was not found");
+        }
+        return matchedItem;
     }
 
     nth(step: number): ICollection<TInput> {
@@ -981,23 +800,13 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     count(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
-        try {
-            let size = 0;
-            for (const item of this) {
-                if (predicateFn(item, size, this)) {
-                    size++;
-                }
+        let size = 0;
+        for (const item of this) {
+            if (predicateFn(item, size, this)) {
+                size++;
             }
-            return size;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
+        return size;
     }
 
     size(): number {
@@ -1005,20 +814,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     isEmpty(): boolean {
-        try {
-            for (const _ of this) {
-                return false;
-            }
-            return true;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+        for (const _ of this) {
+            return false;
         }
+        return true;
     }
 
     isNotEmpty(): boolean {
@@ -1026,77 +825,37 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     }
 
     searchFirst(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
-        try {
-            let index = 0;
-            for (const item of this) {
-                if (predicateFn(item, index, this)) {
-                    return index;
-                }
-                index++;
+        let index = 0;
+        for (const item of this) {
+            if (predicateFn(item, index, this)) {
+                return index;
             }
-            return -1;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            index++;
         }
+        return -1;
     }
 
     searchLast(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
-        try {
-            let index = 0;
-            let matchedIndex = -1;
-            for (const item of this) {
-                if (predicateFn(item, index, this)) {
-                    matchedIndex = index;
-                }
-                index++;
+        let index = 0;
+        let matchedIndex = -1;
+        for (const item of this) {
+            if (predicateFn(item, index, this)) {
+                matchedIndex = index;
             }
-            return matchedIndex;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            index++;
         }
+        return matchedIndex;
     }
 
     forEach(callback: ForEach<TInput, ICollection<TInput>>): void {
-        try {
-            let index = 0;
-            for (const item of this) {
-                callback(item, index, this);
-                index++;
-            }
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+        let index = 0;
+        for (const item of this) {
+            callback(item, index, this);
+            index++;
         }
     }
 
     toArray(): TInput[] {
-        try {
-            return [...this];
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        return [...this];
     }
 }

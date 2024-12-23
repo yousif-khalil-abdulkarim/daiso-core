@@ -1,9 +1,4 @@
-import {
-    CollectionError,
-    type ICollection,
-    type Map,
-    UnexpectedCollectionError,
-} from "@/contracts/collection/_module";
+import { type ICollection, type Map } from "@/contracts/collection/_module";
 import { type RecordItem } from "@/_shared/types";
 
 /**
@@ -20,27 +15,17 @@ export class CountByIterable<TInput, TOutput = TInput>
     ) {}
 
     *[Symbol.iterator](): Iterator<RecordItem<TOutput, number>> {
-        try {
-            const map = new Map<TOutput, number>();
-            for (const [index, item] of this.collection.entries()) {
-                const key = this.selectFn(item, index, this.collection);
-                if (!map.has(key)) {
-                    map.set(key, 0);
-                }
-                const counter = map.get(key);
-                if (counter !== undefined) {
-                    map.set(key, counter + 1);
-                }
+        const map = new Map<TOutput, number>();
+        for (const [index, item] of this.collection.entries()) {
+            const key = this.selectFn(item, index, this.collection);
+            if (!map.has(key)) {
+                map.set(key, 0);
             }
-            yield* map;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
+            const counter = map.get(key);
+            if (counter !== undefined) {
+                map.set(key, counter + 1);
             }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
+        yield* map;
     }
 }

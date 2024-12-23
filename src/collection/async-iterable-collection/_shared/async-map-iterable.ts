@@ -1,8 +1,6 @@
 import {
     type AsyncMap,
-    CollectionError,
     type IAsyncCollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -17,18 +15,8 @@ export class AsyncMapIterable<TInput, TOutput>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TOutput> {
-        try {
-            for await (const [index, item] of this.collection.entries()) {
-                yield this.mapFn(item, index, this.collection);
-            }
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+        for await (const [index, item] of this.collection.entries()) {
+            yield this.mapFn(item, index, this.collection);
         }
     }
 }

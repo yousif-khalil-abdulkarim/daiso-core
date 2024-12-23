@@ -1,8 +1,6 @@
 import {
     type AsyncTap,
-    CollectionError,
     type IAsyncCollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -15,17 +13,7 @@ export class AsyncTapIterable<TInput> implements AsyncIterable<TInput> {
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
-        try {
-            await this.callback(this.collection);
-            yield* this.collection;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        await this.callback(this.collection);
+        yield* this.collection;
     }
 }

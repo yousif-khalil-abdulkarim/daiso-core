@@ -1,7 +1,4 @@
-import {
-    CollectionError,
-    UnexpectedCollectionError,
-} from "@/contracts/collection/_shared";
+import {} from "@/contracts/collection/_shared";
 
 /**
  * @internal
@@ -13,27 +10,17 @@ export class ShuffleIterable<TInput> implements Iterable<TInput> {
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
-        try {
-            const newArray = [...this.iterable];
-            for (let i = newArray.length - 1; i > 0; i--) {
-                const j = Math.floor(this.mathRandom() * (i + 1));
-                const temp = newArray[i];
-                if (newArray[j] !== undefined) {
-                    newArray[i] = newArray[j];
-                }
-                if (temp !== undefined) {
-                    newArray[j] = temp;
-                }
+        const newArray = [...this.iterable];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(this.mathRandom() * (i + 1));
+            const temp = newArray[i];
+            if (newArray[j] !== undefined) {
+                newArray[i] = newArray[j];
             }
-            yield* newArray;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
+            if (temp !== undefined) {
+                newArray[j] = temp;
             }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
+        yield* newArray;
     }
 }

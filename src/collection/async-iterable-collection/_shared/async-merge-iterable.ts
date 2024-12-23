@@ -1,7 +1,4 @@
-import {
-    CollectionError,
-    UnexpectedCollectionError,
-} from "@/contracts/collection/_module";
+import {} from "@/contracts/collection/_module";
 import { type AsyncIterableValue } from "@/_shared/types";
 
 /**
@@ -16,17 +13,7 @@ export class AsyncMergeIterable<TInput, TExtended>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput | TExtended> {
-        try {
-            yield* this.iterableA;
-            yield* this.iterableB;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        yield* this.iterableA;
+        yield* this.iterableB;
     }
 }

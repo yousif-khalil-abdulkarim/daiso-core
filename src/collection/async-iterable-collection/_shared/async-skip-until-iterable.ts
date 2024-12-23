@@ -1,8 +1,6 @@
 import {
     type AsyncPredicate,
-    CollectionError,
     type IAsyncCollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -15,30 +13,20 @@ export class AsyncSkipUntilIterable<TInput> implements AsyncIterable<TInput> {
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
-        try {
-            let hasMatched = false,
-                index = 0;
-            for await (const item of this.collection) {
-                if (!hasMatched) {
-                    hasMatched = await this.predicateFn(
-                        item,
-                        index,
-                        this.collection,
-                    );
-                }
-                if (hasMatched) {
-                    yield item;
-                }
-                index++;
+        let hasMatched = false,
+            index = 0;
+        for await (const item of this.collection) {
+            if (!hasMatched) {
+                hasMatched = await this.predicateFn(
+                    item,
+                    index,
+                    this.collection,
+                );
             }
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
+            if (hasMatched) {
+                yield item;
             }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            index++;
         }
     }
 }
