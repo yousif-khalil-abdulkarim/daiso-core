@@ -1,5 +1,15 @@
 # @daiso-tech/core
 
+## 0.5.0
+
+### Minor Changes
+
+-   790a76c: # IAsyncCollection and AsyncIterableCollection
+    Changed IAsyncCollection contract to use PromiseLike instead of Promise.
+    Changed AsyncIterableCollection to use LazyPromise instead of Promise.
+    Removed all try catches catched unknown errors.
+    Renamed timeout to takeUntilTimeout, and abort to takeUntilAbort.
+
 ## 0.4.0
 
 ### Minor Changes
