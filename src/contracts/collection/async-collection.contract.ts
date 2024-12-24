@@ -34,14 +34,6 @@ import type {
     AsyncIterableValue,
 } from "@/_shared/types";
 import type { TimeSpan } from "@/_module";
-import type {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    AsyncError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    AbortAsyncError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    TimeoutAsyncError,
-} from "@/async/_shared";
 
 export type AsyncCollapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -58,9 +50,6 @@ export type AsyncCollapse<TValue> = TValue extends
  * @throws {MultipleItemsFoundCollectionError}
  * @throws {TypeCollectionError}
  * @throws {EmptyCollectionError}
- * @throws {AsyncError}
- * @throws {AbortAsyncError}
- * @throws {TimeoutAsyncError}
  * @group Contracts
  */
 export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
@@ -1547,7 +1536,10 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * const collection = new AsyncIterableCollection(apiIterator);
      * await collection.delay(1000).forEach(user => console.log(user))
      */
-    abort(abortSignal: AbortSignal): IAsyncCollection<TInput>;
+    takeUntilAbort(
+        abortSignal: AbortSignal,
+        shouldThrow?: boolean,
+    ): IAsyncCollection<TInput>;
 
     /**
      * The <I>timeout</i> method returns a new collection that will iterate values until the specified time.
@@ -1568,5 +1560,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      *  .timeout(1000)
      *  .forEach(nbr => console.log(nbr))
      */
-    timeout(timeInMs: number): IAsyncCollection<TInput>;
+    takeUntilTimeout(
+        timeInMs: TimeSpan,
+        shouldThrow?: boolean,
+    ): IAsyncCollection<TInput>;
 };

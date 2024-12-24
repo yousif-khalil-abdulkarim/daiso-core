@@ -22,6 +22,7 @@ import {
     type CrossJoinResult,
 } from "@/contracts/collection/_module";
 import {
+    AsyncErrorHandlerIterable,
     AsyncCrossJoinIterable,
     AsyncSlidingIteralbe,
     AsyncShuffleIterable,
@@ -54,7 +55,6 @@ import {
     AsyncReverseIterable,
     AsyncSliceIterable,
     AsyncRepeatIterable,
-    AsyncTimeoutIterable,
 } from "@/collection/async-iterable-collection/_shared/_module";
 import {
     type AsyncIterableValue,
@@ -65,6 +65,11 @@ import { type RecordItem } from "@/_shared/types";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
 import type { TimeSpan } from "@/_module";
 import { abortableIterable, delayIterable, LazyPromise } from "@/_module";
+import {
+    AbortAsyncError,
+    TimeoutAsyncError,
+    timeoutIterable,
+} from "@/async/_module";
 
 /**
  * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly which means they will be executed when the <i>AsyncIterableCollection</i> is iterated with <i>forEach</i> method or "for await of" loop.
@@ -912,15 +917,21 @@ export class AsyncIterableCollection<TInput>
         return new AsyncIterableCollection(delayIterable(this, time));
     }
 
-    abort(abortSignal: AbortSignal): IAsyncCollection<TInput> {
+    takeUntilAbort(abortSignal: AbortSignal): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
-            abortableIterable(this, abortSignal),
+            new AsyncErrorHandlerIterable(
+                abortableIterable(this, abortSignal),
+                (error) => error instanceof AbortAsyncError,
+            ),
         );
     }
 
-    timeout(timeInMs: number): IAsyncCollection<TInput> {
+    takeUntilTimeout(timeInMs: TimeSpan): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
-            new AsyncTimeoutIterable(this, timeInMs),
+            new AsyncErrorHandlerIterable(
+                timeoutIterable(this, timeInMs),
+                (error) => error instanceof TimeoutAsyncError,
+            ),
         );
     }
 
