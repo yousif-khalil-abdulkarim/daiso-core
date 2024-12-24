@@ -1,9 +1,4 @@
-import {
-    CollectionError,
-    UnexpectedCollectionError,
-    type ICollection,
-    type Map,
-} from "@/contracts/collection/_module";
+import { type ICollection, type Map } from "@/contracts/collection/_module";
 import { type RecordItem } from "@/_shared/types";
 
 /**
@@ -24,29 +19,19 @@ export class GroupByIterable<TInput, TOutput = TInput>
     ) {}
 
     *[Symbol.iterator](): Iterator<RecordItem<TOutput, ICollection<TInput>>> {
-        try {
-            const map = new Map<TOutput, Array<TInput>>();
-            for (const [index, item] of this.collection.entries()) {
-                const key = this.selectFn(item, index, this.collection);
-                let array = map.get(key);
-                if (array === undefined) {
-                    array = [];
-                    map.set(key, array);
-                }
-                array.push(item);
+        const map = new Map<TOutput, Array<TInput>>();
+        for (const [index, item] of this.collection.entries()) {
+            const key = this.selectFn(item, index, this.collection);
+            let array = map.get(key);
+            if (array === undefined) {
+                array = [];
                 map.set(key, array);
             }
-            yield* this.makeCollection(map).map<
-                RecordItem<TOutput, ICollection<TInput>>
-            >(([key, value]) => [key, this.makeCollection(value)]);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            array.push(item);
+            map.set(key, array);
         }
+        yield* this.makeCollection(map).map<
+            RecordItem<TOutput, ICollection<TInput>>
+        >(([key, value]) => [key, this.makeCollection(value)]);
     }
 }

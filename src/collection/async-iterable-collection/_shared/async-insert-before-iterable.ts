@@ -1,8 +1,6 @@
 import {
     type AsyncPredicate,
-    CollectionError,
     type IAsyncCollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 import { type AsyncIterableValue } from "@/_shared/types";
 
@@ -19,28 +17,18 @@ export class AsyncInsertBeforeIterable<TInput, TExtended>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput | TExtended> {
-        try {
-            let hasMatched = false,
-                index = 0;
-            for await (const item of this.collection) {
-                if (
-                    !hasMatched &&
-                    (await this.predicateFn(item, index, this.collection))
-                ) {
-                    yield* this.iterable;
-                    hasMatched = true;
-                }
-                yield item;
-                index++;
+        let hasMatched = false,
+            index = 0;
+        for await (const item of this.collection) {
+            if (
+                !hasMatched &&
+                (await this.predicateFn(item, index, this.collection))
+            ) {
+                yield* this.iterable;
+                hasMatched = true;
             }
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            yield item;
+            index++;
         }
     }
 }

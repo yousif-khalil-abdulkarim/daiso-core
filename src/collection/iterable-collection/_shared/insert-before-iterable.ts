@@ -1,8 +1,6 @@
 import {
-    CollectionError,
     type Predicate,
     type ICollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -18,26 +16,13 @@ export class InsertBeforeIterable<TInput, TExtended>
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput | TExtended> {
-        try {
-            let hasMatched = false;
-            for (const [index, item] of this.collection.entries()) {
-                if (
-                    !hasMatched &&
-                    this.predicateFn(item, index, this.collection)
-                ) {
-                    yield* this.iterable;
-                    hasMatched = true;
-                }
-                yield item;
+        let hasMatched = false;
+        for (const [index, item] of this.collection.entries()) {
+            if (!hasMatched && this.predicateFn(item, index, this.collection)) {
+                yield* this.iterable;
+                hasMatched = true;
             }
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
+            yield item;
         }
     }
 }

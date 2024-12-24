@@ -1,8 +1,6 @@
 import {
-    CollectionError,
     type Predicate,
     type ICollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -20,30 +18,20 @@ export class ChunkWhileIterable<TInput>
     ) {}
 
     *[Symbol.iterator](): Iterator<ICollection<TInput>> {
-        try {
-            const array: TInput[] = [];
-            for (const [index, item] of this.collection.entries()) {
-                if (index === 0) {
-                    array.push(item);
-                } else if (
-                    this.predicateFn(item, index, this.makeCollection(array))
-                ) {
-                    array.push(item);
-                } else {
-                    yield this.makeCollection(array);
-                    array.length = 0;
-                    array.push(item);
-                }
+        const array: TInput[] = [];
+        for (const [index, item] of this.collection.entries()) {
+            if (index === 0) {
+                array.push(item);
+            } else if (
+                this.predicateFn(item, index, this.makeCollection(array))
+            ) {
+                array.push(item);
+            } else {
+                yield this.makeCollection(array);
+                array.length = 0;
+                array.push(item);
             }
-            yield this.makeCollection(array);
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
+        yield this.makeCollection(array);
     }
 }

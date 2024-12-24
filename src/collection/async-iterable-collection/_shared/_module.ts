@@ -4,6 +4,7 @@ export * from "@/collection/async-iterable-collection/_shared/async-collapse-ite
 export * from "@/collection/async-iterable-collection/_shared/async-count-by-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-cross-join-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-entries-iterable";
+export * from "@/collection/async-iterable-collection/_shared/async-error-handler-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-filter-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-flat-map-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-group-by-iterable";
@@ -30,6 +31,3 @@ export * from "@/collection/async-iterable-collection/_shared/async-unique-itera
 export * from "@/collection/async-iterable-collection/_shared/async-update-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-when-iterable";
 export * from "@/collection/async-iterable-collection/_shared/async-zip-iterable";
-export * from "@/collection/async-iterable-collection/_shared/async-timeout-iterable";
-export * from "@/collection/async-iterable-collection/_shared/async-delay-iterable";
-export * from "@/collection/async-iterable-collection/_shared/async-abort-iterable";

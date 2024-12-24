@@ -8,7 +8,7 @@ export type EnsureType<TValue, TType> =
 export type RecordItem<TKey, TValue> = [key: TKey, value: TValue];
 
 export type Lazyable<TValue> = TValue | (() => TValue);
-export type Promisable<TValue> = TValue | Promise<TValue>;
+export type Promisable<TValue> = TValue | PromiseLike<TValue>;
 export type AsyncLazyable<TValue> = TValue | (() => Promisable<TValue>);
 
 export type AsyncIterableValue<TInput> =
@@ -18,7 +18,7 @@ export type AsyncIterableValue<TInput> =
 export type AnyFunction = (...parameters: unknown[]) => unknown;
 
 export type IInitizable = {
-    init(): Promise<void>;
+    init(): PromiseLike<void>;
 };
 export type Func<TArgs extends unknown[], TReturn> = (
     ...args_: TArgs

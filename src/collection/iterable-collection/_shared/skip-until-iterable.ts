@@ -1,8 +1,6 @@
 import {
-    CollectionError,
     type Predicate,
     type ICollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 
 /**
@@ -15,24 +13,14 @@ export class SkipUntilIterable<TInput> implements Iterable<TInput> {
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
-        try {
-            let hasMatched = false;
-            for (const [index, item] of this.collection.entries()) {
-                if (!hasMatched) {
-                    hasMatched = this.predicateFn(item, index, this.collection);
-                }
-                if (hasMatched) {
-                    yield item;
-                }
+        let hasMatched = false;
+        for (const [index, item] of this.collection.entries()) {
+            if (!hasMatched) {
+                hasMatched = this.predicateFn(item, index, this.collection);
             }
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
+            if (hasMatched) {
+                yield item;
             }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
     }
 }

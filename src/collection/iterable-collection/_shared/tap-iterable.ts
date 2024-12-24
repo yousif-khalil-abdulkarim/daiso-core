@@ -1,9 +1,4 @@
-import {
-    CollectionError,
-    type ICollection,
-    type Tap,
-    UnexpectedCollectionError,
-} from "@/contracts/collection/_module";
+import { type ICollection, type Tap } from "@/contracts/collection/_module";
 
 /**
  * @internal
@@ -15,17 +10,7 @@ export class TapIterable<TInput> implements Iterable<TInput> {
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
-        try {
-            this.callback(this.collection);
-            yield* this.collection;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
-            }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
-        }
+        this.callback(this.collection);
+        yield* this.collection;
     }
 }

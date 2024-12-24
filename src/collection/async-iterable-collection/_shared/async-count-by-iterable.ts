@@ -1,8 +1,6 @@
 import {
     type AsyncMap,
-    CollectionError,
     type IAsyncCollection,
-    UnexpectedCollectionError,
 } from "@/contracts/collection/_module";
 import { type RecordItem } from "@/_shared/types";
 /**
@@ -25,27 +23,17 @@ export class AsyncCountByIterable<TInput, TOutput = TInput>
     async *[Symbol.asyncIterator](): AsyncIterator<
         RecordItem<TOutput, number>
     > {
-        try {
-            const map = new Map<TOutput, number>();
-            for await (const [index, item] of this.collection.entries()) {
-                const key = await this.callback(item, index, this.collection);
-                if (!map.has(key)) {
-                    map.set(key, 0);
-                }
-                const counter = map.get(key);
-                if (counter !== undefined) {
-                    map.set(key, counter + 1);
-                }
+        const map = new Map<TOutput, number>();
+        for await (const [index, item] of this.collection.entries()) {
+            const key = await this.callback(item, index, this.collection);
+            if (!map.has(key)) {
+                map.set(key, 0);
             }
-            yield* map;
-        } catch (error: unknown) {
-            if (error instanceof CollectionError) {
-                throw error;
+            const counter = map.get(key);
+            if (counter !== undefined) {
+                map.set(key, counter + 1);
             }
-            throw new UnexpectedCollectionError(
-                `Unexpected error "${String(error)}" occured`,
-                error,
-            );
         }
+        yield* map;
     }
 }
