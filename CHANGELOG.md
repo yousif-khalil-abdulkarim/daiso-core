@@ -1,5 +1,15 @@
 # @daiso-tech/core
 
+## 0.6.0
+
+### Minor Changes
+
+-   f324fc1: # Storage
+    -   Simplified StorageAdapter contract
+    -   Changed the StorageAdapter and Storage contract to use PromiseLike instead of Promise.
+    -   Changed the Storage class to use LazyPromise instead of Promise.
+    -   Removed unnecessary try catches from Storage class so unknown error can propagate up
+
 ## 0.5.0
 
 ### Minor Changes
