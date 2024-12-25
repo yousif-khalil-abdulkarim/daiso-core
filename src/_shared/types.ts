@@ -27,7 +27,3 @@ export type Func<TArgs extends unknown[], TReturn> = (
 export type GetOrAddValue<TValue> = Awaited<
     TValue extends AnyFunction ? ReturnType<TValue> : TValue
 >;
-export type GetOrAddResult<TValue> = {
-    value: TValue;
-    hasKey: boolean;
-};

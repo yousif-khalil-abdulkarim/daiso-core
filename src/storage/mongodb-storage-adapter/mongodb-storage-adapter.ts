@@ -4,7 +4,6 @@
 
 import { type ISerializer } from "@/contracts/serializer/_module";
 import { MongodbSerializer, SuperJsonSerializer } from "@/serializer/_module";
-import type { GetOrAddResult } from "@/_shared/types";
 import { type IInitizable, type RecordItem } from "@/_shared/types";
 import {
     TypeStorageError,
@@ -256,93 +255,6 @@ export class MongodbStorageAdapter<TType>
             results[key] = await this.removeOne(key);
         }
         return results;
-    }
-
-    async getAndRemove<TValue extends TType>(
-        key: string,
-    ): Promise<TValue | null> {
-        const document = (await this.collection.findOneAndDelete(
-            {
-                key,
-            },
-            {
-                projection: {
-                    _id: 0,
-                    value: 1,
-                },
-            },
-        )) as Pick<MongodbStorageDocument, "value"> | null;
-        if (document === null) {
-            return null;
-        }
-        return await this.serializer.deserialize(document.value);
-    }
-
-    async getOrAdd<TValue extends TType, TExtended extends TType>(
-        key: string,
-        valueToAdd: TExtended,
-    ): Promise<GetOrAddResult<TValue | TExtended>> {
-        const document = (await this.collection.findOneAndUpdate(
-            {
-                key,
-            },
-            [
-                {
-                    $addFields: {
-                        array: {
-                            $objectToArray: "$$ROOT",
-                        },
-                    },
-                },
-                {
-                    $addFields: {
-                        size: {
-                            $size: "$array",
-                        },
-                    },
-                },
-                {
-                    $unset: "array",
-                },
-                {
-                    $set: {
-                        value: {
-                            $cond: {
-                                if: {
-                                    $eq: ["$size", 1],
-                                },
-                                then: await this.serializer.serialize(
-                                    valueToAdd,
-                                ),
-                                else: "$value",
-                            },
-                        },
-                    },
-                },
-                {
-                    $unset: "size",
-                },
-            ],
-            {
-                upsert: true,
-                projection: {
-                    _id: 0,
-                    value: 1,
-                },
-            },
-        )) as Pick<MongodbStorageDocument, "value"> | null;
-
-        if (document === null) {
-            return {
-                hasKey: false,
-                value: valueToAdd,
-            };
-        }
-        const { value } = document;
-        return {
-            hasKey: true,
-            value: await this.serializer.deserialize(value),
-        };
     }
 
     async increment(key: string, value: number): Promise<boolean> {

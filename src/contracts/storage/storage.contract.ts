@@ -36,7 +36,7 @@ export type IStorage<TType = unknown> = {
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    exists(key: string): Promise<boolean>;
+    exists(key: string): PromiseLike<boolean>;
 
     /**
      * Returns true for the keys that are found otherwise false will be returned.
@@ -45,14 +45,14 @@ export type IStorage<TType = unknown> = {
      */
     existsMany<TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, boolean>>;
+    ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
      * Returns true when key is not found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    missing(key: string): Promise<boolean>;
+    missing(key: string): PromiseLike<boolean>;
 
     /**
      * Returns true for the keys that are not found otherwise false will be returned.
@@ -61,14 +61,14 @@ export type IStorage<TType = unknown> = {
      */
     missingMany<TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, boolean>>;
+    ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
      * Returns the value when key is found otherwise null will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    get<TValue extends TType>(key: string): Promise<TValue | null>;
+    get<TValue extends TType>(key: string): PromiseLike<TValue | null>;
 
     /**
      * Returns the value for the keys that are found otherwise null will be returned.
@@ -77,7 +77,7 @@ export type IStorage<TType = unknown> = {
      */
     getMany<TValues extends TType, TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, TValues | null>>;
+    ): PromiseLike<Record<TKeys, TValues | null>>;
 
     /**
      * Returns the value when key is found otherwise defaultValue will be returned.
@@ -87,7 +87,7 @@ export type IStorage<TType = unknown> = {
     getOr<TValue extends TType, TExtended extends TType>(
         key: string,
         defaultValue: AsyncLazyable<TExtended>,
-    ): Promise<TValue | TExtended>;
+    ): PromiseLike<TValue | TExtended>;
 
     /**
      * Returns the value for the keys that are found otherwise defaultValue will be returned.
@@ -100,7 +100,7 @@ export type IStorage<TType = unknown> = {
         TKeys extends string,
     >(
         keysWithDefaults: Record<TKeys, AsyncLazyable<TExtended>>,
-    ): Promise<Record<TKeys, TValues | TExtended>>;
+    ): PromiseLike<Record<TKeys, TValues | TExtended>>;
 
     /**
      * Returns the value when key is found otherwise an error will be thrown.
@@ -108,7 +108,7 @@ export type IStorage<TType = unknown> = {
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {KeyNotFoundStorageError} {@link KeyNotFoundStorageError}
      */
-    getOrFail<TValue extends TType>(key: string): Promise<TValue>;
+    getOrFail<TValue extends TType>(key: string): PromiseLike<TValue>;
 
     /**
      * Adds a key when key doesn't exists. Returns true when key doesn't exists otherwise false will be returned.
@@ -118,7 +118,7 @@ export type IStorage<TType = unknown> = {
     add<TValue extends TType>(
         key: string,
         value: StorageValue<TValue>,
-    ): Promise<boolean>;
+    ): PromiseLike<boolean>;
 
     /**
      * Adds the keys that doesn't exists. Returns true for the keys that doesn't exists otherwise false will be returned.
@@ -127,14 +127,17 @@ export type IStorage<TType = unknown> = {
      */
     addMany<TValues extends TType, TKeys extends string>(
         values: Record<TKeys, StorageValue<TValues>>,
-    ): Promise<Record<TKeys, boolean>>;
+    ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
      * Updates a keys that exists. Returns true when key otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    update<TValue extends TType>(key: string, value: TValue): Promise<boolean>;
+    update<TValue extends TType>(
+        key: string,
+        value: TValue,
+    ): PromiseLike<boolean>;
 
     /**
      * Updates the keys that exists. Returns true for the keys that exists otherwise false will be returned.
@@ -143,7 +146,7 @@ export type IStorage<TType = unknown> = {
      */
     updateMany<TValues extends TType, TKeys extends string>(
         values: Record<TKeys, TValues>,
-    ): Promise<Record<TKeys, boolean>>;
+    ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
      * If the key is found it will replaced. If the key is not found it will just be added. True is returned if the key is found otherwise false will be returned.
@@ -153,7 +156,7 @@ export type IStorage<TType = unknown> = {
     put<TValue extends TType>(
         key: string,
         value: StorageValue<TValue>,
-    ): Promise<boolean>;
+    ): PromiseLike<boolean>;
 
     /**
      * Replaces the keys that are found. Adds keys that are not found. Returns true for all the keys that are found otherwise false is returned.
@@ -162,14 +165,14 @@ export type IStorage<TType = unknown> = {
      */
     putMany<TValues extends TType, TKeys extends string>(
         values: Record<TKeys, StorageValue<TValues>>,
-    ): Promise<Record<TKeys, boolean>>;
+    ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
      * Removes the key when found. Returns true if the key is found otherwise false is returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    remove(key: string): Promise<boolean>;
+    remove(key: string): PromiseLike<boolean>;
 
     /**
      * Removes the keys that are found. Returns true for the keys that are found otherwise false is returned.
@@ -178,14 +181,14 @@ export type IStorage<TType = unknown> = {
      */
     removeMany<TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, boolean>>;
+    ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
      * If the key is found the value be returned and key will be removed otherwise null will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    getAndRemove<TValue extends TType>(key: string): Promise<TValue | null>;
+    getAndRemove<TValue extends TType>(key: string): PromiseLike<TValue | null>;
 
     /**
      * If the key is found the value be returned otherwise valueToAdd will be added and returned.
@@ -195,7 +198,7 @@ export type IStorage<TType = unknown> = {
     getOrAdd<TValue extends TType, TExtended extends TType>(
         key: string,
         valueToAdd: AsyncLazyable<StorageValue<GetOrAddValue<TExtended>>>,
-    ): Promise<TValue | TExtended>;
+    ): PromiseLike<TValue | TExtended>;
 
     /**
      * Will increment the existing key with value if found otherwise nonthing will occur. Returns true if key exists otherwise false will be returned.
@@ -203,7 +206,7 @@ export type IStorage<TType = unknown> = {
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
      */
-    increment(key: string, value?: number): Promise<boolean>;
+    increment(key: string, value?: number): PromiseLike<boolean>;
 
     /**
      * Will decrement the existing key with value if found otherwise nonthing will occur. Returns true if key exists otherwise false will be returned.
@@ -211,11 +214,11 @@ export type IStorage<TType = unknown> = {
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
      */
-    decrement(key: string, value?: number): Promise<boolean>;
+    decrement(key: string, value?: number): PromiseLike<boolean>;
 
     /**
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    clear(): Promise<void>;
+    clear(): PromiseLike<void>;
 };
