@@ -8,7 +8,6 @@ import {
     type IStorageAdapter,
 } from "@/contracts/storage/_module";
 import { type StorageValue, type IStorage } from "@/contracts/storage/_module";
-import { UsableStorageAdapter } from "@/storage/usable-storage-adapter";
 import { NamespaceStorageAdapter } from "@/storage/namespace-storage-adapter";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
 import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
@@ -23,14 +22,13 @@ export class Storage<TType = unknown> implements IStorage<TType> {
 
     constructor(
         private readonly storageAdapter: IStorageAdapter<TType>,
-        settings: StorageSettings = {},
+        { namespace = "" }: StorageSettings = {},
     ) {
         this.settings = {
-            namespace: "",
-            ...settings,
+            namespace,
         };
         this.namespaceStorageAdapter = new NamespaceStorageAdapter<TType>(
-            new UsableStorageAdapter(this.storageAdapter),
+            this.storageAdapter,
             this.settings.namespace,
         );
     }
@@ -60,7 +58,12 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
-            return await this.namespaceStorageAdapter.existsMany(keys);
+            const getResult = await this.getMany(keys);
+            const results = {} as Record<TKeys, boolean>;
+            for (const key in getResult) {
+                results[key] = getResult[key] !== null;
+            }
+            return results;
         });
     }
 
@@ -270,7 +273,14 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         key: string,
     ): LazyPromise<TValue | null> {
         return new LazyPromise(async () => {
-            return await this.namespaceStorageAdapter.getAndRemove(key);
+            const { [key]: value } = await this.getMany<TValue, string>([key]);
+            if (value === undefined) {
+                throw new UnexpectedStorageError(
+                    `Destructed field "key" is undefined`,
+                );
+            }
+            await this.namespaceStorageAdapter.removeMany([key]);
+            return value;
         });
     }
 
@@ -279,10 +289,24 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         valueToAdd: AsyncLazyable<StorageValue<GetOrAddValue<TExtended>>>,
     ): LazyPromise<TValue | TExtended> {
         return new LazyPromise(async () => {
-            const value = await this.namespaceStorageAdapter.getOrAdd<
-                TValue,
-                TExtended
-            >(key, valueToAdd as AsyncLazyable<TExtended>);
+            const { [key]: value } = await this.getMany<
+                TValue | TExtended,
+                string
+            >([key]);
+            if (value === undefined) {
+                throw new UnexpectedStorageError(
+                    `Destructed field "key" is undefined`,
+                );
+            }
+            if (value === null) {
+                const valueToAddSimplified = (await simplifyAsyncLazyable(
+                    valueToAdd,
+                )) as TExtended;
+                await this.namespaceStorageAdapter.addMany({
+                    [key]: valueToAddSimplified,
+                });
+                return valueToAddSimplified;
+            }
             return value;
         });
     }

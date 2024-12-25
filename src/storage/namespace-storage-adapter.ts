@@ -2,9 +2,7 @@
  * @module Storage
  */
 
-import type { AsyncLazyable } from "@/_shared/types";
 import { type IStorageAdapter } from "@/contracts/storage/_module";
-import type { UsableStorageAdapter } from "@/storage/usable-storage-adapter";
 
 /**
  * @internal
@@ -13,7 +11,7 @@ export class NamespaceStorageAdapter<TType>
     implements Required<Omit<IStorageAdapter<TType>, "clear" | "getOrAdd">>
 {
     constructor(
-        private readonly usableStorageAdapter: UsableStorageAdapter<TType>,
+        private readonly storageAdapter: IStorageAdapter<TType>,
         private readonly namespace: string,
     ) {}
 
@@ -49,23 +47,11 @@ export class NamespaceStorageAdapter<TType>
         );
     }
 
-    async existsMany<TKeys extends string>(
-        keys: TKeys[],
-    ): Promise<Record<TKeys, boolean>> {
-        return this.withoutNamespaceObject(
-            await this.usableStorageAdapter.existsMany(
-                this.withNamespaceArray(keys),
-            ),
-        );
-    }
-
     async getMany<TValues extends TType, TKeys extends string>(
         keys: TKeys[],
     ): Promise<Record<TKeys, TValues | null>> {
         return this.withoutNamespaceObject(
-            await this.usableStorageAdapter.getMany(
-                this.withNamespaceArray(keys),
-            ),
+            await this.storageAdapter.getMany(this.withNamespaceArray(keys)),
         );
     }
 
@@ -73,9 +59,7 @@ export class NamespaceStorageAdapter<TType>
         values: Record<TKeys, TValues>,
     ): Promise<Record<TKeys, boolean>> {
         return this.withoutNamespaceObject(
-            await this.usableStorageAdapter.addMany(
-                this.withNamespaceObject(values),
-            ),
+            await this.storageAdapter.addMany(this.withNamespaceObject(values)),
         );
     }
 
@@ -83,7 +67,7 @@ export class NamespaceStorageAdapter<TType>
         values: Record<TKeys, TValues>,
     ): Promise<Record<TKeys, boolean>> {
         return this.withoutNamespaceObject(
-            await this.usableStorageAdapter.updateMany(
+            await this.storageAdapter.updateMany(
                 this.withNamespaceObject(values),
             ),
         );
@@ -93,9 +77,7 @@ export class NamespaceStorageAdapter<TType>
         values: Record<TKeys, TValues>,
     ): Promise<Record<TKeys, boolean>> {
         return this.withoutNamespaceObject(
-            await this.usableStorageAdapter.putMany(
-                this.withNamespaceObject(values),
-            ),
+            await this.storageAdapter.putMany(this.withNamespaceObject(values)),
         );
     }
 
@@ -103,46 +85,25 @@ export class NamespaceStorageAdapter<TType>
         keys: TKeys[],
     ): Promise<Record<TKeys, boolean>> {
         return this.withoutNamespaceObject(
-            await this.usableStorageAdapter.removeMany(
-                this.withNamespaceArray(keys),
-            ),
+            await this.storageAdapter.removeMany(this.withNamespaceArray(keys)),
         );
-    }
-
-    async getAndRemove<TValue extends TType>(
-        key: string,
-    ): Promise<TValue | null> {
-        return await this.usableStorageAdapter.getAndRemove(
-            this.withNamespace(key),
-        );
-    }
-
-    async getOrAdd<TValue extends TType, TExtended extends TType>(
-        key: string,
-        valueToAdd: AsyncLazyable<TExtended>,
-    ): Promise<TValue | TExtended> {
-        const { value } = await this.usableStorageAdapter.getOrAdd<
-            TValue,
-            TExtended
-        >(this.withNamespace(key), valueToAdd);
-        return value;
     }
 
     async increment(key: string, value: number): Promise<boolean> {
-        return await this.usableStorageAdapter.increment(
+        return await this.storageAdapter.increment(
             this.withNamespace(key),
             value,
         );
     }
 
     async decrement(key: string, value: number): Promise<boolean> {
-        return await this.usableStorageAdapter.increment(
+        return await this.storageAdapter.increment(
             this.withNamespace(key),
             -value,
         );
     }
 
     async clear(): Promise<void> {
-        await this.usableStorageAdapter.clear(this.namespace);
+        await this.storageAdapter.clear(this.namespace);
     }
 }

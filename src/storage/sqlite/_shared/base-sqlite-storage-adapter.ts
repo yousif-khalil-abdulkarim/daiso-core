@@ -5,7 +5,6 @@
 import { type IStorageAdapter } from "@/contracts/storage/storage-adapter.contract";
 import { type Generated, type Insertable, type Kysely, sql } from "kysely";
 import { type ISerializer } from "@/contracts/serializer/_module";
-import type { GetOrAddResult } from "@/_shared/types";
 import { type RecordItem, type IInitizable } from "@/_shared/types";
 import { TypeStorageError } from "@/contracts/storage/_module";
 
@@ -174,47 +173,6 @@ export class BaseSqliteStorageAdapter<TType>
         }
 
         return results as Record<TKeys, boolean>;
-    }
-
-    async getAndRemove<TValue extends TType>(
-        key: string,
-    ): Promise<TValue | null> {
-        const sqlResult = await this.db
-            .deleteFrom("storage")
-            .where("storage.key", "=", key)
-            .returning("storage.value")
-            .executeTakeFirst();
-        if (sqlResult === undefined) {
-            return null;
-        }
-        const { value } = sqlResult;
-        return await this.serializer.deserialize(value);
-    }
-
-    async getOrAdd<TValue extends TType, TExtended extends TType>(
-        key: string,
-        valueToAdd: TExtended,
-    ): Promise<GetOrAddResult<TValue | TExtended>> {
-        const sqlResult = await this.db
-            .insertInto("storage")
-            .values({
-                key,
-                value: await this.serializer.serialize(valueToAdd),
-            })
-            .onConflict((eb) => eb.column("key").doNothing())
-            .returning("storage.value")
-            .executeTakeFirst();
-        if (sqlResult === undefined) {
-            return {
-                hasKey: true,
-                value: valueToAdd,
-            };
-        }
-        const { value } = sqlResult;
-        return {
-            hasKey: false,
-            value: await this.serializer.deserialize(value),
-        };
     }
 
     async putMany<TValues extends TType, TKeys extends string>(

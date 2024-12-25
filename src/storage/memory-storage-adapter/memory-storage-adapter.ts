@@ -2,6 +2,10 @@
  * @module Storage
  */
 
+import {
+    TypeStorageError,
+    UnexpectedStorageError,
+} from "@/contracts/storage/_shared";
 import { type IStorageAdapter } from "@/contracts/storage/storage-adapter.contract";
 
 /**
@@ -9,6 +13,36 @@ import { type IStorageAdapter } from "@/contracts/storage/storage-adapter.contra
  */
 export class MemoryStorageAdapter<TType> implements IStorageAdapter<TType> {
     constructor(private readonly map: Map<string, TType> = new Map()) {}
+
+    async putMany<TValues extends TType, TKeys extends string>(
+        values: Record<TKeys, TValues>,
+    ): Promise<Record<TKeys, boolean>> {
+        const removeResults = await this.removeMany(Object.keys(values));
+        await this.addMany(values);
+        return removeResults;
+    }
+
+    async increment(key: string, value: number): Promise<boolean> {
+        const { [key]: previousValue } = await this.getMany([key]);
+        if (previousValue === undefined) {
+            throw new UnexpectedStorageError(
+                `Destructed field "key" is undefined`,
+            );
+        }
+        if (previousValue === null) {
+            return false;
+        }
+        if (typeof previousValue !== "number") {
+            throw new TypeStorageError(
+                `Unable to increment or decrement none number type key "${key}"`,
+            );
+        }
+        const newValue = previousValue + value;
+        await this.updateMany({
+            [key]: newValue as TType,
+        });
+        return true;
+    }
 
     getMany<TValues extends TType, TKeys extends string>(
         keys: TKeys[],

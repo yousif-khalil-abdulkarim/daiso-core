@@ -13,7 +13,6 @@ import {
 } from "@/contracts/storage/_module";
 import { ClearIterable, escapeRedisChars } from "@/_shared/redis/_module";
 import { isRedisTypeError } from "@/_shared/redis/_module";
-import type { GetOrAddResult } from "@/_shared/types";
 
 declare module "ioredis" {
     interface RedisCommander<Context> {
@@ -313,38 +312,6 @@ export class RedisStorageAdapter<TType> implements IStorageAdapter<TType> {
             results[key] = hasRemoved;
         }
         return results;
-    }
-
-    async getAndRemove<TValue extends TType>(
-        key: string,
-    ): Promise<TValue | null> {
-        const redisResult = await this.client.getdel(key);
-        if (redisResult === null) {
-            return null;
-        }
-        return await this.serializer.deserialize(redisResult);
-    }
-
-    async getOrAdd<TValue extends TType, TExtended extends TType>(
-        key: string,
-        valueToAdd: TExtended,
-    ): Promise<GetOrAddResult<TValue | TExtended>> {
-        const redisResult = await this.client.set(
-            key,
-            await this.serializer.serialize(valueToAdd),
-            "NX",
-            "GET",
-        );
-        if (redisResult === null) {
-            return {
-                hasKey: false,
-                value: valueToAdd,
-            };
-        }
-        return {
-            hasKey: true,
-            value: await this.serializer.deserialize(redisResult),
-        };
     }
 
     async increment(key: string, value: number): Promise<boolean> {
