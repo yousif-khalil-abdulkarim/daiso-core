@@ -4,7 +4,6 @@
 
 import {
     KeyNotFoundStorageError,
-    StorageError,
     UnexpectedStorageError,
     type IStorageAdapter,
 } from "@/contracts/storage/_module";
@@ -47,23 +46,13 @@ export class Storage<TType = unknown> implements IStorage<TType> {
 
     exists(key: string): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            try {
-                const { [key]: hasKey } = await this.existsMany([key]);
-                if (hasKey === undefined) {
-                    throw new UnexpectedStorageError(
-                        `Destructed field "key" is undefined`,
-                    );
-                }
-                return hasKey;
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
+            const { [key]: hasKey } = await this.existsMany([key]);
+            if (hasKey === undefined) {
                 throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
+                    `Destructed field "key" is undefined`,
                 );
             }
+            return hasKey;
         });
     }
 
@@ -71,17 +60,7 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
-            try {
-                return await this.namespaceStorageAdapter.existsMany(keys);
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            return await this.namespaceStorageAdapter.existsMany(keys);
         });
     }
 
@@ -111,25 +90,13 @@ export class Storage<TType = unknown> implements IStorage<TType> {
 
     get<TValue extends TType>(key: string): LazyPromise<TValue | null> {
         return new LazyPromise(async () => {
-            try {
-                const { [key]: value } = await this.getMany<TValue, string>([
-                    key,
-                ]);
-                if (value === undefined) {
-                    throw new UnexpectedStorageError(
-                        `Destructed field "key" is undefined`,
-                    );
-                }
-                return value;
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
+            const { [key]: value } = await this.getMany<TValue, string>([key]);
+            if (value === undefined) {
                 throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
+                    `Destructed field "key" is undefined`,
                 );
             }
+            return value;
         });
     }
 
@@ -137,17 +104,7 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, TValues | null>> {
         return new LazyPromise(async () => {
-            try {
-                return await this.namespaceStorageAdapter.getMany(keys);
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            return await this.namespaceStorageAdapter.getMany(keys);
         });
     }
 
@@ -156,29 +113,19 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         defaultValue: AsyncLazyable<TExtended>,
     ): LazyPromise<TValue | TExtended> {
         return new LazyPromise(async () => {
-            try {
-                const { [key]: value } = await this.getOrMany<
-                    TValue,
-                    TExtended,
-                    string
-                >({
-                    [key]: defaultValue,
-                });
-                if (value === undefined) {
-                    throw new UnexpectedStorageError(
-                        `Destructed field "key" is undefined`,
-                    );
-                }
-                return value;
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
+            const { [key]: value } = await this.getOrMany<
+                TValue,
+                TExtended,
+                string
+            >({
+                [key]: defaultValue,
+            });
+            if (value === undefined) {
                 throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
+                    `Destructed field "key" is undefined`,
                 );
             }
+            return value;
         });
     }
 
@@ -190,59 +137,37 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         keysWithDefaults: Record<TKeys, AsyncLazyable<TExtended>>,
     ): LazyPromise<Record<TKeys, TValues | TExtended>> {
         return new LazyPromise(async () => {
-            try {
-                const getManyResult = await this.getMany(
-                    Object.keys(keysWithDefaults),
-                );
-                const result = {} as Record<string, TValues | TExtended>;
-                for (const key in getManyResult) {
-                    const { [key]: value } = getManyResult;
-                    if (value === undefined) {
-                        throw new UnexpectedStorageError(
-                            `Destructed field "key" is undefined`,
-                        );
-                    }
-                    if (value === null) {
-                        const defaultValue = keysWithDefaults[key as TKeys];
-                        result[key] = (await simplifyAsyncLazyable(
-                            defaultValue,
-                        )) as TExtended;
-                    } else {
-                        result[key] = value as TValues;
-                    }
+            const getManyResult = await this.getMany(
+                Object.keys(keysWithDefaults),
+            );
+            const result = {} as Record<string, TValues | TExtended>;
+            for (const key in getManyResult) {
+                const { [key]: value } = getManyResult;
+                if (value === undefined) {
+                    throw new UnexpectedStorageError(
+                        `Destructed field "key" is undefined`,
+                    );
                 }
-                return result;
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
+                if (value === null) {
+                    const defaultValue = keysWithDefaults[key as TKeys];
+                    result[key] = (await simplifyAsyncLazyable(
+                        defaultValue,
+                    )) as TExtended;
+                } else {
+                    result[key] = value as TValues;
                 }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
             }
+            return result;
         });
     }
 
     getOrFail<TValue extends TType>(key: string): LazyPromise<TValue> {
         return new LazyPromise(async () => {
-            try {
-                const value = await this.get<TValue>(key);
-                if (value === null) {
-                    throw new KeyNotFoundStorageError(
-                        `Key "${key}" is not found`,
-                    );
-                }
-                return value;
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
+            const value = await this.get<TValue>(key);
+            if (value === null) {
+                throw new KeyNotFoundStorageError(`Key "${key}" is not found`);
             }
+            return value;
         });
     }
 
@@ -251,25 +176,15 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         value: StorageValue<TValue>,
     ): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            try {
-                const { [key]: hasAdded } = await this.addMany<TValue, string>({
-                    [key]: value,
-                });
-                if (hasAdded === undefined) {
-                    throw new UnexpectedStorageError(
-                        `Destructed field "key" is undefined`,
-                    );
-                }
-                return hasAdded;
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
+            const { [key]: hasAdded } = await this.addMany<TValue, string>({
+                [key]: value,
+            });
+            if (hasAdded === undefined) {
                 throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
+                    `Destructed field "key" is undefined`,
                 );
             }
+            return hasAdded;
         });
     }
 
@@ -277,17 +192,7 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         values: Record<TKeys, StorageValue<TValues>>,
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
-            try {
-                return await this.namespaceStorageAdapter.addMany(values);
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            return await this.namespaceStorageAdapter.addMany(values);
         });
     }
 
@@ -321,25 +226,15 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         value: StorageValue<TValue>,
     ): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            try {
-                const { [key]: hasAdded } = await this.putMany<TValue, string>({
-                    [key]: value,
-                });
-                if (hasAdded === undefined) {
-                    throw new UnexpectedStorageError(
-                        `Destructed field "key" is undefined`,
-                    );
-                }
-                return hasAdded;
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
+            const { [key]: hasAdded } = await this.putMany<TValue, string>({
+                [key]: value,
+            });
+            if (hasAdded === undefined) {
                 throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
+                    `Destructed field "key" is undefined`,
                 );
             }
+            return hasAdded;
         });
     }
 
@@ -347,39 +242,19 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         values: Record<TKeys, StorageValue<TValues>>,
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
-            try {
-                return await this.namespaceStorageAdapter.putMany(values);
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            return await this.namespaceStorageAdapter.putMany(values);
         });
     }
 
     remove(key: string): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            try {
-                const { [key]: hasAdded } = await this.removeMany([key]);
-                if (hasAdded === undefined) {
-                    throw new UnexpectedStorageError(
-                        `Destructed field "key" is undefined`,
-                    );
-                }
-                return hasAdded;
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
+            const { [key]: hasAdded } = await this.removeMany([key]);
+            if (hasAdded === undefined) {
                 throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
+                    `Destructed field "key" is undefined`,
                 );
             }
+            return hasAdded;
         });
     }
 
@@ -387,17 +262,7 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
-            try {
-                return await this.namespaceStorageAdapter.removeMany(keys);
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            return await this.namespaceStorageAdapter.removeMany(keys);
         });
     }
 
@@ -405,17 +270,7 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         key: string,
     ): LazyPromise<TValue | null> {
         return new LazyPromise(async () => {
-            try {
-                return await this.namespaceStorageAdapter.getAndRemove(key);
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            return await this.namespaceStorageAdapter.getAndRemove(key);
         });
     }
 
@@ -424,72 +279,29 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         valueToAdd: AsyncLazyable<StorageValue<GetOrAddValue<TExtended>>>,
     ): LazyPromise<TValue | TExtended> {
         return new LazyPromise(async () => {
-            try {
-                const value = await this.namespaceStorageAdapter.getOrAdd<
-                    TValue,
-                    TExtended
-                >(key, valueToAdd as AsyncLazyable<TExtended>);
-                return value;
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            const value = await this.namespaceStorageAdapter.getOrAdd<
+                TValue,
+                TExtended
+            >(key, valueToAdd as AsyncLazyable<TExtended>);
+            return value;
         });
     }
 
     increment(key: string, value: number = 1): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            try {
-                return await this.namespaceStorageAdapter.increment(key, value);
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            return await this.namespaceStorageAdapter.increment(key, value);
         });
     }
 
     decrement(key: string, value: number = 1): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            try {
-                return await this.namespaceStorageAdapter.increment(
-                    key,
-                    -value,
-                );
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            return await this.namespaceStorageAdapter.increment(key, -value);
         });
     }
 
     clear(): LazyPromise<void> {
         return new LazyPromise(async () => {
-            try {
-                await this.namespaceStorageAdapter.clear();
-            } catch (error: unknown) {
-                if (error instanceof StorageError) {
-                    throw error;
-                }
-                throw new UnexpectedStorageError(
-                    `Unexpected error "${String(error)}" occured`,
-                    error,
-                );
-            }
+            await this.namespaceStorageAdapter.clear();
         });
     }
 }
