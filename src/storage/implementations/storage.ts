@@ -11,7 +11,7 @@ import { type StorageValue, type IStorage } from "@/storage/contracts/_module";
 import { WithNamespaceStorageAdapter } from "@/storage/implementations/with-namespace-storage-adapter";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
 import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
-import { LazyPromise } from "@/utilities/async/_module";
+import { LazyPromise } from "@/utilities/_module";
 
 export type StorageSettings = {
     namespace?: string;

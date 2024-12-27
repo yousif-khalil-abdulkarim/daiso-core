@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AsyncError, AbortAsyncError } from "@/utilities/async/_shared";
-import { abortableIterable } from "@/utilities/async/abortable-iterable/_module";
+import { abortableIterable } from "@/utilities/async-iterable/abortable-iterable/_module";
 import type { TimeSpan } from "@/utilities/_module";
 
 /**

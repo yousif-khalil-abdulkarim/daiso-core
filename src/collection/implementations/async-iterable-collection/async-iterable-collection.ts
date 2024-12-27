@@ -73,7 +73,7 @@ import {
     AbortAsyncError,
     TimeoutAsyncError,
     timeoutIterable,
-} from "@/utilities/async/_module";
+} from "@/utilities/_module";
 
 /**
  * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly which means they will be executed when the <i>AsyncIterableCollection</i> is iterated with <i>forEach</i> method or "for await of" loop.
