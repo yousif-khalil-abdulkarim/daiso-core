@@ -64,7 +64,8 @@
         "typedoc-plugin-merge-modules": "^6.0.0",
         "typescript": "^5.5.4",
         "vite-tsconfig-paths": "^4.3.2",
-        "vitest": "^2.0.5"
+        "vitest": "^2.0.5",
+        "zod": "^3.24.1"
     },
     "peerDependencies": {
         "@libsql/client": "^0.4.1",
