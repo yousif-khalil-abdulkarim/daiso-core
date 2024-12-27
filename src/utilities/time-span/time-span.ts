@@ -131,14 +131,14 @@ export class TimeSpan {
     /**
      * Will return endDate relative to a given <i>startDate</i> argument.
      */
-    toEndDate(startDate: Date): Date {
+    toEndDate(startDate = new Date()): Date {
         return new Date(startDate.getTime() + this.toMilliseconds());
     }
 
     /**
      * Will return startDate relative to a given <i>endDate</i> argument.
      */
-    toStartDate(endDate: Date): Date {
+    toStartDate(endDate = new Date()): Date {
         return new Date(endDate.getTime() - this.toMilliseconds());
     }
 }
