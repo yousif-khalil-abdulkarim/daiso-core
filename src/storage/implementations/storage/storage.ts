@@ -8,12 +8,12 @@ import {
     type IStorageAdapter,
 } from "@/storage/contracts/_module";
 import { type StorageValue, type IStorage } from "@/storage/contracts/_module";
-import { WithNamespaceStorageAdapter } from "@/storage/implementations/with-namespace-storage-adapter";
+import { WithNamespaceStorageAdapter } from "@/storage/implementations/storage/with-namespace-storage-adapter";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
 import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
 import type { Validator } from "@/utilities/_module";
 import { LazyPromise } from "@/utilities/_module";
-import { WithValidationStorageAdapter } from "@/storage/implementations/with-validation-storage-adapter";
+import { WithValidationStorageAdapter } from "@/storage/implementations/storage/with-validation-storage-adapter";
 
 export type StorageSettings<TType> = {
     namespace?: string;
