@@ -27,10 +27,6 @@ export type StorageValue<T> = Exclude<T, AnyFunction | undefined | null>;
  * @group Contracts
  */
 export type IStorage<TType = unknown> = {
-    namespace<TNamespaceType extends TType>(
-        name: string,
-    ): IStorage<TNamespaceType>;
-
     /**
      * Returns true when key is found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
@@ -68,39 +64,32 @@ export type IStorage<TType = unknown> = {
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    get<TValue extends TType>(key: string): PromiseLike<TValue | null>;
+    get(key: string): PromiseLike<TType | null>;
 
     /**
      * Returns the value for the keys that are found otherwise null will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    getMany<TValues extends TType, TKeys extends string>(
+    getMany<TKeys extends string>(
         keys: TKeys[],
-    ): PromiseLike<Record<TKeys, TValues | null>>;
+    ): PromiseLike<Record<TKeys, TType | null>>;
 
     /**
      * Returns the value when key is found otherwise defaultValue will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    getOr<TValue extends TType, TExtended extends TType>(
-        key: string,
-        defaultValue: AsyncLazyable<TExtended>,
-    ): PromiseLike<TValue | TExtended>;
+    getOr(key: string, defaultValue: AsyncLazyable<TType>): PromiseLike<TType>;
 
     /**
      * Returns the value for the keys that are found otherwise defaultValue will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    getOrMany<
-        TValues extends TType,
-        TExtended extends TType,
-        TKeys extends string,
-    >(
-        keysWithDefaults: Record<TKeys, AsyncLazyable<TExtended>>,
-    ): PromiseLike<Record<TKeys, TValues | TExtended>>;
+    getOrMany<TKeys extends string>(
+        keysWithDefaults: Record<TKeys, AsyncLazyable<TType>>,
+    ): PromiseLike<Record<TKeys, TType>>;
 
     /**
      * Returns the value when key is found otherwise an error will be thrown.
@@ -108,25 +97,22 @@ export type IStorage<TType = unknown> = {
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {KeyNotFoundStorageError} {@link KeyNotFoundStorageError}
      */
-    getOrFail<TValue extends TType>(key: string): PromiseLike<TValue>;
+    getOrFail(key: string): PromiseLike<TType>;
 
     /**
      * Adds a key when key doesn't exists. Returns true when key doesn't exists otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    add<TValue extends TType>(
-        key: string,
-        value: StorageValue<TValue>,
-    ): PromiseLike<boolean>;
+    add(key: string, value: StorageValue<TType>): PromiseLike<boolean>;
 
     /**
      * Adds the keys that doesn't exists. Returns true for the keys that doesn't exists otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    addMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, StorageValue<TValues>>,
+    addMany<TKeys extends string>(
+        values: Record<TKeys, StorageValue<TType>>,
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
@@ -134,18 +120,15 @@ export type IStorage<TType = unknown> = {
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    update<TValue extends TType>(
-        key: string,
-        value: TValue,
-    ): PromiseLike<boolean>;
+    update(key: string, value: TType): PromiseLike<boolean>;
 
     /**
      * Updates the keys that exists. Returns true for the keys that exists otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
@@ -153,18 +136,15 @@ export type IStorage<TType = unknown> = {
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    put<TValue extends TType>(
-        key: string,
-        value: StorageValue<TValue>,
-    ): PromiseLike<boolean>;
+    put(key: string, value: StorageValue<TType>): PromiseLike<boolean>;
 
     /**
      * Replaces the keys that are found. Adds keys that are not found. Returns true for all the keys that are found otherwise false is returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    putMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, StorageValue<TValues>>,
+    putMany<TKeys extends string>(
+        values: Record<TKeys, StorageValue<TType>>,
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
@@ -188,17 +168,17 @@ export type IStorage<TType = unknown> = {
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    getAndRemove<TValue extends TType>(key: string): PromiseLike<TValue | null>;
+    getAndRemove(key: string): PromiseLike<TType | null>;
 
     /**
      * If the key is found the value be returned otherwise valueToAdd will be added and returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    getOrAdd<TValue extends TType, TExtended extends TType>(
+    getOrAdd(
         key: string,
-        valueToAdd: AsyncLazyable<StorageValue<GetOrAddValue<TExtended>>>,
-    ): PromiseLike<TValue | TExtended>;
+        valueToAdd: AsyncLazyable<StorageValue<GetOrAddValue<TType>>>,
+    ): PromiseLike<TType>;
 
     /**
      * Will increment the existing key with value if found otherwise nonthing will occur. Returns true if key exists otherwise false will be returned.
@@ -206,7 +186,10 @@ export type IStorage<TType = unknown> = {
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
      */
-    increment(key: string, value?: number): PromiseLike<boolean>;
+    increment(
+        key: string,
+        value?: Extract<TType, number>,
+    ): PromiseLike<boolean>;
 
     /**
      * Will decrement the existing key with value if found otherwise nonthing will occur. Returns true if key exists otherwise false will be returned.
@@ -214,7 +197,10 @@ export type IStorage<TType = unknown> = {
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
      */
-    decrement(key: string, value?: number): PromiseLike<boolean>;
+    decrement(
+        key: string,
+        value?: Extract<TType, number>,
+    ): PromiseLike<boolean>;
 
     /**
      * @throws {StorageError} {@link StorageError}

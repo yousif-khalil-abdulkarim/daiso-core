@@ -60,26 +60,26 @@ export class LibsqlStorageAdapter<TType>
         return await this.storageAdapter.existsMany(keys);
     }
 
-    async getMany<TValues extends TType, TKeys extends string>(
+    async getMany<TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, TValues | null>> {
+    ): Promise<Record<TKeys, TType | null>> {
         return await this.storageAdapter.getMany(keys);
     }
 
-    async updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         return await this.storageAdapter.updateMany(values);
     }
 
-    async addMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async addMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         return await this.storageAdapter.addMany(values);
     }
 
-    async putMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async putMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         return await this.storageAdapter.putMany(values);
     }

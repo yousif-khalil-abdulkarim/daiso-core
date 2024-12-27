@@ -8,7 +8,7 @@ import {
     type IStorageAdapter,
 } from "@/storage/contracts/_module";
 import { type StorageValue, type IStorage } from "@/storage/contracts/_module";
-import { NamespaceStorageAdapter } from "@/storage/implementations/namespace-storage-adapter";
+import { WithNamespaceStorageAdapter } from "@/storage/implementations/with-namespace-storage-adapter";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
 import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
 import { LazyPromise } from "@/utilities/async/_module";
@@ -17,7 +17,7 @@ export type StorageSettings = {
     namespace?: string;
 };
 export class Storage<TType = unknown> implements IStorage<TType> {
-    private readonly namespaceStorageAdapter: NamespaceStorageAdapter<TType>;
+    private readonly namespaceStorageAdapter: WithNamespaceStorageAdapter<TType>;
     private readonly settings: Required<StorageSettings>;
 
     constructor(
@@ -27,19 +27,10 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         this.settings = {
             namespace,
         };
-        this.namespaceStorageAdapter = new NamespaceStorageAdapter<TType>(
+        this.namespaceStorageAdapter = new WithNamespaceStorageAdapter<TType>(
             this.storageAdapter,
             this.settings.namespace,
         );
-    }
-
-    namespace<TNamespaceType extends TType>(
-        name: string,
-    ): IStorage<TNamespaceType> {
-        return new Storage<TNamespaceType>(this.storageAdapter, {
-            ...this.settings,
-            namespace: `${this.settings.namespace}${name}`,
-        });
     }
 
     exists(key: string): LazyPromise<boolean> {
@@ -91,9 +82,9 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         });
     }
 
-    get<TValue extends TType>(key: string): LazyPromise<TValue | null> {
+    get(key: string): LazyPromise<TType | null> {
         return new LazyPromise(async () => {
-            const { [key]: value } = await this.getMany<TValue, string>([key]);
+            const { [key]: value } = await this.getMany<string>([key]);
             if (value === undefined) {
                 throw new UnexpectedStorageError(
                     `Destructed field "key" is undefined`,
@@ -103,24 +94,17 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         });
     }
 
-    getMany<TValues extends TType, TKeys extends string>(
+    getMany<TKeys extends string>(
         keys: TKeys[],
-    ): LazyPromise<Record<TKeys, TValues | null>> {
+    ): LazyPromise<Record<TKeys, TType | null>> {
         return new LazyPromise(async () => {
             return await this.namespaceStorageAdapter.getMany(keys);
         });
     }
 
-    getOr<TValue extends TType, TExtended extends TType>(
-        key: string,
-        defaultValue: AsyncLazyable<TExtended>,
-    ): LazyPromise<TValue | TExtended> {
+    getOr(key: string, defaultValue: AsyncLazyable<TType>): LazyPromise<TType> {
         return new LazyPromise(async () => {
-            const { [key]: value } = await this.getOrMany<
-                TValue,
-                TExtended,
-                string
-            >({
+            const { [key]: value } = await this.getOrMany<string>({
                 [key]: defaultValue,
             });
             if (value === undefined) {
@@ -128,22 +112,18 @@ export class Storage<TType = unknown> implements IStorage<TType> {
                     `Destructed field "key" is undefined`,
                 );
             }
-            return value;
+            return value as TType;
         });
     }
 
-    getOrMany<
-        TValues extends TType,
-        TExtended extends TType,
-        TKeys extends string,
-    >(
-        keysWithDefaults: Record<TKeys, AsyncLazyable<TExtended>>,
-    ): LazyPromise<Record<TKeys, TValues | TExtended>> {
+    getOrMany<TKeys extends string>(
+        keysWithDefaults: Record<TKeys, AsyncLazyable<TType>>,
+    ): LazyPromise<Record<TKeys, TType>> {
         return new LazyPromise(async () => {
             const getManyResult = await this.getMany(
                 Object.keys(keysWithDefaults),
             );
-            const result = {} as Record<string, TValues | TExtended>;
+            const result = {} as Record<string, TType>;
             for (const key in getManyResult) {
                 const { [key]: value } = getManyResult;
                 if (value === undefined) {
@@ -155,18 +135,18 @@ export class Storage<TType = unknown> implements IStorage<TType> {
                     const defaultValue = keysWithDefaults[key as TKeys];
                     result[key] = (await simplifyAsyncLazyable(
                         defaultValue,
-                    )) as TExtended;
+                    )) as TType;
                 } else {
-                    result[key] = value as TValues;
+                    result[key] = value as TType;
                 }
             }
             return result;
         });
     }
 
-    getOrFail<TValue extends TType>(key: string): LazyPromise<TValue> {
+    getOrFail(key: string): LazyPromise<TType> {
         return new LazyPromise(async () => {
-            const value = await this.get<TValue>(key);
+            const value = await this.get(key);
             if (value === null) {
                 throw new KeyNotFoundStorageError(`Key "${key}" is not found`);
             }
@@ -174,12 +154,9 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         });
     }
 
-    add<TValue extends TType>(
-        key: string,
-        value: StorageValue<TValue>,
-    ): LazyPromise<boolean> {
+    add(key: string, value: StorageValue<TType>): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            const { [key]: hasAdded } = await this.addMany<TValue, string>({
+            const { [key]: hasAdded } = await this.addMany<string>({
                 [key]: value,
             });
             if (hasAdded === undefined) {
@@ -191,18 +168,15 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         });
     }
 
-    addMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, StorageValue<TValues>>,
+    addMany<TKeys extends string>(
+        values: Record<TKeys, StorageValue<TType>>,
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
             return await this.namespaceStorageAdapter.addMany(values);
         });
     }
 
-    update<TValue extends TType>(
-        key: string,
-        value: TValue,
-    ): LazyPromise<boolean> {
+    update(key: string, value: TType): LazyPromise<boolean> {
         return new LazyPromise(async () => {
             const { [key]: hasKey } = await this.updateMany({
                 [key]: value,
@@ -216,20 +190,17 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         });
     }
 
-    updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
             return await this.namespaceStorageAdapter.updateMany(values);
         });
     }
 
-    put<TValue extends TType>(
-        key: string,
-        value: StorageValue<TValue>,
-    ): LazyPromise<boolean> {
+    put(key: string, value: StorageValue<TType>): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            const { [key]: hasAdded } = await this.putMany<TValue, string>({
+            const { [key]: hasAdded } = await this.putMany<string>({
                 [key]: value,
             });
             if (hasAdded === undefined) {
@@ -241,8 +212,8 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         });
     }
 
-    putMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, StorageValue<TValues>>,
+    putMany<TKeys extends string>(
+        values: Record<TKeys, StorageValue<TType>>,
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
             return await this.namespaceStorageAdapter.putMany(values);
@@ -269,11 +240,9 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         });
     }
 
-    getAndRemove<TValue extends TType>(
-        key: string,
-    ): LazyPromise<TValue | null> {
+    getAndRemove(key: string): LazyPromise<TType | null> {
         return new LazyPromise(async () => {
-            const { [key]: value } = await this.getMany<TValue, string>([key]);
+            const { [key]: value } = await this.getMany<string>([key]);
             if (value === undefined) {
                 throw new UnexpectedStorageError(
                     `Destructed field "key" is undefined`,
@@ -284,15 +253,12 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         });
     }
 
-    getOrAdd<TValue extends TType, TExtended extends TType>(
+    getOrAdd(
         key: string,
-        valueToAdd: AsyncLazyable<StorageValue<GetOrAddValue<TExtended>>>,
-    ): LazyPromise<TValue | TExtended> {
+        valueToAdd: AsyncLazyable<StorageValue<GetOrAddValue<TType>>>,
+    ): LazyPromise<TType> {
         return new LazyPromise(async () => {
-            const { [key]: value } = await this.getMany<
-                TValue | TExtended,
-                string
-            >([key]);
+            const { [key]: value } = await this.getMany<string>([key]);
             if (value === undefined) {
                 throw new UnexpectedStorageError(
                     `Destructed field "key" is undefined`,
@@ -301,7 +267,7 @@ export class Storage<TType = unknown> implements IStorage<TType> {
             if (value === null) {
                 const valueToAddSimplified = (await simplifyAsyncLazyable(
                     valueToAdd,
-                )) as TExtended;
+                )) as TType;
                 await this.namespaceStorageAdapter.addMany({
                     [key]: valueToAddSimplified,
                 });
@@ -311,13 +277,19 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         });
     }
 
-    increment(key: string, value: number = 1): LazyPromise<boolean> {
+    increment(
+        key: string,
+        value = 1 as Extract<TType, number>,
+    ): LazyPromise<boolean> {
         return new LazyPromise(async () => {
             return await this.namespaceStorageAdapter.increment(key, value);
         });
     }
 
-    decrement(key: string, value: number = 1): LazyPromise<boolean> {
+    decrement(
+        key: string,
+        value = 1 as Extract<TType, number>,
+    ): LazyPromise<boolean> {
         return new LazyPromise(async () => {
             return await this.namespaceStorageAdapter.increment(key, -value);
         });

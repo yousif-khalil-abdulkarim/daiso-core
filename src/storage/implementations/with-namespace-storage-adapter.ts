@@ -7,8 +7,8 @@ import { type IStorageAdapter } from "@/storage/contracts/_module";
 /**
  * @internal
  */
-export class NamespaceStorageAdapter<TType>
-    implements Required<Omit<IStorageAdapter<TType>, "clear" | "getOrAdd">>
+export class WithNamespaceStorageAdapter<TType>
+    implements Required<Omit<IStorageAdapter<TType>, "clear">>
 {
     constructor(
         private readonly storageAdapter: IStorageAdapter<TType>,
@@ -47,24 +47,24 @@ export class NamespaceStorageAdapter<TType>
         );
     }
 
-    async getMany<TValues extends TType, TKeys extends string>(
+    async getMany<TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, TValues | null>> {
+    ): Promise<Record<TKeys, TType | null>> {
         return this.withoutNamespaceObject(
             await this.storageAdapter.getMany(this.withNamespaceArray(keys)),
         );
     }
 
-    async addMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async addMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         return this.withoutNamespaceObject(
             await this.storageAdapter.addMany(this.withNamespaceObject(values)),
         );
     }
 
-    async updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         return this.withoutNamespaceObject(
             await this.storageAdapter.updateMany(
@@ -73,8 +73,8 @@ export class NamespaceStorageAdapter<TType>
         );
     }
 
-    async putMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async putMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         return this.withoutNamespaceObject(
             await this.storageAdapter.putMany(this.withNamespaceObject(values)),

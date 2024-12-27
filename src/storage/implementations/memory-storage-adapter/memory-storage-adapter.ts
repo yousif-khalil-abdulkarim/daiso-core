@@ -14,8 +14,8 @@ import { type IStorageAdapter } from "@/storage/contracts/storage-adapter.contra
 export class MemoryStorageAdapter<TType> implements IStorageAdapter<TType> {
     constructor(private readonly map: Map<string, TType> = new Map()) {}
 
-    async putMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async putMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         const removeResults = await this.removeMany(Object.keys(values));
         await this.addMany(values);
@@ -44,19 +44,19 @@ export class MemoryStorageAdapter<TType> implements IStorageAdapter<TType> {
         return true;
     }
 
-    getMany<TValues extends TType, TKeys extends string>(
+    getMany<TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, TValues | null>> {
-        const values = {} as Record<TKeys, TValues | null>;
+    ): Promise<Record<TKeys, TType | null>> {
+        const values = {} as Record<TKeys, TType | null>;
         for (const key of keys) {
             const value = this.map.get(key) ?? null;
-            values[key] = value as TValues | null;
+            values[key] = value as TType | null;
         }
         return Promise.resolve(values);
     }
 
-    addMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    addMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         const result = {} as Record<TKeys, boolean>;
         for (const key in values) {
@@ -70,8 +70,8 @@ export class MemoryStorageAdapter<TType> implements IStorageAdapter<TType> {
         return Promise.resolve(result);
     }
 
-    updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         const results = {} as Record<TKeys, boolean>;
         for (const key in values) {
