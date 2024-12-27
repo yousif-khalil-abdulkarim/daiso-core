@@ -11,25 +11,28 @@ import { type StorageValue, type IStorage } from "@/storage/contracts/_module";
 import { WithNamespaceStorageAdapter } from "@/storage/implementations/with-namespace-storage-adapter";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
 import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
+import type { Validator } from "@/utilities/_module";
 import { LazyPromise } from "@/utilities/_module";
+import { WithValidationStorageAdapter } from "@/storage/implementations/with-validation-storage-adapter";
 
-export type StorageSettings = {
+export type StorageSettings<TType> = {
     namespace?: string;
+    validator?: Validator<TType>;
 };
 export class Storage<TType = unknown> implements IStorage<TType> {
     private readonly namespaceStorageAdapter: WithNamespaceStorageAdapter<TType>;
-    private readonly settings: Required<StorageSettings>;
 
     constructor(
-        private readonly storageAdapter: IStorageAdapter<TType>,
-        { namespace = "" }: StorageSettings = {},
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        private readonly storageAdapter: IStorageAdapter<any>,
+        {
+            namespace = "",
+            validator = (v) => v as TType,
+        }: StorageSettings<TType> = {},
     ) {
-        this.settings = {
-            namespace,
-        };
         this.namespaceStorageAdapter = new WithNamespaceStorageAdapter<TType>(
-            this.storageAdapter,
-            this.settings.namespace,
+            new WithValidationStorageAdapter(this.storageAdapter, validator),
+            namespace,
         );
     }
 
