@@ -6,8 +6,9 @@ import {
     type StartedMongoDBContainer,
 } from "@testcontainers/mongodb";
 import { MongoClient } from "mongodb";
+import { TimeSpan } from "@/utilities/_module";
 
-const TIMEOUT = 60 * 1000;
+const timeout = TimeSpan.fromMinutes(2);
 describe("class: MongodbStorageAdapter", () => {
     let client: MongoClient;
     let startedContainer: StartedMongoDBContainer;
@@ -16,11 +17,11 @@ describe("class: MongodbStorageAdapter", () => {
         client = new MongoClient(startedContainer.getConnectionString(), {
             directConnection: true,
         });
-    }, TIMEOUT);
+    }, timeout.toMilliseconds());
     afterEach(async () => {
         await client.close();
         await startedContainer.stop();
-    });
+    }, timeout.toMilliseconds());
     storageTestSuite({
         createAdapter: async () => {
             const storageAdapter = new MongodbStorageAdapter(

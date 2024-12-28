@@ -6,19 +6,20 @@ import {
     type StartedRedisContainer,
 } from "@testcontainers/redis";
 import Redis from "ioredis";
+import { TimeSpan } from "@/utilities/_module";
 
-const TIMEOUT = 60 * 1000;
+const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisStorageAdapter", () => {
     let client: Redis;
     let startedContainer: StartedRedisContainer;
     beforeEach(async () => {
         startedContainer = await new RedisContainer().start();
         client = new Redis(startedContainer.getConnectionUrl());
-    }, TIMEOUT);
+    }, timeout.toMilliseconds());
     afterEach(async () => {
         await client.quit();
         await startedContainer.stop();
-    });
+    }, timeout.toMilliseconds());
     storageTestSuite({
         createAdapter: () => new RedisStorageAdapter(client),
         test,
