@@ -64,7 +64,8 @@
         "typedoc-plugin-merge-modules": "^6.0.0",
         "typescript": "^5.5.4",
         "vite-tsconfig-paths": "^4.3.2",
-        "vitest": "^2.0.5"
+        "vitest": "^2.0.5",
+        "zod": "^3.24.1"
     },
     "peerDependencies": {
         "@libsql/client": "^0.4.1",
@@ -84,13 +85,16 @@
         },
         "@libsql/client": {
             "optional": true
+        },
+        "zod": {
+            "optional": true
         }
     },
     "dependencies": {
-        "@libsql/kysely-libsql": "^0.4.1",
+        "@libsql/kysely-libsql": "^0.4.0",
         "escape-string-regexp": "^5.0.0",
-        "kysely": "^0.27.4",
-        "superjson": "^2.2.1",
-        "uuid": "^11.0.2"
+        "kysely": "^0.27.0",
+        "superjson": "^2.2.0",
+        "zod": "^3.24.0"
     }
 }

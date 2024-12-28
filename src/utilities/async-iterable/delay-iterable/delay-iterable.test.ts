@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { delayIterable } from "@/utilities/async/delay-iterable/_module";
+import { delayIterable } from "@/utilities/async-iterable/delay-iterable/_module";
 import { AbortAsyncError, AsyncError } from "@/utilities/async/_shared";
 import { TimeSpan } from "@/utilities/time-span/_module";
 

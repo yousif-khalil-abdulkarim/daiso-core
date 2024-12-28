@@ -105,9 +105,9 @@ export class MongodbStorageAdapter<TType>
         return results as Record<TKeys, boolean>;
     }
 
-    async getMany<TValues extends TType, TKeys extends string>(
+    async getMany<TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, TValues | null>> {
+    ): Promise<Record<TKeys, TType | null>> {
         const mongodbResults = await this.collection
             .find<Pick<MongodbStorageDocument, "key" | "value">>(
                 {
@@ -124,17 +124,17 @@ export class MongodbStorageAdapter<TType>
             .toArray();
 
         const results = Object.fromEntries(
-            keys.map<RecordItem<string, TValues | null>>((key) => [key, null]),
+            keys.map<RecordItem<string, TType | null>>((key) => [key, null]),
         );
         for (const { key, value } of mongodbResults) {
             results[key] = await this.serializer.deserialize(value);
         }
 
-        return results as Record<TKeys, TValues | null>;
+        return results as Record<TKeys, TType | null>;
     }
 
-    async addMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async addMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         const documents: MongodbStorageDocument[] = [];
         for (const key in values) {
@@ -200,8 +200,8 @@ export class MongodbStorageAdapter<TType>
         return mongodbResult.matchedCount > 0;
     }
 
-    async updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         const results = {} as Record<TKeys, boolean>;
         for (const key in values) {
@@ -229,8 +229,8 @@ export class MongodbStorageAdapter<TType>
         return mongodbResult.upsertedCount <= 0;
     }
 
-    async putMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async putMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         const results = {} as Record<TKeys, boolean>;
         for (const key in values) {

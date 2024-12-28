@@ -23,17 +23,17 @@ export type IStorageAdapter<TType> = {
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    getMany<TValues extends TType, TKeys extends string>(
+    getMany<TKeys extends string>(
         keys: TKeys[],
-    ): PromiseLike<Record<TKeys, TValues | null>>;
+    ): PromiseLike<Record<TKeys, TType | null>>;
 
     /**
      * Adds the keys that doesn't exists. Returns true for the keys that doesn't exists otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    addMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    addMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
@@ -41,8 +41,8 @@ export type IStorageAdapter<TType> = {
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
@@ -50,8 +50,8 @@ export type IStorageAdapter<TType> = {
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    putMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    putMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**

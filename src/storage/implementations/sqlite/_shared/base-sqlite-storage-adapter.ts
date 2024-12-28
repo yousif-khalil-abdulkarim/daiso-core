@@ -62,9 +62,9 @@ export class BaseSqliteStorageAdapter<TType>
         return results as Record<TKeys, boolean>;
     }
 
-    async getMany<TValues extends TType, TKeys extends string>(
+    async getMany<TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, TValues | null>> {
+    ): Promise<Record<TKeys, TType | null>> {
         const sqlResult = await this.db
             .selectFrom("storage")
             .select(["storage.key", "storage.value"])
@@ -72,17 +72,17 @@ export class BaseSqliteStorageAdapter<TType>
             .execute();
 
         const results = Object.fromEntries(
-            keys.map<RecordItem<string, TValues | null>>((key) => [key, null]),
+            keys.map<RecordItem<string, TType | null>>((key) => [key, null]),
         );
         for (const { key, value } of sqlResult) {
             results[key] = await this.serializer.deserialize(value);
         }
 
-        return results as Record<TKeys, TValues | null>;
+        return results as Record<TKeys, TType | null>;
     }
 
-    async addMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async addMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         const rows: Insertable<BaseSqliteStorageTable>[] = [];
         for (const key in values) {
@@ -110,8 +110,8 @@ export class BaseSqliteStorageAdapter<TType>
         return results as Record<TKeys, boolean>;
     }
 
-    async updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         const rows: Insertable<BaseSqliteStorageTable>[] = [];
         for (const key in values) {
@@ -175,8 +175,8 @@ export class BaseSqliteStorageAdapter<TType>
         return results as Record<TKeys, boolean>;
     }
 
-    async putMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async putMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         const rows: Insertable<BaseSqliteStorageTable>[] = [];
         for (const key in values) {

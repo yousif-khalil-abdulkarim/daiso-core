@@ -124,9 +124,9 @@ export class RedisStorageAdapter<TType> implements IStorageAdapter<TType> {
         return results;
     }
 
-    async getMany<TValues extends TType, TKeys extends string>(
+    async getMany<TKeys extends string>(
         keys: TKeys[],
-    ): Promise<Record<TKeys, TValues | null>> {
+    ): Promise<Record<TKeys, TType | null>> {
         let pipeline = this.client.pipeline();
         for (const key of keys) {
             pipeline = pipeline.get(key);
@@ -136,7 +136,7 @@ export class RedisStorageAdapter<TType> implements IStorageAdapter<TType> {
             throw new UnexpectedStorageError("Redis result is missing");
         }
 
-        const results = {} as Record<TKeys, TValues | null>;
+        const results = {} as Record<TKeys, TType | null>;
         for (const [index, [error, redisResult]] of redisResults.entries()) {
             if (error !== null) {
                 throw new UnexpectedStorageError(
@@ -155,7 +155,7 @@ export class RedisStorageAdapter<TType> implements IStorageAdapter<TType> {
             }
             if (redisResult !== null) {
                 results[key] =
-                    await this.serializer.deserialize<TValues>(redisResult);
+                    await this.serializer.deserialize<TType>(redisResult);
             } else {
                 results[key] = null;
             }
@@ -164,8 +164,8 @@ export class RedisStorageAdapter<TType> implements IStorageAdapter<TType> {
         return results;
     }
 
-    async addMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async addMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         let pipeline = this.client.pipeline();
         for (const key in values) {
@@ -205,8 +205,8 @@ export class RedisStorageAdapter<TType> implements IStorageAdapter<TType> {
         return results;
     }
 
-    async updateMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         let pipeline = this.client.pipeline();
         for (const key in values) {
@@ -246,8 +246,8 @@ export class RedisStorageAdapter<TType> implements IStorageAdapter<TType> {
         return results;
     }
 
-    async putMany<TValues extends TType, TKeys extends string>(
-        values: Record<TKeys, TValues>,
+    async putMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
     ): Promise<Record<TKeys, boolean>> {
         let pipeline = this.client.pipeline();
         for (const key in values) {
