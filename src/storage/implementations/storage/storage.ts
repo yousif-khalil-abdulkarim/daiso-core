@@ -21,6 +21,7 @@ export type StorageSettings<TType> = {
 };
 export class Storage<TType = unknown> implements IStorage<TType> {
     private readonly namespaceStorageAdapter: WithNamespaceStorageAdapter<TType>;
+    private readonly settings: Required<StorageSettings<TType>>;
 
     constructor(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,10 +31,24 @@ export class Storage<TType = unknown> implements IStorage<TType> {
             validator = (v) => v as TType,
         }: StorageSettings<TType> = {},
     ) {
-        this.namespaceStorageAdapter = new WithNamespaceStorageAdapter<TType>(
-            new WithValidationStorageAdapter(this.storageAdapter, validator),
+        this.settings = {
             namespace,
+            validator,
+        };
+        this.namespaceStorageAdapter = new WithNamespaceStorageAdapter<TType>(
+            new WithValidationStorageAdapter(
+                this.storageAdapter,
+                this.settings.validator,
+            ),
+            this.settings.namespace,
         );
+    }
+
+    namespace(name: string): IStorage<TType> {
+        return new Storage<TType>(this.storageAdapter, {
+            ...this.settings,
+            namespace: `${this.settings.namespace}${name}`,
+        });
     }
 
     exists(key: string): LazyPromise<boolean> {

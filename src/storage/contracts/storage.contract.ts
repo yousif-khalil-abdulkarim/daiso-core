@@ -28,6 +28,11 @@ export type StorageValue<T> = Exclude<T, AnyFunction | undefined | null>;
  */
 export type IStorage<TType = unknown> = {
     /**
+     * Return a new instance of <i>IStorage</i> prefixed with given <i>name</i>
+     */
+    namespace(name: string): IStorage<TType>;
+
+    /**
      * Returns true when key is found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
