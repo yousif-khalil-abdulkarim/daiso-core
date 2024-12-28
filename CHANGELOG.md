@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.7.0
+
+### Minor Changes
+
+-   99c4671: Simplified the storage contracts
+
 ## 0.6.0
 
 ### Minor Changes
