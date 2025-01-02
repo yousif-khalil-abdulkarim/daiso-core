@@ -1,3 +1,7 @@
+/**
+ * @module Collection
+ */
+
 import type { CrossJoinResult } from "@/collection/contracts/_module";
 import { type IAsyncCollection } from "@/collection/contracts/_module";
 import { type AsyncIterableValue } from "@/_shared/types";

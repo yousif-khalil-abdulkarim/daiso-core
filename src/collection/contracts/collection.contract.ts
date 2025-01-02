@@ -26,7 +26,7 @@ import type {
     Reduce,
     CrossJoinResult,
 } from "@/collection/contracts/_shared";
-import type { Lazyable, RecordItem, EnsureType } from "@/_shared/types";
+import type { Lazyable, RecordItem } from "@/_shared/types";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -36,6 +36,7 @@ export type Collapse<TValue> = TValue extends
     : TValue;
 
 /**
+ * The <i>ICollection</i> contract offers a fluent and efficient approach to working with {@link Iterable} objects.
  * <i>ICollection</i> is immutable.
  * @throws {CollectionError}
  * @throws {UnexpectedCollectionError}
@@ -158,7 +159,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.map(item => item.toString()).join("_");
      * // "1_2_3_4"
      */
-    join(separator?: string): EnsureType<TInput, string>;
+    join(separator?: string): Extract<TInput, string>;
 
     /**
      * The <i>collapse</i> method collapses a collection of iterables into a single, flat collection.
@@ -227,7 +228,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    sum(): EnsureType<TInput, number>;
+    sum(): Extract<TInput, number>;
 
     /**
      * The <i>average</i> method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -243,7 +244,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    average(): EnsureType<TInput, number>;
+    average(): Extract<TInput, number>;
 
     /**
      * The <i>median</i> method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -259,7 +260,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    median(): EnsureType<TInput, number>;
+    median(): Extract<TInput, number>;
 
     /**
      * The <i>min</i> method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -275,7 +276,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    min(): EnsureType<TInput, number>;
+    min(): Extract<TInput, number>;
 
     /**
      * The <i>max</i> method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -291,7 +292,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    max(): EnsureType<TInput, number>;
+    max(): Extract<TInput, number>;
 
     /**
      * The <i>percentage</i> method may be used to quickly determine the percentage of items in the collection that pass <i>predicateFn</i>.

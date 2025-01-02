@@ -2,9 +2,6 @@
  * @module Shared
  */
 
-export type EnsureType<TValue, TType> =
-    Exclude<TValue, TType> extends never ? TValue : never;
-
 export type RecordItem<TKey, TValue> = [key: TKey, value: TValue];
 
 export type Lazyable<TValue> = TValue | (() => TValue);

@@ -96,13 +96,6 @@ export class WithNamespaceStorageAdapter<TType>
         );
     }
 
-    async decrement(key: string, value: number): Promise<boolean> {
-        return await this.storageAdapter.increment(
-            this.withNamespace(key),
-            -value,
-        );
-    }
-
     async clear(): Promise<void> {
         await this.storageAdapter.clear(this.namespace);
     }

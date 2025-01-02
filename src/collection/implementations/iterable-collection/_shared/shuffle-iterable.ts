@@ -1,4 +1,6 @@
-import {} from "@/collection/contracts/_shared";
+/**
+ * @module Collection
+ */
 
 /**
  * @internal

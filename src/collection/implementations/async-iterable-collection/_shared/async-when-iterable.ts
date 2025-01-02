@@ -1,3 +1,7 @@
+/**
+ * @module Collection
+ */
+
 import {
     type AsyncModifier,
     type IAsyncCollection,

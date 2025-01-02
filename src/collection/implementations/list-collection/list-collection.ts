@@ -22,7 +22,7 @@ import {
     EmptyCollectionError,
     type CrossJoinResult,
 } from "@/collection/contracts/_module";
-import { type EnsureType, type Lazyable } from "@/_shared/types";
+import { type Lazyable } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
 import { simplifyLazyable } from "@/_shared/utilities";
 
@@ -124,7 +124,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }) as any;
     }
 
-    join(separator = ","): EnsureType<TInput, string> {
+    join(separator = ","): Extract<TInput, string> {
         for (const item of this) {
             if (typeof item !== "string") {
                 throw new TypeCollectionError(
@@ -132,7 +132,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 );
             }
         }
-        return this.array.join(separator) as EnsureType<TInput, string>;
+        return this.array.join(separator) as Extract<TInput, string>;
     }
 
     collapse(): ICollection<Collapse<TInput>> {
@@ -176,35 +176,38 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         return this.skip((page - 1) * pageSize).take(pageSize);
     }
 
-    sum(): EnsureType<TInput, number> {
+    sum(): Extract<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
             );
         }
-        return this.reduce((sum, item) => {
+        const result = this.reduce((sum, item) => {
             if (typeof item !== "number") {
                 throw new TypeCollectionError(
                     "Item type is invalid must be number",
                 );
             }
             return sum + item;
-        }, 0) as EnsureType<TInput, number>;
+        }, 0);
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+        return result as any;
     }
 
-    average(): EnsureType<TInput, number> {
+    average(): Extract<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
             );
         }
-        return ((this.sum() as number) / this.size()) as EnsureType<
+        return ((this.sum() as number) / this.size()) as Extract<
             TInput,
             number
         >;
     }
 
-    median(): EnsureType<TInput, number> {
+    median(): Extract<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
@@ -229,12 +232,12 @@ export class ListCollection<TInput> implements ICollection<TInput> {
             if (b === undefined) {
                 throw new UnexpectedCollectionError("Is in invalid state");
             }
-            return ((a + b) / 2) as EnsureType<TInput, number>;
+            return ((a + b) / 2) as Extract<TInput, number>;
         }
-        return a as EnsureType<TInput, number>;
+        return a as Extract<TInput, number>;
     }
 
-    min(): EnsureType<TInput, number> {
+    min(): Extract<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
@@ -253,10 +256,10 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 min = item;
             }
         }
-        return min as EnsureType<TInput, number>;
+        return min as Extract<TInput, number>;
     }
 
-    max(): EnsureType<TInput, number> {
+    max(): Extract<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
@@ -275,7 +278,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 max = item;
             }
         }
-        return max as EnsureType<TInput, number>;
+        return max as Extract<TInput, number>;
     }
 
     percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number {

@@ -30,7 +30,6 @@ import type {
 import type {
     RecordItem,
     AsyncLazyable,
-    EnsureType,
     AsyncIterableValue,
 } from "@/_shared/types";
 import type { TimeSpan } from "@/utilities/_module";
@@ -43,7 +42,8 @@ export type AsyncCollapse<TValue> = TValue extends
     : TValue;
 
 /**
- * <i>IAsyncCollection</i> is immutable. The <i>throwOnIndexOverflow</i> parameter in the <i>IAsyncCollection</i> methods is used for preventing the index to overflow by throwing an error.
+ * The <i>IAsyncCollection</i> contract offers a fluent and efficient approach to working with {@link AsyncIterable} objects.
+ * <i>IAsyncCollection</i> is immutable.
  * @throws {CollectionError} {@link CollectionError}
  * @throws {UnexpectedCollectionError}
  * @throws {ItemNotFoundCollectionError}
@@ -167,7 +167,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.map(item => item.toString()).join("_");
      * // "1_2_3_4"
      */
-    join(separator?: string): PromiseLike<EnsureType<TInput, string>>;
+    join(separator?: string): PromiseLike<Extract<TInput, string>>;
 
     /**
      * The <i>collapse</i> method collapses a collection of iterables into a single, flat collection.
@@ -239,7 +239,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    sum(): PromiseLike<EnsureType<TInput, number>>;
+    sum(): PromiseLike<Extract<TInput, number>>;
 
     /**
      * The <i>average</i> method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -254,7 +254,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    average(): PromiseLike<EnsureType<TInput, number>>;
+    average(): PromiseLike<Extract<TInput, number>>;
 
     /**
      * The <i>median</i> method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -269,7 +269,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    median(): PromiseLike<EnsureType<TInput, number>>;
+    median(): PromiseLike<Extract<TInput, number>>;
 
     /**
      * The <i>min</i> method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -284,7 +284,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    min(): PromiseLike<EnsureType<TInput, number>>;
+    min(): PromiseLike<Extract<TInput, number>>;
 
     /**
      * The <i>max</i> method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -299,7 +299,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    max(): PromiseLike<EnsureType<TInput, number>>;
+    max(): PromiseLike<Extract<TInput, number>>;
 
     /**
      * The <i>percentage</i> method may be used to quickly determine the percentage of items in the collection that pass <i>predicateFn</i>.
