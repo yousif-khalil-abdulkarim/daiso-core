@@ -23,6 +23,7 @@ export type SelectEvent<
 >;
 
 /**
+ * The <i>IListenable</i> contract defines a way listening to events independent of underlying technology
  * @throws {EventBusError} {@link EventBusError}
  * @throws {AddListenerEventBusError} {@link AddListenerEventBusError}
  * @throws {RemoveListenerEventBusError} {@link RemoveListenerEventBusError}
