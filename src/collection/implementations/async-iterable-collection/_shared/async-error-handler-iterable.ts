@@ -1,3 +1,7 @@
+/**
+ * @module Collection
+ */
+
 export class AsyncErrorHandlerIterable<TInput>
     implements AsyncIterable<TInput>
 {

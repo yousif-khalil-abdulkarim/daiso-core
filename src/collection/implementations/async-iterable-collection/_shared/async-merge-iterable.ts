@@ -1,4 +1,7 @@
-import {} from "@/collection/contracts/_module";
+/**
+ * @module Collection
+ */
+
 import { type AsyncIterableValue } from "@/_shared/types";
 
 /**

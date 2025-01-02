@@ -1,3 +1,7 @@
+/**
+ * @module Collection
+ */
+
 import { type Comparator } from "@/collection/contracts/_module";
 
 /**

@@ -1,10 +1,10 @@
 /**
- * @module Async
+ * @module Utilities
  */
 
 /**
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.
- * @group Promise utilities
+ * @group Async utilities
  * @example
  * ```ts
  * (async () => {
@@ -38,7 +38,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
 
 /**
  * The <i>deferLazyPromise</i> function will execute <i>{@link LazyPromise}</i> without awaiting it.
- * @group Promise utilities
+ * @group Async utilities
  */
 export function deferLazyPromise<TValue>(promise: LazyPromise<TValue>): void {
     promise.then(() => {});

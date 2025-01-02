@@ -1,3 +1,7 @@
+/**
+ * @module Collection
+ */
+
 import { isIterable } from "@/collection/implementations/_shared";
 import { type AsyncIterableValue } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";

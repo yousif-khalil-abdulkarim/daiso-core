@@ -21,6 +21,8 @@ import {
 export type StorageValue<T> = Exclude<T, AnyFunction | undefined | null>;
 
 /**
+ * The <i>IStorage</i> contract defines a way for storing data as key-value pairs independent of storage.
+ * It commes with more convient methods compared <i>IStorageAdapter</i>.
  * @throws {StorageError} {@link StorageError}
  * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
  * @throws {TypeStorageError} {@link TypeStorageError}
@@ -28,19 +30,14 @@ export type StorageValue<T> = Exclude<T, AnyFunction | undefined | null>;
  */
 export type IStorage<TType = unknown> = {
     /**
-     * Return a new instance of <i>IStorage</i> prefixed with given <i>name</i>
-     */
-    namespace(name: string): IStorage<TType>;
-
-    /**
-     * Returns true when key is found otherwise false will be returned.
+     * The <i>exists</i> method returns true when <i>key</i> is found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     exists(key: string): PromiseLike<boolean>;
 
     /**
-     * Returns true for the keys that are found otherwise false will be returned.
+     * The <i>existsMany</i> method returns true for the <i>keys</i> that are found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
@@ -49,14 +46,14 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
-     * Returns true when key is not found otherwise false will be returned.
+     * The <i>missing</i> method returns true when <i>key</i> is not found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     missing(key: string): PromiseLike<boolean>;
 
     /**
-     * Returns true for the keys that are not found otherwise false will be returned.
+     * The <i>missingMany</i> method returns true for the <i>keys</i> that are not found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
@@ -65,14 +62,14 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
-     * Returns the value when key is found otherwise null will be returned.
+     * The <i>get</i> method returns the value when <i>key</i> is found otherwise null will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     get(key: string): PromiseLike<TType | null>;
 
     /**
-     * Returns the value for the keys that are found otherwise null will be returned.
+     * The <i>getMany</i> returns the value for the <i>keys</i> that are found otherwise null will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
@@ -81,14 +78,14 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<Record<TKeys, TType | null>>;
 
     /**
-     * Returns the value when key is found otherwise defaultValue will be returned.
+     * The <i>getOr</i> method returns the value when <i>key</i> is found otherwise <i>defaultValue</i> will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     getOr(key: string, defaultValue: AsyncLazyable<TType>): PromiseLike<TType>;
 
     /**
-     * Returns the value for the keys that are found otherwise defaultValue will be returned.
+     * The <i>getOrMany</i> method returns the value for the keys that are found otherwise defaultValue will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
@@ -97,7 +94,7 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<Record<TKeys, TType>>;
 
     /**
-     * Returns the value when key is found otherwise an error will be thrown.
+     * The <i>getOrFail</i> method returns the value when <i>key</i> is found otherwise an error will be thrown.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {KeyNotFoundStorageError} {@link KeyNotFoundStorageError}
@@ -105,14 +102,14 @@ export type IStorage<TType = unknown> = {
     getOrFail(key: string): PromiseLike<TType>;
 
     /**
-     * Adds a key when key doesn't exists. Returns true when key doesn't exists otherwise false will be returned.
+     * The <i>add</i> method adds a <i>key</i> with given <i>value</i> when key doesn't exists. Returns true when key doesn't exists otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     add(key: string, value: StorageValue<TType>): PromiseLike<boolean>;
 
     /**
-     * Adds the keys that doesn't exists. Returns true for the keys that doesn't exists otherwise false will be returned.
+     * The <i>addMany</i> method adds the keys that doesn't exists. Returns true for the keys that doesn't exists otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
@@ -121,14 +118,14 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
-     * Updates a keys that exists. Returns true when key otherwise false will be returned.
+     * The <i>update</i> method updates the given <i>key</i> with given <i>value</i>. Returns true when key otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     update(key: string, value: TType): PromiseLike<boolean>;
 
     /**
-     * Updates the keys that exists. Returns true for the keys that exists otherwise false will be returned.
+     * The <i>updateMany</i> method updates the given keys. Returns true for the keys that exists otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
@@ -137,14 +134,14 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
-     * If the key is found it will replaced. If the key is not found it will just be added. True is returned if the key is found otherwise false will be returned.
+     * The <i>put</i> method replaces the key with given <i>value</i> if found. If the <i>key</i> is not found it will just be added. True is returned if the key is found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     put(key: string, value: StorageValue<TType>): PromiseLike<boolean>;
 
     /**
-     * Replaces the keys that are found. Adds keys that are not found. Returns true for all the keys that are found otherwise false is returned.
+     * The <i>putMany</i> method replaces the keys that are found. Adds keys that are not found. Returns true for all the keys that are found otherwise false is returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
@@ -153,14 +150,14 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
-     * Removes the key when found. Returns true if the key is found otherwise false is returned.
+     * The <i>remove</i> method removes the given <i>key</i> when found. Returns true if the key is found otherwise false is returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     remove(key: string): PromiseLike<boolean>;
 
     /**
-     * Removes the keys that are found. Returns true for the keys that are found otherwise false is returned.
+     * The <i>removesMany</i> method removes the keys that are found. Returns true for the keys that are found otherwise false is returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
@@ -169,14 +166,14 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<Record<TKeys, boolean>>;
 
     /**
-     * If the key is found the value be returned and key will be removed otherwise null will be returned.
+     * The <i>getAndRemove</i> method removes the given <i>key</i> and returns it when found otherwise null will be returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     getAndRemove(key: string): PromiseLike<TType | null>;
 
     /**
-     * If the key is found the value be returned otherwise valueToAdd will be added and returned.
+     * The <i>getOrAdd</i> method will retrieve the given <i>key</i> if found otherwise <i>valueToAdd</i> will be added and returned.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
@@ -186,7 +183,9 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<TType>;
 
     /**
-     * Will increment the existing key with value if found otherwise nonthing will occur. Returns true if key exists otherwise false will be returned.
+     * The <i>increment</i> method will increment the given <i>key</i> if found otherwise nonthing will occur.
+     * Returns true if key exists otherwise false will be returned.
+     * An error will thrown if the key is not a number.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
@@ -197,10 +196,13 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<boolean>;
 
     /**
-     * Will decrement the existing key with value if found otherwise nonthing will occur. Returns true if key exists otherwise false will be returned.
+     * The <i>decrement</i> method will decrement the given <i>key</i> if found otherwise nonthing will occur.
+     * Returns true if key exists otherwise false will be returned.
+     * An error will thrown if the key is not a number.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
+     * An error will thrown if the key is not a number.
      */
     decrement(
         key: string,
@@ -208,6 +210,7 @@ export type IStorage<TType = unknown> = {
     ): PromiseLike<boolean>;
 
     /**
+     * The <i>clear</i> method removes all the keys in the storage.
      * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */

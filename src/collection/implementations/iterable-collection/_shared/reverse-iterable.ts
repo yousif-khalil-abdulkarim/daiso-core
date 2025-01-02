@@ -1,3 +1,7 @@
+/**
+ * @module Collection
+ */
+
 import { type ICollection } from "@/collection/contracts/_module";
 
 /**
