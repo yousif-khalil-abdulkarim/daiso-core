@@ -1,10 +1,7 @@
 export * from "@/utilities/async/_shared";
 export * from "@/utilities/async/abortable/_module";
-export * from "@/utilities/async/abortable-iterable/_module";
+export * from "@/utilities/async/backof-policies/_module";
 export * from "@/utilities/async/delay/_module";
-export * from "@/utilities/async/delay-iterable/_module";
 export * from "@/utilities/async/lazy-promise/_module";
 export * from "@/utilities/async/retry/_module";
-export { retryIterable as unstable_retryIterable } from "@/utilities/async/retry-iterable/_module";
 export * from "@/utilities/async/timeout/_module";
-export * from "@/utilities/async/timeout-iterable/_module";

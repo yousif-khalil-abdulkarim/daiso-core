@@ -1,7 +1,3 @@
-/**
- * @module Collection
- */
-
 import { type ICollection, type Map } from "@/collection/contracts/_module";
 
 /**

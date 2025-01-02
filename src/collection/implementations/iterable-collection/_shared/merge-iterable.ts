@@ -1,6 +1,4 @@
-/**
- * @module Collection
- */
+import {} from "@/collection/contracts/_module";
 
 /**
  * @internal

@@ -1,12 +1,9 @@
-/**
- * @module Collection
- */
-
 import { isIterable } from "@/collection/implementations/_shared";
 import type {
     CrossJoinResult,
     ICollection,
 } from "@/collection/contracts/_module";
+import {} from "@/collection/contracts/_module";
 
 export class CrossJoinIterable<TInput, TExtended = TInput>
     implements Iterable<CrossJoinResult<TInput, TExtended>>

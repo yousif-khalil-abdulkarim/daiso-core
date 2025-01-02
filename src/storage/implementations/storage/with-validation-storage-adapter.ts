@@ -1,7 +1,3 @@
-/**
- * @module Storage
- */
-
 import type { Validator } from "@/utilities/_module";
 import type { IStorageAdapter } from "@/storage/contracts/_module";
 

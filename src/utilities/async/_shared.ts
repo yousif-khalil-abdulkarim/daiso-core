@@ -1,9 +1,9 @@
 /**
- * @module Utilities
+ * @module Async
  */
 
 /**
- * @group Async
+ * @group Errors
  */
 export class AsyncError extends Error {
     constructor(message: string, cause?: unknown) {
@@ -13,7 +13,7 @@ export class AsyncError extends Error {
 }
 
 /**
- * @group Async
+ * @group Errors
  */
 export class AbortAsyncError extends AsyncError {
     constructor(message: string, cause?: unknown) {
@@ -23,7 +23,7 @@ export class AbortAsyncError extends AsyncError {
 }
 
 /**
- * @group Async
+ * @group Errors
  */
 export class TimeoutAsyncError extends AsyncError {
     constructor(message: string, cause?: unknown) {
@@ -33,7 +33,7 @@ export class TimeoutAsyncError extends AsyncError {
 }
 
 /**
- * @group Async
+ * @group Errors
  */
 export type RetryAsyncErrorData = {
     cause?: unknown;
@@ -41,7 +41,7 @@ export type RetryAsyncErrorData = {
 };
 
 /**
- * @group Async
+ * @group Errors
  */
 export class RetryAsyncError extends AsyncError {
     public readonly maxAttempts: number;

@@ -1,5 +1,5 @@
 /**
- * @module Utilities
+ * @module Async
  */
 
 import type { TimeSpan } from "@/utilities/_module";
@@ -14,7 +14,7 @@ import { LazyPromise } from "@/utilities/async/lazy-promise/_module";
 
 /**
  * The <i>delay</i> function creates a promise that will be fulfilled after given <i>time</i> and can be aborted by providing <i>abortSignal</i>.
- * @group Async utilities
+ * @group Promise utilities
  * @throws {AsyncError} {@link AsyncError}
  * @throws {AbortAsyncError} {@link AbortAsyncError}
  * @example

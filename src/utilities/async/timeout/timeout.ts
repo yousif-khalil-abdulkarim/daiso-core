@@ -1,5 +1,5 @@
 /**
- * @module Utilities
+ * @module Async
  */
 
 import { LazyPromise } from "@/utilities/async/lazy-promise/_module";
@@ -16,7 +16,7 @@ import type { TimeSpan } from "@/utilities/_module";
 
 /**
  * The <i>timeout</i> function makes a <i>{@link PromiseLike}</i> object abort after a given <i>time</i> and you can also abort it on your own by passing <i>abortSignal</i>.
- * @group Async utilities
+ * @group Promise utilities
  * @throws {AsyncError} {@link AsyncError}
  * @throws {AbortAsyncError} {@link AbortAsyncError}
  * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}

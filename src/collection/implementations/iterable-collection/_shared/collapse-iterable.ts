@@ -1,7 +1,3 @@
-/**
- * @module Collection
- */
-
 import { isIterable } from "@/collection/implementations/_shared";
 import {
     type Collapse,

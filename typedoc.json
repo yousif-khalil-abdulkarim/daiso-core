@@ -4,6 +4,8 @@
     "exclude": [
         "./src/**/*.test.ts",
         "./src/**/_module.ts",
+        "./src/collection/iterable-collection/_shared/**/*.ts",
+        "./src/collection/async-iterable-collection/_shared/**/*.ts"
     ],
     "navigation": {
         "includeGroups": true,

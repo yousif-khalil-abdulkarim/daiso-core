@@ -1,7 +1,3 @@
-/**
- * @module Collection
- */
-
 import { type AsyncIterableValue } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
 

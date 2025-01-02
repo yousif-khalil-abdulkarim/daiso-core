@@ -1,7 +1,4 @@
-/**
- * @module Collection
- */
-
+import {} from "@/collection/contracts/_module";
 import { type RecordItem } from "@/_shared/types";
 
 /**

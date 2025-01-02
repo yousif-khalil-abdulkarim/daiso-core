@@ -56,7 +56,11 @@ import {
     AsyncSliceIterable,
     AsyncRepeatIterable,
 } from "@/collection/implementations/async-iterable-collection/_shared/_module";
-import { type AsyncIterableValue, type AsyncLazyable } from "@/_shared/types";
+import {
+    type AsyncIterableValue,
+    type AsyncLazyable,
+    type EnsureType,
+} from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
 import type { TimeSpan } from "@/utilities/_module";
@@ -72,9 +76,8 @@ import {
 } from "@/utilities/_module";
 
 /**
- * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly.
- * The methods that return <i>{@link IAsyncCollection}</i> will only be executed when <i>forEach</i> method is called or <i>for await</i> loop.
- * The methods that return <i>{@link PromiseLike}</i> object will execute only when awaited or <i>then</i> method is called.
+ * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly which means they will be executed when the <i>AsyncIterableCollection</i> is iterated with <i>forEach</i> method or "for await of" loop.
+ * The rest of the methods are executed eagerly.
  * @group Adapters
  */
 export class AsyncIterableCollection<TInput>
@@ -180,7 +183,7 @@ export class AsyncIterableCollection<TInput>
         });
     }
 
-    join(separator = ","): LazyPromise<Extract<TInput, string>> {
+    join(separator = ","): LazyPromise<EnsureType<TInput, string>> {
         return new LazyPromise(async () => {
             let str: string | null = null;
             for await (const item of this) {
@@ -195,7 +198,7 @@ export class AsyncIterableCollection<TInput>
                     str = str + separator + item;
                 }
             }
-            return str as Extract<TInput, string>;
+            return str as EnsureType<TInput, string>;
         });
     }
 
@@ -231,7 +234,7 @@ export class AsyncIterableCollection<TInput>
         return this.skip((page - 1) * pageSize).take(pageSize);
     }
 
-    sum(): LazyPromise<Extract<TInput, number>> {
+    sum(): LazyPromise<EnsureType<TInput, number>> {
         return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
@@ -247,11 +250,11 @@ export class AsyncIterableCollection<TInput>
                 }
                 sum += item;
             }
-            return sum as Extract<TInput, number>;
+            return sum as EnsureType<TInput, number>;
         });
     }
 
-    average(): LazyPromise<Extract<TInput, number>> {
+    average(): LazyPromise<EnsureType<TInput, number>> {
         return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
@@ -269,11 +272,11 @@ export class AsyncIterableCollection<TInput>
                 size++;
                 sum += item;
             }
-            return (sum / size) as Extract<TInput, number>;
+            return (sum / size) as EnsureType<TInput, number>;
         });
     }
 
-    median(): LazyPromise<Extract<TInput, number>> {
+    median(): LazyPromise<EnsureType<TInput, number>> {
         return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
@@ -282,7 +285,7 @@ export class AsyncIterableCollection<TInput>
             }
             const size = await this.size();
             if (size === 0) {
-                return 0 as Extract<TInput, number>;
+                return 0 as EnsureType<TInput, number>;
             }
             const isEven = size % 2 === 0,
                 items = await this.map((item) => {
@@ -309,17 +312,17 @@ export class AsyncIterableCollection<TInput>
                 if (b === undefined) {
                     throw new UnexpectedCollectionError("Is in invalid state");
                 }
-                return ((a + b) / 2) as Extract<TInput, number>;
+                return ((a + b) / 2) as EnsureType<TInput, number>;
             }
             const [median] = items;
             if (median === undefined) {
                 throw new UnexpectedCollectionError("Is in invalid state");
             }
-            return median as Extract<TInput, number>;
+            return median as EnsureType<TInput, number>;
         });
     }
 
-    min(): LazyPromise<Extract<TInput, number>> {
+    min(): LazyPromise<EnsureType<TInput, number>> {
         return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
@@ -339,11 +342,11 @@ export class AsyncIterableCollection<TInput>
                     min = item;
                 }
             }
-            return min as Extract<TInput, number>;
+            return min as EnsureType<TInput, number>;
         });
     }
 
-    max(): LazyPromise<Extract<TInput, number>> {
+    max(): LazyPromise<EnsureType<TInput, number>> {
         return new LazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
@@ -363,7 +366,7 @@ export class AsyncIterableCollection<TInput>
                     max = item;
                 }
             }
-            return max as Extract<TInput, number>;
+            return max as EnsureType<TInput, number>;
         });
     }
 

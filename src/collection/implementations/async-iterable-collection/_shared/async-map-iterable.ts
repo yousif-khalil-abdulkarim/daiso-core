@@ -1,7 +1,3 @@
-/**
- * @module Collection
- */
-
 import {
     type AsyncMap,
     type IAsyncCollection,

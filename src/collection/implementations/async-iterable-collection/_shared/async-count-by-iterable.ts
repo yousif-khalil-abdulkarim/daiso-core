@@ -1,13 +1,8 @@
-/**
- * @module Collection
- */
-
 import {
     type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module";
 import { type RecordItem } from "@/_shared/types";
-
 /**
  * @internal
  */

@@ -1,5 +1,5 @@
 /**
- * @module Utilities
+ * @module Async
  */
 
 import {
@@ -60,7 +60,7 @@ function abortSignalToPromise<TValue = void>(
 
 /**
  * The <i>abortable</i> function makes a <i>{@link PromiseLike}</i> object abortable.
- * @group Async utilities
+ * @group Promise utilities
  * @throws {AsyncError} {@link AsyncError}
  * @throws {AbortAsyncError} {@link AbortAsyncError}
  * @example

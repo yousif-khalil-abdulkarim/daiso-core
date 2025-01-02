@@ -55,7 +55,7 @@ import {
     SliceIterable,
     RepeatIterable,
 } from "@/collection/implementations/iterable-collection/_shared/_module";
-import { type Lazyable } from "@/_shared/types";
+import { type Lazyable, type EnsureType } from "@/_shared/types";
 import { type RecordItem } from "@/_shared/types";
 import { simplifyLazyable } from "@/_shared/utilities";
 
@@ -161,7 +161,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         return output;
     }
 
-    join(separator = ","): Extract<TInput, string> {
+    join(separator = ","): EnsureType<TInput, string> {
         let str: string | null = null;
         for (const item of this) {
             if (typeof item !== "string") {
@@ -175,7 +175,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 str = str + separator + (item as string);
             }
         }
-        return str as Extract<TInput, string>;
+        return str as EnsureType<TInput, string>;
     }
 
     collapse(): ICollection<Collapse<TInput>> {
@@ -204,7 +204,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         return this.skip((page - 1) * pageSize).take(pageSize);
     }
 
-    sum(): Extract<TInput, number> {
+    sum(): EnsureType<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
@@ -219,10 +219,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             }
             sum += item;
         }
-        return sum as Extract<TInput, number>;
+        return sum as EnsureType<TInput, number>;
     }
 
-    average(): Extract<TInput, number> {
+    average(): EnsureType<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
@@ -239,10 +239,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             size++;
             sum += item;
         }
-        return (sum / size) as Extract<TInput, number>;
+        return (sum / size) as EnsureType<TInput, number>;
     }
 
-    median(): Extract<TInput, number> {
+    median(): EnsureType<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
@@ -250,7 +250,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         }
         const size = this.size();
         if (size === 0) {
-            return 0 as Extract<TInput, number>;
+            return 0 as EnsureType<TInput, number>;
         }
         const isEven = size % 2 === 0,
             items = this.map((item) => {
@@ -277,16 +277,16 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
             if (b === undefined) {
                 throw new UnexpectedCollectionError("Is in invalid state");
             }
-            return ((a + b) / 2) as Extract<TInput, number>;
+            return ((a + b) / 2) as EnsureType<TInput, number>;
         }
         const [median] = items;
         if (median === undefined) {
             throw new UnexpectedCollectionError("Is in invalid state");
         }
-        return median as Extract<TInput, number>;
+        return median as EnsureType<TInput, number>;
     }
 
-    min(): Extract<TInput, number> {
+    min(): EnsureType<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
@@ -305,10 +305,10 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 min = item;
             }
         }
-        return min as Extract<TInput, number>;
+        return min as EnsureType<TInput, number>;
     }
 
-    max(): Extract<TInput, number> {
+    max(): EnsureType<TInput, number> {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
@@ -327,7 +327,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
                 max = item;
             }
         }
-        return max as Extract<TInput, number>;
+        return max as EnsureType<TInput, number>;
     }
 
     percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number {

@@ -11,67 +11,14 @@ import { type StorageValue, type IStorage } from "@/storage/contracts/_module";
 import { WithNamespaceStorageAdapter } from "@/storage/implementations/storage/with-namespace-storage-adapter";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
 import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { Validator, zodValidator } from "@/utilities/_module";
+import type { Validator } from "@/utilities/_module";
 import { LazyPromise } from "@/utilities/_module";
 import { WithValidationStorageAdapter } from "@/storage/implementations/storage/with-validation-storage-adapter";
 
-/**
- * @group Derivables
- */
 export type StorageSettings<TType> = {
-    /**
-     * You can prefix all keys with a given <i>namespace</i>. This useful if you want to add multitenancy to your application.
-     * @example
-     * ```ts
-     * import { Storage, MemoryStorageAdapter } from "@daiso-tech/core";
-     *
-     * const storageA = new Storage(new MemoryStorageAdapter(), {
-     *   namespace: "@a/"
-     * });
-     * const storageB = new Storage(new MemoryStorageAdapter(), {
-     *   namespace: "@b/"
-     * });
-     *
-     * (async () => {
-     *   await storageA.add("a", 1);
-     *
-     *   // Will be "a"
-     *   console.log(await storageA.get("a"));
-     *
-     *   // Will be "null"
-     *   console.log(await storageB.get("a"));
-     * })();
-     * ```
-     */
     namespace?: string;
-
-    /**
-     * You can pass a custom <i>{@link Validator}</i> to validate, transform and sanitize your data.
-     * You could also use <i>{@link zodValidator}</i> which enables you to use zod for validating, transforming, and sanitizing.
-     * @example
-     * ```ts
-     * import { Storage, MemoryStorageAdapter, zodValidator } from "@daiso-tech/core";
-     * import { z } from "zod";
-     *
-     * const storage = new Storage(new MemoryStorageAdapter(), {
-     *   // Type will be infered from validator
-     *   validator: zodValidator(z.string())
-     * });
-     *
-     * (async () => {
-     *   // An Typescript error will be seen and ValidationError will be thrown during runtime.
-     *   await storageA.add("a", 1);
-     * })();
-     * ```
-     */
     validator?: Validator<TType>;
 };
-
-/**
- * <i>Storage</i> class can be derived from any <i>{@link IStorageAdapter}</i>.
- * @group Derivables
- */
 export class Storage<TType = unknown> implements IStorage<TType> {
     private readonly namespaceStorageAdapter: WithNamespaceStorageAdapter<TType>;
     private readonly settings: Required<StorageSettings<TType>>;
@@ -79,9 +26,11 @@ export class Storage<TType = unknown> implements IStorage<TType> {
     constructor(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         private readonly storageAdapter: IStorageAdapter<any>,
-        settings: StorageSettings<TType> = {},
+        {
+            namespace = "",
+            validator = (v) => v as TType,
+        }: StorageSettings<TType> = {},
     ) {
-        const { namespace = "", validator = (v) => v as TType } = settings;
         this.settings = {
             namespace,
             validator,
@@ -93,6 +42,13 @@ export class Storage<TType = unknown> implements IStorage<TType> {
             ),
             this.settings.namespace,
         );
+    }
+
+    namespace(name: string): IStorage<TType> {
+        return new Storage<TType>(this.storageAdapter, {
+            ...this.settings,
+            namespace: `${this.settings.namespace}${name}`,
+        });
     }
 
     exists(key: string): LazyPromise<boolean> {

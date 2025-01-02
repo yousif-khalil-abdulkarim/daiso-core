@@ -1,7 +1,3 @@
-/**
- * @module Collection
- */
-
 import { type IAsyncCollection } from "@/collection/contracts/_module";
 
 /**

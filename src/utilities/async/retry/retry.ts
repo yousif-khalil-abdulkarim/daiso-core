@@ -1,5 +1,5 @@
 /**
- * @module Utilities
+ * @module Async
  */
 
 import { delay } from "@/utilities/async/delay/_module";
@@ -12,19 +12,15 @@ import {
     TimeoutAsyncError,
     RetryAsyncError,
 } from "@/utilities/async/_shared";
-import type { BackoffPolicy } from "@/utilities/backof-policies/_module";
-import { exponentialBackoffPolicy } from "@/utilities/backof-policies/_module";
+import type { BackoffPolicy } from "@/utilities/async/backof-policies/_module";
+import { exponentialBackoffPolicy } from "@/utilities/async/backof-policies/_module";
 import { LazyPromise } from "@/utilities/async/lazy-promise/_module";
 import { timeout } from "@/utilities/async/timeout/_module";
 import { TimeSpan } from "@/utilities/_module";
 
-/**
- * @group Async utilities
- */
 export type RetryPolicy = (error: unknown) => boolean;
-
 /**
- * @group Async utilities
+ * @group Promise utilities
  */
 export type RetrySettings = {
     /**
@@ -44,7 +40,7 @@ export type RetrySettings = {
  * The <i>retry</i> function will retry a async function if it throws an error until given <i>settings.maxAttempts</i>.
  * You can add timeout for each retry by passing <i>settings.retryTimeout</i> and <i>settings.abortSignal</i> for aborting it on your own.
  * You can also customize the retry policy by passing <i>settings.retryPolicy</i> and custom backof policy by passing <i>settings.backoffPolicy</i>.
- * @group Async utilities
+ * @group Promise utilities
  * @throws {AsyncError} {@link AsyncError}
  * @throws {AbortAsyncError} {@link AbortAsyncError}
  * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}
