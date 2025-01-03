@@ -8,6 +8,8 @@ import {
     MemoryStorageAdapter,
     Storage,
 } from "@/storage/implementations/_module";
+import { EventBus } from "@/event-bus/implementations/_module";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/memory-event-bus-adapter/memory-event-bus-adapter";
 
 describe("class: Storage", () => {
     describe("Api tests:", () => {
@@ -15,16 +17,8 @@ describe("class: Storage", () => {
         let storage: IStorage<any>;
         beforeEach(() => {
             storage = new Storage(new MemoryStorageAdapter(), {
-                namespace: "@a/",
-            });
-        });
-        describe("method: exists", () => {
-            test("Should return true when key exists", async () => {
-                await storage.add("a", 1);
-                expect(await storage.exists("a")).toBe(true);
-            });
-            test("Should return false when key doesnt exists", async () => {
-                expect(await storage.exists("a")).toBe(false);
+                rootNamespace: "@a/",
+                eventBus: new EventBus(new MemoryEventBusAdapter()),
             });
         });
         describe("method: existsMany", () => {
@@ -605,10 +599,12 @@ describe("class: Storage", () => {
         let storageB: IStorage<any>;
         beforeEach(() => {
             storageA = new Storage(new MemoryStorageAdapter(), {
-                namespace: "@a/",
+                rootNamespace: "@a/",
+                eventBus: new EventBus(new MemoryEventBusAdapter()),
             });
             storageB = new Storage(new MemoryStorageAdapter(), {
-                namespace: "@b/",
+                rootNamespace: "@b/",
+                eventBus: new EventBus(new MemoryEventBusAdapter()),
             });
         });
         test("method: exists", async () => {

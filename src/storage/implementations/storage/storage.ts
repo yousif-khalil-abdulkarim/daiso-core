@@ -4,33 +4,57 @@
 
 import {
     KeyNotFoundStorageError,
+    STORAGE_EVENTS,
     UnexpectedStorageError,
+    type IStorage,
     type IStorageAdapter,
 } from "@/storage/contracts/_module";
-import { type StorageValue, type IStorage } from "@/storage/contracts/_module";
+import {
+    type StorageValue,
+    type INamespacedStorage,
+    type AllStorageEvents,
+} from "@/storage/contracts/_module";
 import { WithNamespaceStorageAdapter } from "@/storage/implementations/storage/with-namespace-storage-adapter";
-import { simplifyAsyncLazyable } from "@/_shared/utilities";
+import {
+    isArrayEmpty,
+    isObjectEmpty,
+    simplifyAsyncLazyable,
+} from "@/_shared/utilities";
 import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Validator, zodValidator } from "@/utilities/_module";
 import { LazyPromise } from "@/utilities/_module";
 import { WithValidationStorageAdapter } from "@/storage/implementations/storage/with-validation-storage-adapter";
+import type {
+    INamespacedEventBus,
+    IEventBus,
+    Listener,
+    SelectEvent,
+    Unsubscribe,
+} from "@/event-bus/contracts/_module";
+import {
+    EventBus,
+    NoOpEventBusAdapter,
+} from "@/event-bus/implementations/_module";
+import { WithEventStorageAdapter } from "@/storage/implementations/storage/with-event-storage-adapter";
 
 /**
  * @group Derivables
  */
 export type StorageSettings<TType> = {
     /**
-     * You can prefix all keys with a given <i>namespace</i>. This useful if you want to add multitenancy to your application.
+     * You can prefix all keys with a given <i>rootNamespace</i>.
+     * This useful if you want to add multitenancy but still use the same database.
+     * @default {""}
      * @example
      * ```ts
      * import { Storage, MemoryStorageAdapter } from "@daiso-tech/core";
      *
      * const storageA = new Storage(new MemoryStorageAdapter(), {
-     *   namespace: "@a/"
+     *   rootNamespace: "@a/"
      * });
      * const storageB = new Storage(new MemoryStorageAdapter(), {
-     *   namespace: "@b/"
+     *   rootNamespace: "@b/"
      * });
      *
      * (async () => {
@@ -44,7 +68,7 @@ export type StorageSettings<TType> = {
      * })();
      * ```
      */
-    namespace?: string;
+    rootNamespace?: string;
 
     /**
      * You can pass a custom <i>{@link Validator}</i> to validate, transform and sanitize your data.
@@ -66,33 +90,107 @@ export type StorageSettings<TType> = {
      * ```
      */
     validator?: Validator<TType>;
+
+    eventBus?: INamespacedEventBus<AllStorageEvents<TType>>;
 };
 
 /**
  * <i>Storage</i> class can be derived from any <i>{@link IStorageAdapter}</i>.
  * @group Derivables
  */
-export class Storage<TType = unknown> implements IStorage<TType> {
-    private readonly namespaceStorageAdapter: WithNamespaceStorageAdapter<TType>;
-    private readonly settings: Required<StorageSettings<TType>>;
+export class Storage<TType = unknown> implements INamespacedStorage<TType> {
+    static EVENTS = STORAGE_EVENTS;
+
+    private readonly withEventStorageAdapter: WithEventStorageAdapter<TType>;
+    private readonly namespace_: string;
+    private readonly validator: Validator<TType>;
+    private readonly eventBus: IEventBus<AllStorageEvents<TType>>;
 
     constructor(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         private readonly storageAdapter: IStorageAdapter<any>,
         settings: StorageSettings<TType> = {},
     ) {
-        const { namespace = "", validator = (v) => v as TType } = settings;
-        this.settings = {
-            namespace,
-            validator,
-        };
-        this.namespaceStorageAdapter = new WithNamespaceStorageAdapter<TType>(
-            new WithValidationStorageAdapter(
-                this.storageAdapter,
-                this.settings.validator,
-            ),
-            this.settings.namespace,
+        const {
+            rootNamespace: namespace = "",
+            validator = (v) => v as TType,
+            eventBus = new EventBus(new NoOpEventBusAdapter()),
+        } = settings;
+
+        this.namespace_ = namespace;
+        this.validator = validator;
+        this.eventBus = eventBus.withNamespace(this.namespace_);
+
+        const withValidationStorageAdapter = new WithValidationStorageAdapter(
+            this.storageAdapter,
+            this.validator,
         );
+        const withNamespaceStorageAdapter =
+            new WithNamespaceStorageAdapter<TType>(
+                withValidationStorageAdapter,
+                this.namespace_,
+            );
+        this.withEventStorageAdapter = new WithEventStorageAdapter(
+            withNamespaceStorageAdapter,
+            this.eventBus,
+            {
+                adapter: this.storageAdapter,
+                namespace: this.namespace_,
+            },
+        );
+    }
+
+    addListener<TEventType extends AllStorageEvents<TType>["type"]>(
+        event: TEventType,
+        listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
+    ): PromiseLike<void> {
+        return this.eventBus.addListener(event, listener);
+    }
+
+    addListenerMany<TEventType extends AllStorageEvents<TType>["type"]>(
+        events: TEventType[],
+        listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
+    ): PromiseLike<void> {
+        return this.eventBus.addListenerMany(events, listener);
+    }
+
+    removeListener<TEventType extends AllStorageEvents<TType>["type"]>(
+        event: TEventType,
+        listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
+    ): PromiseLike<void> {
+        return this.eventBus.removeListener(event, listener);
+    }
+
+    removeListenerMany<TEventType extends AllStorageEvents<TType>["type"]>(
+        events: TEventType[],
+        listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
+    ): PromiseLike<void> {
+        return this.eventBus.removeListenerMany(events, listener);
+    }
+
+    subscribe<TEventType extends AllStorageEvents<TType>["type"]>(
+        event: TEventType,
+        listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
+    ): PromiseLike<Unsubscribe> {
+        return this.eventBus.subscribe(event, listener);
+    }
+
+    subscribeMany<TEventType extends AllStorageEvents<TType>["type"]>(
+        events: TEventType[],
+        listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
+    ): PromiseLike<Unsubscribe> {
+        return this.eventBus.subscribeMany(events, listener);
+    }
+
+    withNamespace(namespace: string): IStorage<TType> {
+        return new Storage(this.storageAdapter, {
+            validator: this.validator,
+            rootNamespace: `${this.namespace_}${namespace}`,
+        });
+    }
+
+    getNamespace(): string {
+        return this.namespace_;
     }
 
     exists(key: string): LazyPromise<boolean> {
@@ -160,7 +258,10 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, TType | null>> {
         return new LazyPromise(async () => {
-            return await this.namespaceStorageAdapter.getMany(keys);
+            if (isArrayEmpty(keys)) {
+                return {} as Record<TKeys, TType | null>;
+            }
+            return await this.withEventStorageAdapter.getMany(keys);
         });
     }
 
@@ -234,7 +335,10 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         values: Record<TKeys, StorageValue<TType>>,
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
-            return await this.namespaceStorageAdapter.addMany(values);
+            if (isObjectEmpty(values)) {
+                return {} as Record<TKeys, boolean>;
+            }
+            return await this.withEventStorageAdapter.addMany(values);
         });
     }
 
@@ -256,7 +360,10 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         values: Record<TKeys, TType>,
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
-            return await this.namespaceStorageAdapter.updateMany(values);
+            if (isObjectEmpty(values)) {
+                return {} as Record<TKeys, boolean>;
+            }
+            return await this.withEventStorageAdapter.updateMany(values);
         });
     }
 
@@ -278,7 +385,10 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         values: Record<TKeys, StorageValue<TType>>,
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
-            return await this.namespaceStorageAdapter.putMany(values);
+            if (isObjectEmpty(values)) {
+                return {} as Record<TKeys, boolean>;
+            }
+            return await this.withEventStorageAdapter.putMany(values);
         });
     }
 
@@ -298,7 +408,10 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
         return new LazyPromise(async () => {
-            return await this.namespaceStorageAdapter.removeMany(keys);
+            if (isArrayEmpty(keys)) {
+                return {} as Record<TKeys, boolean>;
+            }
+            return await this.withEventStorageAdapter.removeMany(keys);
         });
     }
 
@@ -310,7 +423,7 @@ export class Storage<TType = unknown> implements IStorage<TType> {
                     `Destructed field "key" is undefined`,
                 );
             }
-            await this.namespaceStorageAdapter.removeMany([key]);
+            await this.withEventStorageAdapter.removeMany([key]);
             return value;
         });
     }
@@ -330,7 +443,7 @@ export class Storage<TType = unknown> implements IStorage<TType> {
                 const valueToAddSimplified = (await simplifyAsyncLazyable(
                     valueToAdd,
                 )) as TType;
-                await this.namespaceStorageAdapter.addMany({
+                await this.withEventStorageAdapter.addMany({
                     [key]: valueToAddSimplified,
                 });
                 return valueToAddSimplified;
@@ -344,7 +457,7 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         value = 1 as Extract<TType, number>,
     ): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            return await this.namespaceStorageAdapter.increment(key, value);
+            return await this.withEventStorageAdapter.increment(key, value);
         });
     }
 
@@ -353,13 +466,13 @@ export class Storage<TType = unknown> implements IStorage<TType> {
         value = 1 as Extract<TType, number>,
     ): LazyPromise<boolean> {
         return new LazyPromise(async () => {
-            return await this.namespaceStorageAdapter.increment(key, -value);
+            return await this.withEventStorageAdapter.increment(key, -value);
         });
     }
 
     clear(): LazyPromise<void> {
         return new LazyPromise(async () => {
-            await this.namespaceStorageAdapter.clear();
+            await this.withEventStorageAdapter.clear();
         });
     }
 }
