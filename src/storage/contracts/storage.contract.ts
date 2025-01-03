@@ -2,11 +2,13 @@
  * @module Storage
  */
 
+import type { IListenable } from "@/event-bus/contracts/_module";
 import {
     type AnyFunction,
     type AsyncLazyable,
     type GetOrAddValue,
 } from "@/_shared/types";
+import type { AllStorageEvents } from "@/storage/contracts/_module";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type StorageError,
@@ -16,19 +18,19 @@ import {
     type UnexpectedStorageError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type KeyNotFoundStorageError,
-} from "@/storage/contracts/_shared";
+} from "@/storage/contracts/_module";
 
 export type StorageValue<T> = Exclude<T, AnyFunction | undefined | null>;
 
 /**
  * The <i>IStorage</i> contract defines a way for storing data as key-value pairs independent of storage.
- * It commes with more convient methods compared <i>IStorageAdapter</i>.
+ * It commes with more convient methods compared to <i>IStorageAdapter</i>.
  * @throws {StorageError} {@link StorageError}
  * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
  * @throws {TypeStorageError} {@link TypeStorageError}
  * @group Contracts
  */
-export type IStorage<TType = unknown> = {
+export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
     /**
      * The <i>exists</i> method returns true when <i>key</i> is found otherwise false will be returned.
      * @throws {StorageError} {@link StorageError}
@@ -215,4 +217,25 @@ export type IStorage<TType = unknown> = {
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     clear(): PromiseLike<void>;
+};
+
+/**
+ * The <i>INamespacedStorage</i> contract defines a way for storing data as key-value pairs independent of storage.
+ * It commes with one extra method which is useful for multitennat applications compared to <i>IStorage</i>.
+ * @throws {StorageError} {@link StorageError}
+ * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
+ * @throws {TypeStorageError} {@link TypeStorageError}
+ * @group Contracts
+ */
+export type INamespacedStorage<TType = unknown> = IStorage<TType> & {
+    /**
+     * The <i>withNamespace</i> method returns new instance of <i>{@link IStorage}</i> where all the keys will be prefixed with a given <i>namespace</i>.
+     * This useful for multitennat applications.
+     */
+    withNamespace(namespace: string): IStorage<TType>;
+
+    /**
+     * The <i>getNamespace</i> method return the complete namespace.
+     */
+    getNamespace(): string;
 };
