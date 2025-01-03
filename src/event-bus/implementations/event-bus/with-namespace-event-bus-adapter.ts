@@ -31,7 +31,7 @@ export class WithNamespaceEventBusAdapter implements IEventBusAdapter {
             wrappedListener = async (eventObj: IBaseEvent) => {
                 await listener({
                     ...eventObj,
-                    type: eventObj.type.slice(-event.length),
+                    type: eventObj.type.slice(this.namespace.length),
                 });
             };
             this.listenerMap.set(listener, wrappedListener);

@@ -73,7 +73,7 @@ export type IStorageAdapter<TType> = {
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
      */
-    increment(key: string, value?: number): PromiseLike<boolean>;
+    increment(key: string, value: number): PromiseLike<boolean>;
 
     /**
      * The <i>clear</i> method removes all keys that starts <i>prefix</i>.

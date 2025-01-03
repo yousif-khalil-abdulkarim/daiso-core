@@ -3,7 +3,7 @@
  */
 
 export type RecordItem<TKey, TValue> = [key: TKey, value: TValue];
-
+export type OneOrMore<TItem> = TItem | TItem[];
 export type Lazyable<TValue> = TValue | (() => TValue);
 export type Promisable<TValue> = TValue | PromiseLike<TValue>;
 export type AsyncLazyable<TValue> = TValue | (() => Promisable<TValue>);
