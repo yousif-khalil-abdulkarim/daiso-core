@@ -2,16 +2,15 @@
  * @module Storage
  */
 
+import type { INamespacedEventBus } from "@/event-bus/contracts/_module";
 import type {
+    IStorageFactory,
     INamespacedStorage,
     IStorageAdapter,
     IStorageManager,
-    StorageManagerUseSettings,
 } from "@/storage/contracts/_module";
-import {
-    Storage,
-    type StorageSettings,
-} from "@/storage/implementations/storage/storage";
+import { Storage } from "@/storage/implementations/storage/storage";
+import type { Validator } from "@/utilities/_module";
 
 /**
  * @group Derivables
@@ -20,35 +19,54 @@ export type StorageManagerSettings<TAdapters extends string = string> = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     adapters: Record<TAdapters, IStorageAdapter<any>>;
     defaultAdapter: NoInfer<TAdapters>;
+    rootNamespace: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    adapterSettings?: Omit<StorageSettings<any>, "validator">;
+    eventBus?: INamespacedEventBus<any>;
 };
 
 /**
  * @group Derivables
  */
-export class StorageManager<TAdapters extends string = string>
-    implements IStorageManager<TAdapters>
+export class StorageManager<TAdapters extends string = string, TType = unknown>
+    implements IStorageManager<TAdapters, TType>
 {
-    private readonly adapters: Record<TAdapters, IStorageAdapter<unknown>>;
+    private readonly adapters: Record<TAdapters, IStorageAdapter>;
     private readonly defaultAdapter: TAdapters;
+    private readonly rootNamespace: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private readonly adapterSettings: Omit<StorageSettings<any>, "validator">;
+    private readonly eventBus?: INamespacedEventBus<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private validator: Validator<any> = (value) => value;
 
     constructor(settings: StorageManagerSettings<TAdapters>) {
-        const { adapters, defaultAdapter, adapterSettings = {} } = settings;
+        const { adapters, defaultAdapter, rootNamespace, eventBus } = settings;
         this.adapters = adapters;
         this.defaultAdapter = defaultAdapter;
-        this.adapterSettings = adapterSettings;
+        this.rootNamespace = rootNamespace;
+        this.eventBus = eventBus;
     }
 
-    use<TType>(
-        adapterSettings: StorageManagerUseSettings<TType, TAdapters> = {},
-    ): INamespacedStorage<TType> {
-        const { adapter = this.defaultAdapter, validator } = adapterSettings;
+    use(adapter: TAdapters = this.defaultAdapter): INamespacedStorage<TType> {
         return new Storage(this.adapters[adapter], {
-            ...this.adapterSettings,
-            validator,
+            rootNamespace: this.rootNamespace,
+            validator: this.validator,
+            eventBus: this.eventBus,
         });
+    }
+
+    withValidation<TOutput extends TType = TType>(
+        validator: Validator<TOutput>,
+    ): IStorageFactory<TAdapters, TOutput> {
+        this.validator = validator;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+        return this as any;
+    }
+
+    withType<TOutput extends TType = TType>(): IStorageFactory<
+        TAdapters,
+        TOutput
+    > {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+        return this as any;
     }
 }

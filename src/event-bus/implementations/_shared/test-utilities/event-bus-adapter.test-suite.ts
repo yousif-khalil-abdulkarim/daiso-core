@@ -26,10 +26,29 @@ export type EventBusTestSuiteSettings = {
     beforeEach: typeof beforeEach;
     createAdapter: () => Promisable<IEventBusAdapter>;
 };
+
 /**
+ * The <i>eventBusAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IEventBusAdapter}</i> with vitest.
+ * @example
+ * ```ts
+ * import { eventBusAdapterTestSuite, MemoryEventBusAdapter } from "@daiso-tech/core";
+ * import { expext, test, describe, beforeEach } from "vitest";
+ *
+ * describe("class: MemoryEventBusAdapter", () => {
+ *   eventBusAdapterTestSuite({
+ *     createAdapter: () => new MemoryEventBusAdapter(),
+ *     test,
+ *     beforeEach,
+ *     expect,
+ *     describe,
+ *   });
+ * });
+ * ```
  * @group Utilities
  */
-export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
+export function eventBusAdapterTestSuite(
+    settings: EventBusTestSuiteSettings,
+): void {
     const { expect, test, createAdapter, beforeEach } = settings;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let eventBusAdapter: IEventBusAdapter;

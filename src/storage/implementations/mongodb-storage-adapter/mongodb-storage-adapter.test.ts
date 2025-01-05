@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { storageTestSuite } from "@/storage/implementations/_shared/test-utilities/_module";
+import { storageAdapterTestSuite } from "@/storage/implementations/_shared/test-utilities/_module";
 import { MongodbStorageAdapter } from "@/storage/implementations/mongodb-storage-adapter/_module";
 import {
     MongoDBContainer,
@@ -22,7 +22,7 @@ describe("class: MongodbStorageAdapter", () => {
         await client.close();
         await startedContainer.stop();
     }, timeout.toMilliseconds());
-    storageTestSuite({
+    storageAdapterTestSuite({
         createAdapter: async () => {
             const storageAdapter = new MongodbStorageAdapter(
                 client.db("database").collection("storage"),

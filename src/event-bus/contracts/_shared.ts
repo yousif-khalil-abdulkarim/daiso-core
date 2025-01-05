@@ -24,6 +24,16 @@ export class EventBusError extends Error {
 /**
  * @group Errors
  */
+export class UnexpectedEventBusError extends EventBusError {
+    constructor(message: string, cause?: unknown) {
+        super(message, { cause });
+        this.name = UnexpectedEventBusError.name;
+    }
+}
+
+/**
+ * @group Errors
+ */
 export class RemoveListenerEventBusError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });

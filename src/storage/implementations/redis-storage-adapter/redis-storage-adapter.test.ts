@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { storageTestSuite } from "@/storage/implementations/_shared/test-utilities/_module";
+import { storageAdapterTestSuite } from "@/storage/implementations/_shared/test-utilities/_module";
 import { RedisStorageAdapter } from "@/storage/implementations/redis-storage-adapter/_module";
 import {
     RedisContainer,
@@ -20,7 +20,7 @@ describe("class: RedisStorageAdapter", () => {
         await client.quit();
         await startedContainer.stop();
     }, timeout.toMilliseconds());
-    storageTestSuite({
+    storageAdapterTestSuite({
         createAdapter: () => new RedisStorageAdapter(client),
         test,
         beforeEach,

@@ -15,7 +15,10 @@ import {
     type KeysFoundStorageEvent,
     type KeysNotFoundStorageEvent,
 } from "@/storage/contracts/_module";
-import type { IEventBus } from "@/event-bus/contracts/_module";
+import {
+    UnexpectedEventBusError,
+    type IEventBus,
+} from "@/event-bus/contracts/_module";
 import type { WithNamespaceStorageAdapter } from "@/storage/implementations/storage/with-namespace-storage-adapter";
 import { isArrayEmpty, isObjectEmpty } from "@/_shared/utilities";
 
@@ -47,7 +50,9 @@ export class WithEventStorageAdapter<TType>
         for (const key in result) {
             const value = result[key];
             if (value === undefined) {
-                continue;
+                throw new UnexpectedEventBusError(
+                    `Destructed field "key" is undefined`,
+                );
             }
             if (value === null) {
                 keysNotFoundEvent.keys.push(key);
@@ -87,7 +92,9 @@ export class WithEventStorageAdapter<TType>
         for (const key in result) {
             const value = values[key];
             if (value === undefined) {
-                continue;
+                throw new UnexpectedEventBusError(
+                    `Destructed field "key" is undefined`,
+                );
             }
             const hasAdded = result[key];
             if (hasAdded) {
@@ -124,9 +131,11 @@ export class WithEventStorageAdapter<TType>
         for (const key in result) {
             const value = values[key];
             if (value === undefined) {
-                continue;
+                throw new UnexpectedEventBusError(
+                    `Destructed field "key" is undefined`,
+                );
             }
-            const keysExists = result[key];
+            const { [key]: keysExists } = result;
             if (keysExists) {
                 keysUpdatedEvent.values[key] = value;
             } else {
@@ -171,7 +180,9 @@ export class WithEventStorageAdapter<TType>
         for (const key in result) {
             const value = values[key];
             if (value === undefined) {
-                continue;
+                throw new UnexpectedEventBusError(
+                    `Destructed field "key" is undefined`,
+                );
             }
             const keyExists = result[key];
             if (keyExists) {
@@ -214,9 +225,11 @@ export class WithEventStorageAdapter<TType>
             keys: [],
         };
         for (const key in result) {
-            const keysExists = result[key];
+            const { [key]: keysExists } = result;
             if (keysExists === undefined) {
-                continue;
+                throw new UnexpectedEventBusError(
+                    `Destructed field "key" is undefined`,
+                );
             }
             if (keysExists) {
                 keysRemovedEvent.keys.push(key);

@@ -22,12 +22,28 @@ export type StorageAdapterTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createAdapter: () => Promisable<IStorageAdapter<unknown>>;
+    createAdapter: () => Promisable<IStorageAdapter>;
 };
 /**
+ * The <i>storageAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IStorageAdapter}</i>.
+ * @example
+ * ```ts
+ * import { storageAdapterTestSuite, MemoryStorageAdapter } from "@daiso-tech/core";
+ * import { expext, test, describe, beforeEach } from "vitest";
+ *
+ * describe("class: MemoryStorageAdapter", () => {
+ *   storageAdapterTestSuite({
+ *     createAdapter: () => new MemoryStorageAdapter(),
+ *     test,
+ *     beforeEach,
+ *     expect,
+ *     describe,
+ *   });
+ * });
+ * ```
  * @group Utilities
  */
-export function storageTestSuite(
+export function storageAdapterTestSuite(
     settings: StorageAdapterTestSuiteSettings,
 ): void {
     const { expect, test, createAdapter, describe, beforeEach } = settings;

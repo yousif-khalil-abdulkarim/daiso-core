@@ -1,5 +1,5 @@
 import { describe, test, beforeEach, expect, afterEach } from "vitest";
-import { eventBusTestSuite } from "@/event-bus/implementations/_shared/test-utilities/event-bus-adapter.test-suite";
+import { eventBusAdapterTestSuite } from "@/event-bus/implementations/_shared/test-utilities/event-bus-adapter.test-suite";
 import { RedisEventBusAdapter } from "@/event-bus/implementations/redis-event-bus-adapter/redis-event-bus-adapter";
 import { TimeSpan } from "@/utilities/_module";
 import type { StartedRedisContainer } from "@testcontainers/redis";
@@ -21,7 +21,7 @@ describe("class: RedisEventBusAdapter", () => {
         await listenerClient.quit();
         await startedContainer.stop();
     }, timeout.toMilliseconds());
-    eventBusTestSuite({
+    eventBusAdapterTestSuite({
         createAdapter: () =>
             new RedisEventBusAdapter({
                 dispatcherClient,
