@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { storageTestSuite } from "@/storage/implementations/_shared/test-utilities/_module";
+import { storageAdapterTestSuite } from "@/storage/implementations/_shared/test-utilities/_module";
 import { LibsqlStorageAdapter } from "@/storage/implementations/sqlite/libsql-storage-adapter/_module";
 import { type Client, createClient } from "@libsql/client";
 
@@ -18,7 +18,7 @@ describe("class: LibsqlStorageAdapter", () => {
     afterEach(() => {
         client.close();
     });
-    storageTestSuite({
+    storageAdapterTestSuite({
         createAdapter: async () => {
             const storageAdapter = new LibsqlStorageAdapter(client, {
                 tableName: "custom_table",
