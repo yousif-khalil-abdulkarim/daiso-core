@@ -1,5 +1,15 @@
 # @daiso-tech/core
 
+## 0.10.0
+
+### Minor Changes
+
+-   f675866: ## Changes
+    -   Changed IAsyncCollection contract to use LazyPromise instead PromiseLike.
+    -   Changed IEventBus contract to use LazyPromise instead PromiseLike.
+    -   Changed IStorage contract to use LazyPromise instead PromiseLike.
+    -   Changed ISerializer contract to use PrommiseLike instead Promise.
+
 ## 0.9.0
 
 ### Minor Changes
