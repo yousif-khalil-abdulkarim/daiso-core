@@ -34,9 +34,6 @@ export class DeserializationError extends SerializerError {
 
 /**
  * @group Contracts
- * @throws {SerializerError} {@link SerializerError}
- * @throws {SerializationError} {@link SerializationError}
- * @throws {DeserializationError} {@link DeserializationError}
  */
 export type ISerializer<TSerialized = unknown> = {
     /**

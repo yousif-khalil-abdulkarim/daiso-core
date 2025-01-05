@@ -95,6 +95,7 @@ export type KeysRemovedStorageEvent = StorageEvent & {
 };
 
 /**
+ * This event will be triggered when storage is cleared.
  * @group Events
  */
 export type KeysClearedStorageEvent = StorageEvent & {

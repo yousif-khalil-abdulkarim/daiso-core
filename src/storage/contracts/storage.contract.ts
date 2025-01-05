@@ -23,24 +23,26 @@ import {
 export type StorageValue<T> = Exclude<T, AnyFunction | undefined | null>;
 
 /**
+ * The <i>IStorageListenable</i> contract defines a way for listening <i>{@link IStorage}</i> crud operations.
+ */
+export type IStorageListenable<TType = unknown> = IListenable<
+    AllStorageEvents<TType>
+>;
+
+/**
  * The <i>IStorage</i> contract defines a way for storing data as key-value pairs independent of storage.
  * It commes with more convient methods compared to <i>IStorageAdapter</i>.
- * @throws {StorageError} {@link StorageError}
- * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
- * @throws {TypeStorageError} {@link TypeStorageError}
  * @group Contracts
  */
-export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
+export type IStorage<TType = unknown> = IStorageListenable & {
     /**
      * The <i>exists</i> method returns true when <i>key</i> is found otherwise false will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     exists(key: string): PromiseLike<boolean>;
 
     /**
      * The <i>existsMany</i> method returns true for the <i>keys</i> that are found otherwise false will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     existsMany<TKeys extends string>(
@@ -49,14 +51,12 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>missing</i> method returns true when <i>key</i> is not found otherwise false will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     missing(key: string): PromiseLike<boolean>;
 
     /**
      * The <i>missingMany</i> method returns true for the <i>keys</i> that are not found otherwise false will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     missingMany<TKeys extends string>(
@@ -65,14 +65,12 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>get</i> method returns the value when <i>key</i> is found otherwise null will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     get(key: string): PromiseLike<TType | null>;
 
     /**
      * The <i>getMany</i> returns the value for the <i>keys</i> that are found otherwise null will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     getMany<TKeys extends string>(
@@ -81,14 +79,12 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>getOr</i> method returns the value when <i>key</i> is found otherwise <i>defaultValue</i> will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     getOr(key: string, defaultValue: AsyncLazyable<TType>): PromiseLike<TType>;
 
     /**
      * The <i>getOrMany</i> method returns the value for the keys that are found otherwise defaultValue will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     getOrMany<TKeys extends string>(
@@ -97,7 +93,6 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>getOrFail</i> method returns the value when <i>key</i> is found otherwise an error will be thrown.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {KeyNotFoundStorageError} {@link KeyNotFoundStorageError}
      */
@@ -105,14 +100,12 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>add</i> method adds a <i>key</i> with given <i>value</i> when key doesn't exists. Returns true when key doesn't exists otherwise false will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     add(key: string, value: StorageValue<TType>): PromiseLike<boolean>;
 
     /**
      * The <i>addMany</i> method adds the keys that doesn't exists. Returns true for the keys that doesn't exists otherwise false will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     addMany<TKeys extends string>(
@@ -121,14 +114,12 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>update</i> method updates the given <i>key</i> with given <i>value</i>. Returns true when key otherwise false will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     update(key: string, value: TType): PromiseLike<boolean>;
 
     /**
      * The <i>updateMany</i> method updates the given keys. Returns true for the keys that exists otherwise false will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     updateMany<TKeys extends string>(
@@ -137,14 +128,12 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>put</i> method replaces the key with given <i>value</i> if found. If the <i>key</i> is not found it will just be added. True is returned if the key is found otherwise false will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     put(key: string, value: StorageValue<TType>): PromiseLike<boolean>;
 
     /**
      * The <i>putMany</i> method replaces the keys that are found. Adds keys that are not found. Returns true for all the keys that are found otherwise false is returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     putMany<TKeys extends string>(
@@ -153,14 +142,12 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>remove</i> method removes the given <i>key</i> when found. Returns true if the key is found otherwise false is returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     remove(key: string): PromiseLike<boolean>;
 
     /**
      * The <i>removesMany</i> method removes the keys that are found. Returns true for the keys that are found otherwise false is returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     removeMany<TKeys extends string>(
@@ -169,14 +156,12 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>getAndRemove</i> method removes the given <i>key</i> and returns it when found otherwise null will be returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     getAndRemove(key: string): PromiseLike<TType | null>;
 
     /**
      * The <i>getOrAdd</i> method will retrieve the given <i>key</i> if found otherwise <i>valueToAdd</i> will be added and returned.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     getOrAdd(
@@ -188,7 +173,6 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
      * The <i>increment</i> method will increment the given <i>key</i> if found otherwise nonthing will occur.
      * Returns true if key exists otherwise false will be returned.
      * An error will thrown if the key is not a number.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
      */
@@ -201,7 +185,6 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
      * The <i>decrement</i> method will decrement the given <i>key</i> if found otherwise nonthing will occur.
      * Returns true if key exists otherwise false will be returned.
      * An error will thrown if the key is not a number.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
      * An error will thrown if the key is not a number.
@@ -213,29 +196,57 @@ export type IStorage<TType = unknown> = IListenable<AllStorageEvents<TType>> & {
 
     /**
      * The <i>clear</i> method removes all the keys in the storage.
-     * @throws {StorageError} {@link StorageError}
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     clear(): PromiseLike<void>;
+
+    /**
+     * The <i>getNamespace</i> method return the complete namespace.
+     * @example
+     * ```ts
+     *   const storage = new Storage(new MemoryStorageAdapter(), {
+     *     rootNamespace: "@root/"
+     *   });
+     *
+     *   // Will be "@root/"
+     *   console.log(storage.getNamespace())
+     *
+     *   const storageA = storage.withNamespace("a/");
+     *
+     *   // Will be "@root/a/"
+     *   console.log(storageA.getNamespace())
+     * ```
+     */
+    getNamespace(): string;
 };
 
 /**
  * The <i>INamespacedStorage</i> contract defines a way for storing data as key-value pairs independent of storage.
  * It commes with one extra method which is useful for multitennat applications compared to <i>IStorage</i>.
- * @throws {StorageError} {@link StorageError}
- * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
- * @throws {TypeStorageError} {@link TypeStorageError}
  * @group Contracts
  */
 export type INamespacedStorage<TType = unknown> = IStorage<TType> & {
     /**
      * The <i>withNamespace</i> method returns new instance of <i>{@link IStorage}</i> where all the keys will be prefixed with a given <i>namespace</i>.
      * This useful for multitennat applications.
+     * @example
+     * ```ts
+     * import { Storage, MemoryStorageAdapter } from "@daiso-tech/core";
+     *
+     * (async () => {
+     *   const storage = new Storage(new MemoryStorageAdapter());
+     *
+     *   const storageA = storage.withNamespace("a");
+     *   await storageA.add("a", 1);
+     *
+     *   const storageB = storage.withNamespace("b");
+     *   await storageB.add("b", 2);
+     *
+     *   // Will print { a: 1, b: null }
+     *   console.log(await storageA.getMany(["a", "b"]));
+     * })();
+     *
+     * ```
      */
     withNamespace(namespace: string): IStorage<TType>;
-
-    /**
-     * The <i>getNamespace</i> method return the complete namespace.
-     */
-    getNamespace(): string;
 };
