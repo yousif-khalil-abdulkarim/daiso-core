@@ -2,17 +2,15 @@
  * @module EventBus
  */
 
+import { type Validator } from "@/utilities/_module";
 import type {
     INamespacedEventBus,
     IEventBusAdapter,
     IEventBusManager,
-    EventBusManagerUseSettings,
     IBaseEvent,
+    IEventBusFactory,
 } from "@/event-bus/contracts/_module";
-import {
-    EventBus,
-    type EventBusSettings,
-} from "@/event-bus/implementations/event-bus/event-bus";
+import { EventBus } from "@/event-bus/implementations/event-bus/event-bus";
 
 /**
  * @group Derivables
@@ -20,35 +18,50 @@ import {
 export type EventBusManagerSettings<TAdapters extends string = string> = {
     adapters: Record<TAdapters, IEventBusAdapter>;
     defaultAdapter: NoInfer<TAdapters>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    adapterSettings?: Omit<EventBusSettings<any>, "validator">;
+    rootNamespace: string;
 };
 
 /**
  * @group Derivables
  */
-export class EventBusManager<TAdapters extends string = string>
-    implements IEventBusManager<TAdapters>
+export class EventBusManager<
+    TAdapters extends string = string,
+    TEvent extends IBaseEvent = IBaseEvent,
+> implements IEventBusManager<TAdapters>
 {
     private readonly adapters: Record<TAdapters, IEventBusAdapter>;
     private readonly defaultAdapter: TAdapters;
+    private readonly rootNamespace: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private readonly adapterSettings: Omit<EventBusSettings<any>, "validator">;
+    private validator: Validator<any> = (value) => value;
 
     constructor(settings: EventBusManagerSettings<TAdapters>) {
-        const { adapters, defaultAdapter, adapterSettings = {} } = settings;
+        const { adapters, defaultAdapter, rootNamespace } = settings;
         this.adapters = adapters;
         this.defaultAdapter = defaultAdapter;
-        this.adapterSettings = adapterSettings;
+        this.rootNamespace = rootNamespace;
     }
 
-    use<TEvents extends IBaseEvent = IBaseEvent>(
-        adapterSettings: EventBusManagerUseSettings<TEvents, TAdapters>,
-    ): INamespacedEventBus<TEvents> {
-        const { adapter = this.defaultAdapter, validator } = adapterSettings;
+    use(adapter: TAdapters = this.defaultAdapter): INamespacedEventBus<TEvent> {
         return new EventBus(this.adapters[adapter], {
-            ...this.adapterSettings,
-            validator,
+            rootNamespace: this.rootNamespace,
+            validator: this.validator,
         });
+    }
+
+    withValidation<TOutput extends IBaseEvent = IBaseEvent>(
+        validator: Validator<TOutput>,
+    ): IEventBusFactory<TAdapters, TOutput> {
+        this.validator = validator;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+        return this as any;
+    }
+
+    withType<TOutput extends IBaseEvent = IBaseEvent>(): IEventBusFactory<
+        TAdapters,
+        TOutput
+    > {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+        return this as any;
     }
 }
