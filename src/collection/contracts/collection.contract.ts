@@ -20,7 +20,6 @@ import type {
     TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
-    ChangendItem,
     Reduce,
     CrossJoinResult,
 } from "@/collection/contracts/_shared";
@@ -212,7 +211,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     change<TFilterOutput extends TInput, TMapOutput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-    ): ICollection<ChangendItem<TInput, TFilterOutput, TMapOutput>>;
+    ): ICollection<TInput | TFilterOutput | TMapOutput>;
 
     /**
      * The <i>page</i> method returns a new collection containing the items that would be present on <i> page </i> with custom <i> pageSize </i>.

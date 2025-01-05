@@ -16,7 +16,6 @@ import {
     type Transform,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type ChangendItem,
     type Reduce,
     EmptyCollectionError,
     type CrossJoinResult,
@@ -191,7 +190,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     change<TFilterOutput extends TInput, TMapOutput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-    ): ICollection<ChangendItem<TInput, TFilterOutput, TMapOutput>> {
+    ): ICollection<TInput | TFilterOutput | TMapOutput> {
         return new IterableCollection(
             new UpdateIterable(this, predicateFn, mapFn),
         );

@@ -11,8 +11,6 @@ import type {
     AsyncModifier,
     AsyncTap,
     AsyncTransform,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    CollectionError,
     Comparator,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ItemNotFoundCollectionError,
@@ -25,7 +23,6 @@ import type {
     TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
-    ChangendItem,
 } from "@/collection/contracts/_shared";
 import type {
     RecordItem,
@@ -226,7 +223,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
             TFilterOutput
         >,
         mapFn: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
-    ): IAsyncCollection<ChangendItem<TInput, TFilterOutput, TMapOutput>>;
+    ): IAsyncCollection<TInput | TFilterOutput | TMapOutput>;
 
     /**
      * The <i>page</i> method returns a new collection containing the items that would be present on <i> page </i> with custom <i> pageSize </i>.

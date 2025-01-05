@@ -6,14 +6,13 @@ import {
     type Predicate,
     type ICollection,
     type Map,
-    type ChangendItem,
 } from "@/collection/contracts/_module";
 
 /**
  * @internal
  */
 export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
-    implements Iterable<ChangendItem<TInput, TFilterOutput, TMapOutput>>
+    implements Iterable<TInput | TFilterOutput | TMapOutput>
 {
     constructor(
         private collection: ICollection<TInput>,
@@ -25,9 +24,7 @@ export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
         private mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
     ) {}
 
-    *[Symbol.iterator](): Iterator<
-        ChangendItem<TInput, TFilterOutput, TMapOutput>
-    > {
+    *[Symbol.iterator](): Iterator<TInput | TFilterOutput | TMapOutput> {
         for (const [index, item] of this.collection.entries()) {
             if (this.predicateFn(item, index, this.collection)) {
                 yield this.mapFn(item as TFilterOutput, index, this.collection);

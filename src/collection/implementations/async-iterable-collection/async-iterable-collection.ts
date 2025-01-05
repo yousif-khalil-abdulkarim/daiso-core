@@ -16,7 +16,6 @@ import {
     MultipleItemsFoundCollectionError,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type ChangendItem,
     type AsyncReduce,
     EmptyCollectionError,
     type CrossJoinResult,
@@ -218,7 +217,7 @@ export class AsyncIterableCollection<TInput>
             TFilterOutput
         >,
         mapFn: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
-    ): IAsyncCollection<ChangendItem<TInput, TFilterOutput, TMapOutput>> {
+    ): IAsyncCollection<TInput | TFilterOutput | TMapOutput> {
         return new AsyncIterableCollection(
             new AsyncUpdateIterable(this, predicateFn, mapFn),
         );

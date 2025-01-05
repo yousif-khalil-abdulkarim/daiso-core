@@ -62,11 +62,6 @@ export class EmptyCollectionError extends CollectionError {
     }
 }
 
-export type ChangendItem<TInput, TFilterOutput, TMapOutput> =
-    | TInput
-    | TFilterOutput
-    | TMapOutput;
-
 export type Comparator<TItem> = (itemA: TItem, itemB: TItem) => number;
 
 export type Predicate_<TInput, TCollection> = (
