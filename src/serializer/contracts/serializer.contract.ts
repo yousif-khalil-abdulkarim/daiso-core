@@ -39,10 +39,10 @@ export type ISerializer<TSerialized = unknown> = {
     /**
      * @throws {SerializationError} {@link SerializationError}
      */
-    serialize<TValue>(value: TValue): Promise<TSerialized>;
+    serialize<TValue>(value: TValue): PromiseLike<TSerialized>;
 
     /**
      * @throws {DeserializationError} {@link DeserializationError}
      */
-    deserialize<TValue>(value: TSerialized): Promise<TValue>;
+    deserialize<TValue>(value: TSerialized): PromiseLike<TValue>;
 };

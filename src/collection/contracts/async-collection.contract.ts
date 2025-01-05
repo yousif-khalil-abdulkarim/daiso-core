@@ -29,7 +29,7 @@ import type {
     AsyncLazyable,
     AsyncIterableValue,
 } from "@/_shared/types";
-import type { TimeSpan } from "@/utilities/_module";
+import type { LazyPromise, TimeSpan } from "@/utilities/_module";
 
 export type AsyncCollapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -141,16 +141,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     reduce(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
-    ): PromiseLike<TInput>;
+    ): LazyPromise<TInput>;
     reduce(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
         // eslint-disable-next-line @typescript-eslint/unified-signatures
         initialValue: TInput,
-    ): PromiseLike<TInput>;
+    ): LazyPromise<TInput>;
     reduce<TOutput>(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue: TOutput,
-    ): PromiseLike<TOutput>;
+    ): LazyPromise<TOutput>;
 
     /**
      * The <i>join</i> method joins the collection's items with <i> separator </i>. An error will be thrown when if a none string item is encounterd.
@@ -172,7 +172,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * // "1_2_3_4"
      * ```
      */
-    join(separator?: string): PromiseLike<Extract<TInput, string>>;
+    join(separator?: string): LazyPromise<Extract<TInput, string>>;
 
     /**
      * The <i>collapse</i> method collapses a collection of iterables into a single, flat collection.
@@ -265,7 +265,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.get(5);
      * ```
      */
-    get(index: number): PromiseLike<TInput | null>;
+    get(index: number): LazyPromise<TInput | null>;
 
     /**
      * The <i>getOrFail</i> method returns the item by index. If the item is not found an error will be thrown.
@@ -283,7 +283,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.getOrFail(5);
      * ```
      */
-    getOrFail(index: number): PromiseLike<TInput>;
+    getOrFail(index: number): LazyPromise<TInput>;
 
     /**
      * The <i>page</i> method returns a new collection containing the items that would be present on <i> page </i> with custom <i> pageSize </i>.
@@ -313,7 +313,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    sum(): PromiseLike<Extract<TInput, number>>;
+    sum(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>average</i> method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -329,7 +329,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    average(): PromiseLike<Extract<TInput, number>>;
+    average(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>median</i> method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -345,7 +345,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    median(): PromiseLike<Extract<TInput, number>>;
+    median(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>min</i> method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -361,7 +361,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    min(): PromiseLike<Extract<TInput, number>>;
+    min(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>max</i> method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -377,7 +377,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
-    max(): PromiseLike<Extract<TInput, number>>;
+    max(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>percentage</i> method may be used to quickly determine the percentage of items in the collection that pass <i>predicateFn</i>.
@@ -394,7 +394,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     percentage(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<number>;
+    ): LazyPromise<number>;
 
     /**
      * The <i>some</i> method determines whether at least one item in the collection matches <i>predicateFn</i>.
@@ -410,7 +410,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     some<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<boolean>;
+    ): LazyPromise<boolean>;
 
     /**
      * The <i>every</i> method determines whether all items in the collection matches <i>predicateFn</i>.
@@ -426,7 +426,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     every<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<boolean>;
+    ): LazyPromise<boolean>;
 
     /**
      * The <i>take</i> method takes the first <i>limit</i> items.
@@ -649,7 +649,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     pipe<TOutput = TInput>(
         callback: AsyncTransform<IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<TOutput>;
+    ): LazyPromise<TOutput>;
 
     /**
      * The <i>tap</i> method passes a copy of the original collection to <i>callback</i>, allowing you to do something with the items while not affecting the original collection.
@@ -1268,7 +1268,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     first<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<TOutput | null>;
+    ): LazyPromise<TOutput | null>;
 
     /**
      * The <i>firstOr</i> method returns the first item in the collection that passes <i> predicateFn </i>
@@ -1310,7 +1310,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     firstOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<TOutput | TExtended>;
+    ): LazyPromise<TOutput | TExtended>;
 
     /**
      * The <i>firstOrFail</i> method returns the first item in the collection that passes <i> predicateFn </i>.
@@ -1344,7 +1344,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     firstOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<TOutput>;
+    ): LazyPromise<TOutput>;
 
     /**
      * The <i>last</i> method returns the last item in the collection that passes <i> predicateFn </i>.
@@ -1378,7 +1378,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     last<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<TOutput | null>;
+    ): LazyPromise<TOutput | null>;
 
     /**
      * The <i>lastOr</i> method returns the last item in the collection that passes <i> predicateFn </i>.
@@ -1420,7 +1420,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     lastOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<TOutput | TExtended>;
+    ): LazyPromise<TOutput | TExtended>;
 
     /**
      * The <i>lastOrFail</i> method returns the last item in the collection that passes <i> predicateFn </i>.
@@ -1454,7 +1454,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     lastOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<TOutput>;
+    ): LazyPromise<TOutput>;
 
     /**
      * The <i>before</i> method returns the item that comes before the first item that matches <i>predicateFn</i>.
@@ -1479,7 +1479,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     before(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<TInput | null>;
+    ): LazyPromise<TInput | null>;
 
     /**
      * The <i>beforeOr</i> method returns the item that comes before the first item that matches <i>predicateFn</i>.
@@ -1513,7 +1513,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     beforeOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<TInput | TExtended>;
+    ): LazyPromise<TInput | TExtended>;
 
     /**
      * The <i>beforeOrFail</i> method returns the item that comes before the first item that matches <i>predicateFn</i>.
@@ -1539,7 +1539,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     beforeOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<TInput>;
+    ): LazyPromise<TInput>;
 
     /**
      * The <i>after</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
@@ -1564,7 +1564,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     after(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<TInput | null>;
+    ): LazyPromise<TInput | null>;
 
     /**
      * The <i>afterOr</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
@@ -1598,7 +1598,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     afterOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<TInput | TExtended>;
+    ): LazyPromise<TInput | TExtended>;
 
     /**
      * The <i>afterOrFail</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
@@ -1624,7 +1624,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     afterOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<TInput>;
+    ): LazyPromise<TInput>;
 
     /**
      * The <i>sole</i> method returns the first item in the collection that passes <i>predicateFn</i>, but only if <i>predicateFn</i> matches exactly one item.
@@ -1659,7 +1659,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     sole<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): PromiseLike<TOutput>;
+    ): LazyPromise<TOutput>;
 
     /**
      * The <i>nth</i> method creates a new collection consisting of every n-th item.
@@ -1688,25 +1688,25 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     count(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<number>;
+    ): LazyPromise<number>;
 
     /**
      * The <i>size</i> returns the size of the collection.
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
-    size(): PromiseLike<number>;
+    size(): LazyPromise<number>;
 
     /**
      * The <i>isEmpty</i> returns true if the collection is empty.
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
-    isEmpty(): PromiseLike<boolean>;
+    isEmpty(): LazyPromise<boolean>;
 
     /**
      * The <i>isNotEmpty</i> returns true if the collection is not empty.
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
-    isNotEmpty(): PromiseLike<boolean>;
+    isNotEmpty(): LazyPromise<boolean>;
 
     /**
      * The <i>searchFirst</i> return the index of the first item that matches <i>predicateFn</i>.
@@ -1722,7 +1722,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     searchFirst(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<number>;
+    ): LazyPromise<number>;
 
     /**
      * The <i>searchLast</i> return the index of the last item that matches <i>predicateFn</i>.
@@ -1738,7 +1738,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     searchLast(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<number>;
+    ): LazyPromise<number>;
 
     /**
      * The <i>forEach</i> method iterates through all items in the collection.
@@ -1746,13 +1746,13 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     forEach(
         callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
-    ): PromiseLike<void>;
+    ): LazyPromise<void>;
 
     /**
      * The <i>toArray</i> method converts the collection to a new array.
      * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
-    toArray(): PromiseLike<TInput[]>;
+    toArray(): LazyPromise<TInput[]>;
 
     /**
      * The <i>delay</i> method will add delay between each iteration.

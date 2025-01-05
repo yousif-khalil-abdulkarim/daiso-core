@@ -143,42 +143,42 @@ export class Storage<TType = unknown> implements INamespacedStorage<TType> {
     addListener<TEventType extends AllStorageEvents<TType>["type"]>(
         event: TEventType,
         listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
-    ): PromiseLike<void> {
+    ): LazyPromise<void> {
         return this.eventBus.addListener(event, listener);
     }
 
     addListenerMany<TEventType extends AllStorageEvents<TType>["type"]>(
         events: TEventType[],
         listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
-    ): PromiseLike<void> {
+    ): LazyPromise<void> {
         return this.eventBus.addListenerMany(events, listener);
     }
 
     removeListener<TEventType extends AllStorageEvents<TType>["type"]>(
         event: TEventType,
         listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
-    ): PromiseLike<void> {
+    ): LazyPromise<void> {
         return this.eventBus.removeListener(event, listener);
     }
 
     removeListenerMany<TEventType extends AllStorageEvents<TType>["type"]>(
         events: TEventType[],
         listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
-    ): PromiseLike<void> {
+    ): LazyPromise<void> {
         return this.eventBus.removeListenerMany(events, listener);
     }
 
     subscribe<TEventType extends AllStorageEvents<TType>["type"]>(
         event: TEventType,
         listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
-    ): PromiseLike<Unsubscribe> {
+    ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribe(event, listener);
     }
 
     subscribeMany<TEventType extends AllStorageEvents<TType>["type"]>(
         events: TEventType[],
         listener: Listener<SelectEvent<AllStorageEvents<TType>, TEventType>>,
-    ): PromiseLike<Unsubscribe> {
+    ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribeMany(events, listener);
     }
 
