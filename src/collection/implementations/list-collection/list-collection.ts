@@ -16,7 +16,6 @@ import {
     type Transform,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type ChangendItem,
     type Reduce,
     type ForEach,
     EmptyCollectionError,
@@ -158,7 +157,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     change<TFilterOutput extends TInput, TMapOutput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-    ): ICollection<ChangendItem<TInput, TFilterOutput, TMapOutput>> {
+    ): ICollection<TInput | TFilterOutput | TMapOutput> {
         return new ListCollection(
             this.array.map((item, index) => {
                 if (predicateFn(item, index, this)) {
@@ -167,6 +166,41 @@ export class ListCollection<TInput> implements ICollection<TInput> {
                 return item;
             }),
         );
+    }
+
+    set(
+        index: number,
+        value: TInput | Map<TInput, ICollection<TInput>, TInput>,
+    ): ICollection<TInput> {
+        if (index < 0) {
+            return this;
+        }
+        if (index >= this.array.length) {
+            return this;
+        }
+        const item = this.array[index];
+        if (item === undefined) {
+            throw new UnexpectedCollectionError("!!__message__!!");
+        }
+        if (typeof value === "function") {
+            const fn = value as Map<TInput, ICollection<TInput>, TInput>;
+            value = fn(item, index, this);
+        }
+        const newArray = [...this.array];
+        newArray[index] = value;
+        return new ListCollection(newArray);
+    }
+
+    get(index: number): TInput | null {
+        return this.array[index] ?? null;
+    }
+
+    getOrFail(index: number): TInput {
+        const item = this.get(index);
+        if (item === null) {
+            throw new ItemNotFoundCollectionError("Item was not found");
+        }
+        return item;
     }
 
     page(page: number, pageSize: number): ICollection<TInput> {
@@ -358,7 +392,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
     ): ICollection<TInput | TExtended> {
         if (condition) {
-            return callback(this);
+            return callback(this) as ICollection<TInput | TExtended>;
         }
         return this as ICollection<TInput | TExtended>;
     }
@@ -389,8 +423,8 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     }
 
     tap(callback: Tap<ICollection<TInput>>): ICollection<TInput> {
-        callback(this);
-        return new ListCollection(this);
+        callback(new ListCollection(this));
+        return this;
     }
 
     chunk(chunkSize: number): ICollection<ICollection<TInput>> {

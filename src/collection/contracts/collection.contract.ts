@@ -20,7 +20,6 @@ import type {
     TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
-    ChangendItem,
     Reduce,
     CrossJoinResult,
 } from "@/collection/contracts/_shared";
@@ -212,7 +211,67 @@ export type ICollection<TInput> = Iterable<TInput> & {
     change<TFilterOutput extends TInput, TMapOutput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-    ): ICollection<ChangendItem<TInput, TFilterOutput, TMapOutput>>;
+    ): ICollection<TInput | TFilterOutput | TMapOutput>;
+
+    /**
+     * The <i>set</i> method changes a item by i>index</i> using <i>value</i>.
+     * @example
+     * ```ts
+     * import { ListCollection } from "@daiso-tech/core";;
+     *
+     * const collection = new ListCollection([1, 2, 3, 4, 5]);
+     * const newCollection = collection.set(1, -1);
+     * newCollection.toArray();
+     * // [1, -1, 3, 4, 5]
+     * ```
+     * @example
+     * ```ts
+     * import { ListCollection } from "@daiso-tech/core";;
+     *
+     * const collection = new ListCollection([1, 2, 3, 4, 5]);
+     * const newCollection = collection.set(1, (prevValue) => prevValue - 2);
+     * newCollection.toArray();
+     * // [1, 0, 3, 4, 5]
+     * ```
+     */
+    set(
+        index: number,
+        value: TInput | Map<TInput, ICollection<TInput>, TInput>,
+    ): ICollection<TInput>;
+
+    /**
+     * The <i>get</i> method returns the item by index. If the item is not found null will returned.
+     * @example
+     * ```ts
+     * import { ListCollection } from "@daiso-tech/core";;
+     *
+     * const collection = new ListCollection([1, 4, 2, 8, -2]);
+     * // Will be 2
+     * collection.get(2);
+     *
+     * // Will be null
+     * collection.get(5);
+     * ```
+     */
+    get(index: number): TInput | null;
+
+    /**
+     * The <i>getOrFail</i> method returns the item by index. If the item is not found an error will be thrown.
+     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @example
+     * ```ts
+     * import { ListCollection } from "@daiso-tech/core";;
+     *
+     * const collection = new ListCollection([1, 4, 2, 8, -2]);
+     * // Will be 2
+     * collection.getOrFail(2);
+     *
+     * // An error will thrown
+     * collection.getOrFail(5);
+     * ```
+     */
+    getOrFail(index: number): TInput;
 
     /**
      * The <i>page</i> method returns a new collection containing the items that would be present on <i> page </i> with custom <i> pageSize </i>.

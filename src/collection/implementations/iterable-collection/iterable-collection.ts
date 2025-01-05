@@ -16,7 +16,6 @@ import {
     type Transform,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type ChangendItem,
     type Reduce,
     EmptyCollectionError,
     type CrossJoinResult,
@@ -191,9 +190,35 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     change<TFilterOutput extends TInput, TMapOutput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-    ): ICollection<ChangendItem<TInput, TFilterOutput, TMapOutput>> {
+    ): ICollection<TInput | TFilterOutput | TMapOutput> {
         return new IterableCollection(
             new UpdateIterable(this, predicateFn, mapFn),
+        );
+    }
+
+    set(
+        index: number,
+        value: TInput | Map<TInput, ICollection<TInput>, TInput>,
+    ): ICollection<TInput> {
+        if (index < 0) {
+            return this;
+        }
+        let fn: Map<TInput, ICollection<TInput>, TInput>;
+        if (typeof value === "function") {
+            fn = value as Map<TInput, ICollection<TInput>, TInput>;
+        } else {
+            fn = () => value;
+        }
+        return this.change((_, indexToMatch) => indexToMatch === index, fn);
+    }
+
+    get(index: number): TInput | null {
+        return this.first((_item, indexToMatch) => indexToMatch === index);
+    }
+
+    getOrFail(index: number): TInput {
+        return this.firstOrFail(
+            (_item, indexToMatch) => indexToMatch === index,
         );
     }
 

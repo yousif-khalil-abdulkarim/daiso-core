@@ -6,7 +6,6 @@ import {
     type AsyncPredicate,
     type AsyncMap,
     type IAsyncCollection,
-    type ChangendItem,
 } from "@/collection/contracts/_module";
 
 /**
@@ -16,7 +15,7 @@ export class AsyncUpdateIterable<
     TInput,
     TFilterOutput extends TInput,
     TMapOutput,
-> implements AsyncIterable<ChangendItem<TInput, TFilterOutput, TMapOutput>>
+> implements AsyncIterable<TInput | TFilterOutput | TMapOutput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
@@ -33,7 +32,7 @@ export class AsyncUpdateIterable<
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<
-        ChangendItem<TInput, TFilterOutput, TMapOutput>
+        TInput | TFilterOutput | TMapOutput
     > {
         for await (const [index, item] of this.collection.entries()) {
             if (await this.predicateFn(item, index, this.collection)) {
