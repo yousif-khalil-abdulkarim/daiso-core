@@ -402,6 +402,68 @@ describe("class: AsyncIterableCollection", () => {
             ]);
         });
     });
+    describe("method: set", () => {
+        test("Should update item when index is in range", async () => {
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "c",
+                "d",
+            ]).set(0, "ab");
+            expect(await collection.toArray()).toEqual(["ab", "b", "c", "d"]);
+        });
+        test("Should update item when index is in range using function", async () => {
+            const collection = new AsyncIterableCollection([
+                "a",
+                "b",
+                "c",
+                "d",
+            ]).set(0, (prevValue) => `${prevValue}ab`);
+            expect(await collection.toArray()).toEqual(["aab", "b", "c", "d"]);
+        });
+        test("Should not change collection when index is less than -1", async () => {
+            const array = ["a", "b", "c", "d"];
+            const collection = new AsyncIterableCollection(array).set(-1, "ab");
+            expect(await collection.toArray()).toEqual(array);
+        });
+        test("Should not change collection when index greater than or equal to size of the collection", async () => {
+            const array = ["a", "b", "c", "d"];
+            const collection = new AsyncIterableCollection(array).set(4, "ab");
+            expect(await collection.toArray()).toEqual(array);
+        });
+    });
+    describe("method: get", () => {
+        test("Should return null when index less than 0", async () => {
+            const collection = new AsyncIterableCollection([1, 2, 3]);
+            expect(await collection.get(-1)).toBeNull();
+        });
+        test("Should return null when index greater than or equal to size of the collection", async () => {
+            const collection = new AsyncIterableCollection([1, 2, 3]);
+            expect(await collection.get(3)).toBeNull();
+        });
+        test("Should return item when index is in range", async () => {
+            const collection = new AsyncIterableCollection([1, 2, 3]);
+            expect(await collection.get(2)).toBe(3);
+        });
+    });
+    describe("method: getOrFail", () => {
+        test("Should return null when index less than 0", async () => {
+            const collection = new AsyncIterableCollection([1, 2, 3]);
+            await expect(collection.getOrFail(-1)).rejects.toBeInstanceOf(
+                ItemNotFoundCollectionError,
+            );
+        });
+        test("Should return null when index greater than or equal to size of the collection", async () => {
+            const collection = new AsyncIterableCollection([1, 2, 3]);
+            await expect(collection.getOrFail(3)).rejects.toBeInstanceOf(
+                ItemNotFoundCollectionError,
+            );
+        });
+        test("Should return item when index is in range", async () => {
+            const collection = new AsyncIterableCollection([1, 2, 3]);
+            expect(await collection.getOrFail(2)).toBe(3);
+        });
+    });
     describe("method: page", () => {
         test("Should return the first 4 items when page is 1 and pageSize 4", async () => {
             const arr = ["a", "b", "c", "d", "e", "f", "g", "h"],

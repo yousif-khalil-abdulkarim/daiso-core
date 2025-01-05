@@ -226,6 +226,66 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     ): IAsyncCollection<TInput | TFilterOutput | TMapOutput>;
 
     /**
+     * The <i>set</i> method changes a item by i>index</i> using <i>value</i>.
+     * @example
+     * ```ts
+     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     *
+     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
+     * const newCollection = collection.set(1, -1);
+     * await newCollection.toArray();
+     * // [1, -1, 3, 4, 5]
+     * ```
+     * @example
+     * ```ts
+     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     *
+     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
+     * const newCollection = collection.set(1, (prevValue) => prevValue - 2);
+     * await newCollection.toArray();
+     * // [1, 0, 3, 4, 5]
+     * ```
+     */
+    set(
+        index: number,
+        value: TInput | AsyncMap<TInput, IAsyncCollection<TInput>, TInput>,
+    ): IAsyncCollection<TInput>;
+
+    /**
+     * The <i>get</i> method returns the item by index. If the item is not found null will returned.
+     * @example
+     * ```ts
+     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     *
+     * const collection = new AsyncIterableCollection([1, 4, 2, 8, -2]);
+     * // Will be 2
+     * await collection.get(2);
+     *
+     * // Will be null
+     * await collection.get(5);
+     * ```
+     */
+    get(index: number): PromiseLike<TInput | null>;
+
+    /**
+     * The <i>getOrFail</i> method returns the item by index. If the item is not found an error will be thrown.
+     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @example
+     * ```ts
+     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     *
+     * const collection = new AsyncIterableCollection([1, 4, 2, 8, -2]);
+     * // Will be 2
+     * await collection.getOrFail(2);
+     *
+     * // An error will thrown
+     * await collection.getOrFail(5);
+     * ```
+     */
+    getOrFail(index: number): PromiseLike<TInput>;
+
+    /**
      * The <i>page</i> method returns a new collection containing the items that would be present on <i> page </i> with custom <i> pageSize </i>.
      * @example
      * ```ts

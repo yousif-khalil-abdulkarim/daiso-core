@@ -223,6 +223,32 @@ export class AsyncIterableCollection<TInput>
         );
     }
 
+    set(
+        index: number,
+        value: TInput | AsyncMap<TInput, IAsyncCollection<TInput>, TInput>,
+    ): IAsyncCollection<TInput> {
+        if (index < 0) {
+            return this;
+        }
+        let fn: AsyncMap<TInput, IAsyncCollection<TInput>, TInput>;
+        if (typeof value === "function") {
+            fn = value as AsyncMap<TInput, IAsyncCollection<TInput>, TInput>;
+        } else {
+            fn = () => value;
+        }
+        return this.change((_, indexToMatch) => indexToMatch === index, fn);
+    }
+
+    get(index: number): LazyPromise<TInput | null> {
+        return this.first((_item, indexToMatch) => indexToMatch === index);
+    }
+
+    getOrFail(index: number): LazyPromise<TInput> {
+        return this.firstOrFail(
+            (_item, indexToMatch) => indexToMatch === index,
+        );
+    }
+
     page(page: number, pageSize: number): IAsyncCollection<TInput> {
         if (page < 0) {
             return this.skip(page * pageSize).take(pageSize);

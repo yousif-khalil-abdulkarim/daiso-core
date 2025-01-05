@@ -263,6 +263,64 @@ describe("class: IterableCollection", () => {
             expect(indexes).toEqual([1, 3, 5]);
         });
     });
+    describe("method: set", () => {
+        test("Should update item when index is in range", () => {
+            const collection = new IterableCollection(["a", "b", "c", "d"]).set(
+                0,
+                "ab",
+            );
+            expect(collection.toArray()).toEqual(["ab", "b", "c", "d"]);
+        });
+        test("Should update item when index is in range using function", () => {
+            const collection = new IterableCollection(["a", "b", "c", "d"]).set(
+                0,
+                (prevValue) => `${prevValue}ab`,
+            );
+            expect(collection.toArray()).toEqual(["aab", "b", "c", "d"]);
+        });
+        test("Should not change collection when index is less than -1", () => {
+            const array = ["a", "b", "c", "d"];
+            const collection = new IterableCollection(array).set(-1, "ab");
+            expect(collection.toArray()).toEqual(array);
+        });
+        test("Should not change collection when index greater than or equal to size of the collection", () => {
+            const array = ["a", "b", "c", "d"];
+            const collection = new IterableCollection(array).set(4, "ab");
+            expect(collection.toArray()).toEqual(array);
+        });
+    });
+    describe("method: get", () => {
+        test("Should return null when index less than 0", () => {
+            const collection = new IterableCollection([1, 2, 3]);
+            expect(collection.get(-1)).toBeNull();
+        });
+        test("Should return null when index greater than or equal to size of the collection", () => {
+            const collection = new IterableCollection([1, 2, 3]);
+            expect(collection.get(3)).toBeNull();
+        });
+        test("Should return item when index is in range", () => {
+            const collection = new IterableCollection([1, 2, 3]);
+            expect(collection.get(2)).toBe(3);
+        });
+    });
+    describe("method: getOrFail", () => {
+        test("Should return null when index less than 0", () => {
+            const collection = new IterableCollection([1, 2, 3]);
+            expect(() => collection.getOrFail(-1)).toThrowError(
+                ItemNotFoundCollectionError,
+            );
+        });
+        test("Should return null when index greater than or equal to size of the collection", () => {
+            const collection = new IterableCollection([1, 2, 3]);
+            expect(() => collection.getOrFail(3)).toThrowError(
+                ItemNotFoundCollectionError,
+            );
+        });
+        test("Should return item when index is in range", () => {
+            const collection = new IterableCollection([1, 2, 3]);
+            expect(collection.getOrFail(2)).toBe(3);
+        });
+    });
     describe("method: page", () => {
         test("Should return the first 4 items when page is 1 and pageSize 4", () => {
             const arr = ["a", "b", "c", "d", "e", "f", "g", "h"],

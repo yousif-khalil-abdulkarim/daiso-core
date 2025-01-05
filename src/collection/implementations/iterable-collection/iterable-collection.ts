@@ -196,6 +196,32 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         );
     }
 
+    set(
+        index: number,
+        value: TInput | Map<TInput, ICollection<TInput>, TInput>,
+    ): ICollection<TInput> {
+        if (index < 0) {
+            return this;
+        }
+        let fn: Map<TInput, ICollection<TInput>, TInput>;
+        if (typeof value === "function") {
+            fn = value as Map<TInput, ICollection<TInput>, TInput>;
+        } else {
+            fn = () => value;
+        }
+        return this.change((_, indexToMatch) => indexToMatch === index, fn);
+    }
+
+    get(index: number): TInput | null {
+        return this.first((_item, indexToMatch) => indexToMatch === index);
+    }
+
+    getOrFail(index: number): TInput {
+        return this.firstOrFail(
+            (_item, indexToMatch) => indexToMatch === index,
+        );
+    }
+
     page(page: number, pageSize: number): ICollection<TInput> {
         if (page < 0) {
             return this.skip(page * pageSize).take(pageSize);
