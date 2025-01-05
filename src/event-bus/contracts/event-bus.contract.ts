@@ -2,6 +2,7 @@
  * @module EventBus
  */
 
+import type { LazyPromise } from "@/_module";
 import type { OneOrMore } from "@/_shared/types";
 import type { IBaseEvent, Listener } from "@/event-bus/contracts/_shared";
 import {
@@ -23,7 +24,7 @@ export type SelectEvent<
     { type: IBaseEvent extends TEvents ? string : TEventType }
 >;
 
-export type Unsubscribe = () => PromiseLike<void>;
+export type Unsubscribe = () => LazyPromise<void>;
 /**
  * The <i>IListenable</i> contract defines a way listening to events independent of underlying technology
  * @group Contracts
@@ -37,7 +38,7 @@ export type IListenable<TEvents extends IBaseEvent = IBaseEvent> = {
     addListener<TEventType extends TEvents["type"]>(
         event: TEventType,
         listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): PromiseLike<void>;
+    ): LazyPromise<void>;
 
     /**
      * The <i>addListenerMany</i> method is used for adding multiple <i>{@link Listener | listeners}</i> for certain <i>events</i>.
@@ -47,7 +48,7 @@ export type IListenable<TEvents extends IBaseEvent = IBaseEvent> = {
     addListenerMany<TEventType extends TEvents["type"]>(
         events: TEventType[],
         listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): PromiseLike<void>;
+    ): LazyPromise<void>;
 
     /**
      * The <i>removeListener</i> method is used for removing <i>{@link Listener | listener}</i> for certain <i>event</i>.
@@ -57,7 +58,7 @@ export type IListenable<TEvents extends IBaseEvent = IBaseEvent> = {
     removeListener<TEventType extends TEvents["type"]>(
         event: TEventType,
         listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): PromiseLike<void>;
+    ): LazyPromise<void>;
 
     /**
      * The <i>removeListener</i> method is used for removing multiple <i>{@link Listener | listeners}</i> for certain <i>event</i>.
@@ -67,7 +68,7 @@ export type IListenable<TEvents extends IBaseEvent = IBaseEvent> = {
     removeListenerMany<TEventType extends TEvents["type"]>(
         events: TEventType[],
         listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): PromiseLike<void>;
+    ): LazyPromise<void>;
 
     /**
      * The <i>subscribe</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i>.
@@ -76,7 +77,7 @@ export type IListenable<TEvents extends IBaseEvent = IBaseEvent> = {
     subscribe<TEventType extends TEvents["type"]>(
         event: TEventType,
         listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): PromiseLike<Unsubscribe>;
+    ): LazyPromise<Unsubscribe>;
 
     /**
      * The <i>subscribeMany</i> method is used for adding <i>{@link Listener | listener}</i> for multiple <i>events</i>.
@@ -85,7 +86,7 @@ export type IListenable<TEvents extends IBaseEvent = IBaseEvent> = {
     subscribeMany<TEventType extends TEvents["type"]>(
         events: TEventType[],
         listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): PromiseLike<Unsubscribe>;
+    ): LazyPromise<Unsubscribe>;
 };
 
 /**
@@ -100,7 +101,7 @@ export type IEventBus<TEvents extends IBaseEvent = IBaseEvent> =
 
          * @throws {DispatchEventBusError} {@link DispatchEventBusError}
          */
-        dispatch(events: OneOrMore<TEvents>): PromiseLike<void>;
+        dispatch(events: OneOrMore<TEvents>): LazyPromise<void>;
 
         /**
          * The <i>getNamespace</i> method return the complete namespace.

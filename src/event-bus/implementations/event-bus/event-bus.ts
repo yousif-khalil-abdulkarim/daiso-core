@@ -209,14 +209,14 @@ export class EventBus<TEvents extends IBaseEvent = IBaseEvent>
     subscribe<TEventType extends TEvents["type"]>(
         event: TEventType,
         listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): PromiseLike<Unsubscribe> {
+    ): LazyPromise<Unsubscribe> {
         return this.subscribeMany([event], listener);
     }
 
     subscribeMany<TEventType extends TEvents["type"]>(
         events: TEventType[],
         listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): PromiseLike<Unsubscribe> {
+    ): LazyPromise<Unsubscribe> {
         return new LazyPromise(async () => {
             await this.addListenerMany(events, listener);
             const unsubscribe = () => {
