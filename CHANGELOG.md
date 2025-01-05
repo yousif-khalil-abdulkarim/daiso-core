@@ -1,5 +1,13 @@
 # @daiso-tech/core
 
+## 0.8.1
+
+### Patch Changes
+
+-   0684e61: ## Changes
+    -   Improved the IEventBusManager
+    -   Improved the IStorageManager
+
 ## 0.8.0
 
 ### Minor Changes
