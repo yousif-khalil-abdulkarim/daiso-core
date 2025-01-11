@@ -31,7 +31,7 @@ export type IEventBusFactory<
      * import { type IEventBusFactory } from "@daiso-tech/core";
      *
      * async function main(eventFactory: IEventBusFactory): Promise<void> {
-     *   // Will dispatch envent using the default driver which is the memory addapter
+     *   // Will dispatch envent using the default driver
      *   await eventBusFactory
      *     .use()
      *     .dispatch({ type: "add", a: 1, b: 2 });

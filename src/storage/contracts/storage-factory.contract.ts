@@ -29,7 +29,7 @@ export type IStorageFactory<
      * import { type IStorageFactory } from "@daiso-tech/core";
      *
      * async function main(storageFactory: IStorageFactory): Promise<void> {
-     *   // Will add key using the default driver which is the memory addapter
+     *   // Will add key using the default driver
      *   await storageFactory
      *     .use()
      *     .add("a", 1);
