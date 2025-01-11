@@ -16,10 +16,11 @@ import {
     RemoveListenerEventBusError,
     AddListenerEventBusError,
 } from "@/event-bus/contracts/_module";
-import { WithNamespaceEventBusAdapter } from "@/event-bus/implementations/event-bus/with-namespace-event-bus-adapter";
-import { WithValidationEventBusAdapter } from "@/event-bus/implementations/event-bus/with-validation-event-bus-adapter";
+
+import { WithNamespaceEventBusAdapter } from "@/event-bus/implementations/derivables/with-namespace-event-bus-adapter";
+import { WithValidationEventBusAdapter } from "@/event-bus/implementations/derivables/with-validation-event-bus-adapter";
 import type { OneOrMore } from "@/_shared/types";
-import { isArrayEmpty } from "@/_shared/utilities";
+import { simplifyNamespace, isArrayEmpty } from "@/_shared/utilities";
 
 /**
  * @group Derivables
@@ -33,11 +34,12 @@ export type EventBusSettings<TEvents extends IBaseEvent> = {
      * ```ts
      * import { EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
      *
-     * const eventBusA = new EventBus(new MemoryEventBusAdapter(), {
-     *   rootNamespace: "@a/"
+     * const memoryEventBusAdapter = new MemoryEventBusAdapter();
+     * const eventBusA = new EventBus(memoryEventBusAdapter, {
+     *   rootNamespace: "@a"
      * });
-     * const eventBusB = new EventBus(new MemoryEventBusAdapter(), {
-     *   rootNamespace: "@b/"
+     * const eventBusB = new EventBus(memoryEventBusAdapter, {
+     *   rootNamespace: "@b"
      * });
      *
      * (async () => {
@@ -57,7 +59,7 @@ export type EventBusSettings<TEvents extends IBaseEvent> = {
      * })();
      * ```
      */
-    rootNamespace?: string;
+    rootNamespace?: OneOrMore<string>;
 
     /**
      * You can pass a custom <i>{@link Validator}</i> to validate, transform and sanitize your data.
@@ -106,34 +108,34 @@ export class EventBus<TEvents extends IBaseEvent = IBaseEvent>
     implements INamespacedEventBus<TEvents>
 {
     private readonly eventBusAdapter: IEventBusAdapter;
-    private readonly namespace_: string;
+    private readonly namespace: string;
     private readonly validator: Validator<TEvents>;
 
     constructor(
         eventBusAdapter: IEventBusAdapter,
         settings: EventBusSettings<TEvents> = {},
     ) {
-        const {
-            rootNamespace: namespace = "",
-            validator = (value) => value as TEvents,
-        } = settings;
-        this.namespace_ = namespace;
+        const { validator = (value) => value as TEvents } = settings;
+        let { rootNamespace: namespace = "" } = settings;
+        namespace = simplifyNamespace(namespace);
+        this.namespace = namespace;
         this.validator = validator;
         this.eventBusAdapter = new WithNamespaceEventBusAdapter(
             new WithValidationEventBusAdapter(eventBusAdapter, this.validator),
-            this.namespace_,
+            this.namespace,
         );
     }
 
-    withNamespace(namespace: string): IEventBus<TEvents> {
+    withNamespace(namespace: OneOrMore<string>): IEventBus<TEvents> {
+        namespace = simplifyNamespace(namespace);
         return new EventBus(this.eventBusAdapter, {
             validator: this.validator,
-            rootNamespace: `${this.namespace_}${namespace}`,
+            rootNamespace: [this.namespace, namespace],
         });
     }
 
     getNamespace(): string {
-        return this.namespace_;
+        return this.namespace;
     }
 
     addListener<TEventType extends TEvents["type"]>(

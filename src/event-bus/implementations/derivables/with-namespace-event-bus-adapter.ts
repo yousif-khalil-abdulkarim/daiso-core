@@ -20,7 +20,9 @@ export class WithNamespaceEventBusAdapter implements IEventBusAdapter {
     constructor(
         private readonly eventBusAdapter: IEventBusAdapter,
         private readonly namespace: string,
-    ) {}
+    ) {
+        this.namespace = `${this.namespace}/`;
+    }
 
     async addListener(
         event: string,

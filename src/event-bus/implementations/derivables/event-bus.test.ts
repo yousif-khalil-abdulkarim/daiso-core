@@ -1,6 +1,6 @@
 import { describe, test, beforeEach, expect } from "vitest";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/memory-event-bus-adapter/memory-event-bus-adapter";
-import { EventBus } from "@/event-bus/implementations/event-bus/event-bus";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
+import { EventBus } from "@/event-bus/implementations/derivables/event-bus";
 import type { IBaseEvent, IEventBus } from "@/event-bus/contracts/_module";
 import { delay, TimeSpan } from "@/utilities/_module";
 
@@ -205,11 +205,12 @@ describe("class: EventBus", () => {
         let eventBusA: IEventBus;
         let eventBusB: IEventBus;
         beforeEach(() => {
-            eventBusA = new EventBus(new MemoryEventBusAdapter(), {
-                rootNamespace: "@a/",
+            const adapter = new MemoryEventBusAdapter();
+            eventBusA = new EventBus(adapter, {
+                rootNamespace: "@a",
             });
-            eventBusB = new EventBus(new MemoryEventBusAdapter(), {
-                rootNamespace: "@b/",
+            eventBusB = new EventBus(adapter, {
+                rootNamespace: "@b",
             });
         });
         test("method: addListener / dispatch", async () => {

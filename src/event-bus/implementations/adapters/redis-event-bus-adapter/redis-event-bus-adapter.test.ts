@@ -1,6 +1,6 @@
 import { describe, test, beforeEach, expect, afterEach } from "vitest";
 import { eventBusAdapterTestSuite } from "@/event-bus/implementations/_shared/test-utilities/event-bus-adapter.test-suite";
-import { RedisEventBusAdapter } from "@/event-bus/implementations/redis-event-bus-adapter/redis-event-bus-adapter";
+import { RedisEventBusAdapter } from "@/event-bus/implementations/adapters/redis-event-bus-adapter/redis-event-bus-adapter";
 import { TimeSpan } from "@/utilities/_module";
 import type { StartedRedisContainer } from "@testcontainers/redis";
 import { RedisContainer } from "@testcontainers/redis";
