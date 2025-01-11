@@ -1,5 +1,17 @@
 # @daiso-tech/core
 
+## 0.11.0
+
+### Minor Changes
+
+-   6308641: ## Changes
+    -   Enhanced the IStorageFactory, so the will throw runtime erros.
+    -   Enhanced the IEventBusFactory, so the will throw runtime erros.
+    -   Simplified the IStorage contract
+    -   Simplified the IStorageAdapter contract
+    -   Simplified Storage class
+    -   Rewrote all the adapters
+
 ## 0.10.0
 
 ### Minor Changes
