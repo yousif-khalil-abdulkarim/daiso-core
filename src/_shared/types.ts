@@ -17,6 +17,9 @@ export type AnyFunction = (...parameters: unknown[]) => unknown;
 export type IInitizable = {
     init(): PromiseLike<void>;
 };
+export type IDeinitizable = {
+    deInit(): PromiseLike<void>;
+};
 export type Func<TArgs extends unknown[], TReturn> = (
     ...args_: TArgs
 ) => TReturn;
@@ -24,3 +27,5 @@ export type Func<TArgs extends unknown[], TReturn> = (
 export type GetOrAddValue<TValue> = Awaited<
     TValue extends AnyFunction ? ReturnType<TValue> : TValue
 >;
+
+export type Result<TValue> = [true, TValue] | [false];
