@@ -1,11 +1,11 @@
 /**
  * @module Serializer
  */
+import { type ISerializer } from "@/serializer/contracts/_module";
 import {
     DeserializationError,
     SerializationError,
-    type ISerializer,
-} from "@/serializer/contracts/_module";
+} from "@/serializer/contracts/serializer.errors";
 
 /**
  * @internal

@@ -2,19 +2,17 @@
  * @module EventBus
  */
 
-import type { LazyPromise } from "@/_module";
+import type { LazyPromise } from "@/utilities/_module";
 import type { OneOrMore } from "@/_shared/types";
 import type { IBaseEvent, Listener } from "@/event-bus/contracts/_shared";
 import {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    EventBusError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DispatchEventBusError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     AddListenerEventBusError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     RemoveListenerEventBusError,
-} from "@/event-bus/contracts/_shared";
+} from "@/event-bus/contracts/event-bus.errors";
 
 export type SelectEvent<
     TEvents extends IBaseEvent,
@@ -25,6 +23,7 @@ export type SelectEvent<
 >;
 
 export type Unsubscribe = () => LazyPromise<void>;
+
 /**
  * The <i>IListenable</i> contract defines a way listening to events independent of underlying technology
  * @group Contracts
@@ -90,38 +89,45 @@ export type IListenable<TEvents extends IBaseEvent = IBaseEvent> = {
 };
 
 /**
+ * The <i>IDispatcher</i> contract defines a way for dispatching to events independent of underlying technology.
+ * @group Contracts
+ */
+export type IDispatcher<TEvents extends IBaseEvent = IBaseEvent> = {
+    /**
+     * The <i>dispatch</i> method is used for dispatching one or multiple <i>events</i>.
+
+     * @throws {DispatchEventBusError} {@link DispatchEventBusError}
+     */
+    dispatch(events: OneOrMore<TEvents>): LazyPromise<void>;
+};
+
+/**
  * The <i>IEventBus</i> contract defines a way for dispatching and listening to events independent of underlying technology.
  * It commes with more convient methods compared to <i>IEventBusAdapter</i>.
  * @group Contracts
  */
 export type IEventBus<TEvents extends IBaseEvent = IBaseEvent> =
-    IListenable<TEvents> & {
-        /**
-         * The <i>dispatch</i> method is used for dispatching one or multiple <i>events</i>.
-
-         * @throws {DispatchEventBusError} {@link DispatchEventBusError}
-         */
-        dispatch(events: OneOrMore<TEvents>): LazyPromise<void>;
-
-        /**
-         * The <i>getNamespace</i> method return the complete namespace.
-         * @example
-         * ```ts
-         *   const eventBus = new EventBus(new MemoryEventBusAdapter(), {
-         *     rootNamespace: "@root/"
-         *   });
-         *
-         *   // Will be "@root/"
-         *   console.log(eventBus.getNamespace())
-         *
-         *   const eventBusA = eventBus.withNamespace("a/");
-         *
-         *   // Will be "@root/a/"
-         *   console.log(eventBusA.getNamespace())
-         * ```
-         */
-        getNamespace(): string;
-    };
+    IListenable<TEvents> &
+        IDispatcher<TEvents> & {
+            /**
+             * The <i>getNamespace</i> method returns the complete namespace.
+             * @example
+             * ```ts
+             * import { type IEventBus } from "@daiso-tech/core";
+             *
+             * async function main(eventBus: IEventBus): Promise<void> {
+             *   // Will be "@root"
+             *   console.log(eventBus.getNamespace())
+             *
+             *   const eventBusA = eventBus.withNamespace("a");
+             *
+             *   // Will be "@root/a"
+             *   console.log(eventBusA.getNamespace())
+             * }
+             * ```
+             */
+            getNamespace(): string;
+        };
 
 /**
  * The <i>INamespacedEventBus</i> contract defines a way for dispatching and listening to events independent of underlying technology.
@@ -135,11 +141,9 @@ export type INamespacedEventBus<TEvents extends IBaseEvent = IBaseEvent> =
          * This useful for multitennat applications.
          * @example
          * ```ts
-         * import { EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+         * import { type IEventBus } from "@daiso-tech/core";
          *
-         * (async () => {
-         *   const eventBus = new EventBus(new MemoryEventBusAdapter());
-         *
+         * async function main(eventBus: IEventBus): Promise<void> {
          *   const eventBusA = eventBus.withNamespace("a");
          *   await eventBusA.subscribe("add", (event) => {
          *     // This will be logged
@@ -157,9 +161,8 @@ export type INamespacedEventBus<TEvents extends IBaseEvent = IBaseEvent> =
          *     a: 1,
          *     b: 2
          *   })
-         * })();
-         *
+         * }
          * ```
          */
-        withNamespace(namespace: string): IEventBus<TEvents>;
+        withNamespace(namespace: OneOrMore<string>): IEventBus<TEvents>;
     };

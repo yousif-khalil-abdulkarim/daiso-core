@@ -2,7 +2,7 @@
  * @module Shared
  */
 
-import type { Lazyable } from "@/_shared/types";
+import type { Lazyable, OneOrMore } from "@/_shared/types";
 import { type AsyncLazyable } from "@/_shared/types";
 
 /**
@@ -46,4 +46,14 @@ export function isObjectEmpty(
         [...Object.values(object)].filter((value) => value !== undefined)
             .length === 0
     );
+}
+
+/**
+ * @internal
+ */
+export function simplifyNamespace(namepsace: OneOrMore<string>): string {
+    if (Array.isArray(namepsace)) {
+        namepsace = namepsace.filter((str) => str.length > 0).join("/");
+    }
+    return namepsace;
 }

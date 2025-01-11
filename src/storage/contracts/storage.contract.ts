@@ -3,15 +3,10 @@
  */
 
 import type { IListenable } from "@/event-bus/contracts/_module";
-import {
-    type AnyFunction,
-    type AsyncLazyable,
-    type GetOrAddValue,
-} from "@/_shared/types";
+import type { OneOrMore } from "@/_shared/types";
+import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
 import type { AllStorageEvents } from "@/storage/contracts/_module";
 import {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type StorageError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type TypeStorageError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,9 +14,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type KeyNotFoundStorageError,
 } from "@/storage/contracts/_module";
-import type { LazyPromise } from "@/_module";
-
-export type StorageValue<T> = Exclude<T, AnyFunction | undefined | null>;
+import type { LazyPromise } from "@/utilities/_module";
 
 /**
  * The <i>IStorageListenable</i> contract defines a way for listening <i>{@link IStorage}</i> crud operations.
@@ -103,14 +96,14 @@ export type IStorage<TType = unknown> = IStorageListenable & {
      * The <i>add</i> method adds a <i>key</i> with given <i>value</i> when key doesn't exists. Returns true when key doesn't exists otherwise false will be returned.
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    add(key: string, value: StorageValue<TType>): LazyPromise<boolean>;
+    add(key: string, value: TType): LazyPromise<boolean>;
 
     /**
-     * The <i>addMany</i> method adds the keys that doesn't exists. Returns true for the keys that doesn't exists otherwise false will be returned.
+     * The <i>addMany</i> method adds new keys. Returns true for the keys that where added otherwise false will be returned.
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     addMany<TKeys extends string>(
-        values: Record<TKeys, StorageValue<TType>>,
+        values: Record<TKeys, TType>,
     ): LazyPromise<Record<TKeys, boolean>>;
 
     /**
@@ -120,7 +113,7 @@ export type IStorage<TType = unknown> = IStorageListenable & {
     update(key: string, value: TType): LazyPromise<boolean>;
 
     /**
-     * The <i>updateMany</i> method updates the given keys. Returns true for the keys that exists otherwise false will be returned.
+     * The <i>updateMany</i> method updates the given keys. Returns true for the keys that where updated otherwise false will be returned.
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     updateMany<TKeys extends string>(
@@ -131,14 +124,14 @@ export type IStorage<TType = unknown> = IStorageListenable & {
      * The <i>put</i> method replaces the key with given <i>value</i> if found. If the <i>key</i> is not found it will just be added. True is returned if the key is found otherwise false will be returned.
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
-    put(key: string, value: StorageValue<TType>): LazyPromise<boolean>;
+    put(key: string, value: TType): LazyPromise<boolean>;
 
     /**
-     * The <i>putMany</i> method replaces the keys that are found. Adds keys that are not found. Returns true for all the keys that are found otherwise false is returned.
+     * The <i>putMany</i> method replaces the keys that exists. Adds keys that do not exists. Return true for all the keys that where updated otherwise false is returned.
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     putMany<TKeys extends string>(
-        values: Record<TKeys, StorageValue<TType>>,
+        values: Record<TKeys, TType>,
     ): LazyPromise<Record<TKeys, boolean>>;
 
     /**
@@ -148,7 +141,7 @@ export type IStorage<TType = unknown> = IStorageListenable & {
     remove(key: string): LazyPromise<boolean>;
 
     /**
-     * The <i>removesMany</i> method removes the keys that are found. Returns true for the keys that are found otherwise false is returned.
+     * The <i>removeMany</i> method removes keys. Returns true for the keys that are removed otherwise false is returned.
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      */
     removeMany<TKeys extends string>(
@@ -167,12 +160,12 @@ export type IStorage<TType = unknown> = IStorageListenable & {
      */
     getOrAdd(
         key: string,
-        valueToAdd: AsyncLazyable<StorageValue<GetOrAddValue<TType>>>,
+        valueToAdd: AsyncLazyable<GetOrAddValue<TType>>,
     ): LazyPromise<TType>;
 
     /**
      * The <i>increment</i> method will increment the given <i>key</i> if found otherwise nonthing will occur.
-     * Returns true if key exists otherwise false will be returned.
+     * Returns true if key is incremented otherwise false will be returned.
      * An error will thrown if the key is not a number.
      * @throws {UnexpectedStorageError} {@link UnexpectedStorageError}
      * @throws {TypeStorageError} {@link TypeStorageError}
@@ -202,20 +195,20 @@ export type IStorage<TType = unknown> = IStorageListenable & {
     clear(): LazyPromise<void>;
 
     /**
-     * The <i>getNamespace</i> method return the complete namespace.
+     * The <i>getNamespace</i> method returns the complete namespace.
      * @example
      * ```ts
-     *   const storage = new Storage(new MemoryStorageAdapter(), {
-     *     rootNamespace: "@root/"
-     *   });
+     * import type { IStorage } from "@daiso-tech/core";
      *
-     *   // Will be "@root/"
+     * async function main(storage: IStorage) {
+     *   // Will be "@root"
      *   console.log(storage.getNamespace())
      *
-     *   const storageA = storage.withNamespace("a/");
+     *   const storageA = storage.withNamespace("a");
      *
-     *   // Will be "@root/a/"
+     *   // Will be "@root/a"
      *   console.log(storageA.getNamespace())
+     * }
      * ```
      */
     getNamespace(): string;
@@ -232,11 +225,9 @@ export type INamespacedStorage<TType = unknown> = IStorage<TType> & {
      * This useful for multitennat applications.
      * @example
      * ```ts
-     * import { Storage, MemoryStorageAdapter } from "@daiso-tech/core";
+     * import { type IStorage } from "@daiso-tech/core";
      *
-     * (async () => {
-     *   const storage = new Storage(new MemoryStorageAdapter());
-     *
+     * async function main(storage: IStorage): Promise<void> {
      *   const storageA = storage.withNamespace("a");
      *   await storageA.add("a", 1);
      *
@@ -245,9 +236,8 @@ export type INamespacedStorage<TType = unknown> = IStorage<TType> & {
      *
      *   // Will print { a: 1, b: null }
      *   console.log(await storageA.getMany(["a", "b"]));
-     * })();
-     *
+     * }
      * ```
      */
-    withNamespace(namespace: string): IStorage<TType>;
+    withNamespace(namespace: OneOrMore<string>): IStorage<TType>;
 };

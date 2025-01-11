@@ -5,7 +5,7 @@
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type TypeStorageError,
-} from "@/storage/contracts/_shared";
+} from "@/storage/contracts/storage.errors";
 
 /**
  * The <i>IStorageAdapter</i> contract defines a way for storing data as key-value pairs independent of storage.
@@ -14,43 +14,33 @@ import {
  */
 export type IStorageAdapter<TType = unknown> = {
     /**
-     * The <i>getMany</i> returns the value for the <i>keys</i> that are found otherwise null will be returned.
+     * The <i>get</i> returns the value of <i>keys</i> that are found otherwise null will be returned.
      */
-    getMany<TKeys extends string>(
-        keys: TKeys[],
-    ): PromiseLike<Record<TKeys, TType | null>>;
+    get(key: string): PromiseLike<TType | null>;
 
     /**
-     * The <i>addMany</i> method adds the keys that doesn't exists. Returns true for the keys that doesn't exists otherwise false will be returned.
+     * The <i>add</i> method add a new <i>key</i>. Returns true if the <i>key</i> where added otherwise false will be returned.
      */
-    addMany<TKeys extends string>(
-        values: Record<TKeys, TType>,
-    ): PromiseLike<Record<TKeys, boolean>>;
+    add(key: string, value: TType): PromiseLike<boolean>;
 
     /**
-     * The <i>updateMany</i> method updates the given keys. Returns true for the keys that exists otherwise false will be returned.
+     * The <i>update</i> method updates a <i>key</i>. Returns true if the <i>key</i> where updated otherwise false will be returned.
      */
-    updateMany<TKeys extends string>(
-        values: Record<TKeys, TType>,
-    ): PromiseLike<Record<TKeys, boolean>>;
+    update(key: string, value: TType): PromiseLike<boolean>;
 
     /**
-     * The <i>putMany</i> method replaces the keys that are found. Adds keys that are not found. Returns true for all the keys that are found otherwise false is returned.
+     * The <i>put</i> method replaces a <i>key</i> that exists or adds <i>key</i> that do not exists. Return true if the <i>key</i> where updated otherwise false is returned.
      */
-    putMany<TKeys extends string>(
-        values: Record<TKeys, TType>,
-    ): PromiseLike<Record<TKeys, boolean>>;
+    put(key: string, value: TType): PromiseLike<boolean>;
 
     /**
-     * The <i>removesMany</i> method removes the keys that are found. Returns true for the keys that are found otherwise false is returned.
+     * The <i>remove</i> method removes a <i>key</i>. Returns true if the <i>key</i> is removed otherwise false is returned.
      */
-    removeMany<TKeys extends string>(
-        keys: TKeys[],
-    ): PromiseLike<Record<TKeys, boolean>>;
+    remove(key: string): PromiseLike<boolean>;
 
     /**
      * The <i>increment</i> method will increment the given <i>key</i> if found otherwise nonthing will occur.
-     * Returns true if key exists otherwise false will be returned.
+     * Returns true if key is incremented otherwise false will be returned.
      * An error will thrown if the key is not a number.
      * @throws {TypeStorageError} {@link TypeStorageError}
      */

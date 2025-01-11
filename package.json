@@ -18,8 +18,18 @@
         "Iterable",
         "AsyncIterable",
         "Cache",
+        "Storage",
+        "EventBus",
+        "PuSub",
         "Mongodb",
-        "Redis"
+        "Redis",
+        "Sqlite3",
+        "Turso",
+        "Libsql",
+        "TypeScript",
+        "JavaScript",
+        "Multitenant",
+        "Multitenancy"
     ],
     "files": [
         "./dist"
