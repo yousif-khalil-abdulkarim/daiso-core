@@ -8,6 +8,9 @@ import type {
     ICollection,
 } from "@/collection/contracts/_module";
 
+/**
+ * @internal
+ */
 export class CrossJoinIterable<TInput, TExtended = TInput>
     implements Iterable<CrossJoinResult<TInput, TExtended>>
 {

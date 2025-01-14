@@ -2,6 +2,9 @@
  * @module Collection
  */
 
+/**
+ * @internal
+ */
 export class AsyncErrorHandlerIterable<TInput>
     implements AsyncIterable<TInput>
 {
