@@ -13,7 +13,7 @@ describe("class: RedisCacheAdapter", () => {
     let client: Redis;
     let startedContainer: StartedRedisContainer;
     beforeEach(async () => {
-        startedContainer = await new RedisContainer().start();
+        startedContainer = await new RedisContainer("redis:7.4.2").start();
         client = new Redis(startedContainer.getConnectionUrl());
     }, timeout.toMilliseconds());
     afterEach(async () => {
