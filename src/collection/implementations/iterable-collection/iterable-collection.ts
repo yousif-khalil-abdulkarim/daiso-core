@@ -2,6 +2,7 @@
  * @module Collection
  */
 
+import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module";
 import {
     type Collapse,
     type Comparator,
@@ -47,7 +48,7 @@ import {
     TakeUntilIterable,
     TapIterable,
     UniqueIterable,
-    UpdateIterable,
+    ChangeIterable,
     WhenIterable,
     ZipIterable,
     ReverseIterable,
@@ -55,7 +56,6 @@ import {
     RepeatIterable,
 } from "@/collection/implementations/iterable-collection/_shared/_module";
 import { type Lazyable } from "@/_shared/types";
-import { type RecordItem } from "@/_shared/types";
 import { simplifyLazyable } from "@/_shared/utilities";
 
 /**
@@ -75,7 +75,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     /**
      * The <i>constructor</i> takes an <i>{@link Iterable}</i>.
      */
-    constructor(private iterable: Iterable<TInput>) {}
+    constructor(private readonly iterable: Iterable<TInput>) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
         yield* this.iterable;
@@ -85,7 +85,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         return this[Symbol.iterator]() as Iterator<TInput, void>;
     }
 
-    entries(): ICollection<RecordItem<number, TInput>> {
+    entries(): ICollection<[number, TInput]> {
         return new IterableCollection(new EntriesIterable(this));
     }
 
@@ -192,7 +192,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
     ): ICollection<TInput | TFilterOutput | TMapOutput> {
         return new IterableCollection(
-            new UpdateIterable(this, predicateFn, mapFn),
+            new ChangeIterable(this, predicateFn, mapFn),
         );
     }
 
@@ -529,7 +529,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     groupBy<TOutput = TInput>(
         selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
-    ): ICollection<RecordItem<TOutput, ICollection<TInput>>> {
+    ): ICollection<[TOutput, ICollection<TInput>]> {
         return new IterableCollection(
             new GroupByIterable(
                 this,
@@ -541,7 +541,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     countBy<TOutput = TInput>(
         selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
-    ): ICollection<RecordItem<TOutput, number>> {
+    ): ICollection<[TOutput, number]> {
         return new IterableCollection(new CountByIterable(this, selectFn));
     }
 
@@ -651,7 +651,7 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     zip<TExtended>(
         iterable: Iterable<TExtended>,
-    ): ICollection<RecordItem<TInput, TExtended>> {
+    ): ICollection<[TInput, TExtended]> {
         return new IterableCollection(new ZipIterable(this, iterable));
     }
 
@@ -881,5 +881,54 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     toArray(): TInput[] {
         return [...this];
+    }
+
+    toRecord(): EnsureRecord<TInput> {
+        const record: Record<string | number | symbol, unknown> = {};
+        for (const item of this) {
+            if (!Array.isArray(item)) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
+                );
+            }
+            if (item.length !== 2) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
+                );
+            }
+            const [key, value] = item;
+            if (
+                !(
+                    typeof key === "string" ||
+                    typeof key === "number" ||
+                    typeof key === "symbol"
+                )
+            ) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
+                );
+            }
+            record[key] = value;
+        }
+        return record as EnsureRecord<TInput>;
+    }
+
+    toMap(): EnsureMap<TInput> {
+        const map = new Map();
+        for (const item of this) {
+            if (!Array.isArray(item)) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2",
+                );
+            }
+            if (item.length !== 2) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2",
+                );
+            }
+            const [key, value] = item;
+            map.set(key, value);
+        }
+        return map as EnsureMap<TInput>;
     }
 }

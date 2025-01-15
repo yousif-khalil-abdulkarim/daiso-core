@@ -6,13 +6,13 @@ import {
     type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module";
-import { type AsyncIterableValue, type RecordItem } from "@/_shared/types";
+import { type AsyncIterableValue } from "@/_shared/types";
 
 /**
  * @internal
  */
 export class AsyncGroupByIterable<TInput, TOutput = TInput>
-    implements AsyncIterable<RecordItem<TOutput, IAsyncCollection<TInput>>>
+    implements AsyncIterable<[TOutput, IAsyncCollection<TInput>]>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
@@ -28,7 +28,7 @@ export class AsyncGroupByIterable<TInput, TOutput = TInput>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<
-        RecordItem<TOutput, IAsyncCollection<TInput>>
+        [TOutput, IAsyncCollection<TInput>]
     > {
         const map = new Map<TOutput, Array<TInput>>();
         for await (const [index, item] of this.collection.entries()) {
@@ -42,7 +42,7 @@ export class AsyncGroupByIterable<TInput, TOutput = TInput>
             map.set(key, array);
         }
         yield* this.makeCollection(map).map<
-            RecordItem<TOutput, IAsyncCollection<TInput>>
+            [TOutput, IAsyncCollection<TInput>]
         >(([key, value]) => [key, this.makeCollection(value)]);
     }
 }

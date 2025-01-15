@@ -3,13 +3,12 @@
  */
 
 import { type ICollection, type Map } from "@/collection/contracts/_module";
-import { type RecordItem } from "@/_shared/types";
 
 /**
  * @internal
  */
 export class GroupByIterable<TInput, TOutput = TInput>
-    implements Iterable<RecordItem<TOutput, ICollection<TInput>>>
+    implements Iterable<[TOutput, ICollection<TInput>]>
 {
     constructor(
         private collection: ICollection<TInput>,
@@ -21,7 +20,7 @@ export class GroupByIterable<TInput, TOutput = TInput>
         ) => ICollection<TInput>,
     ) {}
 
-    *[Symbol.iterator](): Iterator<RecordItem<TOutput, ICollection<TInput>>> {
+    *[Symbol.iterator](): Iterator<[TOutput, ICollection<TInput>]> {
         const map = new Map<TOutput, Array<TInput>>();
         for (const [index, item] of this.collection.entries()) {
             const key = this.selectFn(item, index, this.collection);
@@ -33,8 +32,8 @@ export class GroupByIterable<TInput, TOutput = TInput>
             array.push(item);
             map.set(key, array);
         }
-        yield* this.makeCollection(map).map<
-            RecordItem<TOutput, ICollection<TInput>>
-        >(([key, value]) => [key, this.makeCollection(value)]);
+        yield* this.makeCollection(map).map<[TOutput, ICollection<TInput>]>(
+            ([key, value]) => [key, this.makeCollection(value)],
+        );
     }
 }

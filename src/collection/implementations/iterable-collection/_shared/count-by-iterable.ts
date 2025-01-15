@@ -3,13 +3,12 @@
  */
 
 import { type ICollection, type Map } from "@/collection/contracts/_module";
-import { type RecordItem } from "@/_shared/types";
 
 /**
  * @internal
  */
 export class CountByIterable<TInput, TOutput = TInput>
-    implements Iterable<RecordItem<TOutput, number>>
+    implements Iterable<[TOutput, number]>
 {
     constructor(
         private collection: ICollection<TInput>,
@@ -17,7 +16,7 @@ export class CountByIterable<TInput, TOutput = TInput>
             item as unknown as TOutput,
     ) {}
 
-    *[Symbol.iterator](): Iterator<RecordItem<TOutput, number>> {
+    *[Symbol.iterator](): Iterator<[TOutput, number]> {
         const map = new Map<TOutput, number>();
         for (const [index, item] of this.collection.entries()) {
             const key = this.selectFn(item, index, this.collection);
