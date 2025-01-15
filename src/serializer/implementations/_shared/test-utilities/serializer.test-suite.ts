@@ -4,7 +4,7 @@
 
 import { type TestAPI, type ExpectStatic } from "vitest";
 import { type ISerializer } from "@/serializer/contracts/_module";
-import { type RecordItem, type Promisable } from "@/_shared/types";
+import { type Promisable } from "@/_shared/types";
 
 /**
  * @group Utilities
@@ -289,7 +289,7 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
             ["a", /test/],
             [1, { a: 2, b: -1 }],
             [2, [1, 2, 3]],
-        ] as RecordItem<unknown, unknown>[]);
+        ] as Array<[unknown, unknown]>);
         const deserializedValue = await serializer.deserialize(
             await serializer.serialize(value),
         );
@@ -323,7 +323,7 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
             [/test/, "a"],
             [{ a: 2, b: -1 }, 1],
             [[1, 2, 3], 2],
-        ] as RecordItem<unknown, unknown>[]);
+        ] as Array<[unknown, unknown]>);
         const deserializedValue = await serializer.deserialize(
             await serializer.serialize(value),
         );
@@ -384,7 +384,7 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
                     ]),
                 ],
                 ["a", /test/],
-            ] as RecordItem<string, unknown>[]),
+            ] as Array<[unknown, unknown]>),
         ];
         const deserializedValue = await serializer.deserialize(
             await serializer.serialize(value),
@@ -416,7 +416,7 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
                 ]),
             ],
             ["a", /test/],
-        ] as RecordItem<string, unknown>[]);
+        ] as Array<[string, unknown]>);
         const deserializedValue = await serializer.deserialize(
             await serializer.serialize(value),
         );
