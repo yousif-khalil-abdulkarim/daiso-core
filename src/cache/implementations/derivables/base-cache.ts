@@ -123,7 +123,9 @@ export abstract class BaseCache<TType = unknown>
             for (const [index, key] of keys.entries()) {
                 const value = values[index];
                 if (value === undefined) {
-                    throw new UnexpectedCacheError("!!__message__!!");
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
                 }
                 result[key] = value;
             }
@@ -154,7 +156,9 @@ export abstract class BaseCache<TType = unknown>
             for (const [index, key] of keys.entries()) {
                 const value = values[index];
                 if (value === undefined) {
-                    throw new UnexpectedCacheError("!!__message__!!");
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
                 }
                 result[key] = value;
             }
@@ -180,7 +184,9 @@ export abstract class BaseCache<TType = unknown>
             for (const [index, key] of keys.entries()) {
                 const value = values[index];
                 if (value === undefined) {
-                    throw new UnexpectedCacheError("!!__message__!!");
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
                 }
                 result[key] = value;
             }
@@ -216,7 +222,9 @@ export abstract class BaseCache<TType = unknown>
             for (const [index, key] of keys.entries()) {
                 const value = values[index];
                 if (value === undefined) {
-                    throw new UnexpectedCacheError("!!__message__!!");
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
                 }
                 result[key] = value;
             }
@@ -257,7 +265,9 @@ export abstract class BaseCache<TType = unknown>
             for (const [index, key] of Object.keys(values).entries()) {
                 const value = returnValues[index];
                 if (value === undefined) {
-                    throw new UnexpectedCacheError("!!__message__!!");
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
                 }
                 result[key as TKeys] = value;
             }
@@ -284,7 +294,9 @@ export abstract class BaseCache<TType = unknown>
             for (const [index, key] of Object.keys(values).entries()) {
                 const value = returnValues[index];
                 if (value === undefined) {
-                    throw new UnexpectedCacheError("!!__message__!!");
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
                 }
                 result[key as TKeys] = value;
             }
@@ -315,7 +327,9 @@ export abstract class BaseCache<TType = unknown>
             for (const [index, key] of Object.keys(values).entries()) {
                 const value = returnValues[index];
                 if (value === undefined) {
-                    throw new UnexpectedCacheError("!!__message__!!");
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
                 }
                 result[key as TKeys] = value;
             }
@@ -341,7 +355,9 @@ export abstract class BaseCache<TType = unknown>
             for (const [index, key] of keys.entries()) {
                 const value = values[index];
                 if (value === undefined) {
-                    throw new UnexpectedCacheError("!!__message__!!");
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
                 }
                 result[key] = value;
             }

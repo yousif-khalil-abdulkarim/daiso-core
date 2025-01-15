@@ -77,7 +77,9 @@ export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
             return false;
         }
         if (typeof mapValue !== "number") {
-            throw new TypeCacheError("!!__message__!!");
+            throw new TypeCacheError(
+                `Unable to increment or decrement none number type key "${key}"`,
+            );
         }
         this.map.set(key, (mapValue + value) as TType);
         return true;
