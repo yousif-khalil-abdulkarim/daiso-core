@@ -5,7 +5,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Validator, zodValidator } from "@/utilities/_module";
 import { LazyPromise } from "@/utilities/_module";
-import type { SelectEvent, Unsubscribe } from "@/event-bus/contracts/_module";
+import type { SelectEvent } from "@/event-bus/contracts/_module";
 import {
     type IEventBus,
     type INamespacedEventBus,
@@ -21,6 +21,7 @@ import { WithNamespaceEventBusAdapter } from "@/event-bus/implementations/deriva
 import { WithValidationEventBusAdapter } from "@/event-bus/implementations/derivables/with-validation-event-bus-adapter";
 import type { OneOrMore } from "@/_shared/types";
 import { simplifyNamespace, isArrayEmpty } from "@/_shared/utilities";
+import { BaseEventBus } from "@/event-bus/implementations/derivables/base-event-bus";
 
 /**
  * @group Derivables
@@ -105,6 +106,7 @@ export type EventBusSettings<TEvents extends IBaseEvent> = {
  * @group Derivables
  */
 export class EventBus<TEvents extends IBaseEvent = IBaseEvent>
+    extends BaseEventBus<TEvents>
     implements INamespacedEventBus<TEvents>
 {
     private readonly eventBusAdapter: IEventBusAdapter;
@@ -115,6 +117,7 @@ export class EventBus<TEvents extends IBaseEvent = IBaseEvent>
         eventBusAdapter: IEventBusAdapter,
         settings: EventBusSettings<TEvents> = {},
     ) {
+        super();
         const { validator = (value) => value as TEvents } = settings;
         let { rootNamespace: namespace = "" } = settings;
         namespace = simplifyNamespace(namespace);
@@ -157,22 +160,6 @@ export class EventBus<TEvents extends IBaseEvent = IBaseEvent>
         });
     }
 
-    addListenerMany<TEventType extends TEvents["type"]>(
-        events: TEventType[],
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): LazyPromise<void> {
-        return new LazyPromise(async () => {
-            if (isArrayEmpty(events)) {
-                return;
-            }
-            const promises: PromiseLike<void>[] = [];
-            for (const event of events) {
-                promises.push(this.addListener(event, listener));
-            }
-            await Promise.all(promises);
-        });
-    }
-
     removeListener<TEventType extends TEvents["type"]>(
         event: TEventType,
         listener: Listener<SelectEvent<TEvents, TEventType>>,
@@ -189,44 +176,6 @@ export class EventBus<TEvents extends IBaseEvent = IBaseEvent>
                     error,
                 );
             }
-        });
-    }
-
-    removeListenerMany<TEventType extends TEvents["type"]>(
-        events: TEventType[],
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): LazyPromise<void> {
-        return new LazyPromise(async () => {
-            if (isArrayEmpty(events)) {
-                return;
-            }
-            const promises: PromiseLike<void>[] = [];
-            for (const event of events) {
-                promises.push(this.removeListener(event, listener));
-            }
-            await Promise.all(promises);
-        });
-    }
-
-    subscribe<TEventType extends TEvents["type"]>(
-        event: TEventType,
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): LazyPromise<Unsubscribe> {
-        return this.subscribeMany([event], listener);
-    }
-
-    subscribeMany<TEventType extends TEvents["type"]>(
-        events: TEventType[],
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
-    ): LazyPromise<Unsubscribe> {
-        return new LazyPromise(async () => {
-            await this.addListenerMany(events, listener);
-            const unsubscribe = () => {
-                return new LazyPromise(async () => {
-                    await this.removeListenerMany(events, listener);
-                });
-            };
-            return unsubscribe;
         });
     }
 

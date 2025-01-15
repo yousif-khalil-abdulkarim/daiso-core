@@ -44,9 +44,7 @@ export type BaseCacheSettings<TType> = {
  * It simplifies implementing the {@link INamespacedCache} interface without using an {@link ICacheAdapter}.
  * @group Derivables
  */
-export abstract class BaseCache<TType = unknown>
-    implements INamespacedCache<TType>
-{
+export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     private readonly listenable: IListenable<AllCacheEvents<TType>>;
 
     constructor(settings: BaseCacheSettings<TType>) {
