@@ -12,10 +12,7 @@ import type { IInitizable } from "@/_shared/types";
 import type { ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
 import type { ISerializer } from "@/serializer/contracts/_module";
-import {
-    SuperJsonSerializer,
-    MongodbSerializer,
-} from "@/serializer/implementations/_module";
+import { MongodbSerializer } from "@/serializer/implementations/_module";
 import escapeStringRegexp from "escape-string-regexp";
 
 /**
@@ -32,7 +29,7 @@ export type MongodbCacheDocument = {
  * @group Adapters
  */
 export type MongodbCacheAdapterSettings = {
-    serializer?: ISerializer<string>;
+    serializer: ISerializer<string>;
 };
 
 /**
@@ -57,9 +54,7 @@ export class MongodbCacheAdapter<TType>
 
     constructor(
         private readonly collection: Collection<MongodbCacheDocument>,
-        {
-            serializer = new SuperJsonSerializer(),
-        }: MongodbCacheAdapterSettings = {},
+        { serializer }: MongodbCacheAdapterSettings,
     ) {
         this.serializer = new MongodbSerializer(serializer);
     }

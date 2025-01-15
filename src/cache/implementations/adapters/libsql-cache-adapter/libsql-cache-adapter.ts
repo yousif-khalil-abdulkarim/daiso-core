@@ -8,10 +8,7 @@ import type { ISerializer } from "@/serializer/contracts/_module";
 import type { TimeSpan } from "@/utilities/_module";
 import type { Client } from "@libsql/client";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
-import {
-    SqlSerializer,
-    SuperJsonSerializer,
-} from "@/serializer/implementations/_module";
+import { SqlSerializer } from "@/serializer/implementations/_module";
 import { Kysely } from "kysely";
 import type { LibsqlDialectConfig } from "@libsql/kysely-libsql";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
@@ -22,7 +19,7 @@ import { KyselyTableNameTransformerPlugin } from "@/_shared/kysely/_module";
  */
 export type LibsqlCacheAdapterSettings = {
     tableName?: string;
-    serializer?: ISerializer<string>;
+    serializer: ISerializer<string>;
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
@@ -36,10 +33,10 @@ export class LibsqlCacheAdapter<TType>
 {
     private readonly cacheAdapter: KyselySqliteCacheAdapter<TType>;
 
-    constructor(client: Client, settings: LibsqlCacheAdapterSettings = {}) {
+    constructor(client: Client, settings: LibsqlCacheAdapterSettings) {
         const {
             tableName = "cache",
-            serializer = new SuperJsonSerializer(),
+            serializer,
             enableTransactions = false,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,

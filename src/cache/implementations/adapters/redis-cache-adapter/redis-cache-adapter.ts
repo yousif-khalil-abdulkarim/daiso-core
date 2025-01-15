@@ -7,10 +7,7 @@ import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { TimeSpan } from "@/utilities/_module";
 import { ReplyError, type Redis, type Result } from "ioredis";
 import type { ISerializer } from "@/serializer/contracts/_module";
-import {
-    RedisSerializer,
-    SuperJsonSerializer,
-} from "@/serializer/implementations/_module";
+import { RedisSerializer } from "@/serializer/implementations/_module";
 
 /**
  * @internal
@@ -101,7 +98,7 @@ declare module "ioredis" {
  * @group Adapters
  */
 export type RedisCacheAdapterSettings = {
-    serializer?: ISerializer<string>;
+    serializer: ISerializer<string>;
 };
 
 /**
@@ -124,9 +121,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
 
     constructor(
         private readonly client: Redis,
-        {
-            serializer = new SuperJsonSerializer(),
-        }: RedisCacheAdapterSettings = {},
+        { serializer }: RedisCacheAdapterSettings,
     ) {
         this.serializer = new RedisSerializer(serializer);
         this.initIncrementCommand();
