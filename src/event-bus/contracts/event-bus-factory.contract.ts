@@ -2,7 +2,6 @@
  * @module EventBus
  */
 
-import type { Validator } from "@/utilities/_module";
 import type { INamespacedEventBus } from "@/event-bus/contracts/event-bus.contract";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { IBaseEvent } from "@/event-bus/contracts/_shared";
@@ -45,36 +44,10 @@ export type IEventBusFactory<
     use(driverName?: TDrivers): INamespacedEventBus<TEvents>;
 
     /**
-     * The <i>withValidation</i> method is used to set a <i>validator</i>, which validates the event during runtime.
-     * The type is inferred from the provided <i>validator</i>.
-     * @example
-     * ```ts
-     * import { type IEventBusFactory, zodValidator } from "@daiso-tech/core";
-     * import { z } from "zod"
-     *
-     * async function main(eventBusFactory: IEventBusFactory): Promise<void> {
-     *   const addEventSchema = z.zod({
-     *     type: z.literal("add"),
-     *     a: z.number(),
-     *     b: z.number(),
-     *   });
-     *   await eventBusFactory
-     *     .withValidation(zodValidator(addEventSchema))
-     *     .use()
-     *     // You will se an typescript error and get runtime erorr
-     *     .dispatch({ type: "add" });
-     * }
-     * ```
-     */
-    withValidation<TOutput extends TEvents = TEvents>(
-        validator: Validator<TOutput>,
-    ): IEventBusFactory<TDrivers, TOutput>;
-
-    /**
      * The <i>withTypes</i> method is used to set the event types of the <i>{@link IEventBus}</i>.
      * @example
      * ```ts
-     * import { type IEventBusFactory, zodValidator } from "@daiso-tech/core";
+     * import { type IEventBusFactory } from "@daiso-tech/core";
      *
      * async function main(eventBusFactory: IEventBusFactory): Promise<void> {
      *   type AddEvent = {
