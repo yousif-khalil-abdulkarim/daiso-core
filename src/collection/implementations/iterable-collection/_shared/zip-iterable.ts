@@ -2,20 +2,18 @@
  * @module Collection
  */
 
-import { type RecordItem } from "@/_shared/types";
-
 /**
  * @internal
  */
 export class ZipIterable<TInput, TExtended>
-    implements Iterable<RecordItem<TInput, TExtended>>
+    implements Iterable<[TInput, TExtended]>
 {
     constructor(
         private iterableA: Iterable<TInput>,
         private iterableB: Iterable<TExtended>,
     ) {}
 
-    *[Symbol.iterator](): Iterator<RecordItem<TInput, TExtended>> {
+    *[Symbol.iterator](): Iterator<[TInput, TExtended]> {
         const iteratorA = this.iterableA[Symbol.iterator](),
             iteratorB = this.iterableB[Symbol.iterator]();
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

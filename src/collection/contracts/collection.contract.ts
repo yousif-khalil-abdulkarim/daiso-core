@@ -22,8 +22,10 @@ import type {
     EmptyCollectionError,
     Reduce,
     CrossJoinResult,
-} from "@/collection/contracts/_shared";
-import type { Lazyable, RecordItem } from "@/_shared/types";
+    EnsureMap,
+    EnsureRecord,
+} from "@/collection/contracts/_module";
+import type { Lazyable } from "@/_shared/types";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -36,8 +38,9 @@ export type Collapse<TValue> = TValue extends
  * The <i>ICollection</i> contract offers a fluent and efficient approach to working with {@link Iterable} objects.
  * <i>ICollection</i> is immutable.
  * @group Contracts
+ * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
  */
-export type ICollection<TInput> = Iterable<TInput> & {
+export type ICollection<TInput = unknown> = Iterable<TInput> & {
     /**
      * The <i>toIterator</i> method converts the collection to a new iterator.
      */
@@ -46,7 +49,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     /**
      * The <i>entries</i> returns an ICollection of key, value pairs for every entry in the collection.
      */
-    entries(): ICollection<RecordItem<number, TInput>>;
+    entries(): ICollection<[number, TInput]>;
 
     /**
      * The <i>keys</i> method returns an ICollection of keys in the collection.
@@ -257,7 +260,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
 
     /**
      * The <i>getOrFail</i> method returns the item by index. If the item is not found an error will be thrown.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
@@ -290,6 +292,8 @@ export type ICollection<TInput> = Iterable<TInput> & {
     /**
      * The <i>sum</i> method returns the sum of all items in the collection. If the collection includes other than number items an error will be thrown.
      * If the collection is empty an error will also be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -298,15 +302,14 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.sum();
      * // 6
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     sum(): Extract<TInput, number>;
 
     /**
      * The <i>average</i> method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
      * If the collection is empty an error will also be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -315,15 +318,14 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.average();
      * // 2
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     average(): Extract<TInput, number>;
 
     /**
      * The <i>median</i> method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
      * If the collection is empty an error will also be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -332,15 +334,14 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.median();
      * // 2
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     median(): Extract<TInput, number>;
 
     /**
      * The <i>min</i> method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
      * If the collection is empty an error will also be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -349,15 +350,14 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.min();
      * // 1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     min(): Extract<TInput, number>;
 
     /**
      * The <i>max</i> method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
      * If the collection is empty an error will also be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -366,15 +366,13 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.max();
      * // 3
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     max(): Extract<TInput, number>;
 
     /**
      * The <i>percentage</i> method may be used to quickly determine the percentage of items in the collection that pass <i>predicateFn</i>.
      * If the collection is empty an error will also be thrown.
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -383,8 +381,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.percentage(value => value === 1);
      * // 33.333
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
 
@@ -398,7 +394,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.some(item => item === 1);
      * // true
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     some<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
@@ -414,7 +409,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.every(item => item < 6);
      * // true
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     every<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
@@ -795,7 +789,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     groupBy<TOutput = TInput>(
         selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
-    ): ICollection<RecordItem<TOutput, ICollection<TInput>>>;
+    ): ICollection<[TOutput, ICollection<TInput>]>;
 
     /**
      * The <i>countBy</i> method counts the occurrences of values in the collection by <i> selectFn </i>.
@@ -831,7 +825,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     countBy<TOutput = TInput>(
         selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
-    ): ICollection<RecordItem<TOutput, number>>;
+    ): ICollection<[TOutput, number]>;
 
     /**
      * The <i>unique</i> method removes all duplicate values from the collection by <i> selectFn </i>.
@@ -1162,7 +1156,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
      */
     zip<TExtended>(
         iterable: Iterable<TExtended>,
-    ): ICollection<RecordItem<TInput, TExtended>>;
+    ): ICollection<[TInput, TExtended]>;
 
     /**
      * The <i>sort</i> method sorts the collection. You can provide a <i>comparator</i> function.
@@ -1240,7 +1234,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.first(item => item > 10);
      * // null
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * // 3
      */
     first<TOutput extends TInput>(
@@ -1282,7 +1275,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.firstOr(() => -1, item => item > 10);
      * // -1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     firstOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
@@ -1292,6 +1284,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     /**
      * The <i>firstOrFail</i> method returns the first item in the collection that passes <i> predicateFn </i>.
      * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than error is thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -1316,8 +1309,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.firstOrFail(item => item > 10);
      * // throws an error
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      */
     firstOrFail<TOutput extends TInput>(
         predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
@@ -1350,7 +1341,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.last(item => item > 10);
      * // null
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * // 3
      */
     last<TOutput extends TInput>(
@@ -1392,7 +1382,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.lastOr(() => -1, item => item > 10);
      * // -1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     lastOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
@@ -1402,6 +1391,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     /**
      * The <i>lastOrFail</i> method returns the last item in the collection that passes <i> predicateFn </i>.
      * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than error is thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -1426,8 +1416,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.lastOrFail(item => item > 10);
      * // throws an error
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      */
     lastOrFail<TOutput extends TInput>(
         predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
@@ -1452,7 +1440,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.before(item => item === 1);
      * // null
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     before(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput | null;
 
@@ -1483,7 +1470,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.beforeOr(() => -1, item => item === 1);
      * // -1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     beforeOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
@@ -1493,6 +1479,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     /**
      * The <i>beforeOrFail</i> method returns the item that comes before the first item that matches <i>predicateFn</i>.
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the first item then an error is thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -1509,8 +1496,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.beforeOrFail(item => item === 1);
      * // error is thrown
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      */
     beforeOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput;
 
@@ -1533,7 +1518,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.after(item => item === 4);
      * // null
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     after(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput | null;
 
@@ -1564,7 +1548,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.afterOr(() => -1, item => item === 4);
      * // -1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     afterOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
@@ -1574,6 +1557,7 @@ export type ICollection<TInput> = Iterable<TInput> & {
     /**
      * The <i>afterOrFail</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then an error is thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -1590,14 +1574,14 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.afterOrFail(item => item === 4);
      * // error is thrown
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      */
     afterOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput;
 
     /**
      * The <i>sole</i> method returns the first item in the collection that passes <i>predicateFn</i>, but only if <i>predicateFn</i> matches exactly one item.
      * If no items matches or multiple items are found an error will be thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";;
@@ -1622,9 +1606,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.sole(item => item === 4);
      * // error is thrown
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
-     * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
      */
     sole<TOutput extends TInput>(
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
@@ -1653,25 +1634,21 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.count(value => value % 2 === 0);
      * // 3
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     count(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
 
     /**
      * The <i>size</i> returns the size of the collection.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     size(): number;
 
     /**
      * The <i>isEmpty</i> returns true if the collection is empty.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     isEmpty(): boolean;
 
     /**
      * The <i>isNotEmpty</i> returns true if the collection is not empty.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     isNotEmpty(): boolean;
 
@@ -1685,7 +1662,6 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.searchFirst(item => item === "b");
      * // 1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     searchFirst(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
 
@@ -1699,19 +1675,28 @@ export type ICollection<TInput> = Iterable<TInput> & {
      * collection.searchLast(item => item === "b");
      * // 2
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     searchLast(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
 
     /**
      * The <i>forEach</i> method iterates through all items in the collection.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     forEach(callback: ForEach<TInput, ICollection<TInput>>): void;
 
     /**
-     * The <i>toArray</i> method converts the collection to a new array.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
+     * The <i>toArray</i> method converts the collection to a new <i>{@link Array}</i>.
      */
     toArray(): TInput[];
+
+    /**
+     * The <i>toRecord</i> method converts the collection to a new <i>{@link Record}</i>.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     */
+    toRecord(): EnsureRecord<TInput>;
+
+    /**
+     * The <i>toMap</i> method converts the collection to a new <i>{@link Map}</i>.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     */
+    toMap(): EnsureMap<TInput>;
 };

@@ -11,7 +11,7 @@ import {
 /**
  * @internal
  */
-export class UpdateIterable<TInput, TFilterOutput extends TInput, TMapOutput>
+export class ChangeIterable<TInput, TFilterOutput extends TInput, TMapOutput>
     implements Iterable<TInput | TFilterOutput | TMapOutput>
 {
     constructor(

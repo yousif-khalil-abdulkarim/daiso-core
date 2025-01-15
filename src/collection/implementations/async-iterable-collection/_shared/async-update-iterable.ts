@@ -11,7 +11,7 @@ import {
 /**
  * @internal
  */
-export class AsyncUpdateIterable<
+export class AsyncChangeIterable<
     TInput,
     TFilterOutput extends TInput,
     TMapOutput,

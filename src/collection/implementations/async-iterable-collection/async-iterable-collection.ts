@@ -2,6 +2,7 @@
  * @module Collection
  */
 
+import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module";
 import {
     type AsyncCollapse,
     type AsyncPredicate,
@@ -48,7 +49,7 @@ import {
     AsyncTakeUntilIterable,
     AsyncTapIterable,
     AsyncUniqueIterable,
-    AsyncUpdateIterable,
+    AsyncChangeIterable,
     AsyncWhenIterable,
     AsyncZipIterable,
     AsyncReverseIterable,
@@ -56,7 +57,6 @@ import {
     AsyncRepeatIterable,
 } from "@/collection/implementations/async-iterable-collection/_shared/_module";
 import { type AsyncIterableValue, type AsyncLazyable } from "@/_shared/types";
-import { type RecordItem } from "@/_shared/types";
 import { simplifyAsyncLazyable } from "@/_shared/utilities";
 import type { TimeSpan } from "@/utilities/_module";
 import {
@@ -90,7 +90,7 @@ export class AsyncIterableCollection<TInput>
     /**
      * The <i>constructor</i> takes an <i>{@link Iterable}</i> or <i>{@link AsyncIterable}</i>.
      */
-    constructor(private iterable: AsyncIterableValue<TInput> = []) {}
+    constructor(private readonly iterable: AsyncIterableValue<TInput> = []) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
         yield* this.iterable;
@@ -100,7 +100,7 @@ export class AsyncIterableCollection<TInput>
         return this[Symbol.asyncIterator]() as AsyncIterator<TInput, void>;
     }
 
-    entries(): IAsyncCollection<RecordItem<number, TInput>> {
+    entries(): IAsyncCollection<[number, TInput]> {
         return new AsyncIterableCollection(new AsyncEntriesIterable(this));
     }
 
@@ -219,7 +219,7 @@ export class AsyncIterableCollection<TInput>
         mapFn: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
     ): IAsyncCollection<TInput | TFilterOutput | TMapOutput> {
         return new AsyncIterableCollection(
-            new AsyncUpdateIterable(this, predicateFn, mapFn),
+            new AsyncChangeIterable(this, predicateFn, mapFn),
         );
     }
 
@@ -598,7 +598,7 @@ export class AsyncIterableCollection<TInput>
 
     groupBy<TOutput = TInput>(
         selectFn?: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): IAsyncCollection<RecordItem<TOutput, IAsyncCollection<TInput>>> {
+    ): IAsyncCollection<[TOutput, IAsyncCollection<TInput>]> {
         return new AsyncIterableCollection(
             new AsyncGroupByIterable(
                 this,
@@ -610,7 +610,7 @@ export class AsyncIterableCollection<TInput>
 
     countBy<TOutput = TInput>(
         selectFn?: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): IAsyncCollection<RecordItem<TOutput, number>> {
+    ): IAsyncCollection<[TOutput, number]> {
         return new AsyncIterableCollection(
             new AsyncCountByIterable(this, selectFn),
         );
@@ -735,7 +735,7 @@ export class AsyncIterableCollection<TInput>
 
     zip<TExtended>(
         iterable: AsyncIterableValue<TExtended>,
-    ): IAsyncCollection<RecordItem<TInput, TExtended>> {
+    ): IAsyncCollection<[TInput, TExtended]> {
         return new AsyncIterableCollection(
             new AsyncZipIterable(this, iterable),
         );
@@ -1036,6 +1036,59 @@ export class AsyncIterableCollection<TInput>
                 items.push(item);
             }
             return items;
+        });
+    }
+
+    toRecord(): LazyPromise<EnsureRecord<TInput>> {
+        return new LazyPromise(async () => {
+            const record: Record<string | number | symbol, unknown> = {};
+            for await (const item of this) {
+                if (!Array.isArray(item)) {
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
+                    );
+                }
+                if (item.length !== 2) {
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
+                    );
+                }
+                const [key, value] = item;
+                if (
+                    !(
+                        typeof key === "string" ||
+                        typeof key === "number" ||
+                        typeof key === "symbol"
+                    )
+                ) {
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
+                    );
+                }
+                record[key] = value;
+            }
+            return record as EnsureRecord<TInput>;
+        });
+    }
+
+    toMap(): LazyPromise<EnsureMap<TInput>> {
+        return new LazyPromise(async () => {
+            const map = new Map();
+            for await (const item of this) {
+                if (!Array.isArray(item)) {
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be a tuple of size 2",
+                    );
+                }
+                if (item.length !== 2) {
+                    throw new TypeCollectionError(
+                        "Item type is invalid must be a tuple of size 2",
+                    );
+                }
+                const [key, value] = item;
+                map.set(key, value);
+            }
+            return map as EnsureMap<TInput>;
         });
     }
 }

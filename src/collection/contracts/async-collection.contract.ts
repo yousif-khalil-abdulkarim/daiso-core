@@ -23,12 +23,10 @@ import type {
     TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
-} from "@/collection/contracts/_shared";
-import type {
-    RecordItem,
-    AsyncLazyable,
-    AsyncIterableValue,
-} from "@/_shared/types";
+    EnsureRecord,
+    EnsureMap,
+} from "@/collection/contracts/_module";
+import type { AsyncLazyable, AsyncIterableValue } from "@/_shared/types";
 import type { LazyPromise, TimeSpan } from "@/utilities/_module";
 
 export type AsyncCollapse<TValue> = TValue extends
@@ -42,6 +40,7 @@ export type AsyncCollapse<TValue> = TValue extends
  * The <i>IAsyncCollection</i> contract offers a fluent and efficient approach to working with {@link AsyncIterable} objects.
  * <i>IAsyncCollection</i> is immutable.
  * @group Contracts
+ * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
  */
 export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     /**
@@ -52,7 +51,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     /**
      * The <i>entries</i> returns an IAsyncCollection of key, value pairs for every entry in the collection.
      */
-    entries(): IAsyncCollection<RecordItem<number, TInput>>;
+    entries(): IAsyncCollection<[number, TInput]>;
 
     /**
      * The <i>keys</i> method returns an IAsyncCollection of keys in the collection.
@@ -269,7 +268,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
 
     /**
      * The <i>getOrFail</i> method returns the item by index. If the item is not found an error will be thrown.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
@@ -301,6 +299,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
 
     /**
      * The <i>sum</i> method returns the sum of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -309,14 +309,13 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.sum();
      * // 6
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     sum(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>average</i> method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -325,14 +324,13 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.average();
      * // 2
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     average(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>median</i> method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -341,14 +339,13 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.median();
      * // 2
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     median(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>min</i> method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -357,14 +354,13 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.min();
      * // 1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     min(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>max</i> method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -373,14 +369,12 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.max();
      * // 3
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     max(): LazyPromise<Extract<TInput, number>>;
 
     /**
      * The <i>percentage</i> method may be used to quickly determine the percentage of items in the collection that pass <i>predicateFn</i>.
+     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -389,8 +383,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.percentage(value => value === 1);
      * // 33.333
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      */
     percentage(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -406,7 +398,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.some(item => item === 1);
      * // true
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     some<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -422,7 +413,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.every(item => item < 6);
      * // true
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     every<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -817,7 +807,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     groupBy<TOutput = TInput>(
         selectFn?: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): IAsyncCollection<RecordItem<TOutput, IAsyncCollection<TInput>>>;
+    ): IAsyncCollection<[TOutput, IAsyncCollection<TInput>]>;
 
     /**
      * The <i>countBy</i> method counts the occurrences of values in the collection by <i> selectFn </i>.
@@ -853,7 +843,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     countBy<TOutput = TInput>(
         selectFn?: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): IAsyncCollection<RecordItem<TOutput, number>>;
+    ): IAsyncCollection<[TOutput, number]>;
 
     /**
      * The <i>unique</i> method removes all duplicate values from the collection by <i> selectFn </i>.
@@ -1184,7 +1174,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      */
     zip<TExtended>(
         iterable: AsyncIterableValue<TExtended>,
-    ): IAsyncCollection<RecordItem<TInput, TExtended>>;
+    ): IAsyncCollection<[TInput, TExtended]>;
 
     /**
      * The <i>sort</i> method sorts the collection. You can provide a <i>comparator</i> function.
@@ -1263,7 +1253,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.first(item => item > 10);
      * // null
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * // 3
      */
     first<TOutput extends TInput>(
@@ -1305,7 +1294,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.firstOr(() => -1, item => item > 10);
      * // -1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     firstOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
@@ -1315,6 +1303,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     /**
      * The <i>firstOrFail</i> method returns the first item in the collection that passes <i> predicateFn </i>.
      * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than error is thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -1322,16 +1311,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
      * await collection.firstOrFail();
      * // 1
-     * @example
      * ```
+     * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
      *
      * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
      * await collection.firstOrFail(item => item > 2);
      * // 3
-     * @example
      * ```
+     * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
      *
@@ -1339,8 +1328,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.firstOrFail(item => item > 10);
      * // throws an error
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      */
     firstOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -1373,7 +1360,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.last(item => item > 10);
      * // null
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      * // 3
      */
     last<TOutput extends TInput>(
@@ -1415,7 +1401,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.lastOr(() => -1, item => item > 10);
      * // -1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     lastOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
@@ -1425,6 +1410,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     /**
      * The <i>lastOrFail</i> method returns the last item in the collection that passes <i> predicateFn </i>.
      * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than error is thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -1449,8 +1435,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.lastOrFail(item => item > 10);
      * // throws an error
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      */
     lastOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -1475,7 +1459,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.before(item => item === 1);
      * // null
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     before(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1508,7 +1491,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.beforeOr(() => -1, item => item === 1);
      * // -1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     beforeOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
@@ -1518,6 +1500,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     /**
      * The <i>beforeOrFail</i> method returns the item that comes before the first item that matches <i>predicateFn</i>.
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the first item then an error is thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -1534,8 +1517,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.beforeOrFail(item => item === 1);
      * // error is thrown
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      */
     beforeOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1560,7 +1541,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.after(item => item === 4);
      * // null
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     after(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1584,8 +1564,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
      * await collection.afterOr(-1, item => item === 4);
      * // -1
-     * @example
      * ```
+     * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
      *
@@ -1593,7 +1573,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.afterOr(() => -1, item => item === 4);
      * // -1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     afterOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
@@ -1603,6 +1582,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     /**
      * The <i>afterOrFail</i> method returns the item that comes after the first item that matches <i>predicateFn</i>.
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then an error is thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -1619,8 +1599,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.afterOrFail(item => item === 4);
      * // error is thrown
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      */
     afterOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1629,6 +1607,8 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     /**
      * The <i>sole</i> method returns the first item in the collection that passes <i>predicateFn</i>, but only if <i>predicateFn</i> matches exactly one item.
      * If no items matches or multiple items are found an error will be thrown.
+     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
+     * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -1653,9 +1633,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.sole(item => item === 4);
      * // error is thrown
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
-     * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
      */
     sole<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -1684,7 +1661,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.count(value => value % 2 === 0);
      * // 3
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     count(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1692,19 +1668,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
 
     /**
      * The <i>size</i> returns the size of the collection.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     size(): LazyPromise<number>;
 
     /**
      * The <i>isEmpty</i> returns true if the collection is empty.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     isEmpty(): LazyPromise<boolean>;
 
     /**
      * The <i>isNotEmpty</i> returns true if the collection is not empty.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     isNotEmpty(): LazyPromise<boolean>;
 
@@ -1718,7 +1691,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.searchFirst(item => item === "b");
      * // 1
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     searchFirst(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1734,7 +1706,6 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * await collection.searchLast(item => item === "b");
      * // 2
      * ```
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     searchLast(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
@@ -1742,17 +1713,10 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
 
     /**
      * The <i>forEach</i> method iterates through all items in the collection.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
      */
     forEach(
         callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<void>;
-
-    /**
-     * The <i>toArray</i> method converts the collection to a new array.
-     * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
-     */
-    toArray(): LazyPromise<TInput[]>;
 
     /**
      * The <i>delay</i> method will add delay between each iteration.
@@ -1813,4 +1777,19 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
         timeInMs: TimeSpan,
         shouldThrow?: boolean,
     ): IAsyncCollection<TInput>;
+
+    /**
+     * The <i>toArray</i> method converts the collection to a new <i>{@link Array}</i>.
+     */
+    toArray(): LazyPromise<TInput[]>;
+
+    /**
+     * The <i>toRecord</i> method converts the collection to a new <i>{@link Record}</i>.
+     */
+    toRecord(): LazyPromise<EnsureRecord<TInput>>;
+
+    /**
+     * The <i>toMap</i> method converts the collection to a new <i>{@link Map}</i>.
+     */
+    toMap(): LazyPromise<EnsureMap<TInput>>;
 };

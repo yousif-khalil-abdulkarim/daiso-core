@@ -4,22 +4,19 @@
 
 import { isIterable } from "@/collection/implementations/_shared";
 import { type AsyncIterableValue } from "@/_shared/types";
-import { type RecordItem } from "@/_shared/types";
 
 /**
  * @internal
  */
 export class AsyncZipIterable<TInput, TExtended>
-    implements AsyncIterable<RecordItem<TInput, TExtended>>
+    implements AsyncIterable<[TInput, TExtended]>
 {
     constructor(
         private iterableA: AsyncIterableValue<TInput>,
         private iterableB: AsyncIterableValue<TExtended>,
     ) {}
 
-    async *[Symbol.asyncIterator](): AsyncIterator<
-        RecordItem<TInput, TExtended>
-    > {
+    async *[Symbol.asyncIterator](): AsyncIterator<[TInput, TExtended]> {
         let iteratorA: AsyncIterator<TInput> | Iterator<TInput>;
         if (isIterable(this.iterableA)) {
             iteratorA = this.iterableA[Symbol.iterator]();

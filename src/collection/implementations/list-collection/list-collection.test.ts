@@ -7,7 +7,6 @@ import {
     MultipleItemsFoundCollectionError,
 } from "@/collection/contracts/_module";
 import { ListCollection } from "@/collection/implementations/list-collection/_module";
-import { type RecordItem } from "@/_shared/types";
 
 describe("class: ListCollection", () => {
     describe("method: filter", () => {
@@ -1101,12 +1100,10 @@ describe("class: ListCollection", () => {
                 newCollection = collection.groupBy();
             expect(
                 newCollection
-                    .map(
-                        ([key, item]): RecordItem<string, string[]> => [
-                            key,
-                            item.toArray(),
-                        ],
-                    )
+                    .map(([key, item]): [string, string[]] => [
+                        key,
+                        item.toArray(),
+                    ])
                     .toArray(),
             ).toEqual([
                 ["a", arr.filter((item) => item === "a")],
@@ -1152,12 +1149,10 @@ describe("class: ListCollection", () => {
                 });
             expect(
                 newCollection
-                    .map(
-                        ([key, item]): RecordItem<string, Person[]> => [
-                            key,
-                            item.toArray(),
-                        ],
-                    )
+                    .map(([key, item]): [string, Person[]] => [
+                        key,
+                        item.toArray(),
+                    ])
                     .toArray(),
             ).toEqual([
                 ["Abra", arr.filter((item) => item.name === "Abra")],
@@ -2387,6 +2382,99 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection(["a", "b", "c"]);
             expect(collection.toArray()).toEqual(["a", "b", "c"]);
             expect(collection.toArray()).toEqual(["a", "b", "c"]);
+        });
+    });
+    describe("method: toRecord", () => {
+        test("Should throw TypeCollectionError when given an item that is not array", () => {
+            const collection = new ListCollection(["a"]);
+            expect(() => collection.toRecord()).toThrowError(
+                TypeCollectionError,
+            );
+        });
+        test("Should throw TypeCollectionError when given an item that is empty array", () => {
+            const collection = new ListCollection([[]]);
+            expect(() => collection.toRecord()).toThrowError(
+                TypeCollectionError,
+            );
+        });
+        test("Should throw TypeCollectionError when given an item that is array of size 1", () => {
+            const collection = new ListCollection([["a"]]);
+            expect(() => collection.toRecord()).toThrowError(
+                TypeCollectionError,
+            );
+        });
+        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item boolean", () => {
+            const collection = new ListCollection([[false, "a"]]);
+            expect(() => collection.toRecord()).toThrowError(
+                TypeCollectionError,
+            );
+        });
+        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item is a object", () => {
+            const collection = new ListCollection([[{}, "a"]]);
+            expect(() => collection.toRecord()).toThrowError(
+                TypeCollectionError,
+            );
+        });
+        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item is a function", () => {
+            const collection = new ListCollection([[() => {}, "a"]]);
+            expect(() => collection.toRecord()).toThrowError(
+                TypeCollectionError,
+            );
+        });
+        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item is a bigint", () => {
+            const collection = new ListCollection([[1n, "a"]]);
+            expect(() => collection.toRecord()).toThrowError(
+                TypeCollectionError,
+            );
+        });
+        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item is a null", () => {
+            const collection = new ListCollection([[null, "a"]]);
+            expect(() => collection.toRecord()).toThrowError(
+                TypeCollectionError,
+            );
+        });
+        test("Should return Record when given items that is array of size 2 and where first items are string, number and symbols", () => {
+            const MY_SYMBOL = Symbol("MY_SYMBOL");
+            const collection = new ListCollection([
+                ["a", 1],
+                [1, "b"],
+                [MY_SYMBOL, "c"],
+            ]);
+            expect(collection.toRecord()).toEqual({
+                a: 1,
+                1: "b",
+                [MY_SYMBOL]: "c",
+            });
+        });
+    });
+    describe("method: toMap", () => {
+        test("Should throw TypeCollectionError when given an item that is not array", () => {
+            const collection = new ListCollection(["a"]);
+            expect(() => collection.toMap()).toThrowError(TypeCollectionError);
+        });
+        test("Should throw TypeCollectionError when given an item that is empty array", () => {
+            const collection = new ListCollection([[]]);
+            expect(() => collection.toMap()).toThrowError(TypeCollectionError);
+        });
+        test("Should throw TypeCollectionError when given an item that is array of size 1", () => {
+            const collection = new ListCollection([["a"]]);
+            expect(() => collection.toMap()).toThrowError(TypeCollectionError);
+        });
+        test("Should return Map when given items that is array of size 2", () => {
+            const MY_SYMBOL = Symbol("MY_SYMBOL");
+            const collection = new ListCollection([
+                ["a", 1],
+                [1, "b"],
+                [MY_SYMBOL, "c"],
+            ] as const);
+
+            expect(collection.toMap()).toEqual(
+                new Map<unknown, unknown>([
+                    ["a", 1],
+                    [1, "b"],
+                    [MY_SYMBOL, "c"],
+                ]),
+            );
         });
     });
 });

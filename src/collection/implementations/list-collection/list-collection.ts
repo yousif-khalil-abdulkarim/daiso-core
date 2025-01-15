@@ -3,6 +3,7 @@
  */
 
 import { isIterable } from "@/collection/implementations/_shared";
+import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module";
 import {
     type Collapse,
     type Comparator,
@@ -22,7 +23,6 @@ import {
     type CrossJoinResult,
 } from "@/collection/contracts/_module";
 import { type Lazyable } from "@/_shared/types";
-import { type RecordItem } from "@/_shared/types";
 import { simplifyLazyable } from "@/_shared/utilities";
 
 /**
@@ -47,7 +47,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         return this[Symbol.iterator]() as Iterator<TInput, void>;
     }
 
-    entries(): ICollection<RecordItem<number, TInput>> {
+    entries(): ICollection<[number, TInput]> {
         return new ListCollection(this.array.entries());
     }
 
@@ -180,7 +180,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
         }
         const item = this.array[index];
         if (item === undefined) {
-            throw new UnexpectedCollectionError("!!__message__!!");
+            return this;
         }
         if (typeof value === "function") {
             const fn = value as Map<TInput, ICollection<TInput>, TInput>;
@@ -525,7 +525,7 @@ export class ListCollection<TInput> implements ICollection<TInput> {
     groupBy<TOutput = TInput>(
         selectFn: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
             item as unknown as TOutput,
-    ): ICollection<RecordItem<TOutput, ICollection<TInput>>> {
+    ): ICollection<[TOutput, ICollection<TInput>]> {
         const map = new Map<TOutput, ICollection<TInput>>();
         for (const [index, item] of this.array.entries()) {
             const key = selectFn(item, index, this);
@@ -537,14 +537,16 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
             map.set(key, collection.append([item]));
         }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-        return new ListCollection(map as any);
+        return new ListCollection<[TOutput, ICollection<TInput>]>(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+            map as any,
+        );
     }
 
     countBy<TOutput = TInput>(
         selectFn: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
             item as unknown as TOutput,
-    ): ICollection<RecordItem<TOutput, number>> {
+    ): ICollection<[TOutput, number]> {
         const map = new Map<TOutput, number>();
         for (const [index, item] of this.array.entries()) {
             const key = selectFn(item, index, this);
@@ -735,13 +737,13 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     zip<TExtended>(
         iterable: Iterable<TExtended>,
-    ): ICollection<RecordItem<TInput, TExtended>> {
+    ): ICollection<[TInput, TExtended]> {
         const iterableArray = [...iterable];
         let size = iterableArray.length;
         if (size > this.size()) {
             size = this.size();
         }
-        const items: RecordItem<TInput, TExtended>[] = [];
+        const items: Array<[TInput, TExtended]> = [];
         for (let index = 0; index < size; index++) {
             const itemA = this.array[index],
                 itemB = iterableArray[index];
@@ -965,5 +967,54 @@ export class ListCollection<TInput> implements ICollection<TInput> {
 
     toArray(): TInput[] {
         return [...this.array];
+    }
+
+    toRecord(): EnsureRecord<TInput> {
+        const record: Record<string | number | symbol, unknown> = {};
+        for (const item of this) {
+            if (!Array.isArray(item)) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
+                );
+            }
+            if (item.length !== 2) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
+                );
+            }
+            const [key, value] = item;
+            if (
+                !(
+                    typeof key === "string" ||
+                    typeof key === "number" ||
+                    typeof key === "symbol"
+                )
+            ) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
+                );
+            }
+            record[key] = value;
+        }
+        return record as EnsureRecord<TInput>;
+    }
+
+    toMap(): EnsureMap<TInput> {
+        const map = new Map();
+        for (const item of this) {
+            if (!Array.isArray(item)) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2",
+                );
+            }
+            if (item.length !== 2) {
+                throw new TypeCollectionError(
+                    "Item type is invalid must be a tuple of size 2",
+                );
+            }
+            const [key, value] = item;
+            map.set(key, value);
+        }
+        return map as EnsureMap<TInput>;
     }
 }
