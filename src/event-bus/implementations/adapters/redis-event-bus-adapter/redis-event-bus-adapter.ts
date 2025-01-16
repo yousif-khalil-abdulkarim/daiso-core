@@ -3,10 +3,7 @@
  */
 
 import { type ISerializer } from "@/serializer/contracts/_module";
-import {
-    RedisSerializer,
-    SuperJsonSerializer,
-} from "@/serializer/implementations/_module";
+import { RedisSerializer } from "@/serializer/implementations/_module";
 import type {
     IBaseEvent,
     IEventBusAdapter,
@@ -22,11 +19,26 @@ import { EventEmitter } from "node:events";
 export type RedisEventBusAdapterSettings = {
     dispatcherClient: Redis;
     listenerClient: Redis;
-    serializer?: ISerializer<string>;
+    serializer: ISerializer<string>;
 };
 
 /**
+ * To utilize the <i>RedisEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
+ * @example
+ * ```ts
+ * import { RedisEventBusAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import Redis from "ioredis";
+ *
+ * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
+ * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
+ * const serializer = new SuperJsonSerializer();
+ * const eventBusAdapter = new RedisEventBusAdapter({
+ *   dispatcherClient,
+ *   listenerClient,
+ *   serializer,
+ * });
+ * ```
  */
 export class RedisEventBusAdapter implements IEventBusAdapter {
     private readonly serializer: ISerializer<string>;
@@ -37,7 +49,7 @@ export class RedisEventBusAdapter implements IEventBusAdapter {
     constructor({
         dispatcherClient,
         listenerClient,
-        serializer = new SuperJsonSerializer(),
+        serializer,
     }: RedisEventBusAdapterSettings) {
         this.dispatcherClient = dispatcherClient;
         this.listenerClient = listenerClient;

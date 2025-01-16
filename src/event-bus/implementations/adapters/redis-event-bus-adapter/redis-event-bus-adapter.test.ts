@@ -5,6 +5,7 @@ import { TimeSpan } from "@/utilities/_module";
 import type { StartedRedisContainer } from "@testcontainers/redis";
 import { RedisContainer } from "@testcontainers/redis";
 import Redis from "ioredis";
+import { SuperJsonSerializer } from "@/serializer/implementations/_module";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisEventBusAdapter", () => {
@@ -26,6 +27,7 @@ describe("class: RedisEventBusAdapter", () => {
             new RedisEventBusAdapter({
                 dispatcherClient,
                 listenerClient,
+                serializer: new SuperJsonSerializer(),
             }),
         test,
         beforeEach,
