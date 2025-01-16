@@ -2,7 +2,6 @@
  * @module EventBus
  */
 
-import type { Validator } from "@/utilities/_module";
 import type {
     INamespacedEventBus,
     IEventBusAdapter,
@@ -59,8 +58,6 @@ export class EventBusFactory<
     private readonly drivers: EventBusDrivers<TAdapters>;
     private readonly defaultDriver?: TAdapters;
     private readonly rootNamespace?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private validator: Validator<any> = (value) => value;
 
     constructor(settings: EventBusFactorySettings<TAdapters>) {
         const { drivers, defaultDriver, rootNamespace } = settings;
@@ -81,16 +78,7 @@ export class EventBusFactory<
         }
         return new EventBus(selectedAdapter, {
             rootNamespace: this.rootNamespace,
-            validator: this.validator,
         });
-    }
-
-    withValidation<TOutput extends IBaseEvent = IBaseEvent>(
-        validator: Validator<TOutput>,
-    ): IEventBusFactory<TAdapters, TOutput> {
-        this.validator = validator;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-        return this as any;
     }
 
     withType<TOutput extends IBaseEvent = IBaseEvent>(): IEventBusFactory<

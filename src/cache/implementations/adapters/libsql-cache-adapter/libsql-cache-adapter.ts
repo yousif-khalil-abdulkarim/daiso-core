@@ -10,6 +10,7 @@ import type { Client } from "@libsql/client";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 import {
     SqlSerializer,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     SuperJsonSerializer,
 } from "@/serializer/implementations/_module";
 import { Kysely } from "kysely";
@@ -22,24 +23,36 @@ import { KyselyTableNameTransformerPlugin } from "@/_shared/kysely/_module";
  */
 export type LibsqlCacheAdapterSettings = {
     tableName?: string;
-    serializer?: ISerializer<string>;
+    serializer: ISerializer<string>;
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
 };
 
 /**
+ * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
+ * @example
+ * ```ts
+ * import { LibsqlCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import { createClient } from "@libsql/client";
+ *
+ * const client = createClient({ url: "file:local.db" });
+ * const serializer = new SuperJsonSerializer();
+ * const cacheAdapter = new LibsqlCacheAdapter(client, {
+ *   serializer,
+ * });
+ * ```
  */
 export class LibsqlCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly cacheAdapter: KyselySqliteCacheAdapter<TType>;
 
-    constructor(client: Client, settings: LibsqlCacheAdapterSettings = {}) {
+    constructor(client: Client, settings: LibsqlCacheAdapterSettings) {
         const {
             tableName = "cache",
-            serializer = new SuperJsonSerializer(),
+            serializer,
             enableTransactions = false,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,

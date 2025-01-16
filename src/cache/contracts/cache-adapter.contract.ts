@@ -31,7 +31,7 @@ export type ICacheAdapter<TType = unknown> = {
     update(key: string, value: TType): PromiseLike<boolean>;
 
     /**
-     * The <i>put</i> method replaces a <i>key</i> that exists or adds <i>key</i> that do not exists. Return true if the <i>key</i> where updated otherwise false is returned.
+     * The <i>put</i> method replaces a <i>key</i> that exists or adds <i>key</i> that do not exists. Returns true if the <i>key</i> where updated otherwise false is returned.
      * You can provide a <i>ttl</i> value. If null is passed, the item will not expire.
      */
     put(key: string, value: TType, ttl: TimeSpan | null): PromiseLike<boolean>;

@@ -5,10 +5,7 @@
 import type { IDeinitizable, IInitizable } from "@/_shared/types";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { ISerializer } from "@/serializer/contracts/_module";
-import {
-    SqlSerializer,
-    SuperJsonSerializer,
-} from "@/serializer/implementations/_module";
+import { SqlSerializer } from "@/serializer/implementations/_module";
 import type { TimeSpan } from "@/utilities/_module";
 import { type Database } from "better-sqlite3";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
@@ -20,14 +17,26 @@ import { KyselyTableNameTransformerPlugin } from "@/_shared/kysely/kysely-table-
  */
 export type SqliteStorageAdapterSettings = {
     tableName?: string;
-    serializer?: ISerializer<string>;
+    serializer: ISerializer<string>;
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
 };
 
 /**
+ * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
+ * @example
+ * ```ts
+ * import { SqliteCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import Sqlite from "better-sqlite3";
+ *
+ * const client = new Sqlite("local.db");
+ * const serializer = new SuperJsonSerializer();
+ * const cacheAdapter = new SqliteCacheAdapter(client, {
+ *   serializer,
+ * });
+ * ```
  */
 export class SqliteCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
@@ -37,7 +46,7 @@ export class SqliteCacheAdapter<TType>
     constructor(database: Database, settings: SqliteStorageAdapterSettings) {
         const {
             tableName = "cache",
-            serializer = new SuperJsonSerializer(),
+            serializer,
             enableTransactions = false,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,

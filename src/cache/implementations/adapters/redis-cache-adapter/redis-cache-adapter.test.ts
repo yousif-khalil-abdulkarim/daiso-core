@@ -7,6 +7,7 @@ import {
     type StartedRedisContainer,
 } from "@testcontainers/redis";
 import { TimeSpan } from "@/utilities/_module";
+import { SuperJsonSerializer } from "@/serializer/implementations/_module";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisCacheAdapter", () => {
@@ -21,7 +22,10 @@ describe("class: RedisCacheAdapter", () => {
         await startedContainer.stop();
     }, timeout.toMilliseconds());
     cacheAdapterTestSuite({
-        createAdapter: () => new RedisCacheAdapter(client),
+        createAdapter: () =>
+            new RedisCacheAdapter(client, {
+                serializer: new SuperJsonSerializer(),
+            }),
         test,
         beforeEach,
         expect,

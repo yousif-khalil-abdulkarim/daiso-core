@@ -5,6 +5,7 @@ import type { StartedMongoDBContainer } from "@testcontainers/mongodb";
 import { MongoDBContainer } from "@testcontainers/mongodb";
 import { TimeSpan } from "@/utilities/_module";
 import { MongodbCacheAdapter } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter";
+import { SuperJsonSerializer } from "@/serializer/implementations/_module";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: MongodbCacheAdapter", () => {
@@ -24,6 +25,9 @@ describe("class: MongodbCacheAdapter", () => {
         createAdapter: async () => {
             const cacheAdapter = new MongodbCacheAdapter(
                 client.db("database").collection("cache"),
+                {
+                    serializer: new SuperJsonSerializer(),
+                },
             );
             await cacheAdapter.init();
             return cacheAdapter;

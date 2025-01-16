@@ -7,7 +7,22 @@ import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { TimeSpan } from "@/utilities/_module";
 
 /**
+ * To utilize the <i>MemoryCacheAdapter</i>, you must create instance of it.
  * @group Adapters
+ * @example
+ * ```ts
+ * import { MemoryCacheAdapter } from "@daiso-tech/core";
+ *
+ * const cacheAdapter = new MemoryCacheAdapter(client);
+ * ```
+ * You can also provide an <i>Map</i>.
+ * @example
+ * ```ts
+ * import { MemoryCacheAdapter } from "@daiso-tech/core";
+ *
+ * const map = new Map<any, any>();
+ * const cacheAdapter = new MemoryCacheAdapter(map);
+ * ```
  */
 export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
     constructor(private readonly map: Map<string, TType> = new Map()) {}
