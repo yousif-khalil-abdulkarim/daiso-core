@@ -19,7 +19,7 @@ import { delay, TimeSpan } from "@/utilities/_module";
 /**
  * @group Utilities
  */
-export type EventBusTestSuiteSettings = {
+export type EventBusAdapterTestSuiteSettings = {
     expect: ExpectStatic;
     test: TestAPI;
     describe: SuiteAPI;
@@ -29,25 +29,48 @@ export type EventBusTestSuiteSettings = {
 
 /**
  * The <i>eventBusAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IEventBusAdapter}</i> with vitest.
+ * @group Utilities
  * @example
  * ```ts
- * import { eventBusAdapterTestSuite, MemoryEventBusAdapter } from "@daiso-tech/core";
- * import { expext, test, describe, beforeEach } from "vitest";
+ * import { describe, test, beforeEach, expect, afterEach } from "vitest";
+ * import type { StartedRedisContainer } from "@testcontainers/redis";
+ * import { RedisContainer } from "@testcontainers/redis";
+ * import Redis from "ioredis";
+ * import { SuperJsonSerializer, TimeSpan, RedisEventBusAdapter, eventBusAdapterTestSuite } from "@daiso-tech/core";
  *
- * describe("class: MemoryEventBusAdapter", () => {
- *   eventBusAdapterTestSuite({
- *     createAdapter: () => new MemoryEventBusAdapter(),
- *     test,
- *     beforeEach,
- *     expect,
- *     describe,
+ * const timeout = TimeSpan.fromMinutes(2);
+ * describe("class: RedisEventBusAdapter", () => {
+ *   let dispatcherClient: Redis;
+ *   let listenerClient: Redis;
+ *   let startedContainer: StartedRedisContainer;
+ *   const serializer = new SuperJsonSerializer();
+ *   beforeEach(async () => {
+ *     startedContainer = await new RedisContainer().start();
+ *     dispatcherClient = new Redis(startedContainer.getConnectionUrl());
+ *     listenerClient = new Redis(startedContainer.getConnectionUrl());
+ *   }, timeout.toMilliseconds());
+ *   afterEach(async () => {
+ *     await dispatcherClient.quit();
+ *     await listenerClient.quit();
+ *     await startedContainer.stop();
+ *   }, timeout.toMilliseconds());
+ *    eventBusAdapterTestSuite({
+ *      createAdapter: () =>
+ *        new RedisEventBusAdapter({
+ *          dispatcherClient,
+ *          listenerClient,
+ *          serializer,
+ *        }),
+ *      test,
+ *      beforeEach,
+ *      expect,
+ *      describe,
  *   });
  * });
  * ```
- * @group Utilities
  */
 export function eventBusAdapterTestSuite(
-    settings: EventBusTestSuiteSettings,
+    settings: EventBusAdapterTestSuiteSettings,
 ): void {
     const { expect, test, createAdapter, beforeEach } = settings;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

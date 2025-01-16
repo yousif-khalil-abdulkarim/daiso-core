@@ -1,40 +1,104 @@
-import { describe, test, beforeEach, expect } from "vitest";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
-import { EventBus } from "@/event-bus/implementations/derivables/event-bus";
-import type { IBaseEvent, IEventBus } from "@/event-bus/contracts/_module";
-import { delay, TimeSpan } from "@/utilities/_module";
-import { eventBusTestSuite } from "@/event-bus/implementations/_shared/_module";
-import { EventEmitter } from "node:events";
+/**
+ * @module EventBus
+ */
 
-describe("class: EventBus", () => {
-    let eventEmitter: EventEmitter;
-    beforeEach(() => {
-        eventEmitter = new EventEmitter();
-    });
-    eventBusTestSuite({
-        test,
+import {
+    type TestAPI,
+    type SuiteAPI,
+    type ExpectStatic,
+    type beforeEach,
+} from "vitest";
+import type { IBaseEvent, IEventBus } from "@/event-bus/contracts/_module";
+import { type Promisable } from "@/_shared/types";
+import { delay, TimeSpan } from "@/utilities/_module";
+
+/**
+ * @group Utilities
+ */
+export type EventBusTestSuiteSettings = {
+    expect: ExpectStatic;
+    test: TestAPI;
+    describe: SuiteAPI;
+    beforeEach: typeof beforeEach;
+    createEventBusA: () => Promisable<IEventBus>;
+    createEventBusB: () => Promisable<IEventBus>;
+};
+
+/**
+ * The <i>eventBusTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IEventBus}</i> with vitest.
+ * @group Utilities
+ * @example
+ * ```ts
+ * import { describe, test, beforeEach, expect, afterEach } from "vitest";
+ * import type { StartedRedisContainer } from "@testcontainers/redis";
+ * import { RedisContainer } from "@testcontainers/redis";
+ * import Redis from "ioredis";
+ * import { SuperJsonSerializer, TimeSpan, RedisEventBusAdapter, eventBusTestSuite } from "@daiso-tech/core";
+ *
+ * const timeout = TimeSpan.fromMinutes(2);
+ * describe("class: EventBus", () => {
+ *   let dispatcherClient: Redis;
+ *   let listenerClient: Redis;
+ *   let startedContainer: StartedRedisContainer;
+ *   const serializer = new SuperJsonSerializer();
+ *   beforeEach(async () => {
+ *     startedContainer = await new RedisContainer().start();
+ *     dispatcherClient = new Redis(startedContainer.getConnectionUrl());
+ *     listenerClient = new Redis(startedContainer.getConnectionUrl());
+ *   }, timeout.toMilliseconds());
+ *   afterEach(async () => {
+ *     await dispatcherClient.quit();
+ *     await listenerClient.quit();
+ *     await startedContainer.stop();
+ *   }, timeout.toMilliseconds());
+ *    eventBusTestSuite({
+ *      createEventBusA: () =>
+ *        new EventBus(
+ *          new RedisEventBusAdapter({
+ *            dispatcherClient,
+ *            listenerClient,
+ *            serializer,
+ *          }),
+ *          { rootNamespace: "@a" }
+ *        ),
+ *      createEventBusB: () =>
+ *        new EventBus(
+ *          new RedisEventBusAdapter({
+ *            dispatcherClient,
+ *            listenerClient,
+ *            serializer,
+ *          }),
+ *          { rootNamespace: "@b" }
+ *        ),
+ *      test,
+ *      beforeEach,
+ *      expect,
+ *      describe,
+ *   });
+ * });
+ * ```
+ */
+export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
+    const {
         expect,
+        test,
         describe,
+        createEventBusA,
+        createEventBusB,
         beforeEach,
-        createEventBusA: () =>
-            new EventBus(new MemoryEventBusAdapter(eventEmitter), {
-                rootNamespace: "@/a",
-            }),
-        createEventBusB: () =>
-            new EventBus(new MemoryEventBusAdapter(eventEmitter), {
-                rootNamespace: "@/b",
-            }),
+    } = settings;
+    let eventBusA: IEventBus;
+    let eventBusB: IEventBus;
+    beforeEach(async () => {
+        eventBusA = await createEventBusA();
+        eventBusB = await createEventBusB();
     });
     describe("Api tests:", () => {
-        let eventBus: IEventBus;
-        beforeEach(() => {
-            eventBus = new EventBus(new MemoryEventBusAdapter());
-        });
         describe("method: addListener, removeListener, dispatch", () => {
             test("Should be null when listener added and event is not triggered", async () => {
                 const TYPE = "type";
                 let result: IBaseEvent | null = null;
-                await eventBus.addListener(TYPE, (event) => {
+                await eventBusA.addListener(TYPE, (event) => {
                     result = event;
                 });
                 expect(result).toBeNull();
@@ -44,11 +108,11 @@ describe("class: EventBus", () => {
                     type: "type",
                 };
                 let result: IBaseEvent | null = null;
-                await eventBus.addListener(event.type, (event) => {
+                await eventBusA.addListener(event.type, (event) => {
                     result = event;
                 });
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBus.dispatch([event]);
+                await eventBusA.dispatch([event]);
                 expect(result).toEqual(event);
             });
             test("Should be null when listener removed and event is triggered", async () => {
@@ -59,10 +123,10 @@ describe("class: EventBus", () => {
                 const listener = (event: IBaseEvent) => {
                     result = event;
                 };
-                await eventBus.addListener(event.type, listener);
-                await eventBus.removeListener(event.type, listener);
+                await eventBusA.addListener(event.type, listener);
+                await eventBusA.removeListener(event.type, listener);
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBus.dispatch([event]);
+                await eventBusA.dispatch([event]);
                 expect(result).toBeNull();
             });
         });
@@ -71,7 +135,7 @@ describe("class: EventBus", () => {
                 const TYPE_1 = "type_1";
                 const TYPE_2 = "type_2";
                 let result: IBaseEvent | null = null;
-                await eventBus.addListenerMany([TYPE_1, TYPE_2], (event) => {
+                await eventBusA.addListenerMany([TYPE_1, TYPE_2], (event) => {
                     result = event;
                 });
                 expect(result).toBeNull();
@@ -85,7 +149,7 @@ describe("class: EventBus", () => {
                 };
                 let result_1: IBaseEvent | null = null;
                 let result_2: IBaseEvent | null = null;
-                await eventBus.addListenerMany(
+                await eventBusA.addListenerMany(
                     [event_1.type, event_2.type],
                     (eventObj: IBaseEvent) => {
                         if (eventObj.type === event_1.type) {
@@ -97,7 +161,7 @@ describe("class: EventBus", () => {
                     },
                 );
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBus.dispatch([event_1, event_2]);
+                await eventBusA.dispatch([event_1, event_2]);
                 expect(result_1).toEqual(event_1);
                 expect(result_2).toEqual(event_2);
             });
@@ -112,16 +176,16 @@ describe("class: EventBus", () => {
                 const listener = (event: IBaseEvent) => {
                     result = event;
                 };
-                await eventBus.addListenerMany(
+                await eventBusA.addListenerMany(
                     [event_A.type, event_B.type],
                     listener,
                 );
-                await eventBus.removeListenerMany(
+                await eventBusA.removeListenerMany(
                     [event_A.type, event_B.type],
                     listener,
                 );
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBus.dispatch([event_A, event_B]);
+                await eventBusA.dispatch([event_A, event_B]);
                 expect(result).toBeNull();
             });
         });
@@ -129,7 +193,7 @@ describe("class: EventBus", () => {
             test("Should be null when listener added and event is not triggered", async () => {
                 const TYPE = "type";
                 let result: IBaseEvent | null = null;
-                await eventBus.subscribe(TYPE, (event) => {
+                await eventBusA.subscribe(TYPE, (event) => {
                     result = event;
                 });
                 expect(result).toBeNull();
@@ -139,11 +203,11 @@ describe("class: EventBus", () => {
                     type: "type",
                 };
                 let result: IBaseEvent | null = null;
-                await eventBus.subscribe(event.type, (event) => {
+                await eventBusA.subscribe(event.type, (event) => {
                     result = event;
                 });
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBus.dispatch([event]);
+                await eventBusA.dispatch([event]);
                 expect(result).toEqual(event);
             });
             test("Should be null when listener removed and event is triggered", async () => {
@@ -154,13 +218,13 @@ describe("class: EventBus", () => {
                 const listener = (event: IBaseEvent) => {
                     result = event;
                 };
-                const unsubscribe = await eventBus.subscribe(
+                const unsubscribe = await eventBusA.subscribe(
                     event.type,
                     listener,
                 );
                 await unsubscribe();
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBus.dispatch([event]);
+                await eventBusA.dispatch([event]);
                 expect(result).toBeNull();
             });
         });
@@ -169,7 +233,7 @@ describe("class: EventBus", () => {
                 const TYPE_1 = "type_1";
                 const TYPE_2 = "type_2";
                 let result: IBaseEvent | null = null;
-                await eventBus.subscribeMany([TYPE_1, TYPE_2], (event) => {
+                await eventBusA.subscribeMany([TYPE_1, TYPE_2], (event) => {
                     result = event;
                 });
                 expect(result).toBeNull();
@@ -183,7 +247,7 @@ describe("class: EventBus", () => {
                 };
                 let result_1: IBaseEvent | null = null;
                 let result_2: IBaseEvent | null = null;
-                await eventBus.subscribeMany(
+                await eventBusA.subscribeMany(
                     [event_1.type, event_2.type],
                     (eventObj: IBaseEvent) => {
                         if (eventObj.type === event_1.type) {
@@ -195,7 +259,7 @@ describe("class: EventBus", () => {
                     },
                 );
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBus.dispatch([event_1, event_2]);
+                await eventBusA.dispatch([event_1, event_2]);
                 expect(result_1).toEqual(event_1);
                 expect(result_2).toEqual(event_2);
             });
@@ -210,29 +274,18 @@ describe("class: EventBus", () => {
                 const listener = (event: IBaseEvent) => {
                     result = event;
                 };
-                const unsubscribe = await eventBus.subscribeMany(
+                const unsubscribe = await eventBusA.subscribeMany(
                     [event_A.type, event_B.type],
                     listener,
                 );
                 await unsubscribe();
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBus.dispatch([event_A, event_B]);
+                await eventBusA.dispatch([event_A, event_B]);
                 expect(result).toBeNull();
             });
         });
     });
     describe("Namespace tests:", () => {
-        let eventBusA: IEventBus;
-        let eventBusB: IEventBus;
-        beforeEach(() => {
-            const adapter = new MemoryEventBusAdapter();
-            eventBusA = new EventBus(adapter, {
-                rootNamespace: "@a",
-            });
-            eventBusB = new EventBus(adapter, {
-                rootNamespace: "@b",
-            });
-        });
         test("method: addListener / dispatch", async () => {
             const event: IBaseEvent = {
                 type: "type",
@@ -372,4 +425,4 @@ describe("class: EventBus", () => {
             expect(result_b).toBeNull();
         });
     });
-});
+}
