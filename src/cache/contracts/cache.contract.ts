@@ -141,7 +141,7 @@ export type ICache<TType = unknown> = ICacheListenable & {
     put(key: string, value: TType, ttl?: TimeSpan | null): LazyPromise<boolean>;
 
     /**
-     * The <i>putMany</i> method replaces the keys that exists. Adds keys that do not exists. Return true for all the keys that where updated otherwise false is returned.
+     * The <i>putMany</i> method replaces the keys that exists. Adds keys that do not exists. Returns true for all the keys that where updated otherwise false is returned.
      * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     putMany<TKeys extends string>(
