@@ -24,35 +24,37 @@ export type CacheAdapterTestSuiteSettings = {
 };
 
 /**
- * The <i>cacheAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICacheAdapter}</i>.
+ * The <i>cacheAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICacheAdapter}</i> with <i>vitest</i>.
  * @group Utilities
  * @example
  * ```ts
+ * import Redis from "ioredis";
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
- * import { cacheAdapterTestSuite, SqliteCacheAdapter } from "@daiso-tech/core";
- * import Sqlite, { type Database } from "better-sqlite3";
+ * import { RedisContainer, type StartedRedisContainer } from "@testcontainers/redis";
+ * import { SuperJsonSerializer, TimeSpan, RedisCacheAdapter, cacheAdapterTestSuite } from "@daiso-tech/core";
  *
- * describe("class: SqliteCacheAdapter", () => {
- *   let database: Database;
- *   beforeEach(() => {
- *       database = new Sqlite(":memory:");
- *   });
- *   afterEach(() => {
- *       database.close();
- *   });
+ * const timeout = TimeSpan.fromMinutes(2);
+ * describe("class: RedisCacheAdapter", () => {
+ *   let client: Redis;
+ *   let startedContainer: StartedRedisContainer;
+ *   const serializer = new SuperJsonSerializer();
+ *   beforeEach(async () => {
+ *     startedContainer = await new RedisContainer("redis:7.4.2").start();
+ *     client = new Redis(startedContainer.getConnectionUrl());
+ *   }, timeout.toMilliseconds());
+ *   afterEach(async () => {
+ *     await client.quit();
+ *     await startedContainer.stop();
+ *   }, timeout.toMilliseconds());
  *   cacheAdapterTestSuite({
- *       createAdapter: async () => {
- *         const cacheAdapter = new SqliteCacheAdapter(database, {
- *           tableName: "custom_table",
- *           enableTransactions: true,
- *         });
- *         await cacheAdapter.init();
- *         return cacheAdapter;
- *       },
- *       test,
- *       beforeEach,
- *       expect,
- *       describe,
+ *     createAdapter: () =>
+ *       new RedisCacheAdapter(client, {
+ *         serializer,
+ *       }),
+ *     test,
+ *     beforeEach,
+ *     expect,
+ *     describe,
  *   });
  * });
  * ```
