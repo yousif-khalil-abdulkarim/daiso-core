@@ -17,48 +17,6 @@ import { delay, TimeSpan } from "@/utilities/_module";
 
 /**
  * @group Utilities
- * @example
- * ```ts
- * import { afterEach, beforeEach, describe, expect, test } from "vitest";
- * import { cacheAdapterTestSuite, SqliteCacheAdapter } from "@daiso-tech/core";
- * import Sqlite, { type Database } from "better-sqlite3";
- *
- * describe("class: Cache", () => {
- *   let database: Database;
- *   beforeEach(() => {
- *       database = new Sqlite(":memory:");
- *   });
- *   afterEach(() => {
- *       database.close();
- *   });
- *   cacheAdapterTestSuite({
- *       createCacheA: async () => {
- *         const cacheAdapterA = new SqliteCacheAdapter(database, {
- *           tableName: "custom_table",
- *           enableTransactions: true,
- *         });
- *         await cacheAdapterA.init();
- *         return new Cache(cacheAdapterA, {
- *           rootNamespace: "@a"
- *         });
- *       },
- *       createCacheB: async () => {
- *         const cacheAdapterB = new SqliteCacheAdapter(database, {
- *           tableName: "custom_table",
- *           enableTransactions: true,
- *         });
- *         await cacheAdapterB.init();
- *         return new Cache(cacheAdapterB, {
- *           rootNamespace: "@b"
- *         });
- *       },
- *       test,
- *       beforeEach,
- *       expect,
- *       describe,
- *   });
- * });
- * ```
  */
 export type CacheTestSuiteSettings = {
     expect: ExpectStatic;
@@ -68,6 +26,60 @@ export type CacheTestSuiteSettings = {
     createCacheA: () => Promisable<ICache>;
     createCacheB: () => Promisable<ICache>;
 };
+
+/**
+ * The <i>cacheTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICache}</i> with <i>vitest</i>.
+ * @group Utilities
+ * @example
+ * ```ts
+ * import Redis from "ioredis";
+ * import { afterEach, beforeEach, describe, expect, test } from "vitest";
+ * import { RedisContainer, type StartedRedisContainer } from "@testcontainers/redis";
+ * import { SuperJsonSerializer, TimeSpan, RedisCacheAdapter, cacheTestSuite, MemoryEventBusAdapter } from "@daiso-tech/core";
+ *
+ * const timeout = TimeSpan.fromMinutes(2);
+ * describe("class: Cache", () => {
+ *   let client: Redis;
+ *   let startedContainer: StartedRedisContainer;
+ *   const eventBus = new EventBus(new MemoryEventBusAdapter()):
+ *   const serializer = new SuperJsonSerializer();
+ *   beforeEach(async () => {
+ *     startedContainer = await new RedisContainer("redis:7.4.2").start();
+ *     client = new Redis(startedContainer.getConnectionUrl());
+ *   }, timeout.toMilliseconds());
+ *   afterEach(async () => {
+ *     await client.quit();
+ *     await startedContainer.stop();
+ *   }, timeout.toMilliseconds());
+ *   cacheTestSuite({
+ *     createCacheA: () =>
+ *       new Cache(
+ *         new RedisCacheAdapter(client, {
+ *           serializer,
+ *         }),
+ *         {
+ *           rootNamespace: "@a",
+ *           eventBus,
+ *         }
+ *       ),
+ *     createCacheB: () =>
+ *       new Cache(
+ *         new RedisCacheAdapter(client, {
+ *           serializer,
+ *         }),
+ *         {
+ *           rootNamespace: "@b",
+ *           eventBus,
+ *         }
+ *       ),
+ *     test,
+ *     beforeEach,
+ *     expect,
+ *     describe,
+ *   });
+ * });
+ * ```
+ */
 export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
     const { expect, test, createCacheA, createCacheB, describe, beforeEach } =
         settings;
