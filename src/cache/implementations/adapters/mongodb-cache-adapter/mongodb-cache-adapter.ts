@@ -33,7 +33,21 @@ export type MongodbCacheAdapterSettings = {
 };
 
 /**
+ * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
+ * @example
+ * ```ts
+ * import { MongodbCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import { MongoClient } from "mongodb";
+ *
+ * const client = new MongoClient("YOUR_MONGODB_CONNECTION_STRING");
+ * const database = client.db("database");
+ * const cacheCollection = database.collection("cache");
+ * const serializer = new SuperJsonSerializer();
+ * const cacheAdapter = new MongodbCacheAdapter(cacheCollection, {
+ *   serializer,
+ * });
+ * ```
  */
 export class MongodbCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable

@@ -102,7 +102,19 @@ export type RedisCacheAdapterSettings = {
 };
 
 /**
+ * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
+ * @example
+ * ```ts
+ * import { RedisCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import Redis from "ioredis";
+ *
+ * const client = new Redis("YOUR_REDIS_CONNECTION_STRING");
+ * const serializer = new SuperJsonSerializer();
+ * const cacheAdapter = new RedisCacheAdapter(client, {
+ *   serializer,
+ * });
+ * ```
  */
 export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     private static isRedisTypeError(

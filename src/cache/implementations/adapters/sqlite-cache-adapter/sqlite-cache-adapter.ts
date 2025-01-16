@@ -24,7 +24,19 @@ export type SqliteStorageAdapterSettings = {
 };
 
 /**
+ * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
+ * @example
+ * ```ts
+ * import { SqliteCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import Sqlite from "better-sqlite3";
+ *
+ * const client = new Sqlite("local.db");
+ * const serializer = new SuperJsonSerializer();
+ * const cacheAdapter = new SqliteCacheAdapter(client, {
+ *   serializer,
+ * });
+ * ```
  */
 export class SqliteCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
