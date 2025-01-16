@@ -2,6 +2,7 @@
  * @module Shared
  */
 
+export type Values<TValue> = TValue[keyof TValue];
 export type OneOrMore<TItem> = TItem | TItem[];
 export type Lazyable<TValue> = TValue | (() => TValue);
 export type Promisable<TValue> = TValue | PromiseLike<TValue>;

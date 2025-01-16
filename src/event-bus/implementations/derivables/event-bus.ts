@@ -3,7 +3,11 @@
  */
 
 import { LazyPromise } from "@/utilities/_module";
-import type { SelectEvent } from "@/event-bus/contracts/_module";
+import type {
+    SelectEvent,
+    AllEvents,
+    BaseEvents,
+} from "@/event-bus/contracts/_module";
 import {
     type IEventBus,
     type INamespacedEventBus,
@@ -13,6 +17,7 @@ import {
     DispatchEventBusError,
     RemoveListenerEventBusError,
     AddListenerEventBusError,
+    UnexpectedEventBusError,
 } from "@/event-bus/contracts/_module";
 
 import { WithNamespaceEventBusAdapter } from "@/event-bus/implementations/derivables/with-namespace-event-bus-adapter";
@@ -64,7 +69,7 @@ export type EventBusSettings = {
  * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
  * @group Derivables
  */
-export class EventBus<TEvents extends IBaseEvent = IBaseEvent>
+export class EventBus<TEvents extends BaseEvents = BaseEvents>
     extends BaseEventBus<TEvents>
     implements INamespacedEventBus<TEvents>
 {
@@ -96,45 +101,51 @@ export class EventBus<TEvents extends IBaseEvent = IBaseEvent>
         return this.namespace;
     }
 
-    addListener<TEventType extends TEvents["type"]>(
-        event: TEventType,
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
+    addListener<TEventName extends keyof TEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
     ): LazyPromise<void> {
         return new LazyPromise(async () => {
             try {
+                if (typeof eventName !== "string") {
+                    throw new UnexpectedEventBusError("!!__message__!!");
+                }
                 await this.eventBusAdapter.addListener(
-                    event,
+                    eventName,
                     listener as Listener<IBaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new AddListenerEventBusError(
-                    `A listener with name of "${listener.name}" could not added for "${String(event)}" event`,
+                    `A listener with name of "${listener.name}" could not added for "${String(eventName)}" event`,
                     error,
                 );
             }
         });
     }
 
-    removeListener<TEventType extends TEvents["type"]>(
-        event: TEventType,
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
+    removeListener<TEventName extends keyof TEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
     ): LazyPromise<void> {
         return new LazyPromise(async () => {
+            if (typeof eventName !== "string") {
+                throw new UnexpectedEventBusError("!!__message__!!");
+            }
             try {
                 await this.eventBusAdapter.removeListener(
-                    event,
+                    eventName,
                     listener as Listener<IBaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new RemoveListenerEventBusError(
-                    `A listener with name of "${listener.name}" could not removed of "${String(event)}" event`,
+                    `A listener with name of "${listener.name}" could not removed of "${String(eventName)}" event`,
                     error,
                 );
             }
         });
     }
 
-    dispatch(events: OneOrMore<TEvents>): LazyPromise<void> {
+    dispatch(events: OneOrMore<AllEvents<TEvents>>): LazyPromise<void> {
         return new LazyPromise(async () => {
             if (!Array.isArray(events)) {
                 events = [events];
@@ -143,7 +154,7 @@ export class EventBus<TEvents extends IBaseEvent = IBaseEvent>
                 return;
             }
             try {
-                await this.eventBusAdapter.dispatch(events);
+                await this.eventBusAdapter.dispatch(events as IBaseEvent[]);
             } catch (error: unknown) {
                 throw new DispatchEventBusError(
                     `Events "${events.map((event) => event.type).join(", ")}" could not be dispatched`,

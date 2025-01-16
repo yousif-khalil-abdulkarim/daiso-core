@@ -3,14 +3,18 @@
  */
 
 import { LazyPromise } from "@/utilities/_module";
-import type { SelectEvent, Unsubscribe } from "@/event-bus/contracts/_module";
+import type {
+    SelectEvent,
+    BaseEvents,
+    Unsubscribe,
+    AllEvents,
+} from "@/event-bus/contracts/_module";
 import {
     type IEventBus,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type IEventBusAdapter,
     type INamespacedEventBus,
     type Listener,
-    type IBaseEvent,
 } from "@/event-bus/contracts/_module";
 
 import type { OneOrMore } from "@/_shared/types";
@@ -21,76 +25,76 @@ import { isArrayEmpty } from "@/_shared/utilities";
  * It simplifies implementing the {@link INamespacedEventBus} interface without using an {@link IEventBusAdapter}.
  * @group Derivables
  */
-export abstract class BaseEventBus<TEvents extends IBaseEvent>
+export abstract class BaseEventBus<TEvents extends BaseEvents = BaseEvents>
     implements INamespacedEventBus<TEvents>
 {
     abstract withNamespace(namespace: OneOrMore<string>): IEventBus<TEvents>;
 
     abstract getNamespace(): string;
 
-    abstract addListener<TEventType extends TEvents["type"]>(
-        event: TEventType,
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
+    abstract addListener<TEventName extends keyof TEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
     ): LazyPromise<void>;
 
-    addListenerMany<TEventType extends TEvents["type"]>(
-        events: TEventType[],
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
+    addListenerMany<TEventName extends keyof TEvents>(
+        eventNames: TEventName[],
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
     ): LazyPromise<void> {
         return new LazyPromise(async () => {
-            if (isArrayEmpty(events)) {
+            if (isArrayEmpty(eventNames)) {
                 return;
             }
             const promises: PromiseLike<void>[] = [];
-            for (const event of events) {
+            for (const event of eventNames) {
                 promises.push(this.addListener(event, listener));
             }
             await Promise.all(promises);
         });
     }
 
-    abstract removeListener<TEventType extends TEvents["type"]>(
-        event: TEventType,
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
+    abstract removeListener<TEventName extends keyof TEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
     ): LazyPromise<void>;
 
-    removeListenerMany<TEventType extends TEvents["type"]>(
-        events: TEventType[],
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
+    removeListenerMany<TEventName extends keyof TEvents>(
+        eventNames: TEventName[],
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
     ): LazyPromise<void> {
         return new LazyPromise(async () => {
-            if (isArrayEmpty(events)) {
+            if (isArrayEmpty(eventNames)) {
                 return;
             }
             const promises: PromiseLike<void>[] = [];
-            for (const event of events) {
+            for (const event of eventNames) {
                 promises.push(this.removeListener(event, listener));
             }
             await Promise.all(promises);
         });
     }
 
-    subscribe<TEventType extends TEvents["type"]>(
-        event: TEventType,
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
+    subscribe<TEventName extends keyof TEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
     ): LazyPromise<Unsubscribe> {
-        return this.subscribeMany([event], listener);
+        return this.subscribeMany([eventName], listener);
     }
 
-    subscribeMany<TEventType extends TEvents["type"]>(
-        events: TEventType[],
-        listener: Listener<SelectEvent<TEvents, TEventType>>,
+    subscribeMany<TEventName extends keyof TEvents>(
+        eventNames: TEventName[],
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
     ): LazyPromise<Unsubscribe> {
         return new LazyPromise(async () => {
-            await this.addListenerMany(events, listener);
+            await this.addListenerMany(eventNames, listener);
             const unsubscribe = () => {
                 return new LazyPromise(async () => {
-                    await this.removeListenerMany(events, listener);
+                    await this.removeListenerMany(eventNames, listener);
                 });
             };
             return unsubscribe;
         });
     }
 
-    abstract dispatch(events: OneOrMore<TEvents>): LazyPromise<void>;
+    abstract dispatch(events: OneOrMore<AllEvents<TEvents>>): LazyPromise<void>;
 }

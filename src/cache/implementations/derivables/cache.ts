@@ -2,26 +2,9 @@
  * @module Cache
  */
 
-import type {
-    KeyAddedCacheEvent,
-    KeyDecrementedCacheEvent,
-    KeyFoundCacheEvent,
-    KeyIncrementedCacheEvent,
-    KeyNotFoundCacheEvent,
-    KeyRemovedCacheEvent,
-    KeysClearedCacheEvent,
-    KeyUpdatedCacheEvent,
-    CacheEvent,
-} from "@/cache/contracts/_module";
-import {
-    CACHE_EVENTS,
-    type ICache,
-    type ICacheAdapter,
-} from "@/cache/contracts/_module";
-import {
-    type INamespacedCache,
-    type AllCacheEvents,
-} from "@/cache/contracts/_module";
+import type { CacheEvent, CacheEvents } from "@/cache/contracts/_module";
+import { type ICache, type ICacheAdapter } from "@/cache/contracts/_module";
+import { type INamespacedCache } from "@/cache/contracts/_module";
 import { simplifyNamespace } from "@/_shared/utilities";
 import type { OneOrMore } from "@/_shared/types";
 import type { TimeSpan } from "@/utilities/_module";
@@ -29,6 +12,7 @@ import { LazyPromise } from "@/utilities/_module";
 import type {
     INamespacedEventBus,
     IEventBus,
+    AllEvents,
 } from "@/event-bus/contracts/_module";
 import {
     EventBus,
@@ -72,7 +56,7 @@ export type CacheSettings<TType> = {
     /**
      * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link INamespacedEventBus}</i>.
      */
-    eventBus?: INamespacedEventBus<AllCacheEvents<TType>>;
+    eventBus?: INamespacedEventBus<CacheEvents<TType>>;
 
     /**
      * You can decide the default ttl value. If null is passed then no ttl will be used by default.
@@ -96,9 +80,9 @@ export class Cache<TType = unknown>
 {
     private readonly namespace: string;
     private readonly namespacedEventBus: INamespacedEventBus<
-        AllCacheEvents<TType>
+        CacheEvents<TType>
     >;
-    private readonly eventBus: IEventBus<AllCacheEvents<TType>>;
+    private readonly eventBus: IEventBus<CacheEvents<TType>>;
     private readonly cacheAdapter: ICacheAdapter<TType>;
     private readonly eventAttributes: CacheEvent;
     private readonly defaultTtl: TimeSpan | null;
@@ -136,18 +120,18 @@ export class Cache<TType = unknown>
     private createKeyFoundEvent(
         key: string,
         value: TType,
-    ): KeyFoundCacheEvent<TType> {
+    ): AllEvents<CacheEvents<TType>> {
         return {
-            type: CACHE_EVENTS.KEY_FOUND,
+            type: "key_found",
             ...this.eventAttributes,
             key,
             value,
         };
     }
 
-    private createKeyNotFoundEvent(key: string): KeyNotFoundCacheEvent {
+    private createKeyNotFoundEvent(key: string): AllEvents<CacheEvents<TType>> {
         return {
-            type: CACHE_EVENTS.KEY_NOT_FOUND,
+            type: "key_not_found",
             ...this.eventAttributes,
             key,
         };
@@ -157,9 +141,9 @@ export class Cache<TType = unknown>
         key: string,
         value: TType,
         ttl: TimeSpan | null,
-    ): KeyAddedCacheEvent<TType> {
+    ): AllEvents<CacheEvents<TType>> {
         return {
-            type: CACHE_EVENTS.KEY_ADDED,
+            type: "key_added",
             ...this.eventAttributes,
             key,
             value,
@@ -170,26 +154,26 @@ export class Cache<TType = unknown>
     private createKeyUpdatedEvent(
         key: string,
         value: TType,
-    ): KeyUpdatedCacheEvent<TType> {
+    ): AllEvents<CacheEvents<TType>> {
         return {
-            type: CACHE_EVENTS.KEY_UPDATED,
+            type: "key_updated",
             ...this.eventAttributes,
             key,
             value,
         };
     }
 
-    private createKeyRemovedEvent(key: string): KeyRemovedCacheEvent {
+    private createKeyRemovedEvent(key: string): AllEvents<CacheEvents<TType>> {
         return {
-            type: CACHE_EVENTS.KEY_REMOVED,
+            type: "key_removed",
             ...this.eventAttributes,
             key,
         };
     }
 
-    private createKeysClearedEvent(): KeysClearedCacheEvent {
+    private createKeysClearedEvent(): AllEvents<CacheEvents<TType>> {
         return {
-            type: CACHE_EVENTS.KEYS_CLEARED,
+            type: "keys_cleared",
             ...this.eventAttributes,
         };
     }
@@ -197,9 +181,9 @@ export class Cache<TType = unknown>
     private createKeyIncrementedEvent(
         key: string,
         value: number,
-    ): KeyIncrementedCacheEvent {
+    ): AllEvents<CacheEvents<TType>> {
         return {
-            type: CACHE_EVENTS.KEY_INCREMENTED,
+            type: "key_incremented",
             ...this.eventAttributes,
             key,
             value,
@@ -209,9 +193,9 @@ export class Cache<TType = unknown>
     private createKeyDecrementedEvent(
         key: string,
         value: number,
-    ): KeyDecrementedCacheEvent {
+    ): AllEvents<CacheEvents<TType>> {
         return {
-            type: CACHE_EVENTS.KEY_DECREMENTED,
+            type: "key_decremented",
             ...this.eventAttributes,
             key,
             value,

@@ -2,9 +2,10 @@
  * @module EventBus
  */
 
-import type { INamespacedEventBus } from "@/event-bus/contracts/event-bus.contract";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { IBaseEvent } from "@/event-bus/contracts/_shared";
+import type {
+    BaseEvents,
+    INamespacedEventBus,
+} from "@/event-bus/contracts/event-bus.contract";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredDriverError,
@@ -18,7 +19,7 @@ import {
  */
 export type IEventBusFactory<
     TDrivers extends string = string,
-    TEvents extends IBaseEvent = IBaseEvent,
+    TEvents extends BaseEvents = BaseEvents,
 > = {
     /**
      * The <i>use</i> method will throw an error if you provide it unregisted driver.

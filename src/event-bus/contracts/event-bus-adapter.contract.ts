@@ -2,7 +2,11 @@
  * @module EventBus
  */
 
-import type { IBaseEvent, Listener } from "@/event-bus/contracts/_shared";
+import type { Listener } from "@/event-bus/contracts/_shared";
+
+export type IBaseEvent = {
+    type: string;
+};
 
 /**
  * The <i>IEventBusAdapter</i> contract defines a way for dispatching and listening to events independent of underlying technology.

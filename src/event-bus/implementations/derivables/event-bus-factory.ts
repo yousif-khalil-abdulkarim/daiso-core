@@ -5,8 +5,8 @@
 import type {
     INamespacedEventBus,
     IEventBusAdapter,
-    IBaseEvent,
     IEventBusFactory,
+    BaseEvents,
 } from "@/event-bus/contracts/_module";
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus";
 import {
@@ -52,8 +52,8 @@ export type EventBusFactorySettings<TAdapters extends string = string> = {
  */
 export class EventBusFactory<
     TAdapters extends string = string,
-    TEvent extends IBaseEvent = IBaseEvent,
-> implements IEventBusFactory<TAdapters>
+    TEvents extends BaseEvents = BaseEvents,
+> implements IEventBusFactory<TAdapters, TEvents>
 {
     private readonly drivers: EventBusDrivers<TAdapters>;
     private readonly defaultDriver?: TAdapters;
@@ -68,7 +68,7 @@ export class EventBusFactory<
 
     use(
         driverName: TAdapters | undefined = this.defaultDriver,
-    ): INamespacedEventBus<TEvent> {
+    ): INamespacedEventBus<TEvents> {
         if (driverName === undefined) {
             throw new DefaultDriverNotDefinedError(EventBusFactory.name);
         }
@@ -81,7 +81,7 @@ export class EventBusFactory<
         });
     }
 
-    withType<TOutput extends IBaseEvent = IBaseEvent>(): IEventBusFactory<
+    withType<TOutput extends BaseEvents = TEvents>(): IEventBusFactory<
         TAdapters,
         TOutput
     > {

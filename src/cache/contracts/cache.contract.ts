@@ -5,7 +5,7 @@
 import type { IListenable } from "@/event-bus/contracts/_module";
 import type { OneOrMore } from "@/_shared/types";
 import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
-import type { AllCacheEvents } from "@/cache/contracts/_module";
+import type { CacheEvents } from "@/cache/contracts/_module";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type TypeCacheError,
@@ -20,9 +20,7 @@ import type { LazyPromise, TimeSpan } from "@/utilities/_module";
  * The <i>ICacheListenable</i> contract defines a way for listening <i>{@link ICache}</i> crud operations.
  * @group Contracts
  */
-export type ICacheListenable<TType = unknown> = IListenable<
-    AllCacheEvents<TType>
->;
+export type ICacheListenable<TType = unknown> = IListenable<CacheEvents<TType>>;
 
 /**
  * @group Contracts
