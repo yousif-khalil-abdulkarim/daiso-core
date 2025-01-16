@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import type { CacheEventNames, WithTtlValue } from "@/cache/contracts/_module";
+import type { WithTtlValue } from "@/cache/contracts/_module";
 import {
     KeyNotFoundCacheError,
     UnexpectedCacheError,
@@ -12,7 +12,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type ICacheAdapter,
     type INamespacedCache,
-    type AllCacheEvents,
+    type CacheEvents,
 } from "@/cache/contracts/_module";
 import {
     isArrayEmpty,
@@ -25,10 +25,10 @@ import type { TimeSpan } from "@/utilities/_module";
 import { LazyPromise } from "@/utilities/_module";
 import type {
     Listener,
-    SelectEvent,
     Unsubscribe,
     INamespacedEventBus,
     IListenable,
+    SelectEvent,
 } from "@/event-bus/contracts/_module";
 
 /**
@@ -36,7 +36,7 @@ import type {
  */
 export type BaseCacheSettings<TType> = {
     namespace: string;
-    eventBus: INamespacedEventBus<AllCacheEvents<TType>>;
+    eventBus: INamespacedEventBus<CacheEvents<TType>>;
 };
 
 /**
@@ -45,53 +45,53 @@ export type BaseCacheSettings<TType> = {
  * @group Derivables
  */
 export abstract class BaseCache<TType> implements INamespacedCache<TType> {
-    private readonly listenable: IListenable<AllCacheEvents<TType>>;
+    private readonly listenable: IListenable<CacheEvents<TType>>;
 
     constructor(settings: BaseCacheSettings<TType>) {
         const { eventBus, namespace } = settings;
         this.listenable = eventBus.withNamespace(namespace);
     }
 
-    addListener<TEventType extends CacheEventNames>(
-        event: TEventType,
-        listener: Listener<SelectEvent<AllCacheEvents<TType>, TEventType>>,
+    addListener<TEventName extends keyof CacheEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
     ): LazyPromise<void> {
-        return this.listenable.addListener(event, listener);
+        return this.listenable.addListener(eventName, listener);
     }
 
-    addListenerMany<TEventType extends CacheEventNames>(
-        events: TEventType[],
-        listener: Listener<SelectEvent<AllCacheEvents<TType>, TEventType>>,
+    addListenerMany<TEventName extends keyof CacheEvents>(
+        eventNames: TEventName[],
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
     ): LazyPromise<void> {
-        return this.listenable.addListenerMany(events, listener);
+        return this.listenable.addListenerMany(eventNames, listener);
     }
 
-    removeListener<TEventType extends CacheEventNames>(
-        event: TEventType,
-        listener: Listener<SelectEvent<AllCacheEvents<TType>, TEventType>>,
+    removeListener<TEventName extends keyof CacheEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
     ): LazyPromise<void> {
-        return this.listenable.removeListener(event, listener);
+        return this.listenable.removeListener(eventName, listener);
     }
 
-    removeListenerMany<TEventType extends CacheEventNames>(
-        events: TEventType[],
-        listener: Listener<SelectEvent<AllCacheEvents<TType>, TEventType>>,
+    removeListenerMany<TEventName extends keyof CacheEvents>(
+        eventNames: TEventName[],
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
     ): LazyPromise<void> {
-        return this.listenable.removeListenerMany(events, listener);
+        return this.listenable.removeListenerMany(eventNames, listener);
     }
 
-    subscribe<TEventType extends CacheEventNames>(
-        event: TEventType,
-        listener: Listener<SelectEvent<AllCacheEvents<TType>, TEventType>>,
+    subscribe<TEventName extends keyof CacheEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
     ): LazyPromise<Unsubscribe> {
-        return this.listenable.subscribe(event, listener);
+        return this.listenable.subscribe(eventName, listener);
     }
 
-    subscribeMany<TEventType extends CacheEventNames>(
-        events: TEventType[],
-        listener: Listener<SelectEvent<AllCacheEvents<TType>, TEventType>>,
+    subscribeMany<TEventName extends keyof CacheEvents>(
+        eventNames: TEventName[],
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
     ): LazyPromise<Unsubscribe> {
-        return this.listenable.subscribeMany(events, listener);
+        return this.listenable.subscribeMany(eventNames, listener);
     }
 
     abstract withNamespace(namespace: OneOrMore<string>): ICache<TType>;
