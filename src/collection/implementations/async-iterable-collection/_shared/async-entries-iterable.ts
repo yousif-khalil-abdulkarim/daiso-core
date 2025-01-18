@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import { type AsyncIterableValue } from "@/_shared/types";
+import { type AsyncIterableValue } from "@/utilities/_module";
 
 /**
  * @internal

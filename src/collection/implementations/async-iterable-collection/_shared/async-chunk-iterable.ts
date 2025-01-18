@@ -3,7 +3,7 @@
  */
 
 import { type IAsyncCollection } from "@/collection/contracts/_module";
-import { type AsyncIterableValue } from "@/_shared/types";
+import { type AsyncIterableValue } from "@/utilities/_module";
 
 /**
  * @internal

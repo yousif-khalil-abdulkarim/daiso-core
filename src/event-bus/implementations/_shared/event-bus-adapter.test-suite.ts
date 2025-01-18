@@ -13,8 +13,9 @@ import type {
     IBaseEvent,
     IEventBusAdapter,
 } from "@/event-bus/contracts/_module";
-import { type Promisable } from "@/_shared/types";
-import { delay, TimeSpan } from "@/utilities/_module";
+import { type Promisable } from "@/utilities/_module";
+import { TimeSpan } from "@/utilities/_module";
+import { delay } from "@/async/_module";
 
 /**
  * @group Utilities

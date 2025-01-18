@@ -6,7 +6,7 @@ import { type ICacheAdapter, TypeCacheError } from "@/cache/contracts/_module";
 import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
 import { type ISerializer } from "@/serializer/contracts/_module";
-import type { IDeinitizable, IInitizable } from "@/_shared/types";
+import type { IDeinitizable, IInitizable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
 
 /**

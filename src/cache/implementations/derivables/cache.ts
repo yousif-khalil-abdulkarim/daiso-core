@@ -5,10 +5,11 @@
 import type { CacheEvent, CacheEvents } from "@/cache/contracts/_module";
 import { type ICache, type ICacheAdapter } from "@/cache/contracts/_module";
 import { type INamespacedCache } from "@/cache/contracts/_module";
-import { simplifyNamespace } from "@/_shared/utilities";
-import type { OneOrMore } from "@/_shared/types";
+import { simplifyNamespace } from "@/utilities/_module";
+import type { OneOrMore } from "@/utilities/_module";
 import type { TimeSpan } from "@/utilities/_module";
-import { LazyPromise } from "@/utilities/_module";
+import type { LazyPromiseSettings } from "@/async/_module";
+import type { LazyPromise } from "@/async/_module";
 import type {
     INamespacedEventBus,
     IEventBus,
@@ -62,6 +63,8 @@ export type CacheSettings<TType> = {
      * You can decide the default ttl value. If null is passed then no ttl will be used by default.
      */
     defaultTtl?: TimeSpan | null;
+
+    lazyPromiseSettings?: LazyPromiseSettings;
 };
 
 /**
@@ -220,7 +223,7 @@ export class Cache<TType = unknown>
     }
 
     get(key: string): LazyPromise<TType | null> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const value = await this.cacheAdapter.get(
                 this.keyWithNamespace(key),
             );
@@ -240,7 +243,7 @@ export class Cache<TType = unknown>
         value: TType,
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const hasAdded = await this.cacheAdapter.add(
                 this.keyWithNamespace(key),
                 value,
@@ -256,7 +259,7 @@ export class Cache<TType = unknown>
     }
 
     update(key: string, value: TType): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const hasUpdated = await this.cacheAdapter.update(
                 this.keyWithNamespace(key),
                 value,
@@ -277,7 +280,7 @@ export class Cache<TType = unknown>
         value: TType,
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const hasUpdated = await this.cacheAdapter.put(
                 this.keyWithNamespace(key),
                 value,
@@ -297,7 +300,7 @@ export class Cache<TType = unknown>
     }
 
     remove(key: string): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const hasRemoved = await this.cacheAdapter.remove(
                 this.keyWithNamespace(key),
             );
@@ -314,7 +317,7 @@ export class Cache<TType = unknown>
         key: string,
         value = 1 as Extract<TType, number>,
     ): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const hasUpdated = await this.cacheAdapter.increment(
                 this.keyWithNamespace(key),
                 value,
@@ -338,7 +341,7 @@ export class Cache<TType = unknown>
     }
 
     clear(): LazyPromise<void> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             await this.cacheAdapter.clear(this.namespace);
             await this.eventBus.dispatch(this.createKeysClearedEvent());
         });

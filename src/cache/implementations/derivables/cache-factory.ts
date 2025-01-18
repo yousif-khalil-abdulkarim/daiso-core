@@ -5,7 +5,7 @@
 import {
     DefaultDriverNotDefinedError,
     UnregisteredDriverError,
-} from "@/utilities/global-errors";
+} from "@/utilities/_module";
 import type { INamespacedEventBus } from "@/event-bus/contracts/_module";
 import type {
     ICacheFactory,

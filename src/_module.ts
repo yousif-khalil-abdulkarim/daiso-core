@@ -1,3 +1,4 @@
+export * from "@/async/_module";
 export * from "@/cache/implementations/_module";
 export * from "@/cache/contracts/_module";
 export * from "@/collection/implementations/_module";

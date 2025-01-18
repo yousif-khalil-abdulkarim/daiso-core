@@ -7,8 +7,7 @@ import {
     UnexpectedCacheError,
 } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { TimeSpan } from "@/utilities/_module";
-import type { IInitizable } from "@/_shared/types";
+import type { TimeSpan, IInitizable } from "@/utilities/_module";
 import type { ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
 import type { ISerializer } from "@/serializer/contracts/_module";
@@ -47,6 +46,9 @@ export type MongodbCacheAdapterSettings = {
  * const cacheAdapter = new MongodbCacheAdapter(cacheCollection, {
  *   serializer,
  * });
+ *   // You only need to call it once before using the adapter.
+ *   await cacheAdapter.init();
+ *   await cacheAdapter.add("a", 1);
  * ```
  */
 export class MongodbCacheAdapter<TType>

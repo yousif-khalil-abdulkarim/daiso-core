@@ -5,6 +5,7 @@
 import type { WithTtlValue } from "@/cache/contracts/_module";
 import {
     KeyNotFoundCacheError,
+    TypeCacheError,
     UnexpectedCacheError,
     type ICache,
 } from "@/cache/contracts/_module";
@@ -18,11 +19,11 @@ import {
     isArrayEmpty,
     isObjectEmpty,
     simplifyAsyncLazyable,
-} from "@/_shared/utilities";
-import type { OneOrMore } from "@/_shared/types";
-import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
+} from "@/utilities/_module";
+import type { OneOrMore } from "@/utilities/_module";
+import { type AsyncLazyable, type GetOrAddValue } from "@/utilities/_module";
 import type { TimeSpan } from "@/utilities/_module";
-import { LazyPromise } from "@/utilities/_module";
+import { LazyPromise } from "@/async/_module";
 import type {
     Listener,
     Unsubscribe,
@@ -45,6 +46,19 @@ export type BaseCacheSettings<TType> = {
  * @group Derivables
  */
 export abstract class BaseCache<TType> implements INamespacedCache<TType> {
+    protected static createLayPromise<TValue = void>(
+        asyncFn: () => PromiseLike<TValue>,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(asyncFn, {
+            retryPolicy: (error) => {
+                return !(
+                    error instanceof TypeCacheError ||
+                    error instanceof KeyNotFoundCacheError
+                );
+            },
+        });
+    }
+
     private readonly listenable: IListenable<CacheEvents<TType>>;
 
     constructor(settings: BaseCacheSettings<TType>) {
@@ -99,7 +113,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     abstract getNamespace(): string;
 
     exists(key: string): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const value = await this.get(key);
             return value !== null;
         });
@@ -132,7 +146,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     }
 
     missing(key: string): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const value = await this.get(key);
             return value === null;
         });
@@ -141,7 +155,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     missingMany<TKeys extends string>(
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             if (isArrayEmpty(keys)) {
                 return {};
             }
@@ -169,7 +183,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     getMany<TKeys extends string>(
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, TType | null>> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             if (isArrayEmpty(keys)) {
                 return {};
             }
@@ -193,7 +207,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     }
 
     getOr(key: string, defaultValue: AsyncLazyable<TType>): LazyPromise<TType> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const value = await this.get(key);
             if (value === null) {
                 return await simplifyAsyncLazyable(defaultValue);
@@ -205,7 +219,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     getOrMany<TKeys extends string>(
         keysWithDefaults: Record<TKeys, AsyncLazyable<TType>>,
     ): LazyPromise<Record<TKeys, TType>> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const keys = Object.keys(keysWithDefaults);
             if (isArrayEmpty(keys)) {
                 return {};
@@ -231,7 +245,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     }
 
     getOrFail(key: string): LazyPromise<TType> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const value = await this.get(key);
             if (value === null) {
                 throw new KeyNotFoundCacheError(`Key "${key}" is not found`);
@@ -249,7 +263,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     addMany<TKeys extends string>(
         values: Record<TKeys, WithTtlValue<TType>>,
     ): LazyPromise<Record<TKeys, boolean>> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             if (isObjectEmpty(values)) {
                 return {} as Record<TKeys, boolean>;
             }
@@ -278,7 +292,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     updateMany<TKeys extends string>(
         values: Record<TKeys, TType>,
     ): LazyPromise<Record<TKeys, boolean>> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             if (isObjectEmpty(values)) {
                 return {} as Record<TKeys, boolean>;
             }
@@ -311,7 +325,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     putMany<TKeys extends string>(
         values: Record<TKeys, WithTtlValue<TType>>,
     ): LazyPromise<Record<TKeys, boolean>> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             if (isObjectEmpty(values)) {
                 return {} as Record<TKeys, boolean>;
             }
@@ -340,7 +354,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     removeMany<TKeys extends string>(
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             if (isArrayEmpty(keys)) {
                 return {} as Record<TKeys, boolean>;
             }
@@ -364,7 +378,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
     }
 
     getAndRemove(key: string): LazyPromise<TType | null> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const value = await this.get(key);
             if (value === null) {
                 return null;
@@ -379,7 +393,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
         valueToAdd: AsyncLazyable<GetOrAddValue<TType>>,
         ttl?: TimeSpan,
     ): LazyPromise<TType> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             const value = await this.get(key);
             if (value === null) {
                 const simplifiedValueToAdd = await simplifyAsyncLazyable(
@@ -401,7 +415,7 @@ export abstract class BaseCache<TType> implements INamespacedCache<TType> {
         key: string,
         value = 1 as Extract<TType, number>,
     ): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return BaseCache.createLayPromise(async () => {
             return await this.increment(key, -value as Extract<TType, number>);
         });
     }

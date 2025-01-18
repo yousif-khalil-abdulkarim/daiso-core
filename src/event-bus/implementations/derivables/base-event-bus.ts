@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import { LazyPromise } from "@/utilities/_module";
+import { LazyPromise } from "@/async/_module";
 import type {
     SelectEvent,
     BaseEvents,
@@ -17,8 +17,8 @@ import {
     type Listener,
 } from "@/event-bus/contracts/_module";
 
-import type { OneOrMore } from "@/_shared/types";
-import { isArrayEmpty } from "@/_shared/utilities";
+import type { OneOrMore } from "@/utilities/_module";
+import { isArrayEmpty } from "@/utilities/_module";
 
 /**
  * The BaseEventBus class serves as an abstract base class that provides implementations for redundant methods.

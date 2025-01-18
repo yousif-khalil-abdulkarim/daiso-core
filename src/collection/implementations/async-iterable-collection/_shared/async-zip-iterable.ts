@@ -3,7 +3,7 @@
  */
 
 import { isIterable } from "@/collection/implementations/_shared";
-import { type AsyncIterableValue } from "@/_shared/types";
+import { type AsyncIterableValue } from "@/utilities/_module";
 
 /**
  * @internal

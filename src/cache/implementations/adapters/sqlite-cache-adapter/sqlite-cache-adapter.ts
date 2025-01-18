@@ -2,15 +2,14 @@
  * @module Cache
  */
 
-import type { IDeinitizable, IInitizable } from "@/_shared/types";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { ISerializer } from "@/serializer/contracts/_module";
 import { SqlSerializer } from "@/serializer/implementations/_module";
-import type { TimeSpan } from "@/utilities/_module";
+import type { TimeSpan, IInitizable, IDeinitizable } from "@/utilities/_module";
 import { type Database } from "better-sqlite3";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 import { Kysely, SqliteDialect } from "kysely";
-import { KyselyTableNameTransformerPlugin } from "@/_shared/kysely/kysely-table-name-transformer-plugin";
+import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
 
 /**
  * @group Adapters
@@ -36,6 +35,12 @@ export type SqliteStorageAdapterSettings = {
  * const cacheAdapter = new SqliteCacheAdapter(client, {
  *   serializer,
  * });
+ *   // You only need to call it once before using the adapter.
+ *   await cacheAdapter.init();
+ *   await cacheAdapter.add("a", 1);
+ *
+ *   // Will remove the cache
+ *   await cacheAdapter.deInit();
  * ```
  */
 export class SqliteCacheAdapter<TType>

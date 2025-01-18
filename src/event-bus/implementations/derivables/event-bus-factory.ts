@@ -12,7 +12,7 @@ import { EventBus } from "@/event-bus/implementations/derivables/event-bus";
 import {
     DefaultDriverNotDefinedError,
     UnregisteredDriverError,
-} from "@/utilities/global-errors";
+} from "@/utilities/_module";
 
 /**
  * @group Derivables

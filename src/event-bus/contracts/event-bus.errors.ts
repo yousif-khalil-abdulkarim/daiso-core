@@ -25,7 +25,7 @@ export class UnexpectedEventBusError extends EventBusError {
 /**
  * @group Errors
  */
-export class RemoveListenerEventBusError extends Error {
+export class RemoveListenerEventBusError extends UnexpectedEventBusError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = RemoveListenerEventBusError.name;
@@ -35,7 +35,7 @@ export class RemoveListenerEventBusError extends Error {
 /**
  * @group Errors
  */
-export class AddListenerEventBusError extends Error {
+export class AddListenerEventBusError extends UnexpectedEventBusError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = AddListenerEventBusError.name;
@@ -45,7 +45,7 @@ export class AddListenerEventBusError extends Error {
 /**
  * @group Errors
  */
-export class DispatchEventBusError extends Error {
+export class DispatchEventBusError extends UnexpectedEventBusError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = DispatchEventBusError.name;

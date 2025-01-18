@@ -2,7 +2,8 @@ import { describe, test, beforeEach, expect } from "vitest";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus";
 import type { IBaseEvent, IEventBus } from "@/event-bus/contracts/_module";
-import { delay, TimeSpan } from "@/utilities/_module";
+import { TimeSpan } from "@/utilities/_module";
+import { delay } from "@/async/_module";
 import { eventBusTestSuite } from "@/event-bus/implementations/_shared/_module";
 import { EventEmitter } from "node:events";
 

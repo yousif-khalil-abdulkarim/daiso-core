@@ -4,7 +4,7 @@
 
 import { type TestAPI, type ExpectStatic } from "vitest";
 import { type ISerializer } from "@/serializer/contracts/_module";
-import { type Promisable } from "@/_shared/types";
+import { type Promisable } from "@/utilities/_module";
 
 /**
  * @group Utilities

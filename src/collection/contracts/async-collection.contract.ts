@@ -12,6 +12,10 @@ import type {
     AsyncTap,
     AsyncTransform,
     Comparator,
+    EnsureRecord,
+    EnsureMap,
+} from "@/collection/contracts/_module";
+import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ItemNotFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -23,11 +27,10 @@ import type {
     TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
-    EnsureRecord,
-    EnsureMap,
 } from "@/collection/contracts/_module";
-import type { AsyncLazyable, AsyncIterableValue } from "@/_shared/types";
-import type { LazyPromise, TimeSpan } from "@/utilities/_module";
+import type { AsyncLazyable, AsyncIterableValue } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module";
+import type { LazyPromise } from "@/async/_module";
 
 export type AsyncCollapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -1735,7 +1738,9 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     delay(time: TimeSpan): IAsyncCollection<TInput>;
 
     /**
-     * The <i>abort</i> method will abort iteration of the collection by passing <i>{@link AbortSignal}</i>.
+     * @experimental
+     * The <I>takeUntilAbort</i> method returns a new collection that will iterate values until aborted by passing in <i>{@link abortSignal | AbortSignal}</i>.
+     * After when aborted, the collection will stop iterating:
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -1753,8 +1758,9 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
     ): IAsyncCollection<TInput>;
 
     /**
-     * The <I>timeout</i> method returns a new collection that will iterate values until the specified time.
-     * After that time, the collection will then stop iterating:
+     * @experimental
+     * The <I>takeUntilTimeout</i> method returns a new collection that will iterate values until the specified time.
+     * After that time, the collection will stop iterating:
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";;
@@ -1774,7 +1780,7 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * ```
      */
     takeUntilTimeout(
-        timeInMs: TimeSpan,
+        time: TimeSpan,
         shouldThrow?: boolean,
     ): IAsyncCollection<TInput>;
 

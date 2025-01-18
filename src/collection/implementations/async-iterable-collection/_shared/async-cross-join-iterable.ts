@@ -4,7 +4,7 @@
 
 import type { CrossJoinResult } from "@/collection/contracts/_module";
 import { type IAsyncCollection } from "@/collection/contracts/_module";
-import { type AsyncIterableValue } from "@/_shared/types";
+import { type AsyncIterableValue } from "@/utilities/_module";
 import { isIterable } from "@/collection/implementations/_shared";
 
 /**

@@ -10,7 +10,6 @@ import type {
     Listener,
 } from "@/event-bus/contracts/_module";
 import type Redis from "ioredis";
-import { LazyPromise } from "@/utilities/_module";
 import { EventEmitter } from "node:events";
 
 /**
@@ -99,11 +98,9 @@ export class RedisEventBusAdapter implements IEventBusAdapter {
         const promises: PromiseLike<number>[] = [];
         for (const event of events) {
             promises.push(
-                new LazyPromise(async () =>
-                    this.dispatcherClient.publish(
-                        event.type,
-                        await this.serializer.serialize(event),
-                    ),
+                this.dispatcherClient.publish(
+                    event.type,
+                    await this.serializer.serialize(event),
                 ),
             );
         }
