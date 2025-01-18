@@ -3,8 +3,8 @@
  */
 
 import type { IListenable } from "@/event-bus/contracts/_module";
-import type { OneOrMore } from "@/_shared/types";
-import { type AsyncLazyable, type GetOrAddValue } from "@/_shared/types";
+import type { OneOrMore } from "@/utilities/_module";
+import { type AsyncLazyable, type GetOrAddValue } from "@/utilities/_module";
 import type { CacheEvents } from "@/cache/contracts/_module";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -14,7 +14,8 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type KeyNotFoundCacheError,
 } from "@/cache/contracts/_module";
-import type { LazyPromise, TimeSpan } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module";
+import type { LazyPromise } from "@/async/_module";
 
 /**
  * The <i>ICacheListenable</i> contract defines a way for listening <i>{@link ICache}</i> crud operations.
@@ -41,13 +42,11 @@ export type WithTtlValue<TType> = {
 export type ICache<TType = unknown> = ICacheListenable & {
     /**
      * The <i>exists</i> method returns true when <i>key</i> is found otherwise false will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     exists(key: string): LazyPromise<boolean>;
 
     /**
      * The <i>existsMany</i> method returns true for the <i>keys</i> that are found otherwise false will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     existsMany<TKeys extends string>(
         keys: TKeys[],
@@ -55,13 +54,11 @@ export type ICache<TType = unknown> = ICacheListenable & {
 
     /**
      * The <i>missing</i> method returns true when <i>key</i> is not found otherwise false will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     missing(key: string): LazyPromise<boolean>;
 
     /**
      * The <i>missingMany</i> method returns true for the <i>keys</i> that are not found otherwise false will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     missingMany<TKeys extends string>(
         keys: TKeys[],
@@ -69,13 +66,11 @@ export type ICache<TType = unknown> = ICacheListenable & {
 
     /**
      * The <i>get</i> method returns the value when <i>key</i> is found otherwise null will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     get(key: string): LazyPromise<TType | null>;
 
     /**
      * The <i>getMany</i> returns the value for the <i>keys</i> that are found otherwise null will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     getMany<TKeys extends string>(
         keys: TKeys[],
@@ -83,13 +78,11 @@ export type ICache<TType = unknown> = ICacheListenable & {
 
     /**
      * The <i>getOr</i> method returns the value when <i>key</i> is found otherwise <i>defaultValue</i> will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     getOr(key: string, defaultValue: AsyncLazyable<TType>): LazyPromise<TType>;
 
     /**
      * The <i>getOrMany</i> method returns the value for the keys that are found otherwise defaultValue will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     getOrMany<TKeys extends string>(
         keysWithDefaults: Record<TKeys, AsyncLazyable<TType>>,
@@ -97,7 +90,6 @@ export type ICache<TType = unknown> = ICacheListenable & {
 
     /**
      * The <i>getOrFail</i> method returns the value when <i>key</i> is found otherwise an error will be thrown.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      * @throws {KeyNotFoundCacheError} {@link KeyNotFoundCacheError}
      */
     getOrFail(key: string): LazyPromise<TType>;
@@ -105,13 +97,11 @@ export type ICache<TType = unknown> = ICacheListenable & {
     /**
      * The <i>add</i> method adds a <i>key</i> with given <i>value</i> when key doesn't exists. Returns true when key doesn't exists otherwise false will be returned.
      * You can provide a <i>ttl</i> value. If null is passed, the item will not expire.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     add(key: string, value: TType, ttl?: TimeSpan | null): LazyPromise<boolean>;
 
     /**
      * The <i>addMany</i> method adds new keys. Returns true for the keys that where added otherwise false will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     addMany<TKeys extends string>(
         values: Record<TKeys, WithTtlValue<TType>>,
@@ -119,13 +109,11 @@ export type ICache<TType = unknown> = ICacheListenable & {
 
     /**
      * The <i>update</i> method updates the given <i>key</i> with given <i>value</i>. Returns true when key otherwise false will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     update(key: string, value: TType): LazyPromise<boolean>;
 
     /**
      * The <i>updateMany</i> method updates the given keys. Returns true for the keys that where updated otherwise false will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     updateMany<TKeys extends string>(
         values: Record<TKeys, TType>,
@@ -134,13 +122,11 @@ export type ICache<TType = unknown> = ICacheListenable & {
     /**
      * The <i>put</i> method replaces the key with given <i>value</i> if found. If the <i>key</i> is not found it will just be added. True is returned if the key is found otherwise false will be returned.
      * You can provide a <i>ttl</i> value. If null is passed, the item will not expire.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     put(key: string, value: TType, ttl?: TimeSpan | null): LazyPromise<boolean>;
 
     /**
      * The <i>putMany</i> method replaces the keys that exists. Adds keys that do not exists. Returns true for all the keys that where updated otherwise false is returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     putMany<TKeys extends string>(
         values: Record<TKeys, WithTtlValue<TType>>,
@@ -148,13 +134,11 @@ export type ICache<TType = unknown> = ICacheListenable & {
 
     /**
      * The <i>remove</i> method removes the given <i>key</i> when found. Returns true if the key is found otherwise false is returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     remove(key: string): LazyPromise<boolean>;
 
     /**
      * The <i>removeMany</i> method removes keys. Returns true for the keys that are removed otherwise false is returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     removeMany<TKeys extends string>(
         keys: TKeys[],
@@ -162,13 +146,11 @@ export type ICache<TType = unknown> = ICacheListenable & {
 
     /**
      * The <i>getAndRemove</i> method removes the given <i>key</i> and returns it when found otherwise null will be returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     getAndRemove(key: string): LazyPromise<TType | null>;
 
     /**
      * The <i>getOrAdd</i> method will retrieve the given <i>key</i> if found otherwise <i>valueToAdd</i> will be added and returned.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     getOrAdd(
         key: string,
@@ -180,7 +162,6 @@ export type ICache<TType = unknown> = ICacheListenable & {
      * The <i>increment</i> method will increment the given <i>key</i> if found otherwise nonthing will occur.
      * Returns true if key is incremented otherwise false will be returned.
      * An error will thrown if the key is not a number.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
     increment(
@@ -192,7 +173,6 @@ export type ICache<TType = unknown> = ICacheListenable & {
      * The <i>decrement</i> method will decrement the given <i>key</i> if found otherwise nonthing will occur.
      * Returns true if key exists otherwise false will be returned.
      * An error will thrown if the key is not a number.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      * @throws {TypeCacheError} {@link TypeCacheError}
      * An error will thrown if the key is not a number.
      */
@@ -203,7 +183,6 @@ export type ICache<TType = unknown> = ICacheListenable & {
 
     /**
      * The <i>clear</i> method removes all the keys in the cache.
-     * @throws {UnexpectedCacheError} {@link UnexpectedCacheError}
      */
     clear(): LazyPromise<void>;
 

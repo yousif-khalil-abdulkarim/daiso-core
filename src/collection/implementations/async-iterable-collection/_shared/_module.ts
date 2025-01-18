@@ -4,7 +4,6 @@ export * from "@/collection/implementations/async-iterable-collection/_shared/as
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-count-by-iterable";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-cross-join-iterable";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-entries-iterable";
-export * from "@/collection/implementations/async-iterable-collection/_shared/async-error-handler-iterable";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-filter-iterable";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-flat-map-iterable";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-group-by-iterable";
@@ -31,3 +30,7 @@ export * from "@/collection/implementations/async-iterable-collection/_shared/as
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-update-iterable";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-when-iterable";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-zip-iterable";
+export * from "@/collection/implementations/async-iterable-collection/_shared/async-take-until-abort-iterable";
+export * from "@/collection/implementations/async-iterable-collection/_shared/async-take-until-timeout-iterable";
+export * from "@/collection/implementations/async-iterable-collection/_shared/async-delay-iterable";
+export * from "@/collection/implementations/async-iterable-collection/_shared/async-retry-iterable";

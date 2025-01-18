@@ -55,8 +55,8 @@ import {
     SliceIterable,
     RepeatIterable,
 } from "@/collection/implementations/iterable-collection/_shared/_module";
-import { type Lazyable } from "@/_shared/types";
-import { simplifyLazyable } from "@/_shared/utilities";
+import { type Lazyable } from "@/utilities/_module";
+import { simplifyLazyable } from "@/utilities/_module";
 
 /**
  * All methods that return <i>{@link ICollection}</i> are executed lazly which means they will be executed when the <i>IterableCollection</i> is iterated with <i>forEach</i> method or "for of" loop.

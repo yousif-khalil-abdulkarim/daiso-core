@@ -2,8 +2,8 @@
  * @module EventBus
  */
 
-import type { OneOrMore, Values } from "@/_shared/types";
-import type { LazyPromise } from "@/utilities/_module";
+import type { OneOrMore, Values } from "@/utilities/_module";
+import type { LazyPromise } from "@/async/_module";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DispatchEventBusError,

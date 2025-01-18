@@ -8,7 +8,7 @@ import {
     UnregisteredDriverError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultDriverNotDefinedError,
-} from "@/utilities/global-errors";
+} from "@/utilities/errors";
 
 /**
  * The <i>ICacheFactory</i> contract makes it easy to configure and switch between different <i>{@link INamespacedCache}</i> dynamically.

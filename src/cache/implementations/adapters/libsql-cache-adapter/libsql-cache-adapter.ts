@@ -2,10 +2,9 @@
  * @module Cache
  */
 
-import type { IDeinitizable, IInitizable } from "@/_shared/types";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { ISerializer } from "@/serializer/contracts/_module";
-import type { TimeSpan } from "@/utilities/_module";
+import type { TimeSpan, IDeinitizable, IInitizable } from "@/utilities/_module";
 import type { Client } from "@libsql/client";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 import {
@@ -16,7 +15,7 @@ import {
 import { Kysely } from "kysely";
 import type { LibsqlDialectConfig } from "@libsql/kysely-libsql";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
-import { KyselyTableNameTransformerPlugin } from "@/_shared/kysely/_module";
+import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
 
 /**
  * @group Adapters
@@ -37,11 +36,19 @@ export type LibsqlCacheAdapterSettings = {
  * import { LibsqlCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
  * import { createClient } from "@libsql/client";
  *
- * const client = createClient({ url: "file:local.db" });
- * const serializer = new SuperJsonSerializer();
- * const cacheAdapter = new LibsqlCacheAdapter(client, {
- *   serializer,
- * });
+ * (async () => {
+ *   const client = createClient({ url: "file:local.db" });
+ *   const serializer = new SuperJsonSerializer();
+ *   const cacheAdapter = new LibsqlCacheAdapter(client, {
+ *     serializer,
+ *   });
+ *   // You only need to call it once before using the adapter.
+ *   await cacheAdapter.init();
+ *   await cacheAdapter.add("a", 1);
+ *
+ *   // Will remove the cache
+ *   await cacheAdapter.deInit();
+ * })();
  * ```
  */
 export class LibsqlCacheAdapter<TType>

@@ -11,7 +11,7 @@ import {
     UnregisteredDriverError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultDriverNotDefinedError,
-} from "@/utilities/global-errors";
+} from "@/utilities/_module";
 
 /**
  * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link INamespacedEventBus}</i> dynamically.

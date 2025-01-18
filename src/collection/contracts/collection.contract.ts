@@ -25,7 +25,7 @@ import type {
     EnsureMap,
     EnsureRecord,
 } from "@/collection/contracts/_module";
-import type { Lazyable } from "@/_shared/types";
+import type { Lazyable } from "@/utilities/_module";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>

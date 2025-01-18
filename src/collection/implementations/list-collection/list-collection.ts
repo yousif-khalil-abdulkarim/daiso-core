@@ -22,8 +22,8 @@ import {
     EmptyCollectionError,
     type CrossJoinResult,
 } from "@/collection/contracts/_module";
-import { type Lazyable } from "@/_shared/types";
-import { simplifyLazyable } from "@/_shared/utilities";
+import { type Lazyable } from "@/utilities/_module";
+import { simplifyLazyable } from "@/utilities/_module";
 
 /**
  * All methods in <i>ListCollection</i> are executed eagerly.

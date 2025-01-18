@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import { LazyPromise } from "@/utilities/_module";
+import { LazyPromise } from "@/async/_module";
 import type {
     SelectEvent,
     AllEvents,
@@ -21,8 +21,8 @@ import {
 } from "@/event-bus/contracts/_module";
 
 import { WithNamespaceEventBusAdapter } from "@/event-bus/implementations/derivables/with-namespace-event-bus-adapter";
-import type { OneOrMore } from "@/_shared/types";
-import { simplifyNamespace, isArrayEmpty } from "@/_shared/utilities";
+import type { OneOrMore } from "@/utilities/_module";
+import { simplifyNamespace, isArrayEmpty } from "@/utilities/_module";
 import { BaseEventBus } from "@/event-bus/implementations/derivables/base-event-bus";
 
 /**
@@ -108,7 +108,9 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
         return new LazyPromise(async () => {
             try {
                 if (typeof eventName !== "string") {
-                    throw new UnexpectedEventBusError("!!__message__!!");
+                    throw new UnexpectedEventBusError(
+                        `The event name "${String(eventName)}" must be of string name`,
+                    );
                 }
                 await this.eventBusAdapter.addListener(
                     eventName,
@@ -129,7 +131,9 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
     ): LazyPromise<void> {
         return new LazyPromise(async () => {
             if (typeof eventName !== "string") {
-                throw new UnexpectedEventBusError("!!__message__!!");
+                throw new UnexpectedEventBusError(
+                    `The event name "${String(eventName)}" must be of string name`,
+                );
             }
             try {
                 await this.eventBusAdapter.removeListener(
