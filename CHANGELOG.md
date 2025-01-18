@@ -1,5 +1,20 @@
 # @daiso-tech/core
 
+## 0.15.0
+
+### Minor Changes
+
+-   e08c7d6: ## Changes
+    -   Changed <i>IEventBus</i> contract to use event maps types.
+-   18e68be: ## Changes
+    -   Removed <i>abort</i>, <i>retry</i>, <i>timeout</i> methods.
+    -   Added these methods as part of the <i>LazyPromise</i> class for better developer experience.
+
+### Patch Changes
+
+-   2cc89b6: ## Minor features
+    -   Added reusable tests for <i>ICace</i> contract.
+
 ## 0.14.0
 
 ### Minor Changes
