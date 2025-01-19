@@ -64,6 +64,7 @@ import {
 } from "@/utilities/_module";
 import { simplifyAsyncLazyable } from "@/utilities/_module";
 import type { TimeSpan } from "@/utilities/_module";
+import type { LazyPromiseSettings } from "@/async/_module";
 import { LazyPromise } from "@/async/_module";
 
 /**
@@ -75,21 +76,6 @@ import { LazyPromise } from "@/async/_module";
 export class AsyncIterableCollection<TInput>
     implements IAsyncCollection<TInput>
 {
-    private static createLazyPromise<TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
-    ) {
-        return new LazyPromise(asyncFn, {
-            retryPolicy: (error) => {
-                return !(
-                    error instanceof ItemNotFoundCollectionError ||
-                    error instanceof MultipleItemsFoundCollectionError ||
-                    error instanceof TypeCollectionError ||
-                    error instanceof EmptyCollectionError
-                );
-            },
-        });
-    }
-
     private static DEFAULT_CHUNK_SIZE = 1024;
 
     private static makeCollection = <TInput>(
@@ -101,7 +87,26 @@ export class AsyncIterableCollection<TInput>
     /**
      * The <i>constructor</i> takes an <i>{@link Iterable}</i> or <i>{@link AsyncIterable}</i>.
      */
-    constructor(private readonly iterable: AsyncIterableValue<TInput> = []) {}
+    constructor(
+        private readonly iterable: AsyncIterableValue<TInput> = [],
+        private readonly settings: LazyPromiseSettings = {},
+    ) {}
+
+    private createLazyPromise<TValue = void>(
+        asyncFn: () => PromiseLike<TValue>,
+    ) {
+        return new LazyPromise(asyncFn, {
+            retryPolicy: (error) => {
+                return !(
+                    error instanceof ItemNotFoundCollectionError ||
+                    error instanceof MultipleItemsFoundCollectionError ||
+                    error instanceof TypeCollectionError ||
+                    error instanceof EmptyCollectionError
+                );
+            },
+            ...this.settings,
+        });
+    }
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
         yield* this.iterable;
@@ -161,7 +166,7 @@ export class AsyncIterableCollection<TInput>
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue?: TOutput,
     ): LazyPromise<TOutput> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             if (initialValue === undefined && (await this.isEmpty())) {
                 throw new TypeCollectionError(
                     "Reduce of empty array must be inputed a initial value",
@@ -191,7 +196,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     join(separator = ","): LazyPromise<Extract<TInput, string>> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             let str: string | null = null;
             for await (const item of this) {
                 if (typeof item !== "string") {
@@ -268,7 +273,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     sum(): LazyPromise<Extract<TInput, number>> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -288,7 +293,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     average(): LazyPromise<Extract<TInput, number>> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -310,7 +315,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     median(): LazyPromise<Extract<TInput, number>> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -356,7 +361,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     min(): LazyPromise<Extract<TInput, number>> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -380,7 +385,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     max(): LazyPromise<Extract<TInput, number>> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -406,7 +411,7 @@ export class AsyncIterableCollection<TInput>
     percentage(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<number> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             if (await this.isEmpty()) {
                 throw new EmptyCollectionError(
                     "Collection is empty therby operation cannot be performed",
@@ -427,7 +432,7 @@ export class AsyncIterableCollection<TInput>
     some<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<boolean> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
                     return true;
@@ -440,7 +445,7 @@ export class AsyncIterableCollection<TInput>
     every<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<boolean> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             let isTrue = true;
             for await (const [index, item] of this.entries()) {
                 isTrue &&= await predicateFn(item, index, this);
@@ -541,7 +546,7 @@ export class AsyncIterableCollection<TInput>
     pipe<TOutput = TInput>(
         callback: AsyncTransform<IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             return await callback(this);
         });
     }
@@ -788,7 +793,7 @@ export class AsyncIterableCollection<TInput>
             TOutput
         > = () => true,
     ): LazyPromise<TOutput | TExtended> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
                     return item as TOutput;
@@ -801,7 +806,7 @@ export class AsyncIterableCollection<TInput>
     firstOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const item = await this.first(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundCollectionError("Item was not found");
@@ -824,7 +829,7 @@ export class AsyncIterableCollection<TInput>
             TOutput
         > = () => true,
     ): LazyPromise<TOutput | TExtended> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
@@ -841,7 +846,7 @@ export class AsyncIterableCollection<TInput>
     lastOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const item = await this.last(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundCollectionError("Item was not found");
@@ -860,7 +865,7 @@ export class AsyncIterableCollection<TInput>
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | TExtended> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             let beforeItem: TInput | null = null,
                 index = 0;
             for await (const item of this) {
@@ -877,7 +882,7 @@ export class AsyncIterableCollection<TInput>
     beforeOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const item = await this.before(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundCollectionError("Item was not found");
@@ -896,7 +901,7 @@ export class AsyncIterableCollection<TInput>
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | TExtended> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             let hasMatched = false,
                 index = 0;
             for await (const item of this) {
@@ -913,7 +918,7 @@ export class AsyncIterableCollection<TInput>
     afterOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const item = await this.after(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundCollectionError("Item was not found");
@@ -925,7 +930,7 @@ export class AsyncIterableCollection<TInput>
     sole<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
@@ -967,7 +972,7 @@ export class AsyncIterableCollection<TInput>
     count(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<number> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             let size = 0;
             for await (const item of this) {
                 if (await predicateFn(item, size, this)) {
@@ -983,7 +988,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     isEmpty(): LazyPromise<boolean> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             for await (const _ of this) {
                 return false;
             }
@@ -992,7 +997,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     isNotEmpty(): LazyPromise<boolean> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             return !(await this.isEmpty());
         });
     }
@@ -1000,7 +1005,7 @@ export class AsyncIterableCollection<TInput>
     searchFirst(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<number> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
                     return index;
@@ -1013,7 +1018,7 @@ export class AsyncIterableCollection<TInput>
     searchLast(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<number> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             let matchedIndex = -1;
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
@@ -1027,7 +1032,7 @@ export class AsyncIterableCollection<TInput>
     forEach(
         callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<void> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
                 await callback(item, index, this);
             }
@@ -1035,7 +1040,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     toArray(): LazyPromise<TInput[]> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const items: TInput[] = [];
             for await (const item of this) {
                 items.push(item);
@@ -1045,7 +1050,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     toRecord(): LazyPromise<EnsureRecord<TInput>> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const record: Record<string | number | symbol, unknown> = {};
             for await (const item of this) {
                 if (!Array.isArray(item)) {
@@ -1077,7 +1082,7 @@ export class AsyncIterableCollection<TInput>
     }
 
     toMap(): LazyPromise<EnsureMap<TInput>> {
-        return AsyncIterableCollection.createLazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const map = new Map();
             for await (const item of this) {
                 if (!Array.isArray(item)) {
