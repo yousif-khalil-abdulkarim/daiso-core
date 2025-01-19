@@ -2,24 +2,45 @@
  * @module Cache
  */
 
-import type { CacheEvent, CacheEvents } from "@/cache/contracts/_module";
-import { type ICache, type ICacheAdapter } from "@/cache/contracts/_module";
+import type {
+    CacheEvent,
+    CacheEvents,
+    WithTtlValue,
+} from "@/cache/contracts/_module";
+import {
+    KeyNotFoundCacheError,
+    TypeCacheError,
+    UnexpectedCacheError,
+    type ICache,
+    type ICacheAdapter,
+} from "@/cache/contracts/_module";
 import { type INamespacedCache } from "@/cache/contracts/_module";
-import { simplifyNamespace } from "@/utilities/_module";
-import type { OneOrMore } from "@/utilities/_module";
+import {
+    isArrayEmpty,
+    isObjectEmpty,
+    simplifyAsyncLazyable,
+    simplifyNamespace,
+} from "@/utilities/_module";
+import type {
+    AsyncLazyable,
+    GetOrAddValue,
+    OneOrMore,
+} from "@/utilities/_module";
 import type { TimeSpan } from "@/utilities/_module";
 import type { LazyPromiseSettings } from "@/async/_module";
-import type { LazyPromise } from "@/async/_module";
+import { LazyPromise } from "@/async/_module";
 import type {
     INamespacedEventBus,
     IEventBus,
     AllEvents,
+    Listener,
+    SelectEvent,
+    Unsubscribe,
 } from "@/event-bus/contracts/_module";
 import {
     EventBus,
     NoOpEventBusAdapter,
 } from "@/event-bus/implementations/_module";
-import { BaseCache } from "@/cache/implementations/derivables/base-cache";
 
 /**
  * @group Derivables
@@ -77,10 +98,7 @@ export type CacheSettings<TType> = {
  * const cache = new Cache(new MemoryCacheAdapter());
  * ```
  */
-export class Cache<TType = unknown>
-    extends BaseCache<TType>
-    implements INamespacedCache<TType>
-{
+export class Cache<TType = unknown> implements INamespacedCache<TType> {
     private readonly namespace: string;
     private readonly namespacedEventBus: INamespacedEventBus<
         CacheEvents<TType>
@@ -89,6 +107,7 @@ export class Cache<TType = unknown>
     private readonly cacheAdapter: ICacheAdapter<TType>;
     private readonly eventAttributes: CacheEvent;
     private readonly defaultTtl: TimeSpan | null;
+    private readonly lazyPromiseSettings?: LazyPromiseSettings;
 
     constructor(
         cacheAdapter: ICacheAdapter<any>,
@@ -100,24 +119,32 @@ export class Cache<TType = unknown>
             ),
             defaultTtl = null,
             rootNamespace = "",
+            lazyPromiseSettings,
         } = settings;
-        const namespace = simplifyNamespace(rootNamespace);
-        const eventBus = namespacedEventBus.withNamespace(namespace);
-
-        super({
-            namespace,
-            eventBus: namespacedEventBus,
-        });
-
+        this.lazyPromiseSettings = lazyPromiseSettings;
         this.namespacedEventBus = namespacedEventBus;
-        this.namespace = namespace;
-        this.eventBus = eventBus;
+        this.namespace = simplifyNamespace(rootNamespace);
+        this.eventBus = this.namespacedEventBus.withNamespace(this.namespace);
         this.cacheAdapter = cacheAdapter;
         this.defaultTtl = defaultTtl;
         this.eventAttributes = {
             adapter: this.cacheAdapter,
             namespace: this.namespace,
         };
+    }
+
+    private createLayPromise<TValue = void>(
+        asyncFn: () => PromiseLike<TValue>,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(asyncFn, {
+            retryPolicy: (error) => {
+                return !(
+                    error instanceof TypeCacheError ||
+                    error instanceof KeyNotFoundCacheError
+                );
+            },
+            ...this.lazyPromiseSettings,
+        });
     }
 
     private createKeyFoundEvent(
@@ -223,7 +250,7 @@ export class Cache<TType = unknown>
     }
 
     get(key: string): LazyPromise<TType | null> {
-        return BaseCache.createLayPromise(async () => {
+        return this.createLayPromise(async () => {
             const value = await this.cacheAdapter.get(
                 this.keyWithNamespace(key),
             );
@@ -243,7 +270,7 @@ export class Cache<TType = unknown>
         value: TType,
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
-        return BaseCache.createLayPromise(async () => {
+        return this.createLayPromise(async () => {
             const hasAdded = await this.cacheAdapter.add(
                 this.keyWithNamespace(key),
                 value,
@@ -259,7 +286,7 @@ export class Cache<TType = unknown>
     }
 
     update(key: string, value: TType): LazyPromise<boolean> {
-        return BaseCache.createLayPromise(async () => {
+        return this.createLayPromise(async () => {
             const hasUpdated = await this.cacheAdapter.update(
                 this.keyWithNamespace(key),
                 value,
@@ -280,7 +307,7 @@ export class Cache<TType = unknown>
         value: TType,
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
-        return BaseCache.createLayPromise(async () => {
+        return this.createLayPromise(async () => {
             const hasUpdated = await this.cacheAdapter.put(
                 this.keyWithNamespace(key),
                 value,
@@ -300,7 +327,7 @@ export class Cache<TType = unknown>
     }
 
     remove(key: string): LazyPromise<boolean> {
-        return BaseCache.createLayPromise(async () => {
+        return this.createLayPromise(async () => {
             const hasRemoved = await this.cacheAdapter.remove(
                 this.keyWithNamespace(key),
             );
@@ -317,7 +344,7 @@ export class Cache<TType = unknown>
         key: string,
         value = 1 as Extract<TType, number>,
     ): LazyPromise<boolean> {
-        return BaseCache.createLayPromise(async () => {
+        return this.createLayPromise(async () => {
             const hasUpdated = await this.cacheAdapter.increment(
                 this.keyWithNamespace(key),
                 value,
@@ -341,9 +368,336 @@ export class Cache<TType = unknown>
     }
 
     clear(): LazyPromise<void> {
-        return BaseCache.createLayPromise(async () => {
+        return this.createLayPromise(async () => {
             await this.cacheAdapter.clear(this.namespace);
             await this.eventBus.dispatch(this.createKeysClearedEvent());
+        });
+    }
+
+    addListener<TEventName extends keyof CacheEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
+    ): LazyPromise<void> {
+        return this.eventBus.addListener(eventName, listener);
+    }
+
+    addListenerMany<TEventName extends keyof CacheEvents>(
+        eventNames: TEventName[],
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
+    ): LazyPromise<void> {
+        return this.eventBus.addListenerMany(eventNames, listener);
+    }
+
+    removeListener<TEventName extends keyof CacheEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
+    ): LazyPromise<void> {
+        return this.eventBus.removeListener(eventName, listener);
+    }
+
+    removeListenerMany<TEventName extends keyof CacheEvents>(
+        eventNames: TEventName[],
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
+    ): LazyPromise<void> {
+        return this.eventBus.removeListenerMany(eventNames, listener);
+    }
+
+    subscribe<TEventName extends keyof CacheEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
+    ): LazyPromise<Unsubscribe> {
+        return this.eventBus.subscribe(eventName, listener);
+    }
+
+    subscribeMany<TEventName extends keyof CacheEvents>(
+        eventNames: TEventName[],
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
+    ): LazyPromise<Unsubscribe> {
+        return this.eventBus.subscribeMany(eventNames, listener);
+    }
+
+    exists(key: string): LazyPromise<boolean> {
+        return this.createLayPromise(async () => {
+            const value = await this.get(key);
+            return value !== null;
+        });
+    }
+
+    existsMany<TKeys extends string>(
+        keys: TKeys[],
+    ): LazyPromise<Record<TKeys, boolean>> {
+        return new LazyPromise(async () => {
+            if (isArrayEmpty(keys)) {
+                return {};
+            }
+            const valuePromises: PromiseLike<boolean>[] = [];
+            for (const key of keys) {
+                valuePromises.push(this.exists(key));
+            }
+            const values = await Promise.all(valuePromises);
+            const result = {} as Record<string, boolean>;
+            for (const [index, key] of keys.entries()) {
+                const value = values[index];
+                if (value === undefined) {
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
+                }
+                result[key] = value;
+            }
+            return result;
+        });
+    }
+
+    missing(key: string): LazyPromise<boolean> {
+        return this.createLayPromise(async () => {
+            const value = await this.get(key);
+            return value === null;
+        });
+    }
+
+    missingMany<TKeys extends string>(
+        keys: TKeys[],
+    ): LazyPromise<Record<TKeys, boolean>> {
+        return this.createLayPromise(async () => {
+            if (isArrayEmpty(keys)) {
+                return {};
+            }
+            const valuePromises: PromiseLike<boolean>[] = [];
+            for (const key of keys) {
+                valuePromises.push(this.missing(key));
+            }
+            const values = await Promise.all(valuePromises);
+            const result = {} as Record<string, boolean>;
+            for (const [index, key] of keys.entries()) {
+                const value = values[index];
+                if (value === undefined) {
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
+                }
+                result[key] = value;
+            }
+            return result;
+        });
+    }
+
+    getMany<TKeys extends string>(
+        keys: TKeys[],
+    ): LazyPromise<Record<TKeys, TType | null>> {
+        return this.createLayPromise(async () => {
+            if (isArrayEmpty(keys)) {
+                return {};
+            }
+            const valuePromises: PromiseLike<TType | null>[] = [];
+            for (const key of keys) {
+                valuePromises.push(this.get(key));
+            }
+            const values = await Promise.all(valuePromises);
+            const result = {} as Record<string, TType | null>;
+            for (const [index, key] of keys.entries()) {
+                const value = values[index];
+                if (value === undefined) {
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
+                }
+                result[key] = value;
+            }
+            return result;
+        });
+    }
+
+    getOr(key: string, defaultValue: AsyncLazyable<TType>): LazyPromise<TType> {
+        return this.createLayPromise(async () => {
+            const value = await this.get(key);
+            if (value === null) {
+                return await simplifyAsyncLazyable(defaultValue);
+            }
+            return value;
+        });
+    }
+
+    getOrMany<TKeys extends string>(
+        keysWithDefaults: Record<TKeys, AsyncLazyable<TType>>,
+    ): LazyPromise<Record<TKeys, TType>> {
+        return this.createLayPromise(async () => {
+            const keys = Object.keys(keysWithDefaults);
+            if (isArrayEmpty(keys)) {
+                return {};
+            }
+            const valuePromises: PromiseLike<TType>[] = [];
+            for (const key of keys) {
+                const defaultValue = keysWithDefaults[key as TKeys];
+                valuePromises.push(this.getOr(key, defaultValue));
+            }
+            const values = await Promise.all(valuePromises);
+            const result = {} as Record<string, TType>;
+            for (const [index, key] of keys.entries()) {
+                const value = values[index];
+                if (value === undefined) {
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
+                }
+                result[key] = value;
+            }
+            return result;
+        });
+    }
+
+    getOrFail(key: string): LazyPromise<TType> {
+        return this.createLayPromise(async () => {
+            const value = await this.get(key);
+            if (value === null) {
+                throw new KeyNotFoundCacheError(`Key "${key}" is not found`);
+            }
+            return value;
+        });
+    }
+
+    addMany<TKeys extends string>(
+        values: Record<TKeys, WithTtlValue<TType>>,
+    ): LazyPromise<Record<TKeys, boolean>> {
+        return this.createLayPromise(async () => {
+            if (isObjectEmpty(values)) {
+                return {} as Record<TKeys, boolean>;
+            }
+            const valuePromises: PromiseLike<boolean>[] = [];
+            for (const key in values) {
+                const { value, ttl } = values[key];
+                valuePromises.push(this.add(key, value, ttl));
+            }
+            const returnValues = await Promise.all(valuePromises);
+            const result = {} as Record<string, boolean>;
+            for (const [index, key] of Object.keys(values).entries()) {
+                const value = returnValues[index];
+                if (value === undefined) {
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
+                }
+                result[key as TKeys] = value;
+            }
+            return result;
+        });
+    }
+
+    updateMany<TKeys extends string>(
+        values: Record<TKeys, TType>,
+    ): LazyPromise<Record<TKeys, boolean>> {
+        return this.createLayPromise(async () => {
+            if (isObjectEmpty(values)) {
+                return {} as Record<TKeys, boolean>;
+            }
+            const valuePromises: PromiseLike<boolean>[] = [];
+            for (const key in values) {
+                const value = values[key];
+                valuePromises.push(this.update(key, value));
+            }
+            const returnValues = await Promise.all(valuePromises);
+            const result = {} as Record<string, boolean>;
+            for (const [index, key] of Object.keys(values).entries()) {
+                const value = returnValues[index];
+                if (value === undefined) {
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
+                }
+                result[key as TKeys] = value;
+            }
+            return result;
+        });
+    }
+
+    putMany<TKeys extends string>(
+        values: Record<TKeys, WithTtlValue<TType>>,
+    ): LazyPromise<Record<TKeys, boolean>> {
+        return this.createLayPromise(async () => {
+            if (isObjectEmpty(values)) {
+                return {} as Record<TKeys, boolean>;
+            }
+            const valuePromises: PromiseLike<boolean>[] = [];
+            for (const key in values) {
+                const { value, ttl } = values[key];
+                valuePromises.push(this.put(key, value, ttl));
+            }
+            const returnValues = await Promise.all(valuePromises);
+            const result = {} as Record<string, boolean>;
+            for (const [index, key] of Object.keys(values).entries()) {
+                const value = returnValues[index];
+                if (value === undefined) {
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
+                }
+                result[key as TKeys] = value;
+            }
+            return result;
+        });
+    }
+
+    removeMany<TKeys extends string>(
+        keys: TKeys[],
+    ): LazyPromise<Record<TKeys, boolean>> {
+        return this.createLayPromise(async () => {
+            if (isArrayEmpty(keys)) {
+                return {} as Record<TKeys, boolean>;
+            }
+            const valuePromises: PromiseLike<boolean>[] = [];
+            for (const key of keys) {
+                valuePromises.push(this.remove(key));
+            }
+            const values = await Promise.all(valuePromises);
+            const result = {} as Record<string, boolean>;
+            for (const [index, key] of keys.entries()) {
+                const value = values[index];
+                if (value === undefined) {
+                    throw new UnexpectedCacheError(
+                        `Item "values[${String(index)}]" is undefined`,
+                    );
+                }
+                result[key] = value;
+            }
+            return result;
+        });
+    }
+
+    getAndRemove(key: string): LazyPromise<TType | null> {
+        return this.createLayPromise(async () => {
+            const value = await this.get(key);
+            if (value === null) {
+                return null;
+            }
+            await this.remove(key);
+            return value;
+        });
+    }
+
+    getOrAdd(
+        key: string,
+        valueToAdd: AsyncLazyable<GetOrAddValue<TType>>,
+        ttl?: TimeSpan,
+    ): LazyPromise<TType> {
+        return this.createLayPromise(async () => {
+            const value = await this.get(key);
+            if (value === null) {
+                const simplifiedValueToAdd = await simplifyAsyncLazyable(
+                    valueToAdd as AsyncLazyable<TType>,
+                );
+                await this.add(key, simplifiedValueToAdd, ttl);
+                return simplifiedValueToAdd;
+            }
+            return value;
+        });
+    }
+
+    decrement(
+        key: string,
+        value = 1 as Extract<TType, number>,
+    ): LazyPromise<boolean> {
+        return this.createLayPromise(async () => {
+            return await this.increment(key, -value as Extract<TType, number>);
         });
     }
 }
