@@ -11,7 +11,7 @@ import type {
 /**
  * @internal
  */
-export class WithNamespaceEventBusAdapter implements IEventBusAdapter {
+export class WithGroupEventBusAdapter implements IEventBusAdapter {
     private readonly listenerMap = new Map<
         Listener<IBaseEvent>,
         Listener<IBaseEvent>
@@ -19,9 +19,9 @@ export class WithNamespaceEventBusAdapter implements IEventBusAdapter {
 
     constructor(
         private readonly eventBusAdapter: IEventBusAdapter,
-        private readonly namespace: string,
+        private readonly group: string,
     ) {
-        this.namespace = `${this.namespace}/`;
+        this.group = `${this.group}/`;
     }
 
     async addListener(
@@ -33,14 +33,14 @@ export class WithNamespaceEventBusAdapter implements IEventBusAdapter {
             wrappedListener = async (eventObj: IBaseEvent) => {
                 await listener({
                     ...eventObj,
-                    type: eventObj.type.slice(this.namespace.length),
+                    type: eventObj.type.slice(this.group.length),
                 });
             };
             this.listenerMap.set(listener, wrappedListener);
         }
 
         await this.eventBusAdapter.addListener(
-            `${this.namespace}${event}`,
+            `${this.group}${event}`,
             wrappedListener,
         );
     }
@@ -55,7 +55,7 @@ export class WithNamespaceEventBusAdapter implements IEventBusAdapter {
         }
 
         await this.eventBusAdapter.removeListener(
-            `${this.namespace}${event}`,
+            `${this.group}${event}`,
             wrappedListener,
         );
         this.listenerMap.delete(listener);
@@ -65,7 +65,7 @@ export class WithNamespaceEventBusAdapter implements IEventBusAdapter {
         await this.eventBusAdapter.dispatch(
             events.map((event) => ({
                 ...event,
-                type: `${this.namespace}${event.type}`,
+                type: `${this.group}${event.type}`,
             })),
         );
     }

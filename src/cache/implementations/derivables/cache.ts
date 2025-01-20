@@ -14,7 +14,7 @@ import {
     type ICache,
     type ICacheAdapter,
 } from "@/cache/contracts/_module";
-import { type INamespacedCache } from "@/cache/contracts/_module";
+import { type IGroupableCache } from "@/cache/contracts/_module";
 import {
     isArrayEmpty,
     isObjectEmpty,
@@ -30,7 +30,7 @@ import type { TimeSpan } from "@/utilities/_module";
 import type { LazyPromiseSettings } from "@/async/_module";
 import { LazyPromise } from "@/async/_module";
 import type {
-    INamespacedEventBus,
+    IGroupableEventBus,
     IEventBus,
     AllEvents,
     Listener,
@@ -47,7 +47,7 @@ import {
  */
 export type CacheSettings<TType> = {
     /**
-     * You can prefix all keys with a given <i>rootNamespace</i>.
+     * You can prefix all keys with a given <i>rootGroup</i>.
      * This useful if you want to add multitenancy but still use the same database.
      * @default {""}
      * @example
@@ -56,10 +56,10 @@ export type CacheSettings<TType> = {
      *
      * const memoryCacheAdapter = new MemoryCacheAdapter();
      * const cacheA = new Cache(memoryCacheAdapter, {
-     *   rootNamespace: "@a"
+     *   rootGroup: "@a"
      * });
      * const cacheB = new Cache(memoryCacheAdapter, {
-     *   rootNamespace: "@b"
+     *   rootGroup: "@b"
      * });
      *
      * (async () => {
@@ -73,12 +73,12 @@ export type CacheSettings<TType> = {
      * })();
      * ```
      */
-    rootNamespace?: OneOrMore<string>;
+    rootGroup?: OneOrMore<string>;
 
     /**
-     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link INamespacedEventBus}</i>.
+     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
      */
-    eventBus?: INamespacedEventBus<CacheEvents<TType>>;
+    eventBus?: IGroupableEventBus<CacheEvents<TType>>;
 
     /**
      * You can decide the default ttl value. If null is passed then no ttl will be used by default.
@@ -98,11 +98,9 @@ export type CacheSettings<TType> = {
  * const cache = new Cache(new MemoryCacheAdapter());
  * ```
  */
-export class Cache<TType = unknown> implements INamespacedCache<TType> {
-    private readonly namespace: string;
-    private readonly namespacedEventBus: INamespacedEventBus<
-        CacheEvents<TType>
-    >;
+export class Cache<TType = unknown> implements IGroupableCache<TType> {
+    private readonly group: string;
+    private readonly groupdEventBus: IGroupableEventBus<CacheEvents<TType>>;
     private readonly eventBus: IEventBus<CacheEvents<TType>>;
     private readonly cacheAdapter: ICacheAdapter<TType>;
     private readonly eventAttributes: CacheEvent;
@@ -114,22 +112,20 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
         settings: CacheSettings<TType> = {},
     ) {
         const {
-            eventBus: namespacedEventBus = new EventBus(
-                new NoOpEventBusAdapter(),
-            ),
+            eventBus: groupdEventBus = new EventBus(new NoOpEventBusAdapter()),
             defaultTtl = null,
-            rootNamespace = "",
+            rootGroup = "",
             lazyPromiseSettings,
         } = settings;
         this.lazyPromiseSettings = lazyPromiseSettings;
-        this.namespacedEventBus = namespacedEventBus;
-        this.namespace = simplifyGroupName(rootNamespace);
-        this.eventBus = this.namespacedEventBus.withNamespace(this.namespace);
+        this.groupdEventBus = groupdEventBus;
+        this.group = simplifyGroupName(rootGroup);
+        this.eventBus = this.groupdEventBus.withGroup(this.group);
         this.cacheAdapter = cacheAdapter;
         this.defaultTtl = defaultTtl;
         this.eventAttributes = {
             adapter: this.cacheAdapter,
-            namespace: this.namespace,
+            group: this.group,
         };
     }
 
@@ -232,28 +228,26 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
         };
     }
 
-    private keyWithNamespace(key: string): string {
-        return simplifyGroupName([this.namespace, key]);
+    private keyWithGroup(key: string): string {
+        return simplifyGroupName([this.group, key]);
     }
 
-    withNamespace(namespace: OneOrMore<string>): ICache<TType> {
-        namespace = simplifyGroupName(namespace);
+    withGroup(group: OneOrMore<string>): ICache<TType> {
+        group = simplifyGroupName(group);
         return new Cache(this.cacheAdapter, {
             defaultTtl: this.defaultTtl,
-            eventBus: this.namespacedEventBus,
-            rootNamespace: [this.namespace, namespace],
+            eventBus: this.groupdEventBus,
+            rootGroup: [this.group, group],
         });
     }
 
-    getNamespace(): string {
-        return this.namespace;
+    getGroup(): string {
+        return this.group;
     }
 
     get(key: string): LazyPromise<TType | null> {
         return this.createLayPromise(async () => {
-            const value = await this.cacheAdapter.get(
-                this.keyWithNamespace(key),
-            );
+            const value = await this.cacheAdapter.get(this.keyWithGroup(key));
             if (value === null) {
                 await this.eventBus.dispatch(this.createKeyNotFoundEvent(key));
             } else {
@@ -272,7 +266,7 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
             const hasAdded = await this.cacheAdapter.add(
-                this.keyWithNamespace(key),
+                this.keyWithGroup(key),
                 value,
                 ttl,
             );
@@ -288,7 +282,7 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
     update(key: string, value: TType): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
             const hasUpdated = await this.cacheAdapter.update(
-                this.keyWithNamespace(key),
+                this.keyWithGroup(key),
                 value,
             );
             if (hasUpdated) {
@@ -309,7 +303,7 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
             const hasUpdated = await this.cacheAdapter.put(
-                this.keyWithNamespace(key),
+                this.keyWithGroup(key),
                 value,
                 ttl,
             );
@@ -329,7 +323,7 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
     remove(key: string): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
             const hasRemoved = await this.cacheAdapter.remove(
-                this.keyWithNamespace(key),
+                this.keyWithGroup(key),
             );
             if (hasRemoved) {
                 await this.eventBus.dispatch(this.createKeyRemovedEvent(key));
@@ -346,7 +340,7 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
             const hasUpdated = await this.cacheAdapter.increment(
-                this.keyWithNamespace(key),
+                this.keyWithGroup(key),
                 value,
             );
             if (hasUpdated) {
@@ -369,7 +363,7 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
 
     clear(): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            await this.cacheAdapter.clear(this.namespace);
+            await this.cacheAdapter.clear(this.group);
             await this.eventBus.dispatch(this.createKeysClearedEvent());
         });
     }

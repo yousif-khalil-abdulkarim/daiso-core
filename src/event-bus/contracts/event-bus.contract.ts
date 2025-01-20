@@ -119,47 +119,47 @@ export type IEventBus<TEvents extends BaseEvents = BaseEvents> =
     IListenable<TEvents> &
         IDispatcher<TEvents> & {
             /**
-             * The <i>getNamespace</i> method returns the complete namespace.
+             * The <i>getGroup</i> method returns the complete group.
              * @example
              * ```ts
              * import { type IEventBus } from "@daiso-tech/core";
              *
              * async function main(eventBus: IEventBus): Promise<void> {
              *   // Will be "@root"
-             *   console.log(eventBus.getNamespace())
+             *   console.log(eventBus.getGroup())
              *
-             *   const eventBusA = eventBus.withNamespace("a");
+             *   const eventBusA = eventBus.withGroup("a");
              *
              *   // Will be "@root/a"
-             *   console.log(eventBusA.getNamespace())
+             *   console.log(eventBusA.getGroup())
              * }
              * ```
              */
-            getNamespace(): string;
+            getGroup(): string;
         };
 
 /**
- * The <i>INamespacedEventBus</i> contract defines a way for dispatching and listening to events independent of underlying technology.
+ * The <i>IGroupableEventBus</i> contract defines a way for dispatching and listening to events independent of underlying technology.
  * It commes with one extra method which is useful for multitennat applications compared to <i>IEventBus</i>.
  * @group Contracts
  */
-export type INamespacedEventBus<TEvents extends BaseEvents = BaseEvents> =
+export type IGroupableEventBus<TEvents extends BaseEvents = BaseEvents> =
     IEventBus<TEvents> & {
         /**
-         * The <i>withNamespace</i> method returns new instance of <i>{@link IEventBus}</i> where all the events names will be prefixed with a given <i>namespace</i>.
+         * The <i>withGroup</i> method returns new instance of <i>{@link IEventBus}</i> where all the events names will be prefixed with a given <i>group</i>.
          * This useful for multitennat applications.
          * @example
          * ```ts
          * import { type IEventBus } from "@daiso-tech/core";
          *
          * async function main(eventBus: IEventBus): Promise<void> {
-         *   const eventBusA = eventBus.withNamespace("a");
+         *   const eventBusA = eventBus.withGroup("a");
          *   await eventBusA.subscribe("add", (event) => {
          *     // This will be logged
          *     console.log("eventBusA:", event);
          *   });
          *
-         *   const eventBusB = eventBus.withNamespace("b");
+         *   const eventBusB = eventBus.withGroup("b");
          *   await eventBusB.subscribe("add", (event) => {
          *     // This will never be logged
          *     console.log("eventBusB:", event);
@@ -173,5 +173,5 @@ export type INamespacedEventBus<TEvents extends BaseEvents = BaseEvents> =
          * }
          * ```
          */
-        withNamespace(namespace: OneOrMore<string>): IEventBus<TEvents>;
+        withGroup(group: OneOrMore<string>): IEventBus<TEvents>;
     };

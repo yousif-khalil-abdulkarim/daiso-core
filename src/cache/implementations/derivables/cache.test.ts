@@ -14,12 +14,12 @@ describe("class: Cache", () => {
     cacheTestSuite({
         createCacheA: () =>
             new Cache(new MemoryCacheAdapter(map), {
-                rootNamespace: "@a",
+                rootGroup: "@a",
                 eventBus,
             }),
         createCacheB: () =>
             new Cache(new MemoryCacheAdapter(map), {
-                rootNamespace: "@b",
+                rootGroup: "@b",
                 eventBus,
             }),
         beforeEach,

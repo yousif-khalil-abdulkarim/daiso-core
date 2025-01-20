@@ -59,7 +59,7 @@ export type CacheTestSuiteSettings = {
  *           serializer,
  *         }),
  *         {
- *           rootNamespace: "@a",
+ *           rootGroup: "@a",
  *           eventBus,
  *         }
  *       ),
@@ -69,7 +69,7 @@ export type CacheTestSuiteSettings = {
  *           serializer,
  *         }),
  *         {
- *           rootNamespace: "@b",
+ *           rootGroup: "@b",
  *           eventBus,
  *         }
  *       ),
@@ -898,7 +898,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
         });
     });
-    describe("Namespace tests:", () => {
+    describe("Group tests:", () => {
         test("method: exists", async () => {
             await cacheA.put("a", 1);
             expect(await cacheA.exists("a")).toBe(true);
