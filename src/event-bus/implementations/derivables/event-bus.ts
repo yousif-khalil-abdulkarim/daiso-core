@@ -12,7 +12,7 @@ import type {
 } from "@/event-bus/contracts/_module";
 import {
     type IEventBus,
-    type INamespacedEventBus,
+    type IGroupableEventBus,
     type IEventBusAdapter,
     type Listener,
     type IBaseEvent,
@@ -23,14 +23,14 @@ import {
 } from "@/event-bus/contracts/_module";
 
 import type { OneOrMore } from "@/utilities/_module";
-import { simplifyNamespace, isArrayEmpty } from "@/utilities/_module";
+import { simplifyGroupName, isArrayEmpty } from "@/utilities/_module";
 
 /**
  * @group Derivables
  */
 export type EventBusSettings = {
     /**
-     * You can prefix all keys with a given <i>namespace</i>.
+     * You can prefix all keys with a given <i>group</i>.
      * This useful if you want to add multitenancy but still use the same database.
      * @default {""}
      * @example
@@ -39,15 +39,15 @@ export type EventBusSettings = {
      *
      * const memoryEventBusAdapter = new MemoryEventBusAdapter();
      * const eventBusA = new EventBus(memoryEventBusAdapter, {
-     *   rootNamespace: "@a"
+     *   rootGroup: "@a"
      * });
      * const eventBusB = new EventBus(memoryEventBusAdapter, {
-     *   rootNamespace: "@b"
+     *   rootGroup: "@b"
      * });
      *
      * (async () => {
      *   eventBusB.addListener("add", event => {
-     *     // This will never be logged because eventBusB has different namespace
+     *     // This will never be logged because eventBusB has different group
      *     console.log("eventBusB:", event);
      *   });
      *
@@ -62,7 +62,7 @@ export type EventBusSettings = {
      * })();
      * ```
      */
-    rootNamespace?: OneOrMore<string>;
+    rootGroup?: OneOrMore<string>;
 
     lazyPromiseSettings?: LazyPromiseSettings;
 };
@@ -72,10 +72,10 @@ export type EventBusSettings = {
  * @group Derivables
  */
 export class EventBus<TEvents extends BaseEvents = BaseEvents>
-    implements INamespacedEventBus<TEvents>
+    implements IGroupableEventBus<TEvents>
 {
     private readonly eventBusAdapter: IEventBusAdapter;
-    private readonly namespace: string;
+    private readonly group: string;
     private readonly lazyPromiseSettings?: LazyPromiseSettings;
     private readonly listenerMap = new Map<
         Listener<IBaseEvent>,
@@ -86,9 +86,9 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
         eventBusAdapter: IEventBusAdapter,
         settings: EventBusSettings = {},
     ) {
-        const { rootNamespace: namespace = "", lazyPromiseSettings } = settings;
+        const { rootGroup: group = "", lazyPromiseSettings } = settings;
         this.lazyPromiseSettings = lazyPromiseSettings;
-        this.namespace = simplifyNamespace(namespace);
+        this.group = simplifyGroupName(group);
         this.eventBusAdapter = eventBusAdapter;
     }
 
@@ -98,19 +98,19 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
         return new LazyPromise(asyncFn, this.lazyPromiseSettings);
     }
 
-    private keyWithNamespace(key: string): string {
-        return simplifyNamespace([this.namespace, key]);
+    private keyWithGroup(key: string): string {
+        return simplifyGroupName([this.group, key]);
     }
 
-    withNamespace(namespace: OneOrMore<string>): IEventBus<TEvents> {
-        namespace = simplifyNamespace(namespace);
+    withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
+        group = simplifyGroupName(group);
         return new EventBus(this.eventBusAdapter, {
-            rootNamespace: [this.namespace, namespace],
+            rootGroup: [this.group, group],
         });
     }
 
-    getNamespace(): string {
-        return this.namespace;
+    getGroup(): string {
+        return this.group;
     }
 
     private _getListener(
@@ -127,7 +127,7 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
             wrappedListener = async (eventObj: IBaseEvent) => {
                 await listener({
                     ...eventObj,
-                    type: eventObj.type.slice(this.namespace.length + 1),
+                    type: eventObj.type.slice(this.group.length + 1),
                 });
             };
             this.listenerMap.set(listener, wrappedListener);
@@ -147,7 +147,7 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                     );
                 }
                 await this.eventBusAdapter.addListener(
-                    this.keyWithNamespace(eventName),
+                    this.keyWithGroup(eventName),
                     this._getOrAddListener(listener as Listener<IBaseEvent>),
                 );
             } catch (error: unknown) {
@@ -177,7 +177,7 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                     return;
                 }
                 await this.eventBusAdapter.removeListener(
-                    this.keyWithNamespace(eventName),
+                    this.keyWithGroup(eventName),
                     wrappedListener,
                 );
             } catch (error: unknown) {
@@ -207,7 +207,7 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                         }
                         return {
                             ...event,
-                            type: this.keyWithNamespace(event.type),
+                            type: this.keyWithGroup(event.type),
                         };
                     }),
                 );

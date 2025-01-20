@@ -6,10 +6,10 @@ import {
     DefaultDriverNotDefinedError,
     UnregisteredDriverError,
 } from "@/utilities/_module";
-import type { INamespacedEventBus } from "@/event-bus/contracts/_module";
+import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
 import type {
     ICacheFactory,
-    INamespacedCache,
+    IGroupableCache,
     ICacheAdapter,
 } from "@/cache/contracts/_module";
 import { Cache } from "@/cache/implementations/derivables/cache";
@@ -35,14 +35,14 @@ export type CacheFactorySettings<TDrivers extends string = string> = {
     defaultTtl?: TimeSpan;
 
     /**
-     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link INamespacedEventBus}</i>.
+     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
      */
-    eventBus?: INamespacedEventBus<any>;
+    eventBus?: IGroupableEventBus<any>;
 
     /**
-     * You can prefix all keys with a given <i>rootNamespace</i>.
+     * You can prefix all keys with a given <i>rootGroup</i>.
      */
-    rootNamespace?: string;
+    rootGroup?: string;
 };
 
 /**
@@ -58,17 +58,17 @@ export type CacheFactorySettings<TDrivers extends string = string> = {
  *     redis: new RedisCacheAdapter(new Redis()),
  *   },
  *   defaultDriver: "memory",
- *   rootNamespace: "@events"
+ *   rootGroup: "@events"
  * });
  * ```
  */
 export class CacheFactory<TDrivers extends string = string, TType = unknown>
     implements ICacheFactory<TDrivers, TType>
 {
-    private readonly rootNamespace?: string;
+    private readonly rootGroup?: string;
     private readonly drivers: CacheDrivers<TDrivers>;
     private readonly defaultDriver?: TDrivers;
-    private readonly eventBus?: INamespacedEventBus<any>;
+    private readonly eventBus?: IGroupableEventBus<any>;
     private defaultTtl: TimeSpan | null;
 
     constructor(settings: CacheFactorySettings<TDrivers>) {
@@ -76,19 +76,19 @@ export class CacheFactory<TDrivers extends string = string, TType = unknown>
             drivers,
             defaultDriver,
             eventBus,
-            rootNamespace,
+            rootGroup,
             defaultTtl = null,
         } = settings;
         this.drivers = drivers;
         this.defaultDriver = defaultDriver;
         this.eventBus = eventBus;
-        this.rootNamespace = rootNamespace;
+        this.rootGroup = rootGroup;
         this.defaultTtl = defaultTtl;
     }
 
     use(
         driverName: TDrivers | undefined = this.defaultDriver,
-    ): INamespacedCache<TType> {
+    ): IGroupableCache<TType> {
         if (driverName === undefined) {
             throw new DefaultDriverNotDefinedError(CacheFactory.name);
         }
@@ -98,7 +98,7 @@ export class CacheFactory<TDrivers extends string = string, TType = unknown>
         }
         return new Cache<TType>(driver, {
             eventBus: this.eventBus,
-            rootNamespace: this.rootNamespace,
+            rootGroup: this.rootGroup,
             defaultTtl: this.defaultTtl,
         });
     }

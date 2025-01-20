@@ -187,43 +187,43 @@ export type ICache<TType = unknown> = ICacheListenable & {
     clear(): LazyPromise<void>;
 
     /**
-     * The <i>getNamespace</i> method returns the complete namespace.
+     * The <i>getGroup</i> method returns the complete group.
      * @example
      * ```ts
      * import type { ICache } from "@daiso-tech/core";
      *
      * async function main(cache: ICache) {
      *   // Will be "@root"
-     *   console.log(cache.getNamespace())
+     *   console.log(cache.getGroup())
      *
-     *   const cacheA = cache.withNamespace("a");
+     *   const cacheA = cache.withGroup("a");
      *
      *   // Will be "@root/a"
-     *   console.log(cacheA.getNamespace())
+     *   console.log(cacheA.getGroup())
      * }
      * ```
      */
-    getNamespace(): string;
+    getGroup(): string;
 };
 
 /**
- * The <i>INamespacedCache</i> contract defines a way for storing data as key-value pairs independent of data storage.
+ * The <i>IGroupableCache</i> contract defines a way for storing data as key-value pairs independent of data storage.
  * It commes with one extra method which is useful for multitennat applications compared to <i>ICache</i>.
  * @group Contracts
  */
-export type INamespacedCache<TType = unknown> = ICache<TType> & {
+export type IGroupableCache<TType = unknown> = ICache<TType> & {
     /**
-     * The <i>withNamespace</i> method returns new instance of <i>{@link ICache}</i> where all the keys will be prefixed with a given <i>namespace</i>.
+     * The <i>withGroup</i> method returns new instance of <i>{@link ICache}</i> where all the keys will be prefixed with a given <i>group</i>.
      * This useful for multitennat applications.
      * @example
      * ```ts
      * import { type ICache } from "@daiso-tech/core";
      *
      * async function main(cache: ICache): Promise<void> {
-     *   const cacheA = cache.withNamespace("a");
+     *   const cacheA = cache.withGroup("a");
      *   await cacheA.add("a", 1);
      *
-     *   const cacheB = cache.withNamespace("b");
+     *   const cacheB = cache.withGroup("b");
      *   await cacheB.add("b", 2);
      *
      *   // Will print { a: 1, b: null }
@@ -231,5 +231,5 @@ export type INamespacedCache<TType = unknown> = ICache<TType> & {
      * }
      * ```
      */
-    withNamespace(namespace: OneOrMore<string>): ICache<TType>;
+    withGroup(group: OneOrMore<string>): ICache<TType>;
 };

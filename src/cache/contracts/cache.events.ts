@@ -9,7 +9,7 @@ import type { ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
  * @group Events
  */
 export type CacheEvent = {
-    namespace: string;
+    group: string;
     adapter: ICacheAdapter<any>;
 };
 

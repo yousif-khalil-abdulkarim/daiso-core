@@ -16,11 +16,11 @@ describe("class: EventBus", () => {
         beforeEach,
         createEventBusA: () =>
             new EventBus(new MemoryEventBusAdapter(eventEmitter), {
-                rootNamespace: "@/a",
+                rootGroup: "@/a",
             }),
         createEventBusB: () =>
             new EventBus(new MemoryEventBusAdapter(eventEmitter), {
-                rootNamespace: "@/b",
+                rootGroup: "@/b",
             }),
     });
 });

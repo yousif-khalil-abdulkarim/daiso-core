@@ -60,7 +60,7 @@ export type EventBusTestSuiteSettings = {
  *            listenerClient,
  *            serializer,
  *          }),
- *          { rootNamespace: "@a" }
+ *          { rootGroup: "@a" }
  *        ),
  *      createEventBusB: () =>
  *        new EventBus(
@@ -69,7 +69,7 @@ export type EventBusTestSuiteSettings = {
  *            listenerClient,
  *            serializer,
  *          }),
- *          { rootNamespace: "@b" }
+ *          { rootGroup: "@b" }
  *        ),
  *      test,
  *      beforeEach,
@@ -286,7 +286,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
         });
     });
-    describe("Namespace tests:", () => {
+    describe("Group tests:", () => {
         test("method: addListener / dispatch", async () => {
             const event: IBaseEvent = {
                 type: "type",

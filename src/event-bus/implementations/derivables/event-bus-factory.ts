@@ -3,7 +3,7 @@
  */
 
 import type {
-    INamespacedEventBus,
+    IGroupableEventBus,
     IEventBusAdapter,
     IEventBusFactory,
     BaseEvents,
@@ -27,7 +27,7 @@ export type EventBusDrivers<TAdapters extends string = string> = Partial<
 export type EventBusFactorySettings<TAdapters extends string = string> = {
     drivers: EventBusDrivers<TAdapters>;
     defaultDriver?: NoInfer<TAdapters>;
-    rootNamespace?: string;
+    rootGroup?: string;
 };
 
 /**
@@ -46,7 +46,7 @@ export type EventBusFactorySettings<TAdapters extends string = string> = {
  *     }),
  *   },
  *   defaultDriver: "memory",
- *   rootNamespace: "@events"
+ *   rootGroup: "@events"
  * });
  * ```
  */
@@ -57,18 +57,18 @@ export class EventBusFactory<
 {
     private readonly drivers: EventBusDrivers<TAdapters>;
     private readonly defaultDriver?: TAdapters;
-    private readonly rootNamespace?: string;
+    private readonly rootGroup?: string;
 
     constructor(settings: EventBusFactorySettings<TAdapters>) {
-        const { drivers, defaultDriver, rootNamespace } = settings;
+        const { drivers, defaultDriver, rootGroup } = settings;
         this.drivers = drivers;
         this.defaultDriver = defaultDriver;
-        this.rootNamespace = rootNamespace;
+        this.rootGroup = rootGroup;
     }
 
     use(
         driverName: TAdapters | undefined = this.defaultDriver,
-    ): INamespacedEventBus<TEvents> {
+    ): IGroupableEventBus<TEvents> {
         if (driverName === undefined) {
             throw new DefaultDriverNotDefinedError(EventBusFactory.name);
         }
@@ -77,7 +77,7 @@ export class EventBusFactory<
             throw new UnregisteredDriverError(driverName);
         }
         return new EventBus(selectedAdapter, {
-            rootNamespace: this.rootNamespace,
+            rootGroup: this.rootGroup,
         });
     }
 
