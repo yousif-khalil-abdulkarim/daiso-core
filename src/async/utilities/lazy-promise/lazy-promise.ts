@@ -16,6 +16,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     RetryAsyncError,
 } from "@/async/async.errors";
+import type { Func } from "@/utilities/_module";
 
 /**
  * @group Utilities
@@ -48,6 +49,9 @@ export type LazyPromiseSettings = {
  * @group Utilities
  * @example
  * ```ts
+ * import { LazyPromise } from "@daiso-tech/core";
+ * import {} from "node:fs/promises";
+ *
  * (async () => {
  *   const promise = new LazyPromise(async () => {
  *     console.log("I am lazy");
@@ -58,6 +62,30 @@ export type LazyPromiseSettings = {
  * ```
  */
 export class LazyPromise<TValue> implements PromiseLike<TValue> {
+    /**
+     * The <i>wrapFn</i> is convience method used for wrapping a async function with a <i>LazyPromise</i>.
+     * @example
+     * ```ts
+     * import { LazyPromise, TimeSpan } from "@daiso-tech/core";
+     * import { readFile as readFileNodeJs } from "node:fs/promises";
+     *
+     * const readFile = LazyPromise.wrapFn(readFileNodeJs, {
+     *   retryAttempts: 3
+     * });
+     *
+     * (async () => {
+     *   await readFile("none_existing_file.txt").timeout(TimeSpan.fromMinutes(1));
+     * })();
+     * ```
+     */
+    static wrapFn<TParameters extends unknown[], TReturn>(
+        fn: Func<TParameters, PromiseLike<TReturn>>,
+        settings?: LazyPromiseSettings,
+    ): Func<TParameters, LazyPromise<TReturn>> {
+        return (...parameters) =>
+            new LazyPromise(() => fn(...parameters), settings);
+    }
+
     private promise: PromiseLike<TValue> | null = null;
     private attempts: number | null = null;
     private backoffPolicy_: BackoffPolicy | null = null;
