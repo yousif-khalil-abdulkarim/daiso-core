@@ -30,6 +30,33 @@ import { simplifyLazyable } from "@/utilities/_module";
  * @group Adapters
  */
 export class ListCollection<TInput> implements ICollection<TInput> {
+    static crossJoin<TArray extends Array<unknown>>(
+        items: TArray[],
+    ): ICollection<TArray> {
+        throw new Error("Method not implemented.");
+    }
+
+    static concat<TValue>(
+        iterables: Iterable<Iterable<TValue>>,
+    ): ICollection<TValue> {
+        throw new Error("Method not implemented.");
+    }
+
+    static difference<TValue, TSelect>(
+        iterableA: Iterable<TValue>,
+        iterableB: Iterable<TValue>,
+        selectFn?: Map<TValue, ICollection<TValue>, TSelect>,
+    ): ICollection<TValue> {
+        return new ListCollection(iterableA).difference(iterableB, selectFn);
+    }
+
+    static zip<TValueA, TValueB>(
+        iterableA: Iterable<TValueA>,
+        iterableB: Iterable<TValueB>,
+    ): ICollection<[TValueA, TValueB]> {
+        return new ListCollection(iterableA).zip(iterableB);
+    }
+
     private array: TInput[];
 
     /**

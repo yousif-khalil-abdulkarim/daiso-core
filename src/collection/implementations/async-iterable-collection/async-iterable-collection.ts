@@ -76,6 +76,36 @@ import { LazyPromise } from "@/async/_module";
 export class AsyncIterableCollection<TInput>
     implements IAsyncCollection<TInput>
 {
+    static crossJoin<TArray extends Array<unknown>>(
+        items: TArray[],
+    ): IAsyncCollection<TArray> {
+        throw new Error("Method not implemented.");
+    }
+
+    static concat<TValue>(
+        iterables: AsyncIterableValue<AsyncIterableValue<TValue>>,
+    ): IAsyncCollection<TValue> {
+        throw new Error("Method not implemented.");
+    }
+
+    static difference<TValue, TSelect>(
+        iterableA: AsyncIterableValue<TValue>,
+        iterableB: AsyncIterableValue<TValue>,
+        selectFn?: AsyncMap<TValue, IAsyncCollection<TValue>, TSelect>,
+    ): IAsyncCollection<TValue> {
+        return new AsyncIterableCollection(iterableA).difference(
+            iterableB,
+            selectFn,
+        );
+    }
+
+    static zip<TValueA, TValueB>(
+        iterableA: AsyncIterableValue<TValueA>,
+        iterableB: AsyncIterableValue<TValueB>,
+    ): IAsyncCollection<[TValueA, TValueB]> {
+        return new AsyncIterableCollection(iterableA).zip(iterableB);
+    }
+
     private static DEFAULT_CHUNK_SIZE = 1024;
 
     private static makeCollection = <TInput>(
