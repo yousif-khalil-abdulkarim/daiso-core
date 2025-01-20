@@ -23,7 +23,7 @@ import {
 } from "@/event-bus/contracts/_module";
 
 import type { OneOrMore } from "@/utilities/_module";
-import { simplifyNamespace, isArrayEmpty } from "@/utilities/_module";
+import { simplifyGroupName, isArrayEmpty } from "@/utilities/_module";
 
 /**
  * @group Derivables
@@ -88,7 +88,7 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
     ) {
         const { rootNamespace: namespace = "", lazyPromiseSettings } = settings;
         this.lazyPromiseSettings = lazyPromiseSettings;
-        this.namespace = simplifyNamespace(namespace);
+        this.namespace = simplifyGroupName(namespace);
         this.eventBusAdapter = eventBusAdapter;
     }
 
@@ -99,11 +99,11 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
     }
 
     private keyWithNamespace(key: string): string {
-        return simplifyNamespace([this.namespace, key]);
+        return simplifyGroupName([this.namespace, key]);
     }
 
     withNamespace(namespace: OneOrMore<string>): IEventBus<TEvents> {
-        namespace = simplifyNamespace(namespace);
+        namespace = simplifyGroupName(namespace);
         return new EventBus(this.eventBusAdapter, {
             rootNamespace: [this.namespace, namespace],
         });

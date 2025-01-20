@@ -19,7 +19,7 @@ import {
     isArrayEmpty,
     isObjectEmpty,
     simplifyAsyncLazyable,
-    simplifyNamespace,
+    simplifyGroupName,
 } from "@/utilities/_module";
 import type {
     AsyncLazyable,
@@ -123,7 +123,7 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
         } = settings;
         this.lazyPromiseSettings = lazyPromiseSettings;
         this.namespacedEventBus = namespacedEventBus;
-        this.namespace = simplifyNamespace(rootNamespace);
+        this.namespace = simplifyGroupName(rootNamespace);
         this.eventBus = this.namespacedEventBus.withNamespace(this.namespace);
         this.cacheAdapter = cacheAdapter;
         this.defaultTtl = defaultTtl;
@@ -233,11 +233,11 @@ export class Cache<TType = unknown> implements INamespacedCache<TType> {
     }
 
     private keyWithNamespace(key: string): string {
-        return simplifyNamespace([this.namespace, key]);
+        return simplifyGroupName([this.namespace, key]);
     }
 
     withNamespace(namespace: OneOrMore<string>): ICache<TType> {
-        namespace = simplifyNamespace(namespace);
+        namespace = simplifyGroupName(namespace);
         return new Cache(this.cacheAdapter, {
             defaultTtl: this.defaultTtl,
             eventBus: this.namespacedEventBus,

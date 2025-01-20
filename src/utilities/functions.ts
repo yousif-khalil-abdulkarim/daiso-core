@@ -51,9 +51,9 @@ export function isObjectEmpty(
 /**
  * @internal
  */
-export function simplifyNamespace(namepsace: OneOrMore<string>): string {
-    if (Array.isArray(namepsace)) {
-        namepsace = namepsace.filter((str) => str.length > 0).join("/");
+export function simplifyGroupName(name: OneOrMore<string>): string {
+    if (Array.isArray(name)) {
+        name = name.filter((str) => str.length > 0).join("/");
     }
-    return namepsace;
+    return name;
 }
