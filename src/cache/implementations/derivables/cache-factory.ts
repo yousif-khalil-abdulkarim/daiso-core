@@ -38,11 +38,6 @@ export type CacheFactorySettings<TDrivers extends string = string> = {
      * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
      */
     eventBus?: IGroupableEventBus<any>;
-
-    /**
-     * You can prefix all keys with a given <i>rootGroup</i>.
-     */
-    rootGroup?: string;
 };
 
 /**
@@ -58,14 +53,12 @@ export type CacheFactorySettings<TDrivers extends string = string> = {
  *     redis: new RedisCacheAdapter(new Redis()),
  *   },
  *   defaultDriver: "memory",
- *   rootGroup: "@events"
  * });
  * ```
  */
 export class CacheFactory<TDrivers extends string = string, TType = unknown>
     implements ICacheFactory<TDrivers, TType>
 {
-    private readonly rootGroup?: string;
     private readonly drivers: CacheDrivers<TDrivers>;
     private readonly defaultDriver?: TDrivers;
     private readonly eventBus?: IGroupableEventBus<any>;
@@ -76,13 +69,11 @@ export class CacheFactory<TDrivers extends string = string, TType = unknown>
             drivers,
             defaultDriver,
             eventBus,
-            rootGroup,
             defaultTtl = null,
         } = settings;
         this.drivers = drivers;
         this.defaultDriver = defaultDriver;
         this.eventBus = eventBus;
-        this.rootGroup = rootGroup;
         this.defaultTtl = defaultTtl;
     }
 
@@ -98,7 +89,6 @@ export class CacheFactory<TDrivers extends string = string, TType = unknown>
         }
         return new Cache<TType>(driver, {
             eventBus: this.eventBus,
-            rootGroup: this.rootGroup,
             defaultTtl: this.defaultTtl,
         });
     }

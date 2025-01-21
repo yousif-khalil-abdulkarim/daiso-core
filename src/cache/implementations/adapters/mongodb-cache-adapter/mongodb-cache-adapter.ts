@@ -7,12 +7,16 @@ import {
     UnexpectedCacheError,
 } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { TimeSpan, IInitizable } from "@/utilities/_module";
+import {
+    type TimeSpan,
+    type IInitizable,
+    type OneOrMore,
+    simplifyGroupName,
+} from "@/utilities/_module";
 import type { ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
 import type { ISerializer } from "@/serializer/contracts/_module";
 import { MongodbSerializer } from "@/serializer/implementations/_module";
-import escapeStringRegexp from "escape-string-regexp";
 
 /**
  * @group Adapters
@@ -20,6 +24,7 @@ import escapeStringRegexp from "escape-string-regexp";
 export type MongodbCacheDocument = {
     _id: ObjectId;
     key: string;
+    group: string;
     value: number | string;
     expiresAt: Date | null;
 };
@@ -29,6 +34,7 @@ export type MongodbCacheDocument = {
  */
 export type MongodbCacheAdapterSettings = {
     serializer: ISerializer<string>;
+    rootGroup: OneOrMore<string>;
 };
 
 /**
@@ -45,10 +51,14 @@ export type MongodbCacheAdapterSettings = {
  * const serializer = new SuperJsonSerializer();
  * const cacheAdapter = new MongodbCacheAdapter(cacheCollection, {
  *   serializer,
+ *   rootGroup: "@global"
  * });
+ *
+ * (async () => {
  *   // You only need to call it once before using the adapter.
  *   await cacheAdapter.init();
  *   await cacheAdapter.add("a", 1);
+ * })();
  * ```
  */
 export class MongodbCacheAdapter<TType>
@@ -66,27 +76,78 @@ export class MongodbCacheAdapter<TType>
         );
     }
 
-    private serializer: ISerializer<string | number>;
+    private readonly mongodbSerializer: ISerializer<string | number>;
+    private readonly group: string;
+    private readonly serializer: ISerializer<string>;
 
     constructor(
         private readonly collection: Collection<MongodbCacheDocument>,
-        { serializer }: MongodbCacheAdapterSettings,
+        { serializer, rootGroup }: MongodbCacheAdapterSettings,
     ) {
-        this.serializer = new MongodbSerializer(serializer);
+        this.serializer = serializer;
+        this.group = simplifyGroupName(rootGroup);
+        this.mongodbSerializer = new MongodbSerializer(this.serializer);
+    }
+
+    getGroup(): string {
+        return this.group;
+    }
+
+    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+        return new MongodbCacheAdapter(this.collection, {
+            serializer: this.serializer,
+            rootGroup: [this.group, simplifyGroupName(group)],
+        });
     }
 
     async init(): Promise<void> {
-        await this.collection.createIndex("key", {
-            unique: true,
-        });
+        await this.collection.createIndex(
+            {
+                key: 1,
+                group: 1,
+            },
+            {
+                unique: true,
+            },
+        );
         await this.collection.createIndex("expiresAt", {
             expireAfterSeconds: 0,
         });
     }
 
+    async exists(key: string): Promise<boolean> {
+        const document = await this.collection.findOne(
+            {
+                key,
+                group: this.group,
+            },
+            {
+                projection: {
+                    _id: 0,
+                    expiresAt: 1,
+                },
+            },
+        );
+        if (document === null) {
+            return false;
+        }
+        const { expiresAt } = document;
+        if (expiresAt === null) {
+            return true;
+        }
+        const hasExpired = expiresAt.getTime() <= new Date().getTime();
+        if (hasExpired) {
+            return false;
+        }
+        return true;
+    }
+
     async get(key: string): Promise<TType | null> {
         const document = await this.collection.findOne(
-            { key },
+            {
+                key,
+                group: this.group,
+            },
             {
                 projection: {
                     _id: 0,
@@ -100,13 +161,13 @@ export class MongodbCacheAdapter<TType>
         }
         const { expiresAt, value } = document;
         if (expiresAt === null) {
-            return await this.serializer.deserialize(value);
+            return await this.mongodbSerializer.deserialize(value);
         }
         const hasExpired = expiresAt.getTime() <= new Date().getTime();
         if (hasExpired) {
             return null;
         }
-        return await this.serializer.deserialize(value);
+        return await this.mongodbSerializer.deserialize(value);
     }
 
     async add(
@@ -123,14 +184,16 @@ export class MongodbCacheAdapter<TType>
         const hasExpirationAndExpiredQuery = {
             $and: [hasExpirationQuery, hasExpiredQuery],
         };
-        const serializedValue = await this.serializer.serialize(value);
+        const serializedValue = await this.mongodbSerializer.serialize(value);
         const document = await this.collection.findOneAndUpdate(
             {
                 key,
+                group: this.group,
             },
             [
                 {
                     $set: {
+                        group: this.group,
                         value: {
                             $cond: {
                                 if: hasExpirationAndExpiredQuery,
@@ -186,6 +249,7 @@ export class MongodbCacheAdapter<TType>
         const document = await this.collection.findOneAndUpdate(
             {
                 key,
+                group: this.group,
                 $or: [
                     hasNoExpiration,
                     {
@@ -195,7 +259,7 @@ export class MongodbCacheAdapter<TType>
             },
             {
                 $set: {
-                    value: await this.serializer.serialize(value),
+                    value: await this.mongodbSerializer.serialize(value),
                 },
             },
             {
@@ -224,10 +288,12 @@ export class MongodbCacheAdapter<TType>
         const document = await this.collection.findOneAndUpdate(
             {
                 key,
+                group: this.group,
             },
             {
                 $set: {
-                    value: await this.serializer.serialize(value),
+                    group: this.group,
+                    value: await this.mongodbSerializer.serialize(value),
                     expiresAt: ttl?.toEndDate() ?? null,
                 },
             },
@@ -254,6 +320,7 @@ export class MongodbCacheAdapter<TType>
         const document = await this.collection.findOneAndDelete(
             {
                 key,
+                group: this.group,
             },
             {
                 projection: {
@@ -293,6 +360,7 @@ export class MongodbCacheAdapter<TType>
             const document = await this.collection.findOneAndUpdate(
                 {
                     key,
+                    group: this.group,
                     $or: [
                         hasNoExpiration,
                         {
@@ -331,20 +399,9 @@ export class MongodbCacheAdapter<TType>
         }
     }
 
-    async clear(prefix: string): Promise<void> {
-        if (prefix === "") {
-            const mongodbResult = await this.collection.deleteMany();
-            if (!mongodbResult.acknowledged) {
-                throw new UnexpectedCacheError(
-                    "Mongodb deletion was not acknowledged",
-                );
-            }
-            return;
-        }
+    async clear(): Promise<void> {
         const mongodbResult = await this.collection.deleteMany({
-            key: {
-                $regex: new RegExp(`^${escapeStringRegexp(prefix)}`),
-            },
+            group: this.group,
         });
         if (!mongodbResult.acknowledged) {
             throw new UnexpectedCacheError(

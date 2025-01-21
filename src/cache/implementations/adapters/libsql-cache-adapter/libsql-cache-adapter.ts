@@ -4,7 +4,12 @@
 
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { ISerializer } from "@/serializer/contracts/_module";
-import type { TimeSpan, IDeinitizable, IInitizable } from "@/utilities/_module";
+import type {
+    TimeSpan,
+    IDeinitizable,
+    IInitizable,
+    OneOrMore,
+} from "@/utilities/_module";
 import type { Client } from "@libsql/client";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 import {
@@ -26,6 +31,7 @@ export type LibsqlCacheAdapterSettings = {
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
+    rootGroup: OneOrMore<string>;
 };
 
 /**
@@ -36,12 +42,14 @@ export type LibsqlCacheAdapterSettings = {
  * import { LibsqlCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
  * import { createClient } from "@libsql/client";
  *
+ * const client = createClient({ url: "file:local.db" });
+ * const serializer = new SuperJsonSerializer();
+ * const cacheAdapter = new LibsqlCacheAdapter(client, {
+ *   serializer,
+ *   rootGroup: "@global"
+ * });
+ *
  * (async () => {
- *   const client = createClient({ url: "file:local.db" });
- *   const serializer = new SuperJsonSerializer();
- *   const cacheAdapter = new LibsqlCacheAdapter(client, {
- *     serializer,
- *   });
  *   // You only need to call it once before using the adapter.
  *   await cacheAdapter.init();
  *   await cacheAdapter.add("a", 1);
@@ -63,6 +71,7 @@ export class LibsqlCacheAdapter<TType>
             enableTransactions = false,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,
+            rootGroup,
         } = settings;
 
         this.cacheAdapter = new KyselySqliteCacheAdapter(
@@ -81,8 +90,16 @@ export class LibsqlCacheAdapter<TType>
                 enableTransactions,
                 expiredKeysRemovalInterval,
                 shouldRemoveExpiredKeys,
+                rootGroup,
             },
         );
+    }
+    getGroup(): string {
+        return this.cacheAdapter.getGroup();
+    }
+
+    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+        return this.cacheAdapter.withGroup(group);
     }
 
     async removeExpiredKeys(): Promise<void> {
@@ -95,6 +112,10 @@ export class LibsqlCacheAdapter<TType>
 
     async init(): Promise<void> {
         await this.cacheAdapter.init();
+    }
+
+    async exists(key: string): Promise<boolean> {
+        return await this.cacheAdapter.exists(key);
     }
 
     async get(key: string): Promise<TType | null> {
@@ -129,7 +150,7 @@ export class LibsqlCacheAdapter<TType>
         return await this.cacheAdapter.increment(key, value);
     }
 
-    async clear(prefix: string): Promise<void> {
-        await this.cacheAdapter.clear(prefix);
+    async clear(): Promise<void> {
+        await this.cacheAdapter.clear();
     }
 }

@@ -120,13 +120,15 @@ export type ICache<TType = unknown> = ICacheListenable & {
     ): LazyPromise<Record<TKeys, boolean>>;
 
     /**
-     * The <i>put</i> method replaces the key with given <i>value</i> if found. If the <i>key</i> is not found it will just be added. True is returned if the key is found otherwise false will be returned.
-     * You can provide a <i>ttl</i> value. If null is passed, the item will not expire.
+     * The <i>put</i> method replaces a <i>key</i> if the <i>key</i> exists including the ttl value or adds <i>key</i> that do not exists with a given <i>ttl</i>.
+     * Returns true if the <i>key</i> where replaced otherwise false is returned.
+     * You must provide a <i>ttl</i> value. If null is passed, the item will not expire.
      */
     put(key: string, value: TType, ttl?: TimeSpan | null): LazyPromise<boolean>;
 
     /**
-     * The <i>putMany</i> method replaces the keys that exists. Adds keys that do not exists. Returns true for all the keys that where updated otherwise false is returned.
+     * The <i>putMany</i> method replaces the keys that exists including their ttl values or adds keys that do not exists.
+     * Returns true for all the keys that where replaced otherwise false is returned.
      */
     putMany<TKeys extends string>(
         values: Record<TKeys, WithTtlValue<TType>>,
@@ -187,18 +189,18 @@ export type ICache<TType = unknown> = ICacheListenable & {
     clear(): LazyPromise<void>;
 
     /**
-     * The <i>getGroup</i> method returns the complete group.
+     * The <i>getGroup</i> method returns the group name.
      * @example
      * ```ts
      * import type { ICache } from "@daiso-tech/core";
      *
      * async function main(cache: ICache) {
-     *   // Will be "@root"
+     *   // Will be "@global"
      *   console.log(cache.getGroup())
      *
      *   const cacheA = cache.withGroup("a");
      *
-     *   // Will be "@root/a"
+     *   // Will be "@global/a"
      *   console.log(cacheA.getGroup())
      * }
      * ```
@@ -213,7 +215,8 @@ export type ICache<TType = unknown> = ICacheListenable & {
  */
 export type IGroupableCache<TType = unknown> = ICache<TType> & {
     /**
-     * The <i>withGroup</i> method returns new instance of <i>{@link ICache}</i> where all the keys will be prefixed with a given <i>group</i>.
+     * The <i>withGroup</i> method returns a new <i>{@link ICache}</i> instance that groups keys together.
+     * Only keys in the group can be updated, removed, or retrieved, leaving keys outside the group unaffected.
      * This useful for multitennat applications.
      * @example
      * ```ts

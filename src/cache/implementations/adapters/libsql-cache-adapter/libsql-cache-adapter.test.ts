@@ -15,11 +15,22 @@ describe("class: LibsqlCacheAdapter", () => {
         client.close();
     });
     cacheAdapterTestSuite({
-        createAdapter: async () => {
+        createAdapterA: async () => {
             const cacheAdapter = new LibsqlCacheAdapter(client, {
                 tableName: "custom_table",
                 shouldRemoveExpiredKeys: false,
                 serializer: new SuperJsonSerializer(),
+                rootGroup: "@a",
+            });
+            await cacheAdapter.init();
+            return cacheAdapter;
+        },
+        createAdapterB: async () => {
+            const cacheAdapter = new LibsqlCacheAdapter(client, {
+                tableName: "custom_table",
+                shouldRemoveExpiredKeys: false,
+                serializer: new SuperJsonSerializer(),
+                rootGroup: "@a/b",
             });
             await cacheAdapter.init();
             return cacheAdapter;

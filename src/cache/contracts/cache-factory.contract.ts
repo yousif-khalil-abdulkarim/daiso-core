@@ -42,7 +42,7 @@ export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
      * The <i>withTypes</i> method is used to set the value types of the cache.
      * @example
      * ```ts
-     * import { type ICacheFactory zodValidator } from "@daiso-tech/core";
+     * import { type ICacheFactory } from "@daiso-tech/core";
      *
      * async function main(cacheFactory: ICacheFactory): Promise<void> {
      *   await cacheFactory
