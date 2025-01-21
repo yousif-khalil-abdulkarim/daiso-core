@@ -4,7 +4,8 @@
 
 import { TypeCacheError } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { TimeSpan } from "@/utilities/_module";
+import type { OneOrMore } from "@/utilities/_module";
+import { simplifyGroupName, type TimeSpan } from "@/utilities/_module";
 import { ReplyError, type Redis, type Result } from "ioredis";
 import type { ISerializer } from "@/serializer/contracts/_module";
 import { RedisSerializer } from "@/serializer/implementations/_module";
@@ -82,15 +83,10 @@ function escapeRedisChars(value: string): string {
 
 declare module "ioredis" {
     interface RedisCommander<Context> {
-        daiso_storage_increment(
+        daiso_cache_increment(
             key: string,
             number: string,
         ): Result<number, Context>;
-        daiso_storage_put(key: string, value: string): Result<string, Context>;
-        daiso_storage_getOrAdd(
-            key: string,
-            valueToAdd: string,
-        ): Result<string, Context>;
     }
 }
 
@@ -99,6 +95,7 @@ declare module "ioredis" {
  */
 export type RedisCacheAdapterSettings = {
     serializer: ISerializer<string>;
+    rootGroup: OneOrMore<string>;
 };
 
 /**
@@ -113,6 +110,7 @@ export type RedisCacheAdapterSettings = {
  * const serializer = new SuperJsonSerializer();
  * const cacheAdapter = new RedisCacheAdapter(client, {
  *   serializer,
+ *   rootGroup: "@global"
  * });
  * ```
  */
@@ -129,17 +127,34 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         );
     }
 
-    private serializer: ISerializer<string>;
+    private readonly serializer: ISerializer<string>;
+    private readonly group: string;
 
     constructor(
         private readonly client: Redis,
-        { serializer }: RedisCacheAdapterSettings,
+        { serializer, rootGroup }: RedisCacheAdapterSettings,
     ) {
+        this.group = simplifyGroupName(rootGroup);
         this.serializer = new RedisSerializer(serializer);
         this.initIncrementCommand();
     }
 
+    private getGroupName(): string {
+        return simplifyGroupName([this.group, "__KEY__"]);
+    }
+
+    private withPrefix(key: string): string {
+        return simplifyGroupName([this.getGroupName(), key]);
+    }
+
+    async exists(key: string): Promise<boolean> {
+        key = this.withPrefix(key);
+        const result = await this.client.exists(key);
+        return result > 0;
+    }
+
     async get(key: string): Promise<TType | null> {
+        key = this.withPrefix(key);
         const value = await this.client.get(key);
         if (value === null) {
             return null;
@@ -152,6 +167,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         value: TType,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
+        key = this.withPrefix(key);
         if (ttl === null) {
             const result = await this.client.set(
                 key,
@@ -171,6 +187,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     }
 
     async update(key: string, value: TType): Promise<boolean> {
+        key = this.withPrefix(key);
         const result = await this.client.set(
             key,
             await this.serializer.serialize(value),
@@ -184,6 +201,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         value: TType,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
+        key = this.withPrefix(key);
         if (ttl === null) {
             const result = await this.client.set(
                 key,
@@ -203,16 +221,17 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     }
 
     async remove(key: string): Promise<boolean> {
+        key = this.withPrefix(key);
         const result = await this.client.del(key);
         return result === 1;
     }
 
     private initIncrementCommand(): void {
-        if (typeof this.client.daiso_storage_increment === "function") {
+        if (typeof this.client.daiso_cache_increment === "function") {
             return;
         }
 
-        this.client.defineCommand("daiso_storage_increment", {
+        this.client.defineCommand("daiso_cache_increment", {
             numberOfKeys: 1,
             lua: `
                 local hasKey = redis.call("exists", KEYS[1])
@@ -228,7 +247,8 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
 
     async increment(key: string, value: number): Promise<boolean> {
         try {
-            const redisResult = await this.client.daiso_storage_increment(
+            key = this.withPrefix(key);
+            const redisResult = await this.client.daiso_cache_increment(
                 key,
                 await this.serializer.serialize(value),
             );
@@ -244,16 +264,23 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         }
     }
 
-    async clear(prefix: string): Promise<void> {
-        if (prefix === "") {
-            await this.client.flushall();
-            return;
-        }
+    async clear(): Promise<void> {
         for await (const _ of new ClearIterable(
             this.client,
-            `${escapeRedisChars(prefix)}*`,
+            simplifyGroupName([escapeRedisChars(this.getGroupName()), "*"]),
         )) {
             /* Empty */
         }
+    }
+
+    getGroup(): string {
+        return this.group;
+    }
+
+    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+        return new RedisCacheAdapter(this.client, {
+            serializer: this.serializer,
+            rootGroup: [this.group, simplifyGroupName(group)],
+        });
     }
 }
