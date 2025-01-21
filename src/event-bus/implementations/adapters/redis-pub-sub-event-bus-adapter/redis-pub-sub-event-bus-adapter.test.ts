@@ -23,11 +23,19 @@ describe("class: RedisPubSubEventBusAdapter", () => {
         await startedContainer.stop();
     }, timeout.toMilliseconds());
     eventBusAdapterTestSuite({
-        createAdapter: () =>
+        createAdapterA: () =>
             new RedisPubSubEventBusAdapter({
                 dispatcherClient,
                 listenerClient,
                 serializer: new SuperJsonSerializer(),
+                rootGroup: "@a",
+            }),
+        createAdapterB: () =>
+            new RedisPubSubEventBusAdapter({
+                dispatcherClient,
+                listenerClient,
+                serializer: new SuperJsonSerializer(),
+                rootGroup: "@a/b",
             }),
         test,
         beforeEach,
