@@ -6,7 +6,7 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memo
 import { cacheTestSuite } from "@/cache/implementations/_shared/cache.test-suite";
 
 describe("class: Cache", () => {
-    const eventBus = new EventBus<any>(new MemoryEventBusAdapter());
+    const eventBus = new EventBus<any>(new MemoryEventBusAdapter("@global"));
     let map: Map<string, unknown>;
     beforeEach(() => {
         map = new Map();
