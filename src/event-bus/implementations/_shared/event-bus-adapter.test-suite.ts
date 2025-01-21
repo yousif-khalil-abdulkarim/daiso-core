@@ -25,7 +25,8 @@ export type EventBusAdapterTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createAdapter: () => Promisable<IEventBusAdapter>;
+    createAdapterA: () => Promisable<IEventBusAdapter>;
+    createAdapterB: () => Promisable<IEventBusAdapter>;
 };
 
 /**
@@ -56,11 +57,19 @@ export type EventBusAdapterTestSuiteSettings = {
  *     await startedContainer.stop();
  *   }, timeout.toMilliseconds());
  *    eventBusAdapterTestSuite({
- *      createAdapter: () =>
+ *      createAdapterA: () =>
  *        new RedisPubSubEventBusAdapter({
  *          dispatcherClient,
  *          listenerClient,
  *          serializer,
+ *          rootGroup: "@global"
+ *        }),
+ *      createAdapterB: () =>
+ *        new RedisPubSubEventBusAdapter({
+ *          dispatcherClient,
+ *          listenerClient,
+ *          serializer,
+ *          rootGroup: "@global"
  *        }),
  *      test,
  *      beforeEach,
@@ -73,49 +82,102 @@ export type EventBusAdapterTestSuiteSettings = {
 export function eventBusAdapterTestSuite(
     settings: EventBusAdapterTestSuiteSettings,
 ): void {
-    const { expect, test, createAdapter, beforeEach } = settings;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let eventBusAdapter: IEventBusAdapter;
+    const { expect, test, createAdapterA, createAdapterB, beforeEach } =
+        settings;
+
+    let eventBusAdapterA: IEventBusAdapter;
+    let eventBusAdapterB: IEventBusAdapter;
     beforeEach(async () => {
-        eventBusAdapter = await createAdapter();
+        eventBusAdapterA = await createAdapterA();
+        eventBusAdapterB = await createAdapterB();
     });
 
-    describe("method: addListener, removeListener, dispatch", () => {
-        test("Should be null when listener added and event is not triggered", async () => {
-            const TYPE = "type";
-            let result: IBaseEvent | null = null;
-            await eventBusAdapter.addListener(TYPE, (event) => {
-                result = event;
+    const TTL = TimeSpan.fromMilliseconds(50);
+    describe("Api tests:", () => {
+        describe("method: addListener, removeListener, dispatch", () => {
+            test("Should be null when listener added and event is not triggered", async () => {
+                const TYPE = "type";
+                let result: IBaseEvent | null = null;
+                await eventBusAdapterA.addListener(TYPE, (event) => {
+                    result = event;
+                });
+                expect(result).toBeNull();
             });
-            expect(result).toBeNull();
-        });
-        test("Should be IBaseEvent when listener added and event is triggered", async () => {
-            const TYPE = "type";
-            let result: IBaseEvent | null = null;
-            await eventBusAdapter.addListener(TYPE, (event) => {
-                result = event;
+            test("Should be IBaseEvent when listener added and event is triggered", async () => {
+                const TYPE = "type";
+                let result: IBaseEvent | null = null;
+                await eventBusAdapterA.addListener(TYPE, (event) => {
+                    result = event;
+                });
+                const event: IBaseEvent = {
+                    type: TYPE,
+                };
+                await eventBusAdapterA.dispatch(event);
+                await delay(TTL);
+                expect(result).toEqual(event);
             });
-            const event: IBaseEvent = {
-                type: TYPE,
-            };
-            await eventBusAdapter.dispatch([event]);
-            await delay(TimeSpan.fromMilliseconds(50));
-            expect(result).toEqual(event);
+            test("Should be null when listener removed and event is triggered", async () => {
+                const TYPE = "type";
+                let result: IBaseEvent | null = null;
+                const listener = (event: IBaseEvent) => {
+                    result = event;
+                };
+                await eventBusAdapterA.addListener(TYPE, listener);
+                await eventBusAdapterA.removeListener(TYPE, listener);
+                const event: IBaseEvent = {
+                    type: TYPE,
+                };
+                await eventBusAdapterA.dispatch(event);
+                await delay(TTL);
+                expect(result).toBeNull();
+            });
         });
-        test("Should be null when listener removed and event is triggered", async () => {
-            const TYPE = "type";
-            let result: IBaseEvent | null = null;
-            const listener = (event: IBaseEvent) => {
-                result = event;
-            };
-            await eventBusAdapter.addListener(TYPE, listener);
-            await eventBusAdapter.removeListener(TYPE, listener);
+    });
+    describe("Group tests:", () => {
+        test("method: addListener / dispatch", async () => {
             const event: IBaseEvent = {
-                type: TYPE,
+                type: "type",
             };
-            await delay(TimeSpan.fromMilliseconds(50));
-            await eventBusAdapter.dispatch([event]);
-            expect(result).toBeNull();
+
+            let result_a: IBaseEvent | null = null;
+            await eventBusAdapterA.addListener(event.type, (event) => {
+                result_a = event;
+            });
+
+            let result_b: IBaseEvent | null = null;
+            await eventBusAdapterB.addListener(event.type, (event) => {
+                result_b = event;
+            });
+
+            await eventBusAdapterA.dispatch(event);
+            await delay(TTL);
+
+            expect(result_a).toEqual(event);
+            expect(result_b).toBeNull();
+        });
+        test("method: removeListener / addListener / dispatch", async () => {
+            const event: IBaseEvent = {
+                type: "type",
+            };
+
+            let result_a: IBaseEvent | null = null;
+            await eventBusAdapterA.addListener(event.type, (event) => {
+                result_a = event;
+            });
+
+            let result_b: IBaseEvent | null = null;
+            const listenerB = (event: IBaseEvent) => {
+                result_b = event;
+            };
+            await eventBusAdapterB.addListener(event.type, listenerB);
+            await eventBusAdapterB.removeListener(event.type, listenerB);
+
+            await eventBusAdapterA.dispatch(event);
+            await eventBusAdapterB.dispatch(event);
+            await delay(TTL);
+
+            expect(result_a).toEqual(event);
+            expect(result_b).toBeNull();
         });
     });
 }
