@@ -103,11 +103,18 @@ export type IListenable<TEvents extends BaseEvents = BaseEvents> = {
  */
 export type IDispatcher<TEvents extends BaseEvents = BaseEvents> = {
     /**
-     * The <i>dispatch</i> method is used for dispatching one or multiple <i>events</i>.
+     * The <i>dispatch</i> method is used for dispatching a <i>event</i>.
 
      * @throws {DispatchEventBusError} {@link DispatchEventBusError}
      */
-    dispatch(events: OneOrMore<AllEvents<TEvents>>): LazyPromise<void>;
+    dispatch(event: AllEvents<TEvents>): LazyPromise<void>;
+
+    /**
+     * The <i>dispatchMany</i> method is used for dispatching multiple <i>event</i>.
+
+     * @throws {DispatchEventBusError} {@link DispatchEventBusError}
+     */
+    dispatchMany(events: AllEvents<TEvents>[]): LazyPromise<void>;
 };
 
 /**
