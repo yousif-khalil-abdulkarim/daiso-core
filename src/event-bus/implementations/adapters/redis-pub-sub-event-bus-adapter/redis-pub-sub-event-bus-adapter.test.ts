@@ -1,6 +1,6 @@
 import { describe, test, beforeEach, expect, afterEach } from "vitest";
 import { eventBusAdapterTestSuite } from "@/event-bus/implementations/_shared/_module";
-import { RedisEventBusAdapter } from "@/event-bus/implementations/adapters/redis-event-bus-adapter/redis-event-bus-adapter";
+import { RedisPubSubEventBusAdapter } from "@/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/redis-pub-sub-event-bus-adapter";
 import { TimeSpan } from "@/utilities/_module";
 import type { StartedRedisContainer } from "@testcontainers/redis";
 import { RedisContainer } from "@testcontainers/redis";
@@ -8,7 +8,7 @@ import Redis from "ioredis";
 import { SuperJsonSerializer } from "@/serializer/implementations/_module";
 
 const timeout = TimeSpan.fromMinutes(2);
-describe("class: RedisEventBusAdapter", () => {
+describe("class: RedisPubSubEventBusAdapter", () => {
     let dispatcherClient: Redis;
     let listenerClient: Redis;
     let startedContainer: StartedRedisContainer;
@@ -24,7 +24,7 @@ describe("class: RedisEventBusAdapter", () => {
     }, timeout.toMilliseconds());
     eventBusAdapterTestSuite({
         createAdapter: () =>
-            new RedisEventBusAdapter({
+            new RedisPubSubEventBusAdapter({
                 dispatcherClient,
                 listenerClient,
                 serializer: new SuperJsonSerializer(),

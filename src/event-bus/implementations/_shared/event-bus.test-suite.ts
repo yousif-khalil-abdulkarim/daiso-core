@@ -34,7 +34,7 @@ export type EventBusTestSuiteSettings = {
  * import type { StartedRedisContainer } from "@testcontainers/redis";
  * import { RedisContainer } from "@testcontainers/redis";
  * import Redis from "ioredis";
- * import { SuperJsonSerializer, TimeSpan, RedisEventBusAdapter, eventBusTestSuite } from "@daiso-tech/core";
+ * import { SuperJsonSerializer, TimeSpan, RedisPubSubEventBusAdapter, eventBusTestSuite } from "@daiso-tech/core";
  *
  * const timeout = TimeSpan.fromMinutes(2);
  * describe("class: EventBus", () => {
@@ -55,7 +55,7 @@ export type EventBusTestSuiteSettings = {
  *    eventBusTestSuite({
  *      createEventBusA: () =>
  *        new EventBus(
- *          new RedisEventBusAdapter({
+ *          new RedisPubSubEventBusAdapter({
  *            dispatcherClient,
  *            listenerClient,
  *            serializer,
@@ -64,7 +64,7 @@ export type EventBusTestSuiteSettings = {
  *        ),
  *      createEventBusB: () =>
  *        new EventBus(
- *          new RedisEventBusAdapter({
+ *          new RedisPubSubEventBusAdapter({
  *            dispatcherClient,
  *            listenerClient,
  *            serializer,
