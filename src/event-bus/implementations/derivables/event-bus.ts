@@ -23,47 +23,12 @@ import {
 } from "@/event-bus/contracts/_module";
 
 import type { OneOrMore } from "@/utilities/_module";
-import { simplifyGroupName, isArrayEmpty } from "@/utilities/_module";
+import { isArrayEmpty } from "@/utilities/_module";
 
 /**
  * @group Derivables
  */
 export type EventBusSettings = {
-    /**
-     * You can prefix all keys with a given <i>group</i>.
-     * This useful if you want to add multitenancy but still use the same database.
-     * @default {""}
-     * @example
-     * ```ts
-     * import { EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
-     *
-     * const memoryEventBusAdapter = new MemoryEventBusAdapter();
-     * const eventBusA = new EventBus(memoryEventBusAdapter, {
-     *   rootGroup: "@a"
-     * });
-     * const eventBusB = new EventBus(memoryEventBusAdapter, {
-     *   rootGroup: "@b"
-     * });
-     *
-     * (async () => {
-     *   eventBusB.addListener("add", event => {
-     *     // This will never be logged because eventBusB has different group
-     *     console.log("eventBusB:", event);
-     *   });
-     *
-     *   eventBusB.addListener("add", event => {
-     *     // This will be logged
-     *     console.log("eventBusB:", event);
-     *   });
-     *
-     *   await eventBusA.dispatch([
-     *     { type: "add", a: 1, b: 2 }
-     *   ]);
-     * })();
-     * ```
-     */
-    rootGroup?: OneOrMore<string>;
-
     lazyPromiseSettings?: LazyPromiseSettings;
 };
 
@@ -75,7 +40,6 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
     implements IGroupableEventBus<TEvents>
 {
     private readonly eventBusAdapter: IEventBusAdapter;
-    private readonly group: string;
     private readonly lazyPromiseSettings?: LazyPromiseSettings;
     private readonly listenerMap = new Map<
         Listener<IBaseEvent>,
@@ -86,9 +50,8 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
         eventBusAdapter: IEventBusAdapter,
         settings: EventBusSettings = {},
     ) {
-        const { rootGroup: group = "", lazyPromiseSettings } = settings;
+        const { lazyPromiseSettings } = settings;
         this.lazyPromiseSettings = lazyPromiseSettings;
-        this.group = simplifyGroupName(group);
         this.eventBusAdapter = eventBusAdapter;
     }
 
@@ -98,41 +61,14 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
         return new LazyPromise(asyncFn, this.lazyPromiseSettings);
     }
 
-    private keyWithGroup(key: string): string {
-        return simplifyGroupName([this.group, key]);
-    }
-
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
-        group = simplifyGroupName(group);
-        return new EventBus(this.eventBusAdapter, {
-            rootGroup: [this.group, group],
+        return new EventBus(this.eventBusAdapter.withGroup(group), {
+            lazyPromiseSettings: this.lazyPromiseSettings,
         });
     }
 
     getGroup(): string {
-        return this.group;
-    }
-
-    private _getListener(
-        listener: Listener<IBaseEvent>,
-    ): Listener<IBaseEvent> | null {
-        return this.listenerMap.get(listener) ?? null;
-    }
-
-    private _getOrAddListener(
-        listener: Listener<IBaseEvent>,
-    ): Listener<IBaseEvent> {
-        let wrappedListener = this._getListener(listener);
-        if (wrappedListener === null) {
-            wrappedListener = async (eventObj: IBaseEvent) => {
-                await listener({
-                    ...eventObj,
-                    type: eventObj.type.slice(this.group.length + 1),
-                });
-            };
-            this.listenerMap.set(listener, wrappedListener);
-        }
-        return wrappedListener;
+        return this.eventBusAdapter.getGroup();
     }
 
     addListener<TEventName extends keyof TEvents>(
@@ -147,8 +83,8 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                     );
                 }
                 await this.eventBusAdapter.addListener(
-                    this.keyWithGroup(eventName),
-                    this._getOrAddListener(listener as Listener<IBaseEvent>),
+                    eventName,
+                    listener as Listener<IBaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new AddListenerEventBusError(
@@ -170,15 +106,9 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                 );
             }
             try {
-                const wrappedListener = this._getListener(
-                    listener as Listener<IBaseEvent>,
-                );
-                if (wrappedListener === null) {
-                    return;
-                }
                 await this.eventBusAdapter.removeListener(
-                    this.keyWithGroup(eventName),
-                    wrappedListener,
+                    eventName,
+                    listener as Listener<IBaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new RemoveListenerEventBusError(
@@ -198,22 +128,16 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                 return;
             }
             try {
-                await this.eventBusAdapter.dispatch(
-                    events.map((event) => {
-                        if (typeof event.type !== "string") {
-                            throw new UnexpectedEventBusError(
-                                `The event name "${String(event.type)}" must be of string name`,
-                            );
-                        }
-                        return {
-                            ...event,
-                            type: this.keyWithGroup(event.type),
-                        };
-                    }),
-                );
+                const promises: PromiseLike<void>[] = [];
+                for (const event of events) {
+                    promises.push(
+                        this.eventBusAdapter.dispatch(event as IBaseEvent),
+                    );
+                }
+                await Promise.all(promises);
             } catch (error: unknown) {
                 throw new DispatchEventBusError(
-                    `Events "${events.map((event) => event.type).join(", ")}" could not be dispatched`,
+                    `Events of types "${events.map((event) => event.type).join(", ")}" could not be dispatched`,
                     error,
                 );
             }
