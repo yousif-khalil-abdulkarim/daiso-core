@@ -119,14 +119,8 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
         });
     }
 
-    dispatch(events: OneOrMore<AllEvents<TEvents>>): LazyPromise<void> {
+    dispatchMany(events: AllEvents<TEvents>[]): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            if (!Array.isArray(events)) {
-                events = [events];
-            }
-            if (isArrayEmpty(events)) {
-                return;
-            }
             try {
                 const promises: PromiseLike<void>[] = [];
                 for (const event of events) {
@@ -138,6 +132,19 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
             } catch (error: unknown) {
                 throw new DispatchEventBusError(
                     `Events of types "${events.map((event) => event.type).join(", ")}" could not be dispatched`,
+                    error,
+                );
+            }
+        });
+    }
+
+    dispatch(event: AllEvents<TEvents>): LazyPromise<void> {
+        return this.createLayPromise(async () => {
+            try {
+                await this.eventBusAdapter.dispatch(event as IBaseEvent);
+            } catch (error: unknown) {
+                throw new DispatchEventBusError(
+                    `Event of type "${String(event.type)}" could not be dispatched`,
                     error,
                 );
             }
