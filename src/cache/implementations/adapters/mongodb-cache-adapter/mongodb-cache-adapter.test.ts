@@ -22,11 +22,23 @@ describe("class: MongodbCacheAdapter", () => {
         await startedContainer.stop();
     }, timeout.toMilliseconds());
     cacheAdapterTestSuite({
-        createAdapter: async () => {
+        createAdapterA: async () => {
             const cacheAdapter = new MongodbCacheAdapter(
                 client.db("database").collection("cache"),
                 {
                     serializer: new SuperJsonSerializer(),
+                    rootGroup: "@a",
+                },
+            );
+            await cacheAdapter.init();
+            return cacheAdapter;
+        },
+        createAdapterB: async () => {
+            const cacheAdapter = new MongodbCacheAdapter(
+                client.db("database").collection("cache"),
+                {
+                    serializer: new SuperJsonSerializer(),
+                    rootGroup: "@a/b",
                 },
             );
             await cacheAdapter.init();
