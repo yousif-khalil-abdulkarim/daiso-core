@@ -13,13 +13,11 @@ describe("class: Cache", () => {
     });
     cacheTestSuite({
         createCacheA: () =>
-            new Cache(new MemoryCacheAdapter(map), {
-                rootGroup: "@a",
+            new Cache(new MemoryCacheAdapter("@a", map), {
                 eventBus,
             }),
         createCacheB: () =>
-            new Cache(new MemoryCacheAdapter(map), {
-                rootGroup: "@b",
+            new Cache(new MemoryCacheAdapter("@a/b", map), {
                 eventBus,
             }),
         beforeEach,
