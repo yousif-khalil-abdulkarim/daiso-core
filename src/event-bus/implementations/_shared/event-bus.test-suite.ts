@@ -113,7 +113,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     result = event;
                 });
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBusA.dispatch([event]);
+                await eventBusA.dispatch(event);
                 expect(result).toEqual(event);
             });
             test("Should be null when listener removed and event is triggered", async () => {
@@ -127,7 +127,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 await eventBusA.addListener(event.type, listener);
                 await eventBusA.removeListener(event.type, listener);
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBusA.dispatch([event]);
+                await eventBusA.dispatch(event);
                 expect(result).toBeNull();
             });
         });
@@ -162,7 +162,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     },
                 );
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBusA.dispatch([event_1, event_2]);
+                await eventBusA.dispatchMany([event_1, event_2]);
                 expect(result_1).toEqual(event_1);
                 expect(result_2).toEqual(event_2);
             });
@@ -186,7 +186,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     listener,
                 );
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBusA.dispatch([event_A, event_B]);
+                await eventBusA.dispatchMany([event_A, event_B]);
                 expect(result).toBeNull();
             });
         });
@@ -208,7 +208,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     result = event;
                 });
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBusA.dispatch([event]);
+                await eventBusA.dispatch(event);
                 expect(result).toEqual(event);
             });
             test("Should be null when listener removed and event is triggered", async () => {
@@ -225,7 +225,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 );
                 await unsubscribe();
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBusA.dispatch([event]);
+                await eventBusA.dispatch(event);
                 expect(result).toBeNull();
             });
         });
@@ -260,7 +260,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     },
                 );
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBusA.dispatch([event_1, event_2]);
+                await eventBusA.dispatchMany([event_1, event_2]);
                 expect(result_1).toEqual(event_1);
                 expect(result_2).toEqual(event_2);
             });
@@ -281,7 +281,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 );
                 await unsubscribe();
                 await delay(TimeSpan.fromMilliseconds(50));
-                await eventBusA.dispatch([event_A, event_B]);
+                await eventBusA.dispatchMany([event_A, event_B]);
                 expect(result).toBeNull();
             });
         });
@@ -302,7 +302,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 result_b = event;
             });
 
-            await eventBusA.dispatch([event]);
+            await eventBusA.dispatch(event);
 
             expect(result_a).toEqual(event);
             expect(result_b).toBeNull();
@@ -322,7 +322,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 result_b = event;
             });
 
-            await eventBusA.dispatch([event]);
+            await eventBusA.dispatch(event);
 
             expect(result_a).toEqual(event);
             expect(result_b).toBeNull();
@@ -344,8 +344,8 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             await eventBusB.addListener(event.type, listenerB);
             await eventBusB.removeListener(event.type, listenerB);
 
-            await eventBusA.dispatch([event]);
-            await eventBusB.dispatch([event]);
+            await eventBusA.dispatch(event);
+            await eventBusB.dispatch(event);
 
             expect(result_a).toEqual(event);
             expect(result_b).toBeNull();
@@ -367,8 +367,8 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             await eventBusB.addListener(event.type, listenerB);
             await eventBusB.removeListenerMany([event.type], listenerB);
 
-            await eventBusA.dispatch([event]);
-            await eventBusB.dispatch([event]);
+            await eventBusA.dispatch(event);
+            await eventBusB.dispatch(event);
 
             expect(result_a).toEqual(event);
             expect(result_b).toBeNull();
@@ -393,8 +393,8 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             );
             await unsubscribe();
 
-            await eventBusA.dispatch([event]);
-            await eventBusB.dispatch([event]);
+            await eventBusA.dispatch(event);
+            await eventBusB.dispatch(event);
 
             expect(result_a).toEqual(event);
             expect(result_b).toBeNull();
@@ -419,8 +419,8 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             );
             await unsubscribe();
 
-            await eventBusA.dispatch([event]);
-            await eventBusB.dispatch([event]);
+            await eventBusA.dispatch(event);
+            await eventBusB.dispatch(event);
 
             expect(result_a).toEqual(event);
             expect(result_b).toBeNull();
