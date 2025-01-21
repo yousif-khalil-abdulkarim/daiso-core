@@ -11,6 +11,8 @@ import type {
 } from "@/event-bus/contracts/_module";
 import type Redis from "ioredis";
 import { EventEmitter } from "node:events";
+import type { OneOrMore } from "@/utilities/_module";
+import { simplifyGroupName } from "@/utilities/_module";
 
 /**
  * @group Adapters
@@ -19,6 +21,7 @@ export type RedisPubSubEventBusAdapterSettings = {
     dispatcherClient: Redis;
     listenerClient: Redis;
     serializer: ISerializer<string>;
+    rootGroup: OneOrMore<string>;
 };
 
 /**
@@ -40,7 +43,9 @@ export type RedisPubSubEventBusAdapterSettings = {
  * ```
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
+    private readonly group: string;
     private readonly serializer: ISerializer<string>;
+    private readonly redisSerializer: ISerializer<string>;
     private readonly dispatcherClient: Redis;
     private readonly listenerClient: Redis;
     private readonly eventEmitter = new EventEmitter();
@@ -49,61 +54,69 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         dispatcherClient,
         listenerClient,
         serializer,
+        rootGroup,
     }: RedisPubSubEventBusAdapterSettings) {
+        this.group = simplifyGroupName(rootGroup);
         this.dispatcherClient = dispatcherClient;
         this.listenerClient = listenerClient;
-        this.serializer = new RedisSerializer(serializer);
+        this.serializer = serializer;
+        this.redisSerializer = new RedisSerializer(serializer);
     }
 
-    private redisListener = async (channel: string, message: string) => {
+    getGroup(): string {
+        return this.group;
+    }
+
+    withGroup(group: OneOrMore<string>): IEventBusAdapter {
+        return new RedisPubSubEventBusAdapter({
+            listenerClient: this.listenerClient,
+            dispatcherClient: this.dispatcherClient,
+            serializer: this.serializer,
+            rootGroup: [this.group, simplifyGroupName(group)],
+        });
+    }
+
+    private withPrefix(eventName: string): string {
+        return simplifyGroupName([this.group, eventName]);
+    }
+
+    private redisListener = async (
+        channel: string,
+        message: string,
+    ): Promise<void> => {
         this.eventEmitter.emit(
             channel,
-            await this.serializer.deserialize(message),
+            await this.redisSerializer.deserialize(message),
         );
     };
 
     async addListener(
-        event: string,
+        eventName: string,
         listener: Listener<IBaseEvent>,
     ): Promise<void> {
-        await this.listenerClient.subscribe(event);
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        this.eventEmitter.on(this.withPrefix(eventName), listener);
+
+        await this.listenerClient.subscribe(this.withPrefix(eventName));
 
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.listenerClient.on("message", this.redisListener);
-
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmitter.on(event, listener);
     }
 
     async removeListener(
-        event: string,
+        eventName: string,
         listener: Listener<IBaseEvent>,
     ): Promise<void> {
-        await this.listenerClient.unsubscribe(event);
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmitter.off(event, listener);
+        this.eventEmitter.off(this.withPrefix(eventName), listener);
 
-        let totalListenerCount = 0;
-        for (const event of this.eventEmitter.eventNames()) {
-            totalListenerCount += this.eventEmitter.listenerCount(event);
-        }
-
-        if (totalListenerCount === 0) {
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            this.listenerClient.off("message", this.redisListener);
-        }
+        await this.listenerClient.unsubscribe(this.withPrefix(eventName));
     }
 
-    async dispatch(events: IBaseEvent[]): Promise<void> {
-        const promises: PromiseLike<number>[] = [];
-        for (const event of events) {
-            promises.push(
-                this.dispatcherClient.publish(
-                    event.type,
-                    await this.serializer.serialize(event),
-                ),
-            );
-        }
-        await Promise.all(promises);
+    async dispatch(event: IBaseEvent): Promise<void> {
+        await this.dispatcherClient.publish(
+            this.withPrefix(event.type),
+            await this.redisSerializer.serialize(event),
+        );
     }
 }
