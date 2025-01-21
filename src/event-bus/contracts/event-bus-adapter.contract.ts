@@ -3,6 +3,7 @@
  */
 
 import type { Listener } from "@/event-bus/contracts/_shared";
+import type { OneOrMore } from "@/utilities/_module";
 
 export type IBaseEvent = {
     type: string;
@@ -15,23 +16,27 @@ export type IBaseEvent = {
  */
 export type IEventBusAdapter = {
     /**
-     * The <i>addListener</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i>.
+     * The <i>addListener</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>eventName</i>.
      */
     addListener(
-        event: string,
+        eventName: string,
         listener: Listener<IBaseEvent>,
     ): PromiseLike<void>;
 
     /**
-     * The <i>removeListener</i> method is used for removing <i>{@link Listener | listener}</i> for certain <i>event</i>.
+     * The <i>removeListener</i> method is used for removing <i>{@link Listener | listener}</i> for certain <i>eventName</i>.
      */
     removeListener(
-        event: string,
+        eventName: string,
         listener: Listener<IBaseEvent>,
     ): PromiseLike<void>;
 
     /**
      * The <i>dispatch</i> method is used for dispatching one or multiple <i>events</i>.
      */
-    dispatch(events: IBaseEvent[]): PromiseLike<void>;
+    dispatch(event: IBaseEvent): PromiseLike<void>;
+
+    getGroup(): string;
+
+    withGroup(group: OneOrMore<string>): IEventBusAdapter;
 };
