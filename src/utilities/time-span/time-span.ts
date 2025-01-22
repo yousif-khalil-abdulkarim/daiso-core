@@ -2,19 +2,38 @@
  * @module Utilities
  */
 
+import type { ISerializable } from "@/_module";
+
+/**
+ * @group Time utilities
+ */
+export type ISerializedTimeSpan = {
+    timeInMs: number;
+};
+
 /**
  * The <i>TimeSpan</i> class is used for representing time interval that is the difference between two times measured in a number of days, hours, minutes, and seconds.
  * <i>TimeSpan</i> cannot be negative.
  * @group Time utilities
  */
-export class TimeSpan {
+export class TimeSpan implements ISerializable<ISerializedTimeSpan> {
     private static secondInMilliseconds = 1000;
     private static minuteInMilliseconds = 60 * TimeSpan.secondInMilliseconds;
     private static hourInMilliseconds = 60 * TimeSpan.minuteInMilliseconds;
     private static dayInMilliseconds = 24 * TimeSpan.hourInMilliseconds;
 
-    private constructor(private readonly milliseconds: number = 0) {
+    static deserialize(serializedValue: ISerializedTimeSpan): TimeSpan {
+        return new TimeSpan(serializedValue.timeInMs);
+    }
+
+    constructor(private readonly milliseconds: number = 0) {
         this.milliseconds = Math.max(0, this.milliseconds);
+    }
+
+    serialize(): ISerializedTimeSpan {
+        return {
+            timeInMs: this.toMilliseconds(),
+        };
     }
 
     static fromMilliseconds(milliseconds: number): TimeSpan {
