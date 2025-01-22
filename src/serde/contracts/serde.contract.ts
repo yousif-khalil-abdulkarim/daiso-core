@@ -1,12 +1,12 @@
 /**
- * @module Serializer
+ * @module Serde
  */
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     SerializationError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DeserializationError,
-} from "@/serializer/contracts/serde.errors";
+} from "@/serde/contracts/serde.errors";
 
 /**
  * @group Contracts
@@ -21,7 +21,7 @@ export type ISerializer<TSerialized = unknown> = {
 /**
  * @group Contracts
  */
-export type IDeserializer<TSerialized = unknown> = {
+export type IDeserde<TSerialized = unknown> = {
     /**
      * @throws {DeserializationError} {@link DeserializationError}
      */
@@ -32,4 +32,4 @@ export type IDeserializer<TSerialized = unknown> = {
  * @group Contracts
  */
 export type ISerde<TSerialized = unknown> = ISerializer<TSerialized> &
-    IDeserializer<TSerialized>;
+    IDeserde<TSerialized>;

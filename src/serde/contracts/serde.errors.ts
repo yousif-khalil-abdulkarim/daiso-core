@@ -1,5 +1,5 @@
 /**
- * @module Serializer
+ * @module Serde
  */
 
 /**

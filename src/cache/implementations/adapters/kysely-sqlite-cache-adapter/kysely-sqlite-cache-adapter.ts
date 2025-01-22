@@ -5,7 +5,7 @@
 import { type ICacheAdapter, TypeCacheError } from "@/cache/contracts/_module";
 import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
-import { type ISerde } from "@/serializer/contracts/_module";
+import { type ISerde } from "@/serde/contracts/_module";
 import type {
     IDeinitizable,
     IInitizable,
@@ -35,7 +35,7 @@ type KyselySqliteTables = {
  * @internal
  */
 type KyselySqliteSettings = {
-    serializer: ISerde<string>;
+    serde: ISerde<string>;
     enableTransactions: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
@@ -49,7 +49,7 @@ export class KyselySqliteCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly group: string;
-    private readonly serializer: ISerde<string>;
+    private readonly serde: ISerde<string>;
     private readonly enableTransactions: boolean;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;
@@ -60,14 +60,14 @@ export class KyselySqliteCacheAdapter<TType>
         settings: KyselySqliteSettings,
     ) {
         const {
-            serializer,
+            serde,
             enableTransactions,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
             rootGroup,
         } = settings;
         this.group = simplifyGroupName(rootGroup);
-        this.serializer = serializer;
+        this.serde = serde;
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.enableTransactions = enableTransactions;
@@ -81,7 +81,7 @@ export class KyselySqliteCacheAdapter<TType>
         return new KyselySqliteCacheAdapter(this.db, {
             enableTransactions: this.enableTransactions,
             expiredKeysRemovalInterval: this.expiredKeysRemovalInterval,
-            serializer: this.serializer,
+            serde: this.serde,
             shouldRemoveExpiredKeys: this.shouldRemoveExpiredKeys,
             rootGroup: [this.group, simplifyGroupName(group)],
         });
@@ -173,13 +173,13 @@ export class KyselySqliteCacheAdapter<TType>
         }
         const { value, expiresAt } = row;
         if (expiresAt === null) {
-            return await this.serializer.deserialize(value);
+            return await this.serde.deserialize(value);
         }
         const hasExpired = expiresAt <= new Date().getTime();
         if (hasExpired) {
             return null;
         }
-        return await this.serializer.deserialize(value);
+        return await this.serde.deserialize(value);
     }
 
     async add(
@@ -188,7 +188,7 @@ export class KyselySqliteCacheAdapter<TType>
         ttl: TimeSpan | null,
     ): Promise<boolean> {
         const result = await this.withTransaction(async (db) => {
-            const serializedValue = this.serializer.serialize(value);
+            const serializedValue = this.serde.serialize(value);
             const expiresAtInsert = ttl?.toMilliseconds() ?? null;
             const prevRow = await db
                 .selectFrom("cache")
@@ -250,7 +250,7 @@ export class KyselySqliteCacheAdapter<TType>
 
     async update(key: string, value: TType): Promise<boolean> {
         return await this.withTransaction(async (db) => {
-            const serializedValue = this.serializer.serialize(value);
+            const serializedValue = this.serde.serialize(value);
             const prevRow = await db
                 .selectFrom("cache")
                 .where("cache.key", "=", key)
@@ -306,7 +306,7 @@ export class KyselySqliteCacheAdapter<TType>
                 .where("cache.group", "=", this.group)
                 .select(["cache.expiresAt"])
                 .executeTakeFirst();
-            const serializedValue = this.serializer.serialize(value);
+            const serializedValue = this.serde.serialize(value);
             await db
                 .insertInto("cache")
                 .values({

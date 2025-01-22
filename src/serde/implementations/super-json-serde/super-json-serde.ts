@@ -1,18 +1,18 @@
 /**
- * @module Serializer
+ * @module Serde
  */
 
-import { type ISerde } from "@/serializer/contracts/_module";
+import { type ISerde } from "@/serde/contracts/_module";
 import {
     DeserializationError,
     SerializationError,
-} from "@/serializer/contracts/serde.errors";
+} from "@/serde/contracts/serde.errors";
 import { SuperJSON } from "superjson-cjs";
 
 /**
  * @group Adapters
  */
-export class SuperJsonSerializer implements ISerde<string> {
+export class SuperJsonSerde implements ISerde<string> {
     private readonly superJson: SuperJSON = new SuperJSON();
 
     constructor() {

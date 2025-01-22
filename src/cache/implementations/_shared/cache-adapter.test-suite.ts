@@ -33,13 +33,13 @@ export type CacheAdapterTestSuiteSettings = {
  * import Redis from "ioredis";
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import { RedisContainer, type StartedRedisContainer } from "@testcontainers/redis";
- * import { SuperJsonSerializer, TimeSpan, RedisCacheAdapter, cacheAdapterTestSuite } from "@daiso-tech/core";
+ * import { SuperJsonSerde, TimeSpan, RedisCacheAdapter, cacheAdapterTestSuite } from "@daiso-tech/core";
  *
  * const timeout = TimeSpan.fromMinutes(2);
  * describe("class: RedisCacheAdapter", () => {
  *   let client: Redis;
  *   let startedContainer: StartedRedisContainer;
- *   const serializer = new SuperJsonSerializer();
+ *   const serde = new SuperJsonSerde();
  *   beforeEach(async () => {
  *     startedContainer = await new RedisContainer("redis:7.4.2").start();
  *     client = new Redis(startedContainer.getConnectionUrl());
@@ -51,12 +51,12 @@ export type CacheAdapterTestSuiteSettings = {
  *   cacheAdapterTestSuite({
  *     createAdapterA: () =>
  *       new RedisCacheAdapter(client, {
- *         serializer,
+ *         serde,
  *         rootGroup: "@a"
  *       }),
  *     createAdapterB: () =>
  *       new RedisCacheAdapter(client, {
- *         serializer,
+ *         serde,
  *         rootGroup: "@b"
  *       }),
  *     test,

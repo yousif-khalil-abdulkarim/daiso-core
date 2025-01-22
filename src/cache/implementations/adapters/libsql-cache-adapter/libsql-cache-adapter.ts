@@ -3,7 +3,7 @@
  */
 
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { ISerde } from "@/serializer/contracts/_module";
+import type { ISerde } from "@/serde/contracts/_module";
 import type {
     TimeSpan,
     IDeinitizable,
@@ -13,10 +13,10 @@ import type {
 import type { Client } from "@libsql/client";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 import {
-    SqlSerializer,
+    SqlSerde,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    SuperJsonSerializer,
-} from "@/serializer/implementations/_module";
+    SuperJsonSerde,
+} from "@/serde/implementations/_module";
 import { Kysely } from "kysely";
 import type { LibsqlDialectConfig } from "@libsql/kysely-libsql";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
@@ -27,7 +27,7 @@ import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
  */
 export type LibsqlCacheAdapterSettings = {
     tableName?: string;
-    serializer: ISerde<string>;
+    serde: ISerde<string>;
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
@@ -35,17 +35,17 @@ export type LibsqlCacheAdapterSettings = {
 };
 
 /**
- * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
+ * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  * @example
  * ```ts
- * import { LibsqlCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import { LibsqlCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
  * import { createClient } from "@libsql/client";
  *
  * const client = createClient({ url: "file:local.db" });
- * const serializer = new SuperJsonSerializer();
+ * const serde = new SuperJsonSerde();
  * const cacheAdapter = new LibsqlCacheAdapter(client, {
- *   serializer,
+ *   serde,
  *   rootGroup: "@global"
  * });
  *
@@ -67,7 +67,7 @@ export class LibsqlCacheAdapter<TType>
     constructor(client: Client, settings: LibsqlCacheAdapterSettings) {
         const {
             tableName = "cache",
-            serializer,
+            serde,
             enableTransactions = false,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,
@@ -86,7 +86,7 @@ export class LibsqlCacheAdapter<TType>
                 ],
             }),
             {
-                serializer: new SqlSerializer(serializer),
+                serde: new SqlSerde(serde),
                 enableTransactions,
                 expiredKeysRemovalInterval,
                 shouldRemoveExpiredKeys,
