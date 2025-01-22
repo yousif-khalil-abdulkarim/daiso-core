@@ -80,13 +80,10 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         return simplifyGroupName([this.group, eventName]);
     }
 
-    private redisListener = async (
-        channel: string,
-        message: string,
-    ): Promise<void> => {
+    private redisListener = (channel: string, message: string): void => {
         this.eventEmitter.emit(
             channel,
-            await this.redisSerializer.deserialize(message),
+            this.redisSerializer.deserialize(message),
         );
     };
 
@@ -116,7 +113,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     async dispatch(event: IBaseEvent): Promise<void> {
         await this.dispatcherClient.publish(
             this.withPrefix(event.type),
-            await this.redisSerializer.serialize(event),
+            this.redisSerializer.serialize(event),
         );
     }
 }
