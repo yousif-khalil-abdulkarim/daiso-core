@@ -8,7 +8,7 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import type { IBaseEvent, IEventBus } from "@/event-bus/contracts/_module";
+import { type IBaseEvent, type IEventBus } from "@/event-bus/contracts/_module";
 import { type Promisable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
 import { delay } from "@/async/_module";
@@ -94,6 +94,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         eventBusA = await createEventBusA();
         eventBusB = await createEventBusB();
     });
+    const TTL = TimeSpan.fromMilliseconds(50);
     describe("Api tests:", () => {
         describe("method: addListener, removeListener, dispatch", () => {
             test("Should be null when listener added and event is not triggered", async () => {
@@ -112,8 +113,8 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 await eventBusA.addListener(event.type, (event) => {
                     result = event;
                 });
-                await delay(TimeSpan.fromMilliseconds(50));
                 await eventBusA.dispatch(event);
+                await delay(TTL);
                 expect(result).toEqual(event);
             });
             test("Should be null when listener removed and event is triggered", async () => {
@@ -126,8 +127,8 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 };
                 await eventBusA.addListener(event.type, listener);
                 await eventBusA.removeListener(event.type, listener);
-                await delay(TimeSpan.fromMilliseconds(50));
                 await eventBusA.dispatch(event);
+                await delay(TTL);
                 expect(result).toBeNull();
             });
         });
@@ -161,8 +162,8 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         }
                     },
                 );
-                await delay(TimeSpan.fromMilliseconds(50));
                 await eventBusA.dispatchMany([event_1, event_2]);
+                await delay(TTL);
                 expect(result_1).toEqual(event_1);
                 expect(result_2).toEqual(event_2);
             });
@@ -185,8 +186,8 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     [event_A.type, event_B.type],
                     listener,
                 );
-                await delay(TimeSpan.fromMilliseconds(50));
                 await eventBusA.dispatchMany([event_A, event_B]);
+                await delay(TTL);
                 expect(result).toBeNull();
             });
         });
@@ -207,7 +208,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 await eventBusA.subscribe(event.type, (event) => {
                     result = event;
                 });
-                await delay(TimeSpan.fromMilliseconds(50));
+                await delay(TTL);
                 await eventBusA.dispatch(event);
                 expect(result).toEqual(event);
             });
@@ -224,8 +225,8 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     listener,
                 );
                 await unsubscribe();
-                await delay(TimeSpan.fromMilliseconds(50));
                 await eventBusA.dispatch(event);
+                await delay(TTL);
                 expect(result).toBeNull();
             });
         });
@@ -259,7 +260,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         }
                     },
                 );
-                await delay(TimeSpan.fromMilliseconds(50));
+                await delay(TTL);
                 await eventBusA.dispatchMany([event_1, event_2]);
                 expect(result_1).toEqual(event_1);
                 expect(result_2).toEqual(event_2);
@@ -280,9 +281,44 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     listener,
                 );
                 await unsubscribe();
-                await delay(TimeSpan.fromMilliseconds(50));
                 await eventBusA.dispatchMany([event_A, event_B]);
+                await delay(TTL);
                 expect(result).toBeNull();
+            });
+        });
+        describe("method: listenOnce", () => {
+            test("Should be null when listener added and event is not triggered", async () => {
+                const TYPE = "type";
+                let result: IBaseEvent | null = null;
+                await eventBusA.listenOnce(TYPE, (event) => {
+                    result = event;
+                });
+                expect(result).toBeNull();
+            });
+            test("Should be IBaseEvent when listener added and event is triggered", async () => {
+                const event: IBaseEvent = {
+                    type: "type",
+                };
+                let result: IBaseEvent | null = null;
+                await eventBusA.listenOnce(event.type, (event) => {
+                    result = event;
+                });
+                await eventBusA.dispatch(event);
+                await delay(TTL);
+                expect(result).toEqual(event);
+            });
+            test("Should only listen for event once", async () => {
+                const event: IBaseEvent = {
+                    type: "type",
+                };
+                let i = 0;
+                await eventBusA.listenOnce(event.type, () => {
+                    i++;
+                });
+                await eventBusA.dispatch(event);
+                await eventBusA.dispatch(event);
+                await delay(TTL);
+                expect(i).toBe(1);
             });
         });
     });
