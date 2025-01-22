@@ -39,7 +39,7 @@ export type LazyPromiseSettings = {
  * - <i>abort</i>
  * - <i>timeout</i>
  *
- * The order in which these methods are called does not affect their functionality. Internally, the following execution order is applied:
+ * The order in which these methods are called does not affect their methodality. Internally, the following execution order is applied:
  * 1. <i>timeout</i>
  * 2. <i>retryAttempts</i>
  * 3. <i>abort</i>
@@ -63,7 +63,7 @@ export type LazyPromiseSettings = {
  */
 export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
-     * The <i>wrapFn</i> is convience method used for wrapping a async function with a <i>LazyPromise</i>.
+     * The <i>wrapFn</i> is convience method used for wrapping a async method with a <i>LazyPromise</i>.
      * @example
      * ```ts
      * import { LazyPromise, TimeSpan } from "@daiso-tech/core";
@@ -84,6 +84,49 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     ): Func<TParameters, LazyPromise<TReturn>> {
         return (...parameters) =>
             new LazyPromise(() => fn(...parameters), settings);
+    }
+
+    /**
+     * The <i>all<i> method works similarly to <i>{@link Promise.all}</i> with the key distinction that it operates lazily.
+     */
+    static all<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings?: LazyPromiseSettings,
+    ): LazyPromise<TValue[]> {
+        return new LazyPromise(async () => Promise.all(promises), settings);
+    }
+
+    /**
+     * The <i>allSettled<i> method works similarly to <i>{@link Promise.allSettled}</i> with the key distinction that it operates lazily.
+     */
+    static allSettled<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings?: LazyPromiseSettings,
+    ): LazyPromise<PromiseSettledResult<TValue>[]> {
+        return new LazyPromise(
+            async () => Promise.allSettled(promises),
+            settings,
+        );
+    }
+
+    /**
+     * The <i>race<i> method works similarly to <i>{@link Promise.race}</i> with the key distinction that it operates lazily.
+     */
+    static race<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings?: LazyPromiseSettings,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(async () => Promise.race(promises), settings);
+    }
+
+    /**
+     * The <i>any<i> method works similarly to <i>{@link Promise.any}</i> with the key distinction that it operates lazily.
+     */
+    static any<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings?: LazyPromiseSettings,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(async () => Promise.any(promises), settings);
     }
 
     private promise: PromiseLike<TValue> | null = null;
