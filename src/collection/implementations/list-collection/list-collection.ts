@@ -30,16 +30,14 @@ import { simplifyLazyable } from "@/utilities/_module";
  * @group Adapters
  */
 export class ListCollection<TInput> implements ICollection<TInput> {
-    static crossJoin<TArray extends Array<unknown>>(
-        items: TArray[],
-    ): ICollection<TArray> {
-        throw new Error("Method not implemented.");
-    }
-
     static concat<TValue>(
         iterables: Iterable<Iterable<TValue>>,
     ): ICollection<TValue> {
-        throw new Error("Method not implemented.");
+        let array: TValue[] = [];
+        for (const iterable of iterables) {
+            array = [...array, ...iterable];
+        }
+        return new ListCollection(array);
     }
 
     static difference<TValue, TSelect>(

@@ -64,16 +64,10 @@ import { simplifyLazyable } from "@/utilities/_module";
  * @group Adapters
  */
 export class IterableCollection<TInput> implements ICollection<TInput> {
-    static crossJoin<TArray extends Array<unknown>>(
-        items: TArray[],
-    ): ICollection<TArray> {
-        throw new Error("Method not implemented.");
-    }
-
     static concat<TValue>(
         iterables: Iterable<Iterable<TValue>>,
     ): ICollection<TValue> {
-        throw new Error("Method not implemented.");
+        return new IterableCollection(new MergeIterable(iterables));
     }
 
     static difference<TValue, TSelect>(
@@ -640,13 +634,13 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     prepend<TExtended = TInput>(
         iterable: Iterable<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
-        return new IterableCollection(new MergeIterable(iterable, this));
+        return new IterableCollection(new MergeIterable([iterable, this]));
     }
 
     append<TExtended = TInput>(
         iterable: Iterable<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
-        return new IterableCollection(new MergeIterable(this, iterable));
+        return new IterableCollection(new MergeIterable([this, iterable]));
     }
 
     insertBefore<TExtended = TInput>(

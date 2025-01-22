@@ -76,16 +76,10 @@ import { LazyPromise } from "@/async/_module";
 export class AsyncIterableCollection<TInput>
     implements IAsyncCollection<TInput>
 {
-    static crossJoin<TArray extends Array<unknown>>(
-        items: TArray[],
-    ): IAsyncCollection<TArray> {
-        throw new Error("Method not implemented.");
-    }
-
     static concat<TValue>(
         iterables: AsyncIterableValue<AsyncIterableValue<TValue>>,
     ): IAsyncCollection<TValue> {
-        throw new Error("Method not implemented.");
+        return new AsyncIterableCollection(new AsyncMergeIterable(iterables));
     }
 
     static difference<TValue, TSelect>(
@@ -736,8 +730,8 @@ export class AsyncIterableCollection<TInput>
     prepend<TExtended = TInput>(
         iterable: AsyncIterableValue<TInput | TExtended>,
     ): IAsyncCollection<TInput | TExtended> {
-        return new AsyncIterableCollection(
-            new AsyncMergeIterable(iterable, this),
+        return new AsyncIterableCollection<TInput | TExtended>(
+            new AsyncMergeIterable([iterable, this]),
         );
     }
 
@@ -745,7 +739,7 @@ export class AsyncIterableCollection<TInput>
         iterable: AsyncIterableValue<TInput | TExtended>,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
-            new AsyncMergeIterable(this, iterable),
+            new AsyncMergeIterable([this, iterable]),
         );
     }
 
