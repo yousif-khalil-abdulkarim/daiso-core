@@ -1,5 +1,65 @@
 # @daiso-tech/core
 
+## 0.16.0
+
+### Minor Changes
+
+-   9197902: ## Changes
+    -   Moved cache group logic from the <i>Cache</i> class into the adapters classes.
+        -   **Key Impact**: Each adapter is now required to implement the <i>getGroup</i> and <i>withGroup</i> methods.
+        -   This change enhances flexibility for adapter-specific logic.
+-   7d07f5d: ## New Features
+
+    -   Introduced new static helper methods for the <i>LazyPromise</i> class:
+
+        -   <i>all</i>
+        -   <i>allSettled</i>
+        -   <i>race</i>
+        -   <i>any</i>
+
+        These methods are similar to JavaScript <i>Promise</i> methods but execute lazily.
+
+-   29bfdf2: ## Changes
+    -   Renamed everything that start with </i>namespace</i> to </i>group</i>.
+-   cd2342b: ## Changes
+
+    -   Renamed all instances of the <i>ISerializer</i> contract to <i>ISerde</i>.
+    -   Added two new contracts:
+        -   <i>IDeserializer</i>: Handles only deserialization.
+        -   <i>ISerializer</i>: Handles olny serialization.
+
+    ## New Features
+
+    -   Introduced the <i>ISerializable</i> contract, enabling classes to be marked as serializable.
+    -   Added the <i>IFlexibleSerde</i> contract, allowing registration of custom classes for serialization and deserialization.
+    -   Implemented the <i>ISerializable</i> contract the <i>TimeSpan</i> class.
+
+-   46d2474: ## New features
+    -   Introduced a new static helper method <i>wrapFn</i> for the <i>LazyPromise</i> class.
+        This method simplifies the process of wrapping asynchronous functions with <i>LazyPromise</i>.
+-   d3eec52: ## Changes
+    -   Removed abstract <i>BaseCache</i> class
+    -   Removed abstract <i>BaseEventBus</i> class
+    -   Added lazyPromiseSettings for <i>AsyncIterableCollection</i> class
+    -   Added lazyPromiseSettings for <i>Cache</i> class
+    -   Added lazyPromiseSettings for <i>EventBus</i> class
+-   5e7dae8: ## New features
+
+    -   Introduced a instance static method <i>listenOnce</i> for the <i>IEventBus</i> contract and <i>EventBus</i> class.
+        This method simplifies add listener that will only execute once.
+
+    ## Changes
+
+    -   Moved event bus group logic from the <i>Cache</i> class into the adapters classes.
+        -   **Key Impact**: Each adapter is now required to implement the <i>getGroup</i> and <i>withGroup</i> methods.
+        -   This change enhances flexibility for adapter-specific logic.
+
+-   67ec890: ## New Features
+    -   Introduced new static helper methods for the <i>AsyncIterableCollection</i>, <i>IterableCollection</i> and <i>ListCollection</i> classes:
+        -   <i>concat</i>
+        -   <i>difference</i>
+        -   <i>zip</i>
+
 ## 0.15.0
 
 ### Minor Changes
