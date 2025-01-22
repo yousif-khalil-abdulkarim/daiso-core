@@ -1,20 +1,20 @@
 /**
- * @module Serializer
+ * @module Serde
  */
 
-import { type ISerializer } from "@/serializer/contracts/_module";
+import { type ISerde } from "@/serde/contracts/_module";
 import {
     DeserializationError,
     SerializationError,
-} from "@/serializer/contracts/serializer.errors";
+} from "@/serde/contracts/serde.errors";
 
 /**
  * @internal
  */
-export class MongodbSerializer implements ISerializer<string | number> {
-    constructor(private readonly serializer: ISerializer<string>) {}
+export class MongodbSerde implements ISerde<string | number> {
+    constructor(private readonly serde: ISerde<string>) {}
 
-    async serialize<TValue>(value: TValue): Promise<string | number> {
+    serialize<TValue>(value: TValue): string | number {
         try {
             if (
                 typeof value === "number" &&
@@ -23,7 +23,7 @@ export class MongodbSerializer implements ISerializer<string | number> {
             ) {
                 return value;
             }
-            return await this.serializer.serialize(value);
+            return this.serde.serialize(value);
         } catch (error: unknown) {
             throw new SerializationError(
                 `Serialization error "${String(error)}" occured`,
@@ -32,12 +32,12 @@ export class MongodbSerializer implements ISerializer<string | number> {
         }
     }
 
-    async deserialize<TValue>(value: string | number): Promise<TValue> {
+    deserialize<TValue>(value: string | number): TValue {
         try {
             if (typeof value === "number") {
                 return value as TValue;
             }
-            return await this.serializer.deserialize(value);
+            return this.serde.deserialize(value);
         } catch (error: unknown) {
             throw new DeserializationError(
                 `Serialization error "${String(error)}" occured`,

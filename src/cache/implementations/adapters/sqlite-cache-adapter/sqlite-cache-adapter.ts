@@ -3,8 +3,8 @@
  */
 
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { ISerializer } from "@/serializer/contracts/_module";
-import { SqlSerializer } from "@/serializer/implementations/_module";
+import type { ISerde } from "@/serde/contracts/_module";
+import { SqlSerde } from "@/serde/implementations/_module";
 import type {
     TimeSpan,
     IInitizable,
@@ -21,7 +21,7 @@ import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
  */
 export type SqliteStorageAdapterSettings = {
     tableName?: string;
-    serializer: ISerializer<string>;
+    serde: ISerde<string>;
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
@@ -29,17 +29,17 @@ export type SqliteStorageAdapterSettings = {
 };
 
 /**
- * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
+ * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  * @example
  * ```ts
- * import { SqliteCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import { SqliteCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
  * import Sqlite from "better-sqlite3";
  *
  * const client = new Sqlite("local.db");
- * const serializer = new SuperJsonSerializer();
+ * const serde = new SuperJsonSerde();
  * const cacheAdapter = new SqliteCacheAdapter(client, {
- *   serializer,
+ *   serde,
  *   rootGroup: "@global"
  * });
  *
@@ -61,7 +61,7 @@ export class SqliteCacheAdapter<TType>
     constructor(database: Database, settings: SqliteStorageAdapterSettings) {
         const {
             tableName = "cache",
-            serializer,
+            serde,
             enableTransactions = false,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,
@@ -80,7 +80,7 @@ export class SqliteCacheAdapter<TType>
                 ],
             }),
             {
-                serializer: new SqlSerializer(serializer),
+                serde: new SqlSerde(serde),
                 enableTransactions,
                 expiredKeysRemovalInterval,
                 shouldRemoveExpiredKeys,

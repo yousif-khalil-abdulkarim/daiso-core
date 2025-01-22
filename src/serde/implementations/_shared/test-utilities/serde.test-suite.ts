@@ -1,119 +1,95 @@
 /**
- * @module Serializer
+ * @module Serde
  */
 
 import { type TestAPI, type ExpectStatic } from "vitest";
-import { type ISerializer } from "@/serializer/contracts/_module";
+import { type ISerde } from "@/serde/contracts/_module";
 import { type Promisable } from "@/utilities/_module";
 
 /**
  * @group Utilities
  */
-export type SerializerSuiteSettings = {
+export type SerdeSuiteSettings = {
     expect: ExpectStatic;
     test: TestAPI;
-    createAdapter: () => Promisable<ISerializer>;
+    createAdapter: () => Promisable<ISerde>;
 };
 /**
  * @group Utilities
  */
-export function serializerTestSuite(settings: SerializerSuiteSettings): void {
+export function serdeTestSuite(settings: SerdeSuiteSettings): void {
     const { expect, test, createAdapter } = settings;
     test("Should work with positive integer", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = 1;
-        expect(
-            await serializer.deserialize(await serializer.serialize(value)),
-        ).toBe(value);
+        expect(serde.deserialize(serde.serialize(value))).toBe(value);
     });
     test("Should work with negative integer", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = -1;
-        expect(
-            await serializer.deserialize(await serializer.serialize(value)),
-        ).toBe(value);
+        expect(serde.deserialize(serde.serialize(value))).toBe(value);
     });
     test("Should work with positive decimal", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = 1.5;
-        expect(
-            await serializer.deserialize(await serializer.serialize(value)),
-        ).toBe(value);
+        expect(serde.deserialize(serde.serialize(value))).toBe(value);
     });
     test("Should work with negative decimal", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = -1.5;
-        expect(
-            await serializer.deserialize(await serializer.serialize(value)),
-        ).toBe(value);
+        expect(serde.deserialize(serde.serialize(value))).toBe(value);
     });
     test("Should work with NaN", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = NaN;
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toBeNaN();
     });
     test("Should work with Infinity", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = Infinity;
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(isFinite(deserializedValue as number)).toBe(false);
     });
     test("Should work with Bigint", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = 20n;
-        expect(
-            await serializer.deserialize(await serializer.serialize(value)),
-        ).toBe(value);
+        expect(serde.deserialize(serde.serialize(value))).toBe(value);
     });
     test("Should work with true", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = true;
-        expect(
-            await serializer.deserialize(await serializer.serialize(value)),
-        ).toBe(value);
+        expect(serde.deserialize(serde.serialize(value))).toBe(value);
     });
     test("Should work with false", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = false;
-        expect(
-            await serializer.deserialize(await serializer.serialize(value)),
-        ).toBe(value);
+        expect(serde.deserialize(serde.serialize(value))).toBe(value);
     });
     test("Should work with string", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = "str";
-        expect(
-            await serializer.deserialize(await serializer.serialize(value)),
-        ).toBe(value);
+        expect(serde.deserialize(serde.serialize(value))).toBe(value);
     });
     test("Should work with Date", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Date("2024-01-01");
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toBeInstanceOf(Date);
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with RegExp", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = /test/;
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toBeInstanceOf(RegExp);
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with Buffer", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = Buffer.from("asd");
-        const deserializedValue = await serializer.deserialize<Buffer>(
-            await serializer.serialize(value),
+        const deserializedValue = serde.deserialize<Buffer>(
+            serde.serialize(value),
         );
         expect(deserializedValue).toBeInstanceOf(Buffer);
         expect(deserializedValue.toString("base64")).toEqual(
@@ -121,10 +97,10 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
         );
     });
     test("Should work with Uint8Array", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Uint8Array(Buffer.from("asd"));
-        const deserializedValue = await serializer.deserialize<Uint8Array>(
-            await serializer.serialize(value),
+        const deserializedValue = serde.deserialize<Uint8Array>(
+            serde.serialize(value),
         );
         expect(deserializedValue).toBeInstanceOf(Uint8Array);
         expect(Buffer.from(deserializedValue).toString("base64")).toEqual(
@@ -132,10 +108,10 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
         );
     });
     test("Should work with Int8Array", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Int8Array(Buffer.from("asd"));
-        const deserializedValue = await serializer.deserialize<Int8Array>(
-            await serializer.serialize(value),
+        const deserializedValue = serde.deserialize<Int8Array>(
+            serde.serialize(value),
         );
         expect(deserializedValue).toBeInstanceOf(Int8Array);
         expect(Buffer.from(deserializedValue).toString("base64")).toEqual(
@@ -143,10 +119,10 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
         );
     });
     test("Should work with Uint16Array", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Uint16Array(Buffer.from("asd"));
-        const deserializedValue = await serializer.deserialize<Uint16Array>(
-            await serializer.serialize(value),
+        const deserializedValue = serde.deserialize<Uint16Array>(
+            serde.serialize(value),
         );
         expect(deserializedValue).toBeInstanceOf(Uint16Array);
         expect(Buffer.from(deserializedValue).toString("base64")).toEqual(
@@ -154,10 +130,10 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
         );
     });
     test("Should work with Int16Array", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Int16Array(Buffer.from("asd"));
-        const deserializedValue = await serializer.deserialize<Int16Array>(
-            await serializer.serialize(value),
+        const deserializedValue = serde.deserialize<Int16Array>(
+            serde.serialize(value),
         );
         expect(deserializedValue).toBeInstanceOf(Int16Array);
         expect(Buffer.from(deserializedValue).toString("base64")).toEqual(
@@ -165,10 +141,10 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
         );
     });
     test("Should work with Uint32Array", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Uint32Array(Buffer.from("asd"));
-        const deserializedValue = await serializer.deserialize<Uint32Array>(
-            await serializer.serialize(value),
+        const deserializedValue = serde.deserialize<Uint32Array>(
+            serde.serialize(value),
         );
         expect(deserializedValue).toBeInstanceOf(Uint32Array);
         expect(Buffer.from(deserializedValue).toString("base64")).toEqual(
@@ -176,10 +152,10 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
         );
     });
     test("Should work with Int32Array", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Int32Array(Buffer.from("asd"));
-        const deserializedValue = await serializer.deserialize<Int32Array>(
-            await serializer.serialize(value),
+        const deserializedValue = serde.deserialize<Int32Array>(
+            serde.serialize(value),
         );
         expect(deserializedValue).toBeInstanceOf(Int32Array);
         expect(Buffer.from(deserializedValue).toString("base64")).toEqual(
@@ -187,10 +163,10 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
         );
     });
     test("Should work with Float32Array", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Float32Array(Buffer.from("asd"));
-        const deserializedValue = await serializer.deserialize<Float32Array>(
-            await serializer.serialize(value),
+        const deserializedValue = serde.deserialize<Float32Array>(
+            serde.serialize(value),
         );
         expect(deserializedValue).toBeInstanceOf(Float32Array);
         expect(Buffer.from(deserializedValue).toString("base64")).toEqual(
@@ -198,10 +174,10 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
         );
     });
     test("Should work with Float64Array", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Float64Array(Buffer.from("asd"));
-        const deserializedValue = await serializer.deserialize<Float64Array>(
-            await serializer.serialize(value),
+        const deserializedValue = serde.deserialize<Float64Array>(
+            serde.serialize(value),
         );
         expect(deserializedValue).toBeInstanceOf(Float64Array);
         expect(Buffer.from(deserializedValue).toString("base64")).toEqual(
@@ -209,17 +185,15 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
         );
     });
     test("Should work with Set", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
 
         const value = new Set(["a", "b", "c"]);
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toBeInstanceOf(Set);
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with Set of number, boolean, string, Date, Set, Map, RegExp, Objects, Arrays", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Set([
             0,
             -1,
@@ -243,27 +217,23 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
             [1, 2, 3],
             /test/,
         ]);
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toBeInstanceOf(Set);
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with Map", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Map([
             ["a", 1],
             ["b", 2],
             ["c", 3],
         ]);
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toBeInstanceOf(Map);
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with Map of number, boolean, string, Date, Set, Map, RegExp, Objects, Arrays values", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Map([
             ["a", 0],
             ["b", -1],
@@ -290,14 +260,12 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
             [1, { a: 2, b: -1 }],
             [2, [1, 2, 3]],
         ] as Array<[unknown, unknown]>);
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toBeInstanceOf(Map);
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with Map of number, boolean, string, Date, Set, Map, RegExp, Objects, Arrays keys", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = new Map([
             [0, "a"],
             [-1, "a"],
@@ -324,14 +292,12 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
             [{ a: 2, b: -1 }, 1],
             [[1, 2, 3], 2],
         ] as Array<[unknown, unknown]>);
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toBeInstanceOf(Map);
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with array of number, boolean, string, Date, Set, Map, RegExp", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = [
             0,
             -1,
@@ -353,13 +319,11 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
             ]),
             /test/,
         ];
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with array of objects", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = [
             Object.fromEntries([
                 ["a", 0],
@@ -386,13 +350,11 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
                 ["a", /test/],
             ] as Array<[unknown, unknown]>),
         ];
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with object of number, boolean, string, Date, Set, Map, RegExp", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = Object.fromEntries([
             ["a", 0],
             ["b", -1],
@@ -417,13 +379,11 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
             ],
             ["a", /test/],
         ] as Array<[string, unknown]>);
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toEqual(value);
     });
     test("Should work with object of arrays", async () => {
-        const serializer = await createAdapter();
+        const serde = await createAdapter();
         const value = {
             a: [
                 0,
@@ -447,9 +407,7 @@ export function serializerTestSuite(settings: SerializerSuiteSettings): void {
                 /test/,
             ],
         };
-        const deserializedValue = await serializer.deserialize(
-            await serializer.serialize(value),
-        );
+        const deserializedValue = serde.deserialize(serde.serialize(value));
         expect(deserializedValue).toEqual(value);
     });
 }

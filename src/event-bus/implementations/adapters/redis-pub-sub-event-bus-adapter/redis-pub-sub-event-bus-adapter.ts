@@ -2,8 +2,8 @@
  * @module EventBus
  */
 
-import { type ISerializer } from "@/serializer/contracts/_module";
-import { RedisSerializer } from "@/serializer/implementations/_module";
+import { type ISerde } from "@/serde/contracts/_module";
+import { RedisSerde } from "@/serde/implementations/_module";
 import type {
     IBaseEvent,
     IEventBusAdapter,
@@ -20,32 +20,32 @@ import { simplifyGroupName } from "@/utilities/_module";
 export type RedisPubSubEventBusAdapterSettings = {
     dispatcherClient: Redis;
     listenerClient: Redis;
-    serializer: ISerializer<string>;
+    serde: ISerde<string>;
     rootGroup: OneOrMore<string>;
 };
 
 /**
- * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
+ * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  * @example
  * ```ts
- * import { RedisPubSubEventBusAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import { RedisPubSubEventBusAdapter, SuperJsonSerde } from "@daiso-tech/core";
  * import Redis from "ioredis";
  *
  * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
  * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
- * const serializer = new SuperJsonSerializer();
+ * const serde = new SuperJsonSerde();
  * const eventBusAdapter = new RedisPubSubEventBusAdapter({
  *   dispatcherClient,
  *   listenerClient,
- *   serializer,
+ *   serde,
  * });
  * ```
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     private readonly group: string;
-    private readonly serializer: ISerializer<string>;
-    private readonly redisSerializer: ISerializer<string>;
+    private readonly serde: ISerde<string>;
+    private readonly redisSerde: ISerde<string>;
     private readonly dispatcherClient: Redis;
     private readonly listenerClient: Redis;
     private readonly eventEmitter = new EventEmitter();
@@ -53,14 +53,14 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     constructor({
         dispatcherClient,
         listenerClient,
-        serializer,
+        serde,
         rootGroup,
     }: RedisPubSubEventBusAdapterSettings) {
         this.group = simplifyGroupName(rootGroup);
         this.dispatcherClient = dispatcherClient;
         this.listenerClient = listenerClient;
-        this.serializer = serializer;
-        this.redisSerializer = new RedisSerializer(serializer);
+        this.serde = serde;
+        this.redisSerde = new RedisSerde(serde);
     }
 
     getGroup(): string {
@@ -71,7 +71,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         return new RedisPubSubEventBusAdapter({
             listenerClient: this.listenerClient,
             dispatcherClient: this.dispatcherClient,
-            serializer: this.serializer,
+            serde: this.serde,
             rootGroup: [this.group, simplifyGroupName(group)],
         });
     }
@@ -80,14 +80,8 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         return simplifyGroupName([this.group, eventName]);
     }
 
-    private redisListener = async (
-        channel: string,
-        message: string,
-    ): Promise<void> => {
-        this.eventEmitter.emit(
-            channel,
-            await this.redisSerializer.deserialize(message),
-        );
+    private redisListener = (channel: string, message: string): void => {
+        this.eventEmitter.emit(channel, this.redisSerde.deserialize(message));
     };
 
     async addListener(
@@ -116,7 +110,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     async dispatch(event: IBaseEvent): Promise<void> {
         await this.dispatcherClient.publish(
             this.withPrefix(event.type),
-            await this.redisSerializer.serialize(event),
+            this.redisSerde.serialize(event),
         );
     }
 }

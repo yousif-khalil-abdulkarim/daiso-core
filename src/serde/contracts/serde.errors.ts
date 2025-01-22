@@ -1,21 +1,21 @@
 /**
- * @module Serializer
+ * @module Serde
  */
 
 /**
  * @group Errors
  */
-export class SerializerError extends Error {
+export class SerdeError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
-        this.name = SerializerError.name;
+        this.name = SerdeError.name;
     }
 }
 
 /**
  * @group Errors
  */
-export class SerializationError extends SerializerError {
+export class SerializationError extends SerdeError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = SerializationError.name;
@@ -25,7 +25,7 @@ export class SerializationError extends SerializerError {
 /**
  * @group Errors
  */
-export class DeserializationError extends SerializerError {
+export class DeserializationError extends SerdeError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = DeserializationError.name;

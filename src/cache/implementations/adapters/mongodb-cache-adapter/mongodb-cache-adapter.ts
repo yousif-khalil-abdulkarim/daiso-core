@@ -15,8 +15,8 @@ import {
 } from "@/utilities/_module";
 import type { ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
-import type { ISerializer } from "@/serializer/contracts/_module";
-import { MongodbSerializer } from "@/serializer/implementations/_module";
+import type { ISerde } from "@/serde/contracts/_module";
+import { MongodbSerde } from "@/serde/implementations/_module";
 
 /**
  * @group Adapters
@@ -33,24 +33,24 @@ export type MongodbCacheDocument = {
  * @group Adapters
  */
 export type MongodbCacheAdapterSettings = {
-    serializer: ISerializer<string>;
+    serde: ISerde<string>;
     rootGroup: OneOrMore<string>;
 };
 
 /**
- * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
+ * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  * @example
  * ```ts
- * import { MongodbCacheAdapter, SuperJsonSerializer } from "@daiso-tech/core";
+ * import { MongodbCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
  * import { MongoClient } from "mongodb";
  *
  * const client = new MongoClient("YOUR_MONGODB_CONNECTION_STRING");
  * const database = client.db("database");
  * const cacheCollection = database.collection("cache");
- * const serializer = new SuperJsonSerializer();
+ * const serde = new SuperJsonSerde();
  * const cacheAdapter = new MongodbCacheAdapter(cacheCollection, {
- *   serializer,
+ *   serde,
  *   rootGroup: "@global"
  * });
  *
@@ -76,17 +76,17 @@ export class MongodbCacheAdapter<TType>
         );
     }
 
-    private readonly mongodbSerializer: ISerializer<string | number>;
+    private readonly mongodbSerde: ISerde<string | number>;
     private readonly group: string;
-    private readonly serializer: ISerializer<string>;
+    private readonly serde: ISerde<string>;
 
     constructor(
         private readonly collection: Collection<MongodbCacheDocument>,
-        { serializer, rootGroup }: MongodbCacheAdapterSettings,
+        { serde, rootGroup }: MongodbCacheAdapterSettings,
     ) {
-        this.serializer = serializer;
+        this.serde = serde;
         this.group = simplifyGroupName(rootGroup);
-        this.mongodbSerializer = new MongodbSerializer(this.serializer);
+        this.mongodbSerde = new MongodbSerde(this.serde);
     }
 
     getGroup(): string {
@@ -95,7 +95,7 @@ export class MongodbCacheAdapter<TType>
 
     withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
         return new MongodbCacheAdapter(this.collection, {
-            serializer: this.serializer,
+            serde: this.serde,
             rootGroup: [this.group, simplifyGroupName(group)],
         });
     }
@@ -161,13 +161,13 @@ export class MongodbCacheAdapter<TType>
         }
         const { expiresAt, value } = document;
         if (expiresAt === null) {
-            return await this.mongodbSerializer.deserialize(value);
+            return await this.mongodbSerde.deserialize(value);
         }
         const hasExpired = expiresAt.getTime() <= new Date().getTime();
         if (hasExpired) {
             return null;
         }
-        return await this.mongodbSerializer.deserialize(value);
+        return await this.mongodbSerde.deserialize(value);
     }
 
     async add(
@@ -184,7 +184,7 @@ export class MongodbCacheAdapter<TType>
         const hasExpirationAndExpiredQuery = {
             $and: [hasExpirationQuery, hasExpiredQuery],
         };
-        const serializedValue = await this.mongodbSerializer.serialize(value);
+        const serializedValue = this.mongodbSerde.serialize(value);
         const document = await this.collection.findOneAndUpdate(
             {
                 key,
@@ -259,7 +259,7 @@ export class MongodbCacheAdapter<TType>
             },
             {
                 $set: {
-                    value: await this.mongodbSerializer.serialize(value),
+                    value: this.mongodbSerde.serialize(value),
                 },
             },
             {
@@ -293,7 +293,7 @@ export class MongodbCacheAdapter<TType>
             {
                 $set: {
                     group: this.group,
-                    value: await this.mongodbSerializer.serialize(value),
+                    value: this.mongodbSerde.serialize(value),
                     expiresAt: ttl?.toEndDate() ?? null,
                 },
             },
