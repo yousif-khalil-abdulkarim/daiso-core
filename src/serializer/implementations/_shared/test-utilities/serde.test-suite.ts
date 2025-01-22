@@ -9,7 +9,7 @@ import { type Promisable } from "@/utilities/_module";
 /**
  * @group Utilities
  */
-export type SerializerSuiteSettings = {
+export type SerdeSuiteSettings = {
     expect: ExpectStatic;
     test: TestAPI;
     createAdapter: () => Promisable<ISerde>;
@@ -17,7 +17,7 @@ export type SerializerSuiteSettings = {
 /**
  * @group Utilities
  */
-export function serializerTestSuite(settings: SerializerSuiteSettings): void {
+export function serdeTestSuite(settings: SerdeSuiteSettings): void {
     const { expect, test, createAdapter } = settings;
     test("Should work with positive integer", async () => {
         const serializer = await createAdapter();
