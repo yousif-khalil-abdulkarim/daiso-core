@@ -184,7 +184,7 @@ export class MongodbCacheAdapter<TType>
         const hasExpirationAndExpiredQuery = {
             $and: [hasExpirationQuery, hasExpiredQuery],
         };
-        const serializedValue = await this.mongodbSerializer.serialize(value);
+        const serializedValue = this.mongodbSerializer.serialize(value);
         const document = await this.collection.findOneAndUpdate(
             {
                 key,
@@ -259,7 +259,7 @@ export class MongodbCacheAdapter<TType>
             },
             {
                 $set: {
-                    value: await this.mongodbSerializer.serialize(value),
+                    value: this.mongodbSerializer.serialize(value),
                 },
             },
             {
@@ -293,7 +293,7 @@ export class MongodbCacheAdapter<TType>
             {
                 $set: {
                     group: this.group,
-                    value: await this.mongodbSerializer.serialize(value),
+                    value: this.mongodbSerializer.serialize(value),
                     expiresAt: ttl?.toEndDate() ?? null,
                 },
             },
