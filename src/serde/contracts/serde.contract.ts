@@ -44,9 +44,11 @@ export type ISerializable<TSerializedValue> = {
 /**
  * @group Contracts
  */
-export type SerializableClass<TSerializedValue, TValue> = {
+export type SerializableClass<TSerializedValue> = {
     new (...arguments_: any[]): ISerializable<TSerializedValue>;
-    deserialize(serializedValue: TSerializedValue): TValue;
+    deserialize(
+        serializedValue: TSerializedValue,
+    ): ISerializable<TSerializedValue>;
 };
 
 /**
@@ -54,7 +56,7 @@ export type SerializableClass<TSerializedValue, TValue> = {
  */
 export type IFlexibleSerde<TSerializedValue = unknown> =
     ISerde<TSerializedValue> & {
-        registerClass<TValue>(
-            class_: SerializableClass<TSerializedValue, TValue>,
+        registerClass<TSerializedValue>(
+            class_: SerializableClass<TSerializedValue>,
         ): void;
     };

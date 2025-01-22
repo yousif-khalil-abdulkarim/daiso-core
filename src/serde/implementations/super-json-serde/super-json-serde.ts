@@ -2,17 +2,22 @@
  * @module Serde
  */
 
-import { type ISerde } from "@/serde/contracts/_module";
+import type {
+    ISerializable,
+    SerializableClass,
+} from "@/serde/contracts/_module";
+import { type IFlexibleSerde } from "@/serde/contracts/_module";
 import {
     DeserializationError,
     SerializationError,
 } from "@/serde/contracts/serde.errors";
 import { SuperJSON } from "superjson-cjs";
+import type { SuperJSONResult } from "superjson-cjs/dist/index";
 
 /**
  * @group Adapters
  */
-export class SuperJsonSerde implements ISerde<string> {
+export class SuperJsonSerde implements IFlexibleSerde<string> {
     private readonly superJson: SuperJSON = new SuperJSON();
 
     constructor() {
@@ -378,6 +383,30 @@ export class SuperJsonSerde implements ISerde<string> {
         this.registerInt32Array();
         this.registerFloat32Array();
         this.registerFloat64Array();
+    }
+
+    registerClass<TSerializedValue>(
+        class_: SerializableClass<TSerializedValue>,
+    ): void {
+        this.superJson.registerCustom<
+            ISerializable<TSerializedValue>,
+            SuperJSONResult["json"]
+        >(
+            {
+                isApplicable(value) {
+                    return value instanceof class_;
+                },
+                deserialize(serializedValue) {
+                    return class_.deserialize(
+                        serializedValue as TSerializedValue,
+                    );
+                },
+                serialize(value) {
+                    return value.serialize() as SuperJSONResult["json"];
+                },
+            },
+            Float64Array.name,
+        );
     }
 
     serialize<TValue>(value: TValue): string {
