@@ -188,7 +188,7 @@ export class KyselySqliteCacheAdapter<TType>
         ttl: TimeSpan | null,
     ): Promise<boolean> {
         const result = await this.withTransaction(async (db) => {
-            const serializedValue = await this.serializer.serialize(value);
+            const serializedValue = this.serializer.serialize(value);
             const expiresAtInsert = ttl?.toMilliseconds() ?? null;
             const prevRow = await db
                 .selectFrom("cache")
@@ -250,7 +250,7 @@ export class KyselySqliteCacheAdapter<TType>
 
     async update(key: string, value: TType): Promise<boolean> {
         return await this.withTransaction(async (db) => {
-            const serializedValue = await this.serializer.serialize(value);
+            const serializedValue = this.serializer.serialize(value);
             const prevRow = await db
                 .selectFrom("cache")
                 .where("cache.key", "=", key)
@@ -306,7 +306,7 @@ export class KyselySqliteCacheAdapter<TType>
                 .where("cache.group", "=", this.group)
                 .select(["cache.expiresAt"])
                 .executeTakeFirst();
-            const serializedValue = await this.serializer.serialize(value);
+            const serializedValue = this.serializer.serialize(value);
             await db
                 .insertInto("cache")
                 .values({
