@@ -30,6 +30,31 @@ import { simplifyLazyable } from "@/utilities/_module";
  * @group Adapters
  */
 export class ListCollection<TInput> implements ICollection<TInput> {
+    static concat<TValue>(
+        iterables: Iterable<Iterable<TValue>>,
+    ): ICollection<TValue> {
+        let array: TValue[] = [];
+        for (const iterable of iterables) {
+            array = [...array, ...iterable];
+        }
+        return new ListCollection(array);
+    }
+
+    static difference<TValue, TSelect>(
+        iterableA: Iterable<TValue>,
+        iterableB: Iterable<TValue>,
+        selectFn?: Map<TValue, ICollection<TValue>, TSelect>,
+    ): ICollection<TValue> {
+        return new ListCollection(iterableA).difference(iterableB, selectFn);
+    }
+
+    static zip<TValueA, TValueB>(
+        iterableA: Iterable<TValueA>,
+        iterableB: Iterable<TValueB>,
+    ): ICollection<[TValueA, TValueB]> {
+        return new ListCollection(iterableA).zip(iterableB);
+    }
+
     private array: TInput[];
 
     /**

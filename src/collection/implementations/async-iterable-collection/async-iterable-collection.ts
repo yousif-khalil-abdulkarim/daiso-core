@@ -76,6 +76,30 @@ import { LazyPromise } from "@/async/_module";
 export class AsyncIterableCollection<TInput>
     implements IAsyncCollection<TInput>
 {
+    static concat<TValue>(
+        iterables: AsyncIterableValue<AsyncIterableValue<TValue>>,
+    ): IAsyncCollection<TValue> {
+        return new AsyncIterableCollection(new AsyncMergeIterable(iterables));
+    }
+
+    static difference<TValue, TSelect>(
+        iterableA: AsyncIterableValue<TValue>,
+        iterableB: AsyncIterableValue<TValue>,
+        selectFn?: AsyncMap<TValue, IAsyncCollection<TValue>, TSelect>,
+    ): IAsyncCollection<TValue> {
+        return new AsyncIterableCollection(iterableA).difference(
+            iterableB,
+            selectFn,
+        );
+    }
+
+    static zip<TValueA, TValueB>(
+        iterableA: AsyncIterableValue<TValueA>,
+        iterableB: AsyncIterableValue<TValueB>,
+    ): IAsyncCollection<[TValueA, TValueB]> {
+        return new AsyncIterableCollection(iterableA).zip(iterableB);
+    }
+
     private static DEFAULT_CHUNK_SIZE = 1024;
 
     private static makeCollection = <TInput>(
@@ -706,8 +730,8 @@ export class AsyncIterableCollection<TInput>
     prepend<TExtended = TInput>(
         iterable: AsyncIterableValue<TInput | TExtended>,
     ): IAsyncCollection<TInput | TExtended> {
-        return new AsyncIterableCollection(
-            new AsyncMergeIterable(iterable, this),
+        return new AsyncIterableCollection<TInput | TExtended>(
+            new AsyncMergeIterable([iterable, this]),
         );
     }
 
@@ -715,7 +739,7 @@ export class AsyncIterableCollection<TInput>
         iterable: AsyncIterableValue<TInput | TExtended>,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
-            new AsyncMergeIterable(this, iterable),
+            new AsyncMergeIterable([this, iterable]),
         );
     }
 

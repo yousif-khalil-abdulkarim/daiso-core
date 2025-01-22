@@ -64,6 +64,30 @@ import { simplifyLazyable } from "@/utilities/_module";
  * @group Adapters
  */
 export class IterableCollection<TInput> implements ICollection<TInput> {
+    static concat<TValue>(
+        iterables: Iterable<Iterable<TValue>>,
+    ): ICollection<TValue> {
+        return new IterableCollection(new MergeIterable(iterables));
+    }
+
+    static difference<TValue, TSelect>(
+        iterableA: Iterable<TValue>,
+        iterableB: Iterable<TValue>,
+        selectFn?: Map<TValue, ICollection<TValue>, TSelect>,
+    ): ICollection<TValue> {
+        return new IterableCollection(iterableA).difference(
+            iterableB,
+            selectFn,
+        );
+    }
+
+    static zip<TValueA, TValueB>(
+        iterableA: Iterable<TValueA>,
+        iterableB: Iterable<TValueB>,
+    ): ICollection<[TValueA, TValueB]> {
+        return new IterableCollection(iterableA).zip(iterableB);
+    }
+
     private static DEFAULT_CHUNK_SIZE = 1024;
 
     private static makeCollection = <TInput>(
@@ -610,13 +634,13 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
     prepend<TExtended = TInput>(
         iterable: Iterable<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
-        return new IterableCollection(new MergeIterable(iterable, this));
+        return new IterableCollection(new MergeIterable([iterable, this]));
     }
 
     append<TExtended = TInput>(
         iterable: Iterable<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
-        return new IterableCollection(new MergeIterable(this, iterable));
+        return new IterableCollection(new MergeIterable([this, iterable]));
     }
 
     insertBefore<TExtended = TInput>(
