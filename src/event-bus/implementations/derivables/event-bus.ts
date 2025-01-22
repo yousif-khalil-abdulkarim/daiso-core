@@ -41,10 +41,6 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
 {
     private readonly eventBusAdapter: IEventBusAdapter;
     private readonly lazyPromiseSettings?: LazyPromiseSettings;
-    private readonly listenerMap = new Map<
-        Listener<IBaseEvent>,
-        Listener<IBaseEvent>
-    >();
 
     constructor(
         eventBusAdapter: IEventBusAdapter,
@@ -180,6 +176,24 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                 promises.push(this.removeListener(event, listener));
             }
             await Promise.all(promises);
+        });
+    }
+
+    listenOnce<TEventName extends keyof TEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    ): LazyPromise<void> {
+        return this.createLayPromise(async () => {
+            const wrappedListener = async (
+                event: SelectEvent<TEvents, TEventName>,
+            ) => {
+                try {
+                    await listener(event);
+                } finally {
+                    await this.removeListener(eventName, wrappedListener);
+                }
+            };
+            await this.addListener(eventName, wrappedListener);
         });
     }
 

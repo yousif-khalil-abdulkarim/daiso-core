@@ -92,8 +92,7 @@ export type IListenable<TEvents extends BaseEvents = BaseEvents> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>listenOnce</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i>.
-     * A listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
+     * The <i>listenOnce</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i> that is trigged only once.
      * @throws {AddListenerEventBusError} {@link AddListenerEventBusError}
      */
     listenOnce<TEventName extends keyof TEvents>(
