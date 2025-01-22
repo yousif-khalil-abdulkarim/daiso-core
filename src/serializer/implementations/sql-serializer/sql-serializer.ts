@@ -5,7 +5,7 @@ import { type ISerializer } from "@/serializer/contracts/_module";
 import {
     DeserializationError,
     SerializationError,
-} from "@/serializer/contracts/serializer.errors";
+} from "@/serializer/contracts/serde.errors";
 
 /**
  * @internal
@@ -13,7 +13,7 @@ import {
 export class SqlSerializer implements ISerializer<string> {
     constructor(private readonly serializer: ISerializer<string>) {}
 
-    async serialize<TValue>(value: TValue): Promise<string> {
+    serialize<TValue>(value: TValue): string {
         try {
             if (
                 typeof value === "number" &&
@@ -22,7 +22,7 @@ export class SqlSerializer implements ISerializer<string> {
             ) {
                 return String(value);
             }
-            return await this.serializer.serialize(value);
+            return this.serializer.serialize(value);
         } catch (error: unknown) {
             throw new SerializationError(
                 `Serialization error "${String(error)}" occured`,
@@ -30,13 +30,13 @@ export class SqlSerializer implements ISerializer<string> {
             );
         }
     }
-    async deserialize<TValue>(value: string): Promise<TValue> {
+    deserialize<TValue>(value: string): TValue {
         try {
             const isNumberRegex = /^(-?([0-9]+)(\.[0-5]+)?)$/g;
             if (isNumberRegex.test(value)) {
                 return Number(value) as TValue;
             }
-            return await this.serializer.deserialize(value);
+            return this.serializer.deserialize(value);
         } catch (error: unknown) {
             throw new DeserializationError(
                 `Deserialization error "${String(error)}" occured`,
