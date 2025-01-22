@@ -12,7 +12,7 @@ import type {
 } from "@/event-bus/contracts/_module";
 import {
     type IEventBus,
-    type INamespacedEventBus,
+    type IGroupableEventBus,
     type IEventBusAdapter,
     type Listener,
     type IBaseEvent,
@@ -23,47 +23,12 @@ import {
 } from "@/event-bus/contracts/_module";
 
 import type { OneOrMore } from "@/utilities/_module";
-import { simplifyNamespace, isArrayEmpty } from "@/utilities/_module";
+import { isArrayEmpty } from "@/utilities/_module";
 
 /**
  * @group Derivables
  */
 export type EventBusSettings = {
-    /**
-     * You can prefix all keys with a given <i>namespace</i>.
-     * This useful if you want to add multitenancy but still use the same database.
-     * @default {""}
-     * @example
-     * ```ts
-     * import { EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
-     *
-     * const memoryEventBusAdapter = new MemoryEventBusAdapter();
-     * const eventBusA = new EventBus(memoryEventBusAdapter, {
-     *   rootNamespace: "@a"
-     * });
-     * const eventBusB = new EventBus(memoryEventBusAdapter, {
-     *   rootNamespace: "@b"
-     * });
-     *
-     * (async () => {
-     *   eventBusB.addListener("add", event => {
-     *     // This will never be logged because eventBusB has different namespace
-     *     console.log("eventBusB:", event);
-     *   });
-     *
-     *   eventBusB.addListener("add", event => {
-     *     // This will be logged
-     *     console.log("eventBusB:", event);
-     *   });
-     *
-     *   await eventBusA.dispatch([
-     *     { type: "add", a: 1, b: 2 }
-     *   ]);
-     * })();
-     * ```
-     */
-    rootNamespace?: OneOrMore<string>;
-
     lazyPromiseSettings?: LazyPromiseSettings;
 };
 
@@ -72,23 +37,17 @@ export type EventBusSettings = {
  * @group Derivables
  */
 export class EventBus<TEvents extends BaseEvents = BaseEvents>
-    implements INamespacedEventBus<TEvents>
+    implements IGroupableEventBus<TEvents>
 {
     private readonly eventBusAdapter: IEventBusAdapter;
-    private readonly namespace: string;
     private readonly lazyPromiseSettings?: LazyPromiseSettings;
-    private readonly listenerMap = new Map<
-        Listener<IBaseEvent>,
-        Listener<IBaseEvent>
-    >();
 
     constructor(
         eventBusAdapter: IEventBusAdapter,
         settings: EventBusSettings = {},
     ) {
-        const { rootNamespace: namespace = "", lazyPromiseSettings } = settings;
+        const { lazyPromiseSettings } = settings;
         this.lazyPromiseSettings = lazyPromiseSettings;
-        this.namespace = simplifyNamespace(namespace);
         this.eventBusAdapter = eventBusAdapter;
     }
 
@@ -98,41 +57,14 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
         return new LazyPromise(asyncFn, this.lazyPromiseSettings);
     }
 
-    private keyWithNamespace(key: string): string {
-        return simplifyNamespace([this.namespace, key]);
-    }
-
-    withNamespace(namespace: OneOrMore<string>): IEventBus<TEvents> {
-        namespace = simplifyNamespace(namespace);
-        return new EventBus(this.eventBusAdapter, {
-            rootNamespace: [this.namespace, namespace],
+    withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
+        return new EventBus(this.eventBusAdapter.withGroup(group), {
+            lazyPromiseSettings: this.lazyPromiseSettings,
         });
     }
 
-    getNamespace(): string {
-        return this.namespace;
-    }
-
-    private _getListener(
-        listener: Listener<IBaseEvent>,
-    ): Listener<IBaseEvent> | null {
-        return this.listenerMap.get(listener) ?? null;
-    }
-
-    private _getOrAddListener(
-        listener: Listener<IBaseEvent>,
-    ): Listener<IBaseEvent> {
-        let wrappedListener = this._getListener(listener);
-        if (wrappedListener === null) {
-            wrappedListener = async (eventObj: IBaseEvent) => {
-                await listener({
-                    ...eventObj,
-                    type: eventObj.type.slice(this.namespace.length + 1),
-                });
-            };
-            this.listenerMap.set(listener, wrappedListener);
-        }
-        return wrappedListener;
+    getGroup(): string {
+        return this.eventBusAdapter.getGroup();
     }
 
     addListener<TEventName extends keyof TEvents>(
@@ -147,8 +79,8 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                     );
                 }
                 await this.eventBusAdapter.addListener(
-                    this.keyWithNamespace(eventName),
-                    this._getOrAddListener(listener as Listener<IBaseEvent>),
+                    eventName,
+                    listener as Listener<IBaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new AddListenerEventBusError(
@@ -170,15 +102,9 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                 );
             }
             try {
-                const wrappedListener = this._getListener(
-                    listener as Listener<IBaseEvent>,
-                );
-                if (wrappedListener === null) {
-                    return;
-                }
                 await this.eventBusAdapter.removeListener(
-                    this.keyWithNamespace(eventName),
-                    wrappedListener,
+                    eventName,
+                    listener as Listener<IBaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new RemoveListenerEventBusError(
@@ -189,31 +115,32 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
         });
     }
 
-    dispatch(events: OneOrMore<AllEvents<TEvents>>): LazyPromise<void> {
+    dispatchMany(events: AllEvents<TEvents>[]): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            if (!Array.isArray(events)) {
-                events = [events];
-            }
-            if (isArrayEmpty(events)) {
-                return;
-            }
             try {
-                await this.eventBusAdapter.dispatch(
-                    events.map((event) => {
-                        if (typeof event.type !== "string") {
-                            throw new UnexpectedEventBusError(
-                                `The event name "${String(event.type)}" must be of string name`,
-                            );
-                        }
-                        return {
-                            ...event,
-                            type: this.keyWithNamespace(event.type),
-                        };
-                    }),
-                );
+                const promises: PromiseLike<void>[] = [];
+                for (const event of events) {
+                    promises.push(
+                        this.eventBusAdapter.dispatch(event as IBaseEvent),
+                    );
+                }
+                await Promise.all(promises);
             } catch (error: unknown) {
                 throw new DispatchEventBusError(
-                    `Events "${events.map((event) => event.type).join(", ")}" could not be dispatched`,
+                    `Events of types "${events.map((event) => event.type).join(", ")}" could not be dispatched`,
+                    error,
+                );
+            }
+        });
+    }
+
+    dispatch(event: AllEvents<TEvents>): LazyPromise<void> {
+        return this.createLayPromise(async () => {
+            try {
+                await this.eventBusAdapter.dispatch(event as IBaseEvent);
+            } catch (error: unknown) {
+                throw new DispatchEventBusError(
+                    `Event of type "${String(event.type)}" could not be dispatched`,
                     error,
                 );
             }
@@ -249,6 +176,24 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
                 promises.push(this.removeListener(event, listener));
             }
             await Promise.all(promises);
+        });
+    }
+
+    listenOnce<TEventName extends keyof TEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    ): LazyPromise<void> {
+        return this.createLayPromise(async () => {
+            const wrappedListener = async (
+                event: SelectEvent<TEvents, TEventName>,
+            ) => {
+                try {
+                    await listener(event);
+                } finally {
+                    await this.removeListener(eventName, wrappedListener);
+                }
+            };
+            await this.addListener(eventName, wrappedListener);
         });
     }
 

@@ -59,7 +59,7 @@ export type CacheTestSuiteSettings = {
  *           serializer,
  *         }),
  *         {
- *           rootNamespace: "@a",
+ *           rootGroup: "@a",
  *           eventBus,
  *         }
  *       ),
@@ -69,7 +69,7 @@ export type CacheTestSuiteSettings = {
  *           serializer,
  *         }),
  *         {
- *           rootNamespace: "@b",
+ *           rootGroup: "@b",
  *           eventBus,
  *         }
  *       ),
@@ -605,6 +605,14 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cacheA.put("a", -1);
                 expect(await cacheA.get("a")).toBe(-1);
             });
+            test("Should replace the ttl value", async () => {
+                const ttlA = TimeSpan.fromMilliseconds(100);
+                await cacheA.add("a", 1, ttlA);
+                const ttlB = TimeSpan.fromMilliseconds(50);
+                await cacheA.put("a", -1, ttlB);
+                await delay(ttlB);
+                expect(await cacheA.get("a")).toBeNull();
+            });
         });
         describe("method: putMany", () => {
             test("Should return only true when all keys exists", async () => {
@@ -683,6 +691,19 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     a: -1,
                     b: -1,
                 });
+            });
+            test("Should replace the ttl value", async () => {
+                const ttlA = TimeSpan.fromMilliseconds(100);
+                await cacheA.add("a", 1, ttlA);
+                const ttlB = TimeSpan.fromMilliseconds(50);
+                await cacheA.putMany({
+                    a: {
+                        value: -1,
+                        ttl: ttlB,
+                    },
+                });
+                await delay(ttlB);
+                expect(await cacheA.get("a")).toBeNull();
             });
         });
         describe("method: remove", () => {
@@ -898,7 +919,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
         });
     });
-    describe("Namespace tests:", () => {
+    describe("Group tests:", () => {
         test("method: exists", async () => {
             await cacheA.put("a", 1);
             expect(await cacheA.exists("a")).toBe(true);
@@ -940,7 +961,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         test("method: get", async () => {
             await cacheA.put("a", 1);
             expect(await cacheA.get("a")).toBe(1);
-            expect(await cacheB.get("a")).toBe(null);
+            expect(await cacheB.get("a")).toBeNull();
         });
         test("method: getMany", async () => {
             await cacheA.putMany({

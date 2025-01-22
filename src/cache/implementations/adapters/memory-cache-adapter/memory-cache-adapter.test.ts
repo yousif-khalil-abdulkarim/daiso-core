@@ -4,7 +4,10 @@ import { MemoryCacheAdapter } from "@/cache/implementations/adapters/memory-cach
 
 describe("class: MemoryCacheAdapter", () => {
     cacheAdapterTestSuite({
-        createAdapter: () => new MemoryCacheAdapter(new Map<string, unknown>()),
+        createAdapterA: () =>
+            new MemoryCacheAdapter("@a", new Map<string, unknown>()),
+        createAdapterB: () =>
+            new MemoryCacheAdapter("@a/b", new Map<string, unknown>()),
         test,
         beforeEach,
         expect,

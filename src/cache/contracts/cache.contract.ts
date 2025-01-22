@@ -120,13 +120,15 @@ export type ICache<TType = unknown> = ICacheListenable & {
     ): LazyPromise<Record<TKeys, boolean>>;
 
     /**
-     * The <i>put</i> method replaces the key with given <i>value</i> if found. If the <i>key</i> is not found it will just be added. True is returned if the key is found otherwise false will be returned.
-     * You can provide a <i>ttl</i> value. If null is passed, the item will not expire.
+     * The <i>put</i> method replaces a <i>key</i> if the <i>key</i> exists including the ttl value or adds <i>key</i> that do not exists with a given <i>ttl</i>.
+     * Returns true if the <i>key</i> where replaced otherwise false is returned.
+     * You must provide a <i>ttl</i> value. If null is passed, the item will not expire.
      */
     put(key: string, value: TType, ttl?: TimeSpan | null): LazyPromise<boolean>;
 
     /**
-     * The <i>putMany</i> method replaces the keys that exists. Adds keys that do not exists. Returns true for all the keys that where updated otherwise false is returned.
+     * The <i>putMany</i> method replaces the keys that exists including their ttl values or adds keys that do not exists.
+     * Returns true for all the keys that where replaced otherwise false is returned.
      */
     putMany<TKeys extends string>(
         values: Record<TKeys, WithTtlValue<TType>>,
@@ -187,43 +189,44 @@ export type ICache<TType = unknown> = ICacheListenable & {
     clear(): LazyPromise<void>;
 
     /**
-     * The <i>getNamespace</i> method returns the complete namespace.
+     * The <i>getGroup</i> method returns the group name.
      * @example
      * ```ts
      * import type { ICache } from "@daiso-tech/core";
      *
      * async function main(cache: ICache) {
-     *   // Will be "@root"
-     *   console.log(cache.getNamespace())
+     *   // Will be "@global"
+     *   console.log(cache.getGroup())
      *
-     *   const cacheA = cache.withNamespace("a");
+     *   const cacheA = cache.withGroup("a");
      *
-     *   // Will be "@root/a"
-     *   console.log(cacheA.getNamespace())
+     *   // Will be "@global/a"
+     *   console.log(cacheA.getGroup())
      * }
      * ```
      */
-    getNamespace(): string;
+    getGroup(): string;
 };
 
 /**
- * The <i>INamespacedCache</i> contract defines a way for storing data as key-value pairs independent of data storage.
+ * The <i>IGroupableCache</i> contract defines a way for storing data as key-value pairs independent of data storage.
  * It commes with one extra method which is useful for multitennat applications compared to <i>ICache</i>.
  * @group Contracts
  */
-export type INamespacedCache<TType = unknown> = ICache<TType> & {
+export type IGroupableCache<TType = unknown> = ICache<TType> & {
     /**
-     * The <i>withNamespace</i> method returns new instance of <i>{@link ICache}</i> where all the keys will be prefixed with a given <i>namespace</i>.
+     * The <i>withGroup</i> method returns a new <i>{@link ICache}</i> instance that groups keys together.
+     * Only keys in the group can be updated, removed, or retrieved, leaving keys outside the group unaffected.
      * This useful for multitennat applications.
      * @example
      * ```ts
      * import { type ICache } from "@daiso-tech/core";
      *
      * async function main(cache: ICache): Promise<void> {
-     *   const cacheA = cache.withNamespace("a");
+     *   const cacheA = cache.withGroup("a");
      *   await cacheA.add("a", 1);
      *
-     *   const cacheB = cache.withNamespace("b");
+     *   const cacheB = cache.withGroup("b");
      *   await cacheB.add("b", 2);
      *
      *   // Will print { a: 1, b: null }
@@ -231,5 +234,5 @@ export type INamespacedCache<TType = unknown> = ICache<TType> & {
      * }
      * ```
      */
-    withNamespace(namespace: OneOrMore<string>): ICache<TType>;
+    withGroup(group: OneOrMore<string>): ICache<TType>;
 };

@@ -4,7 +4,7 @@
 
 import type {
     BaseEvents,
-    INamespacedEventBus,
+    IGroupableEventBus,
 } from "@/event-bus/contracts/event-bus.contract";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -14,7 +14,7 @@ import {
 } from "@/utilities/_module";
 
 /**
- * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link INamespacedEventBus}</i> dynamically.
+ * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableEventBus}</i> dynamically.
  * @group Contracts
  */
 export type IEventBusFactory<
@@ -42,7 +42,7 @@ export type IEventBusFactory<
      * }
      * ```
      */
-    use(driverName?: TDrivers): INamespacedEventBus<TEvents>;
+    use(driverName?: TDrivers): IGroupableEventBus<TEvents>;
 
     /**
      * The <i>withTypes</i> method is used to set the event types of the <i>{@link IEventBus}</i>.

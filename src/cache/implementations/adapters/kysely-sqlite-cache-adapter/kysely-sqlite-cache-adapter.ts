@@ -6,13 +6,18 @@ import { type ICacheAdapter, TypeCacheError } from "@/cache/contracts/_module";
 import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
 import { type ISerializer } from "@/serializer/contracts/_module";
-import type { IDeinitizable, IInitizable } from "@/utilities/_module";
-import { TimeSpan } from "@/utilities/_module";
+import type {
+    IDeinitizable,
+    IInitizable,
+    OneOrMore,
+} from "@/utilities/_module";
+import { simplifyGroupName, TimeSpan } from "@/utilities/_module";
 
 /**
  * @internal
  */
 type KyselySqliteCacheTable = {
+    group: string;
     key: string;
     value: string;
     // In ms since unix epoch
@@ -34,6 +39,7 @@ type KyselySqliteSettings = {
     enableTransactions: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
+    rootGroup: OneOrMore<string>;
 };
 
 /**
@@ -42,6 +48,7 @@ type KyselySqliteSettings = {
 export class KyselySqliteCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
+    private readonly group: string;
     private readonly serializer: ISerializer<string>;
     private readonly enableTransactions: boolean;
     private readonly expiredKeysRemovalInterval: TimeSpan;
@@ -57,11 +64,27 @@ export class KyselySqliteCacheAdapter<TType>
             enableTransactions,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
+            rootGroup,
         } = settings;
+        this.group = simplifyGroupName(rootGroup);
         this.serializer = serializer;
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.enableTransactions = enableTransactions;
+    }
+
+    getGroup(): string {
+        return this.group;
+    }
+
+    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+        return new KyselySqliteCacheAdapter(this.db, {
+            enableTransactions: this.enableTransactions,
+            expiredKeysRemovalInterval: this.expiredKeysRemovalInterval,
+            serializer: this.serializer,
+            shouldRemoveExpiredKeys: this.shouldRemoveExpiredKeys,
+            rootGroup: [this.group, simplifyGroupName(group)],
+        });
     }
 
     private async withTransaction<TValue>(
@@ -84,9 +107,11 @@ export class KyselySqliteCacheAdapter<TType>
         await this.db.schema
             .createTable("cache")
             .ifNotExists()
-            .addColumn("key", "text", (cb) => cb.primaryKey())
+            .addColumn("group", "text")
+            .addColumn("key", "text")
             .addColumn("value", "text")
             .addColumn("expiresAt", "integer")
+            .addPrimaryKeyConstraint("asd", ["group", "key"])
             .modifyEnd(sql`strict`)
             .execute();
         await this.db.schema
@@ -115,10 +140,32 @@ export class KyselySqliteCacheAdapter<TType>
         await this.db.schema.dropTable("cache").ifExists().execute();
     }
 
+    async exists(key: string): Promise<boolean> {
+        const row = await this.db
+            .selectFrom("cache")
+            .where("cache.key", "=", key)
+            .where("cache.group", "=", this.group)
+            .select(["cache.expiresAt"])
+            .executeTakeFirst();
+        if (row === undefined) {
+            return false;
+        }
+        const { expiresAt } = row;
+        if (expiresAt === null) {
+            return true;
+        }
+        const hasExpired = expiresAt <= new Date().getTime();
+        if (hasExpired) {
+            return false;
+        }
+        return true;
+    }
+
     async get(key: string): Promise<TType | null> {
         const row = await this.db
             .selectFrom("cache")
             .where("cache.key", "=", key)
+            .where("cache.group", "=", this.group)
             .select(["cache.value", "cache.expiresAt"])
             .executeTakeFirst();
         if (row === undefined) {
@@ -146,17 +193,19 @@ export class KyselySqliteCacheAdapter<TType>
             const prevRow = await db
                 .selectFrom("cache")
                 .where("cache.key", "=", key)
+                .where("cache.group", "=", this.group)
                 .select(["cache.expiresAt"])
                 .executeTakeFirst();
             await db
                 .insertInto("cache")
                 .values({
                     key,
+                    group: this.group,
                     value: serializedValue,
                     expiresAt: expiresAtInsert,
                 })
                 .onConflict((eb) =>
-                    eb.column("key").doUpdateSet(({ eb }) => {
+                    eb.columns(["key", "group"]).doUpdateSet(({ eb }) => {
                         const hasExpiration = eb.not(
                             eb("cache.expiresAt", "is", null),
                         );
@@ -205,11 +254,13 @@ export class KyselySqliteCacheAdapter<TType>
             const prevRow = await db
                 .selectFrom("cache")
                 .where("cache.key", "=", key)
+                .where("cache.group", "=", this.group)
                 .select(["cache.expiresAt"])
                 .executeTakeFirst();
             await db
                 .updateTable("cache")
                 .where("cache.key", "=", key)
+                .where("cache.group", "=", this.group)
                 .where((eb) => {
                     const hasNoExpiration = eb("cache.expiresAt", "is", null);
                     const hasExpiration = eb.not(
@@ -252,6 +303,7 @@ export class KyselySqliteCacheAdapter<TType>
             const prevRow = await db
                 .selectFrom("cache")
                 .where("cache.key", "=", key)
+                .where("cache.group", "=", this.group)
                 .select(["cache.expiresAt"])
                 .executeTakeFirst();
             const serializedValue = await this.serializer.serialize(value);
@@ -259,11 +311,12 @@ export class KyselySqliteCacheAdapter<TType>
                 .insertInto("cache")
                 .values({
                     key,
+                    group: this.group,
                     value: serializedValue,
                     expiresAt: resovledTtl,
                 })
                 .onConflict((cb) =>
-                    cb.column("key").doUpdateSet({
+                    cb.columns(["key", "group"]).doUpdateSet({
                         key,
                         value: serializedValue,
                         expiresAt: resovledTtl,
@@ -286,6 +339,7 @@ export class KyselySqliteCacheAdapter<TType>
         const row = await this.db
             .deleteFrom("cache")
             .where("cache.key", "=", key)
+            .where("cache.group", "=", this.group)
             .returning("cache.expiresAt")
             .executeTakeFirst();
         if (row === undefined) {
@@ -304,11 +358,13 @@ export class KyselySqliteCacheAdapter<TType>
             const prevRow = await db
                 .selectFrom("cache")
                 .where("cache.key", "=", key)
+                .where("cache.group", "=", this.group)
                 .select(["cache.expiresAt"])
                 .executeTakeFirst();
             const sqlResult = await db
                 .updateTable("cache")
                 .where("cache.key", "=", key)
+                .where("cache.group", "=", this.group)
                 .where((eb) => {
                     const hasNoExpiration = eb("cache.expiresAt", "is", null);
                     const hasExpiration = eb.not(
@@ -338,7 +394,6 @@ export class KyselySqliteCacheAdapter<TType>
                         .end();
                     return sql`json_set(${eb.ref("cache.value")}, '$', ${incrementJsonRootIfNumber})`;
                 })
-                .where("cache.key", "=", key)
                 .returning((eb) => {
                     const jsonRootValue = sql`typeof(${eb.ref("cache.value")} ->> '$')`;
                     const isNumber = eb.or([
@@ -368,14 +423,10 @@ export class KyselySqliteCacheAdapter<TType>
         });
     }
 
-    async clear(prefix: string): Promise<void> {
-        if (prefix === "") {
-            await this.db.deleteFrom("cache").execute();
-            return;
-        }
+    async clear(): Promise<void> {
         await this.db
             .deleteFrom("cache")
-            .where("key", "like", `${prefix}%`)
+            .where("cache.group", "=", this.group)
             .execute();
     }
 }

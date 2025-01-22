@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import type { INamespacedCache } from "@/cache/contracts/cache.contract";
+import type { IGroupableCache } from "@/cache/contracts/cache.contract";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredDriverError,
@@ -11,7 +11,7 @@ import {
 } from "@/utilities/errors";
 
 /**
- * The <i>ICacheFactory</i> contract makes it easy to configure and switch between different <i>{@link INamespacedCache}</i> dynamically.
+ * The <i>ICacheFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableCache}</i> dynamically.
  * @group Contracts
  */
 export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
@@ -36,13 +36,13 @@ export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
      * }
      * ```
      */
-    use(driverName?: TDrivers): INamespacedCache<TType>;
+    use(driverName?: TDrivers): IGroupableCache<TType>;
 
     /**
      * The <i>withTypes</i> method is used to set the value types of the cache.
      * @example
      * ```ts
-     * import { type ICacheFactory zodValidator } from "@daiso-tech/core";
+     * import { type ICacheFactory } from "@daiso-tech/core";
      *
      * async function main(cacheFactory: ICacheFactory): Promise<void> {
      *   await cacheFactory

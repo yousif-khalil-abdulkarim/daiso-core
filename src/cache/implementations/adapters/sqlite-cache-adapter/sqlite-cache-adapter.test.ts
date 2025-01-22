@@ -13,12 +13,24 @@ describe("class: SqliteCacheAdapter", () => {
         database.close();
     });
     cacheAdapterTestSuite({
-        createAdapter: async () => {
+        createAdapterA: async () => {
             const cacheAdapter = new SqliteCacheAdapter(database, {
                 tableName: "custom_table",
                 enableTransactions: true,
                 shouldRemoveExpiredKeys: false,
                 serializer: new SuperJsonSerializer(),
+                rootGroup: "@a",
+            });
+            await cacheAdapter.init();
+            return cacheAdapter;
+        },
+        createAdapterB: async () => {
+            const cacheAdapter = new SqliteCacheAdapter(database, {
+                tableName: "custom_table",
+                enableTransactions: true,
+                shouldRemoveExpiredKeys: false,
+                serializer: new SuperJsonSerializer(),
+                rootGroup: "@a/b",
             });
             await cacheAdapter.init();
             return cacheAdapter;

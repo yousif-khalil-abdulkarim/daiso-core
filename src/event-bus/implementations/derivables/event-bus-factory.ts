@@ -2,8 +2,9 @@
  * @module EventBus
  */
 
+import type { LazyPromiseSettings } from "@/async/_module";
 import type {
-    INamespacedEventBus,
+    IGroupableEventBus,
     IEventBusAdapter,
     IEventBusFactory,
     BaseEvents,
@@ -27,7 +28,7 @@ export type EventBusDrivers<TAdapters extends string = string> = Partial<
 export type EventBusFactorySettings<TAdapters extends string = string> = {
     drivers: EventBusDrivers<TAdapters>;
     defaultDriver?: NoInfer<TAdapters>;
-    rootNamespace?: string;
+    rootGroup?: string;
 };
 
 /**
@@ -40,13 +41,12 @@ export type EventBusFactorySettings<TAdapters extends string = string> = {
  * const eventBusFactory = new EventBusFactory({
  *   drivers: {
  *     memory: new MemoryEventBusAdapter(),
- *     redis: new RedisEventBusAdapter({
+ *     redis: new RedisPubSubEventBusAdapter({
  *       dispatcherClient: new Redis(),
  *       listenerClient: new Redis(),
  *     }),
  *   },
  *   defaultDriver: "memory",
- *   rootNamespace: "@events"
  * });
  * ```
  */
@@ -57,18 +57,17 @@ export class EventBusFactory<
 {
     private readonly drivers: EventBusDrivers<TAdapters>;
     private readonly defaultDriver?: TAdapters;
-    private readonly rootNamespace?: string;
+    private readonly lazyPromiseSettings?: LazyPromiseSettings;
 
     constructor(settings: EventBusFactorySettings<TAdapters>) {
-        const { drivers, defaultDriver, rootNamespace } = settings;
+        const { drivers, defaultDriver } = settings;
         this.drivers = drivers;
         this.defaultDriver = defaultDriver;
-        this.rootNamespace = rootNamespace;
     }
 
     use(
         driverName: TAdapters | undefined = this.defaultDriver,
-    ): INamespacedEventBus<TEvents> {
+    ): IGroupableEventBus<TEvents> {
         if (driverName === undefined) {
             throw new DefaultDriverNotDefinedError(EventBusFactory.name);
         }
@@ -77,7 +76,7 @@ export class EventBusFactory<
             throw new UnregisteredDriverError(driverName);
         }
         return new EventBus(selectedAdapter, {
-            rootNamespace: this.rootNamespace,
+            lazyPromiseSettings: this.lazyPromiseSettings,
         });
     }
 

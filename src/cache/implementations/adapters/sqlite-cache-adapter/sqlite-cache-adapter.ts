@@ -5,7 +5,12 @@
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { ISerializer } from "@/serializer/contracts/_module";
 import { SqlSerializer } from "@/serializer/implementations/_module";
-import type { TimeSpan, IInitizable, IDeinitizable } from "@/utilities/_module";
+import type {
+    TimeSpan,
+    IInitizable,
+    IDeinitizable,
+    OneOrMore,
+} from "@/utilities/_module";
 import { type Database } from "better-sqlite3";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 import { Kysely, SqliteDialect } from "kysely";
@@ -20,6 +25,7 @@ export type SqliteStorageAdapterSettings = {
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
+    rootGroup: OneOrMore<string>;
 };
 
 /**
@@ -34,13 +40,17 @@ export type SqliteStorageAdapterSettings = {
  * const serializer = new SuperJsonSerializer();
  * const cacheAdapter = new SqliteCacheAdapter(client, {
  *   serializer,
+ *   rootGroup: "@global"
  * });
+ *
+ * (async () => {
  *   // You only need to call it once before using the adapter.
  *   await cacheAdapter.init();
  *   await cacheAdapter.add("a", 1);
  *
  *   // Will remove the cache
  *   await cacheAdapter.deInit();
+ * })();
  * ```
  */
 export class SqliteCacheAdapter<TType>
@@ -55,6 +65,7 @@ export class SqliteCacheAdapter<TType>
             enableTransactions = false,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,
+            rootGroup,
         } = settings;
 
         this.cacheAdapter = new KyselySqliteCacheAdapter(
@@ -73,8 +84,17 @@ export class SqliteCacheAdapter<TType>
                 enableTransactions,
                 expiredKeysRemovalInterval,
                 shouldRemoveExpiredKeys,
+                rootGroup,
             },
         );
+    }
+
+    getGroup(): string {
+        return this.getGroup();
+    }
+
+    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+        return this.withGroup(group);
     }
 
     async removeExpiredKeys(): Promise<void> {
@@ -87,6 +107,10 @@ export class SqliteCacheAdapter<TType>
 
     async init(): Promise<void> {
         await this.cacheAdapter.init();
+    }
+
+    async exists(key: string): Promise<boolean> {
+        return await this.cacheAdapter.exists(key);
     }
 
     async get(key: string): Promise<TType | null> {
@@ -121,7 +145,7 @@ export class SqliteCacheAdapter<TType>
         return await this.cacheAdapter.increment(key, value);
     }
 
-    async clear(prefix: string): Promise<void> {
-        await this.cacheAdapter.clear(prefix);
+    async clear(): Promise<void> {
+        await this.cacheAdapter.clear();
     }
 }
