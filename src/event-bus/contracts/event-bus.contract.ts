@@ -22,6 +22,9 @@ export type AllEvents<TEvents extends BaseEvents> = Values<{
     };
 }>;
 
+/**
+ * @group Contracts
+ */
 export type SelectEvent<
     TEvents extends BaseEvents,
     TEventName extends keyof TEvents,
@@ -31,7 +34,17 @@ export type SelectEvent<
     };
 }[TEventName];
 
+/**
+ * @group Contracts
+ */
 export type Unsubscribe = () => LazyPromise<void>;
+
+/**
+ * @group Contracts
+ */
+export type AddListenerSettings = {
+    signal?: AbortSignal;
+};
 
 /**
  * The <i>IListenable</i> contract defines a way listening to events independent of underlying technology
@@ -75,6 +88,16 @@ export type IListenable<TEvents extends BaseEvents = BaseEvents> = {
      */
     removeListenerMany<TEventName extends keyof TEvents>(
         eventNames: TEventName[],
+        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    ): LazyPromise<void>;
+
+    /**
+     * The <i>listenOnce</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i>.
+     * A listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
+     * @throws {AddListenerEventBusError} {@link AddListenerEventBusError}
+     */
+    listenOnce<TEventName extends keyof TEvents>(
+        eventName: TEventName,
         listener: Listener<SelectEvent<TEvents, TEventName>>,
     ): LazyPromise<void>;
 
