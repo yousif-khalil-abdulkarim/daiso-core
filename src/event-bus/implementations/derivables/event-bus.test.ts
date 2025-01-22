@@ -15,8 +15,8 @@ describe("class: EventBus", () => {
         describe,
         beforeEach,
         createEventBusA: () =>
-            new EventBus(new MemoryEventBusAdapter("@global", eventEmitter)),
+            new EventBus(new MemoryEventBusAdapter("@a", eventEmitter)),
         createEventBusB: () =>
-            new EventBus(new MemoryEventBusAdapter("@global", eventEmitter)),
+            new EventBus(new MemoryEventBusAdapter("@a/b", eventEmitter)),
     });
 });
