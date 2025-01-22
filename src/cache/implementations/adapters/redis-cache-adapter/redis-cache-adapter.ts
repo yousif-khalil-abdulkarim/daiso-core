@@ -171,14 +171,14 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         if (ttl === null) {
             const result = await this.client.set(
                 key,
-                await this.serializer.serialize(value),
+                this.serializer.serialize(value),
                 "NX",
             );
             return result === "OK";
         }
         const result = await this.client.set(
             key,
-            await this.serializer.serialize(value),
+            this.serializer.serialize(value),
             "PX",
             ttl.toMilliseconds(),
             "NX",
@@ -190,7 +190,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         key = this.withPrefix(key);
         const result = await this.client.set(
             key,
-            await this.serializer.serialize(value),
+            this.serializer.serialize(value),
             "XX",
         );
         return result === "OK";
@@ -205,14 +205,14 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         if (ttl === null) {
             const result = await this.client.set(
                 key,
-                await this.serializer.serialize(value),
+                this.serializer.serialize(value),
                 "GET",
             );
             return result !== null;
         }
         const result = await this.client.set(
             key,
-            await this.serializer.serialize(value),
+            this.serializer.serialize(value),
             "PX",
             ttl.toMilliseconds(),
             "GET",
@@ -250,7 +250,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
             key = this.withPrefix(key);
             const redisResult = await this.client.daiso_cache_increment(
                 key,
-                await this.serializer.serialize(value),
+                this.serializer.serialize(value),
             );
             const keyExists = redisResult === 1;
             return keyExists;
