@@ -6,48 +6,23 @@ import { type ISerializer } from "@/serializer/contracts/_module";
 import {
     DeserializationError,
     SerializationError,
-} from "@/serializer/contracts/serializer.errors";
-import type { SuperJSON } from "superjson";
-import type { JSONValue } from "superjson/dist/types";
-/**
- * @group Adapters
- */
-export type SuperJsonSerializerSettings = {
-    dedupe?: boolean;
-    registerClass?: (registerClass: SuperJSON["registerClass"]) => void;
-    registerSymbol?: (registerClass: SuperJSON["registerSymbol"]) => void;
-    registerCustom?: (registerClass: SuperJSON["registerCustom"]) => void;
-};
+} from "@/serializer/contracts/serde.errors";
+import { SuperJSON } from "superjson-cjs";
+
 /**
  * @group Adapters
  */
 export class SuperJsonSerializer implements ISerializer<string> {
-    private superJson: SuperJSON | null = null;
-    private dedupe: boolean;
-    private registerClass: (registerClass: SuperJSON["registerClass"]) => void;
-    private registerSymbol: (
-        registerClass: SuperJSON["registerSymbol"],
-    ) => void;
-    private registerCustom: (
-        registerClass: SuperJSON["registerCustom"],
-    ) => void;
+    private readonly superJson: SuperJSON = new SuperJSON();
 
-    constructor({
-        dedupe = false,
-        registerClass = () => {},
-        registerSymbol = () => {},
-        registerCustom = () => {},
-    }: SuperJsonSerializerSettings = {}) {
-        this.registerClass = registerClass;
-        this.registerSymbol = registerSymbol;
-        this.registerCustom = registerCustom;
-        this.dedupe = dedupe;
+    constructor() {
+        this.registerAll();
     }
 
-    private static registerBuffer(superJson: SuperJSON): void {
-        superJson.registerCustom<Buffer, JSONValue>(
+    private registerBuffer(): void {
+        this.superJson.registerCustom<Buffer, any>(
             {
-                isApplicable(value) {
+                isApplicable(value: any): value is Buffer {
                     return value instanceof Buffer;
                 },
                 deserialize(serializedValue) {
@@ -81,10 +56,10 @@ export class SuperJsonSerializer implements ISerializer<string> {
         );
     }
 
-    private static registerUint8Array(superJson: SuperJSON): void {
-        superJson.registerCustom<Uint8Array, JSONValue>(
+    private registerUint8Array(): void {
+        this.superJson.registerCustom<Uint8Array, any>(
             {
-                isApplicable(value) {
+                isApplicable(value): value is Uint8Array {
                     return value instanceof Uint8Array;
                 },
                 deserialize(serializedValue) {
@@ -120,10 +95,10 @@ export class SuperJsonSerializer implements ISerializer<string> {
         );
     }
 
-    private static registerInt8Array(superJson: SuperJSON): void {
-        superJson.registerCustom<Int8Array, JSONValue>(
+    private registerInt8Array(): void {
+        this.superJson.registerCustom<Int8Array, any>(
             {
-                isApplicable(value) {
+                isApplicable(value): value is Int8Array {
                     return value instanceof Int8Array;
                 },
                 deserialize(serializedValue) {
@@ -159,10 +134,10 @@ export class SuperJsonSerializer implements ISerializer<string> {
         );
     }
 
-    private static registerUint16Array(superJson: SuperJSON): void {
-        superJson.registerCustom<Uint16Array, JSONValue>(
+    private registerUint16Array(): void {
+        this.superJson.registerCustom<Uint16Array, any>(
             {
-                isApplicable(value) {
+                isApplicable(value): value is Uint16Array {
                     return value instanceof Uint16Array;
                 },
                 deserialize(serializedValue) {
@@ -198,10 +173,10 @@ export class SuperJsonSerializer implements ISerializer<string> {
         );
     }
 
-    private static registerInt16Array(superJson: SuperJSON): void {
-        superJson.registerCustom<Int16Array, JSONValue>(
+    private registerInt16Array(): void {
+        this.superJson.registerCustom<Int16Array, any>(
             {
-                isApplicable(value) {
+                isApplicable(value): value is Int16Array {
                     return value instanceof Int16Array;
                 },
                 deserialize(serializedValue) {
@@ -237,10 +212,10 @@ export class SuperJsonSerializer implements ISerializer<string> {
         );
     }
 
-    private static registerUint32Array(superJson: SuperJSON): void {
-        superJson.registerCustom<Uint32Array, JSONValue>(
+    private registerUint32Array(): void {
+        this.superJson.registerCustom<Uint32Array, any>(
             {
-                isApplicable(value) {
+                isApplicable(value): value is Uint32Array {
                     return value instanceof Uint32Array;
                 },
                 deserialize(serializedValue) {
@@ -276,10 +251,10 @@ export class SuperJsonSerializer implements ISerializer<string> {
         );
     }
 
-    private static registerInt32Array(superJson: SuperJSON): void {
-        superJson.registerCustom<Int32Array, JSONValue>(
+    private registerInt32Array(): void {
+        this.superJson.registerCustom<Int32Array, any>(
             {
-                isApplicable(value) {
+                isApplicable(value): value is Int32Array {
                     return value instanceof Int32Array;
                 },
                 deserialize(serializedValue) {
@@ -315,10 +290,10 @@ export class SuperJsonSerializer implements ISerializer<string> {
         );
     }
 
-    private static registerFloat32Array(superJson: SuperJSON): void {
-        superJson.registerCustom<Float32Array, JSONValue>(
+    private registerFloat32Array(): void {
+        this.superJson.registerCustom<Float32Array, any>(
             {
-                isApplicable(value) {
+                isApplicable(value): value is Float32Array {
                     return value instanceof Float32Array;
                 },
                 deserialize(serializedValue) {
@@ -354,10 +329,10 @@ export class SuperJsonSerializer implements ISerializer<string> {
         );
     }
 
-    private static registerFloat64Array(superJson: SuperJSON): void {
-        superJson.registerCustom<Float64Array, JSONValue>(
+    private registerFloat64Array(): void {
+        this.superJson.registerCustom<Float64Array, any>(
             {
-                isApplicable(value) {
+                isApplicable(value): value is Float64Array {
                     return value instanceof Float64Array;
                 },
                 deserialize(serializedValue) {
@@ -393,39 +368,21 @@ export class SuperJsonSerializer implements ISerializer<string> {
         );
     }
 
-    private async init(): Promise<SuperJSON> {
-        /**
-         * The package is esm only so it must be imported dynamically inorder for it to work with both esm and cjs
-         */
-        const { SuperJSON } = await import("superjson");
-        if (this.superJson === null) {
-            this.superJson = new SuperJSON({ dedupe: this.dedupe });
-            this.registerClass(
-                this.superJson.registerClass.bind(this.superJson),
-            );
-            this.registerSymbol(
-                this.superJson.registerSymbol.bind(this.superJson),
-            );
-            this.registerCustom(
-                this.superJson.registerCustom.bind(this.superJson),
-            );
-            SuperJsonSerializer.registerBuffer(this.superJson);
-            SuperJsonSerializer.registerUint8Array(this.superJson);
-            SuperJsonSerializer.registerInt8Array(this.superJson);
-            SuperJsonSerializer.registerUint16Array(this.superJson);
-            SuperJsonSerializer.registerInt16Array(this.superJson);
-            SuperJsonSerializer.registerUint32Array(this.superJson);
-            SuperJsonSerializer.registerInt32Array(this.superJson);
-            SuperJsonSerializer.registerFloat32Array(this.superJson);
-            SuperJsonSerializer.registerFloat64Array(this.superJson);
-        }
-        return this.superJson;
+    private registerAll(): void {
+        this.registerBuffer();
+        this.registerUint8Array();
+        this.registerInt8Array();
+        this.registerUint16Array();
+        this.registerInt16Array();
+        this.registerUint32Array();
+        this.registerInt32Array();
+        this.registerFloat32Array();
+        this.registerFloat64Array();
     }
 
-    async serialize<TValue>(value: TValue): Promise<string> {
+    serialize<TValue>(value: TValue): string {
         try {
-            const superJson = await this.init();
-            return superJson.stringify(value);
+            return this.superJson.stringify(value);
         } catch (error: unknown) {
             throw new SerializationError(
                 `Serialization error "${String(error)}" occured`,
@@ -434,10 +391,9 @@ export class SuperJsonSerializer implements ISerializer<string> {
         }
     }
 
-    async deserialize<TValue>(value: string): Promise<TValue> {
+    deserialize<TValue>(value: string): TValue {
         try {
-            const superJson = await this.init();
-            return (await superJson.parse(value)) as TValue;
+            return this.superJson.parse(value);
         } catch (error: unknown) {
             throw new DeserializationError(
                 `Deserialization error "${String(error)}" occured`,
