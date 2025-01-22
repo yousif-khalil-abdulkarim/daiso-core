@@ -4,7 +4,8 @@
 
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { ISerde } from "@/serde/contracts/_module";
-import { SqlSerde } from "@/serde/implementations/_module";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { SuperJsonSerde } from "@/serde/implementations/_module";
 import type {
     TimeSpan,
     IInitizable,
@@ -80,7 +81,7 @@ export class SqliteCacheAdapter<TType>
                 ],
             }),
             {
-                serde: new SqlSerde(serde),
+                serde,
                 enableTransactions,
                 expiredKeysRemovalInterval,
                 shouldRemoveExpiredKeys,

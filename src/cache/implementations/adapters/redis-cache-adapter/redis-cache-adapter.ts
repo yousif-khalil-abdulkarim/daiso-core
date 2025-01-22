@@ -127,7 +127,8 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         );
     }
 
-    private readonly serde: ISerde<string>;
+    private readonly baseSerde: ISerde<string>;
+    private readonly redisSerde: ISerde<string>;
     private readonly group: string;
 
     constructor(
@@ -135,7 +136,8 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         { serde, rootGroup }: RedisCacheAdapterSettings,
     ) {
         this.group = simplifyGroupName(rootGroup);
-        this.serde = new RedisSerde(serde);
+        this.baseSerde = serde;
+        this.redisSerde = new RedisSerde(serde);
         this.initIncrementCommand();
     }
 
@@ -159,7 +161,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         if (value === null) {
             return null;
         }
-        return await this.serde.deserialize(value);
+        return await this.redisSerde.deserialize(value);
     }
 
     async add(
@@ -171,14 +173,14 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         if (ttl === null) {
             const result = await this.client.set(
                 key,
-                this.serde.serialize(value),
+                this.redisSerde.serialize(value),
                 "NX",
             );
             return result === "OK";
         }
         const result = await this.client.set(
             key,
-            this.serde.serialize(value),
+            this.redisSerde.serialize(value),
             "PX",
             ttl.toMilliseconds(),
             "NX",
@@ -190,7 +192,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         key = this.withPrefix(key);
         const result = await this.client.set(
             key,
-            this.serde.serialize(value),
+            this.redisSerde.serialize(value),
             "XX",
         );
         return result === "OK";
@@ -205,14 +207,14 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         if (ttl === null) {
             const result = await this.client.set(
                 key,
-                this.serde.serialize(value),
+                this.redisSerde.serialize(value),
                 "GET",
             );
             return result !== null;
         }
         const result = await this.client.set(
             key,
-            this.serde.serialize(value),
+            this.redisSerde.serialize(value),
             "PX",
             ttl.toMilliseconds(),
             "GET",
@@ -250,7 +252,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
             key = this.withPrefix(key);
             const redisResult = await this.client.daiso_cache_increment(
                 key,
-                this.serde.serialize(value),
+                this.redisSerde.serialize(value),
             );
             const keyExists = redisResult === 1;
             return keyExists;
@@ -279,7 +281,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
 
     withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
         return new RedisCacheAdapter(this.client, {
-            serde: this.serde,
+            serde: this.baseSerde,
             rootGroup: [this.group, simplifyGroupName(group)],
         });
     }

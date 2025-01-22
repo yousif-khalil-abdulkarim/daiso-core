@@ -12,6 +12,7 @@ import type {
     OneOrMore,
 } from "@/utilities/_module";
 import { simplifyGroupName, TimeSpan } from "@/utilities/_module";
+import { SqlSerde } from "@/serde/implementations/_module";
 
 /**
  * @internal
@@ -67,7 +68,7 @@ export class KyselySqliteCacheAdapter<TType>
             rootGroup,
         } = settings;
         this.group = simplifyGroupName(rootGroup);
-        this.serde = serde;
+        this.serde = new SqlSerde(serde);
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.enableTransactions = enableTransactions;
