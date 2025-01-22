@@ -3,7 +3,7 @@
  */
 
 import { type TestAPI, type ExpectStatic } from "vitest";
-import { type ISerializer } from "@/serializer/contracts/_module";
+import { type ISerde } from "@/serializer/contracts/_module";
 import { type Promisable } from "@/utilities/_module";
 
 /**
@@ -12,7 +12,7 @@ import { type Promisable } from "@/utilities/_module";
 export type SerializerSuiteSettings = {
     expect: ExpectStatic;
     test: TestAPI;
-    createAdapter: () => Promisable<ISerializer>;
+    createAdapter: () => Promisable<ISerde>;
 };
 /**
  * @group Utilities

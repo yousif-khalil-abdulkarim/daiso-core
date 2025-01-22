@@ -1,2 +1,2 @@
-export * from "@/serializer/contracts/serializer.contract";
-export * from "@/serializer/contracts/serializer.errors";
+export * from "@/serializer/contracts/serde.contract";
+export * from "@/serializer/contracts/serde.errors";

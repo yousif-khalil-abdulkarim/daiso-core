@@ -2,7 +2,7 @@
  * @module Serializer
  */
 
-import { type ISerializer } from "@/serializer/contracts/_module";
+import { type ISerde } from "@/serializer/contracts/_module";
 import {
     DeserializationError,
     SerializationError,
@@ -12,7 +12,7 @@ import { SuperJSON } from "superjson-cjs";
 /**
  * @group Adapters
  */
-export class SuperJsonSerializer implements ISerializer<string> {
+export class SuperJsonSerializer implements ISerde<string> {
     private readonly superJson: SuperJSON = new SuperJSON();
 
     constructor() {

@@ -5,7 +5,7 @@
 import { type ICacheAdapter, TypeCacheError } from "@/cache/contracts/_module";
 import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
-import { type ISerializer } from "@/serializer/contracts/_module";
+import { type ISerde } from "@/serializer/contracts/_module";
 import type {
     IDeinitizable,
     IInitizable,
@@ -35,7 +35,7 @@ type KyselySqliteTables = {
  * @internal
  */
 type KyselySqliteSettings = {
-    serializer: ISerializer<string>;
+    serializer: ISerde<string>;
     enableTransactions: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
@@ -49,7 +49,7 @@ export class KyselySqliteCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly group: string;
-    private readonly serializer: ISerializer<string>;
+    private readonly serializer: ISerde<string>;
     private readonly enableTransactions: boolean;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;

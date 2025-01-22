@@ -15,7 +15,7 @@ import {
 } from "@/utilities/_module";
 import type { ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
-import type { ISerializer } from "@/serializer/contracts/_module";
+import type { ISerde } from "@/serializer/contracts/_module";
 import { MongodbSerializer } from "@/serializer/implementations/_module";
 
 /**
@@ -33,12 +33,12 @@ export type MongodbCacheDocument = {
  * @group Adapters
  */
 export type MongodbCacheAdapterSettings = {
-    serializer: ISerializer<string>;
+    serializer: ISerde<string>;
     rootGroup: OneOrMore<string>;
 };
 
 /**
- * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
+ * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
  * @example
  * ```ts
@@ -76,9 +76,9 @@ export class MongodbCacheAdapter<TType>
         );
     }
 
-    private readonly mongodbSerializer: ISerializer<string | number>;
+    private readonly mongodbSerializer: ISerde<string | number>;
     private readonly group: string;
-    private readonly serializer: ISerializer<string>;
+    private readonly serializer: ISerde<string>;
 
     constructor(
         private readonly collection: Collection<MongodbCacheDocument>,

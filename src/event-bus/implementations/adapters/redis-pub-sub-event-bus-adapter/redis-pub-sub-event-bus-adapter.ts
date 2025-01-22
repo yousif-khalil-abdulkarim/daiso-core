@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import { type ISerializer } from "@/serializer/contracts/_module";
+import { type ISerde } from "@/serializer/contracts/_module";
 import { RedisSerializer } from "@/serializer/implementations/_module";
 import type {
     IBaseEvent,
@@ -20,12 +20,12 @@ import { simplifyGroupName } from "@/utilities/_module";
 export type RedisPubSubEventBusAdapterSettings = {
     dispatcherClient: Redis;
     listenerClient: Redis;
-    serializer: ISerializer<string>;
+    serializer: ISerde<string>;
     rootGroup: OneOrMore<string>;
 };
 
 /**
- * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
+ * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
  * @example
  * ```ts
@@ -44,8 +44,8 @@ export type RedisPubSubEventBusAdapterSettings = {
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     private readonly group: string;
-    private readonly serializer: ISerializer<string>;
-    private readonly redisSerializer: ISerializer<string>;
+    private readonly serializer: ISerde<string>;
+    private readonly redisSerializer: ISerde<string>;
     private readonly dispatcherClient: Redis;
     private readonly listenerClient: Redis;
     private readonly eventEmitter = new EventEmitter();

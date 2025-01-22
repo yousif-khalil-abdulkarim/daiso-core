@@ -3,7 +3,7 @@
  */
 
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { ISerializer } from "@/serializer/contracts/_module";
+import type { ISerde } from "@/serializer/contracts/_module";
 import type {
     TimeSpan,
     IDeinitizable,
@@ -27,7 +27,7 @@ import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
  */
 export type LibsqlCacheAdapterSettings = {
     tableName?: string;
-    serializer: ISerializer<string>;
+    serializer: ISerde<string>;
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
@@ -35,7 +35,7 @@ export type LibsqlCacheAdapterSettings = {
 };
 
 /**
- * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
+ * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
  * @example
  * ```ts

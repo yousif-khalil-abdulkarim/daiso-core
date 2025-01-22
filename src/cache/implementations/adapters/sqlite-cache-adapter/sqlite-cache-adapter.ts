@@ -3,7 +3,7 @@
  */
 
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { ISerializer } from "@/serializer/contracts/_module";
+import type { ISerde } from "@/serializer/contracts/_module";
 import { SqlSerializer } from "@/serializer/implementations/_module";
 import type {
     TimeSpan,
@@ -21,7 +21,7 @@ import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
  */
 export type SqliteStorageAdapterSettings = {
     tableName?: string;
-    serializer: ISerializer<string>;
+    serializer: ISerde<string>;
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
@@ -29,7 +29,7 @@ export type SqliteStorageAdapterSettings = {
 };
 
 /**
- * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
+ * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
  * @example
  * ```ts

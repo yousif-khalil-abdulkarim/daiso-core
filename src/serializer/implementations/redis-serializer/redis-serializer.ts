@@ -1,7 +1,7 @@
 /**
  * @module Serializer
  */
-import { type ISerializer } from "@/serializer/contracts/_module";
+import { type ISerde } from "@/serializer/contracts/_module";
 import {
     DeserializationError,
     SerializationError,
@@ -10,8 +10,8 @@ import {
 /**
  * @internal
  */
-export class RedisSerializer implements ISerializer<string> {
-    constructor(private readonly serializer: ISerializer<string>) {}
+export class RedisSerializer implements ISerde<string> {
+    constructor(private readonly serializer: ISerde<string>) {}
 
     serialize<TValue>(value: TValue): string {
         try {

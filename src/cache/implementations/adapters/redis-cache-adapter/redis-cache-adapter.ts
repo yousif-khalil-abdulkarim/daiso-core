@@ -7,7 +7,7 @@ import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { OneOrMore } from "@/utilities/_module";
 import { simplifyGroupName, type TimeSpan } from "@/utilities/_module";
 import { ReplyError, type Redis, type Result } from "ioredis";
-import type { ISerializer } from "@/serializer/contracts/_module";
+import type { ISerde } from "@/serializer/contracts/_module";
 import { RedisSerializer } from "@/serializer/implementations/_module";
 
 /**
@@ -94,12 +94,12 @@ declare module "ioredis" {
  * @group Adapters
  */
 export type RedisCacheAdapterSettings = {
-    serializer: ISerializer<string>;
+    serializer: ISerde<string>;
     rootGroup: OneOrMore<string>;
 };
 
 /**
- * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerializer | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
+ * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | string serializer}</i>, such as <i>{@link SuperJsonSerializer}</i>.
  * @group Adapters
  * @example
  * ```ts
@@ -127,7 +127,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         );
     }
 
-    private readonly serializer: ISerializer<string>;
+    private readonly serializer: ISerde<string>;
     private readonly group: string;
 
     constructor(
