@@ -2,6 +2,7 @@
  * @module EventBus
  */
 
+import { simplifyGroupName, type OneOrMore } from "@/utilities/_module";
 import type {
     IBaseEvent,
     IEventBusAdapter,
@@ -25,34 +26,54 @@ import { EventEmitter } from "node:events";
  * import { EventEmitter } from "node:events";
  *
  * const eventEmitter = new EventEmitter();
- * const eventBusAdapter = new MemoryCacheAdapter(eventEmitter);
+ * const eventBusAdapter = new MemoryCacheAdapter("@global", eventEmitter);
  * ```
  */
 export class MemoryEventBusAdapter implements IEventBusAdapter {
-    constructor(private readonly eventEmiter = new EventEmitter()) {}
+    private readonly group: string;
+
+    constructor(
+        defaultGroup: OneOrMore<string>,
+        private readonly eventEmiter = new EventEmitter(),
+    ) {
+        this.group = simplifyGroupName(defaultGroup);
+    }
+
+    getGroup(): string {
+        return this.group;
+    }
+
+    withGroup(group: OneOrMore<string>): IEventBusAdapter {
+        return new MemoryEventBusAdapter(
+            [this.group, simplifyGroupName(group)],
+            this.eventEmiter,
+        );
+    }
+
+    private withPrefix(event: string): string {
+        return simplifyGroupName([this.group, event]);
+    }
 
     // eslint-disable-next-line @typescript-eslint/require-await
     async addListener(
-        event: string,
+        eventName: string,
         listener: Listener<IBaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmiter.addListener(event, listener);
+        this.eventEmiter.on(this.withPrefix(eventName), listener);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
     async removeListener(
-        event: string,
+        eventName: string,
         listener: Listener<IBaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmiter.removeListener(event, listener);
+        this.eventEmiter.off(this.withPrefix(eventName), listener);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
-    async dispatch(events: IBaseEvent[]): Promise<void> {
-        for (const event of events) {
-            this.eventEmiter.emit(event.type, event);
-        }
+    async dispatch(event: IBaseEvent): Promise<void> {
+        this.eventEmiter.emit(this.withPrefix(event.type), event);
     }
 }

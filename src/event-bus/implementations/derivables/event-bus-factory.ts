@@ -2,6 +2,7 @@
  * @module EventBus
  */
 
+import type { LazyPromiseSettings } from "@/async/_module";
 import type {
     IGroupableEventBus,
     IEventBusAdapter,
@@ -40,13 +41,12 @@ export type EventBusFactorySettings<TAdapters extends string = string> = {
  * const eventBusFactory = new EventBusFactory({
  *   drivers: {
  *     memory: new MemoryEventBusAdapter(),
- *     redis: new RedisEventBusAdapter({
+ *     redis: new RedisPubSubEventBusAdapter({
  *       dispatcherClient: new Redis(),
  *       listenerClient: new Redis(),
  *     }),
  *   },
  *   defaultDriver: "memory",
- *   rootGroup: "@events"
  * });
  * ```
  */
@@ -57,13 +57,12 @@ export class EventBusFactory<
 {
     private readonly drivers: EventBusDrivers<TAdapters>;
     private readonly defaultDriver?: TAdapters;
-    private readonly rootGroup?: string;
+    private readonly lazyPromiseSettings?: LazyPromiseSettings;
 
     constructor(settings: EventBusFactorySettings<TAdapters>) {
-        const { drivers, defaultDriver, rootGroup } = settings;
+        const { drivers, defaultDriver } = settings;
         this.drivers = drivers;
         this.defaultDriver = defaultDriver;
-        this.rootGroup = rootGroup;
     }
 
     use(
@@ -77,7 +76,7 @@ export class EventBusFactory<
             throw new UnregisteredDriverError(driverName);
         }
         return new EventBus(selectedAdapter, {
-            rootGroup: this.rootGroup,
+            lazyPromiseSettings: this.lazyPromiseSettings,
         });
     }
 
