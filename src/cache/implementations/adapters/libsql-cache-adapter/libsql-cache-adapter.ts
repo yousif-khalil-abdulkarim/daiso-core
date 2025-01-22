@@ -12,11 +12,8 @@ import type {
 } from "@/utilities/_module";
 import type { Client } from "@libsql/client";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
-import {
-    SqlSerde,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    SuperJsonSerde,
-} from "@/serde/implementations/_module";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { SuperJsonSerde } from "@/serde/implementations/_module";
 import { Kysely } from "kysely";
 import type { LibsqlDialectConfig } from "@libsql/kysely-libsql";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
@@ -86,7 +83,7 @@ export class LibsqlCacheAdapter<TType>
                 ],
             }),
             {
-                serde: new SqlSerde(serde),
+                serde,
                 enableTransactions,
                 expiredKeysRemovalInterval,
                 shouldRemoveExpiredKeys,

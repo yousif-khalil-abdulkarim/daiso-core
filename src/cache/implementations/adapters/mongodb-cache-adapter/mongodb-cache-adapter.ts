@@ -16,6 +16,8 @@ import {
 import type { ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
 import type { ISerde } from "@/serde/contracts/_module";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { SuperJsonSerde } from "@/serde/implementations/_module";
 import { MongodbSerde } from "@/serde/implementations/_module";
 
 /**
@@ -38,6 +40,7 @@ export type MongodbCacheAdapterSettings = {
 };
 
 /**
+ * tis kl 9
  * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  * @example
@@ -78,15 +81,15 @@ export class MongodbCacheAdapter<TType>
 
     private readonly mongodbSerde: ISerde<string | number>;
     private readonly group: string;
-    private readonly serde: ISerde<string>;
+    private readonly baseSerde: ISerde<string>;
 
     constructor(
         private readonly collection: Collection<MongodbCacheDocument>,
         { serde, rootGroup }: MongodbCacheAdapterSettings,
     ) {
-        this.serde = serde;
+        this.baseSerde = serde;
         this.group = simplifyGroupName(rootGroup);
-        this.mongodbSerde = new MongodbSerde(this.serde);
+        this.mongodbSerde = new MongodbSerde(this.baseSerde);
     }
 
     getGroup(): string {
@@ -95,7 +98,7 @@ export class MongodbCacheAdapter<TType>
 
     withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
         return new MongodbCacheAdapter(this.collection, {
-            serde: this.serde,
+            serde: this.baseSerde,
             rootGroup: [this.group, simplifyGroupName(group)],
         });
     }

@@ -44,7 +44,7 @@ export type RedisPubSubEventBusAdapterSettings = {
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     private readonly group: string;
-    private readonly serde: ISerde<string>;
+    private readonly baseSerde: ISerde<string>;
     private readonly redisSerde: ISerde<string>;
     private readonly dispatcherClient: Redis;
     private readonly listenerClient: Redis;
@@ -59,7 +59,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         this.group = simplifyGroupName(rootGroup);
         this.dispatcherClient = dispatcherClient;
         this.listenerClient = listenerClient;
-        this.serde = serde;
+        this.baseSerde = serde;
         this.redisSerde = new RedisSerde(serde);
     }
 
@@ -71,7 +71,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         return new RedisPubSubEventBusAdapter({
             listenerClient: this.listenerClient,
             dispatcherClient: this.dispatcherClient,
-            serde: this.serde,
+            serde: this.baseSerde,
             rootGroup: [this.group, simplifyGroupName(group)],
         });
     }
