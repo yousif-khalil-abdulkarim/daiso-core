@@ -333,6 +333,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.eventBus.removeListenerMany(eventNames, listener);
     }
 
+    listenOnce<TEventName extends keyof CacheEvents>(
+        eventName: TEventName,
+        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
+    ): LazyPromise<void> {
+        return this.eventBus.listenOnce(eventName, listener);
+    }
+
     subscribe<TEventName extends keyof CacheEvents>(
         eventName: TEventName,
         listener: Listener<SelectEvent<CacheEvents, TEventName>>,
