@@ -4,10 +4,7 @@
 
 import type { Listener } from "@/event-bus/contracts/_shared";
 import type { OneOrMore } from "@/utilities/_module";
-
-export type IBaseEvent = {
-    type: string;
-};
+import type { BaseEvent } from "@/event-bus/contracts/_shared";
 
 /**
  * The <i>IEventBusAdapter</i> contract defines a way for dispatching and listening to events independent of underlying technology.
@@ -20,7 +17,7 @@ export type IEventBusAdapter = {
      */
     addListener(
         eventName: string,
-        listener: Listener<IBaseEvent>,
+        listener: Listener<BaseEvent>,
     ): PromiseLike<void>;
 
     /**
@@ -28,13 +25,13 @@ export type IEventBusAdapter = {
      */
     removeListener(
         eventName: string,
-        listener: Listener<IBaseEvent>,
+        listener: Listener<BaseEvent>,
     ): PromiseLike<void>;
 
     /**
      * The <i>dispatch</i> method is used for dispatching one or multiple <i>events</i>.
      */
-    dispatch(event: IBaseEvent): PromiseLike<void>;
+    dispatch(eventName: string, eventData: BaseEvent): PromiseLike<void>;
 
     getGroup(): string;
 
