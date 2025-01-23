@@ -7,7 +7,7 @@ import type {
     IGroupableEventBus,
     IEventBusAdapter,
     IEventBusFactory,
-    BaseEvents,
+    BaseEvent,
 } from "@/event-bus/contracts/_module";
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus";
 import {
@@ -52,7 +52,7 @@ export type EventBusFactorySettings<TAdapters extends string = string> = {
  */
 export class EventBusFactory<
     TAdapters extends string = string,
-    TEvents extends BaseEvents = BaseEvents,
+    TEvents extends BaseEvent = BaseEvent,
 > implements IEventBusFactory<TAdapters, TEvents>
 {
     private readonly drivers: EventBusDrivers<TAdapters>;
@@ -80,7 +80,7 @@ export class EventBusFactory<
         });
     }
 
-    withType<TOutput extends BaseEvents = TEvents>(): IEventBusFactory<
+    withType<TOutput extends BaseEvent = TEvents>(): IEventBusFactory<
         TAdapters,
         TOutput
     > {
