@@ -4,7 +4,7 @@
 
 import { simplifyGroupName, type OneOrMore } from "@/utilities/_module";
 import type {
-    IBaseEvent,
+    BaseEvent,
     IEventBusAdapter,
     Listener,
 } from "@/event-bus/contracts/_module";
@@ -57,7 +57,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
     // eslint-disable-next-line @typescript-eslint/require-await
     async addListener(
         eventName: string,
-        listener: Listener<IBaseEvent>,
+        listener: Listener<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmiter.on(this.withPrefix(eventName), listener);
@@ -66,14 +66,14 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
     // eslint-disable-next-line @typescript-eslint/require-await
     async removeListener(
         eventName: string,
-        listener: Listener<IBaseEvent>,
+        listener: Listener<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmiter.off(this.withPrefix(eventName), listener);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
-    async dispatch(event: IBaseEvent): Promise<void> {
-        this.eventEmiter.emit(this.withPrefix(event.type), event);
+    async dispatch(eventName: string, eventData: BaseEvent): Promise<void> {
+        this.eventEmiter.emit(this.withPrefix(eventName), eventData);
     }
 }

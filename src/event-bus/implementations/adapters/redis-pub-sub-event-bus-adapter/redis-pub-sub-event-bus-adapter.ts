@@ -5,7 +5,7 @@
 import { type ISerde } from "@/serde/contracts/_module";
 import { RedisSerde } from "@/serde/implementations/_module";
 import type {
-    IBaseEvent,
+    BaseEvent,
     IEventBusAdapter,
     Listener,
 } from "@/event-bus/contracts/_module";
@@ -86,7 +86,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
 
     async addListener(
         eventName: string,
-        listener: Listener<IBaseEvent>,
+        listener: Listener<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.on(this.withPrefix(eventName), listener);
@@ -99,7 +99,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
 
     async removeListener(
         eventName: string,
-        listener: Listener<IBaseEvent>,
+        listener: Listener<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.off(this.withPrefix(eventName), listener);
@@ -107,10 +107,10 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         await this.listenerClient.unsubscribe(this.withPrefix(eventName));
     }
 
-    async dispatch(event: IBaseEvent): Promise<void> {
+    async dispatch(eventName: string, eventData: BaseEvent): Promise<void> {
         await this.dispatcherClient.publish(
-            this.withPrefix(event.type),
-            this.redisSerde.serialize(event),
+            this.withPrefix(eventName),
+            this.redisSerde.serialize(eventData),
         );
     }
 }

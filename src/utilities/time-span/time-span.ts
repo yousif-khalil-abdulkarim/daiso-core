@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-import type { ISerializable } from "@/_module";
+import type { ISerializable } from "@/serde/contracts/_module";
 
 /**
  * @group Time utilities

@@ -2,16 +2,14 @@
  * @module EventBus
  */
 
-import type {
-    BaseEvents,
-    IGroupableEventBus,
-} from "@/event-bus/contracts/event-bus.contract";
+import type { IGroupableEventBus } from "@/event-bus/contracts/event-bus.contract";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredDriverError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultDriverNotDefinedError,
 } from "@/utilities/_module";
+import type { BaseEvent } from "@/event-bus/contracts/_shared";
 
 /**
  * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableEventBus}</i> dynamically.
@@ -19,7 +17,7 @@ import {
  */
 export type IEventBusFactory<
     TDrivers extends string = string,
-    TEvents extends BaseEvents = BaseEvents,
+    TEvents extends BaseEvent = BaseEvent,
 > = {
     /**
      * The <i>use</i> method will throw an error if you provide it unregisted driver.

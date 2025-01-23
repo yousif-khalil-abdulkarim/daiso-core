@@ -3,7 +3,7 @@
  */
 
 import type { OneOrMore } from "@/utilities/_module";
-import type { Listener, IBaseEvent } from "@/event-bus/contracts/_module";
+import type { BaseEvent, Listener } from "@/event-bus/contracts/_module";
 import type {
     IEventBusAdapter,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -22,21 +22,22 @@ export class NoOpEventBusAdapter implements IEventBusAdapter {
     withGroup(_group: OneOrMore<string>): IEventBusAdapter {
         return new NoOpEventBusAdapter();
     }
+
     addListener(
-        _event: string,
-        _listener: Listener<IBaseEvent>,
-    ): Promise<void> {
+        _eventName: string,
+        _listener: Listener<BaseEvent>,
+    ): PromiseLike<void> {
         return Promise.resolve();
     }
 
     removeListener(
-        _event: string,
-        _listener: Listener<IBaseEvent>,
-    ): Promise<void> {
+        _eventName: string,
+        _listener: Listener<BaseEvent>,
+    ): PromiseLike<void> {
         return Promise.resolve();
     }
 
-    dispatch(_event: IBaseEvent): Promise<void> {
+    dispatch(_eventName: string, _eventData: BaseEvent): PromiseLike<void> {
         return Promise.resolve();
     }
 }

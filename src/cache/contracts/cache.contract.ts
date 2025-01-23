@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import type { IListenable } from "@/event-bus/contracts/_module";
+import type { IEventListener } from "@/event-bus/contracts/_module";
 import type { OneOrMore } from "@/utilities/_module";
 import { type AsyncLazyable, type GetOrAddValue } from "@/utilities/_module";
 import type { CacheEvents } from "@/cache/contracts/_module";
@@ -21,7 +21,9 @@ import type { LazyPromise } from "@/async/_module";
  * The <i>ICacheListenable</i> contract defines a way for listening <i>{@link ICache}</i> crud operations.
  * @group Contracts
  */
-export type ICacheListenable<TType = unknown> = IListenable<CacheEvents<TType>>;
+export type ICacheListenable<TType = unknown> = IEventListener<
+    CacheEvents<TType>
+>;
 
 /**
  * @group Contracts

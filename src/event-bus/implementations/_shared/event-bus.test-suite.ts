@@ -8,16 +8,19 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { type IBaseEvent, type IEventBus } from "@/event-bus/contracts/_module";
+import { BaseEvent, type IEventBus } from "@/event-bus/contracts/_module";
 import { type Promisable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
 import { delay } from "@/async/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
+import { NoOpSerde } from "@/serde/implementations/_module";
 
 /**
  * @group Utilities
  */
 export type EventBusTestSuiteSettings = {
     expect: ExpectStatic;
+    serde?: IFlexibleSerde;
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
@@ -34,7 +37,7 @@ export type EventBusTestSuiteSettings = {
  * import type { StartedRedisContainer } from "@testcontainers/redis";
  * import { RedisContainer } from "@testcontainers/redis";
  * import Redis from "ioredis";
- * import { SuperJsonSerde, TimeSpan, RedisPubSubEventBusAdapter, eventBusTestSuite } from "@daiso-tech/core";
+ * import { SuperJsonSerde, TimeSpan, RedisPubSubEventBusAdapter, eventBusTestSuite, serde } from "@daiso-tech/core";
  *
  * const timeout = TimeSpan.fromMinutes(2);
  * describe("class: EventBus", () => {
@@ -71,6 +74,7 @@ export type EventBusTestSuiteSettings = {
  *          }),
  *          { rootGroup: "@b" }
  *        ),
+ *      serde,
  *      test,
  *      beforeEach,
  *      expect,
@@ -82,6 +86,7 @@ export type EventBusTestSuiteSettings = {
 export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
     const {
         expect,
+        serde = new NoOpSerde(),
         test,
         describe,
         createEventBusA,
@@ -94,39 +99,73 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         eventBusA = await createEventBusA();
         eventBusB = await createEventBusB();
     });
+
     const TTL = TimeSpan.fromMilliseconds(50);
+    class TestEventA extends BaseEvent {
+        static override deserialize(
+            serializedEvent: Record<string, unknown>,
+        ): BaseEvent {
+            return new TestEventA(serializedEvent);
+        }
+
+        constructor(public readonly data: Record<string, unknown>) {
+            super();
+        }
+
+        override serialize(): Record<string, unknown> {
+            return this.data;
+        }
+    }
+    class TestEventB extends BaseEvent {
+        static override deserialize(
+            serializedEvent: Record<string, unknown>,
+        ): BaseEvent {
+            return new TestEventB(serializedEvent);
+        }
+
+        constructor(public readonly data: Record<string, unknown>) {
+            super();
+        }
+
+        override serialize(): Record<string, unknown> {
+            return this.data;
+        }
+    }
+    serde.registerClass(TestEventA);
+    serde.registerClass(TestEventB);
+
     describe("Api tests:", () => {
         describe("method: addListener, removeListener, dispatch", () => {
             test("Should be null when listener added and event is not triggered", async () => {
-                const TYPE = "type";
-                let result: IBaseEvent | null = null;
-                await eventBusA.addListener(TYPE, (event) => {
+                let result: TestEventA | null = null;
+                await eventBusA.addListener(TestEventA, (event) => {
                     result = event;
                 });
                 expect(result).toBeNull();
             });
-            test("Should be IBaseEvent when listener added and event is triggered", async () => {
-                const event: IBaseEvent = {
-                    type: "type",
-                };
-                let result: IBaseEvent | null = null;
-                await eventBusA.addListener(event.type, (event) => {
+            test("Should be TestEventA when listener added and event is triggered", async () => {
+                let result: TestEventA | null = null;
+                await eventBusA.addListener(TestEventA, (event) => {
                     result = event;
+                });
+                const event = new TestEventA({
+                    type: TestEventA.name,
                 });
                 await eventBusA.dispatch(event);
                 await delay(TTL);
                 expect(result).toEqual(event);
+                expect(result).toBeInstanceOf(TestEventA);
             });
             test("Should be null when listener removed and event is triggered", async () => {
-                const event: IBaseEvent = {
-                    type: "type",
-                };
-                let result: IBaseEvent | null = null;
-                const listener = (event: IBaseEvent) => {
+                const event = new TestEventA({
+                    type: TestEventA.name,
+                });
+                let result: TestEventA | null = null;
+                const listener = (event: TestEventA) => {
                     result = event;
                 };
-                await eventBusA.addListener(event.type, listener);
-                await eventBusA.removeListener(event.type, listener);
+                await eventBusA.addListener(TestEventA, listener);
+                await eventBusA.removeListener(TestEventA, listener);
                 await eventBusA.dispatch(event);
                 await delay(TTL);
                 expect(result).toBeNull();
@@ -134,30 +173,31 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         });
         describe("method: addListenerMany, removeListenerMany, dispatch", () => {
             test("Should be null when listener added and event is not triggered", async () => {
-                const TYPE_1 = "type_1";
-                const TYPE_2 = "type_2";
-                let result: IBaseEvent | null = null;
-                await eventBusA.addListenerMany([TYPE_1, TYPE_2], (event) => {
-                    result = event;
-                });
+                let result: TestEventA | TestEventB | null = null;
+                await eventBusA.addListenerMany(
+                    [TestEventA, TestEventB],
+                    (event) => {
+                        result = event;
+                    },
+                );
                 expect(result).toBeNull();
             });
-            test("Should be IBaseEvent when listener added and event is triggered", async () => {
-                const event_1: IBaseEvent = {
-                    type: "type_1",
-                };
-                const event_2: IBaseEvent = {
-                    type: "type_2",
-                };
-                let result_1: IBaseEvent | null = null;
-                let result_2: IBaseEvent | null = null;
+            test("Should be BaseEvent when listener added and event is triggered", async () => {
+                const event_1 = new TestEventA({
+                    type: TestEventA.name,
+                });
+                const event_2 = new TestEventB({
+                    type: TestEventB.name,
+                });
+                let result_1: TestEventA | null = null;
+                let result_2: TestEventB | null = null;
                 await eventBusA.addListenerMany(
-                    [event_1.type, event_2.type],
-                    (eventObj: IBaseEvent) => {
-                        if (eventObj.type === event_1.type) {
+                    [TestEventA, TestEventB],
+                    (eventObj) => {
+                        if (eventObj instanceof TestEventA) {
                             result_1 = eventObj;
                         }
-                        if (eventObj.type === event_2.type) {
+                        if (eventObj instanceof TestEventB) {
                             result_2 = eventObj;
                         }
                     },
@@ -165,25 +205,27 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 await eventBusA.dispatchMany([event_1, event_2]);
                 await delay(TTL);
                 expect(result_1).toEqual(event_1);
+                expect(result_1).toBeInstanceOf(TestEventA);
                 expect(result_2).toEqual(event_2);
+                expect(result_2).toBeInstanceOf(TestEventB);
             });
             test("Should be null when listener removed and event is triggered", async () => {
-                const event_A: IBaseEvent = {
-                    type: "type_a",
-                };
-                const event_B: IBaseEvent = {
-                    type: "type_b",
-                };
-                let result: IBaseEvent | null = null;
-                const listener = (event: IBaseEvent) => {
+                const event_A: TestEventA = new TestEventA({
+                    type: TestEventA.name,
+                });
+                const event_B: TestEventB = new TestEventB({
+                    type: TestEventB.name,
+                });
+                let result: TestEventA | TestEventB | null = null;
+                const listener = (event: TestEventA | TestEventB) => {
                     result = event;
                 };
                 await eventBusA.addListenerMany(
-                    [event_A.type, event_B.type],
+                    [TestEventA, TestEventB],
                     listener,
                 );
                 await eventBusA.removeListenerMany(
-                    [event_A.type, event_B.type],
+                    [TestEventA, TestEventB],
                     listener,
                 );
                 await eventBusA.dispatchMany([event_A, event_B]);
@@ -193,35 +235,35 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         });
         describe("method: subscribe", () => {
             test("Should be null when listener added and event is not triggered", async () => {
-                const TYPE = "type";
-                let result: IBaseEvent | null = null;
-                await eventBusA.subscribe(TYPE, (event) => {
+                let result: TestEventA | null = null;
+                await eventBusA.subscribe(TestEventA, (event) => {
                     result = event;
                 });
                 expect(result).toBeNull();
             });
-            test("Should be IBaseEvent when listener added and event is triggered", async () => {
-                const event: IBaseEvent = {
-                    type: "type",
-                };
-                let result: IBaseEvent | null = null;
-                await eventBusA.subscribe(event.type, (event) => {
+            test("Should be TestEventA when listener added and event is triggered", async () => {
+                const event: TestEventA = new TestEventA({
+                    type: TestEventA.name,
+                });
+                let result: TestEventA | null = null;
+                await eventBusA.subscribe(TestEventA, (event) => {
                     result = event;
                 });
                 await delay(TTL);
                 await eventBusA.dispatch(event);
                 expect(result).toEqual(event);
+                expect(result).toBeInstanceOf(TestEventA);
             });
             test("Should be null when listener removed and event is triggered", async () => {
-                const event: IBaseEvent = {
-                    type: "type",
-                };
-                let result: IBaseEvent | null = null;
-                const listener = (event: IBaseEvent) => {
+                const event: TestEventA = new TestEventA({
+                    type: TestEventA.name,
+                });
+                let result: TestEventA | null = null;
+                const listener = (event: TestEventA) => {
                     result = event;
                 };
                 const unsubscribe = await eventBusA.subscribe(
-                    event.type,
+                    TestEventA,
                     listener,
                 );
                 await unsubscribe();
@@ -232,30 +274,31 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         });
         describe("method: subscribeMany", () => {
             test("Should be null when listener added and event is not triggered", async () => {
-                const TYPE_1 = "type_1";
-                const TYPE_2 = "type_2";
-                let result: IBaseEvent | null = null;
-                await eventBusA.subscribeMany([TYPE_1, TYPE_2], (event) => {
-                    result = event;
-                });
+                let result: TestEventA | TestEventB | null = null;
+                await eventBusA.subscribeMany(
+                    [TestEventA, TestEventB],
+                    (event) => {
+                        result = event;
+                    },
+                );
                 expect(result).toBeNull();
             });
-            test("Should be IBaseEvent when listener added and event is triggered", async () => {
-                const event_1: IBaseEvent = {
-                    type: "type_1",
-                };
-                const event_2: IBaseEvent = {
-                    type: "type_2",
-                };
-                let result_1: IBaseEvent | null = null;
-                let result_2: IBaseEvent | null = null;
+            test("Should be BaseEvent when listener added and event is triggered", async () => {
+                const event_1: TestEventA = new TestEventA({
+                    type: TestEventA.name,
+                });
+                const event_2: TestEventB = new TestEventB({
+                    type: TestEventB.name,
+                });
+                let result_1: BaseEvent | null = null;
+                let result_2: BaseEvent | null = null;
                 await eventBusA.subscribeMany(
-                    [event_1.type, event_2.type],
-                    (eventObj: IBaseEvent) => {
-                        if (eventObj.type === event_1.type) {
+                    [TestEventA, TestEventB],
+                    (eventObj: BaseEvent) => {
+                        if (eventObj instanceof TestEventA) {
                             result_1 = eventObj;
                         }
-                        if (eventObj.type === event_2.type) {
+                        if (eventObj instanceof TestEventB) {
                             result_2 = eventObj;
                         }
                     },
@@ -263,21 +306,23 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 await delay(TTL);
                 await eventBusA.dispatchMany([event_1, event_2]);
                 expect(result_1).toEqual(event_1);
+                expect(result_1).toBeInstanceOf(TestEventA);
                 expect(result_2).toEqual(event_2);
+                expect(result_2).toBeInstanceOf(TestEventB);
             });
             test("Should be null when listener removed and event is triggered", async () => {
-                const event_A: IBaseEvent = {
-                    type: "type_a",
-                };
-                const event_B: IBaseEvent = {
-                    type: "type_b",
-                };
-                let result: IBaseEvent | null = null;
-                const listener = (event: IBaseEvent) => {
+                const event_A: TestEventA = new TestEventA({
+                    type: TestEventA.name,
+                });
+                const event_B: TestEventB = new TestEventB({
+                    type: TestEventB.name,
+                });
+                let result: BaseEvent | null = null;
+                const listener = (event: BaseEvent) => {
                     result = event;
                 };
                 const unsubscribe = await eventBusA.subscribeMany(
-                    [event_A.type, event_B.type],
+                    [TestEventA, TestEventB],
                     listener,
                 );
                 await unsubscribe();
@@ -288,31 +333,31 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         });
         describe("method: listenOnce", () => {
             test("Should be null when listener added and event is not triggered", async () => {
-                const TYPE = "type";
-                let result: IBaseEvent | null = null;
-                await eventBusA.listenOnce(TYPE, (event) => {
+                let result: TestEventA | null = null;
+                await eventBusA.listenOnce(TestEventA, (event) => {
                     result = event;
                 });
                 expect(result).toBeNull();
             });
-            test("Should be IBaseEvent when listener added and event is triggered", async () => {
-                const event: IBaseEvent = {
-                    type: "type",
-                };
-                let result: IBaseEvent | null = null;
-                await eventBusA.listenOnce(event.type, (event) => {
+            test("Should be TestEventA when listener added and event is triggered", async () => {
+                const event: TestEventA = new TestEventA({
+                    type: TestEventA.name,
+                });
+                let result: TestEventA | null = null;
+                await eventBusA.listenOnce(TestEventA, (event) => {
                     result = event;
                 });
                 await eventBusA.dispatch(event);
                 await delay(TTL);
                 expect(result).toEqual(event);
+                expect(result).toBeInstanceOf(TestEventA);
             });
             test("Should only listen for event once", async () => {
-                const event: IBaseEvent = {
-                    type: "type",
-                };
+                const event: TestEventA = new TestEventA({
+                    type: TestEventA.name,
+                });
                 let i = 0;
-                await eventBusA.listenOnce(event.type, () => {
+                await eventBusA.listenOnce(TestEventA, () => {
                     i++;
                 });
                 await eventBusA.dispatch(event);
@@ -324,107 +369,111 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
     });
     describe("Group tests:", () => {
         test("method: addListener / dispatch", async () => {
-            const event: IBaseEvent = {
-                type: "type",
-            };
+            const event: TestEventA = new TestEventA({
+                type: TestEventA.name,
+            });
 
-            let result_a: IBaseEvent | null = null;
-            await eventBusA.addListener(event.type, (event) => {
+            let result_a: TestEventA | null = null;
+            await eventBusA.addListener(TestEventA, (event) => {
                 result_a = event;
             });
 
-            let result_b: IBaseEvent | null = null;
-            await eventBusB.addListener(event.type, (event) => {
+            let result_b: TestEventA | null = null;
+            await eventBusB.addListener(TestEventA, (event) => {
                 result_b = event;
             });
 
             await eventBusA.dispatch(event);
 
             expect(result_a).toEqual(event);
+            expect(result_a).toBeInstanceOf(TestEventA);
             expect(result_b).toBeNull();
         });
         test("method: addListenerMany / dispatch", async () => {
-            const event: IBaseEvent = {
+            const event: TestEventA = new TestEventA({
                 type: "type",
-            };
+            });
 
-            let result_a: IBaseEvent | null = null;
-            await eventBusA.addListenerMany([event.type], (event) => {
+            let result_a: TestEventA | null = null;
+            await eventBusA.addListenerMany([TestEventA], (event) => {
                 result_a = event;
             });
 
-            let result_b: IBaseEvent | null = null;
-            await eventBusB.addListenerMany([event.type], (event) => {
+            let result_b: TestEventA | null = null;
+            await eventBusB.addListenerMany([TestEventA], (event) => {
                 result_b = event;
             });
 
             await eventBusA.dispatch(event);
 
             expect(result_a).toEqual(event);
+            expect(result_a).toBeInstanceOf(TestEventA);
             expect(result_b).toBeNull();
         });
         test("method: removeListener / addListener / dispatch", async () => {
-            const event: IBaseEvent = {
-                type: "type",
-            };
+            const event: TestEventA = new TestEventA({
+                type: TestEventA.name,
+            });
 
-            let result_a: IBaseEvent | null = null;
-            await eventBusA.addListener(event.type, (event) => {
+            let result_a: TestEventA | null = null;
+            await eventBusA.addListener(TestEventA, (event) => {
                 result_a = event;
             });
 
-            let result_b: IBaseEvent | null = null;
-            const listenerB = (event: IBaseEvent) => {
+            let result_b: TestEventA | null = null;
+            const listenerB = (event: TestEventA) => {
                 result_b = event;
             };
-            await eventBusB.addListener(event.type, listenerB);
-            await eventBusB.removeListener(event.type, listenerB);
+            await eventBusB.addListener(TestEventA, listenerB);
+            await eventBusB.removeListener(TestEventA, listenerB);
 
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
 
             expect(result_a).toEqual(event);
+            expect(result_a).toBeInstanceOf(TestEventA);
             expect(result_b).toBeNull();
         });
         test("method: removeListenerMany / addListener / dispatch", async () => {
-            const event: IBaseEvent = {
-                type: "type",
-            };
+            const event: TestEventA = new TestEventA({
+                type: TestEventA.name,
+            });
 
-            let result_a: IBaseEvent | null = null;
-            await eventBusA.addListener(event.type, (event) => {
+            let result_a: TestEventA | null = null;
+            await eventBusA.addListener(TestEventA, (event) => {
                 result_a = event;
             });
 
-            let result_b: IBaseEvent | null = null;
-            const listenerB = (event: IBaseEvent) => {
+            let result_b: TestEventA | null = null;
+            const listenerB = (event: TestEventA) => {
                 result_b = event;
             };
-            await eventBusB.addListener(event.type, listenerB);
-            await eventBusB.removeListenerMany([event.type], listenerB);
+            await eventBusB.addListener(TestEventA, listenerB);
+            await eventBusB.removeListenerMany([TestEventA], listenerB);
 
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
 
             expect(result_a).toEqual(event);
+            expect(result_a).toBeInstanceOf(TestEventA);
             expect(result_b).toBeNull();
         });
         test("method: subscribe / dispatch", async () => {
-            const event: IBaseEvent = {
-                type: "type",
-            };
+            const event: TestEventA = new TestEventA({
+                type: TestEventA.name,
+            });
 
-            let result_a: IBaseEvent | null = null;
-            await eventBusA.subscribe(event.type, (event) => {
+            let result_a: BaseEvent | null = null;
+            await eventBusA.subscribe(TestEventA, (event) => {
                 result_a = event;
             });
 
-            let result_b: IBaseEvent | null = null;
-            const listenerB = (event: IBaseEvent) => {
+            let result_b: BaseEvent | null = null;
+            const listenerB = (event: BaseEvent) => {
                 result_b = event;
             };
             const unsubscribe = await eventBusB.subscribe(
-                event.type,
+                TestEventA,
                 listenerB,
             );
             await unsubscribe();
@@ -433,24 +482,25 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             await eventBusB.dispatch(event);
 
             expect(result_a).toEqual(event);
+            expect(result_a).toBeInstanceOf(TestEventA);
             expect(result_b).toBeNull();
         });
         test("method: subscribeMany / dispatch", async () => {
-            const event: IBaseEvent = {
-                type: "type",
-            };
+            const event: TestEventA = new TestEventA({
+                type: TestEventA.name,
+            });
 
-            let result_a: IBaseEvent | null = null;
-            await eventBusA.subscribeMany([event.type], (event) => {
+            let result_a: TestEventA | null = null;
+            await eventBusA.subscribeMany([TestEventA], (event) => {
                 result_a = event;
             });
 
-            let result_b: IBaseEvent | null = null;
-            const listenerB = (event: IBaseEvent) => {
+            let result_b: TestEventA | null = null;
+            const listenerB = (event: TestEventA) => {
                 result_b = event;
             };
             const unsubscribe = await eventBusB.subscribeMany(
-                [event.type],
+                [TestEventA],
                 listenerB,
             );
             await unsubscribe();
@@ -459,6 +509,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             await eventBusB.dispatch(event);
 
             expect(result_a).toEqual(event);
+            expect(result_a).toBeInstanceOf(TestEventA);
             expect(result_b).toBeNull();
         });
     });

@@ -5,9 +5,8 @@
 import type { LazyPromiseSettings } from "@/async/_module";
 import { LazyPromise } from "@/async/_module";
 import type {
-    SelectEvent,
-    AllEvents,
-    BaseEvents,
+    EventClass,
+    EventInstance,
     Unsubscribe,
 } from "@/event-bus/contracts/_module";
 import {
@@ -15,15 +14,14 @@ import {
     type IGroupableEventBus,
     type IEventBusAdapter,
     type Listener,
-    type IBaseEvent,
+    type BaseEvent,
     DispatchEventBusError,
     RemoveListenerEventBusError,
     AddListenerEventBusError,
-    UnexpectedEventBusError,
 } from "@/event-bus/contracts/_module";
 
 import type { OneOrMore } from "@/utilities/_module";
-import { isArrayEmpty } from "@/utilities/_module";
+import { getConstructorName, isArrayEmpty } from "@/utilities/_module";
 
 /**
  * @group Derivables
@@ -36,7 +34,7 @@ export type EventBusSettings = {
  * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
  * @group Derivables
  */
-export class EventBus<TEvents extends BaseEvents = BaseEvents>
+export class EventBus<TEvents extends BaseEvent = BaseEvent>
     implements IGroupableEventBus<TEvents>
 {
     private readonly eventBusAdapter: IEventBusAdapter;
@@ -67,155 +65,151 @@ export class EventBus<TEvents extends BaseEvents = BaseEvents>
         return this.eventBusAdapter.getGroup();
     }
 
-    addListener<TEventName extends keyof TEvents>(
-        eventName: TEventName,
-        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    addListener<TEventClass extends EventClass<TEvents>>(
+        event: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {
-                if (typeof eventName !== "string") {
-                    throw new UnexpectedEventBusError(
-                        `The event name "${String(eventName)}" must be of string name`,
-                    );
-                }
                 await this.eventBusAdapter.addListener(
-                    eventName,
-                    listener as Listener<IBaseEvent>,
+                    event.name,
+                    listener as Listener<BaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new AddListenerEventBusError(
-                    `A listener with name of "${listener.name}" could not added for "${String(eventName)}" event`,
+                    `A listener with name of "${listener.name}" could not added for "${String(event)}" event`,
                     error,
                 );
             }
         });
     }
 
-    removeListener<TEventName extends keyof TEvents>(
-        eventName: TEventName,
-        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    removeListener<TEventClass extends EventClass<TEvents>>(
+        event: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            if (typeof eventName !== "string") {
-                throw new UnexpectedEventBusError(
-                    `The event name "${String(eventName)}" must be of string name`,
-                );
-            }
             try {
                 await this.eventBusAdapter.removeListener(
-                    eventName,
-                    listener as Listener<IBaseEvent>,
+                    event.name,
+                    listener as Listener<BaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new RemoveListenerEventBusError(
-                    `A listener with name of "${listener.name}" could not removed of "${String(eventName)}" event`,
+                    `A listener with name of "${listener.name}" could not removed of "${String(event)}" event`,
                     error,
                 );
             }
         });
     }
 
-    dispatchMany(events: AllEvents<TEvents>[]): LazyPromise<void> {
-        return this.createLayPromise(async () => {
-            try {
-                const promises: PromiseLike<void>[] = [];
-                for (const event of events) {
-                    promises.push(
-                        this.eventBusAdapter.dispatch(event as IBaseEvent),
-                    );
-                }
-                await Promise.all(promises);
-            } catch (error: unknown) {
-                throw new DispatchEventBusError(
-                    `Events of types "${events.map((event) => event.type).join(", ")}" could not be dispatched`,
-                    error,
-                );
-            }
-        });
-    }
-
-    dispatch(event: AllEvents<TEvents>): LazyPromise<void> {
-        return this.createLayPromise(async () => {
-            try {
-                await this.eventBusAdapter.dispatch(event as IBaseEvent);
-            } catch (error: unknown) {
-                throw new DispatchEventBusError(
-                    `Event of type "${String(event.type)}" could not be dispatched`,
-                    error,
-                );
-            }
-        });
-    }
-
-    addListenerMany<TEventName extends keyof TEvents>(
-        eventNames: TEventName[],
-        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    addListenerMany<TEventClass extends EventClass<TEvents>>(
+        events: TEventClass[],
+        listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            if (isArrayEmpty(eventNames)) {
+            if (isArrayEmpty(events)) {
                 return;
             }
             const promises: PromiseLike<void>[] = [];
-            for (const event of eventNames) {
+            for (const event of events) {
                 promises.push(this.addListener(event, listener));
             }
             await Promise.all(promises);
         });
     }
 
-    removeListenerMany<TEventName extends keyof TEvents>(
-        eventNames: TEventName[],
-        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    removeListenerMany<TEventClass extends EventClass<TEvents>>(
+        events: TEventClass[],
+        listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            if (isArrayEmpty(eventNames)) {
+            if (isArrayEmpty(events)) {
                 return;
             }
             const promises: PromiseLike<void>[] = [];
-            for (const event of eventNames) {
+            for (const event of events) {
                 promises.push(this.removeListener(event, listener));
             }
             await Promise.all(promises);
         });
     }
 
-    listenOnce<TEventName extends keyof TEvents>(
-        eventName: TEventName,
-        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    listenOnce<TEventClass extends EventClass<TEvents>>(
+        event: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
             const wrappedListener = async (
-                event: SelectEvent<TEvents, TEventName>,
+                event_: EventInstance<TEventClass>,
             ) => {
                 try {
-                    await listener(event);
+                    await listener(event_);
                 } finally {
-                    await this.removeListener(eventName, wrappedListener);
+                    await this.removeListener(event, wrappedListener);
                 }
             };
-            await this.addListener(eventName, wrappedListener);
+            await this.addListener(event, wrappedListener);
         });
     }
 
-    subscribe<TEventName extends keyof TEvents>(
-        eventName: TEventName,
-        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    subscribe<TEventClass extends EventClass<TEvents>>(
+        event: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
-        return this.subscribeMany([eventName], listener);
+        return this.subscribeMany([event], listener);
     }
 
-    subscribeMany<TEventName extends keyof TEvents>(
-        eventNames: TEventName[],
-        listener: Listener<SelectEvent<TEvents, TEventName>>,
+    subscribeMany<TEventClass extends EventClass<TEvents>>(
+        events: TEventClass[],
+        listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.createLayPromise(async () => {
-            await this.addListenerMany(eventNames, listener);
+            await this.addListenerMany(events, listener);
             const unsubscribe = () => {
                 return this.createLayPromise(async () => {
-                    await this.removeListenerMany(eventNames, listener);
+                    await this.removeListenerMany(events, listener);
                 });
             };
             return unsubscribe;
+        });
+    }
+
+    dispatchMany(events: TEvents[]): LazyPromise<void> {
+        return this.createLayPromise(async () => {
+            try {
+                const promises: PromiseLike<void>[] = [];
+                for (const event of events) {
+                    promises.push(
+                        this.eventBusAdapter.dispatch(
+                            getConstructorName(event),
+                            event,
+                        ),
+                    );
+                }
+                await Promise.all(promises);
+            } catch (error: unknown) {
+                throw new DispatchEventBusError(
+                    `Events of types "${events.map((event) => getConstructorName(event)).join(", ")}" could not be dispatched`,
+                    error,
+                );
+            }
+        });
+    }
+
+    dispatch(event: TEvents): LazyPromise<void> {
+        return this.createLayPromise(async () => {
+            try {
+                await this.eventBusAdapter.dispatch(
+                    getConstructorName(event),
+                    event,
+                );
+            } catch (error: unknown) {
+                throw new DispatchEventBusError(
+                    `Event of type "${String(getConstructorName(event))}" could not be dispatched`,
+                    error,
+                );
+            }
         });
     }
 }
