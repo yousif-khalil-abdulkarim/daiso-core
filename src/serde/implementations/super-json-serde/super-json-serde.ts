@@ -2,6 +2,7 @@
  * @module Serde
  */
 
+import { getConstructorName } from "@/utilities/_module";
 import type {
     ISerializable,
     SerializableClass,
@@ -393,8 +394,11 @@ export class SuperJsonSerde implements IFlexibleSerde<string> {
             SuperJSONResult["json"]
         >(
             {
-                isApplicable(value) {
-                    return value instanceof class_;
+                isApplicable(value): value is ISerializable<TSerializedValue> {
+                    return (
+                        value instanceof class_ &&
+                        getConstructorName(value) === class_.name
+                    );
                 },
                 deserialize(serializedValue) {
                     return class_.deserialize(
@@ -405,7 +409,7 @@ export class SuperJsonSerde implements IFlexibleSerde<string> {
                     return value.serialize() as SuperJSONResult["json"];
                 },
             },
-            Float64Array.name,
+            class_.name,
         );
     }
 
