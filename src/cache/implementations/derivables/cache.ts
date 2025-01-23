@@ -4,6 +4,16 @@
 
 import type { CacheEvents, WithTtlValue } from "@/cache/contracts/_module";
 import {
+    KeyFoundCacheEvent,
+    KeyNotFoundCacheEvent,
+    KeyAddedCacheEvent,
+    KeyUpdatedCacheEvent,
+    KeyRemovedCacheEvent,
+    KeyIncrementedCacheEvent,
+    KeyDecrementedCacheEvent,
+    KeysClearedCacheEvent,
+} from "@/cache/contracts/_module";
+import {
     KeyNotFoundCacheError,
     TypeCacheError,
     UnexpectedCacheError,
@@ -27,10 +37,10 @@ import { LazyPromise } from "@/async/_module";
 import type {
     IGroupableEventBus,
     IEventBus,
-    AllEvents,
     Listener,
-    SelectEvent,
     Unsubscribe,
+    EventClass,
+    EventInstance,
 } from "@/event-bus/contracts/_module";
 import {
     EventBus,
@@ -104,86 +114,127 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private createKeyFoundEvent(
         key: string,
         value: TType,
-    ): AllEvents<CacheEvents<TType>> {
-        return {
-            type: "key_found",
+    ): KeyFoundCacheEvent<TType> {
+        return new KeyFoundCacheEvent({
             group: this.getGroup(),
             key,
             value,
-        };
+        });
     }
 
-    private createKeyNotFoundEvent(key: string): AllEvents<CacheEvents<TType>> {
-        return {
-            type: "key_not_found",
+    private createKeyNotFoundEvent(key: string): KeyNotFoundCacheEvent {
+        return new KeyNotFoundCacheEvent({
             group: this.getGroup(),
             key,
-        };
+        });
     }
 
     private createKeyAddedEvent(
         key: string,
         value: TType,
         ttl: TimeSpan | null,
-    ): AllEvents<CacheEvents<TType>> {
-        return {
-            type: "key_added",
+    ): KeyAddedCacheEvent {
+        return new KeyAddedCacheEvent({
             group: this.getGroup(),
             key,
             value,
             ttl,
-        };
+        });
     }
 
     private createKeyUpdatedEvent(
         key: string,
         value: TType,
-    ): AllEvents<CacheEvents<TType>> {
-        return {
-            type: "key_updated",
+    ): KeyUpdatedCacheEvent {
+        return new KeyUpdatedCacheEvent({
             group: this.getGroup(),
             key,
             value,
-        };
+        });
     }
 
-    private createKeyRemovedEvent(key: string): AllEvents<CacheEvents<TType>> {
-        return {
-            type: "key_removed",
+    private createKeyRemovedEvent(key: string): KeyRemovedCacheEvent {
+        return new KeyRemovedCacheEvent({
             group: this.getGroup(),
             key,
-        };
+        });
     }
 
-    private createKeysClearedEvent(): AllEvents<CacheEvents<TType>> {
-        return {
-            type: "keys_cleared",
+    private createKeysClearedEvent(): KeysClearedCacheEvent {
+        return new KeysClearedCacheEvent({
             group: this.getGroup(),
-        };
+        });
     }
 
     private createKeyIncrementedEvent(
         key: string,
         value: number,
-    ): AllEvents<CacheEvents<TType>> {
-        return {
-            type: "key_incremented",
+    ): KeyIncrementedCacheEvent {
+        return new KeyIncrementedCacheEvent({
             group: this.getGroup(),
             key,
             value,
-        };
+        });
     }
 
     private createKeyDecrementedEvent(
         key: string,
         value: number,
-    ): AllEvents<CacheEvents<TType>> {
-        return {
-            type: "key_decremented",
+    ): KeyDecrementedCacheEvent {
+        return new KeyDecrementedCacheEvent({
             group: this.getGroup(),
             key,
             value,
-        };
+        });
+    }
+
+    addListener<TEventClass extends EventClass<CacheEvents>>(
+        eventName: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.eventBus.addListener(eventName, listener);
+    }
+
+    addListenerMany<TEventClass extends EventClass<CacheEvents>>(
+        eventNames: TEventClass[],
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.eventBus.addListenerMany(eventNames, listener);
+    }
+
+    removeListener<TEventClass extends EventClass<CacheEvents>>(
+        eventName: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.eventBus.removeListener(eventName, listener);
+    }
+
+    removeListenerMany<TEventClass extends EventClass<CacheEvents>>(
+        eventNames: TEventClass[],
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.eventBus.removeListenerMany(eventNames, listener);
+    }
+
+    listenOnce<TEventClass extends EventClass<CacheEvents>>(
+        eventName: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.eventBus.listenOnce(eventName, listener);
+    }
+
+    subscribe<TEventClass extends EventClass<CacheEvents>>(
+        eventName: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<Unsubscribe> {
+        return this.eventBus.subscribe(eventName, listener);
+    }
+
+    subscribeMany<TEventClass extends EventClass<CacheEvents>>(
+        eventNames: TEventClass[],
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<Unsubscribe> {
+        return this.eventBus.subscribeMany(eventNames, listener);
     }
 
     withGroup(group: OneOrMore<string>): ICache<TType> {
@@ -303,55 +354,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             await this.cacheAdapter.clear();
             await this.eventBus.dispatch(this.createKeysClearedEvent());
         });
-    }
-
-    addListener<TEventName extends keyof CacheEvents>(
-        eventName: TEventName,
-        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
-    ): LazyPromise<void> {
-        return this.eventBus.addListener(eventName, listener);
-    }
-
-    addListenerMany<TEventName extends keyof CacheEvents>(
-        eventNames: TEventName[],
-        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
-    ): LazyPromise<void> {
-        return this.eventBus.addListenerMany(eventNames, listener);
-    }
-
-    removeListener<TEventName extends keyof CacheEvents>(
-        eventName: TEventName,
-        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
-    ): LazyPromise<void> {
-        return this.eventBus.removeListener(eventName, listener);
-    }
-
-    removeListenerMany<TEventName extends keyof CacheEvents>(
-        eventNames: TEventName[],
-        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
-    ): LazyPromise<void> {
-        return this.eventBus.removeListenerMany(eventNames, listener);
-    }
-
-    listenOnce<TEventName extends keyof CacheEvents>(
-        eventName: TEventName,
-        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
-    ): LazyPromise<void> {
-        return this.eventBus.listenOnce(eventName, listener);
-    }
-
-    subscribe<TEventName extends keyof CacheEvents>(
-        eventName: TEventName,
-        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
-    ): LazyPromise<Unsubscribe> {
-        return this.eventBus.subscribe(eventName, listener);
-    }
-
-    subscribeMany<TEventName extends keyof CacheEvents>(
-        eventNames: TEventName[],
-        listener: Listener<SelectEvent<CacheEvents, TEventName>>,
-    ): LazyPromise<Unsubscribe> {
-        return this.eventBus.subscribeMany(eventNames, listener);
     }
 
     exists(key: string): LazyPromise<boolean> {
