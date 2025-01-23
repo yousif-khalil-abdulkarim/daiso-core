@@ -57,3 +57,10 @@ export function simplifyGroupName(name: OneOrMore<string>): string {
     }
     return name;
 }
+
+/**
+ * @internal
+ */
+export function getConstructorName(instance: object): string {
+    return instance.constructor.name;
+}
