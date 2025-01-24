@@ -8,7 +8,11 @@ import type { OneOrMore } from "@/utilities/_module";
 import { simplifyGroupName, type TimeSpan } from "@/utilities/_module";
 import { ReplyError, type Redis, type Result } from "ioredis";
 import type { ISerde } from "@/serde/contracts/_module";
-import { RedisSerde } from "@/serde/implementations/_module";
+import {
+    RedisSerde,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type SuperJsonSerde,
+} from "@/serde/implementations/_module";
 
 /**
  * @internal
@@ -99,20 +103,8 @@ export type RedisCacheAdapterSettings = {
 };
 
 /**
- * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
- * @example
- * ```ts
- * import { RedisCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
- * import Redis from "ioredis";
- *
- * const client = new Redis("YOUR_REDIS_CONNECTION_STRING");
- * const serde = new SuperJsonSerde();
- * const cacheAdapter = new RedisCacheAdapter(client, {
- *   serde,
- *   rootGroup: "@global"
- * });
- * ```
  */
 export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     private static isRedisTypeError(
@@ -131,6 +123,20 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     private readonly redisSerde: ISerde<string>;
     private readonly group: string;
 
+    /**
+     * @example
+     * ```ts
+     * import { RedisCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import Redis from "ioredis";
+     *
+     * const client = new Redis("YOUR_REDIS_CONNECTION_STRING");
+     * const serde = new SuperJsonSerde();
+     * const cacheAdapter = new RedisCacheAdapter(client, {
+     *   serde,
+     *   rootGroup: "@global"
+     * });
+     * ```
+     */
     constructor(
         private readonly client: Redis,
         { serde, rootGroup }: RedisCacheAdapterSettings,

@@ -32,35 +32,37 @@ export type LibsqlCacheAdapterSettings = {
 };
 
 /**
- * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
- * @example
- * ```ts
- * import { LibsqlCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
- * import { createClient } from "@libsql/client";
- *
- * const client = createClient({ url: "file:local.db" });
- * const serde = new SuperJsonSerde();
- * const cacheAdapter = new LibsqlCacheAdapter(client, {
- *   serde,
- *   rootGroup: "@global"
- * });
- *
- * (async () => {
- *   // You only need to call it once before using the adapter.
- *   await cacheAdapter.init();
- *   await cacheAdapter.add("a", 1);
- *
- *   // Will remove the cache
- *   await cacheAdapter.deInit();
- * })();
- * ```
  */
 export class LibsqlCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly cacheAdapter: KyselySqliteCacheAdapter<TType>;
 
+    /***
+     * @example
+     * ```ts
+     * import { LibsqlCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { createClient } from "@libsql/client";
+     *
+     * const client = createClient({ url: "file:local.db" });
+     * const serde = new SuperJsonSerde();
+     * const cacheAdapter = new LibsqlCacheAdapter(client, {
+     *   serde,
+     *   rootGroup: "@global"
+     * });
+     *
+     * (async () => {
+     *   // You only need to call it once before using the adapter.
+     *   await cacheAdapter.init();
+     *   await cacheAdapter.add("a", 1);
+     *
+     *   // Will remove the cache
+     *   await cacheAdapter.deInit();
+     * })();
+     * ```
+     */
     constructor(client: Client, settings: LibsqlCacheAdapterSettings) {
         const {
             tableName = "cache",

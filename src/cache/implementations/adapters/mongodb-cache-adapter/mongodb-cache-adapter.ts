@@ -41,28 +41,8 @@ export type MongodbCacheAdapterSettings = {
 
 /**
  * tis kl 9
- * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
- * @example
- * ```ts
- * import { MongodbCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
- * import { MongoClient } from "mongodb";
- *
- * const client = new MongoClient("YOUR_MONGODB_CONNECTION_STRING");
- * const database = client.db("database");
- * const cacheCollection = database.collection("cache");
- * const serde = new SuperJsonSerde();
- * const cacheAdapter = new MongodbCacheAdapter(cacheCollection, {
- *   serde,
- *   rootGroup: "@global"
- * });
- *
- * (async () => {
- *   // You only need to call it once before using the adapter.
- *   await cacheAdapter.init();
- *   await cacheAdapter.add("a", 1);
- * })();
- * ```
  */
 export class MongodbCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable
@@ -83,6 +63,28 @@ export class MongodbCacheAdapter<TType>
     private readonly group: string;
     private readonly baseSerde: ISerde<string>;
 
+    /**
+     * @example
+     * ```ts
+     * import { MongodbCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { MongoClient } from "mongodb";
+     *
+     * const client = new MongoClient("YOUR_MONGODB_CONNECTION_STRING");
+     * const database = client.db("database");
+     * const cacheCollection = database.collection("cache");
+     * const serde = new SuperJsonSerde();
+     * const cacheAdapter = new MongodbCacheAdapter(cacheCollection, {
+     *   serde,
+     *   rootGroup: "@global"
+     * });
+     *
+     * (async () => {
+     *   // You only need to call it once before using the adapter.
+     *   await cacheAdapter.init();
+     *   await cacheAdapter.add("a", 1);
+     * })();
+     * ```
+     */
     constructor(
         private readonly collection: Collection<MongodbCacheDocument>,
         { serde, rootGroup }: MongodbCacheAdapterSettings,
