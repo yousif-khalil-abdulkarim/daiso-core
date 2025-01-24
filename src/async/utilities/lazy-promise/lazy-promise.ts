@@ -47,18 +47,6 @@ export type LazyPromiseSettings = {
  * This means that combining all methods ensures the <i>retryAttempts</i> method will continue retrying even if the timeout is triggered,
  * while the <i>abort</i> method takes priority to cancel all operations if activated.
  * @group Utilities
- * @example
- * ```ts
- * import { LazyPromise } from "@daiso-tech/core";
- * import {} from "node:fs/promises";
- *
- * (async () => {
- *   const promise = new LazyPromise(async () => {
- *     console.log("I am lazy");
- *   });
- *   // "I am lazy" will only logged when awaited or then method i called.
- *   await promise;
- * })();
  * ```
  */
 export class LazyPromise<TValue> implements PromiseLike<TValue> {
@@ -136,6 +124,19 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     private abortSignal: AbortSignal | null = null;
     private time: TimeSpan | null = null;
 
+    /**
+     * @example
+     * ```ts
+     * import { LazyPromise } from "@daiso-tech/core";
+     *
+     * (async () => {
+     *   const promise = new LazyPromise(async () => {
+     *     console.log("I am lazy");
+     *   });
+     *   // "I am lazy" will only logged when awaited or then method i called.
+     *   await promise;
+     * })();
+     */
     constructor(
         private asyncFn: () => PromiseLike<TValue>,
         settings: LazyPromiseSettings = {},
