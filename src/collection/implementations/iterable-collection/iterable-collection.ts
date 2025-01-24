@@ -64,12 +64,74 @@ import { simplifyLazyable } from "@/utilities/_module";
  * @group Adapters
  */
 export class IterableCollection<TInput> implements ICollection<TInput> {
+    /**
+     * The <i>concat<i> static method is a convenient utility for easily concatenating multiple <i>{@link Iterable}</i>.
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";
+     *
+     * class MyIterable implements Iterable<number> {
+     *   *[Symbol.iterator](): Iterator<number> {
+     *     yield 1;
+     *     yield 2;
+     *     yield 3;
+     *   }
+     * }
+     *
+     * const collection = IterableCollection.concat([
+     *   new MyIterable(),
+     *   new Set([1, 2, 3]),
+     *   new Map([["a", 1], ["b", 2]]),
+     *   ["a", "b", "c"]
+     * ]);
+     * collection.toArray();
+     * // [1, 2, 3, 1, 2, 3, ["a", 1], ["b", 2], "a", "b", "c"]
+     * ```
+     */
     static concat<TValue>(
         iterables: Iterable<Iterable<TValue>>,
     ): ICollection<TValue> {
         return new IterableCollection(new MergeIterable(iterables));
     }
 
+    /**
+     * The <i>difference</i> static method is used to compute the difference between two <i>{@link Iterable}</i> instances. By default, the equality check is performed on each item.
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";
+     *
+     * const collection = IterableCollection.difference(
+     *   [1, 2, 2, 3, 4, 5],
+     *   [2, 4, 6, 8]
+     * );
+     * collection.toArray();
+     * // [1, 3, 5]
+     * ```
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";
+     *
+     * const collection = IterableCollection.difference(
+     *   [
+     *     { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *     { name: "iPhone 5", brand: "Apple", type: "phone" },
+     *     { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *     { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *     { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+     *   ],
+     *   [
+     *     { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *   ],
+     *   (product) => product.type
+     * );
+     * collection.toArray();
+     * // [
+     * //   { name: "iPhone 6", brand: "Apple", type: "phone" },
+     * //   { name: "iPhone 5", brand: "Apple", type: "phone" },
+     * //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     * // ]
+     * ```
+     */
     static difference<TValue, TSelect>(
         iterableA: Iterable<TValue>,
         iterableB: Iterable<TValue>,
@@ -81,6 +143,34 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
         );
     }
 
+    /**
+     * The <i>zip</i> static method merges together the values of <i>iterableA</i> with the values of the <i>iterableB</i> at their corresponding index.
+     * The returned collection has size of the shortest collection.
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";;
+     *
+     * const collection = IterableCollection.zip(["Chair", "Desk"], [100, 200]);
+     * collection.toArray();
+     * // [["Chair", 100], ["Desk", 200]]
+     * ```
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";;
+     *
+     * const collection = IterableCollection.zip(["Chair", "Desk", "Couch"], [100, 200]);
+     * collection.toArray();
+     * // [["Chair", 100], ["Desk", 200]]
+     * ```
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";;
+     *
+     * const collection = IterableCollection.zip(["Chair", "Desk"], [100, 200, 300]);
+     * collection.toArray();
+     * // [["Chair", 100], ["Desk", 200]]
+     * ```
+     */
     static zip<TValueA, TValueB>(
         iterableA: Iterable<TValueA>,
         iterableB: Iterable<TValueB>,
@@ -98,6 +188,53 @@ export class IterableCollection<TInput> implements ICollection<TInput> {
 
     /**
      * The <i>constructor</i> takes an <i>{@link Iterable}</i>.
+     *
+     * Works with <i>Array</i>.
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";
+     *
+     * const collection = new IterableCollection([1, 2, 3, 4]);
+     * ```
+     *
+     * Works with <i>String</i>.
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";
+     *
+     * const collection = new IterableCollection("ABCDE");
+     * ```
+     *
+     * Works with <i>Set</i>.
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";
+     *
+     * const collection = new IterableCollection(new Set([1, 2, 2 4]));
+     * ```
+     *
+     * Works with <i>Map</i>.
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";
+     *
+     * const collection = new IterableCollection(new Map([["a", 1], ["b", 2]]));
+     * ```
+     *
+     * Works with any <i>Iterable</i>.
+     * @example
+     * ```ts
+     * import { IterableCollection } from "@daiso-tech/core";
+     *
+     * class MyIterable implements Iterable<number> {
+     *   *[Symbol.iterator](): Iterator<number> {
+     *     yield 1;
+     *     yield 2;
+     *     yield 3;
+     *   }
+     * }
+     * const collection = new IterableCollection(new MyIterable());
+     * ```
      */
     constructor(private readonly iterable: Iterable<TInput>) {}
 
