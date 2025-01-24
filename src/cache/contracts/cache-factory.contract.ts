@@ -23,7 +23,10 @@ export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
      * @example
      * ```ts
      * import { type ICacheFactory } from "@daiso-tech/core";
+     * import Redis from "ioredis"
      *
+     * // Asume the inputed cacheFactory has registered both a memory and Redis ICacheAdapter.
+     * // The memory ICacheAdapter adapter is the default.
      * async function main(cacheFactory: ICacheFactory): Promise<void> {
      *   // Will add key using the default driver
      *   await cacheFactory
@@ -42,8 +45,11 @@ export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
      * The <i>withTypes</i> method is used to set the value types of the cache.
      * @example
      * ```ts
+     *
      * import { type ICacheFactory } from "@daiso-tech/core";
      *
+     * // Asume the inputed cacheFactory has registered both a memory and Redis ICacheAdapter.
+     * // The memory ICacheAdapter adapter is the default.
      * async function main(cacheFactory: ICacheFactory): Promise<void> {
      *   await cacheFactory
      *     .withTypes<string>()
