@@ -67,12 +67,6 @@ export type CacheSettings<TType> = {
 /**
  * <i>Cache</i> class can be derived from any <i>{@link ICacheAdapter}</i>.
  * @group Derivables
- * @example
- * ```ts
- * import { Cache, MemoryCacheAdapter } from "@daiso-tech/core";
- *
- * const cache = new Cache(new MemoryCacheAdapter());
- * ```
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly groupdEventBus: IGroupableEventBus<CacheEvents<TType>>;
@@ -81,6 +75,17 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly defaultTtl: TimeSpan | null;
     private readonly lazyPromiseSettings?: LazyPromiseSettings;
 
+    /**
+     *@example
+     * ```ts
+     * import { Cache, MemoryCacheAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     *
+     * const eventBus = new EventBus(new MemoryEventBusAdapter("@global"));
+     * const cache = new Cache(new MemoryCacheAdapter("@global"), {
+     *   eventBus,
+     * });
+     * ```
+     */
     constructor(
         cacheAdapter: ICacheAdapter<any>,
         settings: CacheSettings<TType> = {},
@@ -266,6 +271,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     add(
         key: string,
         value: TType,
+        /**
+         * @default null
+         */
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
@@ -296,6 +304,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     put(
         key: string,
         value: TType,
+        /**
+         * @default null
+         */
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
@@ -616,6 +627,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     getOrAdd(
         key: string,
         valueToAdd: AsyncLazyable<GetOrAddValue<TType>>,
+        /**
+         * @default {null}
+         */
         ttl?: TimeSpan,
     ): LazyPromise<TType> {
         return this.createLayPromise(async () => {
