@@ -13,25 +13,27 @@ import { EventEmitter } from "node:events";
 /**
  * To utilize the <i>MemoryEventBusAdapter</i>, you must create instance of it.
  * @group Adapters
- * @example
- * ```ts
- * import { MemoryEventBusAdapter } from "@daiso-tech/core";
- *
- * const eventBusAdapter = new MemoryEventBusAdapter(client);
- * ```
- * You can also provide an <i>EVentEmitter</i>.
- * @example
- * ```ts
- * import { MemoryCacheAdapter } from "@daiso-tech/core";
- * import { EventEmitter } from "node:events";
- *
- * const eventEmitter = new EventEmitter();
- * const eventBusAdapter = new MemoryCacheAdapter("@global", eventEmitter);
- * ```
  */
 export class MemoryEventBusAdapter implements IEventBusAdapter {
     private readonly group: string;
 
+    /**
+     * @example
+     * ```ts
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core";
+     *
+     * const eventBusAdapter = new MemoryEventBusAdapter(client);
+     * ```
+     * You can also provide an <i>EVentEmitter</i>.
+     * @example
+     * ```ts
+     * import { MemoryCacheAdapter } from "@daiso-tech/core";
+     * import { EventEmitter } from "node:events";
+     *
+     * const eventEmitter = new EventEmitter();
+     * const eventBusAdapter = new MemoryCacheAdapter("@global", eventEmitter);
+     * ```
+     */
     constructor(
         defaultGroup: OneOrMore<string>,
         private readonly eventEmiter = new EventEmitter(),

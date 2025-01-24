@@ -3,7 +3,11 @@
  */
 
 import { type ISerde } from "@/serde/contracts/_module";
-import { RedisSerde } from "@/serde/implementations/_module";
+import {
+    RedisSerde,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    SuperJsonSerde,
+} from "@/serde/implementations/_module";
 import type {
     BaseEvent,
     IEventBusAdapter,
@@ -25,22 +29,8 @@ export type RedisPubSubEventBusAdapterSettings = {
 };
 
 /**
- * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
- * @example
- * ```ts
- * import { RedisPubSubEventBusAdapter, SuperJsonSerde } from "@daiso-tech/core";
- * import Redis from "ioredis";
- *
- * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
- * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
- * const serde = new SuperJsonSerde();
- * const eventBusAdapter = new RedisPubSubEventBusAdapter({
- *   dispatcherClient,
- *   listenerClient,
- *   serde,
- * });
- * ```
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     private readonly group: string;
@@ -50,6 +40,22 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     private readonly listenerClient: Redis;
     private readonly eventEmitter = new EventEmitter();
 
+    /**
+     * @example
+     * ```ts
+     * import { RedisPubSubEventBusAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import Redis from "ioredis";
+     *
+     * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
+     * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
+     * const serde = new SuperJsonSerde();
+     * const eventBusAdapter = new RedisPubSubEventBusAdapter({
+     *   dispatcherClient,
+     *   listenerClient,
+     *   serde,
+     * });
+     * ```
+     */
     constructor({
         dispatcherClient,
         listenerClient,

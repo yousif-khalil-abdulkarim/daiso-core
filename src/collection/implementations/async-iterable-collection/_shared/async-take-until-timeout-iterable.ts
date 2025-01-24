@@ -3,7 +3,7 @@
  */
 
 import { type TimeSpan } from "@/utilities/_module";
-import { abort } from "@/async/utilities/abort/_module";
+import { abort } from "@/async/utilities/_module";
 
 /**
  * @internal

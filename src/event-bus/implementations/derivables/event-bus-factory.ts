@@ -40,7 +40,7 @@ export type EventBusFactorySettings<TAdapters extends string = string> = {
  *
  * const eventBusFactory = new EventBusFactory({
  *   drivers: {
- *     memory: new MemoryEventBusAdapter(),
+ *     memory: new MemoryEventBusAdapter("@global"),
  *     redis: new RedisPubSubEventBusAdapter({
  *       dispatcherClient: new Redis(),
  *       listenerClient: new Redis(),

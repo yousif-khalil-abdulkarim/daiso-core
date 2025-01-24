@@ -35,7 +35,7 @@ export type CacheAdapterTestSuiteSettings = {
  * import { RedisContainer, type StartedRedisContainer } from "@testcontainers/redis";
  * import { SuperJsonSerde, TimeSpan, RedisCacheAdapter, cacheAdapterTestSuite } from "@daiso-tech/core";
  *
- * const timeout = TimeSpan.fromMinutes(2);
+ * const TIMEOUT = TimeSpan.fromMinutes(2);
  * describe("class: RedisCacheAdapter", () => {
  *   let client: Redis;
  *   let startedContainer: StartedRedisContainer;
@@ -43,11 +43,11 @@ export type CacheAdapterTestSuiteSettings = {
  *   beforeEach(async () => {
  *     startedContainer = await new RedisContainer("redis:7.4.2").start();
  *     client = new Redis(startedContainer.getConnectionUrl());
- *   }, timeout.toMilliseconds());
+ *   }, TIMEOUT.toMilliseconds());
  *   afterEach(async () => {
  *     await client.quit();
  *     await startedContainer.stop();
- *   }, timeout.toMilliseconds());
+ *   }, TIMEOUT.toMilliseconds());
  *   cacheAdapterTestSuite({
  *     createAdapterA: () =>
  *       new RedisCacheAdapter(client, {

@@ -14,20 +14,6 @@ import {
 /**
  * To utilize the <i>MemoryCacheAdapter</i>, you must create instance of it.
  * @group Adapters
- * @example
- * ```ts
- * import { MemoryCacheAdapter } from "@daiso-tech/core";
- *
- * const cacheAdapter = new MemoryCacheAdapter(client);
- * ```
- * You can also provide an <i>Map</i>.
- * @example
- * ```ts
- * import { MemoryCacheAdapter } from "@daiso-tech/core";
- *
- * const map = new Map<any, any>();
- * const cacheAdapter = new MemoryCacheAdapter("@cache", map);
- * ```
  */
 export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
     private readonly group: string;
@@ -37,6 +23,22 @@ export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
         NodeJS.Timeout | string | number
     >();
 
+    /**
+     *  @example
+     * ```ts
+     * import { MemoryCacheAdapter } from "@daiso-tech/core";
+     *
+     * const cacheAdapter = new MemoryCacheAdapter(client);
+     * ```
+     * You can also provide an <i>Map</i>.
+     * @example
+     * ```ts
+     * import { MemoryCacheAdapter } from "@daiso-tech/core";
+     *
+     * const map = new Map<any, any>();
+     * const cacheAdapter = new MemoryCacheAdapter("@cache", map);
+     * ```
+     */
     constructor(
         rootGroup: OneOrMore<string>,
         private readonly map: Map<string, TType> = new Map(),

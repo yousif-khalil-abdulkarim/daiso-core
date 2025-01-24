@@ -30,35 +30,37 @@ export type SqliteStorageAdapterSettings = {
 };
 
 /**
- * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | string serde}</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
- * @example
- * ```ts
- * import { SqliteCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
- * import Sqlite from "better-sqlite3";
- *
- * const client = new Sqlite("local.db");
- * const serde = new SuperJsonSerde();
- * const cacheAdapter = new SqliteCacheAdapter(client, {
- *   serde,
- *   rootGroup: "@global"
- * });
- *
- * (async () => {
- *   // You only need to call it once before using the adapter.
- *   await cacheAdapter.init();
- *   await cacheAdapter.add("a", 1);
- *
- *   // Will remove the cache
- *   await cacheAdapter.deInit();
- * })();
- * ```
  */
 export class SqliteCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly cacheAdapter: KyselySqliteCacheAdapter<TType>;
 
+    /**
+     * @example
+     * ```ts
+     * import { SqliteCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import Sqlite from "better-sqlite3";
+     *
+     * const client = new Sqlite("local.db");
+     * const serde = new SuperJsonSerde();
+     * const cacheAdapter = new SqliteCacheAdapter(client, {
+     *   serde,
+     *   rootGroup: "@global"
+     * });
+     *
+     * (async () => {
+     *   // You only need to call it once before using the adapter.
+     *   await cacheAdapter.init();
+     *   await cacheAdapter.add("a", 1);
+     *
+     *   // Will remove the cache
+     *   await cacheAdapter.deInit();
+     * })();
+     * ```
+     */
     constructor(database: Database, settings: SqliteStorageAdapterSettings) {
         const {
             tableName = "cache",

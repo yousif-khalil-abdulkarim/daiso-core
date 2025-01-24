@@ -307,6 +307,7 @@ export type CacheEvents<TType = unknown> =
     | KeysClearedCacheEvent;
 
 /**
+ * The <i>registerCacheEvents</i> function is used to register all cache events with a <i>{@link IFlexibleSerde}</i>.
  * @group Events
  */
 export function registerCacheEvents<TSerializedValue>(

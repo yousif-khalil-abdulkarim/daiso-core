@@ -28,15 +28,41 @@ export type IEventBusFactory<
      * ```ts
      * import { type IEventBusFactory } from "@daiso-tech/core";
      *
+     * type SerializedAddEvent = {
+     *   a: number;
+     *   b: number;
+     * };
+     *
+     * class AddEvent extends BaseEvent<SerializedAddEvent> {
+     *   // This needed for adapters that need to deserialize like the redis dapter.
+     *   static override deserialize({ a, b }: SerializedAddEvent): AddEvent {
+     *     return new AddEvent(a, b);
+     *   }
+     *
+     *   constructor(public readonly a: number, public readonly b: number) {
+     *     super();
+     *   }
+     *
+     *   // This needed for adapters that need to serialize like the redis adapter.
+     *   override serialize(): SerializedAddEvent {
+     *     return {
+     *       a: this.a,
+     *       b: this.b
+     *     };
+     *   }
+     * }
+     *
+     * // Asume the inputed eventFactory has registered both a memory and Redis IEventBusAdapter.
+     * // The memory IEventBusAdapter adapter is the default.
      * async function main(eventFactory: IEventBusFactory): Promise<void> {
      *   // Will dispatch envent using the default driver
      *   await eventBusFactory
      *     .use()
-     *     .dispatch({ type: "add", a: 1, b: 2 });
+     *     .dispatch(new AddEvent(1, 2));
      *   // Will dispatch envent using the redis addapter
      *   await eventBusFactory
      *     .use("redis")
-     *     .dispatch({ type: "add", a: 1, b: 2 });
+     *     .dispatch(new AddEvent(1, 2));
      * }
      * ```
      */
@@ -48,17 +74,62 @@ export type IEventBusFactory<
      * ```ts
      * import { type IEventBusFactory } from "@daiso-tech/core";
      *
+     * type SerializedAddEvent = {
+     *   a: number;
+     *   b: number;
+     * };
+     *
+     * class AddEvent extends BaseEvent<SerializedAddEvent> {
+     *   // This needed for adapters that need to deserialize like the redis dapter.
+     *   static override deserialize({ a, b }: SerializedAddEvent): AddEvent {
+     *     return new AddEvent(a, b);
+     *   }
+     *
+     *   constructor(public readonly a: number, public readonly b: number) {
+     *     super();
+     *   }
+     *
+     *   // This needed for adapters that need to serialize like the redis adapter.
+     *   override serialize(): SerializedAddEvent {
+     *     return {
+     *       a: this.a,
+     *       b: this.b
+     *     };
+     *   }
+     * }
+     *
+     * type SerializedSubEvent = {
+     *   c: number;
+     *   d: number;
+     * };
+     *
+     * class SubEvent extends BaseEvent<SerializedSubEvent> {
+     *   // This needed for adapters that need to deserialize like the redis dapter.
+     *   static override deserialize({ c, d }: SerializedSubEvent): SubEvent {
+     *     return new SubEvent(c, d);
+     *   }
+     *
+     *   constructor(public readonly a: number, public readonly b: number) {
+     *     super();
+     *   }
+     *
+     *   // This needed for adapters that need to serialize like the redis adapter.
+     *   override serialize(): SerializedSubEvent {
+     *     return {
+     *       c: this.c,
+     *       d: this.d
+     *     };
+     *   }
+     * }
+     *
+     * // Asume the inputed eventFactory has registered both a memory and Redis IEventBusAdapter.
+     * // The memory IEventBusAdapter adapter is the default.
      * async function main(eventBusFactory: IEventBusFactory): Promise<void> {
-     *   type AddEvent = {
-     *     type: "add";
-     *     a: number;
-     *     b: number;
-     *   };
      *   await eventBusFactory
      *     .withTypes<AddEvent>()
      *     .use()
      *     // You will se an typescript error
-     *     .dispatch({ type: "add" });
+     *     .dispatch(new SubEvent(1, 2));
      * }
      * ```
      */
