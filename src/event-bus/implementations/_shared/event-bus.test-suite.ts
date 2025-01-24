@@ -39,7 +39,7 @@ export type EventBusTestSuiteSettings = {
  * import Redis from "ioredis";
  * import { SuperJsonSerde, TimeSpan, RedisPubSubEventBusAdapter, eventBusTestSuite, serde } from "@daiso-tech/core";
  *
- * const timeout = TimeSpan.fromMinutes(2);
+ * const TIMEOUT = TimeSpan.fromMinutes(2);
  * describe("class: EventBus", () => {
  *   let dispatcherClient: Redis;
  *   let listenerClient: Redis;
@@ -49,12 +49,12 @@ export type EventBusTestSuiteSettings = {
  *     startedContainer = await new RedisContainer().start();
  *     dispatcherClient = new Redis(startedContainer.getConnectionUrl());
  *     listenerClient = new Redis(startedContainer.getConnectionUrl());
- *   }, timeout.toMilliseconds());
+ *   }, TIMEOUT.toMilliseconds());
  *   afterEach(async () => {
  *     await dispatcherClient.quit();
  *     await listenerClient.quit();
  *     await startedContainer.stop();
- *   }, timeout.toMilliseconds());
+ *   }, TIMEOUT.toMilliseconds());
  *    eventBusTestSuite({
  *      createEventBusA: () =>
  *        new EventBus(
