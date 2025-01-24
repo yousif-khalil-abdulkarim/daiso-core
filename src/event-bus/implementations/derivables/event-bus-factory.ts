@@ -50,10 +50,8 @@ export type EventBusFactorySettings<TAdapters extends string = string> = {
  * });
  * ```
  */
-export class EventBusFactory<
-    TAdapters extends string = string,
-    TEvents extends BaseEvent = BaseEvent,
-> implements IEventBusFactory<TAdapters, TEvents>
+export class EventBusFactory<TAdapters extends string = string>
+    implements IEventBusFactory<TAdapters>
 {
     private readonly drivers: EventBusDrivers<TAdapters>;
     private readonly defaultDriver?: TAdapters;
@@ -65,7 +63,7 @@ export class EventBusFactory<
         this.defaultDriver = defaultDriver;
     }
 
-    use(
+    use<TEvents extends BaseEvent = BaseEvent>(
         driverName: TAdapters | undefined = this.defaultDriver,
     ): IGroupableEventBus<TEvents> {
         if (driverName === undefined) {
@@ -78,13 +76,5 @@ export class EventBusFactory<
         return new EventBus(selectedAdapter, {
             lazyPromiseSettings: this.lazyPromiseSettings,
         });
-    }
-
-    withType<TOutput extends BaseEvent = TEvents>(): IEventBusFactory<
-        TAdapters,
-        TOutput
-    > {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-        return this as any;
     }
 }

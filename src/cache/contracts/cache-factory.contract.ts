@@ -14,7 +14,7 @@ import {
  * The <i>ICacheFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableCache}</i> dynamically.
  * @group Contracts
  */
-export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
+export type ICacheFactory<TDrivers extends string = string> = {
     /**
      * The <i>use</i> method will throw an error if you provide it unregisted driver.
      * If no default driver is defined an error will be thrown by <i>use</i> method.
@@ -39,25 +39,5 @@ export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
      * }
      * ```
      */
-    use(driverName?: TDrivers): IGroupableCache<TType>;
-
-    /**
-     * The <i>withTypes</i> method is used to set the value types of the cache.
-     * @example
-     * ```ts
-     *
-     * import { type ICacheFactory } from "@daiso-tech/core";
-     *
-     * // Asume the inputed cacheFactory has registered both a memory and Redis ICacheAdapter.
-     * // The memory ICacheAdapter adapter is the default.
-     * async function main(cacheFactory: ICacheFactory): Promise<void> {
-     *   await cacheFactory
-     *     .withTypes<string>()
-     *     .use()
-     *     // You will se an typescript error
-     *     .add("a", 1)
-     * }
-     * ```
-     */
-    withType<TOutput extends TType = TType>(): ICacheFactory<TDrivers, TOutput>;
+    use<TType = unknown>(driverName?: TDrivers): IGroupableCache<TType>;
 };

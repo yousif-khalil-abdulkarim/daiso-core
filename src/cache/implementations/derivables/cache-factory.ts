@@ -46,8 +46,8 @@ export type CacheFactorySettings<TDrivers extends string = string> = {
 /**
  * @group Derivables
  */
-export class CacheFactory<TDrivers extends string = string, TType = unknown>
-    implements ICacheFactory<TDrivers, TType>
+export class CacheFactory<TDrivers extends string = string>
+    implements ICacheFactory<TDrivers>
 {
     private readonly drivers: CacheDrivers<TDrivers>;
     private readonly defaultDriver?: TDrivers;
@@ -87,7 +87,7 @@ export class CacheFactory<TDrivers extends string = string, TType = unknown>
         this.lazyPromiseSettings = lazyPromiseSettings;
     }
 
-    use(
+    use<TType = unknown>(
         driverName: TDrivers | undefined = this.defaultDriver,
     ): IGroupableCache<TType> {
         if (driverName === undefined) {
@@ -102,13 +102,5 @@ export class CacheFactory<TDrivers extends string = string, TType = unknown>
             defaultTtl: this.defaultTtl,
             lazyPromiseSettings: this.lazyPromiseSettings,
         });
-    }
-
-    withType<TOutput extends TType = TType>(): ICacheFactory<
-        TDrivers,
-        TOutput
-    > {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        return this as any;
     }
 }

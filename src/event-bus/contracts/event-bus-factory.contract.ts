@@ -15,10 +15,7 @@ import type { BaseEvent } from "@/event-bus/contracts/_shared";
  * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableEventBus}</i> dynamically.
  * @group Contracts
  */
-export type IEventBusFactory<
-    TDrivers extends string = string,
-    TEvents extends BaseEvent = BaseEvent,
-> = {
+export type IEventBusFactory<TDrivers extends string = string> = {
     /**
      * The <i>use</i> method will throw an error if you provide it unregisted driver.
      * If no default driver is defined an error will be thrown by <i>use</i> method.
@@ -66,75 +63,7 @@ export type IEventBusFactory<
      * }
      * ```
      */
-    use(driverName?: TDrivers): IGroupableEventBus<TEvents>;
-
-    /**
-     * The <i>withTypes</i> method is used to set the event types of the <i>{@link IEventBus}</i>.
-     * @example
-     * ```ts
-     * import { type IEventBusFactory } from "@daiso-tech/core";
-     *
-     * type SerializedAddEvent = {
-     *   a: number;
-     *   b: number;
-     * };
-     *
-     * class AddEvent extends BaseEvent<SerializedAddEvent> {
-     *   // This needed for adapters that need to deserialize like the redis dapter.
-     *   static override deserialize({ a, b }: SerializedAddEvent): AddEvent {
-     *     return new AddEvent(a, b);
-     *   }
-     *
-     *   constructor(public readonly a: number, public readonly b: number) {
-     *     super();
-     *   }
-     *
-     *   // This needed for adapters that need to serialize like the redis adapter.
-     *   override serialize(): SerializedAddEvent {
-     *     return {
-     *       a: this.a,
-     *       b: this.b
-     *     };
-     *   }
-     * }
-     *
-     * type SerializedSubEvent = {
-     *   c: number;
-     *   d: number;
-     * };
-     *
-     * class SubEvent extends BaseEvent<SerializedSubEvent> {
-     *   // This needed for adapters that need to deserialize like the redis dapter.
-     *   static override deserialize({ c, d }: SerializedSubEvent): SubEvent {
-     *     return new SubEvent(c, d);
-     *   }
-     *
-     *   constructor(public readonly a: number, public readonly b: number) {
-     *     super();
-     *   }
-     *
-     *   // This needed for adapters that need to serialize like the redis adapter.
-     *   override serialize(): SerializedSubEvent {
-     *     return {
-     *       c: this.c,
-     *       d: this.d
-     *     };
-     *   }
-     * }
-     *
-     * // Asume the inputed eventFactory has registered both a memory and Redis IEventBusAdapter.
-     * // The memory IEventBusAdapter adapter is the default.
-     * async function main(eventBusFactory: IEventBusFactory): Promise<void> {
-     *   await eventBusFactory
-     *     .withTypes<AddEvent>()
-     *     .use()
-     *     // You will se an typescript error
-     *     .dispatch(new SubEvent(1, 2));
-     * }
-     * ```
-     */
-    withType<TOutput extends TEvents = TEvents>(): IEventBusFactory<
-        TDrivers,
-        TOutput
-    >;
+    use<TEvents extends BaseEvent = BaseEvent>(
+        driverName?: TDrivers,
+    ): IGroupableEventBus<TEvents>;
 };
