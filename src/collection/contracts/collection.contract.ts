@@ -65,12 +65,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>filter</i> method filters the collection using <i>predicateFn</i>, keeping only those items that pass <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
-     * const filtered = collection.filter(item => 2 < item && item < 5);
-     * filtered.toArray();
-     * // [3, 4]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4, 5, 6])
+     *     .filter(item => 2 < item && item < 5)
+     *     .toArray();
+     *   // [3, 4]
+     * }
      * ```
      */
     filter<TOutput extends TInput>(
@@ -81,12 +85,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>reject</i> method filters the collection using <i>predicateFn</i>, keeping only those items that not pass <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
-     * const filtered = collection.reject(item => 2 < item && item < 5);
-     * filtered.toArray();
-     * // [1, 2, 5, 6]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4, 5, 6])
+     *     .reject(item => 2 < item && item < 5)
+     *     .toArray();
+     *   // [1, 2, 5, 6]
+     * }
      * ```
      */
     reject<TOutput extends TInput>(
@@ -98,12 +106,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>mapFn</i> is free to modify the item and return it, thus forming a new collection of modified items.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5]);
-     * const mapped = collection.map(item => item * 2);
-     * mapped.toArray();
-     * // [2, 4, 6, 8, 10]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .map(item => item * 2)
+     *     .toArray();
+     *   // [2, 4, 6, 8, 10]
+     * }
      * ```
      */
     map<TOutput>(
@@ -115,25 +127,34 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The final result of running the reducer across all items of the array is a single value.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3]);
-     * collection.reduce((sum, item) => sum + item);
-     * // 6
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3]);
+     *     .reduce((sum, item) => sum + item);
+     *   // 6
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "c"]);
-     * collection.entries().reduce(
-     *   (record, [key, value]) => ({
-     *     ...record,
-     *     [key]: value
-     *   }),
-     *   {} as Record<number, string>
-     * );
-     * // { 0: "a", 1: "b", 2: "c" }
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .append(["a", "b", "c"])
+     *     .entries()
+     *     .reduce(
+     *       (record, [key, value]) => ({
+     *         ...record,
+     *         [key]: value
+     *       }),
+     *       {} as Record<number, string>
+     *     );
+     *   // { 0: "a", 1: "b", 2: "c" }
+     * }
      * ```
      */
     reduce(reduceFn: Reduce<TInput, ICollection<TInput>, TInput>): TInput;
@@ -152,19 +173,28 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {TypeCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.map(item => item.toString()).join();
-     * // "1,2,3,4"
-     * @example
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4])
+     *     .map(item => item.toString())
+     *     .join();
+     *   // "1,2,3,4"
+     * }
      * ```
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.map(item => item.toString()).join("_");
-     * // "1_2_3_4"
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4])
+     *     .map(item => item.toString())
+     *     .join("_");
+     *   // "1_2_3_4"
+     * }
      * ```
      */
     join(separator?: string): Extract<TInput, string>;
@@ -173,12 +203,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>collapse</i> method collapses a collection of iterables into a single, flat collection.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([[1, 2], [3, 4]]);
-     * const collapsed = collection.collapse();
-     * collapsed.toArray();
-     * // [1, 2, 3, 4]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number[]>): void {
+     *   collection
+     *     .append([[1, 2], [3, 4]])
+     *     .collapse()
+     *      .toArray();
+     *   // [1, 2, 3, 4]
+     * }
      * ```
      */
     collapse(): ICollection<Collapse<TInput>>;
@@ -188,11 +222,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * It is identical to a <i>map</i> method followed by a <i>collapse</i> method.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([["a", "b"], ["c", "d"]]).flatMap(item => [item.length, ...item]);
-     * collection.toArray();
-     * // [2, "a", "b", 2, "c", "d"]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string[]>): void {
+     *   collection
+     *     .append([["a", "b"], ["c", "d"]])
+     *     .flatMap(item => [item.length, ...item])
+     *     .toArray();
+     *   // [2, "a", "b", 2, "c", "d"]
+     * }
      * ```
      */
     flatMap<TOutput>(
@@ -203,12 +242,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>change</i> method changes only the items that passes <i>predicateFn</i> using <i>mapFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5]);
-     * const newCollection = collection.change(item => item % 2 === 0, item => item * 2);
-     * newCollection.toArray();
-     * // [1, 4, 3, 8, 5]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .change(item => item % 2 === 0, item => item * 2)
+     *     .toArray();
+     *   // [1, 4, 3, 8, 5]
+     * }
      * ```
      */
     change<TFilterOutput extends TInput, TMapOutput>(
@@ -220,21 +263,29 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>set</i> method changes a item by i>index</i> using <i>value</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5]);
-     * const newCollection = collection.set(1, -1);
-     * newCollection.toArray();
-     * // [1, -1, 3, 4, 5]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .set(1, -1)
+     *     .toArray();
+     *   // [1, -1, 3, 4, 5]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5]);
-     * const newCollection = collection.set(1, (prevValue) => prevValue - 2);
-     * newCollection.toArray();
-     * // [1, 0, 3, 4, 5]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .set(1, (prevValue) => prevValue - 2)
+     *     .toArray();
+     *   // [1, 0, 3, 4, 5]
+     * }
      * ```
      */
     set(
@@ -246,14 +297,18 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>get</i> method returns the item by index. If the item is not found null will returned.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 4, 2, 8, -2]);
-     * // Will be 2
-     * collection.get(2);
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection = collection.append([1, 4, 2, 8, -2]);
      *
-     * // Will be null
-     * collection.get(5);
+     *   // Will be 2
+     *   collection.get(2);
+     *
+     *   // Will be null
+     *   collection.get(5);
+     * }
      * ```
      */
     get(index: number): TInput | null;
@@ -263,14 +318,18 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 4, 2, 8, -2]);
-     * // Will be 2
-     * collection.getOrFail(2);
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection = collection.append([1, 4, 2, 8, -2]);
      *
-     * // An error will thrown
-     * collection.getOrFail(5);
+     *   // Will be 2
+     *   collection.getOrFail(2);
+     *
+     *   // An error will thrown
+     *   collection.getOrFail(5);
+     * }
      * ```
      */
     getOrFail(index: number): TInput;
@@ -279,12 +338,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>page</i> method returns a new collection containing the items that would be present on <i> page </i> with custom <i> pageSize </i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-     * const page = collection.page(2, 3);
-     * page.toArray();
-     * // [4, 5, 6]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4, 5, 6, 7, 8, 9])
+     *     .page(2, 3)
+     *     .toArray()
+     *   // [4, 5, 6]
+     * }
      * ```
      */
     page(page: number, pageSize: number): ICollection<TInput>;
@@ -296,11 +359,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3]);
-     * collection.sum();
-     * // 6
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3])
+     *     .sum();
+     *   // 6
+     * }
      * ```
      */
     sum(): Extract<TInput, number>;
@@ -312,11 +379,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3]);
-     * collection.average();
-     * // 2
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3])
+     *     .average()
+     *   // 2
+     * }
      * ```
      */
     average(): Extract<TInput, number>;
@@ -328,11 +399,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3]);
-     * collection.median();
-     * // 2
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3])
+     *     .median();
+     *   // 2
+     * }
      * ```
      */
     median(): Extract<TInput, number>;
@@ -344,11 +419,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3]);
-     * collection.min();
-     * // 1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3])
+     *     .min();
+     *   // 1
+     * }
      * ```
      */
     min(): Extract<TInput, number>;
@@ -360,11 +439,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3]);
-     * collection.max();
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3])
+     *     .max();
+     *   // 3
+     * }
      * ```
      */
     max(): Extract<TInput, number>;
@@ -375,11 +458,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 1, 2, 2, 2, 3]);
-     * collection.percentage(value => value === 1);
-     * // 33.333
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 1, 2, 2, 2, 3])
+     *     .percentage(value => value === 1);
+     *   // 33.333
+     * }
      * ```
      */
     percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
@@ -388,11 +475,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>some</i> method determines whether at least one item in the collection matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([0, 1, 2, 3, 4, 5]);
-     * collection.some(item => item === 1);
-     * // true
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([0, 1, 2, 3, 4, 5])
+     *     .some(item => item === 1);
+     *   // true
+     * }
      * ```
      */
     some<TOutput extends TInput>(
@@ -403,11 +494,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>every</i> method determines whether all items in the collection matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([0, 1, 2, 3, 4, 5]);
-     * collection.every(item => item < 6);
-     * // true
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([0, 1, 2, 3, 4, 5])
+     *     .every(item => item < 6);
+     *   // true
+     * }
      * ```
      */
     every<TOutput extends TInput>(
@@ -418,21 +513,30 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>take</i> method takes the first <i>limit</i> items.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([0, 1, 2, 3, 4, 5]);
-     * const chunk = collection.take(3);
-     * chunk.toArray();
-     * // [0, 1, 2]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([0, 1, 2, 3, 4, 5])
+     *     .take(3)
+     *     .toArray();
+     *   // [0, 1, 2]
+     * }
      * ```
+     *
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([0, 1, 2, 3, 4, 5]);
-     * const chunk = collection.take(-2);
-     * chunk.toArray();
-     * // [0, 1, 2, 3]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([0, 1, 2, 3, 4, 5])
+     *     .take(-2)
+     *     .toArray();
+     *   // [0, 1, 2, 3]
+     * }
      * ```
      */
     take(limit: number): ICollection<TInput>;
@@ -441,12 +545,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>takeUntil</i> method takes items until <i>predicateFn</i> returns true.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * const chunk = collection.takeUntil(item => item >= 3);
-     * chunk.toArray();
-     * // [1, 2]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4])
+     *     .takeUntil(item => item >= 3)
+     *     .toArray();
+     *   // [1, 2]
+     * }
      * ```
      */
     takeUntil(
@@ -457,12 +565,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>takeWhile</i> method takes items until <i>predicateFn</i> returns false.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * const chunk = collection.takeWhile(item => item < 4);
-     * chunk.toArray();
-     * // [1, 2, 3]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4])
+     *     .takeWhile(item => item < 4)
+     *     .toArray();
+     *   // [1, 2, 3]
+     * }
      * ```
      */
     takeWhile(
@@ -473,11 +585,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>skip</i> method skips the first <i>offset</i> items.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).skip(4);
-     * collection.toArray();
-     * // [5, 6, 7, 8, 9, 10]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .append([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+     *     .skip(4)
+     *     .toArray();
+     *   // [5, 6, 7, 8, 9, 10]
+     * }
      * ```
      */
     skip(offset: number): ICollection<TInput>;
@@ -486,11 +603,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>skipUntil</i> method skips items until <i>predicateFn</i> returns true.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]).skipUntil(item => item >= 3);
-     * collection.toArray();
-     * // [3, 4]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .skipUntil(item => item >= 3)
+     *     .toArray();
+     *   // [3, 4]
+     * }
      * ```
      */
     skipUntil(
@@ -501,11 +623,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>skipWhile</i> method skips items until <i>predicateFn</i> returns false.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]).skipWhile(item => item <= 3);
-     * collection.toArray();
-     * // [4]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .skipWhile(item => item <= 3)
+     *     .toArray();
+     *   // [4]
+     * }
      * ```
      */
     skipWhile(
@@ -516,13 +643,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>when</i> method will execute <i>callback</i> when <i>condition</i> evaluates to true.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4])
-     *  .when(true, collection => collection.append([-3]))
-     *  .when(false, collection => collection.append([20]));
-     * collection.toArray();
-     * // [1, 2, 3, 4, -3]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .when(true, collection => collection.append([-3]))
+     *     .when(false, collection => collection.append([20]))
+     *     .toArray();
+     *   // [1, 2, 3, 4, -3]
+     * }
      * ```
      */
     when<TExtended = TInput>(
@@ -534,21 +665,29 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>whenEmpty</i> method will execute <i>callback</i> when the collection is empty.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([])
-     *  .whenEmpty(collection => collection.append([-3]))
-     * collection.toArray();
-     * // [-3]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([])
+     *     .whenEmpty(collection => collection.append([-3]))
+     *     .toArray();
+     *   // [-3]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1])
-     *  .whenEmpty(collection => collection.append([-3]))
-     * collection.toArray();
-     * // [1]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1])
+     *     .whenEmpty(collection => collection.append([-3]))
+     *     .toArray();
+     *   // [1]
+     * }
      * ```
      */
     whenEmpty<TExtended = TInput>(
@@ -559,13 +698,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>whenNot</i> method will execute <i>callback</i> when <i>condition</i> evaluates to false.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4])
-     *  .whenNot(true, collection => collection.append([-3]))
-     *  .whenNot(false, collection => collection.append([20]));
-     * collection.toArray();
-     * // [1, 2, 3, 4, 20]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection.apppend([1, 2, 3, 4])
+     *     .whenNot(true, collection => collection.append([-3]))
+     *     .whenNot(false, collection => collection.append([20]))
+     *     .toArray();
+     *   // [1, 2, 3, 4, 20]
+     * }
      * ```
      */
     whenNot<TExtended = TInput>(
@@ -577,21 +719,28 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>whenNotEmpty</i> method will execute <i>callback</i> when the collection is not empty.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([])
-     *  .whenNotEmpty(collection => collection.append([-3]))
-     * collection.toArray();
-     * // []
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection.apppend([])
+     *     .whenNotEmpty(collection => collection.append([-3]))
+     *     .toArray();
+     *   // []
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1])
-     *  .whenNotEmpty(collection => collection.append([-3]))
-     * collection.toArray();
-     * // [1, -3]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection = collection
+     *     .apppend([1])
+     *     .whenNotEmpty(collection => collection.append([-3]))
+     *     .toArray();
+     *   // [1, -3]
+     * }
      * ```
      */
     whenNotEmpty<TExtended = TInput>(
@@ -603,22 +752,28 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * This method is useful when you want compose multiple smaller functions.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, "2", "a", 1, 3, {}]);
-     * function toNbrs<TInput>(
-     *       collection: ICollection<TInput>,
-     * ): ICollection<number> {
-     *   return collection
-     *     .map((item) => Number(item))
-     *     .reject((nbr) => Number.isNaN(nbr));
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   function toNbrs<TInput>(
+     *     collection: ICollection<TInput>,
+     *   ): ICollection<number> {
+     *     return collection
+     *       .map((item) => Number(item))
+     *       .reject((nbr) => Number.isNaN(nbr));
+     *   }
+     *
+     *   function nbrToStr(collection: ICollection<number>): number[] {
+     *     return collection.repeat(2).toArray();
+     *   }
+     *
+     *   const piped = collection
+     *     .apppend([1, "2", "a", 1, 3, {}])
+     *     .pipe(toNbrs)
+     *     .pipe(nbrToStr);
+     *   // [ 1, 2, 1, 3 ]
      * }
-     * function nbrToStr(collection: ICollection<number>): number[] {
-     *   return collection.repeat(2).toArray();
-     * }
-     * const piped = collection.pipe(toNbrs).pipe(nbrToStr);
-     * console.log(piped);
-     * // [ 1, 2, 1, 3 ]
      * ```
      */
     pipe<TOutput = TInput>(
@@ -629,16 +784,19 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>tap</i> method passes a copy of the original collection to <i>callback</i>, allowing you to do something with the items while not affecting the original collection.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6])
-     *   .tap(collection => {
-     *     collection
-     *       .filter(value => value % 2 === 0)
-     *       .forEach(value => console.log(value))
-     *   })
-     *   .toArray();
-     * // [1, 2, 3, 4, 5, 6]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection.apppend([1, 2, 3, 4, 5, 6])
+     *     .tap(collection => {
+     *       collection
+     *         .filter(value => value % 2 === 0)
+     *         .forEach(value => console.log(value))
+     *     })
+     *     .toArray();
+     *   // [1, 2, 3, 4, 5, 6]
+     * }
      * ```
      */
     tap(callback: Tap<ICollection<TInput>>): ICollection<TInput>;
@@ -648,12 +806,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * If <i>chunkSize</i> is not divisible with total number of items then the last chunk will contain the remaining items.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6, 7]);
-     * const chunks = collection.chunk(4);
-     * chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2, 3, 4], [5, 6, 7]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection.apppend([1, 2, 3, 4, 5, 6, 7]);
+     *   const chunks = collection.chunk(4);
+     *   chunks.map(chunk => chunk.toArray()).toArray();
+     *   // [[1, 2, 3, 4], [5, 6, 7]]
+     * }
      * ```
      */
     chunk(chunkSize: number): ICollection<ICollection<TInput>>;
@@ -663,14 +824,19 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The chunk variable passed to the <i>predicateFn</i> may be used to inspect the previous item.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection("AABBCCCD");
-     * const chunks = collection.chunkWhile((value, index, chunk) => {
-     *  return value === chunk.last();
-     * });
-     * chunks.map(chunk => chunk.toArray()).toArray();
-     * //  [["A", "A"], ["B", "B"], ["C", "C", "C"], ["D"]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend("AABBCCCD")
+     *     .chunkWhile((value, index, chunk) => {
+     *       return value === chunk.last();
+     *     })
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   //  [["A", "A"], ["B", "B"], ["C", "C", "C"], ["D"]]
+     * }
      * ```
      */
     chunkWhile(
@@ -681,30 +847,45 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>split</i> method breaks a collection evenly into <i>chunkAmount</i> of chunks.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5]);
-     * const chunks = collection.split(3);
-     * chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2], [3, 4], [5]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 5])
+     *     .split(3)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2], [3, 4], [5]]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
-     * const chunks = collection.split(3);
-     * chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2], [3, 4], [5, 6]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 5, 6])
+     *     .split(3)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray()
+     *   // [[1, 2], [3, 4], [5, 6]]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6, 7]);
-     * const chunks = collection.split(3);
-     * chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2, 7], [3, 4], [5, 6]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 5, 6, 7])
+     *     .split(3)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2, 7], [3, 4], [5, 6]]
+     * }
      * ```
      */
     split(chunkAmount: number): ICollection<ICollection<TInput>>;
@@ -713,12 +894,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>partition</i> method is used to separate items that pass <i>predicateFn</i> from those that do not.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
-     * const chunks = collection.partition(item => item < 3);
-     * chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2], [3, 4, 5, 6]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 5, 6])
+     *     .partition(item => item < 3)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2], [3, 4, 5, 6]]
+     * }
      * ```
      */
     partition(
@@ -729,12 +915,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>sliding</i> method returns a new collection of chunks representing a "sliding window" view of the items in the collection.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5])
-     * const chunks = collection.sliding(2);
-     * chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2], [2, 3], [3, 4], [4, 5]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 5])
+     *     .sliding(2)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2], [2, 3], [3, 4], [4, 5]]
+     * }
      * ```
      */
     sliding(chunkSize: number, step?: number): ICollection<ICollection<TInput>>;
@@ -744,47 +935,53 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * By default the equality check occurs on the item.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "a", "a", "b", "b", "c"]);
-     * const group = collection
-     *   .groupBy()
-     *   .map(([key, collection]) => [key, collection.toArray()])
-     *   .toArray();
-     * // [
-     * //  [
-     * //    "a",
-     * //    ["a", "a", "a"]
-     * //  ],
-     * //  [
-     * //    "b",
-     * //    ["b", "b"]
-     * //  ],
-     * //  [
-     * //    "c",
-     * //    ["c"]
-     * //  ]
-     * // ]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "a", "a", "b", "b", "c"])
+     *     .groupBy()
+     *     .map(([key, collection]) => [key, .toArray()])
+     *     .toArray();
+     *   // [
+     *   //  [
+     *   //    "a",
+     *   //    ["a", "a", "a"]
+     *   //  ],
+     *   //  [
+     *   //    "b",
+     *   //    ["b", "b"]
+     *   //  ],
+     *   //  [
+     *   //    "c",
+     *   //    ["c"]
+     *   //  ]
+     *   // ]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"]);
-     * const group = collection
-     *   .groupBy(item => item.split("@")[1])
-     *   .map(([key, collection]) => [key, collection.toArray()])
-     *   .toArray();
-     * // [
-     * //   [
-     * //     "gmail.com",
-     * //     ["alice@gmail.com", "carlos@gmail.com"]
-     * //   ],
-     * //   [
-     * //     "yahoo.com",
-     * //     ["bob@yahoo.com"]
-     * //   ]
-     * // ]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     * collection.apppend(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"]);
+     *   const group = collection
+     *     .groupBy(item => item.split("@")[1])
+     *     .map(([key, collection]) => [key, .toArray()])
+     *     .toArray();
+     *   // [
+     *   //   [
+     *   //     "gmail.com",
+     *   //     ["alice@gmail.com", "carlos@gmail.com"]
+     *   //   ],
+     *   //   [
+     *   //     "yahoo.com",
+     *   //     ["bob@yahoo.com"]
+     *   //   ]
+     *   // ]
+     * }
      * ```
      */
     groupBy<TOutput = TInput>(
@@ -796,31 +993,37 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * By default the equality check occurs on the item.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "a", "a", "b", "b", "c"]);
-     * const count = collection
-     *   .countBy()
-     *   .map(([key, collection]) => [key, collection.toArray()])
-     *   .toArray();
-     * // [
-     * //  ["a", 3],
-     * //  ["b", 2],
-     * //  ["c", 1]
-     * // ]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "a", "a", "b", "b", "c"])
+     *     .countBy()
+     *     .map(([key, collection]) => [key, .toArray()])
+     *     .toArray();
+     *   // [
+     *   //  ["a", 3],
+     *   //  ["b", 2],
+     *   //  ["c", 1]
+     *   // ]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"]);
-     * const count = collection
-     *   .countBy(item => item.split("@")[1])
-     *   .toArray();
-     * // [
-     * //   ["gmail.com", 2],
-     * //   ["yahoo.com", 1]
-     * // ]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"])
+     *     .countBy(item => item.split("@")[1])
+     *     .toArray();
+     *   // [
+     *   //   ["gmail.com", 2],
+     *   //   ["yahoo.com", 1]
+     *   // ]
+     * }
      * ```
      */
     countBy<TOutput = TInput>(
@@ -832,30 +1035,44 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * By default the equality check occurs on the item.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 1, 2, 2, 3, 4, 2]);
-     * collection.unique().toArray();
-     * // [1, 2, 3, 4]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 1, 2, 2, 3, 4, 2])
+     *     .unique()
+     *     .toArray();
+     *   // [1, 2, 3, 4]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([
-     *   { name: "iPhone 6", brand: "Apple", type: "phone" },
-     *   { name: "iPhone 5", brand: "Apple", type: "phone" },
-     *   { name: "Apple Watch", brand: "Apple", type: "watch" },
-     *   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-     *   { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
-     * ]);
-     * const unique = collection.unique({
-     *   selectFn: item => item.brand
-     * }).toArray();
-     * // [
-     * //   { name: "iPhone 6", brand: "Apple", type: "phone" },
-     * //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-     * // ]
+     * type Phone = {
+     *   name: string;
+     *   brand: string;
+     *   type: string;
+     * };
+     *
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<Phone>): void {
+     *   collection
+     *     .apppend([
+     *       { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *       { name: "iPhone 5", brand: "Apple", type: "phone" },
+     *       { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *       { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *       { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+     *     ])
+     *     .unique(item => item.brand)
+     *     .toArray();
+     *   // [
+     *   //   { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *   //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *   // ]
+     * }
      * ```
      */
     unique<TOutput = TInput>(
@@ -867,36 +1084,50 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * By default the equality check occurs on the item.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 2, 3, 4, 5]);
-     * const difference = collection.difference([2, 4, 6, 8]);
-     * difference.toArray();
-     * // [1, 3, 5]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 2, 3, 4, 5])
+     *     .difference([2, 4, 6, 8])
+     *     .toArray();
+     *   // [1, 3, 5]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([
-     *   { name: "iPhone 6", brand: "Apple", type: "phone" },
-     *   { name: "iPhone 5", brand: "Apple", type: "phone" },
-     *   { name: "Apple Watch", brand: "Apple", type: "watch" },
-     *   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-     *   { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
-     * ]);
-     * const difference = collection.difference(
-     *   [
-     *     { name: "Apple Watch", brand: "Apple", type: "watch" },
-     *   ],
-     *   (product) => product.type
-     * );
-     * difference.toArray();
-     * // [
-     * //   { name: "iPhone 6", brand: "Apple", type: "phone" },
-     * //   { name: "iPhone 5", brand: "Apple", type: "phone" },
-     * //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-     * // ]
+     * type Phone = {
+     *   name: string;
+     *   brand: string;
+     *   type: string;
+     * };
+     *
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<Phone>): void {
+     *   collection
+     *     .apppend([
+     *       { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *       { name: "iPhone 5", brand: "Apple", type: "phone" },
+     *       { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *       { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *       { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+     *     ])
+     *     .difference(
+     *       [
+     *         { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *       ],
+     *       (product) => product.type
+     *     )
+     *     .toArray();
+     *   // [
+     *   //   { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *   //   { name: "iPhone 5", brand: "Apple", type: "phone" },
+     *   //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *   // ]
+     * }
      * ```
      */
     difference<TOutput = TInput>(
@@ -908,12 +1139,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>repeat</i> method will repeat the original collection <i>amount</i> times.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3]);
-     * const newCollection = collection.repeat(3);
-     * newCollection.toArray();
-     * // [1, 2, 3,  1, 2, 3,  1, 2, 3]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3])
+     *     .repeat(3)
+     *     .toArray();
+     *   // [1, 2, 3,  1, 2, 3,  1, 2, 3]
+     * }
      * ```
      */
     repeat(amount: number): ICollection<TInput>;
@@ -923,19 +1158,46 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The padding is applied from the start of this collection.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * new ListCollection("abc").padStart(10, "foo").join("");
-     * // "foofoofabc"
-     *
-     * new ListCollection("abc").padStart(6, "123465").join("");
-     * // "123abc"
-     *
-     * new ListCollection("abc").padStart(8, "0").join("");
-     * // "00000abc"
-     *
-     * new ListCollection("abc").padStart(1, "_").join("");
-     * // "abc"
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .append("abc")
+     *     .padStart(10, "foo")
+     *     .join("");
+     *     // "foofoofabc"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .append("abc")
+     *     .padStart(6, "123465")
+     *     .join("");
+     *   // "123abc"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .append("abc")
+     *     .padStart(8, "0")
+     *     .join("");
+     *   // "00000abc"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .append("abc")
+     *     .padStart(1, "_")
+     *     .join("");
+     *   // "abc"
+     * }
      * ```
      */
     padStart<TExtended = TInput>(
@@ -948,19 +1210,56 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The padding is applied from the end of this collection.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * new ListCollection("abc").padEnd(10, "foo").join("");
-     * // "abcfoofoof"
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .append("abc")
+     *     .padEnd(10, "foo")
+     *     .join("");
+     *   // "abcfoofoof"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * new ListCollection("abc").padEnd(6, "123465").join("");
-     * // "abc123"
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .append("abc")
+     *     .padEnd(6, "123465")
+     *     .join("");
+     *   // "abc123"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * new ListCollection("abc").padEnd(8, "0").join("");
-     * // "abc00000"
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .append("abc")
+     *     .padEnd(8, "0")
+     *     .join("");
+     *   // "abc00000"
      *
-     * new ListCollection("abc").padEnd(1, "_").join("");
-     * // "abc"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * import type { ICollection } from "@daiso-tech/core";
+     *
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .append("abc")
+     *     .padEnd(1, "_")
+     *     .join("");
+     *   // "abc"
+     * }
      * ```
      */
     padEnd<TExtended = TInput>(
@@ -973,51 +1272,81 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * where <i>start</i> and <i>end</i> (end not included) represent the index of items in the collection.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
-     * collection.slice(3).toArray();
-     * // ["d", "e", "f"]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "b", "c", "d", "e", "f"])
+     *     .slice(3)
+     *     .toArray();
+     *   // ["d", "e", "f"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
-     * collection.slice(undefined, 2).toArray();
-     * // ["a", "b"]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "b", "c", "d", "e", "f"])
+     *     .slice(undefined, 2)
+     *     .toArray()
+     *   // ["a", "b"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
-     * collection.slice(2, 5).toArray();
-     * // ["c", "d", "e"]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "b", "c", "d", "e", "f"])
+     *     .slice(2, 5)
+     *     .toArray()
+     *   // ["c", "d", "e"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
-     * collection.slice(-2).toArray();
-     * // ["e", "f"]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "b", "c", "d", "e", "f"])
+     *     .slice(-2)
+     *     .toArray();
+     *   // ["e", "f"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
-     * collection.slice(undefined, -2).toArray();
-     * // ["a", "b", "c", "d"]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "b", "c", "d", "e", "f"])
+     *     .slice(undefined, -2)
+     *     .toArray()
+     *   // ["a", "b", "c", "d"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]);
-     * collection.slice(-4, -2).toArray();
-     * // ["c", "d"]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "b", "c", "d", "e", "f"])
+     *     .slice(-4, -2)
+     *     .toArray();
+     *   // ["c", "d"]
+     * }
      * ```
      */
     slice(start?: number, end?: number): ICollection<TInput>;
@@ -1026,11 +1355,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>prepend</i> method adds <i>iterable</i> to the beginning of the collection.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5]).prepend([-1, 20]);
-     * collection.toArray();
-     * // [-1, 20, 1, 2, 3, 4, 5]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 5])
+     *     .prepend([-1, 20])
+     *     .toArray();
+     *   // [-1, 20, 1, 2, 3, 4, 5]
+     * }
      * ```
      */
     prepend<TExtended = TInput>(
@@ -1041,11 +1375,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>append</i> method adds <i>iterable</i> to the end of the collection.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5]).append([-1, -2]);
-     * collection.toArray();
-     * // [1, 2, 3, 4, 5, -1, -2,]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 5])
+     *     .append([-1, -2])
+     *     .toArray();
+     *   // [1, 2, 3, 4, 5, -1, -2,]
+     * }
      * ```
      */
     append<TExtended = TInput>(
@@ -1056,11 +1395,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>insertBefore</i> method adds <i>iterable</i> before the first item that matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 2, 3, 4, 5]).insertBefore(item => item === 2, [-1, 20]);
-     * collection.toArray();
-     * // [1, -1, 20, 2, 2, 3, 4, 5]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 2, 3, 4, 5])
+     *     .insertBefore(item => item === 2, [-1, 20])
+     *     .toArray();
+     *   // [1, -1, 20, 2, 2, 3, 4, 5]
+     * }
      * ```
      */
     insertBefore<TExtended = TInput>(
@@ -1072,11 +1416,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>insertAfter</i> method adds <i>iterable</i> after the first item that matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 2, 3, 4, 5]).insertAfter(item => item === 2, [-1, 20]);
-     * collection.toArray();
-     * // [1, 2, -1, 20, 2, 3, 4, 5]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 2, 3, 4, 5])
+     *     .insertAfter(item => item === 2, [-1, 20])
+     *     .toArray();
+     *   // [1, 2, -1, 20, 2, 3, 4, 5]
+     * }
      * ```
      */
     insertAfter<TExtended = TInput>(
@@ -1088,35 +1437,44 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>crossJoin</i> method cross joins the collection's values among <i>iterables</i>, returning a Cartesian product with all possible permutations.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2]);
-     * const matrix = collection.cross(["a", "b"]);
-     * matrix.toArray();
-     * // [
-     * //  [1, "a"],
-     * //  [1, "b"],
-     * //  [2, "a"],
-     * //  [2, "b"],
-     * // ]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2])
+     *     .cross(["a", "b"])
+     *     .toArray();
+     *   // [
+     *   //  [1, "a"],
+     *   //  [1, "b"],
+     *   //  [2, "a"],
+     *   //  [2, "b"],
+     *   // ]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2]);
-     * const matrix = collection.cross(["a", "b"]).cross(["I", "II"]);
-     * matrix.toArray();
-     * // [
-     * //  [1, "a", "I"],
-     * //  [1, "a", "II"],
-     * //  [1, "b", "I"],
-     * //  [1, "b", "II"],
-     * //  [2, "a", "I"],
-     * //  [2, "a", "II"],
-     * //  [2, "b", "I"],
-     * //  [2, "b", "II"],
-     * // ]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2])
+     *     .cross(["a", "b"])
+     *     .cross(["I", "II"])
+     *     .toArray();
+     *   // [
+     *   //  [1, "a", "I"],
+     *   //  [1, "a", "II"],
+     *   //  [1, "b", "I"],
+     *   //  [1, "b", "II"],
+     *   //  [2, "a", "I"],
+     *   //  [2, "a", "II"],
+     *   //  [2, "b", "I"],
+     *   //  [2, "b", "II"],
+     *   // ]
+     * }
      * ```
      */
     crossJoin<TExtended>(
@@ -1128,30 +1486,42 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The returned collection has size of the shortest collection.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["Chair", "Desk"]);
-     * const zipped = collection.zip([100, 200]);
-     * zipped.toArray();
-     * // [["Chair", 100], ["Desk", 200]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["Chair", "Desk"]);
+     *     .zip([100, 200]);
+     *     .toArray();
+     *   // [["Chair", 100], ["Desk", 200]]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["Chair", "Desk", "Couch"]);
-     * const zipped = collection.zip([100, 200]);
-     * zipped.toArray();
-     * // [["Chair", 100], ["Desk", 200]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["Chair", "Desk", "Couch"])
+     *     .zip([100, 200])
+     *     .toArray();
+     *   // [["Chair", 100], ["Desk", 200]]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["Chair", "Desk"]);
-     * const zipped = collection.zip([100, 200, 300]);
-     * zipped.toArray();
-     * // [["Chair", 100], ["Desk", 200]]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["Chair", "Desk"])
+     *     .zip([100, 200, 300])
+     *     .toArray();
+     *   // [["Chair", 100], ["Desk", 200]]
+     * }
      * ```
      */
     zip<TExtended>(
@@ -1162,29 +1532,44 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>sort</i> method sorts the collection. You can provide a <i>comparator</i> function.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([-1, 2, 4, 3]);
-     * collection.sort().toArray();
-     * // [-1, 2, 3, 4]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([-1, 2, 4, 3])
+     *     .sort()
+     *     .toArray()
+     *   // [-1, 2, 3, 4]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([
-     *   { name: "Anders", age: 30 },
-     *   { name: "Joe", age: 20 },
-     *   { name: "Hasan", age: 25 },
-     *   { name: "Linda", age: 19 }
-     * ]);
-     * collection.sort(({ age: ageA }, { age: ageB }) => ageA - ageB).toArray();
-     * // [
-     * //   { name: "Linda", age: 19 }
-     * //   { name: "Joe", age: 20 },
-     * //   { name: "Hasan", age: 25 },
-     * //   { name: "Anders", age: 30 },
-     * // ]
+     * type Person = {
+     *   name: string;
+     *   age: number;
+     * };
+     *
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<Person>): void {
+     *   collection
+     *     .apppend([
+     *       { name: "Anders", age: 30 },
+     *       { name: "Joe", age: 20 },
+     *       { name: "Hasan", age: 25 },
+     *       { name: "Linda", age: 19 }
+     *     ])
+     *     .sort(({ age: ageA }, { age: ageB }) => ageA - ageB)
+     *     .toArray();
+     *   // [
+     *   //   { name: "Linda", age: 19 }
+     *   //   { name: "Joe", age: 20 },
+     *   //   { name: "Hasan", age: 25 },
+     *   //   { name: "Anders", age: 30 },
+     *   // ]
+     * }
      * ```
      */
     sort(comparator?: Comparator<TInput>): ICollection<TInput>;
@@ -1194,11 +1579,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The reversing of the collection will be applied in chunks that are the size of <i> chunkSize </i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([-1, 2, 4, 3]);
-     * collection.reverse().toArray();
-     * // [3, 4, 2, -1]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([-1, 2, 4, 3])
+     *     .reverse()
+     *     .toArray();
+     *   // [3, 4, 2, -1]
+     * }
      * ```
      */
     reverse(chunkSize?: number): ICollection<TInput>;
@@ -1213,26 +1603,39 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than null i returned.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.first();
-     * // 1
-     * @example
-     * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
-     *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.first(item => item > 2);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .first();
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.first(item => item > 10);
-     * // null
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .first(item => item > 2);
+     *   // 3
+     * }
+     * ```
+     * @example
+     * ```ts
+     * import type { ICollection } from "@daiso-tech/core";
+     *
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .first(item => item > 10);
+     *   // null
+     * }
      * ```
      * // 3
      */
@@ -1245,35 +1648,51 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than <i> defaultValue </i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.firstOr(-1);
-     * // 1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .firstOr(-1);
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.firstOr(-1, item => item > 2);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .firstOr(-1, item => item > 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.firstOr(-1, item => item > 10);
-     * // -1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .firstOr(-1, item => item > 10);
+     *   // -1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.firstOr(() => -1, item => item > 10);
-     * // -1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .firstOr(() => -1, item => item > 10);
+     *   // -1
+     * }
      * ```
      */
     firstOr<TOutput extends TInput, TExtended = TInput>(
@@ -1287,27 +1706,39 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.firstOrFail();
-     * // 1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .firstOrFail();
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.firstOrFail(item => item > 2);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .firstOrFail(item => item > 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.firstOrFail(item => item > 10);
-     * // throws an error
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .firstOrFail(item => item > 10);
+     *   // throws an error
+     * }
      * ```
      */
     firstOrFail<TOutput extends TInput>(
@@ -1319,29 +1750,40 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than null i returned.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.last();
-     * // 4
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .last();
+     *   // 4
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.last(item => item < 4);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .last(item => item < 4);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.last(item => item > 10);
-     * // null
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .last(item => item > 10);
+     *   // null
+     * }
      * ```
-     * // 3
      */
     last<TOutput extends TInput>(
         predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
@@ -1352,35 +1794,51 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than <i> defaultValue </i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.lastOr(-1);
-     * // 4
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .lastOr(-1);
+     *   // 4
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.lastOr(-1, item => item < 4);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .lastOr(-1, item => item < 4);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.lastOr(-1, item => item > 10);
-     * // -1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .lastOr(-1, item => item > 10);
+     *   // -1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.lastOr(() => -1, item => item > 10);
-     * // -1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .lastOr(() => -1, item => item > 10);
+     *   // -1
+     * }
      * ```
      */
     lastOr<TOutput extends TInput, TExtended = TInput>(
@@ -1394,27 +1852,39 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.lastOrFail();
-     * // 4
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .lastOrFail();
+     *   // 4
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.lastOrFail(item => item < 4);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .lastOrFail(item => item < 4);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.lastOrFail(item => item > 10);
-     * // throws an error
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .lastOrFail(item => item > 10);
+     *     .apppend([1, 2, 3, 4])
+     *   // throws an error
+     * }
      * ```
      */
     lastOrFail<TOutput extends TInput>(
@@ -1426,19 +1896,27 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * If the <i>predicateFn</i> does not match or matches the first item then null is returned.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.before(item => item === 2);
-     * // 1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .before(item => item === 2);
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.before(item => item === 1);
-     * // null
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .before(item => item === 1);
+     *   // null
+     * }
      * ```
      */
     before(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput | null;
@@ -1448,27 +1926,39 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the first item then <i>defaultValue</i> is returned.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.beforeOr(-1, item => item === 2);
-     * // 1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .beforeOr(-1, item => item === 2);
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.beforeOr(-1, item => item === 1);
-     * // -1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .beforeOr(-1, item => item === 1);
+     *   // -1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.beforeOr(() => -1, item => item === 1);
-     * // -1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .beforeOr(() => -1, item => item === 1);
+     *   // -1
+     * }
      * ```
      */
     beforeOr<TExtended = TInput>(
@@ -1482,19 +1972,27 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.beforeOrFail(item => item === 2);
-     * // 1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .beforeOrFail(item => item === 2);
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.beforeOrFail(item => item === 1);
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .beforeOrFail(item => item === 1);
      * // error is thrown
+     * }
      * ```
      */
     beforeOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput;
@@ -1504,19 +2002,27 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then null is returned.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.after(item => item === 2);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .after(item => item === 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.after(item => item === 4);
-     * // null
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .after(item => item === 4);
+     *   // null
+     * }
      * ```
      */
     after(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput | null;
@@ -1526,27 +2032,39 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then <i>defaultValue</i> is returned.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.afterOr(-1, item => item === 2);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .afterOr(-1, item => item === 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.afterOr(-1, item => item === 4);
-     * // -1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .afterOr(-1, item => item === 4);
+     *   // -1
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.afterOr(() => -1, item => item === 4);
-     * // -1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .afterOr(() => -1, item => item === 4);
+     *   // -1
+     * }
      * ```
      */
     afterOr<TExtended = TInput>(
@@ -1560,19 +2078,27 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.afterOrFail(item => item === 2);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .afterOrFail(item => item === 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4]);
-     * collection.afterOrFail(item => item === 4);
-     * // error is thrown
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4])
+     *     .afterOrFail(item => item === 4);
+     *   // error is thrown
+     * }
      * ```
      */
     afterOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput;
@@ -1584,27 +2110,39 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5]);
-     * collection.sole(item => item === 4);
-     * // 4
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 5])
+     *     .sole(item => item === 4);
+     *   // 4
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 4, 5]);
-     * collection.sole(item => item === 4);
-     * // error is thrown
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 4, 5])
+     *     .sole(item => item === 4);
+     *   // error is thrown
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 5]);
-     * collection.sole(item => item === 4);
-     * // error is thrown
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 5])
+     *     .sole(item => item === 4);
+     *   // error is thrown
+     * }
      * ```
      */
     sole<TOutput extends TInput>(
@@ -1615,11 +2153,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>nth</i> method creates a new collection consisting of every n-th item.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "c", "d", "e", "f"]).nth(4);
-     * collection.toArray();
-     * // ["a", "e"]
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "b", "c", "d", "e", "f"])
+     *     .nth(4)
+     *     .toArray();
+     *   // ["a", "e"]
+     * }
      * ```
      */
     nth(step: number): ICollection<TInput>;
@@ -1628,11 +2171,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>count</i> method returns the total number of items in the collection that passes <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection([1, 2, 3, 4, 5, 6]);
-     * collection.count(value => value % 2 === 0);
-     * // 3
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<number>): void {
+     *   collection
+     *     .apppend([1, 2, 3, 4, 5, 6])
+     *     .count(value => value % 2 === 0);
+     *   // 3
+     * }
      * ```
      */
     count(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
@@ -1656,11 +2203,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>searchFirst</i> return the index of the first item that matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "b", "c"]);
-     * collection.searchFirst(item => item === "b");
-     * // 1
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "b", "b", "c"])
+     *     .searchFirst(item => item === "b");
+     *   // 1
+     * }
      * ```
      */
     searchFirst(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
@@ -1669,11 +2220,15 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
      * The <i>searchLast</i> return the index of the last item that matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import type { ICollection } from "@daiso-tech/core";
      *
-     * const collection = new ListCollection(["a", "b", "b", "c"]);
-     * collection.searchLast(item => item === "b");
-     * // 2
+     * // Assume the inputed collection is empty.
+     * function main(collection: ICollection<string>): void {
+     *   collection
+     *     .apppend(["a", "b", "b", "c"])
+     *     .searchLast(item => item === "b");
+     *   // 2
+     * }
      * ```
      */
     searchLast(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
@@ -1690,12 +2245,14 @@ export type ICollection<TInput = unknown> = Iterable<TInput> & {
 
     /**
      * The <i>toRecord</i> method converts the collection to a new <i>{@link Record}</i>.
+     * An error will be thrown if item is not a tuple of size 2 where the first element is a string or a number.
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     toRecord(): EnsureRecord<TInput>;
 
     /**
      * The <i>toMap</i> method converts the collection to a new <i>{@link Map}</i>.
+     * An error will be thrown if item is not a tuple of size 2.
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     toMap(): EnsureMap<TInput>;

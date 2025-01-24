@@ -70,12 +70,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>filter</i> method filters the collection using <i>predicateFn</i>, keeping only those items that pass <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5, 6]);
-     * const filtered = collection.filter(item => 2 < item && item < 5);
-     * await filtered.toArray();
-     * // [3, 4]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6])
+     *     .filter(item => 2 < item && item < 5)
+     *     .toArray();
+     *   // [3, 4]
+     * }
      * ```
      */
     filter<TOutput extends TInput>(
@@ -86,12 +90,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>reject</i> method filters the collection using <i>predicateFn</i>, keeping only those items that not pass <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5, 6]);
-     * const filtered = collection.reject(item => 2 < item && item < 5);
-     * await filtered.toArray();
-     * // [1, 2, 5, 6]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6])
+     *     .reject(item => 2 < item && item < 5)
+     *     .toArray();
+     *   // [1, 2, 5, 6]
+     * }
      * ```
      */
     reject<TOutput extends TInput>(
@@ -103,12 +111,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>mapFn</i> is free to modify the item and return it, thus forming a new collection of modified items.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-     * const mapped = collection.map(item => item * 2);
-     * await mapped.toArray();
-     * // [2, 4, 6, 8, 10]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .map(item => item * 2)
+     *     .toArray();
+     *   // [2, 4, 6, 8, 10]
+     * }
      * ```
      */
     map<TOutput>(
@@ -120,25 +132,34 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The final result of running the reducer across all items of the array is a single value.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3]);
-     * await collection.reduce((sum, item) => sum + item);
-     * // 6
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3])
+     *     .reduce((sum, item) => sum + item);
+     *   // 6
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "c"]);
-     * await collection.entries().reduce(
-     *   (record, [key, value]) => ({
-     *     ...record,
-     *     [key]: value
-     *   }),
-     *   {} as Record<number, string>
-     * );
-     * // { 0: "a", 1: "b", 2: "c" }
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "b", "c"])
+     *     .entries()
+     *     .reduce(
+     *       (record, [key, value]) => ({
+     *         ...record,
+     *         [key]: value
+     *       }),
+     *       {} as Record<number, string>
+     *     );
+     *   // { 0: "a", 1: "b", 2: "c" }
+     * }
      * ```
      */
     reduce(
@@ -159,19 +180,29 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {TypeCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.map(item => item.toString()).join();
-     * // "1,2,3,4"
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .map(item => item.toString())
+     *     .join();
+     *   // "1,2,3,4"
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.map(item => item.toString()).join("_");
-     * // "1_2_3_4"
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .map(item => item.toString())
+     *     .join("_");
+     *   // "1_2_3_4"
+     * }
      * ```
      */
     join(separator?: string): LazyPromise<Extract<TInput, string>>;
@@ -180,12 +211,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>collapse</i> method collapses a collection of iterables into a single, flat collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([[1, 2], [3, 4]]);
-     * const collapsed = collection.collapse();
-     * await collapsed.toArray();
-     * // [1, 2, 3, 4]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number[]>): Promise<void> {
+     *   await collection
+     *     .append([[1, 2], [3, 4]])
+     *     .collapse()
+     *     .toArray();
+     *   // [1, 2, 3, 4]
+     * }
      * ```
      */
     collapse(): IAsyncCollection<AsyncCollapse<TInput>>;
@@ -195,11 +230,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * It is identical to a <i>map</i> method followed by a <i>collapse</i> method.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([["a", "b"], ["c", "d"]]).flatMap(item => [item.length, ...item]);
-     * await collection.toArray();
-     * // [2, "a", "b", 2, "c", "d"]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string[]>): Promise<void> {
+     *   await collection
+     *     .append([["a", "b"], ["c", "d"]])
+     *     .flatMap(item => [item.length, ...item])
+     *     .toArray();
+     *   // [2, "a", "b", 2, "c", "d"]
+     * }
      * ```
      */
     flatMap<TOutput>(
@@ -210,12 +250,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>change</i> method changes only the items that passes <i>predicateFn</i> using <i>mapFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-     * const newCollection = collection.change(item => item % 2 === 0, item => item * 2);
-     * await newCollection.toArray();
-     * // [1, 4, 3, 8, 5]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .change(item => item % 2 === 0, item => item * 2)
+     *     .toArray();
+     *   // [1, 4, 3, 8, 5]
+     * }
      * ```
      */
     change<TFilterOutput extends TInput, TMapOutput>(
@@ -231,21 +275,29 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>set</i> method changes a item by i>index</i> using <i>value</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-     * const newCollection = collection.set(1, -1);
-     * await newCollection.toArray();
-     * // [1, -1, 3, 4, 5]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .set(1, -1)
+     *     .toArray();
+     *   // [1, -1, 3, 4, 5]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-     * const newCollection = collection.set(1, (prevValue) => prevValue - 2);
-     * await newCollection.toArray();
-     * // [1, 0, 3, 4, 5]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .set(1, (prevValue) => prevValue - 2)
+     *     .toArray();
+     *   // [1, 0, 3, 4, 5]
+     * }
      * ```
      */
     set(
@@ -257,14 +309,18 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>get</i> method returns the item by index. If the item is not found null will returned.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 4, 2, 8, -2]);
-     * // Will be 2
-     * await collection.get(2);
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *    collection = collection.append([1, 4, 2, 8, -2]);
      *
-     * // Will be null
-     * await collection.get(5);
+     *    // Will be 2
+     *    await collection.get(2);
+     *
+     *    // Will be null
+     *    await collection.get(5);
+     * }
      * ```
      */
     get(index: number): LazyPromise<TInput | null>;
@@ -274,14 +330,18 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 4, 2, 8, -2]);
-     * // Will be 2
-     * await collection.getOrFail(2);
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   collection = collection.append([1, 4, 2, 8, -2]);
      *
-     * // An error will thrown
-     * await collection.getOrFail(5);
+     *   // Will be 2
+     *   await collection.getOrFail(2);
+     *
+     *   // An error will thrown
+     *   await collection.getOrFail(5);
+     * }
      * ```
      */
     getOrFail(index: number): LazyPromise<TInput>;
@@ -290,12 +350,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>page</i> method returns a new collection containing the items that would be present on <i> page </i> with custom <i> pageSize </i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-     * const page = collection.page(2, 3);
-     * await page.toArray();
-     * // [4, 5, 6]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6, 7, 8, 9])
+     *     .page(2, 3)
+     *     .toArray();
+     *   // [4, 5, 6]
+     * }
      * ```
      */
     page(page: number, pageSize: number): IAsyncCollection<TInput>;
@@ -306,11 +370,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3]);
-     * await collection.sum();
-     * // 6
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3])
+     *     .sum();
+     *   // 6
+     * }
      * ```
      */
     sum(): LazyPromise<Extract<TInput, number>>;
@@ -321,11 +389,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3]);
-     * await collection.average();
-     * // 2
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3])
+     *     .average();
+     *   // 2
+     * }
      * ```
      */
     average(): LazyPromise<Extract<TInput, number>>;
@@ -336,11 +408,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3]);
-     * await collection.median();
-     * // 2
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3])
+     *     .median();
+     *   // 2
+     * }
      * ```
      */
     median(): LazyPromise<Extract<TInput, number>>;
@@ -351,11 +427,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3]);
-     * await collection.min();
-     * // 1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3])
+     *     .min();
+     *   // 1
+     * }
      * ```
      */
     min(): LazyPromise<Extract<TInput, number>>;
@@ -366,11 +446,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3]);
-     * await collection.max();
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3])
+     *     .max();
+     *   // 3
+     * }
      * ```
      */
     max(): LazyPromise<Extract<TInput, number>>;
@@ -380,11 +464,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 1, 2, 2, 2, 3]);
-     * await collection.percentage(value => value === 1);
-     * // 33.333
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 1, 2, 2, 2, 3])
+     *     .percentage(value => value === 1);
+     *   // 33.333
+     * }
      * ```
      */
     percentage(
@@ -395,11 +483,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>some</i> method determines whether at least one item in the collection matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([0, 1, 2, 3, 4, 5]);
-     * await collection.some(item => item === 1);
-     * // true
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([0, 1, 2, 3, 4, 5])
+     *     .some(item => item === 1);
+     *   // true
+     * }
      * ```
      */
     some<TOutput extends TInput>(
@@ -410,11 +502,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>every</i> method determines whether all items in the collection matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([0, 1, 2, 3, 4, 5]);
-     * await collection.every(item => item < 6);
-     * // true
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([0, 1, 2, 3, 4, 5])
+     *     .every(item => item < 6);
+     *   // true
+     * }
      * ```
      */
     every<TOutput extends TInput>(
@@ -425,21 +521,29 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>take</i> method takes the first <i>limit</i> items.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([0, 1, 2, 3, 4, 5]);
-     * const chunk = collection.take(3);
-     * await chunk.toArray();
-     * // [0, 1, 2]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([0, 1, 2, 3, 4, 5])
+     *     .take(3)
+     *     .toArray();
+     *   // [0, 1, 2]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([0, 1, 2, 3, 4, 5]);
-     * const chunk = collection.take(-2);
-     * await chunk.toArray();
-     * // [0, 1, 2, 3]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([0, 1, 2, 3, 4, 5])
+     *     .take(-2)
+     *     .toArray();
+     *   // [0, 1, 2, 3]
+     * }
      * ```
      */
     take(limit: number): IAsyncCollection<TInput>;
@@ -448,12 +552,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>takeUntil</i> method takes items until <i>predicateFn</i> returns true.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * const chunk = collection.takeUntil(item => item >= 3);
-     * await chunk.toArray();
-     * // [1, 2]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .takeUntil(item => item >= 3)
+     *     .toArray();
+     *   // [1, 2]
+     * }
      * ```
      */
     takeUntil(
@@ -464,12 +572,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>takeWhile</i> method takes items until <i>predicateFn</i> returns false.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * const chunk = collection.takeWhile(item => item < 4);
-     * await chunk.toArray();
-     * // [1, 2, 3]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .takeWhile(item => item < 4)
+     *     .toArray();
+     *   // [1, 2, 3]
+     * }
      * ```
      */
     takeWhile(
@@ -480,11 +592,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>skip</i> method skips the first <i>offset</i> items.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).skip(4);
-     * await collection.toArray();
-     * // [5, 6, 7, 8, 9, 10]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+     *     .skip(4)
+     *     .toArray();
+     *   // [5, 6, 7, 8, 9, 10]
+     * }
      * ```
      */
     skip(offset: number): IAsyncCollection<TInput>;
@@ -493,11 +610,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>skipUntil</i> method skips items until <i>predicateFn</i> returns true.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]).skipUntil(item => item >= 3);
-     * await collection.toArray();
-     * // [3, 4]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .skipUntil(item => item >= 3)
+     *     .toArray();
+     *   // [3, 4]
+     * }
      * ```
      */
     skipUntil(
@@ -508,11 +630,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>skipWhile</i> method skips items until <i>predicateFn</i> returns false.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]).skipWhile(item => item <= 3);
-     * await collection.toArray();
-     * // [4]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .skipWhile(item => item <= 3)
+     *   .toArray();
+     *   // [4]
+     * }
      * ```
      */
     skipWhile(
@@ -523,13 +650,17 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>when</i> method will execute <i>callback</i> when <i>condition</i> evaluates to true.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4])
-     *  .when(true, collection => collection.append([-3]))
-     *  .when(false, collection => collection.append([20]));
-     * await collection.toArray();
-     * // [1, 2, 3, 4, -3]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .when(true, collection => collection.append([-3]))
+     *     .when(false, collection => collection.append([20]))
+     *     .toArray();
+     *   // [1, 2, 3, 4, -3]
+     * }
      * ```
      */
     when<TExtended = TInput>(
@@ -544,21 +675,29 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>whenEmpty</i> method will execute <i>callback</i> when the collection is empty.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([])
-     *  .whenEmpty(collection => collection.append([-3]))
-     * await collection.toArray();
-     * // [-3]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([])
+     *     .whenEmpty(collection => collection.append([-3]))
+     *     .toArray();
+     *   // [-3]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1])
-     *  .whenEmpty(collection => collection.append([-3]))
-     * await collection.toArray();
-     * // [1]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1])
+     *     .whenEmpty(collection => collection.append([-3]))
+     *     .toArray();
+     *   // [1]
+     * }
      * ```
      */
     whenEmpty<TExtended = TInput>(
@@ -572,13 +711,17 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>whenNot</i> method will execute <i>callback</i> when <i>condition</i> evaluates to false.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4])
-     *  .whenNot(true, collection => collection.append([-3]))
-     *  .whenNot(false, collection => collection.append([20]));
-     * await collection.toArray();
-     * // [1, 2, 3, 4, 20]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .whenNot(true, collection => collection.append([-3]))
+     *     .whenNot(false, collection => collection.append([20]))
+     *     .toArray();
+     *   // [1, 2, 3, 4, 20]
+     * }
      * ```
      */
     whenNot<TExtended = TInput>(
@@ -593,21 +736,28 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>whenNotEmpty</i> method will execute <i>callback</i> when the collection is not empty.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([])
-     *  .whenNotEmpty(collection => collection.append([-3]))
-     * await collection.toArray();
-     * // []
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([])
+     *     .whenNotEmpty(collection => collection.append([-3])).toArray();
+     *   // []
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1])
-     *  .whenNotEmpty(collection => collection.append([-3]))
-     * await collection.toArray();
-     * // [1, -3]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1])
+     *     .whenNotEmpty(collection => collection.append([-3]))
+     *     .toArray();
+     *   // [1, -3]
+     * }
      * ```
      */
     whenNotEmpty<TExtended = TInput>(
@@ -622,22 +772,26 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * This method is useful when you want compose multiple smaller functions.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, "2", "a", 1, 3, {}]);
-     * function toNbrs<TInput>(
-     *       collection: IAsyncCollection<TInput>,
-     * ): IAsyncCollection<number> {
-     *   return collection
-     *     .map((item) => Number(item))
-     *     .reject((nbr) => Number.isNaN(nbr));
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   function toNbrs<TInput>(
+     *     collection: IAsyncCollection<TInput>,
+     *   ): IAsyncCollection<number> {
+     *     return collection
+     *       .map((item) => Number(item))
+     *       .reject((nbr) => Number.isNaN(nbr));
+     *   }
+     *   function nbrToStr(collection: IAsyncCollection<number>): number[] {
+     *     return collection.repeat(2).toArray();
+     *   }
+     *   await collection
+     *     .append([1, "2", "a", 1, 3, {}])
+     *     .pipe(toNbrs)
+     *     .then(nbrToStr);
+     *   // [ 1, 2, 1, 3 ]
      * }
-     * function nbrToStr(collection: IAsyncCollection<number>): number[] {
-     *   return collection.repeat(2).toArray();
-     * }
-     * const piped = await collection.pipe(toNbrs).then(nbrToStr);
-     * console.log(piped);
-     * // [ 1, 2, 1, 3 ]
      * ```
      */
     pipe<TOutput = TInput>(
@@ -648,16 +802,20 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>tap</i> method passes a copy of the original collection to <i>callback</i>, allowing you to do something with the items while not affecting the original collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = await new AsyncIterableCollection([1, 2, 3, 4, 5, 6])
-     *   .tap(collection => {
-     *     collection
-     *       .filter(value => value % 2 === 0)
-     *       .forEach(value => console.log(value))
-     *   })
-     *   .toArray();
-     * // [1, 2, 3, 4, 5, 6]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6])
+     *     .tap(collection => {
+     *       collection
+     *         .filter(value => value % 2 === 0)
+     *         .forEach(value => console.log(value))
+     *     })
+     *     .toArray();
+     *   // [1, 2, 3, 4, 5, 6]
+     * }
      * ```
      */
     tap(callback: AsyncTap<IAsyncCollection<TInput>>): IAsyncCollection<TInput>;
@@ -667,12 +825,17 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * If <i>chunkSize</i> is not divisible with total number of items then the last chunk will contain the remaining items.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5, 6, 7]);
-     * const chunks = collection.chunk(4);
-     * await chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2, 3, 4], [5, 6, 7]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6, 7])
+     *     .chunk(4)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2, 3, 4], [5, 6, 7]]
+     * }
      * ```
      */
     chunk(chunkSize: number): IAsyncCollection<IAsyncCollection<TInput>>;
@@ -682,14 +845,19 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The chunk variable passed to the <i>predicateFn</i> may be used to inspect the previous item.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection("AABBCCCD");
-     * const chunks = collection.chunkWhile((value, index, chunk) => {
-     *  return value === chunk.last();
-     * });
-     * await chunks.map(chunk => chunk.toArray()).toArray();
-     * //  [["A", "A"], ["B", "B"], ["C", "C", "C"], ["D"]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append("AABBCCCD")
+     *     .chunkWhile((value, index, chunk) => {
+     *       return value === chunk.last();
+     *     })
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   //  [["A", "A"], ["B", "B"], ["C", "C", "C"], ["D"]]
+     * }
      * ```
      */
     chunkWhile(
@@ -700,30 +868,45 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>split</i> method breaks a collection evenly into <i>chunkAmount</i> of chunks.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-     * const chunks = collection.split(3);
-     * await chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2], [3, 4], [5]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .split(3)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2], [3, 4], [5]]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5, 6]);
-     * const chunks = collection.split(3);
-     * await chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2], [3, 4], [5, 6]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6])
+     *     .split(3)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2], [3, 4], [5, 6]]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5, 6, 7]);
-     * const chunks = collection.split(3);
-     * await chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2, 7], [3, 4], [5, 6]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6, 7])
+     *     .split(3)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2, 7], [3, 4], [5, 6]]
+     * }
      */
     split(chunkAmount: number): IAsyncCollection<IAsyncCollection<TInput>>;
 
@@ -731,12 +914,17 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>partition</i> method is used to separate items that pass <i>predicateFn</i> from those that do not.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5, 6]);
-     * const chunks = collection.partition(item => item < 3);
-     * await chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2], [3, 4, 5, 6]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6])
+     *     .partition(item => item < 3)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2], [3, 4, 5, 6]]
+     * }
      * ```
      */
     partition(
@@ -747,12 +935,17 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>sliding</i> method returns a new collection of chunks representing a "sliding window" view of the items in the collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5])
-     * const chunks = collection.sliding(2);
-     * await chunks.map(chunk => chunk.toArray()).toArray();
-     * // [[1, 2], [2, 3], [3, 4], [4, 5]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .sliding(2)
+     *     .map(chunk => chunk.toArray())
+     *     .toArray();
+     *   // [[1, 2], [2, 3], [3, 4], [4, 5]]
+     * }
      * ```
      */
     sliding(
@@ -765,47 +958,53 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * By default the equality check occurs on the item.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "a", "a", "b", "b", "c"]);
-     * const group = await collection
-     *   .groupBy()
-     *   .map(([key, collection]) => [key, collection.toArray()])
-     *   .toArray();
-     * // [
-     * //  [
-     * //    "a",
-     * //    ["a", "a", "a"]
-     * //  ],
-     * //  [
-     * //    "b",
-     * //    ["b", "b"]
-     * //  ],
-     * //  [
-     * //    "c",
-     * //    ["c"]
-     * //  ]
-     * // ]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "a", "a", "b", "b", "c"])
+     *     .groupBy()
+     *     .map(([key, collection]) => [key, collection.toArray()])
+     *     .toArray();
+     *   // [
+     *   //  [
+     *   //    "a",
+     *   //    ["a", "a", "a"]
+     *   //  ],
+     *   //  [
+     *   //    "b",
+     *   //    ["b", "b"]
+     *   //  ],
+     *   //  [
+     *   //    "c",
+     *   //    ["c"]
+     *   //  ]
+     *   // ]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"]);
-     * const group = await collection
-     *   .groupBy(item => item.split("@")[1])
-     *   .map(([key, collection]) => [key, collection.toArray()])
-     *   .toArray();
-     * // [
-     * //   [
-     * //     "gmail.com",
-     * //     ["alice@gmail.com", "carlos@gmail.com"]
-     * //   ],
-     * //   [
-     * //     "yahoo.com",
-     * //     ["bob@yahoo.com"]
-     * //   ]
-     * // ]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"])
+     *     .groupBy(item => item.split("@")[1])
+     *     .map(([key, collection]) => [key, collection.toArray()])
+     *     .toArray();
+     *   // [
+     *   //   [
+     *   //     "gmail.com",
+     *   //     ["alice@gmail.com", "carlos@gmail.com"]
+     *   //   ],
+     *   //   [
+     *   //     "yahoo.com",
+     *   //     ["bob@yahoo.com"]
+     *   //   ]
+     *   // ]
+     * }
      * ```
      */
     groupBy<TOutput = TInput>(
@@ -817,31 +1016,37 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * By default the equality check occurs on the item.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "a", "a", "b", "b", "c"]);
-     * const count = await collection
-     *   .countBy()
-     *   .map(([key, collection]) => [key, collection.toArray()])
-     *   .toArray();
-     * // [
-     * //  ["a", 3],
-     * //  ["b", 2],
-     * //  ["c", 1]
-     * // ]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *      .append(["a", "a", "a", "b", "b", "c"])
+     *     .countBy()
+     *     .map(([key, collection]) => [key, collection.toArray()])
+     *     .toArray();
+     *   // [
+     *   //  ["a", 3],
+     *   //  ["b", 2],
+     *   //  ["c", 1]
+     *   // ]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"]);
-     * const count = await collection
-     *   .countBy(item => item.split("@")[1])
-     *   .toArray();
-     * // [
-     * //   ["gmail.com", 2],
-     * //   ["yahoo.com", 1]
-     * // ]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"])
+     *     .countBy(item => item.split("@")[1])
+     *     .toArray();
+     *   // [
+     *   //   ["gmail.com", 2],
+     *   //   ["yahoo.com", 1]
+     *   // ]
+     * }
      * ```
      */
     countBy<TOutput = TInput>(
@@ -853,30 +1058,44 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * By default the equality check occurs on the item.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 1, 2, 2, 3, 4, 2]);
-     * await collection.unique().toArray();
-     * // [1, 2, 3, 4]
+     * type Phone = {
+     *   name: string;
+     *   brand: string;
+     *   type: string;
+     * };
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<Phone>): Promise<void> {
+     *   await collection
+     *     .append([1, 1, 2, 2, 3, 4, 2])
+     *     .unique()
+     *     .toArray();
+     *   // [1, 2, 3, 4]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([
-     *   { name: "iPhone 6", brand: "Apple", type: "phone" },
-     *   { name: "iPhone 5", brand: "Apple", type: "phone" },
-     *   { name: "Apple Watch", brand: "Apple", type: "watch" },
-     *   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-     *   { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
-     * ]);
-     * const unique = await collection.unique({
-     *   selectFn: item => item.brand
-     * }).toArray();
-     * // [
-     * //   { name: "iPhone 6", brand: "Apple", type: "phone" },
-     * //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-     * // ]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([
+     *       { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *       { name: "iPhone 5", brand: "Apple", type: "phone" },
+     *       { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *       { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *       { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+     *     ])
+     *     .unique(item => item.brand)
+     *     .toArray();
+     *   // [
+     *   //   { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *   //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *   // ]
+     * }
      * ```
      */
     unique<TOutput = TInput>(
@@ -888,36 +1107,50 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * By default the equality check occurs on the item.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 2, 3, 4, 5]);
-     * const difference = collection.difference([2, 4, 6, 8]);
-     * await difference.toArray();
-     * // [1, 3, 5]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 2, 3, 4, 5])
+     *     .difference([2, 4, 6, 8])
+     *     .toArray();
+     *   // [1, 3, 5]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([
-     *   { name: "iPhone 6", brand: "Apple", type: "phone" },
-     *   { name: "iPhone 5", brand: "Apple", type: "phone" },
-     *   { name: "Apple Watch", brand: "Apple", type: "watch" },
-     *   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-     *   { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
-     * ]);
-     * const difference = collection.difference(
-     *   [
-     *     { name: "Apple Watch", brand: "Apple", type: "watch" },
-     *   ],
-     *   (product) => product.type
-     * );
-     * await difference.toArray();
-     * // [
-     * //   { name: "iPhone 6", brand: "Apple", type: "phone" },
-     * //   { name: "iPhone 5", brand: "Apple", type: "phone" },
-     * //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-     * // ]
+     * type Phone = {
+     *   name: string;
+     *   brand: string;
+     *   type: string;
+     * };
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<Phone>): Promise<void> {
+     *   await collection
+     *     .append([
+     *       { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *       { name: "iPhone 5", brand: "Apple", type: "phone" },
+     *       { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *       { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *       { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+     *     ])
+     *     .difference(
+     *       [
+     *         { name: "Apple Watch", brand: "Apple", type: "watch" },
+     *       ],
+     *       (product) => product.type
+     *     )
+     *     .toArray();
+     *   // [
+     *   //   { name: "iPhone 6", brand: "Apple", type: "phone" },
+     *   //   { name: "iPhone 5", brand: "Apple", type: "phone" },
+     *   //   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+     *   // ]
+     * }
      * ```
      */
     difference<TOutput = TInput>(
@@ -929,12 +1162,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>repeat</i> method will repeat the original collection <i>amount</i> times.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3]);
-     * const newCollection = collection.repeat(3);
-     * await newCollection.toArray();
-     * // [1, 2, 3,  1, 2, 3,  1, 2, 3]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3])
+     *     .repeat(3)
+     *     .toArray();
+     *   // [1, 2, 3,  1, 2, 3,  1, 2, 3]
+     * }
      * ```
      */
     repeat(amount: number): IAsyncCollection<TInput>;
@@ -944,19 +1181,46 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The padding is applied from the start of this collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * await new AsyncIterableCollection("abc").padStart(10, "foo").join("");
-     * // "foofoofabc"
-     *
-     * await new AsyncIterableCollection("abc").padStart(6, "123465").join("");
-     * // "123abc"
-     *
-     * await new AsyncIterableCollection("abc").padStart(8, "0").join("");
-     * // "00000abc"
-     *
-     * await new AsyncIterableCollection("abc").padStart(1, "_").join("");
-     * // "abc"
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append("abc")
+     *     .padStart(10, "foo")
+     *     .join("");
+     *   // "foofoofabc"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append("abc")
+     *     .padStart(6, "123465")
+     *     .join("");
+     *   // "123abc"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append("abc")
+     *     .padStart(8, "0")
+     *     .join("");
+     *   // "00000abc"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append("abc")
+     *     .padStart(1, "_")
+     *     .join("");
+     *   // "abc"
+     * }
      * ```
      */
     padStart<TExtended = TInput>(
@@ -969,19 +1233,46 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The padding is applied from the end of this collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * await new AsyncIterableCollection("abc").padEnd(10, "foo").join("");
-     * // "abcfoofoof"
-     *
-     * await new AsyncIterableCollection("abc").padEnd(6, "123465").join("");
-     * // "abc123"
-     *
-     * await new AsyncIterableCollection("abc").padEnd(8, "0").join("");
-     * // "abc00000"
-     *
-     * await new AsyncIterableCollection("abc").padEnd(1, "_").join("");
-     * // "abc"
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append("abc")
+     *     .padEnd(10, "foo")
+     *     .join("");
+     *   // "abcfoofoof"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append("abc")
+     *     .padEnd(6, "123465")
+     *     .join("");
+     *   // "abc123"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append("abc")
+     *     .padEnd(8, "0")
+     *     .join("");
+     *   // "abc00000"
+     * }
+     * ```
+     * @example
+     * ```ts
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append("abc")
+     *     .padEnd(1, "_")
+     *     .join("");
+     *   // "abc"
+     * }
      * ```
      */
     padEnd<TExtended = TInput>(
@@ -994,51 +1285,81 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * where <i>start</i> and <i>end</i> (end not included) represent the index of items in the collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "c", "d", "e", "f"]);
-     * await collection.slice(3).toArray();
-     * // ["d", "e", "f"]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "b", "c", "d", "e", "f"])
+     *     .slice(3)
+     *     .toArray();
+     *   // ["d", "e", "f"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "c", "d", "e", "f"]);
-     * await collection.slice(undefined, 2).toArray();
-     * // ["a", "b"]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "b", "c", "d", "e", "f"])
+     *     .slice(undefined, 2)
+     *     .toArray();
+     *   // ["a", "b"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "c", "d", "e", "f"]);
-     * await collection.slice(2, 5).toArray();
-     * // ["c", "d", "e"]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "b", "c", "d", "e", "f"])
+     *     .slice(2, 5)
+     *     .toArray();
+     *   // ["c", "d", "e"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "c", "d", "e", "f"]);
-     * await collection.slice(-2).toArray();
-     * // ["e", "f"]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "b", "c", "d", "e", "f"])
+     *     .slice(-2)
+     *     .toArray();
+     *   // ["e", "f"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "c", "d", "e", "f"]);
-     * await collection.slice(undefined, -2).toArray();
-     * // ["a", "b", "c", "d"]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "b", "c", "d", "e", "f"])
+     *     .slice(undefined, -2)
+     *     .toArray();
+     *   // ["a", "b", "c", "d"]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "c", "d", "e", "f"]);
-     * await collection.slice(-4, -2).toArray();
-     * // ["c", "d"]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "b", "c", "d", "e", "f"])
+     *     .slice(-4, -2)
+     *     .toArray();
+     *   // ["c", "d"]
+     * }
      * ```
      */
     slice(start?: number, end?: number): IAsyncCollection<TInput>;
@@ -1047,11 +1368,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>prepend</i> method adds <i>iterable</i> to the beginning of the collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]).prepend([-1, 20]);
-     * await collection.toArray();
-     * // [-1, 20, 1, 2, 3, 4, 5]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .prepend([-1, 20])
+     *     .toArray();
+     *   // [-1, 20, 1, 2, 3, 4, 5]
+     * }
      * ```
      */
     prepend<TExtended = TInput>(
@@ -1062,11 +1388,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>append</i> method adds <i>iterable</i> to the end of the collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]).append([-1, -2]);
-     * await collection.toArray();
-     * // [1, 2, 3, 4, 5, -1, -2,]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .append([-1, -2])
+     *     .toArray();
+     *   // [1, 2, 3, 4, 5, -1, -2,]
+     * }
      * ```
      */
     append<TExtended = TInput>(
@@ -1077,11 +1408,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>insertBefore</i> method adds <i>iterable</i> before the first item that matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 2, 3, 4, 5]).insertBefore(item => item === 2, [-1, 20]);
-     * await collection.toArray();
-     * // [1, -1, 20, 2, 2, 3, 4, 5]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 2, 3, 4, 5])
+     *     .insertBefore(item => item === 2, [-1, 20])
+     *     .toArray();
+     *   // [1, -1, 20, 2, 2, 3, 4, 5]
+     * }
      * ```
      */
     insertBefore<TExtended = TInput>(
@@ -1093,11 +1429,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>insertAfter</i> method adds <i>iterable</i> after the first item that matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 2, 3, 4, 5]).insertAfter(item => item === 2, [-1, 20]);
-     * await collection.toArray();
-     * // [1, 2, -1, 20, 2, 3, 4, 5]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 2, 3, 4, 5])
+     *     .insertAfter(item => item === 2, [-1, 20])
+     *     .toArray();
+     *   // [1, 2, -1, 20, 2, 3, 4, 5]
+     * }
      * ```
      */
     insertAfter<TExtended = TInput>(
@@ -1109,35 +1450,42 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>crossJoin</i> method cross joins the collection's values among <i>iterables</i>, returning a Cartesian product with all possible permutations.
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import { ICollection } from "@daiso-tech/core";;
      *
-     * const collection = new ListCollection([1, 2]);
-     * const matrix = collection.cross(["a", "b"]);
-     * await matrix.toArray();
-     * // [
-     * //  [1, "a"],
-     * //  [1, "b"],
-     * //  [2, "a"],
-     * //  [2, "b"],
-     * // ]
+     * async function(): Promise<void> {
+     *   await collection
+     *     .append([1, 2])
+     *     .cross(["a", "b"])
+     *     .toArray();
+     *   // [
+     *   //  [1, "a"],
+     *   //  [1, "b"],
+     *   //  [2, "a"],
+     *   //  [2, "b"],
+     *   // ]
+     * }
      * ```
      * @example
      * ```ts
-     * import { ListCollection } from "@daiso-tech/core";;
+     * import { ICollection } from "@daiso-tech/core";;
      *
-     * const collection = new ListCollection([1, 2]);
-     * const matrix = collection.cross(["a", "b"]).cross(["I", "II"]);
-     * await matrix.toArray();
-     * // [
-     * //  [1, "a", "I"],
-     * //  [1, "a", "II"],
-     * //  [1, "b", "I"],
-     * //  [1, "b", "II"],
-     * //  [2, "a", "I"],
-     * //  [2, "a", "II"],
-     * //  [2, "b", "I"],
-     * //  [2, "b", "II"],
-     * // ]
+     * async function(): Promise<void> {
+     *   await collection
+     *     .append([1, 2])
+     *     .cross(["a", "b"])
+     *     .cross(["I", "II"])
+     *     .toArray();
+     *   // [
+     *   //  [1, "a", "I"],
+     *   //  [1, "a", "II"],
+     *   //  [1, "b", "I"],
+     *   //  [1, "b", "II"],
+     *   //  [2, "a", "I"],
+     *   //  [2, "a", "II"],
+     *   //  [2, "b", "I"],
+     *   //  [2, "b", "II"],
+     *   // ]
+     * }
      * ```
      */
     crossJoin<TExtended>(
@@ -1149,30 +1497,42 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The returned collection has size of the shortest collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["Chair", "Desk"]);
-     * const zipped = collection.zip([100, 200]);
-     * await zipped.toArray();
-     * // [["Chair", 100], ["Desk", 200]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["Chair", "Desk"])
+     *     .zip([100, 200])
+     *     .toArray();
+     *   // [["Chair", 100], ["Desk", 200]]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["Chair", "Desk", "Couch"]);
-     * const zipped = collection.zip([100, 200]);
-     * await zipped.toArray();
-     * // [["Chair", 100], ["Desk", 200]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["Chair", "Desk", "Couch"])
+     *     .zip([100, 200])
+     *     .toArray();
+     *   // [["Chair", 100], ["Desk", 200]]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["Chair", "Desk"]);
-     * const zipped = collection.zip([100, 200, 300]);
-     * await zipped.toArray();
-     * // [["Chair", 100], ["Desk", 200]]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["Chair", "Desk"])
+     *     .zip([100, 200, 300])
+     *     .toArray();
+     *   // [["Chair", 100], ["Desk", 200]]
+     * }
      * ```
      */
     zip<TExtended>(
@@ -1183,29 +1543,44 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>sort</i> method sorts the collection. You can provide a <i>comparator</i> function.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([-1, 2, 4, 3]);
-     * await collection.sort().toArray();
-     * // [-1, 2, 3, 4]
+     * type Person = {
+     *   name: string;
+     *   age: number;
+     * };
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<Person>): Promise<void> {
+     *   await collection
+     *     .append([-1, 2, 4, 3])
+     *     .sort()
+     *     .toArray();
+     *   // [-1, 2, 3, 4]
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([
-     *   { name: "Anders", age: 30 },
-     *   { name: "Joe", age: 20 },
-     *   { name: "Hasan", age: 25 },
-     *   { name: "Linda", age: 19 }
-     * ]);
-     * await collection.sort(({ age: ageA }, { age: ageB }) => ageA - ageB).toArray();
-     * // [
-     * //   { name: "Linda", age: 19 }
-     * //   { name: "Joe", age: 20 },
-     * //   { name: "Hasan", age: 25 },
-     * //   { name: "Anders", age: 30 },
-     * // ]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([
+     *       { name: "Anders", age: 30 },
+     *       { name: "Joe", age: 20 },
+     *       { name: "Hasan", age: 25 },
+     *       { name: "Linda", age: 19 }
+     *     ])
+     *     .sort(({ age: ageA }, { age: ageB }) => ageA - ageB)
+     *     .toArray();
+     *   // [
+     *   //   { name: "Linda", age: 19 }
+     *   //   { name: "Joe", age: 20 },
+     *   //   { name: "Hasan", age: 25 },
+     *   //   { name: "Anders", age: 30 },
+     *   // ]
+     * }
      * ```
      */
     sort(comparator?: Comparator<TInput>): IAsyncCollection<TInput>;
@@ -1215,11 +1590,16 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The reversing of the collection will be applied in chunks that are the size of <i> chunkSize </i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([-1, 2, 4, 3]);
-     * await collection.reverse().toArray();
-     * // [3, 4, 2, -1]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([-1, 2, 4, 3])
+     *     .reverse()
+     *     .toArray();
+     *   // [3, 4, 2, -1]
+     * }
      * ```
      */
     reverse(chunkSize?: number): IAsyncCollection<TInput>;
@@ -1234,29 +1614,40 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than null i returned.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.first();
-     * // 1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .first();
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.first(item => item > 2);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .first(item => item > 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.first(item => item > 10);
-     * // null
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .first(item => item > 10);
+     *   // null
+     * }
      * ```
-     * // 3
      */
     first<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -1267,35 +1658,51 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than <i> defaultValue </i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.firstOr(-1);
-     * // 1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .firstOr(-1);
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.firstOr(-1, item => item > 2);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .firstOr(-1, item => item > 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.firstOr(-1, item => item > 10);
-     * // -1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .firstOr(-1, item => item > 10);
+     *   // -1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.firstOr(() => -1, item => item > 10);
-     * // -1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .firstOr(() => -1, item => item > 10);
+     *   // -1
+     * }
      * ```
      */
     firstOr<TOutput extends TInput, TExtended = TInput>(
@@ -1309,27 +1716,39 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.firstOrFail();
-     * // 1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .firstOrFail();
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.firstOrFail(item => item > 2);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .firstOrFail(item => item > 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.firstOrFail(item => item > 10);
-     * // throws an error
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .firstOrFail(item => item > 10);
+     *   // throws an error
+     * }
      * ```
      */
     firstOrFail<TOutput extends TInput>(
@@ -1341,29 +1760,40 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than null i returned.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.last();
-     * // 4
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .last();
+     *   // 4
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.last(item => item < 4);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .last(item => item < 4);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.last(item => item > 10);
-     * // null
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .last(item => item > 10);
+     *   // null
+     * }
      * ```
-     * // 3
      */
     last<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
@@ -1374,35 +1804,51 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than <i> defaultValue </i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.lastOr(-1);
-     * // 4
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .lastOr(-1);
+     *   // 4
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.lastOr(-1, item => item < 4);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .lastOr(-1, item => item < 4);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.lastOr(-1, item => item > 10);
-     * // -1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .lastOr(-1, item => item > 10);
+     *   // -1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.lastOr(() => -1, item => item > 10);
-     * // -1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .lastOr(() => -1, item => item > 10);
+     *   // -1
+     * }
      * ```
      */
     lastOr<TOutput extends TInput, TExtended = TInput>(
@@ -1416,27 +1862,39 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.lastOrFail();
-     * // 4
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .lastOrFail();
+     *   // 4
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.lastOrFail(item => item < 4);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .lastOrFail(item => item < 4);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.lastOrFail(item => item > 10);
-     * // throws an error
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .lastOrFail(item => item > 10);
+     *   // throws an error
+     * }
      * ```
      */
     lastOrFail<TOutput extends TInput>(
@@ -1448,19 +1906,27 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * If the <i>predicateFn</i> does not match or matches the first item then null is returned.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.before(item => item === 2);
-     * // 1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *      .append([1, 2, 3, 4])
+     *      .before(item => item === 2);
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.before(item => item === 1);
-     * // null
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .before(item => item === 1);
+     *   // null
+     * }
      * ```
      */
     before(
@@ -1472,27 +1938,39 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the first item then <i>defaultValue</i> is returned.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.beforeOr(-1, item => item === 2);
-     * // 1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .beforeOr(-1, item => item === 2);
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.beforeOr(-1, item => item === 1);
-     * // -1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .beforeOr(-1, item => item === 1);
+     *   // -1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.beforeOr(() => -1, item => item === 1);
-     * // -1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .beforeOr(() => -1, item => item === 1);
+     *   // -1
+     * }
      * ```
      */
     beforeOr<TExtended = TInput>(
@@ -1506,19 +1984,27 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.beforeOrFail(item => item === 2);
-     * // 1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .beforeOrFail(item => item === 2);
+     *   // 1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.beforeOrFail(item => item === 1);
-     * // error is thrown
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .beforeOrFail(item => item === 1);
+     *   // error is thrown
+     * }
      * ```
      */
     beforeOrFail(
@@ -1530,19 +2016,27 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then null is returned.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.after(item => item === 2);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .after(item => item === 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.after(item => item === 4);
-     * // null
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .after(item => item === 4);
+     *   // null
+     * }
      * ```
      */
     after(
@@ -1554,27 +2048,39 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then <i>defaultValue</i> is returned.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.afterOr(-1, item => item === 2);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .afterOr(-1, item => item === 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.afterOr(-1, item => item === 4);
-     * // -1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .afterOr(-1, item => item === 4);
+     *   // -1
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.afterOr(() => -1, item => item === 4);
-     * // -1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .afterOr(() => -1, item => item === 4);
+     *   // -1
+     * }
      * ```
      */
     afterOr<TExtended = TInput>(
@@ -1588,19 +2094,27 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.afterOrFail(item => item === 2);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .afterOrFail(item => item === 2);
+     *   // 3
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
-     * await collection.afterOrFail(item => item === 4);
-     * // error is thrown
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .afterOrFail(item => item === 4);
+     *   // error is thrown
+     * }
      * ```
      */
     afterOrFail(
@@ -1614,27 +2128,39 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-     * await collection.sole(item => item === 4);
-     * // 4
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5])
+     *     .sole(item => item === 4);
+     *   // 4
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 4, 5]);
-     * await collection.sole(item => item === 4);
-     * // error is thrown
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 4, 5])
+     *     .sole(item => item === 4);
+     *   // error is thrown
+     * }
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 5]);
-     * await collection.sole(item => item === 4);
-     * // error is thrown
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 5])
+     *     .sole(item => item === 4);
+     *   // error is thrown
+     * }
      * ```
      */
     sole<TOutput extends TInput>(
@@ -1645,11 +2171,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>nth</i> method creates a new collection consisting of every n-th item.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "c", "d", "e", "f"]).nth(4);
-     * await collection.toArray();
-     * // ["a", "e"]
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection.append(["a", "b", "c", "d", "e", "f"])
+     *     .nth(4)
+     *     .toArray();
+     *   // ["a", "e"]
+     * }
      * ```
      */
     nth(step: number): IAsyncCollection<TInput>;
@@ -1658,11 +2188,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>count</i> method returns the total number of items in the collection that passes <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection([1, 2, 3, 4, 5, 6]);
-     * await collection.count(value => value % 2 === 0);
-     * // 3
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4, 5, 6])
+     *     .count(value => value % 2 === 0);
+     *   // 3
+     * }
      * ```
      */
     count(
@@ -1688,11 +2222,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>searchFirst</i> return the index of the first item that matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "b", "c"]);
-     * await collection.searchFirst(item => item === "b");
-     * // 1
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "b", "b", "c"])
+     *     .searchFirst(item => item === "b");
+     *   // 1
+     * }
      * ```
      */
     searchFirst(
@@ -1703,11 +2241,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * The <i>searchLast</i> return the index of the last item that matches <i>predicateFn</i>.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * const collection = new AsyncIterableCollection(["a", "b", "b", "c"]);
-     * await collection.searchLast(item => item === "b");
-     * // 2
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<string>): Promise<void> {
+     *   await collection
+     *     .append(["a", "b", "b", "c"])
+     *     .searchLast(item => item === "b");
+     *   // 2
+     * }
      * ```
      */
     searchLast(
@@ -1726,13 +2268,25 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * This method is especially useful for situations where you may be interacting with external APIs that rate limit incoming requests:
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * // An iterator that will fetch all users from a specific api
-     * class ApiIterator implements AsyncIterable<IUser> { ... }
-     * const apiIterator = new ApiIterator();
-     * const collection = new AsyncIterableCollection(apiIterator);
-     * await collection.delay(1000).forEach(user => console.log(user))
+     * // Asume the inputed collection is empty.
+     * class MyIterable implements Iterable<number> {
+     *   async *[Symbol.asyncIterator]() {
+     *     for (let i = 0; i < 10; i++) {
+     *       yield i;
+     *     }
+     *   }
+     * }
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   const myIterable = new MyIterable();
+     *   await collection
+     *     .append(myIterable)
+     *     .delay(1000)
+     *     .forEach(user => console.log(user))
+     * }
      * ```
      */
     delay(time: TimeSpan): IAsyncCollection<TInput>;
@@ -1743,13 +2297,30 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * After when aborted, the collection will stop iterating:
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * // An iterator that will fetch all users from a specific api
-     * class ApiIterator implements AsyncIterable<IUser> { ... }
-     * const apiIterator = new ApiIterator();
-     * const collection = new AsyncIterableCollection(apiIterator);
-     * await collection.delay(1000).forEach(user => console.log(user))
+     * class InfiniteIterable implements Iterable<number> {
+     *   async *[Symbol.asyncIterator]() {
+     *     let index = 0;
+     *     while(true) {
+     *       index++;
+     *       yield index;
+     *     }
+     *   }
+     * }
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   const abortController = new AbortController();
+     *   setTimeout(() => {
+     *     abortController.abort("My abort error");
+     *   }, 1000)
+     *   const infiniteIterable = new InfiniteIterable();
+     *   await collection
+     *     .append(infiniteIterable);
+     *     .takeUntilAbort(abortController)
+     *     .forEach(nbr => console.log(nbr))
+     * }
      * ```
      */
     takeUntilAbort(
@@ -1763,20 +2334,26 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
      * After that time, the collection will stop iterating:
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import type { IAsyncCollection } from "@daiso-tech/core";
      *
-     * class AsyncInfiniteIterable implements AsyncIterable<number> {
-     *  async *[Symbol.asyncIterator]() {
-     *      while(true) {
-     *          yield 1;
-     *      }
-     *  }
+     * class InfiniteIterable implements AsyncIterable<number> {
+     *   async *[Symbol.asyncIterator]() {
+     *     let index = 0;
+     *     while(true) {
+     *       index++;
+     *       yield index;
+     *     }
+     *   }
      * }
-     * const asyncInfiniteIterable = new AsyncInfiniteIterable();
-     * const collection = new AsyncIterableCollection(asyncInfiniteIterable);
-     * await collection
-     *  .timeout(1000)
-     *  .forEach(nbr => console.log(nbr))
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   const infiniteIterable = new InfiniteIterable();
+     *   await collection
+     *     .append(infiniteIterable)
+     *     .takeUntilTimeout(1000)
+     *     .forEach(nbr => console.log(nbr))
+     * }
      * ```
      */
     takeUntilTimeout(
@@ -1791,11 +2368,15 @@ export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
 
     /**
      * The <i>toRecord</i> method converts the collection to a new <i>{@link Record}</i>.
+     * An error will be thrown if item is not a tuple of size 2 where the first element is a string or a number.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     toRecord(): LazyPromise<EnsureRecord<TInput>>;
 
     /**
      * The <i>toMap</i> method converts the collection to a new <i>{@link Map}</i>.
+     * An error will be thrown if item is not a tuple of size 2.
+     * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     toMap(): LazyPromise<EnsureMap<TInput>>;
 };
