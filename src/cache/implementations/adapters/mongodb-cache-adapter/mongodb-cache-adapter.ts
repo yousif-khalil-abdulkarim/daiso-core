@@ -44,7 +44,7 @@ export type MongodbCacheAdapterSettings = {
  * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  */
-export class MongodbCacheAdapter<TType>
+export class MongodbCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable
 {
     private static isMongodbIncrementError(

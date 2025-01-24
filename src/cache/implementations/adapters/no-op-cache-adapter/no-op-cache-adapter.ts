@@ -9,7 +9,7 @@ import type { OneOrMore, TimeSpan } from "@/utilities/_module";
  * This <i>NoOpCacheAdapter</i> will do nothing and is used for easily mocking {@link ICacheAdapter} for testing.
  * @group Adapters
  */
-export class NoOpCacheAdapter<TType> implements ICacheAdapter<TType> {
+export class NoOpCacheAdapter<TType = unknown> implements ICacheAdapter<TType> {
     getGroup(): string {
         return "";
     }

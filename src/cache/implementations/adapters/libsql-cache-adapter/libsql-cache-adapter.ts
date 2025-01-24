@@ -35,7 +35,7 @@ export type LibsqlCacheAdapterSettings = {
  * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  */
-export class LibsqlCacheAdapter<TType>
+export class LibsqlCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly cacheAdapter: KyselySqliteCacheAdapter<TType>;

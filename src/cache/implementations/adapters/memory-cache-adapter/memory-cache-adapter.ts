@@ -15,7 +15,9 @@ import {
  * To utilize the <i>MemoryCacheAdapter</i>, you must create instance of it.
  * @group Adapters
  */
-export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
+export class MemoryCacheAdapter<TType = unknown>
+    implements ICacheAdapter<TType>
+{
     private readonly group: string;
 
     private readonly timeoutMap = new Map<

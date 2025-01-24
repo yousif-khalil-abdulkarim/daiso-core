@@ -63,7 +63,9 @@ import { simplifyLazyable } from "@/utilities/_module";
  * The rest of the methods are executed eagerly.
  * @group Adapters
  */
-export class IterableCollection<TInput> implements ICollection<TInput> {
+export class IterableCollection<TInput = unknown>
+    implements ICollection<TInput>
+{
     /**
      * The <i>concat<i> static method is a convenient utility for easily concatenating multiple <i>{@link Iterable}</i>.
      * @example

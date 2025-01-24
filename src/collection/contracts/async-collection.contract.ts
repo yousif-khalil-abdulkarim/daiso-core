@@ -45,7 +45,7 @@ export type AsyncCollapse<TValue> = TValue extends
  * @group Contracts
  * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
  */
-export type IAsyncCollection<TInput> = AsyncIterable<TInput> & {
+export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     /**
      * The <i>toIterator</i> method converts the collection to a new iterator.
      */

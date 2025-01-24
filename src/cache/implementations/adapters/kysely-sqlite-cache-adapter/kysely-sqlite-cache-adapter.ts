@@ -46,7 +46,7 @@ type KyselySqliteSettings = {
 /**
  * @internal
  */
-export class KyselySqliteCacheAdapter<TType>
+export class KyselySqliteCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly group: string;

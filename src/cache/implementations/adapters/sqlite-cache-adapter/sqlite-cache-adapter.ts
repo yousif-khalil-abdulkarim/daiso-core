@@ -33,7 +33,7 @@ export type SqliteStorageAdapterSettings = {
  * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  */
-export class SqliteCacheAdapter<TType>
+export class SqliteCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly cacheAdapter: KyselySqliteCacheAdapter<TType>;

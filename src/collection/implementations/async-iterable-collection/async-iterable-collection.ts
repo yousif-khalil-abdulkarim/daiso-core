@@ -73,7 +73,7 @@ import { LazyPromise } from "@/async/_module";
  * The methods that return <i>{@link PromiseLike}</i> object will execute only when awaited or <i>then</i> method is called.
  * @group Adapters
  */
-export class AsyncIterableCollection<TInput>
+export class AsyncIterableCollection<TInput = unknown>
     implements IAsyncCollection<TInput>
 {
     /**
