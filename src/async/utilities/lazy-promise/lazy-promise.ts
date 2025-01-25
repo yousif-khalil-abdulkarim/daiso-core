@@ -19,17 +19,6 @@ import {
 import type { Func } from "@/utilities/_module";
 
 /**
- * @group Utilities
- */
-export type LazyPromiseSettings = {
-    retryAttempts?: number | null;
-    backoffPolicy?: BackoffPolicy | null;
-    retryPolicy?: RetryPolicy | null;
-    abortSignal?: AbortSignal | null;
-    time?: TimeSpan | null;
-};
-
-/**
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.
  * The class includes helpful methods
  * - <i>defer</i>
@@ -68,20 +57,15 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static wrapFn<TParameters extends unknown[], TReturn>(
         fn: Func<TParameters, PromiseLike<TReturn>>,
-        settings?: LazyPromiseSettings,
     ): Func<TParameters, LazyPromise<TReturn>> {
-        return (...parameters) =>
-            new LazyPromise(() => fn(...parameters), settings);
+        return (...parameters) => new LazyPromise(() => fn(...parameters));
     }
 
     /**
      * The <i>all<i> method works similarly to <i>{@link Promise.all}</i> with the key distinction that it operates lazily.
      */
-    static all<TValue>(
-        promises: LazyPromise<TValue>[],
-        settings?: LazyPromiseSettings,
-    ): LazyPromise<TValue[]> {
-        return new LazyPromise(async () => Promise.all(promises), settings);
+    static all<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue[]> {
+        return new LazyPromise(async () => Promise.all(promises));
     }
 
     /**
@@ -89,32 +73,22 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static allSettled<TValue>(
         promises: LazyPromise<TValue>[],
-        settings?: LazyPromiseSettings,
     ): LazyPromise<PromiseSettledResult<TValue>[]> {
-        return new LazyPromise(
-            async () => Promise.allSettled(promises),
-            settings,
-        );
+        return new LazyPromise(async () => Promise.allSettled(promises));
     }
 
     /**
      * The <i>race<i> method works similarly to <i>{@link Promise.race}</i> with the key distinction that it operates lazily.
      */
-    static race<TValue>(
-        promises: LazyPromise<TValue>[],
-        settings?: LazyPromiseSettings,
-    ): LazyPromise<TValue> {
-        return new LazyPromise(async () => Promise.race(promises), settings);
+    static race<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
+        return new LazyPromise(async () => Promise.race(promises));
     }
 
     /**
      * The <i>any<i> method works similarly to <i>{@link Promise.any}</i> with the key distinction that it operates lazily.
      */
-    static any<TValue>(
-        promises: LazyPromise<TValue>[],
-        settings?: LazyPromiseSettings,
-    ): LazyPromise<TValue> {
-        return new LazyPromise(async () => Promise.any(promises), settings);
+    static any<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
+        return new LazyPromise(async () => Promise.any(promises));
     }
 
     private promise: PromiseLike<TValue> | null = null;
@@ -137,23 +111,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *   await promise;
      * })();
      */
-    constructor(
-        private asyncFn: () => PromiseLike<TValue>,
-        settings: LazyPromiseSettings = {},
-    ) {
-        const {
-            retryAttempts = null,
-            backoffPolicy = null,
-            retryPolicy = null,
-            abortSignal = null,
-            time = null,
-        } = settings;
-        this.attempts = retryAttempts;
-        this.backoffPolicy_ = backoffPolicy;
-        this.retryPolicy_ = retryPolicy;
-        this.abortSignal = abortSignal;
-        this.time = time;
-    }
+    constructor(private asyncFn: () => PromiseLike<TValue>) {}
 
     private applyTimeout(): void {
         if (this.time !== null) {
@@ -220,7 +178,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>retryAttempts</i> method is used for setting max retry attempts.
+     * The <i>setRetryAttempts</i> method is used for setting max retry attempts.
      * @example
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core";
@@ -230,20 +188,20 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *     console.log("A");
      *     throw new Error("Error occured!");
      *   })
-     *   .retryAttempts(3)
+     *   .setRetryAttempts(3)
      * (async () => {
      *   // Will log "A" 3 times and then retry error will be thrown.
      *   await promise;
      * })();
      * ```
      */
-    retryAttempts(attempts: number): this {
+    setRetryAttempts(attempts: number | null): this {
         this.attempts = attempts;
         return this;
     }
 
     /**
-     * The <i>backoffPolicy</i> method is used for setting a custom <i>{@link BackoffPolicy}</i>.
+     * The <i>setBackoffPolicy</i> method is used for setting a custom <i>{@link BackoffPolicy}</i>.
      * @example
      * ```ts
      * import { LazyPromise, linearBackoffPolicy } from "@daiso-tech/core";
@@ -253,21 +211,21 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *     console.log("A");
      *     throw new Error("Error occured!");
      *   })
-     *   .retryAttempts(3)
-     *   .backoffPolicy(linearBackoffPolicy())
+     *   .setRetryAttempts(3)
+     *   .setBackoffPolicy(linearBackoffPolicy())
      * (async () => {
      *   // Will log "A" 3 times and then retry error will be thrown.
      *   await promise;
      * })();
      * ```
      */
-    backoffPolicy(policy: BackoffPolicy): this {
+    setBackoffPolicy(policy: BackoffPolicy | null): this {
         this.backoffPolicy_ = policy;
         return this;
     }
 
     /**
-     * The <i>backoffPolicy</i> method is used for setting a custom <i>{@link BackoffPolicy}</i>.
+     * The <i>setRetryPolicy</i> method is used for setting a custom <i>{@link BackoffPolicy}</i>.
      * @example
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core";
@@ -279,22 +237,22 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *     console.log("A");
      *     throw new Error("Error occured!");
      *   })
-     *   .retryAttempts(3)
+     *   .setRetryAttempts(3)
      *   // Will only retry an error that is instance ErrorA
-     *   .retryPolicy(error => error instanceof ErrorA)
+     *   .setRetryPolicy(error => error instanceof ErrorA)
      * (async () => {
      *   // Will log "A" 1 time and then error will be thrown.
      *   await promise;
      * })();
      * ```
      */
-    retryPolicy(policy: RetryPolicy): this {
+    setRetryPolicy(policy: RetryPolicy | null): this {
         this.retryPolicy_ = policy;
         return this;
     }
 
     /**
-     * The <i>timeout</i> method aborts the <i>LazyPromise</i> if it exceeds the given <i>time</i> by throwning an error.
+     * The <i>setTimeout</i> method aborts the <i>LazyPromise</i> if it exceeds the given <i>time</i> by throwning an error.
      * @example
      * ```ts
      * import { LazyPromise, delay, TimeSpan } from "@daiso-tech/core";
@@ -303,20 +261,20 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *   new LazyPromise(async () => {
      *     await delay(TimeSpan.fromMinutes(1));
      *   })
-     *   .timeout(TimeSpan.fromSeconds(1));
+     *   .setTimeout(TimeSpan.fromSeconds(1));
      * (async () => {
      *   // An timeout error will be thrown.
      *   await promise;
      * })();
      * ```
      */
-    timeout(time: TimeSpan): this {
+    setTimeout(time: TimeSpan | null): this {
         this.time = time;
         return this;
     }
 
     /**
-     * The <i>abort</i> method aborts the <i>LazyPromise</i> by the passed in <i>abortSignal</i>.
+     * The <i>setAbortSignal</i> method aborts the <i>LazyPromise</i> by the passed in <i>abortSignal</i>.
      * @example
      * ```ts
      * import { LazyPromise, delay, TimeSpan } from "@daiso-tech/core";
@@ -326,7 +284,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *   new LazyPromise(async () => {
      *     await delay(TimeSpan.fromMinutes(1));
      *   })
-     *   .abort(abortController.signal);
+     *   .setAbortSignal(abortController.signal);
      * (async () => {
      *   setTimeout(() => {
      *     abortController.abort();
@@ -336,7 +294,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * })();
      * ```
      */
-    abort(abortSignal: AbortSignal): this {
+    setAbortSignal(abortSignal: AbortSignal | null): this {
         this.abortSignal = abortSignal;
         return this;
     }
