@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.17.2
+
+### Patch Changes
+
+-   c31871e: Added missing imports
+
 ## 0.17.1
 
 ### Patch Changes
