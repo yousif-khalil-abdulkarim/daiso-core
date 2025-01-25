@@ -1,3 +1,7 @@
+/**
+ * @module Serde
+ */
+
 import type { ISerializer } from "@/serde/contracts/serializer.contract";
 import type { IDeserializer } from "@/serde/contracts/deserializer.contract";
 
