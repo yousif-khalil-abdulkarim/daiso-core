@@ -16,6 +16,8 @@ import { Kysely, SqliteDialect } from "kysely";
 import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
 import type { SqliteCacheAdapterSettings } from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter-settings";
 import { SqliteCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter-settings";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { ISerde } from "@/serde/contracts/_module";
 
 /**
  * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.

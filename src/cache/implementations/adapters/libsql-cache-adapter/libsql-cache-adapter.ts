@@ -18,6 +18,8 @@ import { LibsqlDialect } from "@libsql/kysely-libsql";
 import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
 import type { LibsqlCacheAdapterSettings } from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter-settings";
 import { LibsqlCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter-settings";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { ISerde } from "@/serde/contracts/_module";
 
 /**
  * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
