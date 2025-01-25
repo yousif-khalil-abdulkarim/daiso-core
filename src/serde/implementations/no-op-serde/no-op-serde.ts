@@ -12,16 +12,22 @@ import type {
  * This <i>NoOpSerde</i> will do nothing and is used for easily mocking {@link IFlexibleSerde} or {@link ISerde} for testing.
  * @group Adapters
  */
-export class NoOpSerde implements IFlexibleSerde {
-    serialize<TValue>(value: TValue): unknown {
-        return value;
+export class NoOpSerde<TSerializedValue>
+    implements IFlexibleSerde<TSerializedValue>
+{
+    serialize<TValue>(value: TValue): TSerializedValue {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return value as any;
     }
 
-    deserialize<TValue>(serializedValue: unknown): TValue {
-        return serializedValue as TValue;
+    deserialize<TValue>(serializedValue: TSerializedValue): TValue {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return serializedValue as any;
     }
 
-    registerClass<TSerializedValue>(
-        _class: SerializableClass<TSerializedValue>,
-    ): void {}
+    registerClass<TSerializedClassInstance>(
+        _class: SerializableClass<TSerializedClassInstance>,
+    ): IFlexibleSerde<TSerializedValue> {
+        return this;
+    }
 }

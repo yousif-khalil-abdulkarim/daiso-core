@@ -98,7 +98,7 @@ export type IFlexibleSerde<TSerializedValue = unknown> =
          *
          * ```
          */
-        registerClass<TSerializedValue>(
-            class_: SerializableClass<TSerializedValue>,
-        ): void;
+        registerClass<TSerializedClassInstance>(
+            class_: SerializableClass<TSerializedClassInstance>,
+        ): IFlexibleSerde<TSerializedValue>;
     };
