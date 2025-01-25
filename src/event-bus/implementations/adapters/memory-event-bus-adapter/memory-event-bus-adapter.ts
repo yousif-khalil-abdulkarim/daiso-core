@@ -9,20 +9,48 @@ import type {
     Listener,
 } from "@/event-bus/contracts/_module";
 import { EventEmitter } from "node:events";
+import type { MemoryEventBusAdapterSettings } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter-settings";
+import { MemoryEventBusAdapterSettingsBuilder } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter-settings";
 
 /**
  * To utilize the <i>MemoryEventBusAdapter</i>, you must create instance of it.
  * @group Adapters
  */
 export class MemoryEventBusAdapter implements IEventBusAdapter {
+    /**
+     * @example
+     * ```ts
+     * import { MemoryEventBusAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { EventEmitter } from "node:events";
+     *
+     * const cacheAdapter = new MemoryEventBusAdapter(
+     *   MemoryEventBusAdapter
+     *     .settings()
+     *     .setEventEmitter(new EventEmitter())
+     *     .setRootGroup("@global")
+     *     .build()
+     * );
+     * ```
+     */
+    static settings<
+        TSettings extends Partial<MemoryEventBusAdapterSettings>,
+    >(): MemoryEventBusAdapterSettingsBuilder<TSettings> {
+        return new MemoryEventBusAdapterSettingsBuilder();
+    }
+
     private readonly group: string;
+    private readonly eventEmitter: EventEmitter;
 
     /**
      * @example
      * ```ts
      * import { MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import { EventEmitter } from "node:events";
      *
-     * const eventBusAdapter = new MemoryEventBusAdapter(client);
+     * const eventEmitter = new EventEmitter();
+     * const eventBusAdapter = new MemoryEventBusAdapter({
+     *   eventEmitter
+     * });
      * ```
      * You can also provide an <i>EVentEmitter</i>.
      * @example
@@ -31,14 +59,16 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
      * import { EventEmitter } from "node:events";
      *
      * const eventEmitter = new EventEmitter();
-     * const eventBusAdapter = new MemoryCacheAdapter("@global", eventEmitter);
+     * const eventBusAdapter = new MemoryEventBusAdapter({
+     *   rootGroup: "@global",
+     *   eventEmitter
+     * });
      * ```
      */
-    constructor(
-        defaultGroup: OneOrMore<string>,
-        private readonly eventEmiter = new EventEmitter(),
-    ) {
-        this.group = simplifyGroupName(defaultGroup);
+    constructor(settings: MemoryEventBusAdapterSettings) {
+        const { rootGroup, eventEmitter = new EventEmitter() } = settings;
+        this.eventEmitter = eventEmitter;
+        this.group = simplifyGroupName(rootGroup);
     }
 
     getGroup(): string {
@@ -46,10 +76,10 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
     }
 
     withGroup(group: OneOrMore<string>): IEventBusAdapter {
-        return new MemoryEventBusAdapter(
-            [this.group, simplifyGroupName(group)],
-            this.eventEmiter,
-        );
+        return new MemoryEventBusAdapter({
+            rootGroup: [this.group, simplifyGroupName(group)],
+            eventEmitter: this.eventEmitter,
+        });
     }
 
     private withPrefix(event: string): string {
@@ -62,7 +92,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
         listener: Listener<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmiter.on(this.withPrefix(eventName), listener);
+        this.eventEmitter.on(this.withPrefix(eventName), listener);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
@@ -71,11 +101,11 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
         listener: Listener<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmiter.off(this.withPrefix(eventName), listener);
+        this.eventEmitter.off(this.withPrefix(eventName), listener);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
     async dispatch(eventName: string, eventData: BaseEvent): Promise<void> {
-        this.eventEmiter.emit(this.withPrefix(eventName), eventData);
+        this.eventEmitter.emit(this.withPrefix(eventName), eventData);
     }
 }
