@@ -40,22 +40,27 @@ export type CacheTestSuiteSettings = {
  *
  * const TIMEOUT = TimeSpan.fromMinutes(2);
  * describe("class: Cache", () => {
- *   let client: Redis;
+ *   let database: Redis;
  *   let startedContainer: StartedRedisContainer;
- *   const eventBus = new EventBus(new MemoryEventBusAdapter()):
+ *   const eventBus = new EventBus({
+ *     adapter: new MemoryEventBusAdapter({
+ *       rootGroup: "@global"
+ *     })
+ *   }):
  *   const serde = new SuperJsonSerde();
  *   beforeEach(async () => {
  *     startedContainer = await new RedisContainer("redis:7.4.2").start();
- *     client = new Redis(startedContainer.getConnectionUrl());
+ *     database = new Redis(startedContainer.getConnectionUrl());
  *   }, TIMEOUT.toMilliseconds());
  *   afterEach(async () => {
- *     await client.quit();
+ *     await database.quit();
  *     await startedContainer.stop();
  *   }, TIMEOUT.toMilliseconds());
  *   cacheTestSuite({
  *     createCacheA: () =>
  *       new Cache(
- *         new RedisCacheAdapter(client, {
+ *         new RedisCacheAdapter({
+ *           database,
  *           serde,
  *         }),
  *         {
@@ -65,7 +70,8 @@ export type CacheTestSuiteSettings = {
  *       ),
  *     createCacheB: () =>
  *       new Cache(
- *         new RedisCacheAdapter(client, {
+ *         new RedisCacheAdapter({
+ *           database,
  *           serde,
  *         }),
  *         {
