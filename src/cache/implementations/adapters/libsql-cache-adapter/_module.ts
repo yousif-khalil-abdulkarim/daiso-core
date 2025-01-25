@@ -1,2 +1,2 @@
-export * from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter-settings";
-export * from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter";
+export * from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter-settings";
+export * from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter";

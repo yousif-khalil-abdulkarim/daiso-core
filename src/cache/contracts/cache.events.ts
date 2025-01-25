@@ -3,7 +3,7 @@
  */
 
 import { BaseEvent } from "@/event-bus/contracts/_module";
-import type { IFlexibleSerde } from "@/serde/contracts/serde.contract";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
 import type { TimeSpan } from "@/utilities/_module";
 
 /**
