@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { LazyPromiseSettings } from "@/async/_module";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
 import { LazyPromise } from "@/async/_module";
 import type {
     EventClass,
@@ -20,15 +20,10 @@ import {
     AddListenerEventBusError,
 } from "@/event-bus/contracts/_module";
 
-import type { OneOrMore } from "@/utilities/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 import { getConstructorName, isArrayEmpty } from "@/utilities/_module";
-
-/**
- * @group Derivables
- */
-export type EventBusSettings = {
-    lazyPromiseSettings?: LazyPromiseSettings;
-};
+import type { EventBusSettings } from "@/event-bus/implementations/derivables/event-bus-settings";
+import { EventBusSettingsBuilder } from "@/event-bus/implementations/derivables/event-bus-settings";
 
 /**
  * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
@@ -37,32 +32,68 @@ export type EventBusSettings = {
 export class EventBus<TEvents extends BaseEvent = BaseEvent>
     implements IGroupableEventBus<TEvents>
 {
-    private readonly eventBusAdapter: IEventBusAdapter;
-    private readonly lazyPromiseSettings?: LazyPromiseSettings;
+    /**
+     * @example
+     * ```ts
+     * import { EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     *
+     * const cache = new EventBus(
+     *   EventBus
+     *     .settings()
+     *     .setAdapter(new MemoryEventBusAdapter({ rootGroup: "@global" }))
+     *     .build()
+     * );
+     * ```
+     */
+    static settings<
+        TSettings extends Partial<EventBusSettings>,
+    >(): EventBusSettingsBuilder<TSettings> {
+        return new EventBusSettingsBuilder();
+    }
 
-    constructor(
-        eventBusAdapter: IEventBusAdapter,
-        settings: EventBusSettings = {},
-    ) {
-        const { lazyPromiseSettings } = settings;
-        this.lazyPromiseSettings = lazyPromiseSettings;
-        this.eventBusAdapter = eventBusAdapter;
+    private readonly adapter: IEventBusAdapter;
+    private readonly retryAttempts: number | null;
+    private readonly backoffPolicy: BackoffPolicy | null;
+    private readonly retryPolicy: RetryPolicy | null;
+    private readonly timeout: TimeSpan | null;
+
+    constructor(settings: EventBusSettings) {
+        const {
+            adapter,
+            retryAttempts = null,
+            backoffPolicy = null,
+            retryPolicy = null,
+            timeout = null,
+        } = settings;
+        this.retryAttempts = retryAttempts;
+        this.backoffPolicy = backoffPolicy;
+        this.retryPolicy = retryPolicy;
+        this.timeout = timeout;
+        this.adapter = adapter;
     }
 
     private createLayPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(asyncFn, this.lazyPromiseSettings);
+        return new LazyPromise(asyncFn)
+            .setRetryAttempts(this.retryAttempts)
+            .setBackoffPolicy(this.backoffPolicy)
+            .setRetryPolicy(this.retryPolicy)
+            .setTimeout(this.timeout);
     }
 
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
-        return new EventBus(this.eventBusAdapter.withGroup(group), {
-            lazyPromiseSettings: this.lazyPromiseSettings,
+        return new EventBus({
+            adapter: this.adapter.withGroup(group),
+            retryAttempts: this.retryAttempts,
+            backoffPolicy: this.backoffPolicy,
+            retryPolicy: this.retryPolicy,
+            timeout: this.timeout,
         });
     }
 
     getGroup(): string {
-        return this.eventBusAdapter.getGroup();
+        return this.adapter.getGroup();
     }
 
     addListener<TEventClass extends EventClass<TEvents>>(
@@ -71,7 +102,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {
-                await this.eventBusAdapter.addListener(
+                await this.adapter.addListener(
                     event.name,
                     listener as Listener<BaseEvent>,
                 );
@@ -90,7 +121,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {
-                await this.eventBusAdapter.removeListener(
+                await this.adapter.removeListener(
                     event.name,
                     listener as Listener<BaseEvent>,
                 );
@@ -181,10 +212,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 const promises: PromiseLike<void>[] = [];
                 for (const event of events) {
                     promises.push(
-                        this.eventBusAdapter.dispatch(
-                            getConstructorName(event),
-                            event,
-                        ),
+                        this.adapter.dispatch(getConstructorName(event), event),
                     );
                 }
                 await Promise.all(promises);
@@ -200,10 +228,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     dispatch(event: TEvents): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {
-                await this.eventBusAdapter.dispatch(
-                    getConstructorName(event),
-                    event,
-                );
+                await this.adapter.dispatch(getConstructorName(event), event);
             } catch (error: unknown) {
                 throw new DispatchEventBusError(
                     `Event of type "${String(getConstructorName(event))}" could not be dispatched`,
