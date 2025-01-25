@@ -1,3 +1,7 @@
+/**
+ * @module Serde
+ */
+
 import type { ISerializable } from "@/serde/contracts/serializable.contract";
 import type { ISerde } from "@/serde/contracts/serde.contract";
 
