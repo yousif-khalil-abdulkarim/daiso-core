@@ -13,6 +13,8 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type SuperJsonSerde,
 } from "@/serde/implementations/_module";
+import type { RedisCacheAdapterSettings } from "@/cache/implementations/adapters/redis-cache-adapter/redis-cache-adapter-settings";
+import { RedisCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/redis-cache-adapter/redis-cache-adapter-settings";
 
 /**
  * @internal
@@ -95,18 +97,34 @@ declare module "ioredis" {
 }
 
 /**
- * @group Adapters
- */
-export type RedisCacheAdapterSettings = {
-    serde: ISerde<string>;
-    rootGroup: OneOrMore<string>;
-};
-
-/**
  * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  */
-export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
+export class RedisCacheAdapter<TType = unknown>
+    implements ICacheAdapter<TType>
+{
+    /**
+     * @example
+     * ```ts
+     * import { RedisCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import Redis from "ioredis";
+     *
+     * const cacheAdapter = new RedisCacheAdapter(
+     *   RedisCacheAdapter
+     *     .settings()
+     *     .setDatabase(new Redis("YOUR_REDIS_CONNECTION_STRING"))
+     *     .setSerde(new SuperJsonSerde())
+     *     .setRootGroup("@global")
+     *     .build()
+     * );
+     * ```
+     */
+    static settings<
+        TSettings extends Partial<RedisCacheAdapterSettings>,
+    >(): RedisCacheAdapterSettingsBuilder<TSettings> {
+        return new RedisCacheAdapterSettingsBuilder();
+    }
+
     private static isRedisTypeError(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
         value: any,
@@ -122,6 +140,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     private readonly baseSerde: ISerde<string>;
     private readonly redisSerde: ISerde<string>;
     private readonly group: string;
+    private readonly database: Redis;
 
     /**
      * @example
@@ -129,18 +148,17 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
      * import { RedisCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
      * import Redis from "ioredis";
      *
-     * const client = new Redis("YOUR_REDIS_CONNECTION_STRING");
+     * const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
      * const serde = new SuperJsonSerde();
-     * const cacheAdapter = new RedisCacheAdapter(client, {
+     * const cacheAdapter = new RedisCacheAdapter({
+     *   database,
      *   serde,
      *   rootGroup: "@global"
      * });
      * ```
      */
-    constructor(
-        private readonly client: Redis,
-        { serde, rootGroup }: RedisCacheAdapterSettings,
-    ) {
+    constructor({ database, serde, rootGroup }: RedisCacheAdapterSettings) {
+        this.database = database;
         this.group = simplifyGroupName(rootGroup);
         this.baseSerde = serde;
         this.redisSerde = new RedisSerde(serde);
@@ -157,13 +175,13 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
 
     async exists(key: string): Promise<boolean> {
         key = this.withPrefix(key);
-        const result = await this.client.exists(key);
+        const result = await this.database.exists(key);
         return result > 0;
     }
 
     async get(key: string): Promise<TType | null> {
         key = this.withPrefix(key);
-        const value = await this.client.get(key);
+        const value = await this.database.get(key);
         if (value === null) {
             return null;
         }
@@ -177,14 +195,14 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     ): Promise<boolean> {
         key = this.withPrefix(key);
         if (ttl === null) {
-            const result = await this.client.set(
+            const result = await this.database.set(
                 key,
                 this.redisSerde.serialize(value),
                 "NX",
             );
             return result === "OK";
         }
-        const result = await this.client.set(
+        const result = await this.database.set(
             key,
             this.redisSerde.serialize(value),
             "PX",
@@ -196,7 +214,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
 
     async update(key: string, value: TType): Promise<boolean> {
         key = this.withPrefix(key);
-        const result = await this.client.set(
+        const result = await this.database.set(
             key,
             this.redisSerde.serialize(value),
             "XX",
@@ -211,14 +229,14 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     ): Promise<boolean> {
         key = this.withPrefix(key);
         if (ttl === null) {
-            const result = await this.client.set(
+            const result = await this.database.set(
                 key,
                 this.redisSerde.serialize(value),
                 "GET",
             );
             return result !== null;
         }
-        const result = await this.client.set(
+        const result = await this.database.set(
             key,
             this.redisSerde.serialize(value),
             "PX",
@@ -230,16 +248,16 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
 
     async remove(key: string): Promise<boolean> {
         key = this.withPrefix(key);
-        const result = await this.client.del(key);
+        const result = await this.database.del(key);
         return result === 1;
     }
 
     private initIncrementCommand(): void {
-        if (typeof this.client.daiso_cache_increment === "function") {
+        if (typeof this.database.daiso_cache_increment === "function") {
             return;
         }
 
-        this.client.defineCommand("daiso_cache_increment", {
+        this.database.defineCommand("daiso_cache_increment", {
             numberOfKeys: 1,
             lua: `
                 local hasKey = redis.call("exists", KEYS[1])
@@ -256,7 +274,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     async increment(key: string, value: number): Promise<boolean> {
         try {
             key = this.withPrefix(key);
-            const redisResult = await this.client.daiso_cache_increment(
+            const redisResult = await this.database.daiso_cache_increment(
                 key,
                 this.redisSerde.serialize(value),
             );
@@ -274,7 +292,7 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
 
     async clear(): Promise<void> {
         for await (const _ of new ClearIterable(
-            this.client,
+            this.database,
             simplifyGroupName([escapeRedisChars(this.getGroupName()), "*"]),
         )) {
             /* Empty */
@@ -286,7 +304,8 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     }
 
     withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
-        return new RedisCacheAdapter(this.client, {
+        return new RedisCacheAdapter({
+            database: this.database,
             serde: this.baseSerde,
             rootGroup: [this.group, simplifyGroupName(group)],
         });

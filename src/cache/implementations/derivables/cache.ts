@@ -32,7 +32,7 @@ import type {
     OneOrMore,
 } from "@/utilities/_module";
 import type { TimeSpan } from "@/utilities/_module";
-import type { LazyPromiseSettings } from "@/async/_module";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
 import { LazyPromise } from "@/async/_module";
 import type {
     IGroupableEventBus,
@@ -46,74 +46,97 @@ import {
     EventBus,
     NoOpEventBusAdapter,
 } from "@/event-bus/implementations/_module";
-
-/**
- * @group Derivables
- */
-export type CacheSettings<TType> = {
-    /**
-     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
-     */
-    eventBus?: IGroupableEventBus<CacheEvents<TType>>;
-
-    /**
-     * You can decide the default ttl value. If null is passed then no ttl will be used by default.
-     */
-    defaultTtl?: TimeSpan | null;
-
-    lazyPromiseSettings?: LazyPromiseSettings;
-};
+import type { CacheSettings } from "@/cache/implementations/derivables/cache-settings";
+import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache-settings";
 
 /**
  * <i>Cache</i> class can be derived from any <i>{@link ICacheAdapter}</i>.
  * @group Derivables
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {
+    /**
+     * @example
+     * ```ts
+     * import { Cache, MemoryCacheAdapter, TimeSpan } from "@daiso-tech/core";
+     *
+     * const cache = new Cache(
+     *   Cache
+     *     .settings()
+     *     .setAdapter(new MemoryCacheAdapter({ rootGroup: "@global" }))
+     *     .setEventBus(new EventBus(new MemoryEventBusAdapter({ rootGroup: "@global" })))
+     *     .setDefaultTtl(TimeSpan.fromMinutes(2))
+     *     .build()
+     * );
+     * ```
+     */
+    static settings<
+        TSettings extends Partial<CacheSettings>,
+    >(): CacheSettingsBuilder<TSettings> {
+        return new CacheSettingsBuilder();
+    }
+
+    private static defaultRetryPolicy: RetryPolicy = (error: unknown) => {
+        return !(
+            error instanceof TypeCacheError ||
+            error instanceof KeyNotFoundCacheError
+        );
+    };
+
     private readonly groupdEventBus: IGroupableEventBus<CacheEvents<TType>>;
     private readonly eventBus: IEventBus<CacheEvents<TType>>;
-    private readonly cacheAdapter: ICacheAdapter<TType>;
+    private readonly adapter: ICacheAdapter<TType>;
     private readonly defaultTtl: TimeSpan | null;
-    private readonly lazyPromiseSettings?: LazyPromiseSettings;
+    private readonly retryAttempts: number | null;
+    private readonly backoffPolicy: BackoffPolicy | null;
+    private readonly retryPolicy: RetryPolicy | null;
+    private readonly timeout: TimeSpan | null;
 
     /**
      *@example
      * ```ts
      * import { Cache, MemoryCacheAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
      *
-     * const eventBus = new EventBus(new MemoryEventBusAdapter("@global"));
-     * const cache = new Cache(new MemoryCacheAdapter("@global"), {
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter({
+     *     rootGroup: "@global"
+     *   }),
      *   eventBus,
      * });
      * ```
      */
-    constructor(
-        cacheAdapter: ICacheAdapter<any>,
-        settings: CacheSettings<TType> = {},
-    ) {
+    constructor(settings: CacheSettings) {
         const {
-            eventBus: groupdEventBus = new EventBus(new NoOpEventBusAdapter()),
+            adapter,
+            eventBus: groupdEventBus = new EventBus({
+                adapter: new NoOpEventBusAdapter(),
+            }),
             defaultTtl = null,
-            lazyPromiseSettings,
+            retryAttempts = null,
+            backoffPolicy = null,
+            retryPolicy = Cache.defaultRetryPolicy,
+            timeout = null,
         } = settings;
-        this.lazyPromiseSettings = lazyPromiseSettings;
         this.groupdEventBus = groupdEventBus;
-        this.eventBus = groupdEventBus.withGroup(cacheAdapter.getGroup());
-        this.cacheAdapter = cacheAdapter;
+        this.eventBus = groupdEventBus.withGroup(adapter.getGroup());
+        this.adapter = adapter;
         this.defaultTtl = defaultTtl;
+        this.retryAttempts = retryAttempts;
+        this.backoffPolicy = backoffPolicy;
+        this.retryPolicy = retryPolicy;
+        this.timeout = timeout;
     }
 
     private createLayPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(asyncFn, {
-            retryPolicy: (error) => {
-                return !(
-                    error instanceof TypeCacheError ||
-                    error instanceof KeyNotFoundCacheError
-                );
-            },
-            ...this.lazyPromiseSettings,
-        });
+        return new LazyPromise(asyncFn)
+            .setRetryAttempts(this.retryAttempts)
+            .setBackoffPolicy(this.backoffPolicy)
+            .setRetryPolicy(this.retryPolicy)
+            .setTimeout(this.timeout);
     }
 
     private createKeyFoundEvent(
@@ -243,20 +266,24 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     withGroup(group: OneOrMore<string>): ICache<TType> {
-        return new Cache(this.cacheAdapter.withGroup(group), {
+        return new Cache({
+            adapter: this.adapter.withGroup(group),
             defaultTtl: this.defaultTtl,
             eventBus: this.groupdEventBus,
-            lazyPromiseSettings: this.lazyPromiseSettings,
+            retryAttempts: this.retryAttempts,
+            backoffPolicy: this.backoffPolicy,
+            retryPolicy: this.retryPolicy,
+            timeout: this.timeout,
         });
     }
 
     getGroup(): string {
-        return this.cacheAdapter.getGroup();
+        return this.adapter.getGroup();
     }
 
     get(key: string): LazyPromise<TType | null> {
         return this.createLayPromise(async () => {
-            const value = await this.cacheAdapter.get(key);
+            const value = await this.adapter.get(key);
             if (value === null) {
                 await this.eventBus.dispatch(this.createKeyNotFoundEvent(key));
             } else {
@@ -277,7 +304,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasAdded = await this.cacheAdapter.add(key, value, ttl);
+            const hasAdded = await this.adapter.add(key, value, ttl);
             if (hasAdded) {
                 await this.eventBus.dispatch(
                     this.createKeyAddedEvent(key, value, ttl),
@@ -289,7 +316,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     update(key: string, value: TType): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasUpdated = await this.cacheAdapter.update(key, value);
+            const hasUpdated = await this.adapter.update(key, value);
             if (hasUpdated) {
                 await this.eventBus.dispatch(
                     this.createKeyUpdatedEvent(key, value),
@@ -310,7 +337,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasUpdated = await this.cacheAdapter.put(key, value, ttl);
+            const hasUpdated = await this.adapter.put(key, value, ttl);
             if (hasUpdated) {
                 await this.eventBus.dispatch(
                     this.createKeyUpdatedEvent(key, value),
@@ -326,7 +353,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     remove(key: string): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasRemoved = await this.cacheAdapter.remove(key);
+            const hasRemoved = await this.adapter.remove(key);
             if (hasRemoved) {
                 await this.eventBus.dispatch(this.createKeyRemovedEvent(key));
             } else {
@@ -341,7 +368,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         value = 1 as Extract<TType, number>,
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasUpdated = await this.cacheAdapter.increment(key, value);
+            const hasUpdated = await this.adapter.increment(key, value);
             if (hasUpdated) {
                 if (value > 0) {
                     await this.eventBus.dispatch(
@@ -362,21 +389,21 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     clear(): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            await this.cacheAdapter.clear();
+            await this.adapter.clear();
             await this.eventBus.dispatch(this.createKeysClearedEvent());
         });
     }
 
     exists(key: string): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            return await this.cacheAdapter.exists(key);
+            return await this.adapter.exists(key);
         });
     }
 
     existsMany<TKeys extends string>(
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
-        return new LazyPromise(async () => {
+        return this.createLayPromise(async () => {
             if (isArrayEmpty(keys)) {
                 return {};
             }

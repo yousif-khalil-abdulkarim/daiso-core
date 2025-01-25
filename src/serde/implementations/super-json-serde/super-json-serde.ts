@@ -386,15 +386,17 @@ export class SuperJsonSerde implements IFlexibleSerde<string> {
         this.registerFloat64Array();
     }
 
-    registerClass<TSerializedValue>(
-        class_: SerializableClass<TSerializedValue>,
-    ): void {
+    registerClass<TSerializedClassInstance>(
+        class_: SerializableClass<TSerializedClassInstance>,
+    ): IFlexibleSerde<string> {
         this.superJson.registerCustom<
-            ISerializable<TSerializedValue>,
+            ISerializable<TSerializedClassInstance>,
             SuperJSONResult["json"]
         >(
             {
-                isApplicable(value): value is ISerializable<TSerializedValue> {
+                isApplicable(
+                    value,
+                ): value is ISerializable<TSerializedClassInstance> {
                     return (
                         value instanceof class_ &&
                         getConstructorName(value) === class_.name
@@ -402,7 +404,7 @@ export class SuperJsonSerde implements IFlexibleSerde<string> {
                 },
                 deserialize(serializedValue) {
                     return class_.deserialize(
-                        serializedValue as TSerializedValue,
+                        serializedValue as TSerializedClassInstance,
                     );
                 },
                 serialize(value) {
@@ -411,6 +413,7 @@ export class SuperJsonSerde implements IFlexibleSerde<string> {
             },
             class_.name,
         );
+        return this;
     }
 
     serialize<TValue>(value: TValue): string {

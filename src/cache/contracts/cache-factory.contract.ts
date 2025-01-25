@@ -5,21 +5,21 @@
 import type { IGroupableCache } from "@/cache/contracts/cache.contract";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnregisteredDriverError,
+    UnregisteredAdapterError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    DefaultDriverNotDefinedError,
+    DefaultAdapterNotDefinedError,
 } from "@/utilities/errors";
 
 /**
  * The <i>ICacheFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableCache}</i> dynamically.
  * @group Contracts
  */
-export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
+export type ICacheFactory<TAdapters extends string = string> = {
     /**
-     * The <i>use</i> method will throw an error if you provide it unregisted driver.
-     * If no default driver is defined an error will be thrown by <i>use</i> method.
-     * @throws {UnregisteredDriverError} {@link UnregisteredDriverError}
-     * @throws {DefaultDriverNotDefinedError} {@link DefaultDriverNotDefinedError}
+     * The <i>use</i> method will throw an error if you provide it unregisted adapter.
+     * If no default adapter is defined an error will be thrown by <i>use</i> method.
+     * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
+     * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      * @example
      * ```ts
      * import { type ICacheFactory } from "@daiso-tech/core";
@@ -28,7 +28,7 @@ export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
      * // Asume the inputed cacheFactory has registered both a memory and Redis ICacheAdapter.
      * // The memory ICacheAdapter adapter is the default.
      * async function main(cacheFactory: ICacheFactory): Promise<void> {
-     *   // Will add key using the default driver
+     *   // Will add key using the default adapter
      *   await cacheFactory
      *     .use()
      *     .add("a", 1);
@@ -39,25 +39,5 @@ export type ICacheFactory<TDrivers extends string = string, TType = unknown> = {
      * }
      * ```
      */
-    use(driverName?: TDrivers): IGroupableCache<TType>;
-
-    /**
-     * The <i>withTypes</i> method is used to set the value types of the cache.
-     * @example
-     * ```ts
-     *
-     * import { type ICacheFactory } from "@daiso-tech/core";
-     *
-     * // Asume the inputed cacheFactory has registered both a memory and Redis ICacheAdapter.
-     * // The memory ICacheAdapter adapter is the default.
-     * async function main(cacheFactory: ICacheFactory): Promise<void> {
-     *   await cacheFactory
-     *     .withTypes<string>()
-     *     .use()
-     *     // You will se an typescript error
-     *     .add("a", 1)
-     * }
-     * ```
-     */
-    withType<TOutput extends TType = TType>(): ICacheFactory<TDrivers, TOutput>;
+    use<TType = unknown>(adapterName?: TAdapters): IGroupableCache<TType>;
 };

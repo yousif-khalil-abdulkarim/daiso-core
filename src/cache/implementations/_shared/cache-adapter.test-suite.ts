@@ -37,25 +37,27 @@ export type CacheAdapterTestSuiteSettings = {
  *
  * const TIMEOUT = TimeSpan.fromMinutes(2);
  * describe("class: RedisCacheAdapter", () => {
- *   let client: Redis;
+ *   let database: Redis;
  *   let startedContainer: StartedRedisContainer;
  *   const serde = new SuperJsonSerde();
  *   beforeEach(async () => {
  *     startedContainer = await new RedisContainer("redis:7.4.2").start();
- *     client = new Redis(startedContainer.getConnectionUrl());
+ *     database = new Redis(startedContainer.getConnectionUrl());
  *   }, TIMEOUT.toMilliseconds());
  *   afterEach(async () => {
- *     await client.quit();
+ *     await database.quit();
  *     await startedContainer.stop();
  *   }, TIMEOUT.toMilliseconds());
  *   cacheAdapterTestSuite({
  *     createAdapterA: () =>
- *       new RedisCacheAdapter(client, {
+ *       new RedisCacheAdapter({
+ *         database,
  *         serde,
  *         rootGroup: "@a"
  *       }),
  *     createAdapterB: () =>
- *       new RedisCacheAdapter(client, {
+ *       new RedisCacheAdapter({
+ *         database,
  *         serde,
  *         rootGroup: "@b"
  *       }),

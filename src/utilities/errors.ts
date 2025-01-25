@@ -15,19 +15,19 @@ export class FactoryError extends Error {
 /**
  * @group Errors
  */
-export class DefaultDriverNotDefinedError extends FactoryError {
+export class DefaultAdapterNotDefinedError extends FactoryError {
     constructor(factoryName: string) {
-        super(`Default driver not set for factory "${factoryName}"`);
-        this.name = DefaultDriverNotDefinedError.name;
+        super(`Default adapter not set for factory "${factoryName}"`);
+        this.name = DefaultAdapterNotDefinedError.name;
     }
 }
 
 /**
  * @group Errors
  */
-export class UnregisteredDriverError extends FactoryError {
-    constructor(driverName: string) {
-        super(`Unregistered driver "${driverName}"`);
-        this.name = UnregisteredDriverError.name;
+export class UnregisteredAdapterError extends FactoryError {
+    constructor(adapterName: string) {
+        super(`Unregistered adapter "${adapterName}"`);
+        this.name = UnregisteredAdapterError.name;
     }
 }

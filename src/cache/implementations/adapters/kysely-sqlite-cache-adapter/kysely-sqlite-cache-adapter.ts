@@ -36,6 +36,7 @@ type KyselySqliteTables = {
  * @internal
  */
 type KyselySqliteSettings = {
+    db: Kysely<KyselySqliteTables>;
     serde: ISerde<string>;
     enableTransactions: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
@@ -46,7 +47,7 @@ type KyselySqliteSettings = {
 /**
  * @internal
  */
-export class KyselySqliteCacheAdapter<TType>
+export class KyselySqliteCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly group: string;
@@ -55,18 +56,18 @@ export class KyselySqliteCacheAdapter<TType>
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;
     private timeoutId: NodeJS.Timeout | string | number | null = null;
+    private readonly db: Kysely<KyselySqliteTables>;
 
-    constructor(
-        private readonly db: Kysely<KyselySqliteTables>,
-        settings: KyselySqliteSettings,
-    ) {
+    constructor(settings: KyselySqliteSettings) {
         const {
+            db,
             serde,
             enableTransactions,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
             rootGroup,
         } = settings;
+        this.db = db;
         this.group = simplifyGroupName(rootGroup);
         this.serde = new SqlSerde(serde);
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
@@ -79,7 +80,8 @@ export class KyselySqliteCacheAdapter<TType>
     }
 
     withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
-        return new KyselySqliteCacheAdapter(this.db, {
+        return new KyselySqliteCacheAdapter({
+            db: this.db,
             enableTransactions: this.enableTransactions,
             expiredKeysRemovalInterval: this.expiredKeysRemovalInterval,
             serde: this.serde,

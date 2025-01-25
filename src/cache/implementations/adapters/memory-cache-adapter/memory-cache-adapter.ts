@@ -10,12 +10,36 @@ import {
     type OneOrMore,
     type TimeSpan,
 } from "@/utilities/_module";
+import type { MemoryCacheAdapterSettings } from "@/cache/implementations/adapters/memory-cache-adapter/memory-cache-adapter-settings";
+import { MemoryCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/memory-cache-adapter/memory-cache-adapter-settings";
 
 /**
  * To utilize the <i>MemoryCacheAdapter</i>, you must create instance of it.
  * @group Adapters
  */
-export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
+export class MemoryCacheAdapter<TType = unknown>
+    implements ICacheAdapter<TType>
+{
+    /**
+     * @example
+     * ```ts
+     * import { MemoryCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     *
+     * const cacheAdapter = new MemoryCacheAdapter(
+     *   MemoryCacheAdapter
+     *     .settings()
+     *     .setMap(new Map())
+     *     .setRootGroup("@global")
+     *     .build()
+     * );
+     * ```
+     */
+    static settings<
+        TSettings extends Partial<MemoryCacheAdapterSettings>,
+    >(): MemoryCacheAdapterSettingsBuilder<TSettings> {
+        return new MemoryCacheAdapterSettingsBuilder();
+    }
+
     private readonly group: string;
 
     private readonly timeoutMap = new Map<
@@ -23,12 +47,16 @@ export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
         NodeJS.Timeout | string | number
     >();
 
+    private readonly map: Map<string, unknown>;
+
     /**
      *  @example
      * ```ts
      * import { MemoryCacheAdapter } from "@daiso-tech/core";
      *
-     * const cacheAdapter = new MemoryCacheAdapter(client);
+     * const cacheAdapter = new MemoryCacheAdapter({
+     *   rootGroup: "@cache"
+     * });
      * ```
      * You can also provide an <i>Map</i>.
      * @example
@@ -36,13 +64,15 @@ export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
      * import { MemoryCacheAdapter } from "@daiso-tech/core";
      *
      * const map = new Map<any, any>();
-     * const cacheAdapter = new MemoryCacheAdapter("@cache", map);
+     * const cacheAdapter = new MemoryCacheAdapter({
+     *   rootGroup: "@cache",
+     *   map
+     * });
      * ```
      */
-    constructor(
-        rootGroup: OneOrMore<string>,
-        private readonly map: Map<string, TType> = new Map(),
-    ) {
+    constructor(settings: MemoryCacheAdapterSettings) {
+        const { rootGroup, map = new Map<string, unknown>() } = settings;
+        this.map = map;
         this.group = simplifyGroupName(rootGroup);
     }
 
@@ -61,7 +91,7 @@ export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
 
     async get(key: string): Promise<TType | null> {
         key = this.withPrefix(key);
-        return this.map.get(key) ?? null;
+        return (this.map.get(key) as TType) ?? null;
     }
 
     async add(
@@ -143,6 +173,9 @@ export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
     }
 
     withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
-        return new MemoryCacheAdapter([this.group, simplifyGroupName(group)]);
+        return new MemoryCacheAdapter({
+            map: this.map,
+            rootGroup: [this.group, simplifyGroupName(group)],
+        });
     }
 }

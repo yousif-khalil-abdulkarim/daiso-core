@@ -62,8 +62,8 @@ export type EventBusTestSuiteSettings = {
  *            dispatcherClient,
  *            listenerClient,
  *            serde,
- *          }),
- *          { rootGroup: "@a" }
+ *            rootGroup: "@global"
+ *          })
  *        ),
  *      createEventBusB: () =>
  *        new EventBus(
@@ -71,8 +71,8 @@ export type EventBusTestSuiteSettings = {
  *            dispatcherClient,
  *            listenerClient,
  *            serde,
+ *            rootGroup: "@global"
  *          }),
- *          { rootGroup: "@b" }
  *        ),
  *      serde,
  *      test,
