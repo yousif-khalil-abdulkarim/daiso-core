@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.17.1
+
+### Patch Changes
+
+-   5f8076b: Improved documentation
+
 ## 0.17.0
 
 ### Minor Changes
