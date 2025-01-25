@@ -6,18 +6,30 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memo
 import { cacheTestSuite } from "@/cache/implementations/_shared/cache.test-suite";
 
 describe("class: Cache", () => {
-    const eventBus = new EventBus<any>(new MemoryEventBusAdapter("@global"));
+    const eventBus = new EventBus<any>({
+        adapter: new MemoryEventBusAdapter({
+            rootGroup: "@global",
+        }),
+    });
     let map: Map<string, unknown>;
     beforeEach(() => {
         map = new Map();
     });
     cacheTestSuite({
         createCacheA: () =>
-            new Cache(new MemoryCacheAdapter("@a", map), {
+            new Cache({
+                adapter: new MemoryCacheAdapter({
+                    rootGroup: "@a",
+                    map,
+                }),
                 eventBus,
             }),
         createCacheB: () =>
-            new Cache(new MemoryCacheAdapter("@a/b", map), {
+            new Cache({
+                adapter: new MemoryCacheAdapter({
+                    rootGroup: "@a/b",
+                    map,
+                }),
                 eventBus,
             }),
         beforeEach,
