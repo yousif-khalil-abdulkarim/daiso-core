@@ -64,8 +64,33 @@ import {
 } from "@/utilities/_module";
 import { simplifyAsyncLazyable } from "@/utilities/_module";
 import type { TimeSpan } from "@/utilities/_module";
-import type { LazyPromiseSettings } from "@/async/_module";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
 import { LazyPromise } from "@/async/_module";
+
+/**
+ * @group Adapters
+ */
+export type AsyncIterableCollectionSettings = {
+    /**
+     * The default retry attempt to use in the returned <i>LazyPromise</i>.
+     */
+    retryAttempts?: number | null;
+
+    /**
+     * The default backof policy to use in the returned <i>LazyPromise</i>.
+     */
+    backoffPolicy?: BackoffPolicy | null;
+
+    /**
+     * The default retry policy to use in the returned <i>LazyPromise</i>.
+     */
+    retryPolicy?: RetryPolicy | null;
+
+    /**
+     * The default timeout to use in the returned <i>LazyPromise</i>.
+     */
+    timeout?: TimeSpan | null;
+};
 
 /**
  * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly.
@@ -201,11 +226,25 @@ export class AsyncIterableCollection<TInput = unknown>
 
     private static DEFAULT_CHUNK_SIZE = 1024;
 
+    private static defaultRetryPolicy: RetryPolicy = (error) => {
+        return !(
+            error instanceof ItemNotFoundCollectionError ||
+            error instanceof MultipleItemsFoundCollectionError ||
+            error instanceof TypeCollectionError ||
+            error instanceof EmptyCollectionError
+        );
+    };
+
     private static makeCollection = <TInput>(
         iterable: AsyncIterableValue<TInput>,
     ): IAsyncCollection<TInput> => {
         return new AsyncIterableCollection<TInput>(iterable);
     };
+
+    private readonly retryAttempts: number | null;
+    private readonly backoffPolicy: BackoffPolicy | null;
+    private readonly retryPolicy: RetryPolicy | null;
+    private readonly timeout: TimeSpan | null;
 
     /**
      * The <i>constructor</i> takes an <i>{@link Iterable}</i> or <i>{@link AsyncIterable}</i>.
@@ -274,23 +313,28 @@ export class AsyncIterableCollection<TInput = unknown>
      */
     constructor(
         private readonly iterable: AsyncIterableValue<TInput> = [],
-        private readonly settings: LazyPromiseSettings = {},
-    ) {}
+        settings: AsyncIterableCollectionSettings = {},
+    ) {
+        const {
+            retryAttempts = null,
+            retryPolicy = AsyncIterableCollection.defaultRetryPolicy,
+            backoffPolicy = null,
+            timeout = null,
+        } = settings;
+        this.retryAttempts = retryAttempts;
+        this.backoffPolicy = backoffPolicy;
+        this.retryPolicy = retryPolicy;
+        this.timeout = timeout;
+    }
 
     private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) {
-        return new LazyPromise(asyncFn, {
-            retryPolicy: (error) => {
-                return !(
-                    error instanceof ItemNotFoundCollectionError ||
-                    error instanceof MultipleItemsFoundCollectionError ||
-                    error instanceof TypeCollectionError ||
-                    error instanceof EmptyCollectionError
-                );
-            },
-            ...this.settings,
-        });
+        return new LazyPromise(asyncFn)
+            .setRetryAttempts(this.retryAttempts)
+            .setBackoffPolicy(this.backoffPolicy)
+            .setRetryPolicy(this.retryPolicy)
+            .setTimeout(this.timeout);
     }
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
