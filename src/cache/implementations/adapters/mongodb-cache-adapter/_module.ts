@@ -1,2 +1,2 @@
-export * from "@/cache/implementations/adapters/memory-cache-adapter/memory-cache-adapter-settings";
-export * from "@/cache/implementations/adapters/memory-cache-adapter/memory-cache-adapter";
+export * from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter-settings";
+export * from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter";
