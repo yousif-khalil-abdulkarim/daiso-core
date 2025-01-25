@@ -36,7 +36,6 @@ import type { Func } from "@/utilities/_module";
  * This means that combining all methods ensures the <i>retryAttempts</i> method will continue retrying even if the timeout is triggered,
  * while the <i>abort</i> method takes priority to cancel all operations if activated.
  * @group Utilities
- * ```
  */
 export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
