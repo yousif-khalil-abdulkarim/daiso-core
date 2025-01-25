@@ -26,7 +26,7 @@ export class TimeSpan implements ISerializable<ISerializedTimeSpan> {
         return new TimeSpan(serializedValue.timeInMs);
     }
 
-    constructor(private readonly milliseconds: number = 0) {
+    private constructor(private readonly milliseconds: number = 0) {
         this.milliseconds = Math.max(0, this.milliseconds);
     }
 
