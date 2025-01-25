@@ -5,9 +5,9 @@
 import type { IGroupableEventBus } from "@/event-bus/contracts/event-bus.contract";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnregisteredDriverError,
+    UnregisteredAdapterError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    DefaultDriverNotDefinedError,
+    DefaultAdapterNotDefinedError,
 } from "@/utilities/_module";
 import type { BaseEvent } from "@/event-bus/contracts/_shared";
 
@@ -15,12 +15,12 @@ import type { BaseEvent } from "@/event-bus/contracts/_shared";
  * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableEventBus}</i> dynamically.
  * @group Contracts
  */
-export type IEventBusFactory<TDrivers extends string = string> = {
+export type IEventBusFactory<TAdapters extends string = string> = {
     /**
-     * The <i>use</i> method will throw an error if you provide it unregisted driver.
-     * If no default driver is defined an error will be thrown by <i>use</i> method.
-     * @throws {UnregisteredDriverError} {@link UnregisteredDriverError}
-     * @throws {DefaultDriverNotDefinedError} {@link DefaultDriverNotDefinedError}
+     * The <i>use</i> method will throw an error if you provide it unregisted adapter.
+     * If no default adapter is defined an error will be thrown by <i>use</i> method.
+     * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
+     * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      * @example
      * ```ts
      * import { type IEventBusFactory } from "@daiso-tech/core";
@@ -52,7 +52,7 @@ export type IEventBusFactory<TDrivers extends string = string> = {
      * // Asume the inputed eventFactory has registered both a memory and Redis IEventBusAdapter.
      * // The memory IEventBusAdapter adapter is the default.
      * async function main(eventFactory: IEventBusFactory): Promise<void> {
-     *   // Will dispatch envent using the default driver
+     *   // Will dispatch envent using the default adapter
      *   await eventBusFactory
      *     .use()
      *     .dispatch(new AddEvent(1, 2));
@@ -64,6 +64,6 @@ export type IEventBusFactory<TDrivers extends string = string> = {
      * ```
      */
     use<TEvents extends BaseEvent = BaseEvent>(
-        driverName?: TDrivers,
+        adapterName?: TAdapters,
     ): IGroupableEventBus<TEvents>;
 };
