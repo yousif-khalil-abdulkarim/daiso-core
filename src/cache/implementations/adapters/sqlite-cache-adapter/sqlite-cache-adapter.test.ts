@@ -14,7 +14,8 @@ describe("class: SqliteCacheAdapter", () => {
     });
     cacheAdapterTestSuite({
         createAdapterA: async () => {
-            const cacheAdapter = new SqliteCacheAdapter(database, {
+            const cacheAdapter = new SqliteCacheAdapter({
+                database: database,
                 tableName: "custom_table",
                 enableTransactions: true,
                 shouldRemoveExpiredKeys: false,
@@ -25,7 +26,8 @@ describe("class: SqliteCacheAdapter", () => {
             return cacheAdapter;
         },
         createAdapterB: async () => {
-            const cacheAdapter = new SqliteCacheAdapter(database, {
+            const cacheAdapter = new SqliteCacheAdapter({
+                database: database,
                 tableName: "custom_table",
                 enableTransactions: true,
                 shouldRemoveExpiredKeys: false,
