@@ -2,34 +2,23 @@
  * @module EventBus
  */
 
-import type { LazyPromiseSettings } from "@/async/_module";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
 import type {
     IGroupableEventBus,
-    IEventBusAdapter,
     IEventBusFactory,
     BaseEvent,
 } from "@/event-bus/contracts/_module";
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus";
+import type { TimeSpan } from "@/utilities/_module";
 import {
-    DefaultDriverNotDefinedError,
-    UnregisteredDriverError,
+    DefaultAdapterNotDefinedError,
+    UnregisteredAdapterError,
 } from "@/utilities/_module";
-
-/**
- * @group Derivables
- */
-export type EventBusDrivers<TAdapters extends string = string> = Partial<
-    Record<TAdapters, IEventBusAdapter>
->;
-
-/**
- * @group Derivables
- */
-export type EventBusFactorySettings<TAdapters extends string = string> = {
-    drivers: EventBusDrivers<TAdapters>;
-    defaultDriver?: NoInfer<TAdapters>;
-    rootGroup?: string;
-};
+import type { EventBusAdapters } from "@/event-bus/implementations/derivables/event-bus-factory-settings";
+import {
+    type EventBusFactorySettings,
+    EventBusFactorySettingsBuilder,
+} from "@/event-bus/implementations/derivables/event-bus-factory-settings";
 
 /**
  * @group Derivables
@@ -39,42 +28,92 @@ export type EventBusFactorySettings<TAdapters extends string = string> = {
  * import Redis from "ioredis"
  *
  * const eventBusFactory = new EventBusFactory({
- *   drivers: {
- *     memory: new MemoryEventBusAdapter("@global"),
+ *   adapters: {
+ *     memory: new MemoryEventBusAdapter({ rootGroup: "@global" }),
  *     redis: new RedisPubSubEventBusAdapter({
  *       dispatcherClient: new Redis(),
  *       listenerClient: new Redis(),
+ *       serde: new SuperJsonSerde(),
+ *       rootGroup: "@global"
  *     }),
  *   },
- *   defaultDriver: "memory",
+ *   defaultAdapter: "memory",
  * });
  * ```
  */
 export class EventBusFactory<TAdapters extends string = string>
     implements IEventBusFactory<TAdapters>
 {
-    private readonly drivers: EventBusDrivers<TAdapters>;
-    private readonly defaultDriver?: TAdapters;
-    private readonly lazyPromiseSettings?: LazyPromiseSettings;
+    /**
+     * @example
+     * ```ts
+     * import { EventBusFactory, SuperJsonSerde. MemoryEventBusAdapter, RedisPubSubEventBusAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import Redis from "ioredis";
+     *
+     * const cacheFactory = new EventBusFactory(
+     *   EventBusFactory
+     *     .settings()
+     *     .setAdapter("memory", new MemoryEventBusAdapter({
+     *       rootGroup: "@global"
+     *     }))
+     *     .setAdapter("redis", new RedisPubSubEventBusAdapter({
+     *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION"),
+     *       listenerClient: new Redis("YOUR_REDIS_CONNECTION")
+     *       serde: new SuperJsonSerde(),
+     *       rootGroup: "@global"
+     *     }))
+     *     .setDefaultAdapter("memory")
+     *     .build()
+     * );
+     * ```
+     */
+    static settings<
+        TAdapters extends string,
+        TSettings extends EventBusFactorySettings<TAdapters>,
+    >(): EventBusFactorySettingsBuilder<TSettings> {
+        return new EventBusFactorySettingsBuilder();
+    }
+
+    private readonly adapters: EventBusAdapters<TAdapters>;
+    private readonly defaultAdapter?: TAdapters;
+    private readonly retryAttempts?: number | null;
+    private readonly backoffPolicy?: BackoffPolicy | null;
+    private readonly retryPolicy?: RetryPolicy | null;
+    private readonly timeout?: TimeSpan | null;
 
     constructor(settings: EventBusFactorySettings<TAdapters>) {
-        const { drivers, defaultDriver } = settings;
-        this.drivers = drivers;
-        this.defaultDriver = defaultDriver;
+        const {
+            adapters,
+            defaultAdapter,
+            retryAttempts,
+            backoffPolicy,
+            retryPolicy,
+            timeout,
+        } = settings;
+        this.retryAttempts = retryAttempts;
+        this.backoffPolicy = backoffPolicy;
+        this.retryPolicy = retryPolicy;
+        this.timeout = timeout;
+        this.adapters = adapters;
+        this.defaultAdapter = defaultAdapter;
     }
 
     use<TEvents extends BaseEvent = BaseEvent>(
-        driverName: TAdapters | undefined = this.defaultDriver,
+        adapterName: TAdapters | undefined = this.defaultAdapter,
     ): IGroupableEventBus<TEvents> {
-        if (driverName === undefined) {
-            throw new DefaultDriverNotDefinedError(EventBusFactory.name);
+        if (adapterName === undefined) {
+            throw new DefaultAdapterNotDefinedError(EventBusFactory.name);
         }
-        const selectedAdapter = this.drivers[driverName];
+        const selectedAdapter = this.adapters[adapterName];
         if (selectedAdapter === undefined) {
-            throw new UnregisteredDriverError(driverName);
+            throw new UnregisteredAdapterError(adapterName);
         }
-        return new EventBus(selectedAdapter, {
-            lazyPromiseSettings: this.lazyPromiseSettings,
+        return new EventBus({
+            adapter: selectedAdapter,
+            retryAttempts: this.retryAttempts,
+            backoffPolicy: this.backoffPolicy,
+            retryPolicy: this.retryPolicy,
+            timeout: this.timeout,
         });
     }
 }
