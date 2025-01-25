@@ -1,5 +1,48 @@
 # @daiso-tech/core
 
+## 0.17.0
+
+### Minor Changes
+
+-   e21e0ce: ### Changes
+
+    -   <i>ICache</i> and <i>ICacheAdapter</i> Enhancements:
+        -   All <i>ICache</i> and <i>ICacheAdapter</i> classes now take a single constructor argument.
+        -   A settings builder has been introduced for all <i>ICache</i> and <i>ICacheAdapter</i> classes.
+    -   <i>IEventBus</i> and <i>IEventBusAdapter</i> Enhancements:
+        -   All <i>IEventBus</i> and <i>IEventBusAdapter</i> classes now take a single constructor argument.
+        -   A settings builder has been introduced for all <i>IEventBus</i> and <i>IEventBusAdapter</i> classes.
+    -   <i>LazyPromise</i> class Enhancements:
+        -   Removed the settings from <i>LazyPromise</i> class.
+        -   Renamed to methods to use set as prefix
+
+### Patch Changes
+
+-   e21e0ce: ### Changes
+    -   Generic Type Defaults: Added default generic types for the following interfaces and classes
+    -   Caching
+        -   ICache contract
+        -   Cache class
+        -   ICacheAdapter contract
+        -   MemoryCacheAdapter class
+        -   SqliteCacheAdapter class
+        -   LibsqlCacheAdapter class
+        -   RedisCacheAdapter class
+        -   MongodbCacheAdapter class
+    -   Event bus:
+        -   IEventBus contract
+        -   EventBus class
+    -   Collections:
+        -   IAsyncCollection contract
+        -   AsyncIterableCollection class
+        -   ICollection contract
+        -   IterableCollection class
+        -   ListCollection class
+-   caa9f36: ## Changes
+    -   Ensured consistent serialization and deserialization in all the cache adapters and event bus adapters.
+-   e21e0ce: ### Changes
+    -   Remove <i>withType</i> method from <i>ICacheFactory</i> and <i>IEventBusFactory</i>.
+
 ## 0.16.0
 
 ### Minor Changes
