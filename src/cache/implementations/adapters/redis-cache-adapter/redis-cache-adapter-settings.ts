@@ -5,11 +5,6 @@
 import type { IBuildable, OneOrMore } from "@/utilities/_module";
 import type { Redis } from "ioredis";
 import type { ISerde } from "@/serde/contracts/_module";
-import {
-    RedisSerde,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type SuperJsonSerde,
-} from "@/serde/implementations/_module";
 
 /**
  * @group Adapters
