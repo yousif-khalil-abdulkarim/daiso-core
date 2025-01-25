@@ -313,12 +313,13 @@ export type CacheEvents<TType = unknown> =
 export function registerCacheEvents<TSerializedValue>(
     serde: IFlexibleSerde<TSerializedValue>,
 ): void {
-    serde.registerClass(KeyFoundCacheEvent);
-    serde.registerClass(KeyNotFoundCacheEvent);
-    serde.registerClass(KeyAddedCacheEvent);
-    serde.registerClass(KeyUpdatedCacheEvent);
-    serde.registerClass(KeyRemovedCacheEvent);
-    serde.registerClass(KeyIncrementedCacheEvent);
-    serde.registerClass(KeyDecrementedCacheEvent);
-    serde.registerClass(KeysClearedCacheEvent);
+    serde
+        .registerClass(KeyFoundCacheEvent)
+        .registerClass(KeyNotFoundCacheEvent)
+        .registerClass(KeyAddedCacheEvent)
+        .registerClass(KeyUpdatedCacheEvent)
+        .registerClass(KeyRemovedCacheEvent)
+        .registerClass(KeyIncrementedCacheEvent)
+        .registerClass(KeyDecrementedCacheEvent)
+        .registerClass(KeysClearedCacheEvent);
 }
