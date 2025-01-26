@@ -4,13 +4,13 @@
 
 import type { ISerde } from "@/serde/contracts/_module";
 import type { TimeSpan, OneOrMore, IBuildable } from "@/utilities/_module";
-import { type Database } from "better-sqlite3";
+import { type SqliteDatabase } from "kysely";
 
 /**
  * @group Adapters
  */
 export type SqliteCacheAdapterSettings = {
-    database: Database;
+    database: SqliteDatabase;
     tableName?: string;
     serde: ISerde<string>;
     enableTransactions?: boolean;
@@ -30,7 +30,7 @@ export class SqliteCacheAdapterSettingsBuilder<
     constructor(private readonly settings: TSettings = {} as TSettings) {}
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    setDatabase(database: Database) {
+    setDatabase(database: SqliteDatabase) {
         return new SqliteCacheAdapterSettingsBuilder({
             ...this.settings,
             database,
