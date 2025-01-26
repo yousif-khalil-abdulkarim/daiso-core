@@ -7,13 +7,16 @@ import {
     type IGroupableEventBus,
     type IEventBusAdapter,
 } from "@/event-bus/contracts/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
-import type { IBuildable, TimeSpan } from "@/utilities/_module";
+import type { IBuildable, OneOrMore, TimeSpan } from "@/utilities/_module";
 
 /**
  * @group Derivables
  */
 export type EventBusSettings = {
+    serde: OneOrMore<IFlexibleSerde>;
+
     adapter: IEventBusAdapter;
 
     /**
@@ -46,6 +49,14 @@ export class EventBusSettingsBuilder<
 > implements IBuildable<EventBusSettings>
 {
     constructor(private readonly settings: TSettings = {} as TSettings) {}
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    setSerde(serde: OneOrMore<IFlexibleSerde>) {
+        return new EventBusSettingsBuilder({
+            ...this.settings,
+            serde,
+        });
+    }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     setAdapter(adapter: IEventBusAdapter) {

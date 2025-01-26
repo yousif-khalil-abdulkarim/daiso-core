@@ -7,7 +7,8 @@ import type {
     IGroupableEventBus,
     IEventBusAdapter,
 } from "@/event-bus/contracts/_module";
-import type { TimeSpan } from "@/utilities/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 /**
  * @group Derivables
  */
@@ -20,7 +21,10 @@ export type EventBusAdapters<TAdapters extends string = string> = Partial<
  * @group Derivables
  */
 export type EventBusFactorySettings<TAdapters extends string = string> = {
+    serde: OneOrMore<IFlexibleSerde>;
+
     adapters: EventBusAdapters<TAdapters>;
+
     defaultAdapter?: NoInfer<TAdapters>;
 
     /**
@@ -57,6 +61,14 @@ export class EventBusFactorySettingsBuilder<
     TSettings extends EventBusFactorySettings,
 > {
     constructor(private readonly settings: TSettings = {} as TSettings) {}
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    setSerde(serde: OneOrMore<IFlexibleSerde>) {
+        return new EventBusFactorySettingsBuilder({
+            ...this.settings,
+            serde,
+        });
+    }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     setEventBus(eventBus: IGroupableEventBus<any>) {
