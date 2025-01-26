@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-export type OneOrMore<TItem> = TItem | TItem[];
+export type OneOrMore<TItem> = TItem | [TItem, ...TItem[]];
 
 export type Lazyable<TValue> = TValue | (() => TValue);
 
