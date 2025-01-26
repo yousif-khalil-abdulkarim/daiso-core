@@ -113,6 +113,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
     private readonly serde: OneOrMore<IFlexibleSerde>;
+    private readonly shouldRegisterErrors: boolean;
+    private readonly shouldRegisterEvents: boolean;
 
     /**
      *@example
@@ -133,6 +135,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     constructor(settings: CacheSettings) {
         const {
+            shouldRegisterErrors = true,
+            shouldRegisterEvents = true,
             serde,
             adapter,
             eventBus: groupdEventBus = new EventBus({
@@ -154,6 +158,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
+        this.shouldRegisterErrors = shouldRegisterErrors;
+        this.shouldRegisterEvents = shouldRegisterEvents;
 
         this.registerEvents();
         this.registerErrors();
@@ -163,6 +169,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * Registers all cache-related events within the given <i>IFlexibleSerde</i> contract.
      */
     private registerEvents(): void {
+        if (!this.shouldRegisterEvents) {
+            return;
+        }
         let array = this.serde;
         if (!Array.isArray(array)) {
             array = [array];
@@ -184,6 +193,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * Registers all cache-related error within the given <i>IFlexibleSerde</i> contract.
      */
     private registerErrors(): void {
+        if (!this.shouldRegisterErrors) {
+            return;
+        }
         let array = this.serde;
         if (!Array.isArray(array)) {
             array = [array];
