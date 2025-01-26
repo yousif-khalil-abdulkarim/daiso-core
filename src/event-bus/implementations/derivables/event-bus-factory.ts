@@ -91,9 +91,11 @@ export class EventBusFactory<TAdapters extends string = string>
     private readonly backoffPolicy?: BackoffPolicy | null;
     private readonly retryPolicy?: RetryPolicy | null;
     private readonly timeout?: TimeSpan | null;
+    private readonly shouldRegisterErrors?: boolean;
 
     constructor(settings: EventBusFactorySettings<TAdapters>) {
         const {
+            shouldRegisterErrors,
             serde,
             adapters,
             defaultAdapter,
@@ -102,6 +104,7 @@ export class EventBusFactory<TAdapters extends string = string>
             retryPolicy,
             timeout,
         } = settings;
+        this.shouldRegisterErrors = shouldRegisterErrors;
         this.serde = serde;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
@@ -125,6 +128,7 @@ export class EventBusFactory<TAdapters extends string = string>
                 backoffPolicy: this.backoffPolicy,
                 retryPolicy: this.retryPolicy,
                 timeout: this.timeout,
+                shouldRegisterErrors: this.shouldRegisterErrors,
             });
         }
     }

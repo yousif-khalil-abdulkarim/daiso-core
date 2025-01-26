@@ -67,6 +67,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
+    private readonly shouldRegisterErrors: boolean;
 
     constructor(settings: EventBusSettings) {
         const {
@@ -76,7 +77,9 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             backoffPolicy = null,
             retryPolicy = null,
             timeout = null,
+            shouldRegisterErrors = false,
         } = settings;
+        this.shouldRegisterErrors = shouldRegisterErrors;
         this.serde = serde;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
@@ -90,6 +93,9 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * Registers all event bus related error within the given <i>IFlexibleSerde</i> contract.
      */
     private registerErrors(): void {
+        if (!this.shouldRegisterErrors) {
+            return;
+        }
         let array = this.serde;
         if (!Array.isArray(array)) {
             array = [array];

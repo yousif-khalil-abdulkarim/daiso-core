@@ -15,7 +15,18 @@ import type { IBuildable, OneOrMore, TimeSpan } from "@/utilities/_module";
  * @group Derivables
  */
 export type EventBusSettings = {
+    /**
+     * You can pass one or more <i>{@link IFlexibleSerde}</i> that will be used to register all <i>{@link IGroupableEventBus}</i> related errors.
+     * @default {true}
+     */
     serde: OneOrMore<IFlexibleSerde>;
+
+    /**
+     * If set to true, all <i>{@link IGroupableEventBus}</i> related errors will be registered with the specified <i>IFlexibleSerde</i> during constructor initialization.
+     * This ensures that all <i>{@link IGroupableEventBus}</i> related errors will be serialized correctly.
+     * @default {true}
+     */
+    shouldRegisterErrors?: boolean;
 
     adapter: IEventBusAdapter;
 
@@ -49,6 +60,14 @@ export class EventBusSettingsBuilder<
 > implements IBuildable<EventBusSettings>
 {
     constructor(private readonly settings: TSettings = {} as TSettings) {}
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    setShouldRegisterErrors(shouldRegisterErrors: boolean) {
+        return new EventBusSettingsBuilder({
+            ...this.settings,
+            shouldRegisterErrors,
+        });
+    }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     setSerde(serde: OneOrMore<IFlexibleSerde>) {
