@@ -73,6 +73,8 @@ export class CacheFactory<TAdapters extends string = string>
     private readonly retryPolicy?: RetryPolicy | null;
     private readonly timeout?: TimeSpan | null;
     private readonly serde: OneOrMore<IFlexibleSerde>;
+    private readonly shouldRegisterErrors?: boolean;
+    private readonly shouldRegisterEvents?: boolean;
 
     /**
      * @example
@@ -103,6 +105,8 @@ export class CacheFactory<TAdapters extends string = string>
      */
     constructor(settings: CacheFactorySettings<TAdapters>) {
         const {
+            shouldRegisterErrors,
+            shouldRegisterEvents,
             serde,
             adapters,
             defaultAdapter,
@@ -113,6 +117,9 @@ export class CacheFactory<TAdapters extends string = string>
             retryPolicy,
             timeout,
         } = settings;
+
+        this.shouldRegisterErrors = shouldRegisterErrors;
+        this.shouldRegisterEvents = shouldRegisterEvents;
         this.serde = serde;
         this.adapters = adapters;
         this.defaultAdapter = defaultAdapter;
@@ -140,6 +147,8 @@ export class CacheFactory<TAdapters extends string = string>
                 backoffPolicy: this.backoffPolicy,
                 retryPolicy: this.retryPolicy,
                 timeout: this.timeout,
+                shouldRegisterErrors: this.shouldRegisterErrors,
+                shouldRegisterEvents: this.shouldRegisterEvents,
             });
         }
     }

@@ -32,21 +32,25 @@ export type EventBusSettings = {
 
     /**
      * The default retry attempt to use in the returned <i>LazyPromise</i>.
+     * @default {null}
      */
     retryAttempts?: number | null;
 
     /**
      * The default backof policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
      */
     backoffPolicy?: BackoffPolicy | null;
 
     /**
      * The default retry policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
      */
     retryPolicy?: RetryPolicy | null;
 
     /**
      * The default timeout to use in the returned <i>LazyPromise</i>.
+     * @default {null}
      */
     timeout?: TimeSpan | null;
 };
