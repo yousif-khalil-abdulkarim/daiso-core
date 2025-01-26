@@ -12,13 +12,14 @@ import {
     KeyIncrementedCacheEvent,
     KeyDecrementedCacheEvent,
     KeysClearedCacheEvent,
+    type ICache,
+    type ICacheAdapter,
 } from "@/cache/contracts/_module";
 import {
+    CacheError,
     KeyNotFoundCacheError,
     TypeCacheError,
     UnexpectedCacheError,
-    type ICache,
-    type ICacheAdapter,
 } from "@/cache/contracts/_module";
 import { type IGroupableCache } from "@/cache/contracts/_module";
 import {
@@ -55,6 +56,24 @@ import type { IFlexibleSerde } from "@/serde/contracts/_module";
  * @group Derivables
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {
+    static readonly errors = {
+        Error: CacheError,
+        Unexpected: UnexpectedCacheError,
+        Type: TypeCacheError,
+        KeyNotFound: KeyNotFoundCacheError,
+    } as const;
+
+    static readonly events = {
+        KeyFound: KeyFoundCacheEvent,
+        KeyNotFound: KeyNotFoundCacheEvent,
+        KeyAdded: KeyAddedCacheEvent,
+        KeyUpdated: KeyUpdatedCacheEvent,
+        KeyRemoved: KeyRemovedCacheEvent,
+        KeyIncremented: KeyIncrementedCacheEvent,
+        KeyDecremented: KeyDecrementedCacheEvent,
+        KeysCleared: KeysClearedCacheEvent,
+    } as const;
+
     /**
      * @example
      * ```ts
@@ -135,8 +154,12 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         this.timeout = timeout;
 
         this.registerEvents();
+        this.registerErrors();
     }
 
+    /**
+     * Registers all cache-related events within the given <i>IFlexibleSerde</i> contract.
+     */
     private registerEvents(): void {
         if (!Array.isArray(this.serde)) {
             this.serde = [this.serde];
@@ -151,6 +174,22 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                 .registerClass(KeyIncrementedCacheEvent)
                 .registerClass(KeyDecrementedCacheEvent)
                 .registerClass(KeysClearedCacheEvent);
+        }
+    }
+
+    /**
+     * Registers all cache-related error within the given <i>IFlexibleSerde</i> contract.
+     */
+    private registerErrors(): void {
+        if (!Array.isArray(this.serde)) {
+            this.serde = [this.serde];
+        }
+        for (const serde of this.serde) {
+            serde
+                .registerClass(CacheError)
+                .registerClass(UnexpectedCacheError)
+                .registerClass(TypeCacheError)
+                .registerClass(KeyNotFoundCacheError);
         }
     }
 

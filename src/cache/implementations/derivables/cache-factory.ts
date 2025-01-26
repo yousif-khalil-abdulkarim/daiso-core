@@ -20,6 +20,14 @@ import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
  * @group Derivables
+ * @internal
+ */
+type Caches<TAdapters extends string> = Partial<
+    Record<TAdapters, IGroupableCache<any>>
+>;
+
+/**
+ * @group Derivables
  */
 export class CacheFactory<TAdapters extends string = string>
     implements ICacheFactory<TAdapters>
@@ -55,6 +63,7 @@ export class CacheFactory<TAdapters extends string = string>
         return new CacheFactorySettingsBuilder();
     }
 
+    private readonly caches = {} as Caches<TAdapters>;
     private readonly adapters: CacheAdapters<TAdapters>;
     private readonly defaultAdapter?: TAdapters;
     private readonly eventBus?: IGroupableEventBus<any>;
@@ -113,6 +122,26 @@ export class CacheFactory<TAdapters extends string = string>
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
+        this.initCaches();
+    }
+
+    private initCaches(): void {
+        for (const key in this.adapters) {
+            const { [key]: adapter } = this.adapters;
+            if (adapter === undefined) {
+                continue;
+            }
+            this.caches[key] = new Cache<any>({
+                adapter,
+                serde: this.serde,
+                eventBus: this.eventBus,
+                defaultTtl: this.defaultTtl,
+                retryAttempts: this.retryAttempts,
+                backoffPolicy: this.backoffPolicy,
+                retryPolicy: this.retryPolicy,
+                timeout: this.timeout,
+            });
+        }
     }
 
     use<TType = unknown>(
@@ -121,19 +150,10 @@ export class CacheFactory<TAdapters extends string = string>
         if (adapterName === undefined) {
             throw new DefaultAdapterNotDefinedError(CacheFactory.name);
         }
-        const adapter = this.adapters[adapterName];
-        if (adapter === undefined) {
+        const cache = this.caches[adapterName];
+        if (cache === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        return new Cache<TType>({
-            serde: this.serde,
-            adapter: adapter,
-            eventBus: this.eventBus,
-            defaultTtl: this.defaultTtl,
-            retryAttempts: this.retryAttempts,
-            backoffPolicy: this.backoffPolicy,
-            retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
-        });
+        return cache;
     }
 }
