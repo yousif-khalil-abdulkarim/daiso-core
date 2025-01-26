@@ -44,13 +44,13 @@ export class MongodbCacheAdapter<TType = unknown>
     /**
      * @example
      * ```ts
-     * import { LibsqlCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { MongodbCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
      * import { MongoClient } from "mongodb";
      *
      * (async () => {
      *   const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
      *   const cacheAdapter = new MongodbCacheAdapter(
-     *     LibsqlCacheAdapter
+     *     MongodbCacheAdapter
      *       .settings()
      *       .setDatabase(client.db("database"))
      *       .setSerde(new SuperJsonSerde())
