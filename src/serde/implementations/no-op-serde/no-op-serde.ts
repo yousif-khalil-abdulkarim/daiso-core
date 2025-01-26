@@ -5,6 +5,7 @@ import type {
     IFlexibleSerde,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ISerde,
+    ISerdeTransformer,
     SerializableClass,
 } from "@/serde/contracts/_module";
 
@@ -27,6 +28,12 @@ export class NoOpSerde<TSerializedValue>
 
     registerClass<TSerializedClassInstance>(
         _class: SerializableClass<TSerializedClassInstance>,
+    ): IFlexibleSerde<TSerializedValue> {
+        return this;
+    }
+
+    registerCustom<TCustomSerialized, TCustomDeserialized>(
+        _transformer: ISerdeTransformer<TCustomSerialized, TCustomDeserialized>,
     ): IFlexibleSerde<TSerializedValue> {
         return this;
     }

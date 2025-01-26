@@ -50,6 +50,7 @@ import {
 import type { CacheSettings } from "@/cache/implementations/derivables/cache-settings";
 import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
+import { NoOpSerde } from "@/serde/implementations/_module";
 
 /**
  * <i>Cache</i> class can be derived from any <i>{@link ICacheAdapter}</i>.
@@ -111,7 +112,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
-    private serde: OneOrMore<IFlexibleSerde>;
+    private readonly serde: OneOrMore<IFlexibleSerde>;
 
     /**
      *@example
@@ -136,6 +137,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             adapter,
             eventBus: groupdEventBus = new EventBus({
                 adapter: new NoOpEventBusAdapter(),
+                serde: new NoOpSerde(),
             }),
             defaultTtl = null,
             retryAttempts = null,
@@ -161,10 +163,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * Registers all cache-related events within the given <i>IFlexibleSerde</i> contract.
      */
     private registerEvents(): void {
-        if (!Array.isArray(this.serde)) {
-            this.serde = [this.serde];
+        let array = this.serde;
+        if (!Array.isArray(array)) {
+            array = [array];
         }
-        for (const serde of this.serde) {
+        for (const serde of array) {
             serde
                 .registerClass(KeyFoundCacheEvent)
                 .registerClass(KeyNotFoundCacheEvent)
@@ -181,10 +184,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * Registers all cache-related error within the given <i>IFlexibleSerde</i> contract.
      */
     private registerErrors(): void {
-        if (!Array.isArray(this.serde)) {
-            this.serde = [this.serde];
+        let array = this.serde;
+        if (!Array.isArray(array)) {
+            array = [array];
         }
-        for (const serde of this.serde) {
+        for (const serde of array) {
             serde
                 .registerClass(CacheError)
                 .registerClass(UnexpectedCacheError)

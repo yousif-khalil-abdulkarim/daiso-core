@@ -3,7 +3,7 @@
  */
 
 import type { ISerializable } from "@/serde/contracts/_module";
-import type { ISerializedError } from "@/utilities/contracts/serialized-error.contract";
+import type { ISerializedError } from "@/utilities/_module";
 
 /**
  * @group Errors
@@ -43,7 +43,7 @@ export class UnexpectedCacheError
     static override deserialize(
         deserializedValue: ISerializedError,
     ): CacheError {
-        return new CacheError(
+        return new UnexpectedCacheError(
             deserializedValue.message,
             deserializedValue.cause,
         );
@@ -52,14 +52,6 @@ export class UnexpectedCacheError
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = UnexpectedCacheError.name;
-    }
-
-    override serialize(): ISerializedError {
-        return {
-            name: this.name,
-            message: this.message,
-            cause: this.cause,
-        };
     }
 }
 
@@ -73,7 +65,7 @@ export class TypeCacheError
     static override deserialize(
         deserializedValue: ISerializedError,
     ): CacheError {
-        return new CacheError(
+        return new TypeCacheError(
             deserializedValue.message,
             deserializedValue.cause,
         );
@@ -82,14 +74,6 @@ export class TypeCacheError
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = TypeCacheError.name;
-    }
-
-    override serialize(): ISerializedError {
-        return {
-            name: this.name,
-            message: this.message,
-            cause: this.cause,
-        };
     }
 }
 
@@ -103,7 +87,7 @@ export class KeyNotFoundCacheError
     static override deserialize(
         deserializedValue: ISerializedError,
     ): CacheError {
-        return new CacheError(
+        return new KeyNotFoundCacheError(
             deserializedValue.message,
             deserializedValue.cause,
         );
@@ -112,13 +96,5 @@ export class KeyNotFoundCacheError
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = KeyNotFoundCacheError.name;
-    }
-
-    override serialize(): ISerializedError {
-        return {
-            name: this.name,
-            message: this.message,
-            cause: this.cause,
-        };
     }
 }
