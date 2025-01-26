@@ -1,5 +1,22 @@
 # @daiso-tech/core
 
+## 0.18.0
+
+### Minor Changes
+
+-   29334ad: ### Changes
+    -   Simplified the event registration process by removing the <i>registerCacheEvents</i> function.
+    -   All cache-related events are now registered directly within the <i>Cache</i> class constructor for improved clarity and maintainability.
+-   a6fe783: ### Changes
+    -   Made all the cahce related Error serializable and deserializable
+    -   All cache related error are registered directly within the <i>Cache</i> class constructor for improved clarity and maintainability
+-   97a3934: ### Changes
+    -   Made all the event bus related Error serializable and deserializable
+    -   All event bus related error are registered directly within the <i>EventBus</i> class constructor for improved clarity and maintainability
+-   f64191c: ### Changes
+    -   Introduced a new method, <i>registerCustom</i>, in the <i>IFlexibleSerde</i> contract.
+        This method enables support for custom serialization and deserialization processes.
+
 ## 0.17.4
 
 ### Patch Changes
