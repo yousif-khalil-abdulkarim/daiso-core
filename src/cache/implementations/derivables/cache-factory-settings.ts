@@ -4,8 +4,9 @@
 
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
 import type { ICacheAdapter } from "@/cache/contracts/_module";
-import type { TimeSpan } from "@/utilities/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
  * @group Derivables
@@ -18,7 +19,11 @@ export type CacheAdapters<TAdapters extends string> = Partial<
  * @group Derivables
  */
 export type CacheFactorySettings<TAdapters extends string = string> = {
+    // Ska den var optional serializern eller required
+    serde: OneOrMore<IFlexibleSerde>;
+
     adapters: CacheAdapters<TAdapters>;
+
     defaultAdapter?: NoInfer<TAdapters>;
 
     /**
@@ -60,6 +65,14 @@ export class CacheFactorySettingsBuilder<
     TSettings extends CacheFactorySettings,
 > {
     constructor(private readonly settings: TSettings = {} as TSettings) {}
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    setSerde(serde: OneOrMore<IFlexibleSerde>) {
+        return new CacheFactorySettingsBuilder({
+            ...this.settings,
+            serde,
+        });
+    }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     setEventBus(eventBus: IGroupableEventBus<any>) {

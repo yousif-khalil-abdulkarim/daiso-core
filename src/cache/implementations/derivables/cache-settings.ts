@@ -3,15 +3,18 @@
  */
 
 import type { ICacheAdapter } from "@/cache/contracts/_module";
-import type { IBuildable } from "@/utilities/_module";
+import type { IBuildable, OneOrMore } from "@/utilities/_module";
 import type { TimeSpan } from "@/utilities/_module";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
  * @group Derivables
  */
 export type CacheSettings = {
+    serde: OneOrMore<IFlexibleSerde>;
+
     adapter: ICacheAdapter<any>;
 
     /**
@@ -53,6 +56,14 @@ export class CacheSettingsBuilder<TSettings extends Partial<CacheSettings>>
     implements IBuildable<CacheSettings>
 {
     constructor(private readonly settings: TSettings = {} as TSettings) {}
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    setSerde(serde: OneOrMore<IFlexibleSerde>) {
+        return new CacheSettingsBuilder({
+            ...this.settings,
+            serde,
+        });
+    }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     setAdapter(adapter: ICacheAdapter<any>) {

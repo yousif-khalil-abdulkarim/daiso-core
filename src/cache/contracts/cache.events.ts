@@ -3,7 +3,6 @@
  */
 
 import { BaseEvent } from "@/event-bus/contracts/_module";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
 import type { TimeSpan } from "@/utilities/_module";
 
 /**
@@ -305,21 +304,3 @@ export type CacheEvents<TType = unknown> =
     | KeyIncrementedCacheEvent
     | KeyDecrementedCacheEvent
     | KeysClearedCacheEvent;
-
-/**
- * The <i>registerCacheEvents</i> function is used to register all cache events with a <i>{@link IFlexibleSerde}</i>.
- * @group Events
- */
-export function registerCacheEvents<TSerializedValue>(
-    serde: IFlexibleSerde<TSerializedValue>,
-): void {
-    serde
-        .registerClass(KeyFoundCacheEvent)
-        .registerClass(KeyNotFoundCacheEvent)
-        .registerClass(KeyAddedCacheEvent)
-        .registerClass(KeyUpdatedCacheEvent)
-        .registerClass(KeyRemovedCacheEvent)
-        .registerClass(KeyIncrementedCacheEvent)
-        .registerClass(KeyDecrementedCacheEvent)
-        .registerClass(KeysClearedCacheEvent);
-}

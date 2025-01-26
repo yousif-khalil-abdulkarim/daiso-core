@@ -9,13 +9,14 @@ import {
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
 import type { ICacheFactory, IGroupableCache } from "@/cache/contracts/_module";
 import { Cache } from "@/cache/implementations/derivables/cache";
-import type { TimeSpan } from "@/utilities/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
 import type {
     CacheAdapters,
     CacheFactorySettings,
 } from "@/cache/implementations/derivables/cache-factory-settings";
 import { CacheFactorySettingsBuilder } from "@/cache/implementations/derivables/cache-factory-settings";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
  * @group Derivables
@@ -29,6 +30,7 @@ export class CacheFactory<TAdapters extends string = string>
      * import { CacheFactory, SuperJsonSerde. MemoryCacheAdapter, RedisCacheAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
      * import Redis from "ioredis";
      *
+     * const serde = new SuperJsonSerde();
      * const cacheFactory = new CacheFactory(
      *   CacheFactory
      *     .settings()
@@ -38,7 +40,7 @@ export class CacheFactory<TAdapters extends string = string>
      *     }))
      *     .setAdapter("redis", new RedisCacheAdapter({
      *       client: new Redis("YOUR_REDIS_CONNECTION"),
-     *       serde: new SuperJsonSerde(),
+     *       serde,
      *       rootGroup: "@global"
      *     }))
      *     .setDefaultAdapter("memory")
@@ -61,6 +63,7 @@ export class CacheFactory<TAdapters extends string = string>
     private readonly backoffPolicy?: BackoffPolicy | null;
     private readonly retryPolicy?: RetryPolicy | null;
     private readonly timeout?: TimeSpan | null;
+    private readonly serde: OneOrMore<IFlexibleSerde>;
 
     /**
      * @example
@@ -71,14 +74,16 @@ export class CacheFactory<TAdapters extends string = string>
      * const eventBus = new EventBus({
      *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
      * });
+     * const serde = new SuperJsonSerde();
      * const cacheFactory = new CacheFactory({
+     *   serde,
      *   adapters: {
      *     memory: new MemoryCacheAdapter({
      *       rootGroup: "@global"
      *     }),
      *     redis: new RedisCacheAdapter({
      *       client: new Redis("YOUR_REDIS_CONNECTION"),
-     *       serde: new SuperJsonSerde(),
+     *       serde,
      *       rootGroup: "@global"
      *     }),
      *   },
@@ -89,6 +94,7 @@ export class CacheFactory<TAdapters extends string = string>
      */
     constructor(settings: CacheFactorySettings<TAdapters>) {
         const {
+            serde,
             adapters,
             defaultAdapter,
             eventBus,
@@ -98,6 +104,7 @@ export class CacheFactory<TAdapters extends string = string>
             retryPolicy,
             timeout,
         } = settings;
+        this.serde = serde;
         this.adapters = adapters;
         this.defaultAdapter = defaultAdapter;
         this.eventBus = eventBus;
@@ -119,6 +126,7 @@ export class CacheFactory<TAdapters extends string = string>
             throw new UnregisteredAdapterError(adapterName);
         }
         return new Cache<TType>({
+            serde: this.serde,
             adapter: adapter,
             eventBus: this.eventBus,
             defaultTtl: this.defaultTtl,
