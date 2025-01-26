@@ -4,6 +4,7 @@
 
 import { getConstructorName } from "@/utilities/_module";
 import type {
+    ISerdeTransformer,
     ISerializable,
     SerializableClass,
 } from "@/serde/contracts/_module";
@@ -16,6 +17,34 @@ import { SuperJSON } from "superjson-cjs";
 import type { SuperJSONResult } from "superjson-cjs/dist/index";
 
 /**
+ * @internal
+ * @group Adapters
+ */
+type JSONBuffer = {
+    buffer: string;
+};
+
+/**
+ * The <i>SuperJsonSerde</i> class has direct support for the following values
+ * - String
+ * - Number
+ * - Boolean
+ * - Null,
+ * - Arrays
+ * - Object literals
+ * - Date
+ * - Map
+ * - Set
+ * - BigInt
+ * - Buffer
+ * - Uint8Array
+ * - Int8Array
+ * - Uint16Array
+ * - Int16Array
+ * - Uint32Array
+ * - Int32Array
+ * - Float32Array
+ * - Float64Array
  * @group Adapters
  */
 export class SuperJsonSerde implements IFlexibleSerde<string> {
@@ -25,353 +54,209 @@ export class SuperJsonSerde implements IFlexibleSerde<string> {
         this.registerAll();
     }
 
-    private registerBuffer(): void {
-        this.superJson.registerCustom<Buffer, any>(
+    registerCustom<TCustomSerialized, TCustomDeserialized>(
+        transformer: ISerdeTransformer<TCustomSerialized, TCustomDeserialized>,
+    ): IFlexibleSerde<string> {
+        this.superJson.registerCustom<TCustomSerialized, any>(
             {
-                isApplicable(value: any): value is Buffer {
-                    return value instanceof Buffer;
-                },
-                deserialize(serializedValue) {
-                    const isObject =
-                        !Array.isArray(serializedValue) &&
-                        typeof serializedValue === "object" &&
-                        serializedValue !== null;
-                    if (!isObject) {
-                        throw new DeserializationError(
-                            "Serialized value is not object",
-                        );
-                    }
-                    const { buffer } = serializedValue as Record<
-                        string,
-                        unknown
-                    >;
-                    if (typeof buffer !== "string") {
-                        throw new DeserializationError(
-                            "Serialized value is not a string",
-                        );
-                    }
-                    return Buffer.from(buffer, "base64");
+                isApplicable(value) {
+                    return transformer.isApplicable(value);
                 },
                 serialize(deserializedValue) {
-                    return {
-                        buffer: deserializedValue.toString("base64"),
-                    };
+                    return transformer.serialize(deserializedValue);
+                },
+                deserialize(serializedValue) {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                    return transformer.deserialize(serializedValue);
                 },
             },
-            Buffer.name,
+            transformer.name,
         );
+        return this;
+    }
+
+    private registerBuffer(): void {
+        this.registerCustom<Buffer, any>({
+            isApplicable(value: any): value is Buffer {
+                return value instanceof Buffer;
+            },
+            deserialize(serializedValue) {
+                const isObject =
+                    !Array.isArray(serializedValue) &&
+                    typeof serializedValue === "object" &&
+                    serializedValue !== null;
+                if (!isObject) {
+                    throw new DeserializationError(
+                        "Serialized value is not object",
+                    );
+                }
+                const { buffer } = serializedValue as Record<string, unknown>;
+                if (typeof buffer !== "string") {
+                    throw new DeserializationError(
+                        "Serialized value is not a string",
+                    );
+                }
+                return Buffer.from(buffer, "base64");
+            },
+            serialize(deserializedValue) {
+                return {
+                    buffer: deserializedValue.toString("base64"),
+                };
+            },
+            name: Buffer.name,
+        });
     }
 
     private registerUint8Array(): void {
-        this.superJson.registerCustom<Uint8Array, any>(
-            {
-                isApplicable(value): value is Uint8Array {
-                    return value instanceof Uint8Array;
-                },
-                deserialize(serializedValue) {
-                    const isObject =
-                        !Array.isArray(serializedValue) &&
-                        typeof serializedValue === "object" &&
-                        serializedValue !== null;
-                    if (!isObject) {
-                        throw new DeserializationError(
-                            "Serialized value is not object",
-                        );
-                    }
-                    const { buffer } = serializedValue as Record<
-                        string,
-                        unknown
-                    >;
-                    if (typeof buffer !== "string") {
-                        throw new DeserializationError(
-                            "Serialized value is not a string",
-                        );
-                    }
-                    return new Uint8Array(Buffer.from(buffer, "base64"));
-                },
-                serialize(deserializedValue) {
-                    return {
-                        buffer: Buffer.from(deserializedValue).toString(
-                            "base64",
-                        ),
-                    };
-                },
+        this.registerCustom<Uint8Array, JSONBuffer>({
+            isApplicable(value): value is Uint8Array {
+                return value instanceof Uint8Array;
             },
-            Uint8Array.name,
-        );
+            deserialize(serializedValue) {
+                return new Uint8Array(
+                    Buffer.from(serializedValue.buffer, "base64"),
+                );
+            },
+            serialize(deserializedValue) {
+                return {
+                    buffer: Buffer.from(deserializedValue).toString("base64"),
+                };
+            },
+            name: Uint8Array.name,
+        });
     }
 
     private registerInt8Array(): void {
-        this.superJson.registerCustom<Int8Array, any>(
-            {
-                isApplicable(value): value is Int8Array {
-                    return value instanceof Int8Array;
-                },
-                deserialize(serializedValue) {
-                    const isObject =
-                        !Array.isArray(serializedValue) &&
-                        typeof serializedValue === "object" &&
-                        serializedValue !== null;
-                    if (!isObject) {
-                        throw new DeserializationError(
-                            "Serialized value is not object",
-                        );
-                    }
-                    const { buffer } = serializedValue as Record<
-                        string,
-                        unknown
-                    >;
-                    if (typeof buffer !== "string") {
-                        throw new DeserializationError(
-                            "Serialized value is not a string",
-                        );
-                    }
-                    return new Int8Array(Buffer.from(buffer, "base64"));
-                },
-                serialize(deserializedValue) {
-                    return {
-                        buffer: Buffer.from(deserializedValue).toString(
-                            "base64",
-                        ),
-                    };
-                },
+        this.registerCustom<Int8Array, JSONBuffer>({
+            isApplicable(value): value is Int8Array {
+                return value instanceof Int8Array;
             },
-            Int8Array.name,
-        );
+            deserialize(serializedValue) {
+                return new Int8Array(
+                    Buffer.from(serializedValue.buffer, "base64"),
+                );
+            },
+            serialize(deserializedValue) {
+                return {
+                    buffer: Buffer.from(deserializedValue).toString("base64"),
+                };
+            },
+            name: Int8Array.name,
+        });
     }
 
     private registerUint16Array(): void {
-        this.superJson.registerCustom<Uint16Array, any>(
-            {
-                isApplicable(value): value is Uint16Array {
-                    return value instanceof Uint16Array;
-                },
-                deserialize(serializedValue) {
-                    const isObject =
-                        !Array.isArray(serializedValue) &&
-                        typeof serializedValue === "object" &&
-                        serializedValue !== null;
-                    if (!isObject) {
-                        throw new DeserializationError(
-                            "Serialized value is not object",
-                        );
-                    }
-                    const { buffer } = serializedValue as Record<
-                        string,
-                        unknown
-                    >;
-                    if (typeof buffer !== "string") {
-                        throw new DeserializationError(
-                            "Serialized value is not a string",
-                        );
-                    }
-                    return new Uint16Array(Buffer.from(buffer, "base64"));
-                },
-                serialize(deserializedValue) {
-                    return {
-                        buffer: Buffer.from(deserializedValue).toString(
-                            "base64",
-                        ),
-                    };
-                },
+        this.registerCustom<Uint16Array, JSONBuffer>({
+            isApplicable(value): value is Uint16Array {
+                return value instanceof Uint16Array;
             },
-            Uint16Array.name,
-        );
+            deserialize(serializedValue) {
+                return new Uint16Array(
+                    Buffer.from(serializedValue.buffer, "base64"),
+                );
+            },
+            serialize(deserializedValue) {
+                return {
+                    buffer: Buffer.from(deserializedValue).toString("base64"),
+                };
+            },
+            name: Uint16Array.name,
+        });
     }
 
     private registerInt16Array(): void {
-        this.superJson.registerCustom<Int16Array, any>(
-            {
-                isApplicable(value): value is Int16Array {
-                    return value instanceof Int16Array;
-                },
-                deserialize(serializedValue) {
-                    const isObject =
-                        !Array.isArray(serializedValue) &&
-                        typeof serializedValue === "object" &&
-                        serializedValue !== null;
-                    if (!isObject) {
-                        throw new DeserializationError(
-                            "Serialized value is not object",
-                        );
-                    }
-                    const { buffer } = serializedValue as Record<
-                        string,
-                        unknown
-                    >;
-                    if (typeof buffer !== "string") {
-                        throw new DeserializationError(
-                            "Serialized value is not a string",
-                        );
-                    }
-                    return new Int16Array(Buffer.from(buffer, "base64"));
-                },
-                serialize(deserializedValue) {
-                    return {
-                        buffer: Buffer.from(deserializedValue).toString(
-                            "base64",
-                        ),
-                    };
-                },
+        this.registerCustom<Int16Array, JSONBuffer>({
+            isApplicable(value): value is Int16Array {
+                return value instanceof Int16Array;
             },
-            Int16Array.name,
-        );
+            deserialize(serializedValue) {
+                return new Int16Array(
+                    Buffer.from(serializedValue.buffer, "base64"),
+                );
+            },
+            serialize(deserializedValue) {
+                return {
+                    buffer: Buffer.from(deserializedValue).toString("base64"),
+                };
+            },
+            name: Int16Array.name,
+        });
     }
 
     private registerUint32Array(): void {
-        this.superJson.registerCustom<Uint32Array, any>(
-            {
-                isApplicable(value): value is Uint32Array {
-                    return value instanceof Uint32Array;
-                },
-                deserialize(serializedValue) {
-                    const isObject =
-                        !Array.isArray(serializedValue) &&
-                        typeof serializedValue === "object" &&
-                        serializedValue !== null;
-                    if (!isObject) {
-                        throw new DeserializationError(
-                            "Serialized value is not object",
-                        );
-                    }
-                    const { buffer } = serializedValue as Record<
-                        string,
-                        unknown
-                    >;
-                    if (typeof buffer !== "string") {
-                        throw new DeserializationError(
-                            "Serialized value is not a string",
-                        );
-                    }
-                    return new Uint32Array(Buffer.from(buffer, "base64"));
-                },
-                serialize(deserializedValue) {
-                    return {
-                        buffer: Buffer.from(deserializedValue).toString(
-                            "base64",
-                        ),
-                    };
-                },
+        this.registerCustom<Uint32Array, JSONBuffer>({
+            isApplicable(value): value is Uint32Array {
+                return value instanceof Uint32Array;
             },
-            Uint32Array.name,
-        );
+            deserialize(serializedValue) {
+                return new Uint32Array(
+                    Buffer.from(serializedValue.buffer, "base64"),
+                );
+            },
+            serialize(deserializedValue) {
+                return {
+                    buffer: Buffer.from(deserializedValue).toString("base64"),
+                };
+            },
+            name: Uint32Array.name,
+        });
     }
 
     private registerInt32Array(): void {
-        this.superJson.registerCustom<Int32Array, any>(
-            {
-                isApplicable(value): value is Int32Array {
-                    return value instanceof Int32Array;
-                },
-                deserialize(serializedValue) {
-                    const isObject =
-                        !Array.isArray(serializedValue) &&
-                        typeof serializedValue === "object" &&
-                        serializedValue !== null;
-                    if (!isObject) {
-                        throw new DeserializationError(
-                            "Serialized value is not object",
-                        );
-                    }
-                    const { buffer } = serializedValue as Record<
-                        string,
-                        unknown
-                    >;
-                    if (typeof buffer !== "string") {
-                        throw new DeserializationError(
-                            "Serialized value is not a string",
-                        );
-                    }
-                    return new Int32Array(Buffer.from(buffer, "base64"));
-                },
-                serialize(deserializedValue) {
-                    return {
-                        buffer: Buffer.from(deserializedValue).toString(
-                            "base64",
-                        ),
-                    };
-                },
+        this.registerCustom<Int32Array, JSONBuffer>({
+            isApplicable(value): value is Int32Array {
+                return value instanceof Int32Array;
             },
-            Int32Array.name,
-        );
+            deserialize(serializedValue) {
+                return new Int32Array(
+                    Buffer.from(serializedValue.buffer, "base64"),
+                );
+            },
+            serialize(deserializedValue) {
+                return {
+                    buffer: Buffer.from(deserializedValue).toString("base64"),
+                };
+            },
+            name: Int32Array.name,
+        });
     }
 
     private registerFloat32Array(): void {
-        this.superJson.registerCustom<Float32Array, any>(
-            {
-                isApplicable(value): value is Float32Array {
-                    return value instanceof Float32Array;
-                },
-                deserialize(serializedValue) {
-                    const isObject =
-                        !Array.isArray(serializedValue) &&
-                        typeof serializedValue === "object" &&
-                        serializedValue !== null;
-                    if (!isObject) {
-                        throw new DeserializationError(
-                            "Serialized value is not object",
-                        );
-                    }
-                    const { buffer } = serializedValue as Record<
-                        string,
-                        unknown
-                    >;
-                    if (typeof buffer !== "string") {
-                        throw new DeserializationError(
-                            "Serialized value is not a string",
-                        );
-                    }
-                    return new Float32Array(Buffer.from(buffer, "base64"));
-                },
-                serialize(deserializedValue) {
-                    return {
-                        buffer: Buffer.from(deserializedValue).toString(
-                            "base64",
-                        ),
-                    };
-                },
+        this.registerCustom<Float32Array, JSONBuffer>({
+            isApplicable(value): value is Float32Array {
+                return value instanceof Float32Array;
             },
-            Float32Array.name,
-        );
+            deserialize(serializedValue) {
+                return new Float32Array(
+                    Buffer.from(serializedValue.buffer, "base64"),
+                );
+            },
+            serialize(deserializedValue) {
+                return {
+                    buffer: Buffer.from(deserializedValue).toString("base64"),
+                };
+            },
+            name: Float32Array.name,
+        });
     }
 
     private registerFloat64Array(): void {
-        this.superJson.registerCustom<Float64Array, any>(
-            {
-                isApplicable(value): value is Float64Array {
-                    return value instanceof Float64Array;
-                },
-                deserialize(serializedValue) {
-                    const isObject =
-                        !Array.isArray(serializedValue) &&
-                        typeof serializedValue === "object" &&
-                        serializedValue !== null;
-                    if (!isObject) {
-                        throw new DeserializationError(
-                            "Serialized value is not object",
-                        );
-                    }
-                    const { buffer } = serializedValue as Record<
-                        string,
-                        unknown
-                    >;
-                    if (typeof buffer !== "string") {
-                        throw new DeserializationError(
-                            "Serialized value is not a string",
-                        );
-                    }
-                    return new Float64Array(Buffer.from(buffer, "base64"));
-                },
-                serialize(deserializedValue) {
-                    return {
-                        buffer: Buffer.from(deserializedValue).toString(
-                            "base64",
-                        ),
-                    };
-                },
+        this.registerCustom<Float64Array, JSONBuffer>({
+            isApplicable(value): value is Float64Array {
+                return value instanceof Float64Array;
             },
-            Float64Array.name,
-        );
+            deserialize(serializedValue) {
+                return new Float64Array(
+                    Buffer.from(serializedValue.buffer, "base64"),
+                );
+            },
+            serialize(deserializedValue) {
+                return {
+                    buffer: Buffer.from(deserializedValue).toString("base64"),
+                };
+            },
+            name: Float64Array.name,
+        });
     }
 
     private registerAll(): void {
@@ -389,31 +274,28 @@ export class SuperJsonSerde implements IFlexibleSerde<string> {
     registerClass<TSerializedClassInstance>(
         class_: SerializableClass<TSerializedClassInstance>,
     ): IFlexibleSerde<string> {
-        this.superJson.registerCustom<
+        return this.registerCustom<
             ISerializable<TSerializedClassInstance>,
             SuperJSONResult["json"]
-        >(
-            {
-                isApplicable(
-                    value,
-                ): value is ISerializable<TSerializedClassInstance> {
-                    return (
-                        value instanceof class_ &&
-                        getConstructorName(value) === class_.name
-                    );
-                },
-                deserialize(serializedValue) {
-                    return class_.deserialize(
-                        serializedValue as TSerializedClassInstance,
-                    );
-                },
-                serialize(value) {
-                    return value.serialize() as SuperJSONResult["json"];
-                },
+        >({
+            isApplicable(
+                value,
+            ): value is ISerializable<TSerializedClassInstance> {
+                return (
+                    value instanceof class_ &&
+                    getConstructorName(value) === class_.name
+                );
             },
-            class_.name,
-        );
-        return this;
+            deserialize(serializedValue) {
+                return class_.deserialize(
+                    serializedValue as TSerializedClassInstance,
+                );
+            },
+            serialize(deserializedValue) {
+                return deserializedValue.serialize() as SuperJSONResult["json"];
+            },
+            name: class_.name,
+        });
     }
 
     serialize<TValue>(value: TValue): string {

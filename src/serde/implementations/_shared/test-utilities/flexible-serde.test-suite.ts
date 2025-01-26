@@ -3,7 +3,11 @@
  */
 
 import { type TestAPI, type ExpectStatic, beforeEach } from "vitest";
-import type { IFlexibleSerde, ISerializable } from "@/serde/contracts/_module";
+import type {
+    IFlexibleSerde,
+    ISerdeTransformer,
+    ISerializable,
+} from "@/serde/contracts/_module";
 import { serdeTestSuite } from "@/serde/implementations/_shared/test-utilities/serde.test-suite";
 
 /**
@@ -69,6 +73,7 @@ export function flexibleSerdeTestSuite(
         expect(deserializedValue).toBeInstanceOf(User);
         expect(deserializedValue.getInfo()).toBe("name: Abra, age: 20");
     });
+
     test("Should work with custom registerd classes that is extended", () => {
         flexibleSerde.registerClass(ExtendedUser);
         const user = new ExtendedUser("Abra", 20);
@@ -77,5 +82,24 @@ export function flexibleSerdeTestSuite(
         );
         expect(deserializedValue).toBeInstanceOf(ExtendedUser);
         expect(deserializedValue.getInfo()).toBe("name: Abra, age: 20");
+    });
+
+    test("Should work with custom ISerdeTransformer", () => {
+        const transformer: ISerdeTransformer<User, SerializedUser> = {
+            name: User.name,
+            isApplicable(value): value is User {
+                return (
+                    value instanceof User &&
+                    value.constructor.name === User.name
+                );
+            },
+            deserialize(serializedValue) {
+                return User.deserialize(serializedValue);
+            },
+            serialize(deserializedValue) {
+                return deserializedValue.serialize();
+            },
+        };
+        flexibleSerde.registerCustom(transformer);
     });
 }
