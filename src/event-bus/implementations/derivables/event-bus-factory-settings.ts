@@ -7,7 +7,8 @@ import type {
     IGroupableEventBus,
     IEventBusAdapter,
 } from "@/event-bus/contracts/_module";
-import type { TimeSpan } from "@/utilities/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 /**
  * @group Derivables
  */
@@ -20,7 +21,21 @@ export type EventBusAdapters<TAdapters extends string = string> = Partial<
  * @group Derivables
  */
 export type EventBusFactorySettings<TAdapters extends string = string> = {
+    /**
+     * You can pass one or more <i>{@link IFlexibleSerde}</i> that will be used to register all <i>{@link IGroupableEventBus}</i> related errors.
+     * @default {true}
+     */
+    serde: OneOrMore<IFlexibleSerde>;
+
+    /**
+     * If set to true, all <i>{@link IGroupableEventBus}</i> related errors will be registered with the specified <i>IFlexibleSerde</i> during constructor initialization.
+     * This ensures that all <i>{@link IGroupableEventBus}</i> related errors will be serialized correctly.
+     * @default {true}
+     */
+    shouldRegisterErrors?: boolean;
+
     adapters: EventBusAdapters<TAdapters>;
+
     defaultAdapter?: NoInfer<TAdapters>;
 
     /**
@@ -57,6 +72,22 @@ export class EventBusFactorySettingsBuilder<
     TSettings extends EventBusFactorySettings,
 > {
     constructor(private readonly settings: TSettings = {} as TSettings) {}
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    setShouldRegisterErrors(shouldRegisterErrors: boolean) {
+        return new EventBusFactorySettingsBuilder({
+            ...this.settings,
+            shouldRegisterErrors,
+        });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    setSerde(serde: OneOrMore<IFlexibleSerde>) {
+        return new EventBusFactorySettingsBuilder({
+            ...this.settings,
+            serde,
+        });
+    }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     setEventBus(eventBus: IGroupableEventBus<any>) {

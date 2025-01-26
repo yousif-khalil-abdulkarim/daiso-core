@@ -9,7 +9,7 @@ import type {
     BaseEvent,
 } from "@/event-bus/contracts/_module";
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus";
-import type { TimeSpan } from "@/utilities/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
@@ -19,6 +19,15 @@ import {
     type EventBusFactorySettings,
     EventBusFactorySettingsBuilder,
 } from "@/event-bus/implementations/derivables/event-bus-factory-settings";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
+
+/**
+ * @group Derivables
+ * @internal
+ */
+type EventBuses<TAdapters extends string> = Partial<
+    Record<TAdapters, IGroupableEventBus<any>>
+>;
 
 /**
  * @group Derivables
@@ -74,15 +83,20 @@ export class EventBusFactory<TAdapters extends string = string>
         return new EventBusFactorySettingsBuilder();
     }
 
+    private readonly eventBuses = {} as EventBuses<TAdapters>;
+    private readonly serde: OneOrMore<IFlexibleSerde>;
     private readonly adapters: EventBusAdapters<TAdapters>;
     private readonly defaultAdapter?: TAdapters;
     private readonly retryAttempts?: number | null;
     private readonly backoffPolicy?: BackoffPolicy | null;
     private readonly retryPolicy?: RetryPolicy | null;
     private readonly timeout?: TimeSpan | null;
+    private readonly shouldRegisterErrors?: boolean;
 
     constructor(settings: EventBusFactorySettings<TAdapters>) {
         const {
+            shouldRegisterErrors,
+            serde,
             adapters,
             defaultAdapter,
             retryAttempts,
@@ -90,12 +104,33 @@ export class EventBusFactory<TAdapters extends string = string>
             retryPolicy,
             timeout,
         } = settings;
+        this.shouldRegisterErrors = shouldRegisterErrors;
+        this.serde = serde;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
         this.adapters = adapters;
         this.defaultAdapter = defaultAdapter;
+        this.initCaches();
+    }
+
+    private initCaches(): void {
+        for (const key in this.adapters) {
+            const { [key]: adapter } = this.adapters;
+            if (adapter === undefined) {
+                continue;
+            }
+            this.eventBuses[key] = new EventBus({
+                serde: this.serde,
+                adapter,
+                retryAttempts: this.retryAttempts,
+                backoffPolicy: this.backoffPolicy,
+                retryPolicy: this.retryPolicy,
+                timeout: this.timeout,
+                shouldRegisterErrors: this.shouldRegisterErrors,
+            });
+        }
     }
 
     use<TEvents extends BaseEvent = BaseEvent>(
@@ -104,16 +139,10 @@ export class EventBusFactory<TAdapters extends string = string>
         if (adapterName === undefined) {
             throw new DefaultAdapterNotDefinedError(EventBusFactory.name);
         }
-        const selectedAdapter = this.adapters[adapterName];
-        if (selectedAdapter === undefined) {
+        const eventBus = this.eventBuses[adapterName];
+        if (eventBus === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        return new EventBus({
-            adapter: selectedAdapter,
-            retryAttempts: this.retryAttempts,
-            backoffPolicy: this.backoffPolicy,
-            retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
-        });
+        return eventBus;
     }
 }
