@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.19.0
+
+### Minor Changes
+
+-   615e616: - Added new settings to the <i>Cache</i> class, allowing you to decide whether to register all <i>Cache</i> related events and errors.
+
 ## 0.18.0
 
 ### Minor Changes
