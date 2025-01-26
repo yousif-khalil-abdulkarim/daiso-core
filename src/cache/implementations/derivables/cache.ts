@@ -56,6 +56,24 @@ import type { IFlexibleSerde } from "@/serde/contracts/_module";
  * @group Derivables
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {
+    static readonly errors = {
+        Error: CacheError,
+        Unexpected: UnexpectedCacheError,
+        Type: TypeCacheError,
+        KeyNotFound: KeyNotFoundCacheError,
+    } as const;
+
+    static readonly events = {
+        KeyFound: KeyFoundCacheEvent,
+        KeyNotFound: KeyNotFoundCacheEvent,
+        KeyAdded: KeyAddedCacheEvent,
+        KeyUpdated: KeyUpdatedCacheEvent,
+        KeyRemoved: KeyRemovedCacheEvent,
+        KeyIncremented: KeyIncrementedCacheEvent,
+        KeyDecremented: KeyDecrementedCacheEvent,
+        KeysCleared: KeysClearedCacheEvent,
+    } as const;
+
     /**
      * @example
      * ```ts
