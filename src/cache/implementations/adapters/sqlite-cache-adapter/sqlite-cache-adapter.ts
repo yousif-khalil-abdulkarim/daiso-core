@@ -29,7 +29,7 @@ export class SqliteCacheAdapter<TType = unknown>
     /**
      * @example
      * ```ts
-     * import { LibsqlCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { SqliteCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
      * import Sqlite from "better-sqlite3";
      *
      * const cacheAdapter = new SqliteCacheAdapter(
