@@ -48,6 +48,7 @@ import {
 } from "@/event-bus/implementations/_module";
 import type { CacheSettings } from "@/cache/implementations/derivables/cache-settings";
 import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache-settings";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
  * <i>Cache</i> class can be derived from any <i>{@link ICacheAdapter}</i>.
@@ -57,11 +58,12 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     /**
      * @example
      * ```ts
-     * import { Cache, MemoryCacheAdapter, TimeSpan } from "@daiso-tech/core";
+     * import { Cache, MemoryCacheAdapter, TimeSpan, SuperJsonSerde } from "@daiso-tech/core";
      *
      * const cache = new Cache(
      *   Cache
      *     .settings()
+     *     .setSerde(new SuperJsonSerde())
      *     .setAdapter(new MemoryCacheAdapter({ rootGroup: "@global" }))
      *     .setEventBus(new EventBus(new MemoryEventBusAdapter({ rootGroup: "@global" })))
      *     .setDefaultTtl(TimeSpan.fromMinutes(2))
@@ -90,6 +92,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
+    private serde: OneOrMore<IFlexibleSerde>;
 
     /**
      *@example
@@ -100,6 +103,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
      * });
      * const cache = new Cache({
+     *   serde: new SuperJsonSerde();
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
@@ -109,6 +113,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     constructor(settings: CacheSettings) {
         const {
+            serde,
             adapter,
             eventBus: groupdEventBus = new EventBus({
                 adapter: new NoOpEventBusAdapter(),
@@ -119,6 +124,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             retryPolicy = Cache.defaultRetryPolicy,
             timeout = null,
         } = settings;
+        this.serde = serde;
         this.groupdEventBus = groupdEventBus;
         this.eventBus = groupdEventBus.withGroup(adapter.getGroup());
         this.adapter = adapter;
@@ -127,6 +133,25 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
+
+        this.registerEvents();
+    }
+
+    private registerEvents(): void {
+        if (!Array.isArray(this.serde)) {
+            this.serde = [this.serde];
+        }
+        for (const serde of this.serde) {
+            serde
+                .registerClass(KeyFoundCacheEvent)
+                .registerClass(KeyNotFoundCacheEvent)
+                .registerClass(KeyAddedCacheEvent)
+                .registerClass(KeyUpdatedCacheEvent)
+                .registerClass(KeyRemovedCacheEvent)
+                .registerClass(KeyIncrementedCacheEvent)
+                .registerClass(KeyDecrementedCacheEvent)
+                .registerClass(KeysClearedCacheEvent);
+        }
     }
 
     private createLayPromise<TValue = void>(
@@ -267,6 +292,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     withGroup(group: OneOrMore<string>): ICache<TType> {
         return new Cache({
+            serde: this.serde,
             adapter: this.adapter.withGroup(group),
             defaultTtl: this.defaultTtl,
             eventBus: this.groupdEventBus,
