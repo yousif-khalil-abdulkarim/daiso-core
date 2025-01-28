@@ -3,7 +3,6 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memo
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus";
 import { eventBusTestSuite } from "@/event-bus/implementations/_shared/_module";
 import { EventEmitter } from "node:events";
-import { NoOpSerde } from "@/serde/implementations/_module";
 
 describe("class: EventBus", () => {
     let eventEmitter: EventEmitter;
@@ -21,7 +20,6 @@ describe("class: EventBus", () => {
                     rootGroup: "@a",
                     eventEmitter,
                 }),
-                serde: new NoOpSerde(),
             }),
         createEventBusB: () =>
             new EventBus({
@@ -29,7 +27,6 @@ describe("class: EventBus", () => {
                     rootGroup: "@a/b",
                     eventEmitter,
                 }),
-                serde: new NoOpSerde(),
             }),
     });
 });

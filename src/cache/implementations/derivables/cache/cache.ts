@@ -16,7 +16,6 @@ import {
     type ICacheAdapter,
 } from "@/cache/contracts/_module";
 import {
-    CacheError,
     KeyNotFoundCacheError,
     TypeCacheError,
     UnexpectedCacheError,
@@ -50,32 +49,12 @@ import {
 } from "@/event-bus/implementations/_module";
 import type { CacheSettings } from "@/cache/implementations/derivables/cache/cache-settings";
 import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache/cache-settings";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
-import { NoOpSerde } from "@/serde/implementations/_module";
 
 /**
  * <i>Cache</i> class can be derived from any <i>{@link ICacheAdapter}</i>.
  * @group Derivables
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {
-    static readonly errors = {
-        Error: CacheError,
-        Unexpected: UnexpectedCacheError,
-        Type: TypeCacheError,
-        KeyNotFound: KeyNotFoundCacheError,
-    } as const;
-
-    static readonly events = {
-        KeyFound: KeyFoundCacheEvent,
-        KeyNotFound: KeyNotFoundCacheEvent,
-        KeyAdded: KeyAddedCacheEvent,
-        KeyUpdated: KeyUpdatedCacheEvent,
-        KeyRemoved: KeyRemovedCacheEvent,
-        KeyIncremented: KeyIncrementedCacheEvent,
-        KeyDecremented: KeyDecrementedCacheEvent,
-        KeysCleared: KeysClearedCacheEvent,
-    } as const;
-
     /**
      * @example
      * ```ts
@@ -84,10 +63,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * const cache = new Cache(
      *   Cache
      *     .settings()
-     *     .setSerde(new SuperJsonSerde())
      *     .setAdapter(new MemoryCacheAdapter({ rootGroup: "@global" }))
      *     .setEventBus(new EventBus(new MemoryEventBusAdapter({ rootGroup: "@global" })))
-     *     .setDefaultTtl(TimeSpan.fromMinutes(2))
      *     .build()
      * );
      * ```
@@ -113,36 +90,31 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
-    private readonly serde: OneOrMore<IFlexibleSerde>;
-    private readonly shouldRegisterErrors: boolean;
-    private readonly shouldRegisterEvents: boolean;
 
     /**
      *@example
      * ```ts
-     * import { Cache, MemoryCacheAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import { Cache, MemoryCacheAdapter, EventBus, MemoryEventBusAdapter, registerCacheEvents, reigsterCacheErrors, SuperJsonSerde } from "@daiso-tech/core";
      *
      * const eventBus = new EventBus({
      *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
      * });
      * const cache = new Cache({
-     *   serde: new SuperJsonSerde();
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
      *   eventBus,
      * });
+     * const serde = new SuperJsonSerde();
+     * registerCacheEvents(serde);
+     * reigsterCacheErrors(serde);
      * ```
      */
     constructor(settings: CacheSettings) {
         const {
-            shouldRegisterErrors = true,
-            shouldRegisterEvents = true,
-            serde,
             adapter,
             eventBus: groupdEventBus = new EventBus({
                 adapter: new NoOpEventBusAdapter(),
-                serde: new NoOpSerde(),
             }),
             defaultTtl = null,
             retryAttempts = null,
@@ -150,7 +122,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             retryPolicy = Cache.defaultRetryPolicy,
             timeout = null,
         } = settings;
-        this.serde = serde;
         this.groupdEventBus = groupdEventBus;
         this.eventBus = groupdEventBus.withGroup(adapter.getGroup());
         this.adapter = adapter;
@@ -159,55 +130,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
-        this.shouldRegisterErrors = shouldRegisterErrors;
-        this.shouldRegisterEvents = shouldRegisterEvents;
-
-        this.registerEvents();
-        this.registerErrors();
-    }
-
-    /**
-     * Registers all cache-related events within the given <i>IFlexibleSerde</i> contract.
-     */
-    private registerEvents(): void {
-        if (!this.shouldRegisterEvents) {
-            return;
-        }
-        let array = this.serde;
-        if (!Array.isArray(array)) {
-            array = [array];
-        }
-        for (const serde of array) {
-            serde
-                .registerClass(KeyFoundCacheEvent)
-                .registerClass(KeyNotFoundCacheEvent)
-                .registerClass(KeyAddedCacheEvent)
-                .registerClass(KeyUpdatedCacheEvent)
-                .registerClass(KeyRemovedCacheEvent)
-                .registerClass(KeyIncrementedCacheEvent)
-                .registerClass(KeyDecrementedCacheEvent)
-                .registerClass(KeysClearedCacheEvent);
-        }
-    }
-
-    /**
-     * Registers all cache-related error within the given <i>IFlexibleSerde</i> contract.
-     */
-    private registerErrors(): void {
-        if (!this.shouldRegisterErrors) {
-            return;
-        }
-        let array = this.serde;
-        if (!Array.isArray(array)) {
-            array = [array];
-        }
-        for (const serde of array) {
-            serde
-                .registerClass(CacheError)
-                .registerClass(UnexpectedCacheError)
-                .registerClass(TypeCacheError)
-                .registerClass(KeyNotFoundCacheError);
-        }
     }
 
     private createLayPromise<TValue = void>(
@@ -348,7 +270,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     withGroup(group: OneOrMore<string>): ICache<TType> {
         return new Cache({
-            serde: this.serde,
             adapter: this.adapter.withGroup(simplifyGroupName(group)),
             defaultTtl: this.defaultTtl,
             eventBus: this.groupdEventBus,

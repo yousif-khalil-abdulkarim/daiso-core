@@ -3,10 +3,11 @@
  */
 
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
-import type {
-    IGroupableEventBus,
-    IEventBusFactory,
-    BaseEvent,
+import {
+    type IGroupableEventBus,
+    type IEventBusFactory,
+    type BaseEvent,
+    registerEventErrors,
 } from "@/event-bus/contracts/_module";
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus";
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
@@ -25,7 +26,7 @@ import type { IFlexibleSerde } from "@/serde/contracts/_module";
  * @group Derivables
  * @internal
  */
-type EventBuses<TAdapters extends string> = Partial<
+type EventBusRecord<TAdapters extends string> = Partial<
     Record<TAdapters, IGroupableEventBus<any>>
 >;
 
@@ -47,6 +48,7 @@ type EventBuses<TAdapters extends string> = Partial<
  *     }),
  *   },
  *   defaultAdapter: "memory",
+ *   serde: new SuperJsonSerde()
  * });
  * ```
  */
@@ -59,16 +61,18 @@ export class EventBusFactory<TAdapters extends string = string>
      * import { EventBusFactory, SuperJsonSerde. MemoryEventBusAdapter, RedisPubSubEventBusAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
      * import Redis from "ioredis";
      *
+     * const serde = new SuperJsonSerde();
      * const cacheFactory = new EventBusFactory(
      *   EventBusFactory
      *     .settings()
+     *     .setSerde(serde)
      *     .setAdapter("memory", new MemoryEventBusAdapter({
      *       rootGroup: "@global"
      *     }))
      *     .setAdapter("redis", new RedisPubSubEventBusAdapter({
      *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION"),
      *       listenerClient: new Redis("YOUR_REDIS_CONNECTION")
-     *       serde: new SuperJsonSerde(),
+     *       serde,
      *       rootGroup: "@global"
      *     }))
      *     .setDefaultAdapter("memory")
@@ -83,9 +87,8 @@ export class EventBusFactory<TAdapters extends string = string>
         return new EventBusFactorySettingsBuilder();
     }
 
-    private readonly eventBuses = {} as EventBuses<TAdapters>;
+    private readonly eventBusRecord = {} as EventBusRecord<TAdapters>;
     private readonly serde: OneOrMore<IFlexibleSerde>;
-    private readonly adapters: EventBusAdapters<TAdapters>;
     private readonly defaultAdapter?: TAdapters;
     private readonly retryAttempts?: number | null;
     private readonly backoffPolicy?: BackoffPolicy | null;
@@ -93,11 +96,34 @@ export class EventBusFactory<TAdapters extends string = string>
     private readonly timeout?: TimeSpan | null;
     private readonly shouldRegisterErrors?: boolean;
 
+    /**
+     * @example
+     * ```ts
+     * import { EventBusFactory, SuperJsonSerde. MemoryEventBusAdapter, RedisPubSubEventBusAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import Redis from "ioredis";
+     * const serde = new SuperJsonSerde();
+     * const cacheFactory = new EventBusFactory({
+     *   serde,
+     *   adapters: {
+     *     memory:new MemoryEventBusAdapter({
+     *       rootGroup: "@global"
+     *     }),
+     *     redis: new RedisPubSubEventBusAdapter({
+     *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION"),
+     *       listenerClient: new Redis("YOUR_REDIS_CONNECTION")
+     *       serde,
+     *       rootGroup: "@global"
+     *     }),
+     *     defaultAdapter: "memory"
+     *   }
+     * })
+     * ```
+     */
     constructor(settings: EventBusFactorySettings<TAdapters>) {
         const {
-            shouldRegisterErrors,
-            serde,
             adapters,
+            shouldRegisterErrors = true,
+            serde,
             defaultAdapter,
             retryAttempts,
             backoffPolicy,
@@ -110,27 +136,31 @@ export class EventBusFactory<TAdapters extends string = string>
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
-        this.adapters = adapters;
         this.defaultAdapter = defaultAdapter;
-        this.initCaches();
+        this.eventBusRecord = this.init(adapters);
     }
 
-    private initCaches(): void {
-        for (const key in this.adapters) {
-            const { [key]: adapter } = this.adapters;
+    private init(
+        adapters: EventBusAdapters<TAdapters>,
+    ): EventBusRecord<TAdapters> {
+        if (this.shouldRegisterErrors) {
+            registerEventErrors(this.serde);
+        }
+        const eventBusRecord: EventBusRecord<TAdapters> = {};
+        for (const key in adapters) {
+            const { [key]: adapter } = adapters;
             if (adapter === undefined) {
                 continue;
             }
-            this.eventBuses[key] = new EventBus({
-                serde: this.serde,
+            eventBusRecord[key] = new EventBus({
                 adapter,
                 retryAttempts: this.retryAttempts,
                 backoffPolicy: this.backoffPolicy,
                 retryPolicy: this.retryPolicy,
                 timeout: this.timeout,
-                shouldRegisterErrors: this.shouldRegisterErrors,
             });
         }
+        return eventBusRecord;
     }
 
     use<TEvents extends BaseEvent = BaseEvent>(
@@ -139,7 +169,7 @@ export class EventBusFactory<TAdapters extends string = string>
         if (adapterName === undefined) {
             throw new DefaultAdapterNotDefinedError(EventBusFactory.name);
         }
-        const eventBus = this.eventBuses[adapterName];
+        const eventBus = this.eventBusRecord[adapterName];
         if (eventBus === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
