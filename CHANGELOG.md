@@ -1,5 +1,12 @@
 # @daiso-tech/core
 
+## 0.20.0
+
+### Minor Changes
+
+-   3dfbd75: - Updated the <i>ICacheAdapter</i> contract: The <i>withGroup</i> method now accepts only a string as its argument.
+    -   Updated the <i>IEventBusAdapter</i> contract: The <i>withGroup</i> method now accepts only a string as its argument.
+
 ## 0.19.0
 
 ### Minor Changes
