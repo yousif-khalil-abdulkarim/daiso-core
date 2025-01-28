@@ -55,11 +55,11 @@ export class UnexpectedEventBusError extends EventBusError {
 /**
  * @group Errors
  */
-export class RemoveListenerEventBusError extends UnexpectedEventBusError {
+export class UnableToRemoveListenerEventBusError extends UnexpectedEventBusError {
     static override deserialize(
         deserializedValue: ISerializedError,
     ): EventBusError {
-        return new RemoveListenerEventBusError(
+        return new UnableToRemoveListenerEventBusError(
             deserializedValue.message,
             deserializedValue.cause,
         );
@@ -67,18 +67,18 @@ export class RemoveListenerEventBusError extends UnexpectedEventBusError {
 
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
-        this.name = RemoveListenerEventBusError.name;
+        this.name = UnableToRemoveListenerEventBusError.name;
     }
 }
 
 /**
  * @group Errors
  */
-export class AddListenerEventBusError extends UnexpectedEventBusError {
+export class UnableToAddListenerEventBusError extends UnexpectedEventBusError {
     static override deserialize(
         deserializedValue: ISerializedError,
     ): EventBusError {
-        return new AddListenerEventBusError(
+        return new UnableToAddListenerEventBusError(
             deserializedValue.message,
             deserializedValue.cause,
         );
@@ -86,16 +86,16 @@ export class AddListenerEventBusError extends UnexpectedEventBusError {
 
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
-        this.name = AddListenerEventBusError.name;
+        this.name = UnableToAddListenerEventBusError.name;
     }
 }
 
 /**
  * @group Errors
  */
-export class DispatchEventBusError extends UnexpectedEventBusError {
+export class UnableToDispatchEventBusError extends UnexpectedEventBusError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
-        this.name = DispatchEventBusError.name;
+        this.name = UnableToDispatchEventBusError.name;
     }
 }

@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import { simplifyGroupName, type OneOrMore } from "@/utilities/_module";
+import { simplifyGroupName } from "@/utilities/_module";
 import type {
     BaseEvent,
     IEventBusAdapter,
@@ -68,16 +68,16 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
     constructor(settings: MemoryEventBusAdapterSettings) {
         const { rootGroup, eventEmitter = new EventEmitter() } = settings;
         this.eventEmitter = eventEmitter;
-        this.group = simplifyGroupName(rootGroup);
+        this.group = rootGroup;
     }
 
     getGroup(): string {
         return this.group;
     }
 
-    withGroup(group: OneOrMore<string>): IEventBusAdapter {
+    withGroup(group: string): IEventBusAdapter {
         return new MemoryEventBusAdapter({
-            rootGroup: [this.group, simplifyGroupName(group)],
+            rootGroup: simplifyGroupName([this.group, group]),
             eventEmitter: this.eventEmitter,
         });
     }

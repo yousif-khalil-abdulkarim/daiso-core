@@ -8,14 +8,14 @@ import {
 } from "@/utilities/_module";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
 import type { ICacheFactory, IGroupableCache } from "@/cache/contracts/_module";
-import { Cache } from "@/cache/implementations/derivables/cache";
+import { Cache } from "@/cache/implementations/derivables/cache/cache";
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
 import type {
     CacheAdapters,
     CacheFactorySettings,
-} from "@/cache/implementations/derivables/cache-factory-settings";
-import { CacheFactorySettingsBuilder } from "@/cache/implementations/derivables/cache-factory-settings";
+} from "@/cache/implementations/derivables/cache-factory/cache-factory-settings";
+import { CacheFactorySettingsBuilder } from "@/cache/implementations/derivables/cache-factory/cache-factory-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**

@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import type { IBuildable, OneOrMore } from "@/utilities/_module";
+import type { IBuildable } from "@/utilities/_module";
 import type { Redis } from "ioredis";
 import type { ISerde } from "@/serde/contracts/_module";
 
@@ -12,7 +12,7 @@ import type { ISerde } from "@/serde/contracts/_module";
 export type RedisCacheAdapterSettings = {
     database: Redis;
     serde: ISerde<string>;
-    rootGroup: OneOrMore<string>;
+    rootGroup: string;
 };
 
 /**
@@ -42,7 +42,7 @@ export class RedisCacheAdapterSettingsBuilder<
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    setRootGroup(group: OneOrMore<string>) {
+    setRootGroup(group: string) {
         return new RedisCacheAdapterSettingsBuilder({
             ...this.settings,
             rootGroup: group,

@@ -3,7 +3,6 @@
  */
 
 import type { IBuildable } from "@/utilities/_module";
-import { type OneOrMore } from "@/utilities/_module";
 import type { CollectionOptions, Db, ObjectId } from "mongodb";
 import type { ISerde } from "@/serde/contracts/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -25,7 +24,7 @@ export type MongodbCacheDocument = {
 export type MongodbCacheAdapterSettings = {
     database: Db;
     serde: ISerde<string>;
-    rootGroup: OneOrMore<string>;
+    rootGroup: string;
     collectionName?: string;
     collectionSettings?: CollectionOptions;
 };
@@ -57,7 +56,7 @@ export class MongodbCacheAdapterSettingsBuilder<
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    setRootGroup(group: OneOrMore<string>) {
+    setRootGroup(group: string) {
         return new MongodbCacheAdapterSettingsBuilder({
             ...this.settings,
             rootGroup: group,

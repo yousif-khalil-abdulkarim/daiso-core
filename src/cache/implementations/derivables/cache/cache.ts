@@ -26,6 +26,7 @@ import {
     isArrayEmpty,
     isObjectEmpty,
     simplifyAsyncLazyable,
+    simplifyGroupName,
 } from "@/utilities/_module";
 import type {
     AsyncLazyable,
@@ -47,8 +48,8 @@ import {
     EventBus,
     NoOpEventBusAdapter,
 } from "@/event-bus/implementations/_module";
-import type { CacheSettings } from "@/cache/implementations/derivables/cache-settings";
-import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache-settings";
+import type { CacheSettings } from "@/cache/implementations/derivables/cache/cache-settings";
+import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache/cache-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 import { NoOpSerde } from "@/serde/implementations/_module";
 
@@ -348,7 +349,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     withGroup(group: OneOrMore<string>): ICache<TType> {
         return new Cache({
             serde: this.serde,
-            adapter: this.adapter.withGroup(group),
+            adapter: this.adapter.withGroup(simplifyGroupName(group)),
             defaultTtl: this.defaultTtl,
             eventBus: this.groupdEventBus,
             retryAttempts: this.retryAttempts,

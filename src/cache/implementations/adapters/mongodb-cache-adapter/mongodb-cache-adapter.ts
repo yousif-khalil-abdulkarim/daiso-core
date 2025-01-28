@@ -11,7 +11,6 @@ import type { IDeinitizable } from "@/utilities/_module";
 import {
     type TimeSpan,
     type IInitizable,
-    type OneOrMore,
     simplifyGroupName,
 } from "@/utilities/_module";
 import type { Db, ObjectId } from "mongodb";
@@ -121,7 +120,7 @@ export class MongodbCacheAdapter<TType = unknown>
             collectionSettings,
         );
         this.baseSerde = serde;
-        this.group = simplifyGroupName(rootGroup);
+        this.group = rootGroup;
         this.mongodbSerde = new MongodbSerde(this.baseSerde);
     }
 
@@ -129,11 +128,11 @@ export class MongodbCacheAdapter<TType = unknown>
         return this.group;
     }
 
-    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+    withGroup(group: string): ICacheAdapter<TType> {
         return new MongodbCacheAdapter({
             database: this.database,
             serde: this.baseSerde,
-            rootGroup: [this.group, simplifyGroupName(group)],
+            rootGroup: simplifyGroupName([this.group, group]),
         });
     }
 

@@ -15,17 +15,21 @@ import {
     type IEventBusAdapter,
     type Listener,
     type BaseEvent,
-    DispatchEventBusError,
-    RemoveListenerEventBusError,
-    AddListenerEventBusError,
+    UnableToDispatchEventBusError,
+    UnableToRemoveListenerEventBusError,
+    UnableToAddListenerEventBusError,
     UnexpectedEventBusError,
     EventBusError,
 } from "@/event-bus/contracts/_module";
 
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
-import { getConstructorName, isArrayEmpty } from "@/utilities/_module";
-import type { EventBusSettings } from "@/event-bus/implementations/derivables/event-bus-settings";
-import { EventBusSettingsBuilder } from "@/event-bus/implementations/derivables/event-bus-settings";
+import {
+    getConstructorName,
+    isArrayEmpty,
+    simplifyGroupName,
+} from "@/utilities/_module";
+import type { EventBusSettings } from "@/event-bus/implementations/derivables/event-bus/event-bus-settings";
+import { EventBusSettingsBuilder } from "@/event-bus/implementations/derivables/event-bus/event-bus-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
@@ -38,8 +42,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     static readonly errors = {
         Error: EventBusError,
         Unexpected: UnexpectedEventBusError,
-        RemoveListener: RemoveListenerEventBusError,
-        AddListener: AddListenerEventBusError,
+        RemoveListener: UnableToRemoveListenerEventBusError,
+        AddListener: UnableToAddListenerEventBusError,
     } as const;
 
     /**
@@ -104,8 +108,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             serde
                 .registerClass(EventBusError)
                 .registerClass(UnexpectedEventBusError)
-                .registerClass(RemoveListenerEventBusError)
-                .registerClass(AddListenerEventBusError);
+                .registerClass(UnableToRemoveListenerEventBusError)
+                .registerClass(UnableToAddListenerEventBusError);
         }
     }
 
@@ -122,7 +126,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
             serde: this.serde,
-            adapter: this.adapter.withGroup(group),
+            adapter: this.adapter.withGroup(simplifyGroupName(group)),
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
@@ -145,7 +149,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                     listener as Listener<BaseEvent>,
                 );
             } catch (error: unknown) {
-                throw new AddListenerEventBusError(
+                throw new UnableToAddListenerEventBusError(
                     `A listener with name of "${listener.name}" could not added for "${String(event)}" event`,
                     error,
                 );
@@ -164,7 +168,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                     listener as Listener<BaseEvent>,
                 );
             } catch (error: unknown) {
-                throw new RemoveListenerEventBusError(
+                throw new UnableToRemoveListenerEventBusError(
                     `A listener with name of "${listener.name}" could not removed of "${String(event)}" event`,
                     error,
                 );
@@ -255,7 +259,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 }
                 await Promise.all(promises);
             } catch (error: unknown) {
-                throw new DispatchEventBusError(
+                throw new UnableToDispatchEventBusError(
                     `Events of types "${events.map((event) => getConstructorName(event)).join(", ")}" could not be dispatched`,
                     error,
                 );
@@ -268,7 +272,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             try {
                 await this.adapter.dispatch(getConstructorName(event), event);
             } catch (error: unknown) {
-                throw new DispatchEventBusError(
+                throw new UnableToDispatchEventBusError(
                     `Event of type "${String(getConstructorName(event))}" could not be dispatched`,
                     error,
                 );

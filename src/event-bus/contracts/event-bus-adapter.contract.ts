@@ -3,7 +3,6 @@
  */
 
 import type { Listener } from "@/event-bus/contracts/_shared";
-import type { OneOrMore } from "@/utilities/_module";
 import type { BaseEvent } from "@/event-bus/contracts/_shared";
 
 /**
@@ -35,5 +34,5 @@ export type IEventBusAdapter = {
 
     getGroup(): string;
 
-    withGroup(group: OneOrMore<string>): IEventBusAdapter;
+    withGroup(group: string): IEventBusAdapter;
 };

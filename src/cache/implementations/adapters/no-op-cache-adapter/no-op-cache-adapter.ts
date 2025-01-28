@@ -2,8 +2,8 @@
  * @module Cache
  */
 
-import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { OneOrMore, TimeSpan } from "@/utilities/_module";
+import type { ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
+import type { TimeSpan } from "@/utilities/_module";
 
 /**
  * This <i>NoOpCacheAdapter</i> will do nothing and is used for easily mocking {@link ICacheAdapter} for testing.
@@ -14,7 +14,7 @@ export class NoOpCacheAdapter<TType = unknown> implements ICacheAdapter<TType> {
         return "";
     }
 
-    withGroup(_group: OneOrMore<string>): ICacheAdapter<TType> {
+    withGroup(_group: string): ICacheAdapter<TType> {
         return new NoOpCacheAdapter();
     }
 

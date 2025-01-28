@@ -1,4 +1,2 @@
-export * from "@/cache/implementations/derivables/cache-factory-settings";
-export * from "@/cache/implementations/derivables/cache-factory";
-export * from "@/cache/implementations/derivables/cache-settings";
-export * from "@/cache/implementations/derivables/cache";
+export * from "@/cache/implementations/derivables/cache-factory/_module";
+export * from "@/cache/implementations/derivables/cache/_module";

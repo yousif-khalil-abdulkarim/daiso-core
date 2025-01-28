@@ -15,7 +15,6 @@ import type {
 } from "@/event-bus/contracts/_module";
 import type Redis from "ioredis";
 import { EventEmitter } from "node:events";
-import type { OneOrMore } from "@/utilities/_module";
 import { simplifyGroupName } from "@/utilities/_module";
 import type { RedisPubSubEventBusAdapterSettings } from "@/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/redis-pub-sub-event-bus-adapter-settings";
 import { RedisPubSubEventBusAdapterSettingsBuilder } from "@/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/redis-pub-sub-event-bus-adapter-settings";
@@ -78,7 +77,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         serde,
         rootGroup,
     }: RedisPubSubEventBusAdapterSettings) {
-        this.group = simplifyGroupName(rootGroup);
+        this.group = rootGroup;
         this.dispatcherClient = dispatcherClient;
         this.listenerClient = listenerClient;
         this.baseSerde = serde;
@@ -89,12 +88,12 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         return this.group;
     }
 
-    withGroup(group: OneOrMore<string>): IEventBusAdapter {
+    withGroup(group: string): IEventBusAdapter {
         return new RedisPubSubEventBusAdapter({
             listenerClient: this.listenerClient,
             dispatcherClient: this.dispatcherClient,
             serde: this.baseSerde,
-            rootGroup: [this.group, simplifyGroupName(group)],
+            rootGroup: simplifyGroupName([this.group, group]),
         });
     }
 

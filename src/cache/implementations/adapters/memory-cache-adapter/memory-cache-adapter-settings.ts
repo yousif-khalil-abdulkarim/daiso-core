@@ -4,13 +4,12 @@
  */
 
 import type { IBuildable } from "@/utilities/_module";
-import { type OneOrMore } from "@/utilities/_module";
 
 /**
  * @group Adapters
  */
 export type MemoryCacheAdapterSettings = {
-    rootGroup: OneOrMore<string>;
+    rootGroup: string;
     map?: Map<string, unknown>;
 };
 
@@ -33,7 +32,7 @@ export class MemoryCacheAdapterSettingsBuilder<
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    setRootGroup(group: OneOrMore<string>) {
+    setRootGroup(group: string) {
         return new MemoryCacheAdapterSettingsBuilder({
             ...this.settings,
             rootGroup: group,

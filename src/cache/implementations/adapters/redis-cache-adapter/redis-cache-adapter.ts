@@ -4,7 +4,6 @@
 
 import { TypeCacheError } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { OneOrMore } from "@/utilities/_module";
 import { simplifyGroupName, type TimeSpan } from "@/utilities/_module";
 import { ReplyError, type Redis, type Result } from "ioredis";
 import type { ISerde } from "@/serde/contracts/_module";
@@ -159,7 +158,7 @@ export class RedisCacheAdapter<TType = unknown>
      */
     constructor({ database, serde, rootGroup }: RedisCacheAdapterSettings) {
         this.database = database;
-        this.group = simplifyGroupName(rootGroup);
+        this.group = rootGroup;
         this.baseSerde = serde;
         this.redisSerde = new RedisSerde(serde);
         this.initIncrementCommand();
@@ -303,11 +302,11 @@ export class RedisCacheAdapter<TType = unknown>
         return this.group;
     }
 
-    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+    withGroup(group: string): ICacheAdapter<TType> {
         return new RedisCacheAdapter({
             database: this.database,
             serde: this.baseSerde,
-            rootGroup: [this.group, simplifyGroupName(group)],
+            rootGroup: simplifyGroupName([this.group, group]),
         });
     }
 }

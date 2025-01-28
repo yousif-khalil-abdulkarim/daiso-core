@@ -6,11 +6,11 @@ import type { OneOrMore } from "@/utilities/_module";
 import type { LazyPromise } from "@/async/_module";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    DispatchEventBusError,
+    UnableToDispatchEventBusError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    AddListenerEventBusError,
+    UnableToAddListenerEventBusError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    RemoveListenerEventBusError,
+    UnableToRemoveListenerEventBusError,
 } from "@/event-bus/contracts/event-bus.errors";
 import type { BaseEvent, Listener } from "@/event-bus/contracts/_shared";
 
@@ -43,7 +43,7 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     /**
      * The <i>addListener</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i>.
      * A listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
-     * @throws {AddListenerEventBusError} {@link AddListenerEventBusError}
+     * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     addListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
@@ -53,7 +53,7 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     /**
      * The <i>addListenerMany</i> method is used for adding multiple <i>{@link Listener | listeners}</i> for certain <i>events</i>.
      * A listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
-     * @throws {AddListenerEventBusError} {@link AddListenerEventBusError}
+     * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     addListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
@@ -63,7 +63,7 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     /**
      * The <i>removeListener</i> method is used for removing <i>{@link Listener | listener}</i> for certain <i>event</i>.
      * Removing unadded listener will have no effect and nothing will occur.
-     * @throws {RemoveListenerEventBusError} {@link RemoveListenerEventBusError}
+     * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
     removeListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
@@ -73,7 +73,7 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     /**
      * The <i>removeListener</i> method is used for removing multiple <i>{@link Listener | listeners}</i> for certain <i>event</i>.
      * Removing unadded listener will have no effect and nothing will occur.
-     * @throws {RemoveListenerEventBusError} {@link RemoveListenerEventBusError}
+     * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
     removeListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
@@ -82,7 +82,7 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
 
     /**
      * The <i>listenOnce</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i> that is trigged only once.
-     * @throws {AddListenerEventBusError} {@link AddListenerEventBusError}
+     * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     listenOnce<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
@@ -116,14 +116,14 @@ export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
     /**
      * The <i>dispatch</i> method is used for dispatching a <i>event</i>.
 
-     * @throws {DispatchEventBusError} {@link DispatchEventBusError}
+     * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
      */
     dispatch(event: TEvents): LazyPromise<void>;
 
     /**
      * The <i>dispatchMany</i> method is used for dispatching multiple <i>event</i>.
 
-     * @throws {DispatchEventBusError} {@link DispatchEventBusError}
+     * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
      */
     dispatchMany(events: TEvents[]): LazyPromise<void>;
 };
