@@ -3,7 +3,8 @@
  */
 
 import { BaseEvent } from "@/event-bus/contracts/_module";
-import type { TimeSpan } from "@/utilities/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 
 /**
  * @group Events
@@ -304,3 +305,24 @@ export type CacheEvents<TType = unknown> =
     | KeyIncrementedCacheEvent
     | KeyDecrementedCacheEvent
     | KeysClearedCacheEvent;
+
+/**
+ * The <i>registerEvents</i> function registers all <i>{@link IGroupableCache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * @group Errors
+ */
+export function registerCacheEvents(serde: OneOrMore<IFlexibleSerde>): void {
+    if (!Array.isArray(serde)) {
+        serde = [serde];
+    }
+    for (const serde_ of serde) {
+        serde_
+            .registerClass(KeyFoundCacheEvent)
+            .registerClass(KeyNotFoundCacheEvent)
+            .registerClass(KeyAddedCacheEvent)
+            .registerClass(KeyUpdatedCacheEvent)
+            .registerClass(KeyRemovedCacheEvent)
+            .registerClass(KeyIncrementedCacheEvent)
+            .registerClass(KeyDecrementedCacheEvent)
+            .registerClass(KeysClearedCacheEvent);
+    }
+}

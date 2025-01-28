@@ -18,8 +18,6 @@ import {
     UnableToDispatchEventBusError,
     UnableToRemoveListenerEventBusError,
     UnableToAddListenerEventBusError,
-    UnexpectedEventBusError,
-    EventBusError,
 } from "@/event-bus/contracts/_module";
 
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
@@ -30,7 +28,6 @@ import {
 } from "@/utilities/_module";
 import type { EventBusSettings } from "@/event-bus/implementations/derivables/event-bus/event-bus-settings";
 import { EventBusSettingsBuilder } from "@/event-bus/implementations/derivables/event-bus/event-bus-settings";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
  * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
@@ -39,24 +36,19 @@ import type { IFlexibleSerde } from "@/serde/contracts/_module";
 export class EventBus<TEvents extends BaseEvent = BaseEvent>
     implements IGroupableEventBus<TEvents>
 {
-    static readonly errors = {
-        Error: EventBusError,
-        Unexpected: UnexpectedEventBusError,
-        RemoveListener: UnableToRemoveListenerEventBusError,
-        AddListener: UnableToAddListenerEventBusError,
-    } as const;
-
     /**
      * @example
      * ```ts
-     * import { EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import { EventBus, MemoryEventBusAdapter, registerEventErrors, SuperJsonSerde } from "@daiso-tech/core";
      *
-     * const cache = new EventBus(
+     * const eventBus = new EventBus(
      *   EventBus
      *     .settings()
      *     .setAdapter(new MemoryEventBusAdapter({ rootGroup: "@global" }))
      *     .build()
      * );
+     * const serde = new SuperJsonSerde();
+     * registerEventErrors(serde)
      * ```
      */
     static settings<
@@ -65,52 +57,37 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         return new EventBusSettingsBuilder();
     }
 
-    private readonly serde: OneOrMore<IFlexibleSerde>;
     private readonly adapter: IEventBusAdapter;
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
-    private readonly shouldRegisterErrors: boolean;
 
+    /**
+     * @example
+     * ```ts
+     * import { EventBus, MemoryEventBusAdapter, registerEventErrors, SuperJsonSerde } from "@daiso-tech/core";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new SuperJsonSerde();
+     * registerEventErrors(serde)
+     * ```
+     */
     constructor(settings: EventBusSettings) {
         const {
-            serde,
             adapter,
             retryAttempts = null,
             backoffPolicy = null,
             retryPolicy = null,
             timeout = null,
-            shouldRegisterErrors = false,
         } = settings;
-        this.shouldRegisterErrors = shouldRegisterErrors;
-        this.serde = serde;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
         this.adapter = adapter;
-        this.registerErrors();
-    }
-
-    /**
-     * Registers all event bus related error within the given <i>IFlexibleSerde</i> contract.
-     */
-    private registerErrors(): void {
-        if (!this.shouldRegisterErrors) {
-            return;
-        }
-        let array = this.serde;
-        if (!Array.isArray(array)) {
-            array = [array];
-        }
-        for (const serde of array) {
-            serde
-                .registerClass(EventBusError)
-                .registerClass(UnexpectedEventBusError)
-                .registerClass(UnableToRemoveListenerEventBusError)
-                .registerClass(UnableToAddListenerEventBusError);
-        }
     }
 
     private createLayPromise<TValue = void>(
@@ -125,7 +102,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
 
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
-            serde: this.serde,
             adapter: this.adapter.withGroup(simplifyGroupName(group)),
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,

@@ -3,38 +3,16 @@
  */
 
 import type { ICacheAdapter } from "@/cache/contracts/_module";
-import type { IBuildable, OneOrMore } from "@/utilities/_module";
+import type { IBuildable } from "@/utilities/_module";
 import type { TimeSpan } from "@/utilities/_module";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { IGroupableCache } from "@/cache/contracts/_module";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
  * @group Derivables
  */
 export type CacheSettings = {
-    /**
-     * You can pass one or more <i>{@link IFlexibleSerde}</i> that will be used to register all <i>{@link IGroupableCache}</i> related errors and events.
-     * @default {true}
-     */
-    serde: OneOrMore<IFlexibleSerde>;
-
-    /**
-     * If set to true, all <i>{@link IGroupableCache}</i> related errors will be registered with the specified <i>IFlexibleSerde</i> during constructor initialization.
-     * This ensures that all <i>{@link IGroupableCache}</i> related errors will be serialized correctly.
-     * @default {true}
-     */
-    shouldRegisterErrors?: boolean;
-
-    /**
-     * If set to true, all <i>{@link IGroupableCache}</i> related events will be registered with the specified <i>IFlexibleSerde</i> during constructor initialization.
-     * This ensures that all <i>{@link IGroupableCache}</i> related events will be serialized correctly.
-     * @default {true}
-     */
-    shouldRegisterEvents?: boolean;
-
     adapter: ICacheAdapter<any>;
 
     /**
@@ -81,30 +59,6 @@ export class CacheSettingsBuilder<TSettings extends Partial<CacheSettings>>
     implements IBuildable<CacheSettings>
 {
     constructor(private readonly settings: TSettings = {} as TSettings) {}
-
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    setShouldRegisterErrors(shouldRegisterErrors: boolean) {
-        return new CacheSettingsBuilder({
-            ...this.settings,
-            shouldRegisterErrors,
-        });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    setShouldRegisterEvents(shouldRegisterEvents: boolean) {
-        return new CacheSettingsBuilder({
-            ...this.settings,
-            shouldRegisterEvents,
-        });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    setSerde(serde: OneOrMore<IFlexibleSerde>) {
-        return new CacheSettingsBuilder({
-            ...this.settings,
-            serde,
-        });
-    }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     setAdapter(adapter: ICacheAdapter<any>) {

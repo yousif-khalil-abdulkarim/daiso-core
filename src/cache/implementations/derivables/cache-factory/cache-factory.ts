@@ -7,7 +7,12 @@ import {
     UnregisteredAdapterError,
 } from "@/utilities/_module";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
-import type { ICacheFactory, IGroupableCache } from "@/cache/contracts/_module";
+import {
+    registerCacheErrors,
+    registerCacheEvents,
+    type ICacheFactory,
+    type IGroupableCache,
+} from "@/cache/contracts/_module";
 import { Cache } from "@/cache/implementations/derivables/cache/cache";
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
@@ -22,7 +27,7 @@ import type { IFlexibleSerde } from "@/serde/contracts/_module";
  * @group Derivables
  * @internal
  */
-type Caches<TAdapters extends string> = Partial<
+type CacheRecord<TAdapters extends string> = Partial<
     Record<TAdapters, IGroupableCache<any>>
 >;
 
@@ -63,8 +68,7 @@ export class CacheFactory<TAdapters extends string = string>
         return new CacheFactorySettingsBuilder();
     }
 
-    private readonly caches = {} as Caches<TAdapters>;
-    private readonly adapters: CacheAdapters<TAdapters>;
+    private readonly cacheRecord = {} as CacheRecord<TAdapters>;
     private readonly defaultAdapter?: TAdapters;
     private readonly eventBus?: IGroupableEventBus<any>;
     private readonly defaultTtl: TimeSpan | null;
@@ -105,8 +109,8 @@ export class CacheFactory<TAdapters extends string = string>
      */
     constructor(settings: CacheFactorySettings<TAdapters>) {
         const {
-            shouldRegisterErrors,
-            shouldRegisterEvents,
+            shouldRegisterErrors = true,
+            shouldRegisterEvents = true,
             serde,
             adapters,
             defaultAdapter,
@@ -121,7 +125,6 @@ export class CacheFactory<TAdapters extends string = string>
         this.shouldRegisterErrors = shouldRegisterErrors;
         this.shouldRegisterEvents = shouldRegisterEvents;
         this.serde = serde;
-        this.adapters = adapters;
         this.defaultAdapter = defaultAdapter;
         this.eventBus = eventBus;
         this.defaultTtl = defaultTtl;
@@ -129,28 +132,33 @@ export class CacheFactory<TAdapters extends string = string>
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
-        this.initCaches();
+        this.cacheRecord = this.init(adapters);
     }
 
-    private initCaches(): void {
-        for (const key in this.adapters) {
-            const { [key]: adapter } = this.adapters;
+    private init(adapters: CacheAdapters<TAdapters>): CacheRecord<TAdapters> {
+        if (this.shouldRegisterErrors) {
+            registerCacheErrors(this.serde);
+        }
+        if (this.shouldRegisterEvents) {
+            registerCacheEvents(this.serde);
+        }
+        const cacheRecord: CacheRecord<TAdapters> = {};
+        for (const key in adapters) {
+            const { [key]: adapter } = adapters;
             if (adapter === undefined) {
                 continue;
             }
-            this.caches[key] = new Cache<any>({
+            cacheRecord[key] = new Cache<any>({
                 adapter,
-                serde: this.serde,
                 eventBus: this.eventBus,
                 defaultTtl: this.defaultTtl,
                 retryAttempts: this.retryAttempts,
                 backoffPolicy: this.backoffPolicy,
                 retryPolicy: this.retryPolicy,
                 timeout: this.timeout,
-                shouldRegisterErrors: this.shouldRegisterErrors,
-                shouldRegisterEvents: this.shouldRegisterEvents,
             });
         }
+        return cacheRecord;
     }
 
     use<TType = unknown>(
@@ -159,7 +167,7 @@ export class CacheFactory<TAdapters extends string = string>
         if (adapterName === undefined) {
             throw new DefaultAdapterNotDefinedError(CacheFactory.name);
         }
-        const cache = this.caches[adapterName];
+        const cache = this.cacheRecord[adapterName];
         if (cache === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }

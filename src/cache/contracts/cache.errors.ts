@@ -2,8 +2,8 @@
  * @module Cache
  */
 
-import type { ISerializable } from "@/serde/contracts/_module";
-import type { ISerializedError } from "@/utilities/_module";
+import type { IFlexibleSerde, ISerializable } from "@/serde/contracts/_module";
+import type { ISerializedError, OneOrMore } from "@/utilities/_module";
 
 /**
  * @group Errors
@@ -96,5 +96,22 @@ export class KeyNotFoundCacheError
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = KeyNotFoundCacheError.name;
+    }
+}
+
+/**
+ * The <i>registerEvents</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * @group Errors
+ */
+export function registerCacheErrors(serde: OneOrMore<IFlexibleSerde>): void {
+    if (!Array.isArray(serde)) {
+        serde = [serde];
+    }
+    for (const serde_ of serde) {
+        serde_
+            .registerClass(CacheError)
+            .registerClass(UnexpectedCacheError)
+            .registerClass(TypeCacheError)
+            .registerClass(KeyNotFoundCacheError);
     }
 }

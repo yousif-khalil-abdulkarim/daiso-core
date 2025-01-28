@@ -62,22 +62,18 @@ export type CacheTestSuiteSettings = {
  *         new RedisCacheAdapter({
  *           database,
  *           serde,
- *         }),
- *         {
  *           rootGroup: "@a",
- *           eventBus,
- *         }
+ *         }),
+ *         { eventBus }
  *       ),
  *     createCacheB: () =>
  *       new Cache(
  *         new RedisCacheAdapter({
  *           database,
  *           serde,
- *         }),
- *         {
  *           rootGroup: "@b",
- *           eventBus,
- *         }
+ *         }),
+ *         { eventBus }
  *       ),
  *     test,
  *     beforeEach,
