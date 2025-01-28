@@ -1,5 +1,13 @@
 # @daiso-tech/core
 
+## 0.21.0
+
+### Minor Changes
+
+-   afdd280: - Removed <i>shouldRegisterEvents</i> and <i>shouldRegisterErrors</i> from <i>CacheSettings</i>.
+    -   Removed <i>shouldRegisterErrors</i> from <i>EventBusSettings</i>.
+-   81396af: - Updated the documentation and made <i>CacheSettings.eventBus</i> field required.
+
 ## 0.20.0
 
 ### Minor Changes
