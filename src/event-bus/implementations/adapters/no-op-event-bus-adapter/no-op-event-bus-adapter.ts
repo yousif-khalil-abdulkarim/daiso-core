@@ -2,7 +2,6 @@
  * @module EventBus
  */
 
-import type { OneOrMore } from "@/utilities/_module";
 import type { BaseEvent, Listener } from "@/event-bus/contracts/_module";
 import type {
     IEventBusAdapter,
@@ -19,7 +18,7 @@ export class NoOpEventBusAdapter implements IEventBusAdapter {
         return "";
     }
 
-    withGroup(_group: OneOrMore<string>): IEventBusAdapter {
+    withGroup(_group: string): IEventBusAdapter {
         return new NoOpEventBusAdapter();
     }
 

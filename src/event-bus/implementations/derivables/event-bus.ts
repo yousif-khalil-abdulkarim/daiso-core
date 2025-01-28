@@ -23,7 +23,11 @@ import {
 } from "@/event-bus/contracts/_module";
 
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
-import { getConstructorName, isArrayEmpty } from "@/utilities/_module";
+import {
+    getConstructorName,
+    isArrayEmpty,
+    simplifyGroupName,
+} from "@/utilities/_module";
 import type { EventBusSettings } from "@/event-bus/implementations/derivables/event-bus-settings";
 import { EventBusSettingsBuilder } from "@/event-bus/implementations/derivables/event-bus-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
@@ -122,7 +126,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
             serde: this.serde,
-            adapter: this.adapter.withGroup(group),
+            adapter: this.adapter.withGroup(simplifyGroupName(group)),
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,

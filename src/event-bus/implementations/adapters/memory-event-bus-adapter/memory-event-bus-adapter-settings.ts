@@ -3,14 +3,13 @@
  */
 
 import type { IBuildable } from "@/utilities/_module";
-import type { OneOrMore } from "@/utilities/_module";
 import type { EventEmitter } from "node:events";
 
 /**
  * @group Adapters
  */
 export type MemoryEventBusAdapterSettings = {
-    rootGroup: OneOrMore<string>;
+    rootGroup: string;
     eventEmitter?: EventEmitter;
 };
 
@@ -33,7 +32,7 @@ export class MemoryEventBusAdapterSettingsBuilder<
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    setRootGroup(group: OneOrMore<string>) {
+    setRootGroup(group: string) {
         return new MemoryEventBusAdapterSettingsBuilder({
             ...this.settings,
             rootGroup: group,
