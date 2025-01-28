@@ -70,7 +70,7 @@ export class CacheFactory<TAdapters extends string = string>
 
     private readonly cacheRecord = {} as CacheRecord<TAdapters>;
     private readonly defaultAdapter?: TAdapters;
-    private readonly eventBus?: IGroupableEventBus<any>;
+    private readonly eventBus: IGroupableEventBus<any>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly retryAttempts?: number | null;
     private readonly backoffPolicy?: BackoffPolicy | null;

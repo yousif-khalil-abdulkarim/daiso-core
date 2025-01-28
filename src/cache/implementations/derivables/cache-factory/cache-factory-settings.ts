@@ -51,7 +51,7 @@ export type CacheFactorySettings<TAdapters extends string = string> = {
     /**
      * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
      */
-    eventBus?: IGroupableEventBus<any>;
+    eventBus: IGroupableEventBus<any>;
 
     /**
      * The default retry attempt to use in the returned <i>LazyPromise</i>.

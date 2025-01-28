@@ -43,10 +43,6 @@ import type {
     EventClass,
     EventInstance,
 } from "@/event-bus/contracts/_module";
-import {
-    EventBus,
-    NoOpEventBusAdapter,
-} from "@/event-bus/implementations/_module";
 import type { CacheSettings } from "@/cache/implementations/derivables/cache/cache-settings";
 import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache/cache-settings";
 
@@ -113,9 +109,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     constructor(settings: CacheSettings) {
         const {
             adapter,
-            eventBus: groupdEventBus = new EventBus({
-                adapter: new NoOpEventBusAdapter(),
-            }),
+            eventBus: groupdEventBus,
             defaultTtl = null,
             retryAttempts = null,
             backoffPolicy = null,

@@ -2,6 +2,8 @@
  * @module Cache
  */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { IGroupableCache } from "@/cache/contracts/cache.contract";
 import { BaseEvent } from "@/event-bus/contracts/_module";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
@@ -307,8 +309,8 @@ export type CacheEvents<TType = unknown> =
     | KeysClearedCacheEvent;
 
 /**
- * The <i>registerEvents</i> function registers all <i>{@link IGroupableCache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
- * @group Errors
+ * The <i>registerCacheEvents</i> function registers all <i>{@link IGroupableCache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * @group Events
  */
 export function registerCacheEvents(serde: OneOrMore<IFlexibleSerde>): void {
     if (!Array.isArray(serde)) {
