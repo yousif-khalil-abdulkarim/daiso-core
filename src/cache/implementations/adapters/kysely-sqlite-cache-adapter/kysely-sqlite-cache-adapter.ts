@@ -6,11 +6,7 @@ import { type ICacheAdapter, TypeCacheError } from "@/cache/contracts/_module";
 import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
 import { type ISerde } from "@/serde/contracts/_module";
-import type {
-    IDeinitizable,
-    IInitizable,
-    OneOrMore,
-} from "@/utilities/_module";
+import type { IDeinitizable, IInitizable } from "@/utilities/_module";
 import { simplifyGroupName, TimeSpan } from "@/utilities/_module";
 import { SqlSerde } from "@/serde/implementations/_module";
 
@@ -41,7 +37,7 @@ type KyselySqliteSettings = {
     enableTransactions: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
-    rootGroup: OneOrMore<string>;
+    rootGroup: string;
 };
 
 /**
@@ -68,7 +64,7 @@ export class KyselySqliteCacheAdapter<TType = unknown>
             rootGroup,
         } = settings;
         this.db = db;
-        this.group = simplifyGroupName(rootGroup);
+        this.group = rootGroup;
         this.serde = new SqlSerde(serde);
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
@@ -79,14 +75,14 @@ export class KyselySqliteCacheAdapter<TType = unknown>
         return this.group;
     }
 
-    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+    withGroup(group: string): ICacheAdapter<TType> {
         return new KyselySqliteCacheAdapter({
             db: this.db,
             enableTransactions: this.enableTransactions,
             expiredKeysRemovalInterval: this.expiredKeysRemovalInterval,
             serde: this.serde,
             shouldRemoveExpiredKeys: this.shouldRemoveExpiredKeys,
-            rootGroup: [this.group, simplifyGroupName(group)],
+            rootGroup: simplifyGroupName([this.group, group]),
         });
     }
 

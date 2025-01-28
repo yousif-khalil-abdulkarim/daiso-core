@@ -5,11 +5,7 @@
 
 import { TypeCacheError } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import {
-    simplifyGroupName,
-    type OneOrMore,
-    type TimeSpan,
-} from "@/utilities/_module";
+import { simplifyGroupName, type TimeSpan } from "@/utilities/_module";
 import type { MemoryCacheAdapterSettings } from "@/cache/implementations/adapters/memory-cache-adapter/memory-cache-adapter-settings";
 import { MemoryCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/memory-cache-adapter/memory-cache-adapter-settings";
 
@@ -73,7 +69,7 @@ export class MemoryCacheAdapter<TType = unknown>
     constructor(settings: MemoryCacheAdapterSettings) {
         const { rootGroup, map = new Map<string, unknown>() } = settings;
         this.map = map;
-        this.group = simplifyGroupName(rootGroup);
+        this.group = rootGroup;
     }
 
     private getGroupName(): string {
@@ -172,10 +168,10 @@ export class MemoryCacheAdapter<TType = unknown>
         return this.group;
     }
 
-    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+    withGroup(group: string): ICacheAdapter<TType> {
         return new MemoryCacheAdapter({
             map: this.map,
-            rootGroup: [this.group, simplifyGroupName(group)],
+            rootGroup: simplifyGroupName([this.group, group]),
         });
     }
 }

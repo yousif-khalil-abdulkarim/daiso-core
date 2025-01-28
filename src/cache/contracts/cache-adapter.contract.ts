@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import type { OneOrMore, TimeSpan } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type TypeCacheError,
@@ -69,5 +69,5 @@ export type ICacheAdapter<TType = unknown> = {
      * The <i>withGroup</i> method returns a new <i>{@link ICacheAdapter}</i> instance that groups keys together.
      * Only keys in the group can be updated, removed, or retrieved, leaving keys outside the group unaffected.
      */
-    withGroup(group: OneOrMore<string>): ICacheAdapter<TType>;
+    withGroup(group: string): ICacheAdapter<TType>;
 };

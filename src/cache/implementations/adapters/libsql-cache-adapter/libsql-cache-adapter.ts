@@ -3,12 +3,7 @@
  */
 
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type {
-    TimeSpan,
-    IDeinitizable,
-    IInitizable,
-    OneOrMore,
-} from "@/utilities/_module";
+import type { TimeSpan, IDeinitizable, IInitizable } from "@/utilities/_module";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SuperJsonSerde } from "@/serde/implementations/_module";
@@ -107,7 +102,7 @@ export class LibsqlCacheAdapter<TType = unknown>
         return this.cacheAdapter.getGroup();
     }
 
-    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
+    withGroup(group: string): ICacheAdapter<TType> {
         return this.cacheAdapter.withGroup(group);
     }
 

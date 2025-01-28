@@ -3,7 +3,7 @@
  */
 
 import type { ISerde } from "@/serde/contracts/_module";
-import type { TimeSpan, OneOrMore, IBuildable } from "@/utilities/_module";
+import type { TimeSpan, IBuildable } from "@/utilities/_module";
 import { type SqliteDatabase } from "kysely";
 
 /**
@@ -16,7 +16,7 @@ export type SqliteCacheAdapterSettings = {
     enableTransactions?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
-    rootGroup: OneOrMore<string>;
+    rootGroup: string;
 };
 
 /**
@@ -78,7 +78,7 @@ export class SqliteCacheAdapterSettingsBuilder<
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    setRootGroup(group: OneOrMore<string>) {
+    setRootGroup(group: string) {
         return new SqliteCacheAdapterSettingsBuilder({
             ...this.settings,
             rootGroup: group,

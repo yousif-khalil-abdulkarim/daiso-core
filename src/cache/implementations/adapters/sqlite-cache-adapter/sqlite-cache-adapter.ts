@@ -5,12 +5,7 @@
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SuperJsonSerde } from "@/serde/implementations/_module";
-import type {
-    TimeSpan,
-    IInitizable,
-    IDeinitizable,
-    OneOrMore,
-} from "@/utilities/_module";
+import type { TimeSpan, IInitizable, IDeinitizable } from "@/utilities/_module";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 import { Kysely, SqliteDialect } from "kysely";
 import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
@@ -102,11 +97,11 @@ export class SqliteCacheAdapter<TType = unknown>
     }
 
     getGroup(): string {
-        return this.getGroup();
+        return this.cacheAdapter.getGroup();
     }
 
-    withGroup(group: OneOrMore<string>): ICacheAdapter<TType> {
-        return this.withGroup(group);
+    withGroup(group: string): ICacheAdapter<TType> {
+        return this.cacheAdapter.withGroup(group);
     }
 
     async removeExpiredKeys(): Promise<void> {
