@@ -48,8 +48,8 @@ import {
     EventBus,
     NoOpEventBusAdapter,
 } from "@/event-bus/implementations/_module";
-import type { CacheSettings } from "@/cache/implementations/derivables/cache-settings";
-import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache-settings";
+import type { CacheSettings } from "@/cache/implementations/derivables/cache/cache-settings";
+import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache/cache-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 import { NoOpSerde } from "@/serde/implementations/_module";
 
