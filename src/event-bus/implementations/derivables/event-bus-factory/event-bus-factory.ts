@@ -7,7 +7,7 @@ import {
     type IGroupableEventBus,
     type IEventBusFactory,
     type BaseEvent,
-    registerEventErrors,
+    registerEventBusErrors,
 } from "@/event-bus/contracts/_module";
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus";
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
@@ -144,7 +144,7 @@ export class EventBusFactory<TAdapters extends string = string>
         adapters: EventBusAdapters<TAdapters>,
     ): EventBusRecord<TAdapters> {
         if (this.shouldRegisterErrors) {
-            registerEventErrors(this.serde);
+            registerEventBusErrors(this.serde);
         }
         const eventBusRecord: EventBusRecord<TAdapters> = {};
         for (const key in adapters) {

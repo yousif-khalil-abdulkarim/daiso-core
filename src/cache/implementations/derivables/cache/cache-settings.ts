@@ -18,7 +18,7 @@ export type CacheSettings = {
     /**
      * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
      */
-    eventBus?: IGroupableEventBus<any>;
+    eventBus: IGroupableEventBus<any>;
 
     /**
      * You can decide the default ttl value. If null is passed then no ttl will be used by default.

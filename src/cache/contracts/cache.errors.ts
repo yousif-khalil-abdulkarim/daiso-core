@@ -2,6 +2,8 @@
  * @module Cache
  */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { IGroupableCache } from "@/cache/contracts/cache.contract";
 import type { IFlexibleSerde, ISerializable } from "@/serde/contracts/_module";
 import type { ISerializedError, OneOrMore } from "@/utilities/_module";
 
@@ -100,7 +102,7 @@ export class KeyNotFoundCacheError
 }
 
 /**
- * The <i>registerEvents</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The <i>registerCacheErrors</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  * @group Errors
  */
 export function registerCacheErrors(serde: OneOrMore<IFlexibleSerde>): void {
