@@ -8,17 +8,17 @@ import type {
     IEventBusFactory,
     BaseEvent,
 } from "@/event-bus/contracts/_module";
-import { EventBus } from "@/event-bus/implementations/derivables/event-bus";
+import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus";
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
 } from "@/utilities/_module";
-import type { EventBusAdapters } from "@/event-bus/implementations/derivables/event-bus-factory-settings";
+import type { EventBusAdapters } from "@/event-bus/implementations/derivables/event-bus-factory/event-bus-factory-settings";
 import {
     type EventBusFactorySettings,
     EventBusFactorySettingsBuilder,
-} from "@/event-bus/implementations/derivables/event-bus-factory-settings";
+} from "@/event-bus/implementations/derivables/event-bus-factory/event-bus-factory-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**

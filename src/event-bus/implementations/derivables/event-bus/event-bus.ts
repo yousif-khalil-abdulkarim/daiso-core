@@ -28,8 +28,8 @@ import {
     isArrayEmpty,
     simplifyGroupName,
 } from "@/utilities/_module";
-import type { EventBusSettings } from "@/event-bus/implementations/derivables/event-bus-settings";
-import { EventBusSettingsBuilder } from "@/event-bus/implementations/derivables/event-bus-settings";
+import type { EventBusSettings } from "@/event-bus/implementations/derivables/event-bus/event-bus-settings";
+import { EventBusSettingsBuilder } from "@/event-bus/implementations/derivables/event-bus/event-bus-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
