@@ -18,7 +18,7 @@ import type { TimeSpan } from "@/utilities/_module";
 import type { LazyPromise } from "@/async/_module";
 
 /**
- * The <i>ICacheListenable</i> contract defines a way for listening <i>{@link ICache}</i> crud operations.
+ * The <i>ICacheListener</i> contract defines a way for listening <i>{@link ICache}</i> crud operations.
  * @group Contracts
  */
 export type ICacheListener<TType = unknown> = IEventListener<
