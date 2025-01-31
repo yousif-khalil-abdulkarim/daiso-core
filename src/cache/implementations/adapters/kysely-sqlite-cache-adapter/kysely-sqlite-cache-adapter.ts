@@ -139,27 +139,6 @@ export class KyselySqliteCacheAdapter<TType = unknown>
         await this.db.schema.dropTable("cache").ifExists().execute();
     }
 
-    async exists(key: string): Promise<boolean> {
-        const row = await this.db
-            .selectFrom("cache")
-            .where("cache.key", "=", key)
-            .where("cache.group", "=", this.group)
-            .select(["cache.expiresAt"])
-            .executeTakeFirst();
-        if (row === undefined) {
-            return false;
-        }
-        const { expiresAt } = row;
-        if (expiresAt === null) {
-            return true;
-        }
-        const hasExpired = expiresAt <= new Date().getTime();
-        if (hasExpired) {
-            return false;
-        }
-        return true;
-    }
-
     async get(key: string): Promise<TType | null> {
         const row = await this.db
             .selectFrom("cache")
