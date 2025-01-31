@@ -114,38 +114,44 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
 
     private applyTimeout(): void {
         if (this.time !== null) {
-            this.asyncFn = () => {
+            const oldAsyncFn = this.asyncFn;
+            const newAsyncFn = () => {
                 if (this.time === null) {
                     throw new Error(`LazyPromise["time"] field is null`);
                 }
-                return timeoutAndFail(this.asyncFn, this.time);
+                return timeoutAndFail(oldAsyncFn, this.time);
             };
+            this.asyncFn = newAsyncFn;
         }
     }
 
     private applyRetry(): void {
-        if (this.attempts !== null && this.attempts > 1) {
-            this.asyncFn = () => {
+        if (this.attempts !== null) {
+            const oldAsyncFn = this.asyncFn;
+            const newAsyncFn = () => {
                 if (this.attempts === null) {
                     throw new Error(`LazyPromise["attempts"] field is null`);
                 }
-                return retryOrFail(this.asyncFn, {
+                return retryOrFail(oldAsyncFn, {
                     backoffPolicy: this.backoffPolicy_ ?? undefined,
                     retryPolicy: this.retryPolicy_ ?? undefined,
                     maxAttempts: this.attempts,
                 });
             };
+            this.asyncFn = newAsyncFn;
         }
     }
 
     private applyAbort() {
         if (this.abortSignal !== null) {
-            this.asyncFn = () => {
+            const oldAsyncFn = this.asyncFn;
+            const newAsyncFn = () => {
                 if (this.abortSignal === null) {
                     throw new Error(`LazyPromise["abortSignal"] field is null`);
                 }
-                return abortAndFail(this.asyncFn, this.abortSignal);
+                return abortAndFail(oldAsyncFn, this.abortSignal);
             };
+            this.asyncFn = newAsyncFn;
         }
     }
 
