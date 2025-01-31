@@ -9,8 +9,16 @@ import {
 } from "vitest";
 import {
     KeyNotFoundCacheError,
+    KeyNotFoundCacheEvent,
+    KeyFoundCacheEvent,
     TypeCacheError,
     type ICache,
+    KeyAddedCacheEvent,
+    KeyUpdatedCacheEvent,
+    KeyRemovedCacheEvent,
+    KeysClearedCacheEvent,
+    KeyIncrementedCacheEvent,
+    KeyDecrementedCacheEvent,
 } from "@/cache/contracts/_module";
 import { type Promisable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
@@ -1146,6 +1154,727 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             expect(await cacheB.getMany(["a", "b"])).toEqual({
                 a: 1,
                 b: 2,
+            });
+        });
+    });
+    describe("Event tests:", () => {
+        const delayTime = TimeSpan.fromMilliseconds(50);
+        describe("method: exists", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.exists("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.exists("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+        });
+        describe("method: existsMany", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.existsMany(["a"]);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.existsMany(["a"]);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+        });
+        describe("method: missing", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.missing("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.missing("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+        });
+        describe("method: missingMany", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.missingMany(["a"]);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.missingMany(["a"]);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+        });
+        describe("method: get", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.get("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.get("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+        });
+        describe("method: getMany", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.getMany(["a"]);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.getMany(["a"]);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+        });
+        describe("method: getOr", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.getOr("a", 1);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.getOr("a", 1);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+        });
+        describe("method: getOrMany", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.getOrMany({ a: 1 });
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.getOrMany({ a: 1 });
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+        });
+        describe("method: getOrFail", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                try {
+                    await cacheA.getOrFail("a");
+                } catch {
+                    /* Empty */
+                }
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.getOrFail("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+        });
+        describe("method: add", () => {
+            test("Should dispatch KeyAddedCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyAddedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyAddedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                const ttl = TimeSpan.fromMilliseconds(20);
+                await cacheA.add("a", 1, ttl);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                expect(event_?.ttl?.toMilliseconds()).toBe(
+                    ttl.toMilliseconds(),
+                );
+                await unsubscribe();
+            });
+        });
+        describe("method: addMany", () => {
+            test("Should dispatch KeyAddedCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyAddedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyAddedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                const ttl = TimeSpan.fromMilliseconds(20);
+                await cacheA.addMany({ a: { value: 1, ttl } });
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                expect(event_?.ttl?.toMilliseconds()).toBe(
+                    ttl.toMilliseconds(),
+                );
+                await unsubscribe();
+            });
+        });
+        describe("method: update", () => {
+            test("Should dispatch KeyUpdatedCacheEvent when key exists", async () => {
+                let event_ = null as KeyUpdatedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyUpdatedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.update("a", 2);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(2);
+                await unsubscribe();
+            });
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.update("a", 2);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+        });
+        describe("method: updateMany", () => {
+            test("Should dispatch KeyUpdatedCacheEvent when key exists", async () => {
+                let event_ = null as KeyUpdatedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyUpdatedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.updateMany({ a: 2 });
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(2);
+                await unsubscribe();
+            });
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.updateMany({ a: 2 });
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+        });
+        describe("method: put", () => {
+            test("Should dispatch KeyAddedCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyAddedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyAddedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                const ttl = TimeSpan.fromMilliseconds(20);
+                await cacheA.put("a", 1, ttl);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                expect(event_?.ttl?.toMilliseconds()).toBe(
+                    ttl.toMilliseconds(),
+                );
+                await unsubscribe();
+            });
+            test("Should dispatch KeyUpdatedCacheEvent when key exists", async () => {
+                let event_ = null as KeyUpdatedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyUpdatedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.put("a", 1);
+                await cacheA.put("a", 2);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(2);
+                await unsubscribe();
+            });
+        });
+        describe("method: putMany", () => {
+            test("Should dispatch KeyAddedCacheEvent when key exists", async () => {
+                let event_ = null as KeyAddedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyAddedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                const ttl = TimeSpan.fromMilliseconds(20);
+                await cacheA.putMany({ a: { value: 1, ttl } });
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                expect(event_?.ttl?.toMilliseconds()).toBe(
+                    ttl.toMilliseconds(),
+                );
+                await unsubscribe();
+            });
+            test("Should dispatch KeyUpdatedCacheEvent when key exists", async () => {
+                let event_ = null as KeyUpdatedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyUpdatedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+
+                const ttl = TimeSpan.fromMilliseconds(20);
+                await cacheA.putMany({ a: { value: 1, ttl } });
+                await cacheA.putMany({ a: { value: 2, ttl } });
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(2);
+                await unsubscribe();
+            });
+        });
+        describe("method: remove", () => {
+            test("Should dispatch KeyRemovedCacheEvent when key exists", async () => {
+                let event_ = null as KeyRemovedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyRemovedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.remove("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.remove("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+        });
+        describe("method: removeMany", () => {
+            test("Should dispatch KeyRemovedCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyRemovedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyRemovedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.removeMany(["a"]);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.removeMany(["a"]);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+        });
+        describe("method: getAndRemove", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.getAndRemove("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.getAndRemove("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+            test("Should dispatch KeyRemovedCacheEvent when key exists", async () => {
+                let event_ = null as KeyRemovedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyRemovedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.getAndRemove("a");
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+        });
+        describe("method: getOrAdd", () => {
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.getOrAdd("a", 1);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
+                let event_ = null as KeyFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.getOrAdd("a", 1);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+            test("Should dispatch KeyAddedCacheEvent when key exists", async () => {
+                let event_ = null as KeyAddedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyAddedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                const ttl = TimeSpan.fromMilliseconds(50);
+                await cacheA.getOrAdd("a", 1, ttl);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                expect(event_?.ttl?.toMilliseconds()).toBe(
+                    ttl.toMilliseconds(),
+                );
+                await unsubscribe();
+            });
+        });
+        describe("method: increment", () => {
+            test("Should dispatch KeyIncrementedCacheEvent when key exists", async () => {
+                let event_ = null as KeyIncrementedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyIncrementedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.increment("a", 1);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyIncrementedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.increment("a", 1);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+        });
+        describe("method: decrement", () => {
+            test("Should dispatch KeyDecrementedCacheEvent when key exists", async () => {
+                let event_ = null as KeyDecrementedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyDecrementedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.add("a", 1);
+                await cacheA.decrement("a", 1);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyDecrementedCacheEvent);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                await unsubscribe();
+            });
+            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeyNotFoundCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeyNotFoundCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.decrement("a", 1);
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
+                expect(event_?.key).toBe("a");
+                await unsubscribe();
+            });
+        });
+        describe("method: clear", () => {
+            test("Should dispatch KeysClearedCacheEvent when key doesnt exists", async () => {
+                let event_ = null as KeysClearedCacheEvent | null;
+                const unsubscribe = await cacheA.subscribe(
+                    KeysClearedCacheEvent,
+                    (event) => {
+                        event_ = event;
+                    },
+                );
+                await cacheA.addMany({
+                    a: { value: 1 },
+                    b: { value: 2 },
+                    c: { value: 3 },
+                });
+                await cacheA.clear();
+                await delay(delayTime);
+                expect(event_).toBeInstanceOf(KeysClearedCacheEvent);
+                await unsubscribe();
             });
         });
     });
