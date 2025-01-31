@@ -18,10 +18,6 @@ export class NoOpCacheAdapter<TType = unknown> implements ICacheAdapter<TType> {
         return new NoOpCacheAdapter();
     }
 
-    exists(_key: string): Promise<boolean> {
-        return Promise.resolve(false);
-    }
-
     get(_key: string): Promise<TType | null> {
         return Promise.resolve(null);
     }
