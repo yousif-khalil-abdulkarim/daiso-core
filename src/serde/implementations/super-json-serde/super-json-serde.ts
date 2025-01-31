@@ -4,6 +4,7 @@
 
 import { getConstructorName } from "@/utilities/_module";
 import type {
+    SerializableEventClass,
     ISerdeTransformer,
     ISerializable,
     SerializableClass,
@@ -15,6 +16,7 @@ import {
 } from "@/serde/contracts/serde.errors";
 import { SuperJSON } from "superjson-cjs";
 import type { SuperJSONResult } from "superjson-cjs/dist/index";
+import { BaseEvent } from "@/_module";
 
 /**
  * @internal
@@ -295,6 +297,23 @@ export class SuperJsonSerde implements IFlexibleSerde<string> {
                 return deserializedValue.serialize() as SuperJSONResult["json"];
             },
             name: class_.name,
+        });
+    }
+
+    registerEvent<TFields extends Record<string, unknown>>(
+        eventClass: SerializableEventClass<TFields>,
+    ): IFlexibleSerde<string> {
+        return this.registerCustom<BaseEvent<TFields>, TFields>({
+            name: eventClass.name,
+            isApplicable(value: unknown): value is BaseEvent<TFields> {
+                return value instanceof BaseEvent;
+            },
+            serialize(deserializedValue: BaseEvent<TFields>): TFields {
+                return deserializedValue.fields;
+            },
+            deserialize(serializedValue: TFields): BaseEvent<TFields> {
+                return new eventClass(serializedValue);
+            },
         });
     }
 

@@ -4,6 +4,7 @@
 
 import type { ISerializable } from "@/serde/contracts/serializable.contract";
 import type { ISerde } from "@/serde/contracts/serde.contract";
+import type { BaseEvent } from "@/_module";
 
 /**
  * The <i>SerializableClass</i> contract defines standard way to make a class instance serializable and deserializable.
@@ -17,10 +18,10 @@ export type SerializableClass<TSerializedValue> = {
 };
 
 /**
- * The <i>SerializableClass</i> contract defines standard way to make a error class instance serializable and deserializable.
  * @group Contracts
  */
-export type ErrorClass = new (...args: any[]) => Error;
+export type SerializableEventClass<TFields extends Record<string, unknown>> =
+    new (fields: any) => BaseEvent<TFields>;
 
 /**
  * @group Contracts
@@ -41,6 +42,10 @@ export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
  */
 export type IFlexibleSerde<TSerializedValue = unknown> =
     ISerde<TSerializedValue> & {
+        registerEvent<TFields extends Record<string, unknown>>(
+            eventClass: SerializableEventClass<TFields>,
+        ): IFlexibleSerde<TSerializedValue>;
+
         /**
          * The <i>registerClass</i> method is used for registering custom class for serialization and deserialization.
          * The <i>class_</i> parameter must be of type <i>{@link SerializableClass}</i>.

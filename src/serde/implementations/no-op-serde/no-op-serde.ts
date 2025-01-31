@@ -2,6 +2,7 @@
  * @module EventBus
  */
 import type {
+    SerializableEventClass,
     IFlexibleSerde,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ISerde,
@@ -16,6 +17,12 @@ import type {
 export class NoOpSerde<TSerializedValue>
     implements IFlexibleSerde<TSerializedValue>
 {
+    registerEvent<TFields extends Record<string, unknown>>(
+        _eventClass: SerializableEventClass<TFields>,
+    ): IFlexibleSerde<TSerializedValue> {
+        return this;
+    }
+
     serialize<TValue>(value: TValue): TSerializedValue {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return value as any;
