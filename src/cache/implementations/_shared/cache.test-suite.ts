@@ -44,14 +44,14 @@ export type CacheTestSuiteSettings = {
  * import Redis from "ioredis";
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import { RedisContainer, type StartedRedisContainer } from "@testcontainers/redis";
- * import { SuperJsonSerde, TimeSpan, RedisCacheAdapter, cacheTestSuite, MemoryEventBusAdapter } from "@daiso-tech/core";
+ * import { SuperJsonSerde, TimeSpan, RedisCacheAdapter, cacheTestSuite, MemorycacheAdapter } from "@daiso-tech/core";
  *
  * const TIMEOUT = TimeSpan.fromMinutes(2);
  * describe("class: Cache", () => {
  *   let database: Redis;
  *   let startedContainer: StartedRedisContainer;
  *   const eventBus = new EventBus({
- *     adapter: new MemoryEventBusAdapter({
+ *     adapter: new MemorycacheAdapter({
  *       rootGroup: "@global"
  *     })
  *   }):
@@ -929,234 +929,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
         });
     });
-    describe("Group tests:", () => {
-        test("method: exists", async () => {
-            await cacheA.put("a", 1);
-            expect(await cacheA.exists("a")).toBe(true);
-            expect(await cacheB.exists("a")).toBe(false);
-        });
-        test("method: existsMany", async () => {
-            await cacheA.putMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            expect(await cacheA.existsMany(["a", "b"])).toEqual({
-                a: true,
-                b: true,
-            });
-            expect(await cacheB.existsMany(["a", "b"])).toEqual({
-                a: false,
-                b: false,
-            });
-        });
-        test("method: missing", async () => {
-            await cacheA.put("a", 1);
-            expect(await cacheA.missing("a")).toBe(false);
-            expect(await cacheB.missing("a")).toBe(true);
-        });
-        test("method: missingMany", async () => {
-            await cacheA.putMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            expect(await cacheA.missingMany(["a", "b"])).toEqual({
-                a: false,
-                b: false,
-            });
-            expect(await cacheB.missingMany(["a", "b"])).toEqual({
-                a: true,
-                b: true,
-            });
-        });
-        test("method: get", async () => {
-            await cacheA.put("a", 1);
-            expect(await cacheA.get("a")).toBe(1);
-            expect(await cacheB.get("a")).toBeNull();
-        });
-        test("method: getMany", async () => {
-            await cacheA.putMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            expect(await cacheA.getMany(["a", "b"])).toEqual({
-                a: 1,
-                b: 1,
-            });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({
-                a: null,
-                b: null,
-            });
-        });
-        test("method: getOr", async () => {
-            await cacheA.put("a", 1);
-            expect(await cacheA.getOr("a", -1)).toBe(1);
-            expect(await cacheB.getOr("a", -1)).toBe(-1);
-        });
-        test("method: getOrMany", async () => {
-            await cacheA.putMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            expect(
-                await cacheA.getOrMany({
-                    a: -1,
-                    b: -1,
-                }),
-            ).toEqual({
-                a: 1,
-                b: 1,
-            });
-            expect(
-                await cacheB.getOrMany({
-                    a: -1,
-                    b: -1,
-                }),
-            ).toEqual({
-                a: -1,
-                b: -1,
-            });
-        });
-        test("method: getOrFail", async () => {
-            await cacheA.put("a", 1);
-            expect(await cacheA.getOrFail("a")).toBe(1);
-            await expect(cacheB.getOrFail("a")).rejects.toBeInstanceOf(
-                KeyNotFoundCacheError,
-            );
-        });
-        test("method: add", async () => {
-            await cacheA.add("a", 1);
-            await cacheB.add("a", 2);
-            expect(await cacheA.get("a")).toBe(1);
-            expect(await cacheB.get("a")).toBe(2);
-        });
-        test("method: addMany", async () => {
-            await cacheA.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheB.addMany({
-                a: { value: 2 },
-                b: { value: 2 },
-            });
-            expect(await cacheA.getMany(["a", "b"])).toEqual({ a: 1, b: 1 });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 2, b: 2 });
-        });
-        test("method: update", async () => {
-            await cacheA.add("a", 1);
-            await cacheB.add("a", 1);
-            await cacheA.update("a", 2);
-            await cacheB.update("a", 3);
-            expect(await cacheA.get("a")).toBe(2);
-            expect(await cacheB.get("a")).toBe(3);
-        });
-        test("method: updateMany", async () => {
-            await cacheA.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheB.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheA.updateMany({
-                a: 2,
-                b: 2,
-            });
-            await cacheB.updateMany({
-                a: 3,
-                b: 3,
-            });
-            expect(await cacheA.getMany(["a", "b"])).toEqual({ a: 2, b: 2 });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 3, b: 3 });
-        });
-        test("method: put", async () => {
-            await cacheA.put("a", 2);
-            await cacheB.put("a", 3);
-            expect(await cacheA.get("a")).toBe(2);
-            expect(await cacheB.get("a")).toBe(3);
-        });
-        test("method: putMany", async () => {
-            await cacheA.putMany({
-                a: { value: 2 },
-                b: { value: 2 },
-            });
-            await cacheB.putMany({
-                a: { value: 3 },
-                b: { value: 3 },
-            });
-            expect(await cacheA.getMany(["a", "b"])).toEqual({ a: 2, b: 2 });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 3, b: 3 });
-        });
-        test("method: remove", async () => {
-            await cacheA.add("a", 1);
-            await cacheB.add("a", 1);
-            await cacheA.remove("a");
-            expect(await cacheA.get("a")).toBeNull();
-            expect(await cacheB.get("a")).toBe(1);
-        });
-        test("method: removeMany", async () => {
-            await cacheA.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheB.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheA.removeMany(["a", "b"]);
-            expect(await cacheA.getMany(["a", "b"])).toEqual({
-                a: null,
-                b: null,
-            });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 1, b: 1 });
-        });
-        test("method: getAndRemove", async () => {
-            await cacheA.add("a", 1);
-            await cacheB.add("a", 2);
-            expect(await cacheA.getAndRemove("a")).toBe(1);
-            expect(await cacheA.get("a")).toBeNull();
-            expect(await cacheB.get("a")).toBe(2);
-        });
-        test("method: getOrAdd", async () => {
-            await cacheA.getOrAdd("a", 1);
-            await cacheB.getOrAdd("a", 2);
-            expect(await cacheA.get("a")).toBe(1);
-            expect(await cacheB.get("a")).toBe(2);
-        });
-        test("method: increment", async () => {
-            await cacheA.add("a", 1);
-            await cacheB.add("a", 1);
-            await cacheA.increment("a", 1);
-            expect(await cacheA.get("a")).toBe(2);
-            expect(await cacheB.get("a")).toBe(1);
-        });
-        test("method: decrement", async () => {
-            await cacheA.add("a", 1);
-            await cacheB.add("a", 1);
-            await cacheA.decrement("a", 1);
-            expect(await cacheA.get("a")).toBe(0);
-            expect(await cacheB.get("a")).toBe(1);
-        });
-        test("method: clear", async () => {
-            await cacheA.addMany({
-                a: { value: 1 },
-                b: { value: 2 },
-            });
-            await cacheB.addMany({
-                a: { value: 1 },
-                b: { value: 2 },
-            });
-            await cacheA.clear();
-            expect(await cacheA.getMany(["a", "b"])).toEqual({
-                a: null,
-                b: null,
-            });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({
-                a: 1,
-                b: 2,
-            });
-        });
-    });
     describe("Event tests:", () => {
         const delayTime = TimeSpan.fromMilliseconds(50);
         describe("method: exists", () => {
@@ -1876,6 +1648,348 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(event_).toBeInstanceOf(KeysClearedCacheEvent);
                 await unsubscribe();
             });
+        });
+    });
+    describe("Group tests:", () => {
+        test("method: exists", async () => {
+            await cacheA.put("a", 1);
+            expect(await cacheA.exists("a")).toBe(true);
+            expect(await cacheB.exists("a")).toBe(false);
+        });
+        test("method: existsMany", async () => {
+            await cacheA.putMany({
+                a: { value: 1 },
+                b: { value: 1 },
+            });
+            expect(await cacheA.existsMany(["a", "b"])).toEqual({
+                a: true,
+                b: true,
+            });
+            expect(await cacheB.existsMany(["a", "b"])).toEqual({
+                a: false,
+                b: false,
+            });
+        });
+        test("method: missing", async () => {
+            await cacheA.put("a", 1);
+            expect(await cacheA.missing("a")).toBe(false);
+            expect(await cacheB.missing("a")).toBe(true);
+        });
+        test("method: missingMany", async () => {
+            await cacheA.putMany({
+                a: { value: 1 },
+                b: { value: 1 },
+            });
+            expect(await cacheA.missingMany(["a", "b"])).toEqual({
+                a: false,
+                b: false,
+            });
+            expect(await cacheB.missingMany(["a", "b"])).toEqual({
+                a: true,
+                b: true,
+            });
+        });
+        test("method: get", async () => {
+            await cacheA.put("a", 1);
+            expect(await cacheA.get("a")).toBe(1);
+            expect(await cacheB.get("a")).toBeNull();
+        });
+        test("method: getMany", async () => {
+            await cacheA.putMany({
+                a: { value: 1 },
+                b: { value: 1 },
+            });
+            expect(await cacheA.getMany(["a", "b"])).toEqual({
+                a: 1,
+                b: 1,
+            });
+            expect(await cacheB.getMany(["a", "b"])).toEqual({
+                a: null,
+                b: null,
+            });
+        });
+        test("method: getOr", async () => {
+            await cacheA.put("a", 1);
+            expect(await cacheA.getOr("a", -1)).toBe(1);
+            expect(await cacheB.getOr("a", -1)).toBe(-1);
+        });
+        test("method: getOrMany", async () => {
+            await cacheA.putMany({
+                a: { value: 1 },
+                b: { value: 1 },
+            });
+            expect(
+                await cacheA.getOrMany({
+                    a: -1,
+                    b: -1,
+                }),
+            ).toEqual({
+                a: 1,
+                b: 1,
+            });
+            expect(
+                await cacheB.getOrMany({
+                    a: -1,
+                    b: -1,
+                }),
+            ).toEqual({
+                a: -1,
+                b: -1,
+            });
+        });
+        test("method: getOrFail", async () => {
+            await cacheA.put("a", 1);
+            expect(await cacheA.getOrFail("a")).toBe(1);
+            await expect(cacheB.getOrFail("a")).rejects.toBeInstanceOf(
+                KeyNotFoundCacheError,
+            );
+        });
+        test("method: add", async () => {
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 2);
+            expect(await cacheA.get("a")).toBe(1);
+            expect(await cacheB.get("a")).toBe(2);
+        });
+        test("method: addMany", async () => {
+            await cacheA.addMany({
+                a: { value: 1 },
+                b: { value: 1 },
+            });
+            await cacheB.addMany({
+                a: { value: 2 },
+                b: { value: 2 },
+            });
+            expect(await cacheA.getMany(["a", "b"])).toEqual({ a: 1, b: 1 });
+            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 2, b: 2 });
+        });
+        test("method: update", async () => {
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 1);
+            await cacheA.update("a", 2);
+            await cacheB.update("a", 3);
+            expect(await cacheA.get("a")).toBe(2);
+            expect(await cacheB.get("a")).toBe(3);
+        });
+        test("method: updateMany", async () => {
+            await cacheA.addMany({
+                a: { value: 1 },
+                b: { value: 1 },
+            });
+            await cacheB.addMany({
+                a: { value: 1 },
+                b: { value: 1 },
+            });
+            await cacheA.updateMany({
+                a: 2,
+                b: 2,
+            });
+            await cacheB.updateMany({
+                a: 3,
+                b: 3,
+            });
+            expect(await cacheA.getMany(["a", "b"])).toEqual({ a: 2, b: 2 });
+            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 3, b: 3 });
+        });
+        test("method: put", async () => {
+            await cacheA.put("a", 2);
+            await cacheB.put("a", 3);
+            expect(await cacheA.get("a")).toBe(2);
+            expect(await cacheB.get("a")).toBe(3);
+        });
+        test("method: putMany", async () => {
+            await cacheA.putMany({
+                a: { value: 2 },
+                b: { value: 2 },
+            });
+            await cacheB.putMany({
+                a: { value: 3 },
+                b: { value: 3 },
+            });
+            expect(await cacheA.getMany(["a", "b"])).toEqual({ a: 2, b: 2 });
+            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 3, b: 3 });
+        });
+        test("method: remove", async () => {
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 1);
+            await cacheA.remove("a");
+            expect(await cacheA.get("a")).toBeNull();
+            expect(await cacheB.get("a")).toBe(1);
+        });
+        test("method: removeMany", async () => {
+            await cacheA.addMany({
+                a: { value: 1 },
+                b: { value: 1 },
+            });
+            await cacheB.addMany({
+                a: { value: 1 },
+                b: { value: 1 },
+            });
+            await cacheA.removeMany(["a", "b"]);
+            expect(await cacheA.getMany(["a", "b"])).toEqual({
+                a: null,
+                b: null,
+            });
+            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 1, b: 1 });
+        });
+        test("method: getAndRemove", async () => {
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 2);
+            expect(await cacheA.getAndRemove("a")).toBe(1);
+            expect(await cacheA.get("a")).toBeNull();
+            expect(await cacheB.get("a")).toBe(2);
+        });
+        test("method: getOrAdd", async () => {
+            await cacheA.getOrAdd("a", 1);
+            await cacheB.getOrAdd("a", 2);
+            expect(await cacheA.get("a")).toBe(1);
+            expect(await cacheB.get("a")).toBe(2);
+        });
+        test("method: increment", async () => {
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 1);
+            await cacheA.increment("a", 1);
+            expect(await cacheA.get("a")).toBe(2);
+            expect(await cacheB.get("a")).toBe(1);
+        });
+        test("method: decrement", async () => {
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 1);
+            await cacheA.decrement("a", 1);
+            expect(await cacheA.get("a")).toBe(0);
+            expect(await cacheB.get("a")).toBe(1);
+        });
+        test("method: clear", async () => {
+            await cacheA.addMany({
+                a: { value: 1 },
+                b: { value: 2 },
+            });
+            await cacheB.addMany({
+                a: { value: 1 },
+                b: { value: 2 },
+            });
+            await cacheA.clear();
+            expect(await cacheA.getMany(["a", "b"])).toEqual({
+                a: null,
+                b: null,
+            });
+            expect(await cacheB.getMany(["a", "b"])).toEqual({
+                a: 1,
+                b: 2,
+            });
+        });
+        test("method: addListener / dispatch", async () => {
+            let result_a: KeyAddedCacheEvent | null = null;
+            await cacheA.addListener(KeyAddedCacheEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAddedCacheEvent | null = null;
+            await cacheB.addListener(KeyAddedCacheEvent, (event) => {
+                result_b = event;
+            });
+
+            await cacheA.add("a", 1);
+
+            expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: addListenerMany / dispatch", async () => {
+            let result_a: KeyAddedCacheEvent | null = null;
+            await cacheA.addListenerMany([KeyAddedCacheEvent], (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAddedCacheEvent | null = null;
+            await cacheB.addListenerMany([KeyAddedCacheEvent], (event) => {
+                result_b = event;
+            });
+
+            await cacheA.add("a", 1);
+
+            expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: removeListener / addListener / dispatch", async () => {
+            let result_a: KeyAddedCacheEvent | null = null;
+            await cacheA.addListener(KeyAddedCacheEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAddedCacheEvent | null = null;
+            const listenerB = (event: KeyAddedCacheEvent) => {
+                result_b = event;
+            };
+            await cacheB.addListener(KeyAddedCacheEvent, listenerB);
+            await cacheB.removeListener(KeyAddedCacheEvent, listenerB);
+
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 1);
+
+            expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: removeListenerMany / addListener / dispatch", async () => {
+            let result_a: KeyAddedCacheEvent | null = null;
+            await cacheA.addListener(KeyAddedCacheEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAddedCacheEvent | null = null;
+            const listenerB = (event: KeyAddedCacheEvent) => {
+                result_b = event;
+            };
+            await cacheB.addListener(KeyAddedCacheEvent, listenerB);
+            await cacheB.removeListenerMany([KeyAddedCacheEvent], listenerB);
+
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 1);
+
+            expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: subscribe / dispatch", async () => {
+            let result_a: KeyAddedCacheEvent | null = null;
+            await cacheA.subscribe(KeyAddedCacheEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAddedCacheEvent | null = null;
+            const listenerB = (event: KeyAddedCacheEvent) => {
+                result_b = event;
+            };
+            const unsubscribe = await cacheB.subscribe(
+                KeyAddedCacheEvent,
+                listenerB,
+            );
+            await unsubscribe();
+
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 1);
+
+            expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: subscribeMany / dispatch", async () => {
+            let result_a: KeyAddedCacheEvent | null = null;
+            await cacheA.subscribeMany([KeyAddedCacheEvent], (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAddedCacheEvent | null = null;
+            const listenerB = (event: KeyAddedCacheEvent) => {
+                result_b = event;
+            };
+            const unsubscribe = await cacheB.subscribeMany(
+                [KeyAddedCacheEvent],
+                listenerB,
+            );
+            await unsubscribe();
+
+            await cacheA.add("a", 1);
+            await cacheB.add("a", 1);
+
+            expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
+            expect(result_b).toBeNull();
         });
     });
 }
