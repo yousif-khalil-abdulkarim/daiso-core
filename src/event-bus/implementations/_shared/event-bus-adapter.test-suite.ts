@@ -101,22 +101,8 @@ export function eventBusAdapterTestSuite(
     });
 
     const TTL = TimeSpan.fromMilliseconds(50);
-    class TestEvent extends BaseEvent {
-        static override deserialize(
-            serializedEvent: Record<string, unknown>,
-        ): BaseEvent {
-            return new TestEvent(serializedEvent);
-        }
-
-        constructor(public readonly data: Record<string, unknown>) {
-            super();
-        }
-
-        override serialize(): Record<string, unknown> {
-            return this.data;
-        }
-    }
-    serde.registerClass(TestEvent);
+    class TestEvent extends BaseEvent {}
+    serde.registerEvent(TestEvent);
 
     describe("Api tests:", () => {
         describe("method: addListener, removeListener, dispatch", () => {
