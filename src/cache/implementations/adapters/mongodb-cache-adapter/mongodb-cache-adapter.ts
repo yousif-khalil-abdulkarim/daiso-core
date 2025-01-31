@@ -162,33 +162,6 @@ export class MongodbCacheAdapter<TType = unknown>
         await this.database.dropCollection(this.collectionName);
     }
 
-    async exists(key: string): Promise<boolean> {
-        const document = await this.collection.findOne(
-            {
-                key,
-                group: this.group,
-            },
-            {
-                projection: {
-                    _id: 0,
-                    expiresAt: 1,
-                },
-            },
-        );
-        if (document === null) {
-            return false;
-        }
-        const { expiresAt } = document;
-        if (expiresAt === null) {
-            return true;
-        }
-        const hasExpired = expiresAt.getTime() <= new Date().getTime();
-        if (hasExpired) {
-            return false;
-        }
-        return true;
-    }
-
     async get(key: string): Promise<TType | null> {
         const document = await this.collection.findOne(
             {

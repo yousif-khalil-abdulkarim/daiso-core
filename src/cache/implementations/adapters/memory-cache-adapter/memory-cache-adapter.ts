@@ -80,11 +80,6 @@ export class MemoryCacheAdapter<TType = unknown>
         return simplifyGroupName([this.getGroupName(), key]);
     }
 
-    async exists(key: string): Promise<boolean> {
-        key = this.withPrefix(key);
-        return this.map.has(key);
-    }
-
     async get(key: string): Promise<TType | null> {
         key = this.withPrefix(key);
         return (this.map.get(key) as TType) ?? null;

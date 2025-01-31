@@ -172,12 +172,6 @@ export class RedisCacheAdapter<TType = unknown>
         return simplifyGroupName([this.getGroupName(), key]);
     }
 
-    async exists(key: string): Promise<boolean> {
-        key = this.withPrefix(key);
-        const result = await this.database.exists(key);
-        return result > 0;
-    }
-
     async get(key: string): Promise<TType | null> {
         key = this.withPrefix(key);
         const value = await this.database.get(key);

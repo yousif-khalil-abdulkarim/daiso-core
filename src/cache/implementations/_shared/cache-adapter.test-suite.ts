@@ -89,20 +89,6 @@ export function cacheAdapterTestSuite(
 
     describe("Api tests::", () => {
         const TTL = TimeSpan.fromMilliseconds(50);
-        describe("method: exists", () => {
-            test("Should return the value when key exists", async () => {
-                await cacheAdapterA.add("a", 1, null);
-                expect(await cacheAdapterA.exists("a")).toBe(true);
-            });
-            test("Should return null when keys doesnt exists", async () => {
-                expect(await cacheAdapterA.exists("a")).toBe(false);
-            });
-            test("Should return null when key is experied", async () => {
-                await cacheAdapterA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheAdapterA.exists("a")).toBe(false);
-            });
-        });
         describe("method: get", () => {
             test("Should return the value when key exists", async () => {
                 await cacheAdapterA.add("a", 1, null);
@@ -287,11 +273,6 @@ export function cacheAdapterTestSuite(
         });
     });
     describe("Group tests", () => {
-        test("method: exists", async () => {
-            await cacheAdapterA.put("a", 1, null);
-            expect(await cacheAdapterA.exists("a")).toBe(true);
-            expect(await cacheAdapterB.exists("a")).toBe(false);
-        });
         test("method: get", async () => {
             await cacheAdapterA.put("a", 1, null);
             expect(await cacheAdapterA.get("a")).toBe(1);

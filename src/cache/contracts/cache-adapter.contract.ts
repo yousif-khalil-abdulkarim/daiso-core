@@ -15,11 +15,6 @@ import {
  */
 export type ICacheAdapter<TType = unknown> = {
     /**
-     * The <i>exists</i> returns true if the <i>key</i> if exists otherwise false will be returned.
-     */
-    exists(key: string): PromiseLike<boolean>;
-
-    /**
      * The <i>get</i> returns the <i>key</i> value if found otherwise null will be returned.
      */
     get(key: string): PromiseLike<TType | null>;

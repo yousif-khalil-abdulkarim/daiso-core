@@ -374,7 +374,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                 }
                 if (value < 0) {
                     await this.eventBus.dispatch(
-                        this.createKeyDecrementedEvent(key, value),
+                        this.createKeyDecrementedEvent(key, -value),
                     );
                 }
             } else {
@@ -393,7 +393,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     exists(key: string): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            return await this.adapter.exists(key);
+            const value = await this.get(key);
+            return value !== null;
         });
     }
 
