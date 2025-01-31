@@ -122,10 +122,6 @@ export class SqliteCacheAdapter<TType = unknown>
         await this.cacheAdapter.init();
     }
 
-    async exists(key: string): Promise<boolean> {
-        return await this.cacheAdapter.exists(key);
-    }
-
     async get(key: string): Promise<TType | null> {
         return await this.cacheAdapter.get(key);
     }
