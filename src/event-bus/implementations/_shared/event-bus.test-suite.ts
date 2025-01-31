@@ -101,38 +101,10 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
     });
 
     const TTL = TimeSpan.fromMilliseconds(50);
-    class TestEventA extends BaseEvent {
-        static override deserialize(
-            serializedEvent: Record<string, unknown>,
-        ): BaseEvent {
-            return new TestEventA(serializedEvent);
-        }
-
-        constructor(public readonly data: Record<string, unknown>) {
-            super();
-        }
-
-        override serialize(): Record<string, unknown> {
-            return this.data;
-        }
-    }
-    class TestEventB extends BaseEvent {
-        static override deserialize(
-            serializedEvent: Record<string, unknown>,
-        ): BaseEvent {
-            return new TestEventB(serializedEvent);
-        }
-
-        constructor(public readonly data: Record<string, unknown>) {
-            super();
-        }
-
-        override serialize(): Record<string, unknown> {
-            return this.data;
-        }
-    }
-    serde.registerClass(TestEventA);
-    serde.registerClass(TestEventB);
+    class TestEventA extends BaseEvent {}
+    class TestEventB extends BaseEvent {}
+    serde.registerEvent(TestEventA);
+    serde.registerEvent(TestEventB);
 
     describe("Api tests:", () => {
         describe("method: addListener, removeListener, dispatch", () => {
