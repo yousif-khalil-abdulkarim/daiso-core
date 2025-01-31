@@ -1,5 +1,12 @@
 # @daiso-tech/core
 
+## 0.21.1
+
+### Patch Changes
+
+-   c3aaf06: - Fixed bugs with LazyPromise class
+-   ccf442d: - Removed <i>exists</i> mehtod from the <i>ICacheAdapter</i> contract and all classes that implement the contract.
+
 ## 0.21.0
 
 ### Minor Changes
