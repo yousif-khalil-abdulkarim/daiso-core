@@ -16,7 +16,11 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     RetryAsyncError,
 } from "@/async/async.errors";
-import type { Func } from "@/utilities/_module";
+import { simplifyAsyncLazyable, type Func } from "@/utilities/_module";
+
+type LazyPromiseValue<TValue> =
+    | LazyPromise<TValue>
+    | (() => PromiseLike<TValue>);
 
 /**
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.
@@ -96,6 +100,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     private retryPolicy_: RetryPolicy | null = null;
     private abortSignal: AbortSignal | null = null;
     private time: TimeSpan | null = null;
+    private asyncFn: () => PromiseLike<TValue>;
 
     /**
      * @example
@@ -110,7 +115,9 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *   await promise;
      * })();
      */
-    constructor(private asyncFn: () => PromiseLike<TValue>) {}
+    constructor(asyncFn: () => PromiseLike<TValue>) {
+        this.asyncFn = async () => simplifyAsyncLazyable(asyncFn);
+    }
 
     private applyTimeout(): void {
         if (this.time !== null) {
