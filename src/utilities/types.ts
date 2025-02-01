@@ -2,13 +2,18 @@
  * @module Utilities
  */
 
+import type { LazyPromise } from "@/_module";
+
 export type OneOrMore<TItem> = TItem | [TItem, ...TItem[]];
 
 export type Lazyable<TValue> = TValue | (() => TValue);
 
 export type Promisable<TValue> = TValue | PromiseLike<TValue>;
 
-export type AsyncLazyable<TValue> = TValue | (() => Promisable<TValue>);
+export type AsyncLazyable<TValue> =
+    | TValue
+    | LazyPromise<TValue>
+    | (() => Promisable<TValue>);
 
 export type Result<TValue, TError> = [TValue, null] | [null, TError];
 

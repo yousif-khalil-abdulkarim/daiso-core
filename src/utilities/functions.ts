@@ -2,6 +2,7 @@
  * @module Utilities
  */
 
+import { LazyPromise } from "@/_module";
 import type { Lazyable, OneOrMore } from "@/utilities/types";
 import { type AsyncLazyable } from "@/utilities/types";
 
@@ -24,6 +25,9 @@ export async function simplifyAsyncLazyable<TValue>(
     if (typeof lazyable === "function") {
         const getValue = lazyable as () => Promise<TValue>;
         return getValue();
+    }
+    if (lazyable instanceof LazyPromise) {
+        return await lazyable;
     }
     return lazyable;
 }
