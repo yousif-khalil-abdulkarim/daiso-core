@@ -156,7 +156,8 @@ export class RedisCacheAdapter<TType = unknown>
      * });
      * ```
      */
-    constructor({ database, serde, rootGroup }: RedisCacheAdapterSettings) {
+    constructor(settings: RedisCacheAdapterSettings) {
+        const { database, serde, rootGroup } = settings;
         this.database = database;
         this.group = rootGroup;
         this.baseSerde = serde;
@@ -164,12 +165,12 @@ export class RedisCacheAdapter<TType = unknown>
         this.initIncrementCommand();
     }
 
-    private getGroupName(): string {
+    private getPrefix(): string {
         return simplifyGroupName([this.group, "__KEY__"]);
     }
 
     private withPrefix(key: string): string {
-        return simplifyGroupName([this.getGroupName(), key]);
+        return simplifyGroupName([this.getPrefix(), key]);
     }
 
     async get(key: string): Promise<TType | null> {
@@ -286,7 +287,7 @@ export class RedisCacheAdapter<TType = unknown>
     async clear(): Promise<void> {
         for await (const _ of new ClearIterable(
             this.database,
-            simplifyGroupName([escapeRedisChars(this.getGroupName()), "*"]),
+            simplifyGroupName([escapeRedisChars(this.getPrefix()), "*"]),
         )) {
             /* Empty */
         }

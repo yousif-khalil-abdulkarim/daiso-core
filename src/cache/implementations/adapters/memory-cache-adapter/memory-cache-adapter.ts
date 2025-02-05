@@ -72,12 +72,12 @@ export class MemoryCacheAdapter<TType = unknown>
         this.group = rootGroup;
     }
 
-    private getGroupName(): string {
+    private getPrefix(): string {
         return simplifyGroupName([this.group, "__KEY__"]);
     }
 
     private withPrefix(key: string): string {
-        return simplifyGroupName([this.getGroupName(), key]);
+        return simplifyGroupName([this.getPrefix(), key]);
     }
 
     async get(key: string): Promise<TType | null> {
@@ -151,7 +151,7 @@ export class MemoryCacheAdapter<TType = unknown>
 
     async clear(): Promise<void> {
         for (const key of this.map.keys()) {
-            if (key.startsWith(this.getGroupName())) {
+            if (key.startsWith(this.getPrefix())) {
                 clearTimeout(this.timeoutMap.get(key));
                 this.timeoutMap.delete(key);
                 this.map.delete(key);

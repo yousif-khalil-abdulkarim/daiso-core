@@ -12,6 +12,7 @@ import {
     KeyNotFoundCacheEvent,
     KeyFoundCacheEvent,
     TypeCacheError,
+    type IGroupableCache,
     type ICache,
     KeyAddedCacheEvent,
     KeyUpdatedCacheEvent,
@@ -32,8 +33,7 @@ export type CacheTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createCacheA: () => Promisable<ICache>;
-    createCacheB: () => Promisable<ICache>;
+    createCache: () => Promisable<IGroupableCache>;
 };
 
 /**
@@ -65,21 +65,12 @@ export type CacheTestSuiteSettings = {
  *     await startedContainer.stop();
  *   }, TIMEOUT.toMilliseconds());
  *   cacheTestSuite({
- *     createCacheA: () =>
+ *     createCache: () =>
  *       new Cache(
  *         new RedisCacheAdapter({
  *           database,
  *           serde,
  *           rootGroup: "@a",
- *         }),
- *         { eventBus }
- *       ),
- *     createCacheB: () =>
- *       new Cache(
- *         new RedisCacheAdapter({
- *           database,
- *           serde,
- *           rootGroup: "@b",
  *         }),
  *         { eventBus }
  *       ),
@@ -92,13 +83,13 @@ export type CacheTestSuiteSettings = {
  * ```
  */
 export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
-    const { expect, test, createCacheA, createCacheB, describe, beforeEach } =
-        settings;
+    const { expect, test, createCache, describe, beforeEach } = settings;
     let cacheA: ICache<any>;
     let cacheB: ICache<any>;
     beforeEach(async () => {
-        cacheA = await createCacheA();
-        cacheB = await createCacheB();
+        const cache = await createCache();
+        cacheA = cache;
+        cacheB = cache.withGroup("b");
     });
     describe("Api tests:", () => {
         const TTL = TimeSpan.fromMilliseconds(50);

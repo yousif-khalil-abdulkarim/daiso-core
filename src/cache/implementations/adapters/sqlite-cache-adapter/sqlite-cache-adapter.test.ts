@@ -13,7 +13,7 @@ describe("class: SqliteCacheAdapter", () => {
         database.close();
     });
     cacheAdapterTestSuite({
-        createAdapterA: async () => {
+        createAdapter: async () => {
             const cacheAdapter = new SqliteCacheAdapter({
                 database: database,
                 tableName: "custom_table",
@@ -21,18 +21,6 @@ describe("class: SqliteCacheAdapter", () => {
                 shouldRemoveExpiredKeys: false,
                 serde: new SuperJsonSerde(),
                 rootGroup: "@a",
-            });
-            await cacheAdapter.init();
-            return cacheAdapter;
-        },
-        createAdapterB: async () => {
-            const cacheAdapter = new SqliteCacheAdapter({
-                database: database,
-                tableName: "custom_table",
-                enableTransactions: true,
-                shouldRemoveExpiredKeys: false,
-                serde: new SuperJsonSerde(),
-                rootGroup: "@a/b",
             });
             await cacheAdapter.init();
             return cacheAdapter;

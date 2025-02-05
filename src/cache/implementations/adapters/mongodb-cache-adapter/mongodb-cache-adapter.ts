@@ -13,7 +13,7 @@ import {
     type IInitizable,
     simplifyGroupName,
 } from "@/utilities/_module";
-import type { Db, ObjectId } from "mongodb";
+import type { CollectionOptions, Db, ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
 import type { ISerde } from "@/serde/contracts/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -83,6 +83,7 @@ export class MongodbCacheAdapter<TType = unknown>
     private readonly database: Db;
     private readonly collection: Collection<MongodbCacheDocument>;
     private readonly collectionName: string;
+    private readonly collectionSettings?: CollectionOptions;
 
     /**
      * @example
@@ -106,19 +107,21 @@ export class MongodbCacheAdapter<TType = unknown>
      * })();
      * ```
      */
-    constructor({
-        collectionName = "cache",
-        collectionSettings,
-        database,
-        serde,
-        rootGroup,
-    }: MongodbCacheAdapterSettings) {
+    constructor(settings: MongodbCacheAdapterSettings) {
+        const {
+            collectionName = "cache",
+            collectionSettings,
+            database,
+            serde,
+            rootGroup,
+        } = settings;
         this.collectionName = collectionName;
         this.database = database;
         this.collection = database.collection(
             collectionName,
             collectionSettings,
         );
+        this.collectionSettings = collectionSettings;
         this.baseSerde = serde;
         this.group = rootGroup;
         this.mongodbSerde = new MongodbSerde(this.baseSerde);
@@ -132,6 +135,8 @@ export class MongodbCacheAdapter<TType = unknown>
         return new MongodbCacheAdapter({
             database: this.database,
             serde: this.baseSerde,
+            collectionName: this.collectionName,
+            collectionSettings: this.collectionSettings,
             rootGroup: simplifyGroupName([this.group, group]),
         });
     }

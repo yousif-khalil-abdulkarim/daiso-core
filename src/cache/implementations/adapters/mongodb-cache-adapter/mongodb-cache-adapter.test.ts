@@ -22,20 +22,11 @@ describe("class: MongodbCacheAdapter", () => {
         await startedContainer.stop();
     }, timeout.toMilliseconds());
     cacheAdapterTestSuite({
-        createAdapterA: async () => {
+        createAdapter: async () => {
             const cacheAdapter = new MongodbCacheAdapter({
                 database: client.db("database"),
                 serde: new SuperJsonSerde(),
                 rootGroup: "@a",
-            });
-            await cacheAdapter.init();
-            return cacheAdapter;
-        },
-        createAdapterB: async () => {
-            const cacheAdapter = new MongodbCacheAdapter({
-                database: client.db("database"),
-                serde: new SuperJsonSerde(),
-                rootGroup: "@a/b",
             });
             await cacheAdapter.init();
             return cacheAdapter;

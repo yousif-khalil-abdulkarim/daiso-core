@@ -3,20 +3,9 @@
  */
 
 import type { IBuildable } from "@/utilities/_module";
-import type { CollectionOptions, Db, ObjectId } from "mongodb";
+import type { CollectionOptions, Db } from "mongodb";
 import type { ISerde } from "@/serde/contracts/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-/**
- * @internal
- */
-export type MongodbCacheDocument = {
-    _id: ObjectId;
-    key: string;
-    group: string;
-    value: number | string;
-    expiresAt: Date | null;
-};
 
 /**
  * @group Adapters
