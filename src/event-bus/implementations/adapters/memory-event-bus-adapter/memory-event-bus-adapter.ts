@@ -9,35 +9,20 @@ import type {
     Listener,
 } from "@/event-bus/contracts/_module";
 import { EventEmitter } from "node:events";
-import type { MemoryEventBusAdapterSettings } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter-settings";
-import { MemoryEventBusAdapterSettingsBuilder } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter-settings";
+
+/**
+ * @group Adapters
+ */
+export type MemoryEventBusAdapterSettings = {
+    rootGroup: string;
+    eventEmitter?: EventEmitter;
+};
 
 /**
  * To utilize the <i>MemoryEventBusAdapter</i>, you must create instance of it.
  * @group Adapters
  */
 export class MemoryEventBusAdapter implements IEventBusAdapter {
-    /**
-     * @example
-     * ```ts
-     * import { MemoryEventBusAdapter, SuperJsonSerde } from "@daiso-tech/core";
-     * import { EventEmitter } from "node:events";
-     *
-     * const cacheAdapter = new MemoryEventBusAdapter(
-     *   MemoryEventBusAdapter
-     *     .settings()
-     *     .setEventEmitter(new EventEmitter())
-     *     .setRootGroup("@global")
-     *     .build()
-     * );
-     * ```
-     */
-    static settings<
-        TSettings extends Partial<MemoryEventBusAdapterSettings>,
-    >(): MemoryEventBusAdapterSettingsBuilder<TSettings> {
-        return new MemoryEventBusAdapterSettingsBuilder();
-    }
-
     private readonly group: string;
     private readonly eventEmitter: EventEmitter;
 
