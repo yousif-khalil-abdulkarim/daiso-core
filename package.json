@@ -53,6 +53,7 @@
         "@testcontainers/mongodb": "^10.13.2",
         "@testcontainers/redis": "^10.13.2",
         "@types/better-sqlite3": "^7.6.11",
+        "@types/uuid": "^10.0.0",
         "@typescript-eslint/eslint-plugin": "^8.1.0",
         "@typescript-eslint/parser": "^8.1.0",
         "@vitest/eslint-plugin": "^1.0.3",
@@ -99,6 +100,7 @@
     "dependencies": {
         "@libsql/kysely-libsql": "^0.4.0",
         "kysely": "^0.27.0",
-        "superjson-cjs": "^2.2.3"
+        "superjson-cjs": "^2.2.3",
+        "uuid": "^11.0.5"
     }
 }

@@ -18,10 +18,6 @@ import {
 } from "@/async/async.errors";
 import { simplifyAsyncLazyable, type Func } from "@/utilities/_module";
 
-type LazyPromiseValue<TValue> =
-    | LazyPromise<TValue>
-    | (() => PromiseLike<TValue>);
-
 /**
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.
  * The class includes helpful methods

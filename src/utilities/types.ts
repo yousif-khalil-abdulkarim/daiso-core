@@ -30,3 +30,7 @@ export type Func<TArgs extends unknown[], TReturn> = (
 export type GetOrAddValue<TValue> = Awaited<
     TValue extends AnyFunction ? ReturnType<TValue> : TValue
 >;
+
+export type LazyPromiseable<TValue> = () =>
+    | PromiseLike<TValue>
+    | LazyPromise<TValue>;
