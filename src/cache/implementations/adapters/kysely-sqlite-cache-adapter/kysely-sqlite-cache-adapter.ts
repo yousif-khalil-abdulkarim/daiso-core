@@ -110,7 +110,7 @@ export class KyselySqliteCacheAdapter<TType = unknown>
             .addColumn("key", "text")
             .addColumn("value", "text")
             .addColumn("expiresAt", "integer")
-            .addPrimaryKeyConstraint("asd", ["group", "key"])
+            .addPrimaryKeyConstraint("cache_unique_columns", ["group", "key"])
             .modifyEnd(sql`strict`)
             .execute();
         await this.db.schema
