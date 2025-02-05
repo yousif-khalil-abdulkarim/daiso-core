@@ -1,0 +1,21 @@
+---
+"@daiso-tech/core": minor
+---
+
+- New features
+  - Added distributed lock.
+    - Contracts
+      - Added IDatabaseLockAdapter
+      - Added ILockAdapter
+      - ILockProvider
+      - ILockProviderFactory
+      - ILock
+    - Derivables
+      - Added <i>LockProvider</i> class.
+      - Added <i>LockProviderFactory</i> class.
+    - Adapter
+      - LibsqlLockAdapter
+      - MemoryLockAdapter
+      - MongodbLockAdapter
+      - RedisLockAdapter
+      - SqliteLockAdapter
