@@ -7,6 +7,7 @@ import {
     UnregisteredAdapterError,
 } from "@/utilities/_module";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
+import type { ICacheAdapter } from "@/cache/contracts/_module";
 import {
     registerCacheErrors,
     registerCacheEvents,
@@ -16,15 +17,79 @@ import {
 import { Cache } from "@/cache/implementations/derivables/cache/cache";
 import type { OneOrMore, TimeSpan } from "@/utilities/_module";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
-import type {
-    CacheAdapters,
-    CacheFactorySettings,
-} from "@/cache/implementations/derivables/cache-factory/cache-factory-settings";
-import { CacheFactorySettingsBuilder } from "@/cache/implementations/derivables/cache-factory/cache-factory-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
  * @group Derivables
+ */
+export type CacheAdapters<TAdapters extends string> = Partial<
+    Record<TAdapters, ICacheAdapter<any>>
+>;
+
+/**
+ * @group Derivables
+ */
+export type CacheFactorySettings<TAdapters extends string = string> = {
+    /**
+     * You can pass one or more <i>{@link IFlexibleSerde}</i> that will be used to register all <i>{@link IGroupableCache}</i> related errors and events.
+     * @default {true}
+     */
+    serde: OneOrMore<IFlexibleSerde>;
+
+    /**
+     * If set to true, all <i>{@link IGroupableCache}</i> related errors will be registered with the specified <i>IFlexibleSerde</i> during constructor initialization.
+     * This ensures that all <i>{@link IGroupableCache}</i> related errors will be serialized correctly.
+     * @default {true}
+     */
+    shouldRegisterErrors?: boolean;
+
+    /**
+     * If set to true, all <i>{@link IGroupableCache}</i> related events will be registered with the specified <i>IFlexibleSerde</i> during constructor initialization.
+     * This ensures that all <i>{@link IGroupableCache}</i> related events will be serialized correctly.
+     * @default {true}
+     */
+    shouldRegisterEvents?: boolean;
+
+    adapters: CacheAdapters<TAdapters>;
+
+    defaultAdapter?: NoInfer<TAdapters>;
+
+    /**
+     * You can decide the default ttl value. If null is passed then no ttl will be used by default.
+     */
+    defaultTtl?: TimeSpan;
+
+    /**
+     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
+     */
+    eventBus: IGroupableEventBus<any>;
+
+    /**
+     * The default retry attempt to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    retryAttempts?: number | null;
+
+    /**
+     * The default backof policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    backoffPolicy?: BackoffPolicy | null;
+
+    /**
+     * The default retry policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    retryPolicy?: RetryPolicy | null;
+
+    /**
+     * The default timeout to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    timeout?: TimeSpan | null;
+};
+
+/**
  * @internal
  */
 type CacheRecord<TAdapters extends string> = Partial<
@@ -37,37 +102,6 @@ type CacheRecord<TAdapters extends string> = Partial<
 export class CacheFactory<TAdapters extends string = string>
     implements ICacheFactory<TAdapters>
 {
-    /**
-     * @example
-     * ```ts
-     * import { CacheFactory, SuperJsonSerde. MemoryCacheAdapter, RedisCacheAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
-     * import Redis from "ioredis";
-     *
-     * const serde = new SuperJsonSerde();
-     * const cacheFactory = new CacheFactory(
-     *   CacheFactory
-     *     .settings()
-     *     .setEventBus(new EventBus(new MemoryEventBusAdapter({ rootGroup: "@global" })))
-     *     .setAdapter("memory", new MemoryCacheAdapter({
-     *       rootGroup: "@global"
-     *     }))
-     *     .setAdapter("redis", new RedisCacheAdapter({
-     *       client: new Redis("YOUR_REDIS_CONNECTION"),
-     *       serde,
-     *       rootGroup: "@global"
-     *     }))
-     *     .setDefaultAdapter("memory")
-     *     .build()
-     * );
-     * ```
-     */
-    static settings<
-        TAdapters extends string,
-        TSettings extends CacheFactorySettings<TAdapters>,
-    >(): CacheFactorySettingsBuilder<TSettings> {
-        return new CacheFactorySettingsBuilder();
-    }
-
     private readonly cacheRecord = {} as CacheRecord<TAdapters>;
     private readonly defaultAdapter?: TAdapters;
     private readonly eventBus: IGroupableEventBus<any>;
