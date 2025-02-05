@@ -1,2 +1,1 @@
-export * from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter-settings";
 export * from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter";

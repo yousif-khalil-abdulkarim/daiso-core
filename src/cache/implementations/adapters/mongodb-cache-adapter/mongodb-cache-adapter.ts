@@ -19,8 +19,17 @@ import type { ISerde } from "@/serde/contracts/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { SuperJsonSerde } from "@/serde/implementations/_module";
 import { MongodbSerde } from "@/serde/implementations/_module";
-import type { MongodbCacheAdapterSettings } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter-settings";
-import { MongodbCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter-settings";
+
+/**
+ * @group Adapters
+ */
+export type MongodbCacheAdapterSettings = {
+    database: Db;
+    serde: ISerde<string>;
+    rootGroup: string;
+    collectionName?: string;
+    collectionSettings?: CollectionOptions;
+};
 
 /**
  * @internal
@@ -40,31 +49,6 @@ type MongodbCacheDocument = {
 export class MongodbCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
-    /**
-     * @example
-     * ```ts
-     * import { MongodbCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
-     * import { MongoClient } from "mongodb";
-     *
-     * (async () => {
-     *   const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
-     *   const cacheAdapter = new MongodbCacheAdapter(
-     *     MongodbCacheAdapter
-     *       .settings()
-     *       .setDatabase(client.db("database"))
-     *       .setSerde(new SuperJsonSerde())
-     *       .setRootGroup("@global")
-     *       .build()
-     *   );
-     * })();
-     * ```
-     */
-    static settings<
-        TSettings extends Partial<MongodbCacheAdapterSettings>,
-    >(): MongodbCacheAdapterSettingsBuilder<TSettings> {
-        return new MongodbCacheAdapterSettingsBuilder();
-    }
-
     private static isMongodbIncrementError(
         value: unknown,
     ): value is MongoServerError {
