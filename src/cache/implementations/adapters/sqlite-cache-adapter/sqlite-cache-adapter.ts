@@ -7,12 +7,24 @@ import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import { SuperJsonSerde } from "@/serde/implementations/_module";
 import type { TimeSpan, IInitizable, IDeinitizable } from "@/utilities/_module";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
+import type { SqliteDatabase } from "kysely";
 import { Kysely, SqliteDialect } from "kysely";
 import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
-import type { SqliteCacheAdapterSettings } from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter-settings";
-import { SqliteCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter-settings";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ISerde } from "@/serde/contracts/_module";
+
+/**
+ * @group Adapters
+ */
+export type SqliteCacheAdapterSettings = {
+    database: SqliteDatabase;
+    tableName?: string;
+    serde: ISerde<string>;
+    enableTransactions?: boolean;
+    expiredKeysRemovalInterval?: TimeSpan;
+    shouldRemoveExpiredKeys?: boolean;
+    rootGroup: string;
+};
 
 /**
  * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
@@ -21,28 +33,6 @@ import type { ISerde } from "@/serde/contracts/_module";
 export class SqliteCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
-    /**
-     * @example
-     * ```ts
-     * import { SqliteCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
-     * import Sqlite from "better-sqlite3";
-     *
-     * const cacheAdapter = new SqliteCacheAdapter(
-     *   SqliteCacheAdapter
-     *     .settings()
-     *     .setDatabase(new Sqlite("local.db"))
-     *     .setSerde(new SuperJsonSerde())
-     *     .setRootGroup("@global")
-     *     .build()
-     * );
-     * ```
-     */
-    static settings<
-        TSettings extends Partial<SqliteCacheAdapterSettings>,
-    >(): SqliteCacheAdapterSettingsBuilder<TSettings> {
-        return new SqliteCacheAdapterSettingsBuilder();
-    }
-
     private readonly cacheAdapter: KyselySqliteCacheAdapter<TType>;
 
     /**
