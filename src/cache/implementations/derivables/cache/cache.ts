@@ -43,34 +43,54 @@ import type {
     EventClass,
     EventInstance,
 } from "@/event-bus/contracts/_module";
-import type { CacheSettings } from "@/cache/implementations/derivables/cache/cache-settings";
-import { CacheSettingsBuilder } from "@/cache/implementations/derivables/cache/cache-settings";
+
+/**
+ * @group Derivables
+ */
+export type CacheSettings = {
+    adapter: ICacheAdapter<any>;
+
+    /**
+     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
+     */
+    eventBus: IGroupableEventBus<any>;
+
+    /**
+     * You can decide the default ttl value. If null is passed then no ttl will be used by default.
+     * @default {null}
+     */
+    defaultTtl?: TimeSpan | null;
+
+    /**
+     * The default retry attempt to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    retryAttempts?: number | null;
+
+    /**
+     * The default backof policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    backoffPolicy?: BackoffPolicy | null;
+
+    /**
+     * The default retry policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    retryPolicy?: RetryPolicy | null;
+
+    /**
+     * The default timeout to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    timeout?: TimeSpan | null;
+};
 
 /**
  * <i>Cache</i> class can be derived from any <i>{@link ICacheAdapter}</i>.
  * @group Derivables
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {
-    /**
-     * @example
-     * ```ts
-     * import { Cache, MemoryCacheAdapter, TimeSpan, SuperJsonSerde } from "@daiso-tech/core";
-     *
-     * const cache = new Cache(
-     *   Cache
-     *     .settings()
-     *     .setAdapter(new MemoryCacheAdapter({ rootGroup: "@global" }))
-     *     .setEventBus(new EventBus(new MemoryEventBusAdapter({ rootGroup: "@global" })))
-     *     .build()
-     * );
-     * ```
-     */
-    static settings<
-        TSettings extends Partial<CacheSettings>,
-    >(): CacheSettingsBuilder<TSettings> {
-        return new CacheSettingsBuilder();
-    }
-
     private static defaultRetryPolicy: RetryPolicy = (error: unknown) => {
         return !(
             error instanceof TypeCacheError ||
