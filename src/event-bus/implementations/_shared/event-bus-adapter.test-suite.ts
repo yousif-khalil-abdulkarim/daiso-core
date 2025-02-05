@@ -26,8 +26,7 @@ export type EventBusAdapterTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createAdapterA: () => Promisable<IEventBusAdapter>;
-    createAdapterB: () => Promisable<IEventBusAdapter>;
+    createAdapter: () => Promisable<IEventBusAdapter>;
 };
 
 /**
@@ -58,14 +57,7 @@ export type EventBusAdapterTestSuiteSettings = {
  *     await startedContainer.stop();
  *   }, TIMEOUT.toMilliseconds());
  *    eventBusAdapterTestSuite({
- *      createAdapterA: () =>
- *        new RedisPubSubEventBusAdapter({
- *          dispatcherClient,
- *          listenerClient,
- *          serde,
- *          rootGroup: "@global"
- *        }),
- *      createAdapterB: () =>
+ *      createAdapter: () =>
  *        new RedisPubSubEventBusAdapter({
  *          dispatcherClient,
  *          listenerClient,
@@ -87,8 +79,7 @@ export function eventBusAdapterTestSuite(
     const {
         expect,
         test,
-        createAdapterA,
-        createAdapterB,
+        createAdapter,
         beforeEach,
         serde = new NoOpSerde(),
     } = settings;
@@ -96,8 +87,8 @@ export function eventBusAdapterTestSuite(
     let eventBusAdapterA: IEventBusAdapter;
     let eventBusAdapterB: IEventBusAdapter;
     beforeEach(async () => {
-        eventBusAdapterA = await createAdapterA();
-        eventBusAdapterB = await createAdapterB();
+        eventBusAdapterA = await createAdapter();
+        eventBusAdapterB = eventBusAdapterA.withGroup("b");
     });
 
     const TTL = TimeSpan.fromMilliseconds(50);

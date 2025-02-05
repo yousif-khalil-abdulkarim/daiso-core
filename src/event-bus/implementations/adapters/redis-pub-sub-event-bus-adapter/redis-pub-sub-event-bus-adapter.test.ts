@@ -24,19 +24,12 @@ describe("class: RedisPubSubEventBusAdapter", () => {
     }, timeout.toMilliseconds());
     const serde = new SuperJsonSerde();
     eventBusAdapterTestSuite({
-        createAdapterA: () =>
+        createAdapter: () =>
             new RedisPubSubEventBusAdapter({
                 dispatcherClient,
                 listenerClient,
                 serde,
                 rootGroup: "@a",
-            }),
-        createAdapterB: () =>
-            new RedisPubSubEventBusAdapter({
-                dispatcherClient,
-                listenerClient,
-                serde,
-                rootGroup: "@a/b",
             }),
         serde,
         test,

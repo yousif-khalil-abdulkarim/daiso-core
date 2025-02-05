@@ -9,14 +9,9 @@ describe("class: MemoryEventBusAdapter", () => {
         eventEmitter = new EventEmitter();
     });
     eventBusAdapterTestSuite({
-        createAdapterA: () =>
+        createAdapter: () =>
             new MemoryEventBusAdapter({
                 rootGroup: "@a",
-                eventEmitter,
-            }),
-        createAdapterB: () =>
-            new MemoryEventBusAdapter({
-                rootGroup: "@a/b",
                 eventEmitter,
             }),
         test,
