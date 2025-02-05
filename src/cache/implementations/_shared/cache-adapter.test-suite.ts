@@ -21,8 +21,7 @@ export type CacheAdapterTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createAdapterA: () => Promisable<ICacheAdapter>;
-    createAdapterB: () => Promisable<ICacheAdapter>;
+    createAdapter: () => Promisable<ICacheAdapter>;
 };
 
 /**
@@ -49,17 +48,11 @@ export type CacheAdapterTestSuiteSettings = {
  *     await startedContainer.stop();
  *   }, TIMEOUT.toMilliseconds());
  *   cacheAdapterTestSuite({
- *     createAdapterA: () =>
+ *     createAdapter: () =>
  *       new RedisCacheAdapter({
  *         database,
  *         serde,
  *         rootGroup: "@a"
- *       }),
- *     createAdapterB: () =>
- *       new RedisCacheAdapter({
- *         database,
- *         serde,
- *         rootGroup: "@b"
  *       }),
  *     test,
  *     beforeEach,
@@ -72,22 +65,15 @@ export type CacheAdapterTestSuiteSettings = {
 export function cacheAdapterTestSuite(
     settings: CacheAdapterTestSuiteSettings,
 ): void {
-    const {
-        expect,
-        test,
-        createAdapterA,
-        createAdapterB,
-        describe,
-        beforeEach,
-    } = settings;
+    const { expect, test, createAdapter, describe, beforeEach } = settings;
     let cacheAdapterA: ICacheAdapter<any>;
     let cacheAdapterB: ICacheAdapter<any>;
     beforeEach(async () => {
-        cacheAdapterA = await createAdapterA();
-        cacheAdapterB = await createAdapterB();
+        cacheAdapterA = await createAdapter();
+        cacheAdapterB = cacheAdapterA.withGroup("b");
     });
 
-    describe("Api tests::", () => {
+    describe("Api tests:", () => {
         const TTL = TimeSpan.fromMilliseconds(50);
         describe("method: get", () => {
             test("Should return the value when key exists", async () => {
@@ -272,7 +258,7 @@ export function cacheAdapterTestSuite(
             });
         });
     });
-    describe("Group tests", () => {
+    describe("Group tests:", () => {
         test("method: get", async () => {
             await cacheAdapterA.put("a", 1, null);
             expect(await cacheAdapterA.get("a")).toBe(1);

@@ -22,17 +22,11 @@ describe("class: RedisCacheAdapter", () => {
         await startedContainer.stop();
     }, timeout.toMilliseconds());
     cacheAdapterTestSuite({
-        createAdapterA: () =>
+        createAdapter: () =>
             new RedisCacheAdapter({
                 database: client,
                 serde: new SuperJsonSerde(),
                 rootGroup: "@a",
-            }),
-        createAdapterB: () =>
-            new RedisCacheAdapter({
-                database: client,
-                serde: new SuperJsonSerde(),
-                rootGroup: "@a/b",
             }),
         test,
         beforeEach,

@@ -15,24 +15,13 @@ describe("class: LibsqlCacheAdapter", () => {
         client.close();
     });
     cacheAdapterTestSuite({
-        createAdapterA: async () => {
+        createAdapter: async () => {
             const cacheAdapter = new LibsqlCacheAdapter({
                 database: client,
                 tableName: "custom_table",
                 shouldRemoveExpiredKeys: false,
                 serde: new SuperJsonSerde(),
                 rootGroup: "@a",
-            });
-            await cacheAdapter.init();
-            return cacheAdapter;
-        },
-        createAdapterB: async () => {
-            const cacheAdapter = new LibsqlCacheAdapter({
-                database: client,
-                tableName: "custom_table",
-                shouldRemoveExpiredKeys: false,
-                serde: new SuperJsonSerde(),
-                rootGroup: "@a/b",
             });
             await cacheAdapter.init();
             return cacheAdapter;

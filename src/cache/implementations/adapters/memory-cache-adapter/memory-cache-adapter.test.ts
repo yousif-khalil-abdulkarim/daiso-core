@@ -4,14 +4,9 @@ import { MemoryCacheAdapter } from "@/cache/implementations/adapters/memory-cach
 
 describe("class: MemoryCacheAdapter", () => {
     cacheAdapterTestSuite({
-        createAdapterA: () =>
+        createAdapter: () =>
             new MemoryCacheAdapter({
                 rootGroup: "@a",
-                map: new Map<string, unknown>(),
-            }),
-        createAdapterB: () =>
-            new MemoryCacheAdapter({
-                rootGroup: "@a/b",
                 map: new Map<string, unknown>(),
             }),
         test,
