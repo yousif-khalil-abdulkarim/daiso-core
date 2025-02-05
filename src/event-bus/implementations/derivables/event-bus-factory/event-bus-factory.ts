@@ -4,6 +4,7 @@
 
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
 import {
+    type IEventBusAdapter,
     type IGroupableEventBus,
     type IEventBusFactory,
     type BaseEvent,
@@ -15,78 +16,76 @@ import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
 } from "@/utilities/_module";
-import type { EventBusAdapters } from "@/event-bus/implementations/derivables/event-bus-factory/event-bus-factory-settings";
-import {
-    type EventBusFactorySettings,
-    EventBusFactorySettingsBuilder,
-} from "@/event-bus/implementations/derivables/event-bus-factory/event-bus-factory-settings";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
  * @group Derivables
+ */
+export type EventBusAdapters<TAdapters extends string = string> = Partial<
+    Record<TAdapters, IEventBusAdapter>
+>;
+
+/**
+ * @group Derivables
+ */
+export type EventBusFactorySettings<TAdapters extends string = string> = {
+    /**
+     * You can pass one or more <i>{@link IFlexibleSerde}</i> that will be used to register all <i>{@link IGroupableEventBus}</i> related errors.
+     * @default {true}
+     */
+    serde: OneOrMore<IFlexibleSerde>;
+
+    /**
+     * If set to true, all <i>{@link IGroupableEventBus}</i> related errors will be registered with the specified <i>IFlexibleSerde</i> during constructor initialization.
+     * This ensures that all <i>{@link IGroupableEventBus}</i> related errors will be serialized correctly.
+     * @default {true}
+     */
+    shouldRegisterErrors?: boolean;
+
+    adapters: EventBusAdapters<TAdapters>;
+
+    defaultAdapter?: NoInfer<TAdapters>;
+
+    /**
+     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
+     */
+    eventBus?: IGroupableEventBus<any>;
+
+    /**
+     * The default retry attempt to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    retryAttempts?: number | null;
+
+    /**
+     * The default backof policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    backoffPolicy?: BackoffPolicy | null;
+
+    /**
+     * The default retry policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    retryPolicy?: RetryPolicy | null;
+
+    /**
+     * The default timeout to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    timeout?: TimeSpan | null;
+};
+
+/**
  * @internal
  */
 type EventBusRecord<TAdapters extends string> = Partial<
     Record<TAdapters, IGroupableEventBus<any>>
 >;
 
-/**
- * @group Derivables
- * @example
- * ```ts
- * import { EventBusFactory } from "@daiso-tech/core";
- * import Redis from "ioredis"
- *
- * const eventBusFactory = new EventBusFactory({
- *   adapters: {
- *     memory: new MemoryEventBusAdapter({ rootGroup: "@global" }),
- *     redis: new RedisPubSubEventBusAdapter({
- *       dispatcherClient: new Redis(),
- *       listenerClient: new Redis(),
- *       serde: new SuperJsonSerde(),
- *       rootGroup: "@global"
- *     }),
- *   },
- *   defaultAdapter: "memory",
- *   serde: new SuperJsonSerde()
- * });
- * ```
- */
 export class EventBusFactory<TAdapters extends string = string>
     implements IEventBusFactory<TAdapters>
 {
-    /**
-     * @example
-     * ```ts
-     * import { EventBusFactory, SuperJsonSerde. MemoryEventBusAdapter, RedisPubSubEventBusAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
-     * import Redis from "ioredis";
-     *
-     * const serde = new SuperJsonSerde();
-     * const cacheFactory = new EventBusFactory(
-     *   EventBusFactory
-     *     .settings()
-     *     .setSerde(serde)
-     *     .setAdapter("memory", new MemoryEventBusAdapter({
-     *       rootGroup: "@global"
-     *     }))
-     *     .setAdapter("redis", new RedisPubSubEventBusAdapter({
-     *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION"),
-     *       listenerClient: new Redis("YOUR_REDIS_CONNECTION")
-     *       serde,
-     *       rootGroup: "@global"
-     *     }))
-     *     .setDefaultAdapter("memory")
-     *     .build()
-     * );
-     * ```
-     */
-    static settings<
-        TAdapters extends string,
-        TSettings extends EventBusFactorySettings<TAdapters>,
-    >(): EventBusFactorySettingsBuilder<TSettings> {
-        return new EventBusFactorySettingsBuilder();
-    }
-
     private readonly eventBusRecord = {} as EventBusRecord<TAdapters>;
     private readonly serde: OneOrMore<IFlexibleSerde>;
     private readonly defaultAdapter?: TAdapters;

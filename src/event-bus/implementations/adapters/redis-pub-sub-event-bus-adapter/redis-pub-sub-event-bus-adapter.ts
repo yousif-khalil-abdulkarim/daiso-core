@@ -16,37 +16,22 @@ import type {
 import type Redis from "ioredis";
 import { EventEmitter } from "node:events";
 import { simplifyGroupName } from "@/utilities/_module";
-import type { RedisPubSubEventBusAdapterSettings } from "@/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/redis-pub-sub-event-bus-adapter-settings";
-import { RedisPubSubEventBusAdapterSettingsBuilder } from "@/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/redis-pub-sub-event-bus-adapter-settings";
+
+/**
+ * @group Adapters
+ */
+export type RedisPubSubEventBusAdapterSettings = {
+    dispatcherClient: Redis;
+    listenerClient: Redis;
+    serde: ISerde<string>;
+    rootGroup: string;
+};
 
 /**
  * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
-    /**
-     * @example
-     * ```ts
-     * import { RedisPubSubEventBusAdapter, SuperJsonSerde } from "@daiso-tech/core";
-     * import Redis from "ioredis";
-     *
-     * const cacheAdapter = new RedisPubSubEventBusAdapter(
-     *   RedisPubSubEventBusAdapter
-     *     .settings()
-     *     .setDispatcherClient(new Redis("YOUR REDIS CONNECTION"))
-     *     .setListenerClient(new Redis("YOUR REDIS CONNECTION"))
-     *     .setSerde(new SuperJsonSerde())
-     *     .setRootGroup("@global")
-     *     .build()
-     * );
-     * ```
-     */
-    static settings<
-        TSettings extends Partial<RedisPubSubEventBusAdapterSettings>,
-    >(): RedisPubSubEventBusAdapterSettingsBuilder<TSettings> {
-        return new RedisPubSubEventBusAdapterSettingsBuilder();
-    }
-
     private readonly group: string;
     private readonly baseSerde: ISerde<string>;
     private readonly redisSerde: ISerde<string>;

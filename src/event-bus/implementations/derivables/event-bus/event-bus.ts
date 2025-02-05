@@ -26,8 +26,37 @@ import {
     isArrayEmpty,
     simplifyGroupName,
 } from "@/utilities/_module";
-import type { EventBusSettings } from "@/event-bus/implementations/derivables/event-bus/event-bus-settings";
-import { EventBusSettingsBuilder } from "@/event-bus/implementations/derivables/event-bus/event-bus-settings";
+
+/**
+ * @group Derivables
+ */
+export type EventBusSettings = {
+    adapter: IEventBusAdapter;
+
+    /**
+     * The default retry attempt to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    retryAttempts?: number | null;
+
+    /**
+     * The default backof policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    backoffPolicy?: BackoffPolicy | null;
+
+    /**
+     * The default retry policy to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    retryPolicy?: RetryPolicy | null;
+
+    /**
+     * The default timeout to use in the returned <i>LazyPromise</i>.
+     * @default {null}
+     */
+    timeout?: TimeSpan | null;
+};
 
 /**
  * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
@@ -36,27 +65,6 @@ import { EventBusSettingsBuilder } from "@/event-bus/implementations/derivables/
 export class EventBus<TEvents extends BaseEvent = BaseEvent>
     implements IGroupableEventBus<TEvents>
 {
-    /**
-     * @example
-     * ```ts
-     * import { EventBus, MemoryEventBusAdapter, registerEventErrors, SuperJsonSerde } from "@daiso-tech/core";
-     *
-     * const eventBus = new EventBus(
-     *   EventBus
-     *     .settings()
-     *     .setAdapter(new MemoryEventBusAdapter({ rootGroup: "@global" }))
-     *     .build()
-     * );
-     * const serde = new SuperJsonSerde();
-     * registerEventErrors(serde)
-     * ```
-     */
-    static settings<
-        TSettings extends Partial<EventBusSettings>,
-    >(): EventBusSettingsBuilder<TSettings> {
-        return new EventBusSettingsBuilder();
-    }
-
     private readonly adapter: IEventBusAdapter;
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
