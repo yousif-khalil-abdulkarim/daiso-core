@@ -12,8 +12,6 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type SuperJsonSerde,
 } from "@/serde/implementations/_module";
-import type { RedisCacheAdapterSettings } from "@/cache/implementations/adapters/redis-cache-adapter/redis-cache-adapter-settings";
-import { RedisCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/redis-cache-adapter/redis-cache-adapter-settings";
 
 /**
  * @internal
@@ -96,34 +94,21 @@ declare module "ioredis" {
 }
 
 /**
+ * @group Adapters
+ */
+export type RedisCacheAdapterSettings = {
+    database: Redis;
+    serde: ISerde<string>;
+    rootGroup: string;
+};
+
+/**
  * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
  * @group Adapters
  */
 export class RedisCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>
 {
-    /**
-     * @example
-     * ```ts
-     * import { RedisCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
-     * import Redis from "ioredis";
-     *
-     * const cacheAdapter = new RedisCacheAdapter(
-     *   RedisCacheAdapter
-     *     .settings()
-     *     .setDatabase(new Redis("YOUR_REDIS_CONNECTION_STRING"))
-     *     .setSerde(new SuperJsonSerde())
-     *     .setRootGroup("@global")
-     *     .build()
-     * );
-     * ```
-     */
-    static settings<
-        TSettings extends Partial<RedisCacheAdapterSettings>,
-    >(): RedisCacheAdapterSettingsBuilder<TSettings> {
-        return new RedisCacheAdapterSettingsBuilder();
-    }
-
     private static isRedisTypeError(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
         value: any,

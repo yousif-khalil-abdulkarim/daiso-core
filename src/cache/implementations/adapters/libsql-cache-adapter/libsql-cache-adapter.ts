@@ -11,10 +11,22 @@ import { Kysely } from "kysely";
 import type { LibsqlDialectConfig } from "@libsql/kysely-libsql";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
 import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
-import type { LibsqlCacheAdapterSettings } from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter-settings";
-import { LibsqlCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter-settings";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ISerde } from "@/serde/contracts/_module";
+import type { Client } from "@libsql/client";
+
+/**
+ * @group Adapters
+ */
+export type LibsqlCacheAdapterSettings = {
+    database: Client;
+    tableName?: string;
+    serde: ISerde<string>;
+    enableTransactions?: boolean;
+    expiredKeysRemovalInterval?: TimeSpan;
+    shouldRemoveExpiredKeys?: boolean;
+    rootGroup: string;
+};
 
 /**
  * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
@@ -23,28 +35,6 @@ import type { ISerde } from "@/serde/contracts/_module";
 export class LibsqlCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
-    /**
-     * @example
-     * ```ts
-     * import { LibsqlCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
-     * import { createClient } from "@libsql/client";
-     *
-     * const cacheAdapter = new LibsqlCacheAdapter(
-     *   LibsqlCacheAdapter
-     *     .settings()
-     *     .setDatabase(createClient({ url: "file:local.db" }))
-     *     .setSerde(new SuperJsonSerde())
-     *     .setRootGroup("@global")
-     *     .build()
-     * );
-     * ```
-     */
-    static settings<
-        TSettings extends Partial<LibsqlCacheAdapterSettings>,
-    >(): LibsqlCacheAdapterSettingsBuilder<TSettings> {
-        return new LibsqlCacheAdapterSettingsBuilder();
-    }
-
     private readonly cacheAdapter: KyselySqliteCacheAdapter<TType>;
 
     /***

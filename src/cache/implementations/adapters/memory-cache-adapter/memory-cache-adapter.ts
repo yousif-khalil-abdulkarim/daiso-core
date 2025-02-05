@@ -6,8 +6,14 @@
 import { TypeCacheError } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import { simplifyGroupName, type TimeSpan } from "@/utilities/_module";
-import type { MemoryCacheAdapterSettings } from "@/cache/implementations/adapters/memory-cache-adapter/memory-cache-adapter-settings";
-import { MemoryCacheAdapterSettingsBuilder } from "@/cache/implementations/adapters/memory-cache-adapter/memory-cache-adapter-settings";
+
+/**
+ * @group Adapters
+ */
+export type MemoryCacheAdapterSettings = {
+    rootGroup: string;
+    map?: Map<string, unknown>;
+};
 
 /**
  * To utilize the <i>MemoryCacheAdapter</i>, you must create instance of it.
@@ -16,26 +22,6 @@ import { MemoryCacheAdapterSettingsBuilder } from "@/cache/implementations/adapt
 export class MemoryCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>
 {
-    /**
-     * @example
-     * ```ts
-     * import { MemoryCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
-     *
-     * const cacheAdapter = new MemoryCacheAdapter(
-     *   MemoryCacheAdapter
-     *     .settings()
-     *     .setMap(new Map())
-     *     .setRootGroup("@global")
-     *     .build()
-     * );
-     * ```
-     */
-    static settings<
-        TSettings extends Partial<MemoryCacheAdapterSettings>,
-    >(): MemoryCacheAdapterSettingsBuilder<TSettings> {
-        return new MemoryCacheAdapterSettingsBuilder();
-    }
-
     private readonly group: string;
 
     private readonly timeoutMap = new Map<
