@@ -23,35 +23,12 @@ import {
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 
 /**
- * @group Derivables
  * @internal
  */
 type EventBusRecord<TAdapters extends string> = Partial<
     Record<TAdapters, IGroupableEventBus<any>>
 >;
 
-/**
- * @group Derivables
- * @example
- * ```ts
- * import { EventBusFactory } from "@daiso-tech/core";
- * import Redis from "ioredis"
- *
- * const eventBusFactory = new EventBusFactory({
- *   adapters: {
- *     memory: new MemoryEventBusAdapter({ rootGroup: "@global" }),
- *     redis: new RedisPubSubEventBusAdapter({
- *       dispatcherClient: new Redis(),
- *       listenerClient: new Redis(),
- *       serde: new SuperJsonSerde(),
- *       rootGroup: "@global"
- *     }),
- *   },
- *   defaultAdapter: "memory",
- *   serde: new SuperJsonSerde()
- * });
- * ```
- */
 export class EventBusFactory<TAdapters extends string = string>
     implements IEventBusFactory<TAdapters>
 {
