@@ -8,7 +8,11 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { BaseEvent, type IEventBus } from "@/event-bus/contracts/_module";
+import {
+    BaseEvent,
+    type IEventBus,
+    type IGroupableEventBus,
+} from "@/event-bus/contracts/_module";
 import { type Promisable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
 import { delay } from "@/async/_module";
@@ -24,8 +28,7 @@ export type EventBusTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createEventBusA: () => Promisable<IEventBus>;
-    createEventBusB: () => Promisable<IEventBus>;
+    createEventBus: () => Promisable<IGroupableEventBus>;
 };
 
 /**
@@ -56,7 +59,7 @@ export type EventBusTestSuiteSettings = {
  *     await startedContainer.stop();
  *   }, TIMEOUT.toMilliseconds());
  *    eventBusTestSuite({
- *      createEventBusA: () =>
+ *      createEventBus: () =>
  *        new EventBus(
  *          new RedisPubSubEventBusAdapter({
  *            dispatcherClient,
@@ -64,15 +67,6 @@ export type EventBusTestSuiteSettings = {
  *            serde,
  *            rootGroup: "@global"
  *          })
- *        ),
- *      createEventBusB: () =>
- *        new EventBus(
- *          new RedisPubSubEventBusAdapter({
- *            dispatcherClient,
- *            listenerClient,
- *            serde,
- *            rootGroup: "@global"
- *          }),
  *        ),
  *      serde,
  *      test,
@@ -89,15 +83,15 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         serde = new NoOpSerde(),
         test,
         describe,
-        createEventBusA,
-        createEventBusB,
+        createEventBus,
         beforeEach,
     } = settings;
     let eventBusA: IEventBus;
     let eventBusB: IEventBus;
     beforeEach(async () => {
-        eventBusA = await createEventBusA();
-        eventBusB = await createEventBusB();
+        const eventBus = await createEventBus();
+        eventBusA = eventBus;
+        eventBusB = eventBus.withGroup("b");
     });
 
     const TTL = TimeSpan.fromMilliseconds(50);
