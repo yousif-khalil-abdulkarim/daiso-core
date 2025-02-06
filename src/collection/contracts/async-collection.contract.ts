@@ -1680,18 +1680,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // 3
      * }
      * ```
-     * @example
-     * ```ts
-     * import type { IAsyncCollection } from "@daiso-tech/core";
-     *
-     * // Asume the inputed collection is empty.
-     * async function main(collection: IAsyncCollection<number>): Promise<void> {
-     *   await collection
-     *     .append([1, 2, 3, 4])
-     *     .firstOr(-1, item => item > 10);
-     *   // -1
-     * }
-     * ```
+     * You can pass a function as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection } from "@daiso-tech/core";
@@ -1701,6 +1690,32 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   await collection
      *     .append([1, 2, 3, 4])
      *     .firstOr(() => -1, item => item > 10);
+     *   // -1
+     * }
+     * ```
+     * You can pass an async function as default value.
+     * @example
+     * ```ts
+     * import type { IAsyncCollection } from "@daiso-tech/core";
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .firstOr(async () => -1, item => item > 10);
+     *   // -1
+     * }
+     * ```
+     * You can pass a <i>{@link LazyPromise}</i> as default value.
+     * @example
+     * ```ts
+     * import type { IAsyncCollection, ICache } from "@daiso-tech/core";
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>, cache: ICache<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .firstOr(cache.get("a"), item => item > 10);
      *   // -1
      * }
      * ```
@@ -1826,18 +1841,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // 3
      * }
      * ```
-     * @example
-     * ```ts
-     * import type { IAsyncCollection } from "@daiso-tech/core";
-     *
-     * // Asume the inputed collection is empty.
-     * async function main(collection: IAsyncCollection<number>): Promise<void> {
-     *   await collection
-     *     .append([1, 2, 3, 4])
-     *     .lastOr(-1, item => item > 10);
-     *   // -1
-     * }
-     * ```
+     * You can pass a function as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection } from "@daiso-tech/core";
@@ -1847,6 +1851,32 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   await collection
      *     .append([1, 2, 3, 4])
      *     .lastOr(() => -1, item => item > 10);
+     *   // -1
+     * }
+     * ```
+     * You can pass an async function as default value.
+     * @example
+     * ```ts
+     * import type { IAsyncCollection } from "@daiso-tech/core";
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .lastOr(async () => -1, item => item > 10);
+     *   // -1
+     * }
+     * ```
+     * You can pass a <i>{@link LazyPromise}</i> as default value.
+     * @example
+     * ```ts
+     * import type { IAsyncCollection, ICache } from "@daiso-tech/core";
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>, cache: ICache<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .lastOr(cache.get("a"), item => item > 10);
      *   // -1
      * }
      * ```
@@ -1948,18 +1978,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // 1
      * }
      * ```
-     * @example
-     * ```ts
-     * import type { IAsyncCollection } from "@daiso-tech/core";
-     *
-     * // Asume the inputed collection is empty.
-     * async function main(collection: IAsyncCollection<number>): Promise<void> {
-     *   await collection
-     *     .append([1, 2, 3, 4])
-     *     .beforeOr(-1, item => item === 1);
-     *   // -1
-     * }
-     * ```
+     * You can pass a function as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection } from "@daiso-tech/core";
@@ -1969,6 +1988,32 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   await collection
      *     .append([1, 2, 3, 4])
      *     .beforeOr(() => -1, item => item === 1);
+     *   // -1
+     * }
+     * ```
+     * You can pass an async function as default value.
+     * @example
+     * ```ts
+     * import type { IAsyncCollection } from "@daiso-tech/core";
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .beforeOr(async () => -1, item => item === 1);
+     *   // -1
+     * }
+     * ```
+     * You can pass a <i>{@link LazyPromise}</i> as default value.
+     * @example
+     * ```ts
+     * import type { IAsyncCollection, ICache } from "@daiso-tech/core";
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>, cache: ICache<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .beforeOr(cache.get("a"), item => item > 10);
      *   // -1
      * }
      * ```
@@ -2058,18 +2103,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // 3
      * }
      * ```
-     * @example
-     * ```ts
-     * import type { IAsyncCollection } from "@daiso-tech/core";
-     *
-     * // Asume the inputed collection is empty.
-     * async function main(collection: IAsyncCollection<number>): Promise<void> {
-     *   await collection
-     *     .append([1, 2, 3, 4])
-     *     .afterOr(-1, item => item === 4);
-     *   // -1
-     * }
-     * ```
+     * You can pass a function as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection } from "@daiso-tech/core";
@@ -2079,6 +2113,32 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   await collection
      *     .append([1, 2, 3, 4])
      *     .afterOr(() => -1, item => item === 4);
+     *   // -1
+     * }
+     * ```
+     * You can pass an async function as default value.
+     * @example
+     * ```ts
+     * import type { IAsyncCollection } from "@daiso-tech/core";
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .afterOr(async () => -1, item => item === 4);
+     *   // -1
+     * }
+     * ```
+     * You can pass a <i>{@link LazyPromise}</i> as default value.
+     * @example
+     * ```ts
+     * import type { IAsyncCollection, ICache } from "@daiso-tech/core";
+     *
+     * // Asume the inputed collection is empty.
+     * async function main(collection: IAsyncCollection<number>, cache: ICache<number>): Promise<void> {
+     *   await collection
+     *     .append([1, 2, 3, 4])
+     *     .afterOr(cache.get("a"), item => item > 10);
      *   // -1
      * }
      * ```
