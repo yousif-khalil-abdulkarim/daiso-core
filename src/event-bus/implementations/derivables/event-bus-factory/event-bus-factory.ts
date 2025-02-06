@@ -83,6 +83,9 @@ type EventBusRecord<TAdapters extends string> = Partial<
     Record<TAdapters, IGroupableEventBus<any>>
 >;
 
+/**
+ * @group Derivables
+ */
 export class EventBusFactory<TAdapters extends string = string>
     implements IEventBusFactory<TAdapters>
 {

@@ -23,7 +23,7 @@ export type IEventBusFactory<TAdapters extends string = string> = {
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      * @example
      * ```ts
-     * import { type IEventBusFactory } from "@daiso-tech/core";
+     * import { type IEventBusFactory, BaseEvent } from "@daiso-tech/core";
      *
      * class AddEvent extends BaseEvent<{
      *   a: number;
