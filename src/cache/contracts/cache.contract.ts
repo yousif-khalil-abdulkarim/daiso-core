@@ -18,7 +18,7 @@ import type { TimeSpan } from "@/utilities/_module";
 import type { LazyPromise } from "@/async/_module";
 
 /**
- * The <i>ICacheListener</i> contract defines a way for listening <i>{@link ICache}</i> crud operations.
+ * The <i>ICacheListener</i> contract defines a way for listening <i>{@link ICache}</i> operations.
  * @group Contracts
  */
 export type ICacheListener<TType = unknown> = IEventListener<
@@ -150,6 +150,43 @@ export type ICache<TType = unknown> = ICacheListener & {
      *   // -1
      * }
      * ```
+     * You can pass a function as default value.
+     * @example
+     * ```ts
+     * import type { ICache } from "@daiso-tech/core";
+     *
+     * // Asume the inputed cache is empty
+     * async function main(cache: ICache): Promise<void> {
+     *   await cache.getOr("a", () => -1);
+     *   // -1
+     * }
+     * ```
+     * You can pass an async function as default value.
+     * @example
+     * ```ts
+     * import type { ICache } from "@daiso-tech/core";
+     *
+     * // Asume the inputed cache is empty
+     * async function main(cache: ICache): Promise<void> {
+     *   await cache.getOr("a", async () => -1);
+     *   // -1
+     * }
+     * ```
+     * You can pass an <i>{@link LazyPromise}</i> as default value.
+     * @example
+     * ```ts
+     * import type { ICache, IAsyncCollection } from "@daiso-tech/core";
+     *
+     * type IPerson = {
+     *   name: string;
+     *   age: number;
+     * };
+     *
+     * // Asume the inputed cache is empty
+     * async function main(cache: ICache, collection: IAsyncCollection<IPerson>): Promise<void> {
+     *   await cache.getOr("a", collection.first(person => person.name === "a"));
+     * }
+     * ```
      */
     getOr(key: string, defaultValue: AsyncLazyable<TType>): LazyPromise<TType>;
 
@@ -163,6 +200,43 @@ export type ICache<TType = unknown> = ICacheListener & {
      * async function main(cache: ICache): Promise<void> {
      *   await cache.getOrMany({ a: -1, b: () => -2, c: async () => -3 });
      *   // { a: -1, b: -2, c: -3 }
+     * }
+     * ```
+     * You can pass a function as default value.
+     * @example
+     * ```ts
+     * import type { ICache } from "@daiso-tech/core";
+     *
+     * // Asume the inputed cache is empty
+     * async function main(cache: ICache): Promise<void> {
+     *   await cache.getOrMany({ a: () => -1 });
+     *   // -1
+     * }
+     * ```
+     * You can pass an async function as default value.
+     * @example
+     * ```ts
+     * import type { ICache } from "@daiso-tech/core";
+     *
+     * // Asume the inputed cache is empty
+     * async function main(cache: ICache): Promise<void> {
+     *   await cache.getOrMany({ a: async () => -1 });
+     *   // -1
+     * }
+     * ```
+     * You can pass an <i>{@link LazyPromise}</i> as default value.
+     * @example
+     * ```ts
+     * import type { ICache, IAsyncCollection } from "@daiso-tech/core";
+     *
+     * type IPerson = {
+     *   name: string;
+     *   age: number;
+     * };
+     *
+     * // Asume the inputed cache is empty
+     * async function main(cache: ICache, collection: IAsyncCollection<IPerson>): Promise<void> {
+     *   await cache.getOrMany({ a: collection.first(person => person.name === "a") });
      * }
      * ```
      */
@@ -468,9 +542,43 @@ export type ICache<TType = unknown> = ICacheListener & {
      * async function main(cache: ICache): Promise<void> {
      *   await cache.getOrAdd("a", 1);
      *   // 1
+     * }
+     * ```
+     * You can pass a function as default value.
+     * @example
+     * ```ts
+     * import type { ICache } from "@daiso-tech/core";
      *
+     * // Asume the inputed cache is empty
+     * async function main(cache: ICache): Promise<void> {
+     *   await cache.getOrAdd("a", () => -1);
+     *   // -1
+     * }
+     * ```
+     * You can pass an async function as default value.
+     * @example
+     * ```ts
+     * import type { ICache } from "@daiso-tech/core";
+     *
+     * // Asume the inputed cache is empty
+     * async function main(cache: ICache): Promise<void> {
      *   await cache.getOrAdd("a", async () => -1);
-     *   // 1
+     *   // -1
+     * }
+     * ```
+     * You can pass an <i>{@link LazyPromise}</i> as default value.
+     * @example
+     * ```ts
+     * import type { ICache, IAsyncCollection } from "@daiso-tech/core";
+     *
+     * type IPerson = {
+     *   name: string;
+     *   age: number;
+     * };
+     *
+     * // Asume the inputed cache is empty
+     * async function main(cache: ICache, collection: IAsyncCollection<IPerson>): Promise<void> {
+     *   await cache.getOrAdd("a", collection.first(person => person.name === "a"));
      * }
      * ```
      */
@@ -547,10 +655,10 @@ export type ICache<TType = unknown> = ICacheListener & {
      * The <i>getGroup</i> method returns the group name.
      * @example
      * ```ts
-     * import type { ICache } from "@daiso-tech/core";
+     * import type { IGroupableCache } from "@daiso-tech/core";
      *
      * // Asume the inputed cache is empty and the default rootGroup is "@global"
-     * async function main(cache: ICache): Promise<void> {
+     * async function main(cache: IGroupableCache): Promise<void> {
      *   console.log(cache.getGroup())
      *
      *   const cacheA = cache.withGroup("a");
@@ -565,20 +673,20 @@ export type ICache<TType = unknown> = ICacheListener & {
 
 /**
  * The <i>IGroupableCache</i> contract defines a way for storing data as key-value pairs independent of data storage.
- * It commes with one extra method which is useful for multitennat applications compared to <i>ICache</i>.
+ * It commes with one extra method which is useful for multitennat applications compared to <i>{@link ICache}</i>.
  * @group Contracts
  */
 export type IGroupableCache<TType = unknown> = ICache<TType> & {
     /**
      * The <i>withGroup</i> method returns a new <i>{@link ICache}</i> instance that groups keys together.
-     * Only keys in the group can be updated, removed, or retrieved, leaving keys outside the group unaffected.
+     * Only keys in the same group will be updated, removed, or retrieved, leaving keys outside the group unaffected.
      * This useful for multitennat applications.
      * @example
      * ```ts
-     * import type { ICache } from "@daiso-tech/core";
+     * import type { IGroupableCache } from "@daiso-tech/core";
      *
      * // Asume the inputed cache is empty and the default rootGroup is "@global"
-     * async function main(cache: ICache): Promise<void> {
+     * async function main(cache: IGroupableCache): Promise<void> {
      *   const cacheA = cache.withGroup("a");
      *   await cacheA.add("a", 1);
      *

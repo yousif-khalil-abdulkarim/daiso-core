@@ -7,10 +7,12 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type TypeCacheError,
 } from "@/cache/contracts/cache.errors";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { ICache } from "@/cache/contracts/cache.contract";
 
 /**
  * The <i>ICacheAdapter</i> contract defines a way for storing data as key-value pairs independent of data storage.
- * This interface is not meant to be used directly, instead you should use <i>ICache</i>
+ * This contract is not meant to be used directly, instead you should use <i>{@link ICache}</i> contract.
  * @group Contracts
  */
 export type ICacheAdapter<TType = unknown> = {
@@ -62,7 +64,7 @@ export type ICacheAdapter<TType = unknown> = {
 
     /**
      * The <i>withGroup</i> method returns a new <i>{@link ICacheAdapter}</i> instance that groups keys together.
-     * Only keys in the group can be updated, removed, or retrieved, leaving keys outside the group unaffected.
+     * Only keys in the same group will be updated, removed, or retrieved, leaving keys outside the group unaffected.
      */
     withGroup(group: string): ICacheAdapter<TType>;
 };
