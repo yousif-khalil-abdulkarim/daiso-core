@@ -7,7 +7,7 @@ import type { BaseEvent } from "@/event-bus/contracts/_shared";
 
 /**
  * The <i>IEventBusAdapter</i> contract defines a way for dispatching and listening to events independent of underlying technology.
- * This interface is not meant to be used directly, instead you should use <i>IEventBus</i>
+ * This contract is not meant to be used directly, instead you should use <i>IEventBus</i>
  * @group Contracts
  */
 export type IEventBusAdapter = {

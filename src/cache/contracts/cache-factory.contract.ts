@@ -22,8 +22,7 @@ export type ICacheFactory<TAdapters extends string = string> = {
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      * @example
      * ```ts
-     * import { type ICacheFactory } from "@daiso-tech/core";
-     * import Redis from "ioredis"
+     * import type { ICacheFactory } from "@daiso-tech/core";
      *
      * // Asume the inputed cacheFactory has registered both a memory and Redis ICacheAdapter.
      * // The memory ICacheAdapter adapter is the default.
