@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { lockAdapterTestSuite } from "@/lock/implementations/_shared/_module";
-import type { MemoryLockData } from "@/lock/implementations/adapters/memory-lock-adapter/_module";
 import { MemoryLockAdapter } from "@/lock/implementations/adapters/memory-lock-adapter/_module";
+import type { ILockData } from "@/lock/contracts/_module";
 
 describe("class: MemoryLockAdapter", () => {
-    let map: Map<string, MemoryLockData>;
+    let map: Map<string, ILockData>;
     beforeEach(() => {
-        map = new Map<string, MemoryLockData>();
+        map = new Map<string, ILockData>();
     });
     lockAdapterTestSuite({
         createAdapter: () =>

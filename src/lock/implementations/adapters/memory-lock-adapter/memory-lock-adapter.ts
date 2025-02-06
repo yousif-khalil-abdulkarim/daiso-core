@@ -3,22 +3,14 @@
  */
 
 import { simplifyGroupName, TimeSpan } from "@/utilities/_module";
-import type { ILockAdapter } from "@/lock/contracts/_module";
-
-/**
- * @group Adapters
- */
-export type MemoryLockData = {
-    owner: string;
-    expiresAt: Date | null;
-};
+import type { ILockAdapter, ILockData } from "@/lock/contracts/_module";
 
 /**
  * @group Adapters
  */
 export type MemoryLockAdapterSettings = {
     rootGroup: string;
-    map?: Map<string, MemoryLockData>;
+    map?: Map<string, ILockData>;
 };
 
 /**
@@ -32,10 +24,10 @@ export class MemoryLockAdapter implements ILockAdapter {
         NodeJS.Timeout | string | number
     >();
 
-    private readonly map: Map<string, MemoryLockData>;
+    private readonly map: Map<string, ILockData>;
 
     constructor(settings: MemoryLockAdapterSettings) {
-        const { rootGroup, map = new Map<string, MemoryLockData>() } = settings;
+        const { rootGroup, map = new Map<string, ILockData>() } = settings;
         this.map = map;
         this.group = rootGroup;
     }
@@ -59,7 +51,7 @@ export class MemoryLockAdapter implements ILockAdapter {
         if (hasNotKey) {
             this.map.set(key, {
                 owner,
-                expiresAt: ttl?.toEndDate() ?? null,
+                expiration: ttl?.toEndDate() ?? null,
             });
         }
         if (hasNotKey && ttl !== null) {
@@ -111,11 +103,11 @@ export class MemoryLockAdapter implements ILockAdapter {
         if (lock === undefined) {
             return null;
         }
-        const { expiresAt } = lock;
-        if (expiresAt === null) {
+        const { expiration } = lock;
+        if (expiration === null) {
             return null;
         }
-        return TimeSpan.fromDateRange(new Date(), expiresAt);
+        return TimeSpan.fromDateRange(new Date(), expiration);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
@@ -132,13 +124,13 @@ export class MemoryLockAdapter implements ILockAdapter {
         if (data.owner !== owner) {
             return false;
         }
-        if (data.expiresAt === null) {
+        if (data.expiration === null) {
             return true;
         }
 
         this.map.set(key, {
             ...data,
-            expiresAt: time.toEndDate(),
+            expiration: time.toEndDate(),
         });
         clearTimeout(this.timeoutMap.get(key));
         this.timeoutMap.set(
