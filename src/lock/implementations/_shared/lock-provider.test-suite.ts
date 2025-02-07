@@ -26,7 +26,7 @@ import {
 } from "@/lock/contracts/_module";
 import { type Promisable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
-import { delay } from "@/async/_module";
+import { delay, LazyPromise } from "@/async/_module";
 import type { ISerde } from "@/serde/contracts/_module";
 import { NoOpSerde } from "@/serde/implementations/_module";
 
@@ -82,7 +82,7 @@ export function lockProviderTestSuite(
                 expect(result).toBe("a");
                 expect(error).toBeNull();
             });
-            test("Should return null when lock is already accquired", async () => {
+            test("Should return null when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
                 const lock = lockProviderA.create(key, {
@@ -97,6 +97,23 @@ export function lockProviderTestSuite(
 
                 expect(result).toBeNull();
                 expect(error).toBeInstanceOf(KeyAlreadyAcquiredLockError);
+            });
+            test("Should work with LazyPromise", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                const [result, error] = await lock.run(
+                    new LazyPromise(async () => {
+                        await delay(TTL);
+                        return "a";
+                    }),
+                );
+
+                expect(result).toBe("a");
+                expect(error).toBeNull();
             });
         });
         describe("method: runOrFail", () => {
@@ -114,7 +131,7 @@ export function lockProviderTestSuite(
 
                 expect(result).toBe("a");
             });
-            test("Should throw KeyAlreadyAcquiredLockError when lock is already accquired", async () => {
+            test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
                 const lock = lockProviderA.create(key, {
@@ -131,6 +148,22 @@ export function lockProviderTestSuite(
                     KeyAlreadyAcquiredLockError,
                 );
             });
+            test("Should work with LazyPromise", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                const result = await lock.runOrFail(
+                    new LazyPromise(async () => {
+                        await delay(TTL);
+                        return "a";
+                    }),
+                );
+
+                expect(result).toBe("a");
+            });
         });
         describe("method: acquire", () => {
             test("Should return true when lock is available", async () => {
@@ -144,7 +177,7 @@ export function lockProviderTestSuite(
 
                 expect(result).toBe(true);
             });
-            test("Should return false when lock is already accquired", async () => {
+            test("Should return false when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
                 const lock = lockProviderA.create(key, {
@@ -197,7 +230,7 @@ export function lockProviderTestSuite(
 
                 await expect(result).resolves.toBeUndefined();
             });
-            test("Should throw KeyAlreadyAcquiredLockError when lock is already accquired", async () => {
+            test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
                 const lock = lockProviderA.create(key, {
@@ -1392,6 +1425,138 @@ export function lockProviderTestSuite(
 
             expect(resultA).toBe(false);
             expect(resultB).toBe(true);
+        });
+        test("method: addListener / dispatch", async () => {
+            let result_a: KeyAcquiredLockEvent | null = null;
+            const key = "a";
+            const lockA = lockProviderA.create(key);
+            await lockA.addListener(KeyAcquiredLockEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAcquiredLockEvent | null = null;
+            const lockB = lockProviderB.create(key);
+            await lockB.addListener(KeyAcquiredLockEvent, (event) => {
+                result_b = event;
+            });
+
+            await lockA.acquire();
+
+            expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: addListenerMany / dispatch", async () => {
+            let result_a: KeyAcquiredLockEvent | null = null;
+            const key = "a";
+            const lockA = lockProviderA.create(key);
+            await lockA.addListenerMany([KeyAcquiredLockEvent], (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAcquiredLockEvent | null = null;
+            const lockB = lockProviderB.create(key);
+            await lockB.addListenerMany([KeyAcquiredLockEvent], (event) => {
+                result_b = event;
+            });
+
+            await lockA.acquire();
+
+            expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: removeListener / addListener / dispatch", async () => {
+            let result_a: KeyAcquiredLockEvent | null = null;
+            const key = "a";
+            const lockA = lockProviderA.create(key);
+            await lockA.addListener(KeyAcquiredLockEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAcquiredLockEvent | null = null;
+            const listenerB = (event: KeyAcquiredLockEvent) => {
+                result_b = event;
+            };
+            const lockB = lockProviderB.create(key);
+            await lockB.addListener(KeyAcquiredLockEvent, listenerB);
+            await lockB.removeListener(KeyAcquiredLockEvent, listenerB);
+
+            await lockA.acquire();
+            await lockB.acquire();
+
+            expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: removeListenerMany / addListener / dispatch", async () => {
+            let result_a: KeyAcquiredLockEvent | null = null;
+            const key = "a";
+            const lockA = lockProviderA.create(key);
+            await lockA.addListener(KeyAcquiredLockEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAcquiredLockEvent | null = null;
+            const listenerB = (event: KeyAcquiredLockEvent) => {
+                result_b = event;
+            };
+            const lockB = lockProviderB.create(key);
+            await lockB.addListener(KeyAcquiredLockEvent, listenerB);
+            await lockB.removeListenerMany([KeyAcquiredLockEvent], listenerB);
+
+            await lockA.acquire();
+            await lockB.acquire();
+
+            expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: subscribe / dispatch", async () => {
+            let result_a: KeyAcquiredLockEvent | null = null;
+            const key = "a";
+            const lockA = lockProviderA.create(key);
+            await lockA.subscribe(KeyAcquiredLockEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAcquiredLockEvent | null = null;
+            const listenerB = (event: KeyAcquiredLockEvent) => {
+                result_b = event;
+            };
+            const lockB = lockProviderB.create(key);
+            const unsubscribe = await lockB.subscribe(
+                KeyAcquiredLockEvent,
+                listenerB,
+            );
+            await unsubscribe();
+
+            await lockA.acquire();
+            await lockB.acquire();
+
+            expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: subscribeMany / dispatch", async () => {
+            let result_a: KeyAcquiredLockEvent | null = null;
+            const key = "a";
+            const lockA = lockProviderA.create(key);
+            await lockA.subscribeMany([KeyAcquiredLockEvent], (event) => {
+                result_a = event;
+            });
+
+            let result_b: KeyAcquiredLockEvent | null = null;
+            const listenerB = (event: KeyAcquiredLockEvent) => {
+                result_b = event;
+            };
+            const lockB = lockProviderB.create(key);
+            const unsubscribe = await lockB.subscribeMany(
+                [KeyAcquiredLockEvent],
+                listenerB,
+            );
+            await unsubscribe();
+
+            await lockA.acquire();
+            await lockB.acquire();
+
+            expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
+            expect(result_b).toBeNull();
         });
     });
     describe("Serde tests:", () => {

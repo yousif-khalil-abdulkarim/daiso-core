@@ -1690,10 +1690,20 @@ describe("class: ListCollection", () => {
                 });
             expect(item).toBe(1);
         });
-        test("Should return default value when item not found", () => {
-            const collection = new ListCollection([1, 2, 3, 4, 5]),
-                item = collection.firstOr("a", (item) => item === 6);
-            expect(item).toBe("a");
+        describe("Should return default value when item not found", () => {
+            test("Value", () => {
+                const collection = new ListCollection([1, 2, 3, 4, 5]),
+                    item = collection.firstOr("a", (item) => item === 6);
+                expect(item).toBe("a");
+            });
+            test("Function", () => {
+                const collection = new ListCollection([1, 2, 3, 4, 5]),
+                    item = collection.firstOr(
+                        () => "a",
+                        (item) => item === 6,
+                    );
+                expect(item).toBe("a");
+            });
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
@@ -1875,10 +1885,20 @@ describe("class: ListCollection", () => {
                 });
             expect(item).toBe(5);
         });
-        test("Should return default value when item not found", () => {
-            const collection = new ListCollection([1, 2, 3, 4, 5]),
-                item = collection.lastOr("a", (item) => item === 6);
-            expect(item).toBe("a");
+        describe("Should return default value when item not found", () => {
+            test("Value", () => {
+                const collection = new ListCollection([1, 2, 3, 4, 5]),
+                    item = collection.lastOr("a", (item) => item === 6);
+                expect(item).toBe("a");
+            });
+            test("Function", () => {
+                const collection = new ListCollection([1, 2, 3, 4, 5]),
+                    item = collection.lastOr(
+                        () => "a",
+                        (item) => item === 6,
+                    );
+                expect(item).toBe("a");
+            });
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
@@ -2014,15 +2034,35 @@ describe("class: ListCollection", () => {
                 item = collection.beforeOr(-1, (item) => item === "c");
             expect(item).toBe("b");
         });
-        test(`Should return default value when searching for string "a" of ["a", "b", "c"]`, () => {
-            const collection = new ListCollection(["a", "b", "c"]),
-                item = collection.beforeOr(-1, (item) => item === "a");
-            expect(item).toBe(-1);
+        describe(`Should return default value when searching for string "a" of ["a", "b", "c"]`, () => {
+            test("Value", () => {
+                const collection = new ListCollection(["a", "b", "c"]),
+                    item = collection.beforeOr(-1, (item) => item === "a");
+                expect(item).toBe(-1);
+            });
+            test("Fucntion", () => {
+                const collection = new ListCollection(["a", "b", "c"]),
+                    item = collection.beforeOr(
+                        () => -1,
+                        (item) => item === "a",
+                    );
+                expect(item).toBe(-1);
+            });
         });
-        test(`Should return default value when searching for string "d" of ["a", "b", "c"]`, () => {
-            const collection = new ListCollection(["a", "b", "c"]),
-                item = collection.beforeOr(-1, (item) => item === "d");
-            expect(item).toBe(-1);
+        describe(`Should return default value when searching for string "d" of ["a", "b", "c"]`, () => {
+            test("Value", () => {
+                const collection = new ListCollection(["a", "b", "c"]),
+                    item = collection.beforeOr(-1, (item) => item === "d");
+                expect(item).toBe(-1);
+            });
+            test("Function", () => {
+                const collection = new ListCollection(["a", "b", "c"]),
+                    item = collection.beforeOr(
+                        () => -1,
+                        (item) => item === "d",
+                    );
+                expect(item).toBe(-1);
+            });
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
@@ -2128,15 +2168,35 @@ describe("class: ListCollection", () => {
                 item = collection.afterOr(-1, (item) => item === "a");
             expect(item).toBe("b");
         });
-        test(`Should return default value when searching for string "c" of ["a", "b", "c"]`, () => {
-            const collection = new ListCollection(["a", "b", "c"]),
-                item = collection.afterOr(-1, (item) => item === "c");
-            expect(item).toBe(-1);
+        describe(`Should return default value when searching for string "c" of ["a", "b", "c"]`, () => {
+            test("Value", () => {
+                const collection = new ListCollection(["a", "b", "c"]),
+                    item = collection.afterOr(-1, (item) => item === "c");
+                expect(item).toBe(-1);
+            });
+            test("Function", () => {
+                const collection = new ListCollection(["a", "b", "c"]),
+                    item = collection.afterOr(
+                        () => -1,
+                        (item) => item === "c",
+                    );
+                expect(item).toBe(-1);
+            });
         });
-        test(`Should return default value when searching for string "d" of ["a", "b", "c"]`, () => {
-            const collection = new ListCollection(["a", "b", "c"]),
-                item = collection.afterOr(-1, (item) => item === "d");
-            expect(item).toBe(-1);
+        describe(`Should return default value when searching for string "d" of ["a", "b", "c"]`, () => {
+            test("Value", () => {
+                const collection = new ListCollection(["a", "b", "c"]),
+                    item = collection.afterOr(-1, (item) => item === "d");
+                expect(item).toBe(-1);
+            });
+            test("Function", () => {
+                const collection = new ListCollection(["a", "b", "c"]),
+                    item = collection.afterOr(
+                        () => -1,
+                        (item) => item === "d",
+                    );
+                expect(item).toBe(-1);
+            });
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),

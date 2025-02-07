@@ -7,6 +7,7 @@ import {
     MultipleItemsFoundCollectionError,
 } from "@/collection/contracts/_module";
 import { AsyncIterableCollection } from "@/collection/implementations/async-iterable-collection/_module";
+import { LazyPromise } from "@/_module";
 
 describe("class: AsyncIterableCollection", () => {
     describe("method: filter", () => {
@@ -2292,15 +2293,37 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should return first item when found", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                item = await collection.firstOr({
-                    defaultValue: "a",
-                });
+                item = await collection.firstOr(-1);
             expect(item).toBe(1);
         });
-        test("Should return default value when item not found", async () => {
-            const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                item = await collection.firstOr("a", (item) => item === 6);
-            expect(item).toBe("a");
+        describe("Should return default value when item not found", () => {
+            test("Value", async () => {
+                const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
+                    item = await collection.firstOr("a", (item) => item === 6);
+                expect(item).toBe("a");
+            });
+            test("Function", async () => {
+                const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
+                    item = await collection.firstOr(
+                        () => "a",
+                        (item) => item === 6,
+                    );
+                expect(item).toBe("a");
+            });
+            test("Async function", async () => {
+                const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
+                    item = await collection.firstOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        async () => "a",
+                        (item) => item === 6,
+                    );
+                expect(item).toBe("a");
+            });
+            test("LazyPromise", async () => {
+                const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
+                    item = await collection.firstOr("a", (item) => item === 6);
+                expect(item).toBe("a");
+            });
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
@@ -2313,18 +2336,71 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should return the same value when called more than 1 times", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-            expect(
-                await collection.firstOr({
-                    defaultValue: "a",
-                }),
-            ).toBe(1);
-            expect(
-                await collection.firstOr({
-                    defaultValue: "a",
-                }),
-            ).toBe(1);
+            expect(await collection.firstOr(-1)).toBe(1);
+            expect(await collection.firstOr(-1)).toBe(1);
+        });
+        test("Should work with predicate function", async () => {
+            type Person = {
+                name: string;
+                age: number;
+            };
+            const persons: Person[] = [
+                    {
+                        name: "Joe",
+                        age: 20,
+                    },
+                    {
+                        name: "Jhon",
+                        age: 23,
+                    },
+                    {
+                        name: "Joe",
+                        age: 30,
+                    },
+                    {
+                        name: "Jhon",
+                        age: 50,
+                    },
+                ],
+                collection = new AsyncIterableCollection(persons),
+                item = await collection.firstOr(
+                    null,
+                    (person) => person.name === "Joe",
+                );
+            expect(item).toEqual(persons[0]);
         });
         test("Should work with async predicate function", async () => {
+            type Person = {
+                name: string;
+                age: number;
+            };
+            const persons: Person[] = [
+                    {
+                        name: "Joe",
+                        age: 20,
+                    },
+                    {
+                        name: "Jhon",
+                        age: 23,
+                    },
+                    {
+                        name: "Joe",
+                        age: 30,
+                    },
+                    {
+                        name: "Jhon",
+                        age: 50,
+                    },
+                ],
+                collection = new AsyncIterableCollection(persons),
+                item = await collection.firstOr(
+                    null,
+                    // eslint-disable-next-line @typescript-eslint/require-await
+                    async (person) => person.name === "Joe",
+                );
+            expect(item).toEqual(persons[0]);
+        });
+        test("Should work with LazyPromise function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2568,15 +2644,41 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should return last item when found", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                item = await collection.lastOr({
-                    defaultValue: "a",
-                });
+                item = await collection.lastOr(-1);
             expect(item).toBe(5);
         });
-        test("Should return default value when item not found", async () => {
-            const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                item = await collection.lastOr("a", (item) => item === 6);
-            expect(item).toBe("a");
+        describe("Should return default value when item not found", () => {
+            test("Value", async () => {
+                const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
+                    item = await collection.lastOr("a", (item) => item === 6);
+                expect(item).toBe("a");
+            });
+            test("Function", async () => {
+                const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
+                    item = await collection.lastOr(
+                        () => "a",
+                        (item) => item === 6,
+                    );
+                expect(item).toBe("a");
+            });
+            test("Async function", async () => {
+                const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
+                    item = await collection.lastOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        async () => "a",
+                        (item) => item === 6,
+                    );
+                expect(item).toBe("a");
+            });
+            test("LazyPromise", async () => {
+                const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
+                    item = await collection.lastOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        new LazyPromise(async () => "a"),
+                        (item) => item === 6,
+                    );
+                expect(item).toBe("a");
+            });
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
@@ -2589,16 +2691,8 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should return the same value when called more than 1 times", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-            expect(
-                await collection.lastOr({
-                    defaultValue: "a",
-                }),
-            ).toBe(5);
-            expect(
-                await collection.lastOr({
-                    defaultValue: "a",
-                }),
-            ).toBe(5);
+            expect(await collection.lastOr(-1)).toBe(5);
+            expect(await collection.lastOr(-1)).toBe(5);
         });
         test("Should work with async predicate function", async () => {
             type Person = {
@@ -2781,15 +2875,77 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.beforeOr(-1, (item) => item === "c");
             expect(item).toBe("b");
         });
-        test(`Should return default value when searching for string "a" of ["a", "b", "c"]`, async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                item = await collection.beforeOr(-1, (item) => item === "a");
-            expect(item).toBe(-1);
+        describe(`Should return default value when searching for string "a" of ["a", "b", "c"]`, () => {
+            test("Value", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.beforeOr(
+                        -1,
+                        (item) => item === "a",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("Function", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.beforeOr(
+                        () => -1,
+                        (item) => item === "a",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("Async function", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.beforeOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        async () => -1,
+                        (item) => item === "a",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("LazyPromise", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.beforeOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        new LazyPromise(async () => -1),
+                        (item) => item === "a",
+                    );
+                expect(item).toBe(-1);
+            });
         });
-        test(`Should return default value when searching for string "d" of ["a", "b", "c"]`, async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                item = await collection.beforeOr(-1, (item) => item === "d");
-            expect(item).toBe(-1);
+        describe(`Should return default value when searching for string "d" of ["a", "b", "c"]`, () => {
+            test("Value", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.beforeOr(
+                        -1,
+                        (item) => item === "d",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("Function", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.beforeOr(
+                        () => -1,
+                        (item) => item === "d",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("Async function", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.beforeOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        async () => -1,
+                        (item) => item === "d",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("LazyPromise", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.beforeOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        new LazyPromise(async () => -1),
+                        (item) => item === "d",
+                    );
+                expect(item).toBe(-1);
+            });
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
@@ -2926,15 +3082,71 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.afterOr(-1, (item) => item === "a");
             expect(item).toBe("b");
         });
-        test(`Should return default value when searching for string "c" of ["a", "b", "c"]`, async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                item = await collection.afterOr(-1, (item) => item === "c");
-            expect(item).toBe(-1);
+        describe(`Should return default value when searching for string "c" of ["a", "b", "c"]`, () => {
+            test("Value", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.afterOr(-1, (item) => item === "c");
+                expect(item).toBe(-1);
+            });
+            test("Function", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.afterOr(
+                        () => -1,
+                        (item) => item === "c",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("Async function", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.afterOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        async () => -1,
+                        (item) => item === "c",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("LazyPromise", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.afterOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        new LazyPromise(async () => -1),
+                        (item) => item === "c",
+                    );
+                expect(item).toBe(-1);
+            });
         });
-        test(`Should return default value when searching for string "d" of ["a", "b", "c"]`, async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                item = await collection.afterOr(-1, (item) => item === "d");
-            expect(item).toBe(-1);
+        describe(`Should return default value when searching for string "d" of ["a", "b", "c"]`, () => {
+            test("Value", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.afterOr(-1, (item) => item === "d");
+                expect(item).toBe(-1);
+            });
+            test("Function", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.afterOr(
+                        () => -1,
+                        (item) => item === "d",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("Async function", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.afterOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        async () => -1,
+                        (item) => item === "d",
+                    );
+                expect(item).toBe(-1);
+            });
+            test("LazyPromise", async () => {
+                const collection = new AsyncIterableCollection(["a", "b", "c"]),
+                    item = await collection.afterOr(
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        new LazyPromise(async () => -1),
+                        (item) => item === "d",
+                    );
+                expect(item).toBe(-1);
+            });
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),

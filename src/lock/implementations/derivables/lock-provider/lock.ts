@@ -114,6 +114,9 @@ export class Lock implements ILock {
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
         return this.createLayPromise(
             async (): Promise<Result<TValue, KeyAlreadyAcquiredLockError>> => {
+                if (typeof asyncFn === "function") {
+                    asyncFn = new LazyPromise(asyncFn);
+                }
                 try {
                     const hasAquired = await this.acquire();
                     if (!hasAquired) {
@@ -122,11 +125,10 @@ export class Lock implements ILock {
                             new KeyAlreadyAcquiredLockError("!!__message__!!"),
                         ];
                     }
-                    const fnPromise = new LazyPromise(asyncFn);
                     if (shouldTimeout) {
-                        fnPromise.setTimeout(this.ttl);
+                        asyncFn.setTimeout(this.ttl);
                     }
-                    return [await fnPromise, null];
+                    return [await asyncFn, null];
                 } finally {
                     await this.release();
                 }
@@ -140,12 +142,14 @@ export class Lock implements ILock {
     ): LazyPromise<TValue> {
         return this.createLayPromise(async () => {
             try {
-                await this.acquireOrFail();
-                const fnPromise = new LazyPromise(asyncFn);
-                if (shouldTimeout) {
-                    fnPromise.setTimeout(this.ttl);
+                if (typeof asyncFn === "function") {
+                    asyncFn = new LazyPromise(asyncFn);
                 }
-                return await fnPromise;
+                await this.acquireOrFail();
+                if (shouldTimeout) {
+                    asyncFn.setTimeout(this.ttl);
+                }
+                return await asyncFn;
             } finally {
                 await this.release();
             }

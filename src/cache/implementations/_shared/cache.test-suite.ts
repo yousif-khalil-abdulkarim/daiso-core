@@ -23,7 +23,7 @@ import {
 } from "@/cache/contracts/_module";
 import { type Promisable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
-import { delay } from "@/async/_module";
+import { delay, LazyPromise } from "@/async/_module";
 
 /**
  * @group Utilities
@@ -235,34 +235,52 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(await cacheA.getOr("a", -1)).toBe(1);
             });
             describe("Should return default value when key doesnt exists", () => {
-                test("Eager", async () => {
+                test("Value", async () => {
                     expect(await cacheA.getOr("a", -1)).toBe(-1);
                 });
-                test("Lazy", async () => {
+                test("Function", async () => {
                     expect(await cacheA.getOr("a", () => -1)).toBe(-1);
                 });
-                test("Async lazy", async () => {
+                test("Async function", async () => {
                     expect(
                         await cacheA.getOr("a", () => Promise.resolve(-1)),
                     ).toBe(-1);
                 });
+                test("LazyPromise", async () => {
+                    expect(
+                        await cacheA.getOr(
+                            "a",
+                            new LazyPromise(() => Promise.resolve(-1)),
+                        ),
+                    ).toBe(-1);
+                });
             });
             describe("Should return default value when key is expired", () => {
-                test("Eager", async () => {
+                test("Value", async () => {
                     await cacheA.add("a", 1, TTL);
                     await delay(TTL);
                     expect(await cacheA.getOr("a", -1)).toBe(-1);
                 });
-                test("Lazy", async () => {
+                test("Function", async () => {
                     await cacheA.add("a", 1, TTL);
                     await delay(TTL);
                     expect(await cacheA.getOr("a", () => -1)).toBe(-1);
                 });
-                test("Async lazy", async () => {
+                test("Async function", async () => {
                     await cacheA.add("a", 1, TTL);
                     await delay(TTL);
                     expect(
                         await cacheA.getOr("a", () => Promise.resolve(-1)),
+                    ).toBe(-1);
+                });
+                test("LazyPromise", async () => {
+                    await cacheA.add("a", 1, TTL);
+                    await delay(TTL);
+                    expect(
+                        await cacheA.getOr(
+                            "a",
+                            new LazyPromise(() => Promise.resolve(-1)),
+                        ),
                     ).toBe(-1);
                 });
             });
@@ -297,13 +315,13 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 });
             });
             describe("Should return only default values when all keys doesnt exists", () => {
-                test("Eager", async () => {
+                test("Value", async () => {
                     expect(await cacheA.getOrMany({ a: -1, b: -1 })).toEqual({
                         a: -1,
                         b: -1,
                     });
                 });
-                test("Lazy", async () => {
+                test("Function", async () => {
                     expect(
                         await cacheA.getOrMany({ a: () => -1, b: () => -1 }),
                     ).toEqual({
@@ -311,7 +329,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                         b: -1,
                     });
                 });
-                test("Async lazy", async () => {
+                test("Async function", async () => {
                     expect(
                         await cacheA.getOrMany({
                             a: () => Promise.resolve(-1),
@@ -322,9 +340,20 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                         b: -1,
                     });
                 });
+                test("LazyPromise", async () => {
+                    expect(
+                        await cacheA.getOrMany({
+                            a: new LazyPromise(() => Promise.resolve(-1)),
+                            b: new LazyPromise(() => Promise.resolve(-1)),
+                        }),
+                    ).toEqual({
+                        a: -1,
+                        b: -1,
+                    });
+                });
             });
             describe("Should return default value when key is expired", () => {
-                test("Eager", async () => {
+                test("Value", async () => {
                     await cacheA.add("a", 1, TTL);
                     await delay(TTL);
                     expect(
@@ -335,7 +364,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                         a: -1,
                     });
                 });
-                test("Lazy", async () => {
+                test("Function", async () => {
                     await cacheA.add("a", 1, TTL);
                     await delay(TTL);
                     expect(
@@ -346,12 +375,23 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                         a: -1,
                     });
                 });
-                test("Async lazy", async () => {
+                test("Async function", async () => {
                     await cacheA.add("a", 1, TTL);
                     await delay(TTL);
                     expect(
                         await cacheA.getOrMany({
                             a: () => Promise.resolve(-1),
+                        }),
+                    ).toEqual({
+                        a: -1,
+                    });
+                });
+                test("LazyPromise", async () => {
+                    await cacheA.add("a", 1, TTL);
+                    await delay(TTL);
+                    expect(
+                        await cacheA.getOrMany({
+                            a: new LazyPromise(() => Promise.resolve(-1)),
                         }),
                     ).toEqual({
                         a: -1,
@@ -792,36 +832,52 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(await cacheA.getOrAdd("a", -1)).toBe(1);
             });
             describe("Should persist insertion when key doesnt exists", () => {
-                test("Eager", async () => {
+                test("Value", async () => {
                     await cacheA.getOrAdd("a", -1);
                     expect(await cacheA.get("a")).toBe(-1);
                 });
-                test("Lazy", async () => {
+                test("Function", async () => {
                     await cacheA.getOrAdd("a", () => -1);
                     expect(await cacheA.get("a")).toBe(-1);
                 });
-                test("Async lazy", async () => {
+                test("Async function", async () => {
                     await cacheA.getOrAdd("a", () => Promise.resolve(-1));
+                    expect(await cacheA.get("a")).toBe(-1);
+                });
+                test("LazyPromise", async () => {
+                    await cacheA.getOrAdd(
+                        "a",
+                        new LazyPromise(() => Promise.resolve(-1)),
+                    );
                     expect(await cacheA.get("a")).toBe(-1);
                 });
             });
             describe("Should persist insertion when key is expired", () => {
-                test("Eager", async () => {
+                test("Value", async () => {
                     await cacheA.add("a", 1, TTL);
                     await delay(TTL);
                     await cacheA.getOrAdd("a", -1);
                     expect(await cacheA.get("a")).toBe(-1);
                 });
-                test("Lazy", async () => {
+                test("Function", async () => {
                     await cacheA.add("a", 1, TTL);
                     await delay(TTL);
                     await cacheA.getOrAdd("a", () => -1);
                     expect(await cacheA.get("a")).toBe(-1);
                 });
-                test("Async lazy", async () => {
+                test("Async function", async () => {
                     await cacheA.add("a", 1, TTL);
                     await delay(TTL);
                     await cacheA.getOrAdd("a", () => Promise.resolve(-1));
+                    expect(await cacheA.get("a")).toBe(-1);
+                });
+                test("LazyPromise", async () => {
+                    await cacheA.add("a", 1, TTL);
+                    await delay(TTL);
+                    await cacheA.getOrAdd(
+                        "a",
+                        new LazyPromise(() => Promise.resolve(-1)),
+                    );
                     expect(await cacheA.get("a")).toBe(-1);
                 });
             });
