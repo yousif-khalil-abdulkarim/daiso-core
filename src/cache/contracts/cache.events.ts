@@ -80,6 +80,17 @@ export class KeysClearedCacheEvent extends BaseEvent<{
 /**
  * @group Events
  */
+export class UnexpectedCacheErrorEvent extends BaseEvent<{
+    group: string;
+    key?: string;
+    value?: unknown;
+    method: string;
+    error: unknown;
+}> {}
+
+/**
+ * @group Events
+ */
 export type CacheEvents<TType = unknown> =
     | KeyFoundCacheEvent<TType>
     | KeyNotFoundCacheEvent
@@ -88,7 +99,8 @@ export type CacheEvents<TType = unknown> =
     | KeyRemovedCacheEvent
     | KeyIncrementedCacheEvent
     | KeyDecrementedCacheEvent
-    | KeysClearedCacheEvent;
+    | KeysClearedCacheEvent
+    | UnexpectedCacheErrorEvent;
 
 /**
  * The <i>registerCacheEvents</i> function registers all <i>{@link IGroupableCache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
@@ -107,6 +119,7 @@ export function registerCacheEvents(serde: OneOrMore<IFlexibleSerde>): void {
             .registerEvent(KeyRemovedCacheEvent)
             .registerEvent(KeyIncrementedCacheEvent)
             .registerEvent(KeyDecrementedCacheEvent)
-            .registerEvent(KeysClearedCacheEvent);
+            .registerEvent(KeysClearedCacheEvent)
+            .registerEvent(UnexpectedCacheErrorEvent);
     }
 }
