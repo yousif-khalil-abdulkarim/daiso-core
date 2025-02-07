@@ -12,6 +12,7 @@ import {
     KeyIncrementedCacheEvent,
     KeyDecrementedCacheEvent,
     KeysClearedCacheEvent,
+    UnexpectedCacheErrorEvent,
     type ICache,
     type ICacheAdapter,
 } from "@/cache/contracts/_module";
@@ -43,6 +44,10 @@ import type {
     EventClass,
     EventInstance,
 } from "@/event-bus/contracts/_module";
+import {
+    EventBus,
+    NoOpEventBusAdapter,
+} from "@/event-bus/implementations/_module";
 
 /**
  * @group Derivables
@@ -53,7 +58,7 @@ export type CacheSettings = {
     /**
      * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
      */
-    eventBus: IGroupableEventBus<any>;
+    eventBus?: IGroupableEventBus<any>;
 
     /**
      * You can decide the default ttl value. If null is passed then no ttl will be used by default.
@@ -129,7 +134,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     constructor(settings: CacheSettings) {
         const {
             adapter,
-            eventBus: groupdEventBus,
+            eventBus: groupdEventBus = new EventBus({
+                adapter: new NoOpEventBusAdapter(),
+            }),
             defaultTtl = null,
             retryAttempts = null,
             backoffPolicy = null,
@@ -154,83 +161,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             .setBackoffPolicy(this.backoffPolicy)
             .setRetryPolicy(this.retryPolicy)
             .setTimeout(this.timeout);
-    }
-
-    private createKeyFoundEvent(
-        key: string,
-        value: TType,
-    ): KeyFoundCacheEvent<TType> {
-        return new KeyFoundCacheEvent({
-            group: this.getGroup(),
-            key,
-            value,
-        });
-    }
-
-    private createKeyNotFoundEvent(key: string): KeyNotFoundCacheEvent {
-        return new KeyNotFoundCacheEvent({
-            group: this.getGroup(),
-            key,
-        });
-    }
-
-    private createKeyAddedEvent(
-        key: string,
-        value: TType,
-        ttl: TimeSpan | null,
-    ): KeyAddedCacheEvent {
-        return new KeyAddedCacheEvent({
-            group: this.getGroup(),
-            key,
-            value,
-            ttl,
-        });
-    }
-
-    private createKeyUpdatedEvent(
-        key: string,
-        value: TType,
-    ): KeyUpdatedCacheEvent {
-        return new KeyUpdatedCacheEvent({
-            group: this.getGroup(),
-            key,
-            value,
-        });
-    }
-
-    private createKeyRemovedEvent(key: string): KeyRemovedCacheEvent {
-        return new KeyRemovedCacheEvent({
-            group: this.getGroup(),
-            key,
-        });
-    }
-
-    private createKeysClearedEvent(): KeysClearedCacheEvent {
-        return new KeysClearedCacheEvent({
-            group: this.getGroup(),
-        });
-    }
-
-    private createKeyIncrementedEvent(
-        key: string,
-        value: number,
-    ): KeyIncrementedCacheEvent {
-        return new KeyIncrementedCacheEvent({
-            group: this.getGroup(),
-            key,
-            value,
-        });
-    }
-
-    private createKeyDecrementedEvent(
-        key: string,
-        value: number,
-    ): KeyDecrementedCacheEvent {
-        return new KeyDecrementedCacheEvent({
-            group: this.getGroup(),
-            key,
-            value,
-        });
     }
 
     addListener<TEventClass extends EventClass<CacheEvents>>(
@@ -300,15 +230,42 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     get(key: string): LazyPromise<TType | null> {
         return this.createLayPromise(async () => {
-            const value = await this.adapter.get(key);
-            if (value === null) {
-                await this.eventBus.dispatch(this.createKeyNotFoundEvent(key));
-            } else {
-                await this.eventBus.dispatch(
-                    this.createKeyFoundEvent(key, value),
-                );
+            try {
+                const value = await this.adapter.get(key);
+                if (value === null) {
+                    this.eventBus
+                        .dispatch(
+                            new KeyNotFoundCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                            }),
+                        )
+                        .defer();
+                } else {
+                    this.eventBus
+                        .dispatch(
+                            new KeyFoundCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                                value,
+                            }),
+                        )
+                        .defer();
+                }
+                return value;
+            } catch (error: unknown) {
+                this.eventBus
+                    .dispatch(
+                        new UnexpectedCacheErrorEvent({
+                            group: this.getGroup(),
+                            key,
+                            method: this.get.name,
+                            error,
+                        }),
+                    )
+                    .defer();
+                throw error;
             }
-            return value;
         });
     }
 
@@ -321,27 +278,77 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasAdded = await this.adapter.add(key, value, ttl);
-            if (hasAdded) {
-                await this.eventBus.dispatch(
-                    this.createKeyAddedEvent(key, value, ttl),
-                );
+            try {
+                const hasAdded = await this.adapter.add(key, value, ttl);
+                if (hasAdded) {
+                    this.eventBus
+                        .dispatch(
+                            new KeyAddedCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                                value,
+                                ttl,
+                            }),
+                        )
+                        .defer();
+                }
+                return hasAdded;
+            } catch (error: unknown) {
+                this.eventBus
+                    .dispatch(
+                        new UnexpectedCacheErrorEvent({
+                            group: this.getGroup(),
+                            key,
+                            value,
+                            method: this.add.name,
+                            error,
+                        }),
+                    )
+                    .defer();
+                throw error;
             }
-            return hasAdded;
         });
     }
 
     update(key: string, value: TType): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasUpdated = await this.adapter.update(key, value);
-            if (hasUpdated) {
-                await this.eventBus.dispatch(
-                    this.createKeyUpdatedEvent(key, value),
-                );
-            } else {
-                await this.eventBus.dispatch(this.createKeyNotFoundEvent(key));
+            try {
+                const hasUpdated = await this.adapter.update(key, value);
+                if (hasUpdated) {
+                    this.eventBus
+                        .dispatch(
+                            new KeyUpdatedCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                                value,
+                            }),
+                        )
+                        .defer();
+                } else {
+                    this.eventBus
+                        .dispatch(
+                            new KeyNotFoundCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                            }),
+                        )
+                        .defer();
+                }
+                return hasUpdated;
+            } catch (error: unknown) {
+                this.eventBus
+                    .dispatch(
+                        new UnexpectedCacheErrorEvent({
+                            group: this.getGroup(),
+                            key,
+                            value,
+                            method: this.update.name,
+                            error,
+                        }),
+                    )
+                    .defer();
+                throw error;
             }
-            return hasUpdated;
         });
     }
 
@@ -354,29 +361,85 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasUpdated = await this.adapter.put(key, value, ttl);
-            if (hasUpdated) {
-                await this.eventBus.dispatch(
-                    this.createKeyUpdatedEvent(key, value),
-                );
-            } else {
-                await this.eventBus.dispatch(
-                    this.createKeyAddedEvent(key, value, ttl),
-                );
+            try {
+                const hasUpdated = await this.adapter.put(key, value, ttl);
+                if (hasUpdated) {
+                    this.eventBus
+                        .dispatch(
+                            new KeyUpdatedCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                                value,
+                            }),
+                        )
+                        .defer();
+                } else {
+                    this.eventBus
+                        .dispatch(
+                            new KeyAddedCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                                value,
+                                ttl,
+                            }),
+                        )
+                        .defer();
+                }
+                return hasUpdated;
+            } catch (error: unknown) {
+                this.eventBus
+                    .dispatch(
+                        new UnexpectedCacheErrorEvent({
+                            group: this.getGroup(),
+                            key,
+                            value,
+                            method: this.put.name,
+                            error,
+                        }),
+                    )
+                    .defer();
+                throw error;
             }
-            return hasUpdated;
         });
     }
 
     remove(key: string): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasRemoved = await this.adapter.remove(key);
-            if (hasRemoved) {
-                await this.eventBus.dispatch(this.createKeyRemovedEvent(key));
-            } else {
-                await this.eventBus.dispatch(this.createKeyNotFoundEvent(key));
+            try {
+                const hasRemoved = await this.adapter.remove(key);
+                if (hasRemoved) {
+                    this.eventBus
+                        .dispatch(
+                            new KeyRemovedCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                            }),
+                        )
+                        .defer();
+                } else {
+                    this.eventBus
+                        .dispatch(
+                            new KeyNotFoundCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                            }),
+                        )
+                        .defer();
+                }
+                return hasRemoved;
+            } catch (error: unknown) {
+                this.eventBus
+                    .dispatch(
+                        new UnexpectedCacheErrorEvent({
+                            group: this.getGroup(),
+                            key,
+                            method: this.remove.name,
+                            error,
+                        }),
+                    )
+                    .defer();
+                throw error;
             }
-            return hasRemoved;
         });
     }
 
@@ -385,29 +448,81 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         value = 1 as Extract<TType, number>,
     ): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
-            const hasUpdated = await this.adapter.increment(key, value);
-            if (hasUpdated) {
-                if (value > 0) {
-                    await this.eventBus.dispatch(
-                        this.createKeyIncrementedEvent(key, value),
-                    );
+            try {
+                const hasUpdated = await this.adapter.increment(key, value);
+                if (hasUpdated && value > 0) {
+                    this.eventBus
+                        .dispatch(
+                            new KeyIncrementedCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                                value,
+                            }),
+                        )
+                        .defer();
                 }
-                if (value < 0) {
-                    await this.eventBus.dispatch(
-                        this.createKeyDecrementedEvent(key, -value),
-                    );
+                if (hasUpdated && value < 0) {
+                    this.eventBus
+                        .dispatch(
+                            new KeyDecrementedCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                                value: -value,
+                            }),
+                        )
+                        .defer();
                 }
-            } else {
-                await this.eventBus.dispatch(this.createKeyNotFoundEvent(key));
+                if (!hasUpdated) {
+                    this.eventBus
+                        .dispatch(
+                            new KeyNotFoundCacheEvent({
+                                group: this.getGroup(),
+                                key,
+                            }),
+                        )
+                        .defer();
+                }
+                return hasUpdated;
+            } catch (error: unknown) {
+                this.eventBus
+                    .dispatch(
+                        new UnexpectedCacheErrorEvent({
+                            group: this.getGroup(),
+                            key,
+                            value,
+                            method: this.increment.name,
+                            error,
+                        }),
+                    )
+                    .defer();
+                throw error;
             }
-            return hasUpdated;
         });
     }
 
     clear(): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            await this.adapter.clear();
-            await this.eventBus.dispatch(this.createKeysClearedEvent());
+            try {
+                await this.adapter.clear();
+                this.eventBus
+                    .dispatch(
+                        new KeysClearedCacheEvent({
+                            group: this.getGroup(),
+                        }),
+                    )
+                    .defer();
+            } catch (error: unknown) {
+                this.eventBus
+                    .dispatch(
+                        new UnexpectedCacheErrorEvent({
+                            group: this.getGroup(),
+                            method: this.clear.name,
+                            error,
+                        }),
+                    )
+                    .defer();
+                throw error;
+            }
         });
     }
 
