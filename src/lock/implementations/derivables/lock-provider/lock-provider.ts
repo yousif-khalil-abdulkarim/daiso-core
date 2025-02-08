@@ -20,12 +20,19 @@ import {
     type ILockProvider,
     type ILockAdapter,
 } from "@/lock/contracts/_module";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
+import type { BackoffPolicy, LazyPromise, RetryPolicy } from "@/async/_module";
 import {
     Lock,
     type ISerializedLock,
 } from "@/lock/implementations/derivables/lock-provider/lock";
-import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
+import type {
+    EventClass,
+    EventInstance,
+    IEventBus,
+    IGroupableEventBus,
+    Listener,
+    Unsubscribe,
+} from "@/event-bus/contracts/_module";
 import {
     EventBus,
     NoOpEventBusAdapter,
@@ -139,6 +146,7 @@ export class LockProvider
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
     private readonly eventBus: IGroupableEventBus<LockEvents>;
+    private readonly lockProviderEventBus: IEventBus<LockEvents>;
 
     get name(): string {
         return Lock.name;
@@ -171,6 +179,56 @@ export class LockProvider
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
         this.eventBus = eventBus;
+        this.lockProviderEventBus = eventBus.withGroup(adapter.getGroup());
+    }
+
+    addListener<TEventClass extends EventClass<LockEvents>>(
+        event: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.lockProviderEventBus.addListener(event, listener);
+    }
+
+    addListenerMany<TEventClass extends EventClass<LockEvents>>(
+        events: TEventClass[],
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.lockProviderEventBus.addListenerMany(events, listener);
+    }
+
+    removeListener<TEventClass extends EventClass<LockEvents>>(
+        event: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.lockProviderEventBus.removeListener(event, listener);
+    }
+
+    removeListenerMany<TEventClass extends EventClass<LockEvents>>(
+        events: TEventClass[],
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.lockProviderEventBus.removeListenerMany(events, listener);
+    }
+
+    listenOnce<TEventClass extends EventClass<LockEvents>>(
+        event: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<void> {
+        return this.lockProviderEventBus.listenOnce(event, listener);
+    }
+
+    subscribe<TEventClass extends EventClass<LockEvents>>(
+        event: TEventClass,
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<Unsubscribe> {
+        return this.lockProviderEventBus.subscribe(event, listener);
+    }
+
+    subscribeMany<TEventClass extends EventClass<LockEvents>>(
+        events: TEventClass[],
+        listener: Listener<EventInstance<TEventClass>>,
+    ): LazyPromise<Unsubscribe> {
+        return this.lockProviderEventBus.subscribeMany(events, listener);
     }
 
     isApplicable(value: unknown): value is Lock {
@@ -194,7 +252,8 @@ export class LockProvider
         }
         const ttl = ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null;
         return new Lock({
-            eventBus: this.eventBus,
+            lockProviderEventDispatcher: this.lockProviderEventBus,
+            lockEventBus: this.eventBus,
             adapter,
             defaultRefreshTime: this.defaultRefreshTime,
             key,
@@ -216,7 +275,8 @@ export class LockProvider
         const { ttl = this.defaultTtl, owner = this.createOwnerId() } =
             settings;
         return new Lock({
-            eventBus: this.eventBus,
+            lockProviderEventDispatcher: this.lockProviderEventBus,
+            lockEventBus: this.eventBus,
             adapter: this.adapter,
             defaultRefreshTime: this.defaultRefreshTime,
             key: simplifyGroupName(key),
