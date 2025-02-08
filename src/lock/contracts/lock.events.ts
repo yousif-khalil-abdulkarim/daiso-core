@@ -69,6 +69,16 @@ export class KeyRefreshedLockEvent extends BaseEvent<{
 /**
  * @group Events
  */
+export class UnexpectedErrorLockEvent extends BaseEvent<{
+    key: string;
+    owner: string;
+    ttl: TimeSpan | null;
+    error: unknown;
+}> {}
+
+/**
+ * @group Events
+ */
 export type LockEvents =
     | KeyAcquiredLockEvent
     | KeyReleasedLockEvent
@@ -76,7 +86,8 @@ export type LockEvents =
     | UnownedRefreshLockEvent
     | KeyAlreadyAcquiredLockEvent
     | KeyForceReleasedLockEvent
-    | KeyRefreshedLockEvent;
+    | KeyRefreshedLockEvent
+    | UnexpectedErrorLockEvent;
 
 /**
  * The <i>registerLockEventsToSerde</i> function registers all <i>{@link ILock}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
@@ -94,6 +105,7 @@ export function registerLockEventsToSerde(
             .registerEvent(KeyReleasedLockEvent)
             .registerEvent(UnownedReleaseLockEvent)
             .registerEvent(KeyAlreadyAcquiredLockEvent)
-            .registerEvent(UnownedRefreshLockEvent);
+            .registerEvent(UnownedRefreshLockEvent)
+            .registerEvent(UnexpectedErrorLockEvent);
     }
 }
