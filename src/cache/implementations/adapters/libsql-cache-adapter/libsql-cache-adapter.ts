@@ -43,18 +43,15 @@ export class LibsqlCacheAdapter<TType = unknown>
      * import { LibsqlCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
      * import { createClient } from "@libsql/client";
      *
-     * const database = createClient({ url: "file:local.db" });
-     * const serde = new SuperJsonSerde();
-     * const cacheAdapter = new LibsqlCacheAdapter({
-     *   database,
-     *   serde,
-     *   rootGroup: "@global"
-     * });
-     *
      * (async () => {
+     *   const database = createClient({ url: "file:local.db" });
+     *   const serde = new SuperJsonSerde();
+     *   const cacheAdapter = new LibsqlCacheAdapter({
+     *     database,
+     *     serde,
+     *     rootGroup: "@global"
+     *   });
      *   await cacheAdapter.init();
-     *   await cacheAdapter.add("a", 1);
-     *   await cacheAdapter.deInit();
      * })();
      * ```
      */
@@ -102,6 +99,7 @@ export class LibsqlCacheAdapter<TType = unknown>
 
     /**
      * Removes the table where the cache values are stored and removes the table indexes.
+     * Note all cache data will be removed.
      */
     async deInit(): Promise<void> {
         await this.cacheAdapter.deInit();
@@ -109,6 +107,7 @@ export class LibsqlCacheAdapter<TType = unknown>
 
     /**
      * Creates the table where the cache values are stored and it's related indexes.
+     * Note the <i>init</i> method needs to be called before using the adapter.
      */
     async init(): Promise<void> {
         await this.cacheAdapter.init();

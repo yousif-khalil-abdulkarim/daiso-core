@@ -23,11 +23,28 @@ export type LibsqlLockAdapterSettings = {
 };
 
 /**
+ * To utilize the <i>LibsqlLockAdapter</i>, you must install the <i>"@libsql/client"</i> package.
  * @group Adapters
  */
 export class LibsqlLockAdapter implements IDatabaseLockAdapter {
     private databaseLockAdapter: KyselyLockAdapter;
 
+    /***
+     * @example
+     * ```ts
+     * import { LibsqlCacheAdapter } from "@daiso-tech/core";
+     * import { createClient } from "@libsql/client";
+     *
+     * (async () => {
+     *   const database = createClient({ url: "file:local.db" });
+     *   const lockAdapter = new LibsqlCacheAdapter({
+     *     database,
+     *     rootGroup: "@global"
+     *   });
+     *   await lockAdapter.init();
+     * })();
+     * ```
+     */
     constructor(settings: LibsqlLockAdapterSettings) {
         const {
             database,
@@ -58,10 +75,18 @@ export class LibsqlLockAdapter implements IDatabaseLockAdapter {
         await this.databaseLockAdapter.removeExpiredKeys();
     }
 
+    /**
+     * Removes the table where the cache values are stored and removes the table indexes.
+     * Note all cache data will be removed.
+     */
     async deInit(): Promise<void> {
         await this.databaseLockAdapter.deInit();
     }
 
+    /**
+     * Creates the table where the cache values are stored and it's related indexes.
+     * Note the <i>init</i> method needs to be called before using the adapter.
+     */
     async init(): Promise<void> {
         await this.databaseLockAdapter.init();
     }
