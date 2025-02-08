@@ -98,6 +98,7 @@ export type LockProviderSettings = {
 };
 
 /**
+ * <i>LockProvider</i> class can be derived from any <i>{@link ILockAdapter}</i> or <i>{@link IDatabaseLockAdapter}</i>.
  * @group Derivables
  */
 export class LockProvider
@@ -152,6 +153,26 @@ export class LockProvider
         return Lock.name;
     }
 
+    /**
+     *@example
+     * ```ts
+     * import { LockProvider, MemoryLockAdapter, EventBus, MemoryEventBusAdapter, registerLockEvents, reigsterLockErrors, SuperJsonSerde } from "@daiso-tech/core";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     * const serde = new SuperJsonSerde();
+     * lockProvider.registerToSerde(serde);
+     * registerLockEvents(serde);
+     * reigsterLockErrors(serde);
+     * ```
+     */
     constructor(settings: LockProviderSettings) {
         const {
             createOwnerId = () => v4(),
@@ -308,6 +329,10 @@ export class LockProvider
         });
     }
 
+    /**
+     * The <i>registerToSerde</i> method ensures that the <i>ILock</i> instance returned by the <i>create</i> method is serializable.
+     * This method must be called once before using the <i>LockProvider</i> class.
+     */
     registerToSerde(serde: OneOrMore<IFlexibleSerde>): void {
         if (!Array.isArray(serde)) {
             serde = [serde];
