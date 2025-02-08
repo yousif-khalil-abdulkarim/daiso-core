@@ -41,18 +41,15 @@ export class SqliteCacheAdapter<TType = unknown>
      * import { SqliteCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
      * import Sqlite from "better-sqlite3";
      *
-     * const database = new Sqlite("local.db");
-     * const serde = new SuperJsonSerde();
-     * const cacheAdapter = new SqliteCacheAdapter({
-     *   database,
-     *   serde,
-     *   rootGroup: "@global"
-     * });
-     *
      * (async () => {
+     *   const database = new Sqlite("local.db");
+     *   const serde = new SuperJsonSerde();
+     *   const cacheAdapter = new SqliteCacheAdapter({
+     *     database,
+     *     serde,
+     *     rootGroup: "@global"
+     *   });
      *   await cacheAdapter.init();
-     *   await cacheAdapter.add("a", 1);
-     *   await cacheAdapter.deInit();
      * })();
      * ```
      */
@@ -100,6 +97,7 @@ export class SqliteCacheAdapter<TType = unknown>
 
     /**
      * Removes the table where the cache values are stored and removes the table indexes.
+     * Note all cache data will be removed.
      */
     async deInit(): Promise<void> {
         await this.cacheAdapter.deInit();
@@ -107,6 +105,7 @@ export class SqliteCacheAdapter<TType = unknown>
 
     /**
      * Creates the table where the cache values are stored and it's related indexes.
+     * Note the <i>init</i> method needs to be called before using the adapter.
      */
     async init(): Promise<void> {
         await this.cacheAdapter.init();

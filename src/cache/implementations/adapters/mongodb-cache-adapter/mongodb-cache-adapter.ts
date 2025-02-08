@@ -84,10 +84,7 @@ export class MongodbCacheAdapter<TType = unknown>
      *     serde,
      *     rootGroup: "@global"
      *   });
-     *
      *   await cacheAdapter.init();
-     *   await cacheAdapter.add("a", 1);
-     *   await cacheAdapter.deInit();
      * })();
      * ```
      */
@@ -127,6 +124,7 @@ export class MongodbCacheAdapter<TType = unknown>
 
     /**
      * Creates all related indexes.
+     * Note the <i>init</i> method needs to be called before using the adapter.
      */
     async init(): Promise<void> {
         await this.collection.createIndex(
@@ -145,6 +143,7 @@ export class MongodbCacheAdapter<TType = unknown>
 
     /**
      * Removes the collection where the cache values are stored and all it's related indexes.
+     * Note all cache data will be removed.
      */
     async deInit(): Promise<void> {
         await this.collection.dropIndexes();
