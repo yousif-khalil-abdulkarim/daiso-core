@@ -26,6 +26,27 @@ export class MemoryLockAdapter implements ILockAdapter {
 
     private readonly map: Map<string, ILockData>;
 
+    /**
+     *  @example
+     * ```ts
+     * import { MemoryLockAdapter } from "@daiso-tech/core";
+     *
+     * const lockAdapter = new MemoryLockAdapter({
+     *   rootGroup: "@cache"
+     * });
+     * ```
+     * You can also provide an <i>Map</i>.
+     * @example
+     * ```ts
+     * import { MemoryLockAdapter } from "@daiso-tech/core";
+     *
+     * const map = new Map<any, any>();
+     * const lockAdapter = new MemoryLockAdapter({
+     *   rootGroup: "@cache",
+     *   map
+     * });
+     * ```
+     */
     constructor(settings: MemoryLockAdapterSettings) {
         const { rootGroup, map = new Map<string, ILockData>() } = settings;
         this.map = map;

@@ -26,6 +26,22 @@ export type SqliteLockAdapterSettings = {
 export class SqliteLockAdapter implements IDatabaseLockAdapter {
     private databaseLockAdapter: KyselyLockAdapter;
 
+    /**
+     * @example
+     * ```ts
+     * import { SqliteLockAdapter } from "@daiso-tech/core";
+     * import Sqlite from "better-sqlite3";
+     *
+     * (async () => {
+     *   const database = new Sqlite("local.db");
+     *   const lockAdapter = new SqliteLockAdapter({
+     *     database,
+     *     rootGroup: "@global"
+     *   });
+     *   await lockAdapter.init();
+     * })();
+     * ```
+     */
     constructor(settings: SqliteLockAdapterSettings) {
         const {
             database,
@@ -56,10 +72,18 @@ export class SqliteLockAdapter implements IDatabaseLockAdapter {
         await this.databaseLockAdapter.removeExpiredKeys();
     }
 
+    /**
+     * Removes the table where the cache values are stored and removes the table indexes.
+     * Note all cache data will be removed.
+     */
     async deInit(): Promise<void> {
         await this.databaseLockAdapter.deInit();
     }
 
+    /**
+     * Creates the table where the cache values are stored and it's related indexes.
+     * Note the <i>init</i> method needs to be called before using the adapter.
+     */
     async init(): Promise<void> {
         await this.databaseLockAdapter.init();
     }

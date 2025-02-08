@@ -38,6 +38,21 @@ export class RedisLockAdapter implements ILockAdapter {
     private readonly group: string;
     private readonly database: Redis;
 
+    /**
+     * @example
+     * ```ts
+     * import { RedisLockAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import Redis from "ioredis";
+     *
+     * const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
+     * const serde = new SuperJsonSerde();
+     * const lockAdapter = new RedisLockAdapter({
+     *   database,
+     *   serde,
+     *   rootGroup: "@global"
+     * });
+     * ```
+     */
     constructor(settings: RedisLockAdapterSettings) {
         const { database, rootGroup } = settings;
         this.database = database;

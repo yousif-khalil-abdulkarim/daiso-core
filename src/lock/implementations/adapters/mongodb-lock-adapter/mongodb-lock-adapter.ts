@@ -39,6 +39,23 @@ export class MongodbLockAdapter implements IDatabaseLockAdapter {
     private readonly collectionName: string;
     private readonly collectionSettings?: CollectionOptions;
 
+    /**
+     * @example
+     * ```ts
+     * import { MongodbLockAdapter } from "@daiso-tech/core";
+     * import { MongoClient } from "mongodb";
+     *
+     * (async () => {
+     *   const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
+     *   const database = client.db("database");
+     *   const lockAdapter = new MongodbLockAdapter({
+     *     database,
+     *     rootGroup: "@global"
+     *   });
+     *   await lockAdapter.init();
+     * })();
+     * ```
+     */
     constructor({
         collectionName = "cache",
         collectionSettings,
@@ -63,6 +80,10 @@ export class MongodbLockAdapter implements IDatabaseLockAdapter {
         });
     }
 
+    /**
+     * Creates all related indexes.
+     * Note the <i>init</i> method needs to be called before using the adapter.
+     */
     async init(): Promise<void> {
         await this.collection.createIndex(
             {
@@ -78,6 +99,10 @@ export class MongodbLockAdapter implements IDatabaseLockAdapter {
         });
     }
 
+    /**
+     * Removes the collection where the cache values are stored and all it's related indexes.
+     * Note all cache data will be removed.
+     */
     async deInit(): Promise<void> {
         await this.collection.dropIndexes();
         await this.database.dropCollection(this.collectionName);
