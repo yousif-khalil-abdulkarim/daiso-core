@@ -132,6 +132,32 @@ export class LockProviderFactory<TAdapters extends string>
     private readonly retryPolicy?: RetryPolicy | null;
     private readonly timeout?: TimeSpan | null;
 
+    /**
+     * @example
+     * ```ts
+     * import { LockProviderFactory, MemoryLockAdapter, RedisLockAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import Redis from "ioredis"
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new SuperJsonSerde();
+     * const lockProviderFactory = new LockProviderFactory({
+     *   serde,
+     *   adapters: {
+     *     memory: new MemoryLockAdapter({
+     *       rootGroup: "@global"
+     *     }),
+     *     redis: new RedisLockAdapter({
+     *       client: new Redis("YOUR_REDIS_CONNECTION"),
+     *       rootGroup: "@global"
+     *     }),
+     *   },
+     *   defaultAdapter: "memory",
+     *   eventBus,
+     * });
+     * ```
+     */
     constructor(settings: LockProviderFactorySettings<TAdapters>) {
         const {
             serde,
