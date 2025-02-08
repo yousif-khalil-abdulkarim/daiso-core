@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.22.1
+
+### Patch Changes
+
+-   c2a6a79: Added more documentation for the lock component
+
 ## 0.22.0
 
 ### Minor Changes
