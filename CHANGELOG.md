@@ -1,5 +1,72 @@
 # @daiso-tech/core
 
+## 0.22.0
+
+### Minor Changes
+
+-   ecabc49: - Changes
+    -   Remove static settings methods and settings builder classes from:
+        -   EventBus class
+        -   EventBusFactory class
+        -   MemoryEventBusAdapter class
+        -   RedisPubSubEventBusAdapter class
+-   1c41caf: - New features
+    -   Added new <i>ILock</i> <i>UnexpectedLockErrorEvent</i> that will dispatched when error occurs.
+    -   Added event listeners to <i>ILockProvider</i>, enabling monitoring of lock events from multiple locks.
+    -   Changes
+        -   Made all the <i>ILock</i> events defered when dispatched.
+-   1821d46: - New features
+    -   Added new <i>ICache</i> <i>UnexpectedCacheErrorEvent</i> that will dispatched when error occurs.
+    -   Changes
+        -   Made all the <i>ICache</i> events defered when dispatched.
+-   9a0c764: - Changes
+    -   Remove static settings methods and settings builder classes from:
+        -   Cache class
+        -   CacheFactory class
+        -   MemoryCacheAdapter class
+        -   MongodbCacheAdapter class
+        -   LibsqlCacheAdapter class
+        -   SqliteCacheAdapter class
+        -   RedisCacheAdapter class
+-   9ef0a81: - New features
+    -   Added distributed lock.
+        -   Contracts
+            -   Added IDatabaseLockAdapter
+            -   Added ILockAdapter
+            -   ILockProvider
+            -   ILockProviderFactory
+            -   ILock
+        -   Derivables
+            -   Added <i>LockProvider</i> class.
+            -   Added <i>LockProviderFactory</i> class.
+        -   Adapter
+            -   LibsqlLockAdapter
+            -   MemoryLockAdapter
+            -   MongodbLockAdapter
+            -   RedisLockAdapter
+            -   SqliteLockAdapter
+-   0dfe16c: - Changes
+    -   Simplified the cacheAdapterTestSuite
+    -   Simplified the cacheTestSuite
+-   8fa218c: - Changes
+    -   Simplified the eventBusAdapterTestSuite
+    -   Simplified the eventBusTestSuite
+-   e2f6d79: - Changes
+    -   IAsyncCollection: You can now pass in LazyPromise as default value in the following methods.
+        -   firstOr
+        -   lastOr
+        -   beforeOr
+        -   afterOr
+    -   Cache: You can now pass in LazyPromise as default value in the following methods.
+        -   getOr
+        -   getOrAdd
+
+### Patch Changes
+
+-   ef2315b: Fixed a minor type bug
+-   d486046: Added missing exports
+-   604e43f: - Improved documentations
+
 ## 0.21.1
 
 ### Patch Changes
