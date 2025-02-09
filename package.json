@@ -13,6 +13,7 @@
         "url": "https://github.com/yousif-khalil-abdulkarim/daiso-core.git"
     },
     "keywords": [
+        "Async collection",
         "Collection",
         "Array",
         "Iterable",
@@ -21,6 +22,14 @@
         "Storage",
         "EventBus",
         "PuSub",
+        "Lock",
+        "Distributed lock",
+        "Mutex",
+        "Distributed mutex",
+        "Serialization",
+        "Serializer",
+        "Deserialization",
+        "Deserializer",
         "Mongodb",
         "Redis",
         "Sqlite3",
