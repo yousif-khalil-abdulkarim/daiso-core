@@ -121,7 +121,9 @@ export class MongodbLockAdapter implements IDatabaseLockAdapter {
             expiresAt: expiration,
         });
         if (!insertResult.acknowledged) {
-            throw new UnexpectedLockError("!!__message__!!");
+            throw new UnexpectedLockError(
+                "Mongodb insertion was not acknowledged",
+            );
         }
     }
 
@@ -156,7 +158,9 @@ export class MongodbLockAdapter implements IDatabaseLockAdapter {
             },
         );
         if (!updateResult.acknowledged) {
-            throw new UnexpectedLockError("!!__message__!!");
+            throw new UnexpectedLockError(
+                "Mongodb update was not acknowledged",
+            );
         }
         return updateResult.modifiedCount; // > 0;
     }
@@ -168,7 +172,9 @@ export class MongodbLockAdapter implements IDatabaseLockAdapter {
                 group: this.group,
             });
             if (!deleteResult.acknowledged) {
-                throw new UnexpectedLockError("!!__message__!!");
+                throw new UnexpectedLockError(
+                    "Mongodb deletion was not acknowledged",
+                );
             }
             return;
         }
@@ -178,7 +184,9 @@ export class MongodbLockAdapter implements IDatabaseLockAdapter {
             owner,
         });
         if (!deleteResult.acknowledged) {
-            throw new UnexpectedLockError("!!__message__!!");
+            throw new UnexpectedLockError(
+                "Mongodb deletion was not acknowledged",
+            );
         }
     }
 
@@ -200,7 +208,9 @@ export class MongodbLockAdapter implements IDatabaseLockAdapter {
             },
         );
         if (!updateResult.acknowledged) {
-            throw new UnexpectedLockError("!!__message__!!");
+            throw new UnexpectedLockError(
+                "Mongodb update was not acknowledged",
+            );
         }
         return updateResult.modifiedCount; // > 0;
     }

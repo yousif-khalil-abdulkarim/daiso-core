@@ -127,7 +127,9 @@ export class Lock implements ILock {
                     if (!hasAquired) {
                         return [
                             null,
-                            new KeyAlreadyAcquiredLockError("!!__message__!!"),
+                            new KeyAlreadyAcquiredLockError(
+                                `Key "${this.key}" already acquired`,
+                            ),
                         ];
                     }
 
@@ -202,7 +204,9 @@ export class Lock implements ILock {
         return this.createLayPromise(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
-                throw new KeyAlreadyAcquiredLockError("!!__message__!!");
+                new KeyAlreadyAcquiredLockError(
+                    `Key "${this.key}" already acquired`,
+                );
             }
         });
     }
@@ -248,7 +252,9 @@ export class Lock implements ILock {
         return this.createLayPromise(async () => {
             const hasRelased = await this.release();
             if (!hasRelased) {
-                throw new UnownedReleaseLockError("!!__message__!!");
+                throw new UnownedReleaseLockError(
+                    `Unonwed release on key "${this.key}" by owner "${this.owner}"`,
+                );
             }
         });
     }
@@ -344,7 +350,9 @@ export class Lock implements ILock {
         return this.createLayPromise(async () => {
             const hasExtended = await this.refresh(ttl);
             if (!hasExtended) {
-                throw new UnownedExtendLockError("!!__message__!!");
+                throw new UnownedExtendLockError(
+                    `Unonwed refresh on key "${this.key}" by owner "${this.owner}"`,
+                );
             }
         });
     }
