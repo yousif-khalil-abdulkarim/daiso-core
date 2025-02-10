@@ -16,7 +16,7 @@ import {
     KeyReleasedLockEvent,
     KeyRefreshedLockEvent,
     UnableToAquireLockError,
-    UnownedExtendLockError,
+    UnownedRefreshLockError,
     UnownedRefreshLockEvent,
     UnownedReleaseLockError,
     UnownedReleaseLockEvent,
@@ -350,7 +350,7 @@ export class Lock implements ILock {
         return this.createLayPromise(async () => {
             const hasExtended = await this.refresh(ttl);
             if (!hasExtended) {
-                throw new UnownedExtendLockError(
+                throw new UnownedRefreshLockError(
                     `Unonwed refresh on key "${this.key}" by owner "${this.owner}"`,
                 );
             }

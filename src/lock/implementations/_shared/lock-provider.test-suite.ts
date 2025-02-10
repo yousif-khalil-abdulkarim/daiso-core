@@ -20,7 +20,7 @@ import {
     KeyReleasedLockEvent,
     KeyAcquiredLockEvent,
     KeyAlreadyAcquiredLockError,
-    UnownedExtendLockError,
+    UnownedRefreshLockError,
     UnownedReleaseLockError,
     KeyRefreshedLockEvent,
 } from "@/lock/contracts/_module";
@@ -574,7 +574,7 @@ export function lockProviderTestSuite(
                 });
             });
             describe("method: refreshOrFail", () => {
-                test("Should not throw UnownedExtendLockError when refreshed by same owner", async () => {
+                test("Should not throw UnownedRefreshLockError when refreshed by same owner", async () => {
                     const key = "a";
                     const ttl = TTL;
                     const owner = "b";
@@ -590,7 +590,7 @@ export function lockProviderTestSuite(
 
                     await expect(result).resolves.toBeUndefined();
                 });
-                test("Should throw UnownedExtendLockError when refreshed by different owner", async () => {
+                test("Should throw UnownedRefreshLockError when refreshed by different owner", async () => {
                     const key = "a";
                     const ttl = TTL;
                     const owner1 = "b";
@@ -608,7 +608,7 @@ export function lockProviderTestSuite(
 
                     const result = lock2.refreshOrFail();
                     await expect(result).rejects.toBeInstanceOf(
-                        UnownedExtendLockError,
+                        UnownedRefreshLockError,
                     );
                 });
                 test("Should refresh expiration by same owner", async () => {

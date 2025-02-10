@@ -230,7 +230,7 @@ export type ILock = ILockListener & {
     /**
      * The <i>refreshOrFail</i> method updates the TTL of the lock if owned by the same owner.
      * Throws an error if a different owner attempts to refresh the lock.
-     * @throws {UnownedExtendLockError} {@link UnownedExtendLockError}
+     * @throws {UnownedRefreshLockError} {@link UnownedRefreshLockError}
      */
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
 
