@@ -179,14 +179,14 @@ export class UnownedReleaseLockError
 /**
  * @group Errors
  */
-export class UnownedExtendLockError
+export class UnownedRefreshLockError
     extends LockError
     implements ISerializable<ISerializedError>
 {
     static override deserialize(
         serializedError: ISerializedError,
-    ): UnownedExtendLockError {
-        return new UnownedExtendLockError(
+    ): UnownedRefreshLockError {
+        return new UnownedRefreshLockError(
             serializedError.message,
             serializedError.cause,
         );
