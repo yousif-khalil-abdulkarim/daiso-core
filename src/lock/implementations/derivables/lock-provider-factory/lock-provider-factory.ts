@@ -207,6 +207,7 @@ export class LockProviderFactory<TAdapters extends string>
             }
             const lockProvider = new LockProvider({
                 adapter,
+                serde: this.serde,
                 eventBus: this.eventBus,
                 defaultTtl: this.defaultTtl,
                 retryAttempts: this.retryAttempts,
@@ -216,7 +217,6 @@ export class LockProviderFactory<TAdapters extends string>
                 defaultRefreshTime: this.defaultExtendTime,
                 createOwnerId: this.createOwnerId,
             });
-            lockProvider.registerToSerde(this.serde);
             cacheRecord[key] = lockProvider;
         }
         return cacheRecord;

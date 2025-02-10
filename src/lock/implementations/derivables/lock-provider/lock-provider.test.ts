@@ -21,13 +21,13 @@ describe("class: LockProvider", () => {
     lockProviderTestSuite({
         createLockProvider: () => {
             const lockProvider = new LockProvider({
+                serde,
                 adapter: new MemoryLockAdapter({
                     rootGroup: "@a",
                     map,
                 }),
                 eventBus,
             });
-            serde.registerCustom(lockProvider);
             return lockProvider;
         },
         beforeEach,

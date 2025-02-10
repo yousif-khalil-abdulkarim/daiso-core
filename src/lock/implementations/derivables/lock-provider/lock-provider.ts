@@ -2,7 +2,6 @@
  * @module Lock
  */
 
-import type { ISerdeRegistrable } from "@/utilities/_module";
 import {
     getConstructorName,
     simplifyGroupName,
@@ -55,6 +54,8 @@ export type LockProviderSettings = {
 
     adapter: ILockAdapter | IDatabaseLockAdapter;
 
+    serde: OneOrMore<IFlexibleSerde>;
+
     /**
      * In order to listen to events of <i>{@link LockProvider}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
      */
@@ -102,10 +103,7 @@ export type LockProviderSettings = {
  * @group Derivables
  */
 export class LockProvider
-    implements
-        IGroupableLockProvider,
-        ISerdeRegistrable,
-        ISerdeTransformer<Lock, ISerializedLock>
+    implements IGroupableLockProvider, ISerdeTransformer<Lock, ISerializedLock>
 {
     private static DEFAULT_TTL = TimeSpan.fromMinutes(5);
     private static DEFAULT_REFRESH_TIME = TimeSpan.fromMinutes(5);
@@ -138,6 +136,7 @@ export class LockProvider
         );
     }
 
+    private readonly serde: OneOrMore<IFlexibleSerde>;
     private readonly createOwnerId: () => string;
     private readonly adapter: ILockAdapter;
     private readonly defaultTtl: TimeSpan;
@@ -149,10 +148,6 @@ export class LockProvider
     private readonly eventBus: IGroupableEventBus<LockEvents>;
     private readonly lockProviderEventBus: IEventBus<LockEvents>;
 
-    get name(): string {
-        return Lock.name;
-    }
-
     /**
      *@example
      * ```ts
@@ -161,14 +156,14 @@ export class LockProvider
      * const eventBus = new EventBus({
      *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
      * });
+     * const serde = new SuperJsonSerde();
      * const lockProvider = new LockProvider({
+     *   serde,
      *   adapter: new MemoryLockAdapter({
      *     rootGroup: "@global"
      *   }),
      *   eventBus,
      * });
-     * const serde = new SuperJsonSerde();
-     * lockProvider.registerToSerde(serde);
      * registerLockEvents(serde);
      * reigsterLockErrors(serde);
      * ```
@@ -186,6 +181,7 @@ export class LockProvider
             eventBus = new EventBus({
                 adapter: new NoOpEventBusAdapter(),
             }),
+            serde,
         } = settings;
         this.createOwnerId = createOwnerId;
         if (LockProvider.isDatabaseAdapter(adapter)) {
@@ -193,6 +189,7 @@ export class LockProvider
         } else {
             this.adapter = adapter;
         }
+        this.serde = serde;
         this.defaultTtl = defaultTtl ?? LockProvider.DEFAULT_TTL;
         this.defaultRefreshTime = defaultRefreshTime;
         this.retryAttempts = retryAttempts;
@@ -201,6 +198,17 @@ export class LockProvider
         this.timeout = timeout;
         this.eventBus = eventBus;
         this.lockProviderEventBus = eventBus.withGroup(adapter.getGroup());
+        this.registerToSerde();
+    }
+
+    private registerToSerde(): void {
+        let serde = this.serde;
+        if (!Array.isArray(serde)) {
+            serde = [serde];
+        }
+        for (const serde_ of serde) {
+            serde_.registerCustom(this);
+        }
     }
 
     addListener<TEventClass extends EventClass<LockEvents>>(
@@ -250,6 +258,10 @@ export class LockProvider
         listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockProviderEventBus.subscribeMany(events, listener);
+    }
+
+    get name(): string {
+        return Lock.name;
     }
 
     isApplicable(value: unknown): value is Lock {
@@ -326,19 +338,7 @@ export class LockProvider
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
             timeout: this.timeout,
+            serde: this.serde,
         });
-    }
-
-    /**
-     * The <i>registerToSerde</i> method ensures that the <i>ILock</i> instance returned by the <i>create</i> method is serializable.
-     * This method must be called once before using the <i>LockProvider</i> class.
-     */
-    registerToSerde(serde: OneOrMore<IFlexibleSerde>): void {
-        if (!Array.isArray(serde)) {
-            serde = [serde];
-        }
-        for (const serde_ of serde) {
-            serde_.registerCustom(this);
-        }
     }
 }
