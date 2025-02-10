@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.22.2
+
+### Patch Changes
+
+-   e456cbe: Updated READNE.md and package.json.
+
 ## 0.22.1
 
 ### Patch Changes
