@@ -2,7 +2,6 @@
  * @module Lock
  */
 
-import type { IDeinitizable, IInitizable } from "@/_module";
 import { TimeSpan, UnexpectedCacheError } from "@/_module";
 import type {
     IDatabaseLockAdapter,
@@ -12,18 +11,8 @@ import type {
 /**
  * @internal
  */
-export class DatabaseLockAdapter
-    implements ILockAdapter, IDeinitizable, IInitizable
-{
+export class DatabaseLockAdapter implements ILockAdapter {
     constructor(private readonly adapter: IDatabaseLockAdapter) {}
-
-    async init(): Promise<void> {
-        await this.adapter.init();
-    }
-
-    async deInit(): Promise<void> {
-        await this.adapter.deInit();
-    }
 
     async acquire(
         key: string,

@@ -2,7 +2,11 @@
  * @module Lock
  */
 
-import { simplifyGroupName } from "@/utilities/_module";
+import {
+    type IDeinitizable,
+    type IInitizable,
+    simplifyGroupName,
+} from "@/utilities/_module";
 import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module";
 import { UnexpectedLockError } from "@/lock/contracts/_module";
 import type { Collection, CollectionOptions, Db } from "mongodb";
@@ -32,7 +36,9 @@ type MongodbLockDocument = {
 /**
  * @group Adapters
  */
-export class MongodbLockAdapter implements IDatabaseLockAdapter {
+export class MongodbLockAdapter
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
+{
     private readonly group: string;
     private readonly database: Db;
     private readonly collection: Collection<MongodbLockDocument>;

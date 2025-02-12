@@ -3,7 +3,11 @@
  */
 
 import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module";
-import { TimeSpan } from "@/utilities/_module";
+import {
+    type IDeinitizable,
+    type IInitizable,
+    TimeSpan,
+} from "@/utilities/_module";
 import { KyselyLockAdapter } from "@/lock/implementations/adapters/kysely-lock-adapter/_module";
 import type { SqliteDatabase } from "kysely";
 import { Kysely, SqliteDialect } from "kysely";
@@ -23,7 +27,9 @@ export type SqliteLockAdapterSettings = {
 /**
  * @group Adapters
  */
-export class SqliteLockAdapter implements IDatabaseLockAdapter {
+export class SqliteLockAdapter
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
+{
     private databaseLockAdapter: KyselyLockAdapter;
 
     /**
