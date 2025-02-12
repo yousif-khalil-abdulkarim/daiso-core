@@ -2,4 +2,4 @@
 "@daiso-tech/core": minor
 ---
 
-Renamed UnownedExtendLockError to UnownedRefreshLockError
+Renamed <i>UnownedExtendLockError</i> to <i>UnownedRefreshLockError</i>

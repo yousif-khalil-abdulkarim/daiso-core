@@ -2,4 +2,4 @@
 "@daiso-tech/core": minor
 ---
 
-Removed the ISerdeRegistrable contract
+Removed the <i>ISerdeRegistrable</i> contract
