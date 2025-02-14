@@ -66,632 +66,630 @@ export function lockProviderTestSuite(
     });
     const TTL = TimeSpan.fromMilliseconds(50);
     describe("Api tests:", () => {
-        describe("class: Lock", () => {
-            describe("method: run", () => {
-                test("Should return string when lock is available", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
+        describe("method: run", () => {
+            test("Should return string when lock is available", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
 
-                    const [result, error] = await lock.run(async () => {
+                const [result, error] = await lock.run(async () => {
+                    await delay(TTL);
+                    return "a";
+                });
+
+                expect(result).toBe("a");
+                expect(error).toBeNull();
+            });
+            test("Should return null when lock is already acquired", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                await lock.acquire();
+                const [result, error] = await lock.run(async () => {
+                    await delay(TTL);
+                    return "a";
+                });
+
+                expect(result).toBeNull();
+                expect(error).toBeInstanceOf(KeyAlreadyAcquiredLockError);
+            });
+            test("Should work with LazyPromise", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                const [result, error] = await lock.run(
+                    new LazyPromise(async () => {
                         await delay(TTL);
                         return "a";
-                    });
+                    }),
+                );
 
-                    expect(result).toBe("a");
-                    expect(error).toBeNull();
+                expect(result).toBe("a");
+                expect(error).toBeNull();
+            });
+        });
+        describe("method: runOrFail", () => {
+            test("Should return string when lock is available", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
                 });
-                test("Should return null when lock is already acquired", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
 
-                    await lock.acquire();
-                    const [result, error] = await lock.run(async () => {
+                const result = await lock.runOrFail(async () => {
+                    await delay(TTL);
+                    return "a";
+                });
+
+                expect(result).toBe("a");
+            });
+            test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                await lock.acquire();
+                const result = lock.runOrFail(async () => {
+                    await delay(TTL);
+                    return "a";
+                });
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyAlreadyAcquiredLockError,
+                );
+            });
+            test("Should work with LazyPromise", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                const result = await lock.runOrFail(
+                    new LazyPromise(async () => {
                         await delay(TTL);
                         return "a";
-                    });
+                    }),
+                );
 
-                    expect(result).toBeNull();
-                    expect(error).toBeInstanceOf(KeyAlreadyAcquiredLockError);
-                });
-                test("Should work with LazyPromise", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
-
-                    const [result, error] = await lock.run(
-                        new LazyPromise(async () => {
-                            await delay(TTL);
-                            return "a";
-                        }),
-                    );
-
-                    expect(result).toBe("a");
-                    expect(error).toBeNull();
-                });
+                expect(result).toBe("a");
             });
-            describe("method: runOrFail", () => {
-                test("Should return string when lock is available", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
-
-                    const result = await lock.runOrFail(async () => {
-                        await delay(TTL);
-                        return "a";
-                    });
-
-                    expect(result).toBe("a");
+        });
+        describe("method: acquire", () => {
+            test("Should return true when lock is available", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
                 });
-                test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
 
-                    await lock.acquire();
-                    const result = lock.runOrFail(async () => {
-                        await delay(TTL);
-                        return "a";
-                    });
+                const result = await lock.acquire();
 
-                    await expect(result).rejects.toBeInstanceOf(
-                        KeyAlreadyAcquiredLockError,
-                    );
-                });
-                test("Should work with LazyPromise", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
-
-                    const result = await lock.runOrFail(
-                        new LazyPromise(async () => {
-                            await delay(TTL);
-                            return "a";
-                        }),
-                    );
-
-                    expect(result).toBe("a");
-                });
+                expect(result).toBe(true);
             });
-            describe("method: acquire", () => {
-                test("Should return true when lock is available", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
-
-                    const result = await lock.acquire();
-
-                    expect(result).toBe(true);
+            test("Should return false when lock is already acquired", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
                 });
-                test("Should return false when lock is already acquired", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
 
-                    await lock.acquire();
-                    const result = await lock.acquire();
+                await lock.acquire();
+                const result = await lock.acquire();
 
-                    expect(result).toBe(false);
-                });
-                test("Should not be expired when released by same owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    const result = await lock.isExpired();
-
-                    expect(result).toBe(false);
-                });
-                test("Should be loked when released by same owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    const result = await lock.isLocked();
-
-                    expect(result).toBe(true);
-                });
+                expect(result).toBe(false);
             });
-            describe("method: acquireOrFail", () => {
-                test("Should not throw KeyAlreadyAcquiredLockError when lock is available", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
-
-                    const result = lock.acquireOrFail();
-
-                    await expect(result).resolves.toBeUndefined();
+            test("Should not be expired when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
                 });
-                test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                    });
 
-                    await lock.acquireOrFail();
-                    const result = lock.acquireOrFail();
+                await lock.acquire();
+                const result = await lock.isExpired();
 
-                    await expect(result).rejects.toBeInstanceOf(
-                        KeyAlreadyAcquiredLockError,
-                    );
-                });
+                expect(result).toBe(false);
             });
-            describe("method: release", () => {
-                test("Should return true when released by same owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    const result = await lock.release();
-
-                    expect(result).toBe(true);
+            test("Should be loked when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
                 });
-                test("Should return false when released by different owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner1,
-                    });
 
-                    await lock1.acquire();
-                    const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner2,
-                    });
-                    const result = await lock2.release();
+                await lock.acquire();
+                const result = await lock.isLocked();
 
-                    expect(result).toBe(false);
-                });
-                test("Should be expired when released by same owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    await lock.release();
-                    const result = await lock.isExpired();
-
-                    expect(result).toBe(true);
-                });
-                test("Should be not loked when released by same owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    await lock.release();
-                    const result = await lock.isLocked();
-
-                    expect(result).toBe(false);
-                });
+                expect(result).toBe(true);
             });
-            describe("method: releaseOrFail", () => {
-                test("Should not throw UnownedReleaseLockError when released by same owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    const result = lock.releaseOrFail();
-
-                    await expect(result).resolves.toBeUndefined();
+        });
+        describe("method: acquireOrFail", () => {
+            test("Should not throw KeyAlreadyAcquiredLockError when lock is available", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
                 });
-                test("Should throw UnownedReleaseLockError when released by different owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner1,
-                    });
 
-                    await lock1.acquire();
-                    const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner2,
-                    });
-                    const result = lock2.releaseOrFail();
+                const result = lock.acquireOrFail();
 
-                    await expect(result).rejects.toBeInstanceOf(
-                        UnownedReleaseLockError,
-                    );
-                });
-                test("Should be expired when released by same owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    await lock.releaseOrFail();
-                    const result = await lock.isExpired();
-
-                    expect(result).toBe(true);
-                });
-                test("Should be not loked when released by same owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    await lock.releaseOrFail();
-                    const result = await lock.isLocked();
-
-                    expect(result).toBe(false);
-                });
+                await expect(result).resolves.toBeUndefined();
             });
-            describe("method: forceRelease", () => {
-                test("Should release lock no regardless of the owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner1,
-                    });
-
-                    await lock1.acquire();
-                    const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner2,
-                    });
-                    await lock2.forceRelease();
-                    const result = await lock1.acquire();
-
-                    expect(result).toBe(true);
+            test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
                 });
-                test("Should be expired when released", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
 
-                    await lock.acquire();
-                    await lock.forceRelease();
-                    const result = await lock.isExpired();
+                await lock.acquireOrFail();
+                const result = lock.acquireOrFail();
 
-                    expect(result).toBe(true);
-                });
-                test("Should be not loked when released", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    await lock.forceRelease();
-                    const result = await lock.isLocked();
-
-                    expect(result).toBe(false);
-                });
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyAlreadyAcquiredLockError,
+                );
             });
-            describe("method: isExpired", () => {
-                test("Should return false when lock has no expiration", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    const result = await lock.isExpired();
-
-                    expect(result).toBe(false);
+        });
+        describe("method: release", () => {
+            test("Should return true when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
                 });
-                test("Should return false when lock has not expired", async () => {
-                    const key = "a";
-                    const owner = "b";
-                    const ttl = TTL;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
 
-                    await lock.acquire();
-                    const result = await lock.isExpired();
+                await lock.acquire();
+                const result = await lock.release();
 
-                    expect(result).toBe(false);
-                });
-                test("Should return true when lock has expired", async () => {
-                    const key = "a";
-                    const owner = "b";
-                    const ttl = TTL;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    await delay(ttl.addMilliseconds(25));
-                    const result = await lock.isExpired();
-
-                    expect(result).toBe(true);
-                });
+                expect(result).toBe(true);
             });
-            describe("method: isLocked", () => {
-                test("Should return true when lock has no expiration", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    const result = await lock.isLocked();
-
-                    expect(result).toBe(true);
+            test("Should return false when released by different owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner1 = "b";
+                const lock1 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner1,
                 });
-                test("Should return true when lock has not expired", async () => {
-                    const key = "a";
-                    const owner = "b";
-                    const ttl = TTL;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
 
-                    await lock.acquire();
-                    const result = await lock.isLocked();
-
-                    expect(result).toBe(true);
+                await lock1.acquire();
+                const owner2 = "c";
+                const lock2 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner2,
                 });
-                test("Should return false when lock has expired", async () => {
-                    const key = "a";
-                    const owner = "b";
-                    const ttl = TTL;
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
+                const result = await lock2.release();
 
-                    await lock.acquire();
-                    await delay(ttl.addMilliseconds(25));
-                    const result = await lock.isLocked();
-
-                    expect(result).toBe(false);
-                });
+                expect(result).toBe(false);
             });
-            describe("method: refresh", () => {
-                test("Should return true when refreshed by same owner", async () => {
-                    const key = "a";
-                    const ttl = TTL;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    await delay(ttl);
-
-                    const result = await lock.refresh();
-
-                    expect(result).toBe(true);
+            test("Should be expired when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
                 });
-                test("Should return false when refreshed by different owner", async () => {
-                    const key = "a";
-                    const ttl = TTL;
-                    const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner1,
-                    });
 
-                    await lock1.acquire();
-                    const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner2,
-                    });
+                await lock.acquire();
+                await lock.release();
+                const result = await lock.isExpired();
 
-                    const result = await lock2.refresh();
-                    expect(result).toBe(false);
-                });
-                test("Should refresh expiration by same owner", async () => {
-                    const key = "a";
-                    const ttl = TTL;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    await delay(ttl.subtractMilliseconds(10));
-                    await lock.refresh();
-                    const time = await lock.getRemainingTime();
-
-                    expect(time?.toMilliseconds()).toBeGreaterThan(0);
-                });
+                expect(result).toBe(true);
             });
-            describe("method: refreshOrFail", () => {
-                test("Should not throw UnownedRefreshLockError when refreshed by same owner", async () => {
-                    const key = "a";
-                    const ttl = TTL;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    await delay(ttl);
-
-                    const result = lock.refreshOrFail();
-
-                    await expect(result).resolves.toBeUndefined();
+            test("Should be not loked when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
                 });
-                test("Should throw UnownedRefreshLockError when refreshed by different owner", async () => {
-                    const key = "a";
-                    const ttl = TTL;
-                    const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner1,
-                    });
 
-                    await lock1.acquire();
-                    const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
-                        ttl,
-                        owner: owner2,
-                    });
+                await lock.acquire();
+                await lock.release();
+                const result = await lock.isLocked();
 
-                    const result = lock2.refreshOrFail();
-                    await expect(result).rejects.toBeInstanceOf(
-                        UnownedRefreshLockError,
-                    );
-                });
-                test("Should refresh expiration by same owner", async () => {
-                    const key = "a";
-                    const ttl = TTL;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquireOrFail();
-                    await delay(ttl.subtractMilliseconds(10));
-                    await lock.refresh();
-                    const time = await lock.getRemainingTime();
-
-                    expect(time?.toMilliseconds()).toBeGreaterThan(0);
-                });
+                expect(result).toBe(false);
             });
-            describe("method: getRemainingTime", () => {
-                test("Should return null when lock is not acquired", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    const result = await lock.getRemainingTime();
-
-                    expect(result).toBeNull();
+        });
+        describe("method: releaseOrFail", () => {
+            test("Should not throw UnownedReleaseLockError when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
                 });
-                test("Should return null when lock is acquired and has expiration", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
 
-                    await lock.acquire();
-                    const result = await lock.getRemainingTime();
+                await lock.acquire();
+                const result = lock.releaseOrFail();
 
-                    expect(result).toBeNull();
-                });
-                test("Should return remaining time when lock is not acquired", async () => {
-                    const key = "a";
-                    const ttl = TTL;
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        ttl,
-                        owner,
-                    });
-
-                    await lock.acquire();
-                    const result = await lock.getRemainingTime();
-
-                    expect(result?.toMilliseconds()).toBe(ttl.toMilliseconds());
-                });
+                await expect(result).resolves.toBeUndefined();
             });
-            describe("method: getOwner", () => {
-                test("Should return the owner", async () => {
-                    const key = "a";
-                    const owner = "b";
-                    const lock = lockProviderA.create(key, {
-                        owner,
-                    });
-
-                    const result = await lock.getOwner();
-
-                    expect(result).toBe(owner);
+            test("Should throw UnownedReleaseLockError when released by different owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner1 = "b";
+                const lock1 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner1,
                 });
-                test("Should return the auto generated owner", async () => {
-                    const key = "a";
-                    const lock = lockProviderA.create(key);
 
-                    const result = await lock.getOwner();
-
-                    expect(result).toBeDefined();
-                    expect(typeof result).toBe("string");
+                await lock1.acquire();
+                const owner2 = "c";
+                const lock2 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner2,
                 });
+                const result = lock2.releaseOrFail();
+
+                await expect(result).rejects.toBeInstanceOf(
+                    UnownedReleaseLockError,
+                );
+            });
+            test("Should be expired when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                await lock.releaseOrFail();
+                const result = await lock.isExpired();
+
+                expect(result).toBe(true);
+            });
+            test("Should be not loked when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                await lock.releaseOrFail();
+                const result = await lock.isLocked();
+
+                expect(result).toBe(false);
+            });
+        });
+        describe("method: forceRelease", () => {
+            test("Should release lock no regardless of the owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner1 = "b";
+                const lock1 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner1,
+                });
+
+                await lock1.acquire();
+                const owner2 = "c";
+                const lock2 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner2,
+                });
+                await lock2.forceRelease();
+                const result = await lock1.acquire();
+
+                expect(result).toBe(true);
+            });
+            test("Should be expired when released", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                await lock.forceRelease();
+                const result = await lock.isExpired();
+
+                expect(result).toBe(true);
+            });
+            test("Should be not loked when released", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                await lock.forceRelease();
+                const result = await lock.isLocked();
+
+                expect(result).toBe(false);
+            });
+        });
+        describe("method: isExpired", () => {
+            test("Should return false when lock has no expiration", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                const result = await lock.isExpired();
+
+                expect(result).toBe(false);
+            });
+            test("Should return false when lock has not expired", async () => {
+                const key = "a";
+                const owner = "b";
+                const ttl = TTL;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                const result = await lock.isExpired();
+
+                expect(result).toBe(false);
+            });
+            test("Should return true when lock has expired", async () => {
+                const key = "a";
+                const owner = "b";
+                const ttl = TTL;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                await delay(ttl.addMilliseconds(25));
+                const result = await lock.isExpired();
+
+                expect(result).toBe(true);
+            });
+        });
+        describe("method: isLocked", () => {
+            test("Should return true when lock has no expiration", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                const result = await lock.isLocked();
+
+                expect(result).toBe(true);
+            });
+            test("Should return true when lock has not expired", async () => {
+                const key = "a";
+                const owner = "b";
+                const ttl = TTL;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                const result = await lock.isLocked();
+
+                expect(result).toBe(true);
+            });
+            test("Should return false when lock has expired", async () => {
+                const key = "a";
+                const owner = "b";
+                const ttl = TTL;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                await delay(ttl.addMilliseconds(25));
+                const result = await lock.isLocked();
+
+                expect(result).toBe(false);
+            });
+        });
+        describe("method: refresh", () => {
+            test("Should return true when refreshed by same owner", async () => {
+                const key = "a";
+                const ttl = TTL;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                await delay(ttl);
+
+                const result = await lock.refresh();
+
+                expect(result).toBe(true);
+            });
+            test("Should return false when refreshed by different owner", async () => {
+                const key = "a";
+                const ttl = TTL;
+                const owner1 = "b";
+                const lock1 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner1,
+                });
+
+                await lock1.acquire();
+                const owner2 = "c";
+                const lock2 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner2,
+                });
+
+                const result = await lock2.refresh();
+                expect(result).toBe(false);
+            });
+            test("Should refresh expiration by same owner", async () => {
+                const key = "a";
+                const ttl = TTL;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                await delay(ttl.subtractMilliseconds(10));
+                await lock.refresh();
+                const time = await lock.getRemainingTime();
+
+                expect(time?.toMilliseconds()).toBeGreaterThan(0);
+            });
+        });
+        describe("method: refreshOrFail", () => {
+            test("Should not throw UnownedRefreshLockError when refreshed by same owner", async () => {
+                const key = "a";
+                const ttl = TTL;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                await delay(ttl);
+
+                const result = lock.refreshOrFail();
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should throw UnownedRefreshLockError when refreshed by different owner", async () => {
+                const key = "a";
+                const ttl = TTL;
+                const owner1 = "b";
+                const lock1 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner1,
+                });
+
+                await lock1.acquire();
+                const owner2 = "c";
+                const lock2 = lockProviderA.create(key, {
+                    ttl,
+                    owner: owner2,
+                });
+
+                const result = lock2.refreshOrFail();
+                await expect(result).rejects.toBeInstanceOf(
+                    UnownedRefreshLockError,
+                );
+            });
+            test("Should refresh expiration by same owner", async () => {
+                const key = "a";
+                const ttl = TTL;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquireOrFail();
+                await delay(ttl.subtractMilliseconds(10));
+                await lock.refresh();
+                const time = await lock.getRemainingTime();
+
+                expect(time?.toMilliseconds()).toBeGreaterThan(0);
+            });
+        });
+        describe("method: getRemainingTime", () => {
+            test("Should return null when lock is not acquired", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                const result = await lock.getRemainingTime();
+
+                expect(result).toBeNull();
+            });
+            test("Should return null when lock is acquired and has expiration", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                const result = await lock.getRemainingTime();
+
+                expect(result).toBeNull();
+            });
+            test("Should return remaining time when lock is not acquired", async () => {
+                const key = "a";
+                const ttl = TTL;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquire();
+                const result = await lock.getRemainingTime();
+
+                expect(result?.toMilliseconds()).toBe(ttl.toMilliseconds());
+            });
+        });
+        describe("method: getOwner", () => {
+            test("Should return the owner", async () => {
+                const key = "a";
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    owner,
+                });
+
+                const result = await lock.getOwner();
+
+                expect(result).toBe(owner);
+            });
+            test("Should return the auto generated owner", async () => {
+                const key = "a";
+                const lock = lockProviderA.create(key);
+
+                const result = await lock.getOwner();
+
+                expect(result).toBeDefined();
+                expect(typeof result).toBe("string");
             });
         });
     });
