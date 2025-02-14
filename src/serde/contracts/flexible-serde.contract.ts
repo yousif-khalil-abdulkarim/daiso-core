@@ -4,7 +4,8 @@
 
 import type { ISerializable } from "@/serde/contracts/serializable.contract";
 import type { ISerde } from "@/serde/contracts/serde.contract";
-import type { BaseEvent } from "@/_module";
+import type { OneOrMore } from "@/utilities/_module";
+import type { BaseEvent } from "@/event-bus/contracts/_module";
 
 /**
  * The <i>SerializableClass</i> contract defines standard way to make a class instance serializable and deserializable.
@@ -27,7 +28,7 @@ export type SerializableEventClass<TFields extends Record<string, unknown>> =
  * @group Contracts
  */
 export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
-    name: string;
+    name: OneOrMore<string>;
 
     isApplicable(value: unknown): value is TDeserializedValue;
 

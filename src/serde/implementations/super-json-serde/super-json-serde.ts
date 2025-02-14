@@ -2,7 +2,7 @@
  * @module Serde
  */
 
-import { getConstructorName } from "@/utilities/_module";
+import { getConstructorName, simplifyOneOrMoreStr } from "@/utilities/_module";
 import type {
     SerializableEventClass,
     ISerdeTransformer,
@@ -72,7 +72,7 @@ export class SuperJsonSerde implements IFlexibleSerde<string> {
                     return transformer.deserialize(serializedValue);
                 },
             },
-            transformer.name,
+            simplifyOneOrMoreStr(transformer.name),
         );
         return this;
     }
