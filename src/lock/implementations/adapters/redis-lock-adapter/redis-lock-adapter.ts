@@ -2,7 +2,8 @@
  * @module Lock
  */
 
-import { simplifyGroupName, TimeSpan } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module";
+import { simplifyGroupName } from "@/utilities/_module";
 import type { ILockAdapter } from "@/lock/contracts/_module";
 import type Redis from "ioredis";
 import type { Result } from "ioredis";
@@ -165,21 +166,6 @@ export class RedisLockAdapter implements ILockAdapter {
     async forceRelease(key: string): Promise<void> {
         key = this.withPrefix(key);
         await this.database.del(key);
-    }
-
-    async isLocked(key: string): Promise<boolean> {
-        key = this.withPrefix(key);
-        const result = await this.database.exists(key);
-        return result > 0;
-    }
-
-    async getRemainingTime(key: string): Promise<TimeSpan | null> {
-        key = this.withPrefix(key);
-        const ttlInMs = await this.database.pttl(key);
-        if (ttlInMs === -1 || ttlInMs === -2) {
-            return null;
-        }
-        return TimeSpan.fromMilliseconds(ttlInMs);
     }
 
     async refresh(key: string, owner: string, ttl: TimeSpan): Promise<boolean> {
