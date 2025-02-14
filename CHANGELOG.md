@@ -1,5 +1,17 @@
 # @daiso-tech/core
 
+## 0.24.0
+
+### Minor Changes
+
+-   8253d62: Changed <i>Lock</i> class so it now doesn't implement <i>ISerdeTransformer</i> contract.
+-   66215ea: The <i>ISerdeTransformer</i> contract name field can now be bot a <i>string</i> and <i>string[]</i>.
+
+### Patch Changes
+
+-   7055619: Improved lock component documentation
+-   8253d62: Fixed a bug with <i>Lock</i> class serialization and deserialization
+
 ## 0.23.0
 
 ### Minor Changes
