@@ -25,6 +25,10 @@ export type SqliteLockAdapterSettings = {
 };
 
 /**
+ * To utilize the <i>SqliteLockAdapter</i>, you must install the <i>"better-sqlite3"</i> and <i>"@types/better-sqlite3"</i> packages.
+ *
+ * Note the <i>SqliteLockAdapter</i> is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes.
+ * To use it correctly, ensure all process instances access the same consistent, persisted database.
  * @group Adapters
  */
 export class SqliteLockAdapter

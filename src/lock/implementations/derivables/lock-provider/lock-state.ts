@@ -1,3 +1,7 @@
+/**
+ * @module Lock
+ */
+
 import { TimeSpan } from "@/utilities/_module";
 
 /**

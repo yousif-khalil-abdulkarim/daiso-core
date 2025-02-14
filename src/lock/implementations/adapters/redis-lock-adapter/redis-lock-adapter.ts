@@ -33,6 +33,9 @@ export type RedisLockAdapterSettings = {
 };
 
 /**
+ * To utilize the <i>RedisLockAdapter</i>, you must install the <i>"ioredis"</i> package.
+ *
+ * Note in order to use <i>RedisLockAdapter</i> correctly, ensure you use a single, consistent database across all server instances.
  * @group Adapters
  */
 export class RedisLockAdapter implements ILockAdapter {
