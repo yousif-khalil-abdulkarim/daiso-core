@@ -3,7 +3,6 @@
  */
 
 import {
-    getConstructorName,
     simplifyOneOrMoreStr,
     TimeSpan,
     type OneOrMore,
@@ -20,10 +19,7 @@ import {
     type ILockAdapter,
 } from "@/lock/contracts/_module";
 import type { BackoffPolicy, LazyPromise, RetryPolicy } from "@/async/_module";
-import {
-    Lock,
-    type ISerializedLock,
-} from "@/lock/implementations/derivables/lock-provider/lock";
+import { Lock } from "@/lock/implementations/derivables/lock-provider/lock";
 import type {
     EventClass,
     EventInstance,
@@ -37,12 +33,10 @@ import {
     NoOpEventBusAdapter,
 } from "@/event-bus/implementations/_module";
 import { v4 } from "uuid";
-import type {
-    IFlexibleSerde,
-    ISerdeTransformer,
-} from "@/serde/contracts/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module";
 import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter";
 import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state";
+import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer";
 
 /**
  * @group Derivables
@@ -103,9 +97,7 @@ export type LockProviderSettings = {
  * <i>LockProvider</i> class can be derived from any <i>{@link ILockAdapter}</i> or <i>{@link IDatabaseLockAdapter}</i>.
  * @group Derivables
  */
-export class LockProvider
-    implements IGroupableLockProvider, ISerdeTransformer<Lock, ISerializedLock>
-{
+export class LockProvider implements IGroupableLockProvider {
     private static DEFAULT_TTL = TimeSpan.fromMinutes(5);
     private static DEFAULT_REFRESH_TIME = TimeSpan.fromMinutes(5);
 
@@ -204,12 +196,22 @@ export class LockProvider
     }
 
     private registerToSerde(): void {
+        const transformer = new LockSerdeTransformer({
+            adapter: this.adapter,
+            backoffPolicy: this.backoffPolicy,
+            defaultRefreshTime: this.defaultRefreshTime,
+            eventBus: this.eventBus,
+            retryAttempts: this.retryAttempts,
+            retryPolicy: this.retryPolicy,
+            timeout: this.timeout,
+        });
+
         let serde = this.serde;
         if (!Array.isArray(serde)) {
             serde = [serde];
         }
         for (const serde_ of serde) {
-            serde_.registerCustom(this);
+            serde_.registerCustom(transformer);
         }
     }
 
@@ -260,49 +262,6 @@ export class LockProvider
         listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockProviderEventBus.subscribeMany(events, listener);
-    }
-
-    get name(): string {
-        return Lock.name;
-    }
-
-    isApplicable(value: unknown): value is Lock {
-        return value instanceof Lock && getConstructorName(value) === Lock.name;
-    }
-
-    serialize(deserializedValue: Lock): ISerializedLock {
-        return Lock.serialize(deserializedValue);
-    }
-
-    deserialize(serializedValue: ISerializedLock): Lock {
-        const { group, key, owner, ttlInMs } = serializedValue;
-        let adapter = this.adapter;
-        const rootGroup = adapter.getGroup();
-        const isRoot = group === rootGroup;
-        if (!isRoot) {
-            const groupWithouRoot = group.slice(
-                this.adapter.getGroup().length + 1,
-            );
-            adapter = adapter.withGroup(groupWithouRoot);
-        }
-        const ttl = ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null;
-        return new Lock({
-            lockProviderEventDispatcher: this.lockProviderEventBus,
-            lockEventBus: this.eventBus,
-            adapter,
-            defaultRefreshTime: this.defaultRefreshTime,
-            key,
-            owner,
-            ttl,
-            lazyPromiseSettings: {
-                backoffPolicy: this.backoffPolicy,
-                retryAttempts: this.retryAttempts,
-                retryPolicy: this.retryPolicy,
-                timeout: this.timeout,
-            },
-            stateRecord: this.stateRecord,
-            expirationInMs: serializedValue.expirationInMs,
-        });
     }
 
     create(
