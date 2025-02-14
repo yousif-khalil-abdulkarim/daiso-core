@@ -5,7 +5,7 @@
 import {
     type IDeinitizable,
     type IInitizable,
-    simplifyGroupName,
+    simplifyOneOrMoreStr,
 } from "@/utilities/_module";
 import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module";
 import { UnexpectedLockError } from "@/lock/contracts/_module";
@@ -253,7 +253,7 @@ export class MongodbLockAdapter
             database: this.database,
             collectionName: this.collectionName,
             collectionSettings: this.collectionSettings,
-            rootGroup: simplifyGroupName([this.group, group]),
+            rootGroup: simplifyOneOrMoreStr([this.group, group]),
         });
     }
 }

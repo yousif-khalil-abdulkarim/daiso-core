@@ -4,7 +4,7 @@
 
 import {
     getConstructorName,
-    simplifyGroupName,
+    simplifyOneOrMoreStr,
     TimeSpan,
     type OneOrMore,
 } from "@/utilities/_module";
@@ -316,8 +316,8 @@ export class LockProvider
             lockEventBus: this.eventBus,
             adapter: this.adapter,
             defaultRefreshTime: this.defaultRefreshTime,
-            key: simplifyGroupName(key),
-            owner: simplifyGroupName(owner),
+            key: simplifyOneOrMoreStr(key),
+            owner: simplifyOneOrMoreStr(owner),
             ttl,
             lazyPromiseSettings: {
                 backoffPolicy: this.backoffPolicy,
@@ -336,7 +336,7 @@ export class LockProvider
 
     withGroup(group: OneOrMore<string>): ILockProvider {
         return new LockProvider({
-            adapter: this.adapter.withGroup(simplifyGroupName(group)),
+            adapter: this.adapter.withGroup(simplifyOneOrMoreStr(group)),
             eventBus: this.eventBus,
             defaultTtl: this.defaultTtl,
             defaultRefreshTime: this.defaultRefreshTime,

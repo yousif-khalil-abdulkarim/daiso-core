@@ -55,7 +55,7 @@ export function isObjectEmpty(
 /**
  * @internal
  */
-export function simplifyGroupName(name: OneOrMore<string>): string {
+export function simplifyOneOrMoreStr(name: OneOrMore<string>): string {
     if (Array.isArray(name)) {
         name = name.filter((str) => str.length > 0).join("/");
     }

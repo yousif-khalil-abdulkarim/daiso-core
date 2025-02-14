@@ -3,7 +3,7 @@
  */
 
 import type { TimeSpan } from "@/utilities/_module";
-import { simplifyGroupName } from "@/utilities/_module";
+import { simplifyOneOrMoreStr } from "@/utilities/_module";
 import type { ILockAdapter } from "@/lock/contracts/_module";
 import type Redis from "ioredis";
 import type { Result } from "ioredis";
@@ -136,11 +136,11 @@ export class RedisLockAdapter implements ILockAdapter {
     }
 
     private getPrefix(): string {
-        return simplifyGroupName([this.group, "__KEY__"]);
+        return simplifyOneOrMoreStr([this.group, "__KEY__"]);
     }
 
     private withPrefix(key: string): string {
-        return simplifyGroupName([this.getPrefix(), key]);
+        return simplifyOneOrMoreStr([this.getPrefix(), key]);
     }
 
     async acquire(
@@ -185,7 +185,7 @@ export class RedisLockAdapter implements ILockAdapter {
     withGroup(group: string): ILockAdapter {
         return new RedisLockAdapter({
             database: this.database,
-            rootGroup: simplifyGroupName([this.group, group]),
+            rootGroup: simplifyOneOrMoreStr([this.group, group]),
         });
     }
 }

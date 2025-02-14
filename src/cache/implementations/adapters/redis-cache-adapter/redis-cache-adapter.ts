@@ -4,7 +4,7 @@
 
 import { TypeCacheError } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import { simplifyGroupName, type TimeSpan } from "@/utilities/_module";
+import { simplifyOneOrMoreStr, type TimeSpan } from "@/utilities/_module";
 import { ReplyError, type Redis, type Result } from "ioredis";
 import type { ISerde } from "@/serde/contracts/_module";
 import {
@@ -151,11 +151,11 @@ export class RedisCacheAdapter<TType = unknown>
     }
 
     private getPrefix(): string {
-        return simplifyGroupName([this.group, "__KEY__"]);
+        return simplifyOneOrMoreStr([this.group, "__KEY__"]);
     }
 
     private withPrefix(key: string): string {
-        return simplifyGroupName([this.getPrefix(), key]);
+        return simplifyOneOrMoreStr([this.getPrefix(), key]);
     }
 
     async get(key: string): Promise<TType | null> {
@@ -272,7 +272,7 @@ export class RedisCacheAdapter<TType = unknown>
     async clear(): Promise<void> {
         for await (const _ of new ClearIterable(
             this.database,
-            simplifyGroupName([escapeRedisChars(this.getPrefix()), "*"]),
+            simplifyOneOrMoreStr([escapeRedisChars(this.getPrefix()), "*"]),
         )) {
             /* Empty */
         }
@@ -286,7 +286,7 @@ export class RedisCacheAdapter<TType = unknown>
         return new RedisCacheAdapter({
             database: this.database,
             serde: this.baseSerde,
-            rootGroup: simplifyGroupName([this.group, group]),
+            rootGroup: simplifyOneOrMoreStr([this.group, group]),
         });
     }
 }
