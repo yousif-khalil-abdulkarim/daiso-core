@@ -95,6 +95,10 @@ export type LockProviderSettings = {
 
 /**
  * <i>LockProvider</i> class can be derived from any <i>{@link ILockAdapter}</i> or <i>{@link IDatabaseLockAdapter}</i>.
+ *
+ * Note the <i>{@link ILock}</i> instances created by the <i>LockProvider</i> class are serializable and deserializable,
+ * allowing them to be seamlessly transferred across different servers, processes, and databases.
+ * This can be done directly using <i>{@link IFlexibleSerde}</i> or indirectly through components that rely on <i>{@link IFlexibleSerde}</i> internally.
  * @group Derivables
  */
 export class LockProvider implements IGroupableLockProvider {

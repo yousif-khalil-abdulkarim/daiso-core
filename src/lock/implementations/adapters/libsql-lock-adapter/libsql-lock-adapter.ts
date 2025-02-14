@@ -28,6 +28,9 @@ export type LibsqlLockAdapterSettings = {
 
 /**
  * To utilize the <i>LibsqlLockAdapter</i>, you must install the <i>"@libsql/client"</i> package.
+ *
+ * Note in order to use <i>LibsqlLockAdapter</i> correctly, ensure you use a single, consistent database across all server instances.
+ * This means you can't use libsql embedded replicas.
  * @group Adapters
  */
 export class LibsqlLockAdapter

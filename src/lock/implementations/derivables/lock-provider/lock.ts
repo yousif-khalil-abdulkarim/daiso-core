@@ -37,7 +37,7 @@ import {
 } from "@/lock/implementations/derivables/lock-provider/lock-state";
 
 /**
- * @group Derivables
+ * @internal
  */
 export type ISerializedLock = {
     group: string;
