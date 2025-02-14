@@ -26,7 +26,7 @@ import {
     isArrayEmpty,
     isObjectEmpty,
     simplifyAsyncLazyable,
-    simplifyGroupName,
+    simplifyOneOrMoreStr,
 } from "@/utilities/_module";
 import type {
     AsyncLazyable,
@@ -214,7 +214,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     withGroup(group: OneOrMore<string>): ICache<TType> {
         return new Cache({
-            adapter: this.adapter.withGroup(simplifyGroupName(group)),
+            adapter: this.adapter.withGroup(simplifyOneOrMoreStr(group)),
             defaultTtl: this.defaultTtl,
             eventBus: this.groupdEventBus,
             retryAttempts: this.retryAttempts,

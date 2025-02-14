@@ -11,7 +11,7 @@ import type { IDeinitizable } from "@/utilities/_module";
 import {
     type TimeSpan,
     type IInitizable,
-    simplifyGroupName,
+    simplifyOneOrMoreStr,
 } from "@/utilities/_module";
 import type { CollectionOptions, Db, ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
@@ -118,7 +118,7 @@ export class MongodbCacheAdapter<TType = unknown>
             serde: this.baseSerde,
             collectionName: this.collectionName,
             collectionSettings: this.collectionSettings,
-            rootGroup: simplifyGroupName([this.group, group]),
+            rootGroup: simplifyOneOrMoreStr([this.group, group]),
         });
     }
 

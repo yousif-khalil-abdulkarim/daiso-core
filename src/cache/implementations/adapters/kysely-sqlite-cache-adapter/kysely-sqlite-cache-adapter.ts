@@ -7,7 +7,7 @@ import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
 import { type ISerde } from "@/serde/contracts/_module";
 import type { IDeinitizable, IInitizable } from "@/utilities/_module";
-import { simplifyGroupName, TimeSpan } from "@/utilities/_module";
+import { simplifyOneOrMoreStr, TimeSpan } from "@/utilities/_module";
 import { SqlSerde } from "@/serde/implementations/_module";
 
 /**
@@ -82,7 +82,7 @@ export class KyselySqliteCacheAdapter<TType = unknown>
             expiredKeysRemovalInterval: this.expiredKeysRemovalInterval,
             serde: this.serde,
             shouldRemoveExpiredKeys: this.shouldRemoveExpiredKeys,
-            rootGroup: simplifyGroupName([this.group, group]),
+            rootGroup: simplifyOneOrMoreStr([this.group, group]),
         });
     }
 

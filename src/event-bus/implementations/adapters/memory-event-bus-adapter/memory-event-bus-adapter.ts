@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import { simplifyGroupName } from "@/utilities/_module";
+import { simplifyOneOrMoreStr } from "@/utilities/_module";
 import type {
     BaseEvent,
     IEventBusAdapter,
@@ -62,13 +62,13 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
 
     withGroup(group: string): IEventBusAdapter {
         return new MemoryEventBusAdapter({
-            rootGroup: simplifyGroupName([this.group, group]),
+            rootGroup: simplifyOneOrMoreStr([this.group, group]),
             eventEmitter: this.eventEmitter,
         });
     }
 
     private withPrefix(event: string): string {
-        return simplifyGroupName([this.group, event]);
+        return simplifyOneOrMoreStr([this.group, event]);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await

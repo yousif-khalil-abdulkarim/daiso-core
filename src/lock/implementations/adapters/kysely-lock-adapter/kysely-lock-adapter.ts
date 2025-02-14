@@ -9,7 +9,7 @@ import {
     type IInitizable,
     TimeSpan,
 } from "@/utilities/_module";
-import { simplifyGroupName } from "@/utilities/_module";
+import { simplifyOneOrMoreStr } from "@/utilities/_module";
 
 /**
  * @internal
@@ -192,7 +192,7 @@ export class KyselyLockAdapter
     withGroup(group: string): IDatabaseLockAdapter {
         return new KyselyLockAdapter({
             database: this.database,
-            rootGroup: simplifyGroupName([this.group, group]),
+            rootGroup: simplifyOneOrMoreStr([this.group, group]),
         });
     }
 }
