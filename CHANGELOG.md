@@ -1,5 +1,20 @@
 # @daiso-tech/core
 
+## 0.23.0
+
+### Minor Changes
+
+-   9160158: Renamed <i>UnownedExtendLockError</i> to <i>UnownedRefreshLockError</i>
+-   ebd0666: Removed <i>IDatabaseLockAdapter</i> inheritance from <i>IDeinitizable</i> and <i>IInitizable</i> to simplify the contract.
+-   4a4b537: Removed the <i>ISerdeRegistrable</i> contract
+-   ebd0666: Removed <i>isLocked</i> method and <i>getRemainingTime</i> method from <i>ILockAdapter</i>.
+
+### Patch Changes
+
+-   4a4b537: Updated READNE.md and package.json.
+-   ebd0666: - <i>Lock</i> class
+    -   Fixed a bug in <i>acquireOrFail</i>, it now correctly throws an error.
+
 ## 0.22.2
 
 ### Patch Changes
