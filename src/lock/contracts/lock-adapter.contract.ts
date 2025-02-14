@@ -34,17 +34,6 @@ export type ILockAdapter = {
     forceRelease(key: string): PromiseLike<void>;
 
     /**
-     * The <i>isLocked</i> method return true if locked otherwise false is returned.
-     */
-    isLocked(key: string): PromiseLike<boolean>;
-
-    /**
-     * The <i>getRemainingTime</i> return the reaming time as <i>{@link TimeSpan}</i>.
-     * Returns null if the key doesnt exist, key has no expiration and key has expired.
-     */
-    getRemainingTime(key: string): PromiseLike<TimeSpan | null>;
-
-    /**
      * The <i>refresh</i> method will upadte ttl of lock if it matches the given <i>key</i> and matches the given <i>owner</i>.
      * Returns true if the update occured otherwise false is returned.
      */

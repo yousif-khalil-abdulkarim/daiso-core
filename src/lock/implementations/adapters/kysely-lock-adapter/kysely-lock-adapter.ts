@@ -4,7 +4,11 @@
 
 import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module";
 import type { Kysely } from "kysely";
-import { TimeSpan } from "@/utilities/_module";
+import {
+    type IDeinitizable,
+    type IInitizable,
+    TimeSpan,
+} from "@/utilities/_module";
 import { simplifyGroupName } from "@/utilities/_module";
 
 /**
@@ -38,7 +42,9 @@ type KyselySettings = {
 /**
  * @internal
  */
-export class KyselyLockAdapter implements IDatabaseLockAdapter {
+export class KyselyLockAdapter
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
+{
     private readonly group: string;
     private readonly database: Kysely<KyselyTables>;
     private readonly expiredKeysRemovalInterval: TimeSpan;

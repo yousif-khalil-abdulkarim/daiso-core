@@ -2,7 +2,8 @@
  * @module Lock
  */
 
-import { simplifyGroupName, TimeSpan } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module";
+import { simplifyGroupName } from "@/utilities/_module";
 import type { ILockAdapter, ILockData } from "@/lock/contracts/_module";
 
 /**
@@ -109,26 +110,6 @@ export class MemoryLockAdapter implements ILockAdapter {
         clearTimeout(this.timeoutMap.get(key));
         this.timeoutMap.delete(key);
         this.map.delete(key);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/require-await
-    async isLocked(key: string): Promise<boolean> {
-        key = this.withPrefix(key);
-        return this.map.has(key);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/require-await
-    async getRemainingTime(key: string): Promise<TimeSpan | null> {
-        key = this.withPrefix(key);
-        const lock = this.map.get(key);
-        if (lock === undefined) {
-            return null;
-        }
-        const { expiration } = lock;
-        if (expiration === null) {
-            return null;
-        }
-        return TimeSpan.fromDateRange(new Date(), expiration);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await

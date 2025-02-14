@@ -31,6 +31,10 @@ import type {
     IEventBus,
     IEventDispatcher,
 } from "@/event-bus/contracts/_module";
+import {
+    type ILockStateRecord,
+    LockState,
+} from "@/lock/implementations/derivables/lock-provider/lock-state";
 
 /**
  * @group Derivables
@@ -40,6 +44,7 @@ export type ISerializedLock = {
     key: string;
     owner: string;
     ttlInMs: number | null;
+    expirationInMs: number | null;
 };
 
 /**
@@ -53,12 +58,14 @@ export type LockSettings = {
     owner: string;
     defaultRefreshTime: TimeSpan;
     ttl: TimeSpan | null;
+    expirationInMs: number | null;
     lazyPromiseSettings: {
         retryAttempts: number | null;
         backoffPolicy: BackoffPolicy | null;
         retryPolicy: RetryPolicy | null;
         timeout: TimeSpan | null;
     };
+    stateRecord: ILockStateRecord;
 };
 
 /**
@@ -71,6 +78,7 @@ export class Lock implements ILock {
             key: deserializedValue.key,
             owner: deserializedValue.owner,
             ttlInMs: deserializedValue.ttl?.toMilliseconds() ?? null,
+            expirationInMs: deserializedValue.state.get()?.getTime() ?? null,
         };
     }
 
@@ -82,6 +90,8 @@ export class Lock implements ILock {
     private readonly ttl: TimeSpan | null;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly lazyPromiseSettings: LockSettings["lazyPromiseSettings"];
+    private readonly state: LockState;
+    private readonly expirationInMs: number | null;
 
     constructor(settings: LockSettings) {
         const {
@@ -93,7 +103,10 @@ export class Lock implements ILock {
             owner,
             ttl,
             lazyPromiseSettings,
+            stateRecord,
+            expirationInMs,
         } = settings;
+        this.expirationInMs = expirationInMs;
         this.lockProviderEventDispatcher = lockProviderEventDispatcher;
         this.lockEventBus = lockEventBus.withGroup([adapter.getGroup(), key]);
         this.defaultRefreshTime = defaultRefreshTime;
@@ -102,6 +115,8 @@ export class Lock implements ILock {
         this.owner = owner;
         this.ttl = ttl;
         this.lazyPromiseSettings = lazyPromiseSettings;
+        this.state = new LockState(stateRecord, key);
+        this.state.set(expirationInMs);
     }
 
     private createLayPromise<TValue = void>(
@@ -164,12 +179,14 @@ export class Lock implements ILock {
     acquire(): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
             try {
+                this.state.remove();
                 const hasAquired = await this.adapter.acquire(
                     this.key,
                     this.owner,
                     this.ttl,
                 );
                 if (hasAquired) {
+                    this.state.set(this.ttl);
                     const event = new KeyAcquiredLockEvent({
                         key: this.key,
                         owner: this.owner,
@@ -204,7 +221,7 @@ export class Lock implements ILock {
         return this.createLayPromise(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
-                new KeyAlreadyAcquiredLockError(
+                throw new KeyAlreadyAcquiredLockError(
                     `Key "${this.key}" already acquired`,
                 );
             }
@@ -219,6 +236,7 @@ export class Lock implements ILock {
                     this.owner,
                 );
                 if (hasReleased) {
+                    this.state.remove();
                     const event = new KeyReleasedLockEvent({
                         key: this.key,
                         owner: this.owner,
@@ -263,6 +281,7 @@ export class Lock implements ILock {
         return this.createLayPromise(async () => {
             try {
                 await this.adapter.forceRelease(this.key);
+                this.state.remove();
                 const event = new KeyForceReleasedLockEvent({
                     key: this.key,
                 });
@@ -283,16 +302,10 @@ export class Lock implements ILock {
     }
 
     isExpired(): LazyPromise<boolean> {
-        return this.createLayPromise(async () => {
-            const isLocked = await this.isLocked();
-            return !isLocked;
-        });
-    }
-
-    isLocked(): LazyPromise<boolean> {
+        // eslint-disable-next-line @typescript-eslint/require-await
         return this.createLayPromise(async () => {
             try {
-                return await this.adapter.isLocked(this.key);
+                return this.state.isExpired();
             } catch (error: unknown) {
                 const event = new UnexpectedErrorLockEvent({
                     key: this.key,
@@ -307,20 +320,28 @@ export class Lock implements ILock {
         });
     }
 
+    isLocked(): LazyPromise<boolean> {
+        return this.createLayPromise(async () => {
+            const isExpired = await this.isExpired();
+            return !isExpired;
+        });
+    }
+
     refresh(ttl: TimeSpan = this.defaultRefreshTime): LazyPromise<boolean> {
         return this.createLayPromise(async () => {
             try {
-                const hasExtended = await this.adapter.refresh(
+                const hasRefreshed = await this.adapter.refresh(
                     this.key,
                     this.owner,
                     ttl,
                 );
-                if (hasExtended) {
+                if (hasRefreshed) {
                     const event = new KeyRefreshedLockEvent({
                         key: this.key,
                         owner: this.owner,
                         ttl,
                     });
+                    this.state.set(ttl);
                     this.lockEventBus.dispatch(event).defer();
                     this.lockProviderEventDispatcher.dispatch(event).defer();
                 } else {
@@ -331,7 +352,7 @@ export class Lock implements ILock {
                     this.lockEventBus.dispatch(event).defer();
                     this.lockProviderEventDispatcher.dispatch(event).defer();
                 }
-                return hasExtended;
+                return hasRefreshed;
             } catch (error: unknown) {
                 const event = new UnexpectedErrorLockEvent({
                     key: this.key,
@@ -348,8 +369,8 @@ export class Lock implements ILock {
 
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            const hasExtended = await this.refresh(ttl);
-            if (!hasExtended) {
+            const hasRefreshed = await this.refresh(ttl);
+            if (!hasRefreshed) {
                 throw new UnownedRefreshLockError(
                     `Unonwed refresh on key "${this.key}" by owner "${this.owner}"`,
                 );
@@ -360,19 +381,7 @@ export class Lock implements ILock {
     getRemainingTime(): LazyPromise<TimeSpan | null> {
         // eslint-disable-next-line @typescript-eslint/require-await
         return this.createLayPromise(async () => {
-            try {
-                return await this.adapter.getRemainingTime(this.key);
-            } catch (error: unknown) {
-                const event = new UnexpectedErrorLockEvent({
-                    key: this.key,
-                    owner: this.owner,
-                    ttl: this.ttl,
-                    error,
-                });
-                this.lockEventBus.dispatch(event).defer();
-                this.lockProviderEventDispatcher.dispatch(event).defer();
-                throw error;
-            }
+            return this.state.getRemainingTime();
         });
     }
 

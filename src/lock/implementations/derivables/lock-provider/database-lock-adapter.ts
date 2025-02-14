@@ -2,8 +2,8 @@
  * @module Lock
  */
 
-import type { IDeinitizable, IInitizable } from "@/_module";
-import { TimeSpan, UnexpectedCacheError } from "@/_module";
+import type { TimeSpan } from "@/_module";
+import { UnexpectedCacheError } from "@/_module";
 import type {
     IDatabaseLockAdapter,
     ILockAdapter,
@@ -12,18 +12,8 @@ import type {
 /**
  * @internal
  */
-export class DatabaseLockAdapter
-    implements ILockAdapter, IDeinitizable, IInitizable
-{
+export class DatabaseLockAdapter implements ILockAdapter {
     constructor(private readonly adapter: IDatabaseLockAdapter) {}
-
-    async init(): Promise<void> {
-        await this.adapter.init();
-    }
-
-    async deInit(): Promise<void> {
-        await this.adapter.deInit();
-    }
 
     async acquire(
         key: string,
@@ -56,34 +46,6 @@ export class DatabaseLockAdapter
 
     async forceRelease(key: string): Promise<void> {
         await this.adapter.remove(key, null);
-    }
-
-    async isLocked(key: string): Promise<boolean> {
-        const lock = await this.adapter.find(key);
-        if (!lock) {
-            return false;
-        }
-        if (lock.expiration === null) {
-            return true;
-        }
-        const isLocked = lock.expiration.getTime() <= Date.now();
-        return !isLocked;
-    }
-
-    async getRemainingTime(key: string): Promise<TimeSpan | null> {
-        const lock = await this.adapter.find(key);
-        if (lock === null) {
-            return null;
-        }
-        const { expiration } = lock;
-        if (expiration === null) {
-            return null;
-        }
-        const hasExpired = expiration.getTime() <= Date.now();
-        if (hasExpired) {
-            return null;
-        }
-        return TimeSpan.fromDateRange(new Date(), expiration);
     }
 
     async refresh(key: string, owner: string, ttl: TimeSpan): Promise<boolean> {

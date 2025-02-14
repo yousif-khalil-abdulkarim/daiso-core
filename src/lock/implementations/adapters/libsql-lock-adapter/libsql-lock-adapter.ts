@@ -3,7 +3,11 @@
  */
 
 import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module";
-import { TimeSpan } from "@/utilities/_module";
+import {
+    type IDeinitizable,
+    type IInitizable,
+    TimeSpan,
+} from "@/utilities/_module";
 import { Kysely } from "kysely";
 import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
 import type { LibsqlDialectConfig } from "@libsql/kysely-libsql";
@@ -26,7 +30,9 @@ export type LibsqlLockAdapterSettings = {
  * To utilize the <i>LibsqlLockAdapter</i>, you must install the <i>"@libsql/client"</i> package.
  * @group Adapters
  */
-export class LibsqlLockAdapter implements IDatabaseLockAdapter {
+export class LibsqlLockAdapter
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
+{
     private databaseLockAdapter: KyselyLockAdapter;
 
     /***

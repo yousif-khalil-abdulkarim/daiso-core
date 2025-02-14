@@ -42,6 +42,7 @@ import type {
     ISerdeTransformer,
 } from "@/serde/contracts/_module";
 import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter";
+import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state";
 
 /**
  * @group Derivables
@@ -147,6 +148,7 @@ export class LockProvider
     private readonly timeout: TimeSpan | null;
     private readonly eventBus: IGroupableEventBus<LockEvents>;
     private readonly lockProviderEventBus: IEventBus<LockEvents>;
+    private stateRecord: ILockStateRecord = {};
 
     /**
      *@example
@@ -298,6 +300,8 @@ export class LockProvider
                 retryPolicy: this.retryPolicy,
                 timeout: this.timeout,
             },
+            stateRecord: this.stateRecord,
+            expirationInMs: serializedValue.expirationInMs,
         });
     }
 
@@ -321,6 +325,8 @@ export class LockProvider
                 retryPolicy: this.retryPolicy,
                 timeout: this.timeout,
             },
+            stateRecord: this.stateRecord,
+            expirationInMs: null,
         });
     }
 
