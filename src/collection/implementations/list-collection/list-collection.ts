@@ -145,6 +145,10 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return new ListCollection(iterableA).zip(iterableB);
     }
 
+    static deserialize<TInput>(serializedValue: TInput[]): ICollection<TInput> {
+        return new ListCollection(serializedValue);
+    }
+
     private array: TInput[];
 
     /**
@@ -199,6 +203,10 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
      */
     constructor(iterable: Iterable<TInput> = []) {
         this.array = [...iterable];
+    }
+
+    serialize(): TInput[] {
+        return this.toArray();
     }
 
     *[Symbol.iterator](): Iterator<TInput> {
