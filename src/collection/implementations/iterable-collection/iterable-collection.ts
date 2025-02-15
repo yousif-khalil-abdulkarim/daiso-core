@@ -180,6 +180,10 @@ export class IterableCollection<TInput = unknown>
         return new IterableCollection(iterableA).zip(iterableB);
     }
 
+    static deserialize<TInput>(serializedValue: TInput[]): ICollection<TInput> {
+        return new IterableCollection(serializedValue);
+    }
+
     private static DEFAULT_CHUNK_SIZE = 1024;
 
     private static makeCollection = <TInput>(
@@ -239,6 +243,10 @@ export class IterableCollection<TInput = unknown>
      * ```
      */
     constructor(private readonly iterable: Iterable<TInput>) {}
+
+    serialize(): TInput[] {
+        return this.toArray();
+    }
 
     *[Symbol.iterator](): Iterator<TInput> {
         yield* this.iterable;
