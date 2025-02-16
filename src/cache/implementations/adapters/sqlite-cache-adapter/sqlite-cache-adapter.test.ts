@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/_shared/_module";
+import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module";
 import Sqlite, { type Database } from "better-sqlite3";
 import { SqliteCacheAdapter } from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter";
 import { Serde } from "@/serde/implementations/deriavables/_module";

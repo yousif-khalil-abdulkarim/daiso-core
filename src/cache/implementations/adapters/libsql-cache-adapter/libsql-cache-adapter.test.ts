@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/_shared/_module";
+import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module";
 import { type Client, createClient } from "@libsql/client";
 import { LibsqlCacheAdapter } from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module";

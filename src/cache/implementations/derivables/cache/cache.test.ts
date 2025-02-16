@@ -3,7 +3,7 @@ import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module";
 import { Cache } from "@/cache/implementations/derivables/cache/cache";
 import { EventBus } from "@/event-bus/implementations/derivables/_module";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
-import { cacheTestSuite } from "@/cache/implementations/_shared/_module";
+import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module";
 
 describe("class: Cache", () => {
     const eventBus = new EventBus<any>({

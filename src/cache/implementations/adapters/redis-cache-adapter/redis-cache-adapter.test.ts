@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/_shared/_module";
+import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module";
 import { RedisCacheAdapter } from "@/cache/implementations/adapters/redis-cache-adapter/_module";
 import Redis from "ioredis";
 import {
