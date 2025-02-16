@@ -5,7 +5,7 @@
 import { delay } from "@/async/utilities/delay/_module";
 import { AbortAsyncError, RetryAsyncError } from "@/async/async.errors";
 import { exponentialBackoffPolicy } from "@/async/backof-policies/_module";
-import { TimeSpan } from "@/utilities/_module";
+import { TimeSpan } from "@/utilities/_module-exports";
 import type { BackoffPolicy } from "@/async/backof-policies/_module";
 
 /**

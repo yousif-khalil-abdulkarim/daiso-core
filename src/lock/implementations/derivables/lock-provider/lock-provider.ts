@@ -6,19 +6,19 @@ import {
     simplifyOneOrMoreStr,
     TimeSpan,
     type OneOrMore,
-} from "@/utilities/_module";
+} from "@/utilities/_module-exports";
 import type {
     IDatabaseLockAdapter,
     LockEvents,
-} from "@/lock/contracts/_module";
+} from "@/lock/contracts/_module-exports";
 import {
     type ILock,
     type IGroupableLockProvider,
     type LockProviderCreateSettings,
     type ILockProvider,
     type ILockAdapter,
-} from "@/lock/contracts/_module";
-import type { BackoffPolicy, LazyPromise, RetryPolicy } from "@/async/_module";
+} from "@/lock/contracts/_module-exports";
+import type { BackoffPolicy, LazyPromise, RetryPolicy } from "@/async/_module-exports";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock";
 import type {
     EventClass,
@@ -27,11 +27,11 @@ import type {
     IGroupableEventBus,
     Listener,
     Unsubscribe,
-} from "@/event-bus/contracts/_module";
-import { EventBus } from "@/event-bus/implementations/derivables/_module";
-import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module";
+} from "@/event-bus/contracts/_module-exports";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports";
 import { v4 } from "uuid";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module-exports";
 import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter";
 import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer";

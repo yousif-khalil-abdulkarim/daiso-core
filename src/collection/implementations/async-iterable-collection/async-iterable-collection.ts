@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module";
+import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module-exports";
 import {
     type AsyncCollapse,
     type AsyncPredicate,
@@ -20,7 +20,7 @@ import {
     type AsyncReduce,
     EmptyCollectionError,
     type CrossJoinResult,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports";
 import {
     AsyncCrossJoinIterable,
     AsyncSlidingIteralbe,
@@ -61,11 +61,11 @@ import {
 import {
     type AsyncIterableValue,
     type AsyncLazyable,
-} from "@/utilities/_module";
-import { simplifyAsyncLazyable } from "@/utilities/_module";
-import type { TimeSpan } from "@/utilities/_module";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
-import { LazyPromise } from "@/async/_module";
+} from "@/utilities/_module-exports";
+import { simplifyAsyncLazyable } from "@/utilities/_module-exports";
+import type { TimeSpan } from "@/utilities/_module-exports";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports";
+import { LazyPromise } from "@/async/_module-exports";
 
 /**
  * @group Adapters

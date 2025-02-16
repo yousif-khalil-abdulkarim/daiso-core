@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import type { CacheEvents, WithTtlValue } from "@/cache/contracts/_module";
+import type { CacheEvents, WithTtlValue } from "@/cache/contracts/_module-exports";
 import {
     KeyFoundCacheEvent,
     KeyNotFoundCacheEvent,
@@ -15,27 +15,27 @@ import {
     UnexpectedCacheErrorEvent,
     type ICache,
     type ICacheAdapter,
-} from "@/cache/contracts/_module";
+} from "@/cache/contracts/_module-exports";
 import {
     KeyNotFoundCacheError,
     TypeCacheError,
     UnexpectedCacheError,
-} from "@/cache/contracts/_module";
-import { type IGroupableCache } from "@/cache/contracts/_module";
+} from "@/cache/contracts/_module-exports";
+import { type IGroupableCache } from "@/cache/contracts/_module-exports";
 import {
     isArrayEmpty,
     isObjectEmpty,
     simplifyAsyncLazyable,
     simplifyOneOrMoreStr,
-} from "@/utilities/_module";
+} from "@/utilities/_module-exports";
 import type {
     AsyncLazyable,
     GetOrAddValue,
     OneOrMore,
-} from "@/utilities/_module";
-import type { TimeSpan } from "@/utilities/_module";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
-import { LazyPromise } from "@/async/_module";
+} from "@/utilities/_module-exports";
+import type { TimeSpan } from "@/utilities/_module-exports";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports";
+import { LazyPromise } from "@/async/_module-exports";
 import type {
     IGroupableEventBus,
     IEventBus,
@@ -43,9 +43,9 @@ import type {
     Unsubscribe,
     EventClass,
     EventInstance,
-} from "@/event-bus/contracts/_module";
-import { EventBus } from "@/event-bus/implementations/derivables/_module";
-import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module";
+} from "@/event-bus/contracts/_module-exports";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports";
 
 /**
  * @group Derivables

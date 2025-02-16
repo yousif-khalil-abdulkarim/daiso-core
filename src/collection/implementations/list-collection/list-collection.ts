@@ -3,7 +3,7 @@
  */
 
 import { isIterable } from "@/collection/implementations/_shared";
-import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module";
+import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module-exports";
 import {
     type Collapse,
     type Comparator,
@@ -21,9 +21,9 @@ import {
     type ForEach,
     EmptyCollectionError,
     type CrossJoinResult,
-} from "@/collection/contracts/_module";
-import { type Lazyable } from "@/utilities/_module";
-import { simplifyLazyable } from "@/utilities/_module";
+} from "@/collection/contracts/_module-exports";
+import { type Lazyable } from "@/utilities/_module-exports";
+import { simplifyLazyable } from "@/utilities/_module-exports";
 
 /**
  * All methods in <i>ListCollection</i> are executed eagerly.

@@ -12,13 +12,13 @@ import {
     BaseEvent,
     type IEventBus,
     type IGroupableEventBus,
-} from "@/event-bus/contracts/_module";
-import { type Promisable } from "@/utilities/_module";
-import { TimeSpan } from "@/utilities/_module";
-import { delay } from "@/async/_module";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
-import { Serde } from "@/serde/implementations/deriavables/_module";
-import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module";
+} from "@/event-bus/contracts/_module-exports";
+import { type Promisable } from "@/utilities/_module-exports";
+import { TimeSpan } from "@/utilities/_module-exports";
+import { delay } from "@/async/_module-exports";
+import type { IFlexibleSerde } from "@/serde/contracts/_module-exports";
+import { Serde } from "@/serde/implementations/deriavables/_module-exports";
+import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports";
 
 /**
  * @group Utilities

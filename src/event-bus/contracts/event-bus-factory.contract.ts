@@ -8,7 +8,7 @@ import {
     UnregisteredAdapterError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultAdapterNotDefinedError,
-} from "@/utilities/_module";
+} from "@/utilities/_module-exports";
 import type { BaseEvent } from "@/event-bus/contracts/_shared";
 
 /**

@@ -5,7 +5,7 @@
 import type {
     ISerdeTransformerAdapter,
     IFlexibleSerdeAdapter,
-} from "@/serde/contracts/_module";
+} from "@/serde/contracts/_module-exports";
 import {
     DeserializationError,
     SerializationError,

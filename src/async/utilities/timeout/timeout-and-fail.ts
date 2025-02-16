@@ -2,7 +2,7 @@
  * @module Async
  */
 import { AbortAsyncError, TimeoutAsyncError } from "@/async/async.errors";
-import type { TimeSpan } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module-exports";
 import { abortAndFail } from "@/async/utilities/abort/_module";
 
 /**

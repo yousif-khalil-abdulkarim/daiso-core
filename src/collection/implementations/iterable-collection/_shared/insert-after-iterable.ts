@@ -5,7 +5,7 @@
 import {
     type Predicate,
     type ICollection,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports";
 
 /**
  * @internal

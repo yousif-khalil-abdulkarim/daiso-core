@@ -2,16 +2,16 @@
  * @module Lock
  */
 
-import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module";
+import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module-exports";
 import {
     type IDeinitizable,
     type IInitizable,
     TimeSpan,
-} from "@/utilities/_module";
+} from "@/utilities/_module-exports";
 import { KyselyLockAdapter } from "@/lock/implementations/adapters/kysely-lock-adapter/_module";
 import type { SqliteDatabase } from "kysely";
 import { Kysely, SqliteDialect } from "kysely";
-import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
+import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports";
 
 /**
  * @group Adapters

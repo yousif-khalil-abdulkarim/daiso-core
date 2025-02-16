@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import type { OneOrMore, TimeSpan } from "@/utilities/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports";
 import type { ILock, ILockListener } from "@/lock/contracts/lock.contract";
 
 /**

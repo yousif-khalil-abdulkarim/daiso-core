@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import { type TimeSpan } from "@/utilities/_module";
+import { type TimeSpan } from "@/utilities/_module-exports";
 import { abort } from "@/async/utilities/_module";
 
 /**

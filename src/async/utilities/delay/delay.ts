@@ -2,7 +2,7 @@
  * @module Async
  */
 
-import { type TimeSpan } from "@/utilities/_module";
+import { type TimeSpan } from "@/utilities/_module-exports";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     AsyncError,

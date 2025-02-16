@@ -2,21 +2,21 @@
  * @module EventBus
  */
 
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports";
 import {
     type IEventBusAdapter,
     type IGroupableEventBus,
     type IEventBusFactory,
     type BaseEvent,
     registerEventBusErrors,
-} from "@/event-bus/contracts/_module";
+} from "@/event-bus/contracts/_module-exports";
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus";
-import type { OneOrMore, TimeSpan } from "@/utilities/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
-} from "@/utilities/_module";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
+} from "@/utilities/_module-exports";
+import type { IFlexibleSerde } from "@/serde/contracts/_module-exports";
 
 /**
  * @group Derivables

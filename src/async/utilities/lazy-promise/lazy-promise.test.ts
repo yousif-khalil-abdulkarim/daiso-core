@@ -1,4 +1,4 @@
-import { TimeSpan } from "@/utilities/_module";
+import { TimeSpan } from "@/utilities/_module-exports";
 import { describe, test, expect } from "vitest";
 import { LazyPromise } from "@/async/utilities/lazy-promise/lazy-promise";
 import {

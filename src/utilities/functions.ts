@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-import { LazyPromise } from "@/async/_module";
+import { LazyPromise } from "@/async/_module-exports";
 import type { Lazyable, OneOrMore } from "@/utilities/types";
 import { type AsyncLazyable } from "@/utilities/types";
 

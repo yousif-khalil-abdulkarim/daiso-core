@@ -1,5 +1,5 @@
-import type { ISerdeTransformer } from "@/serde/contracts/_module";
-import { getConstructorName, type OneOrMore } from "@/utilities/_module";
+import type { ISerdeTransformer } from "@/serde/contracts/_module-exports";
+import { getConstructorName, type OneOrMore } from "@/utilities/_module-exports";
 
 /**
  * @internal

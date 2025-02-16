@@ -2,13 +2,13 @@
  * @module EventBus
  */
 
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
-import { LazyPromise } from "@/async/_module";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports";
+import { LazyPromise } from "@/async/_module-exports";
 import type {
     EventClass,
     EventInstance,
     Unsubscribe,
-} from "@/event-bus/contracts/_module";
+} from "@/event-bus/contracts/_module-exports";
 import {
     type IEventBus,
     type IGroupableEventBus,
@@ -18,14 +18,14 @@ import {
     UnableToDispatchEventBusError,
     UnableToRemoveListenerEventBusError,
     UnableToAddListenerEventBusError,
-} from "@/event-bus/contracts/_module";
+} from "@/event-bus/contracts/_module-exports";
 
-import type { OneOrMore, TimeSpan } from "@/utilities/_module";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports";
 import {
     getConstructorName,
     isArrayEmpty,
     simplifyOneOrMoreStr,
-} from "@/utilities/_module";
+} from "@/utilities/_module-exports";
 
 /**
  * @group Derivables

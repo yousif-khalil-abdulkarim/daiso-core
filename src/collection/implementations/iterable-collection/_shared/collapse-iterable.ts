@@ -6,7 +6,7 @@ import { isIterable } from "@/collection/implementations/_shared";
 import {
     type Collapse,
     type ICollection,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports";
 
 /**
  * @internal

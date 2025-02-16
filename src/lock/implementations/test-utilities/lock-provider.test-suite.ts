@@ -11,7 +11,7 @@ import type {
     ILockProvider,
     IGroupableLockProvider,
     ILock,
-} from "@/lock/contracts/_module";
+} from "@/lock/contracts/_module-exports";
 import {
     UnownedRefreshLockEvent,
     KeyForceReleasedLockEvent,
@@ -23,13 +23,13 @@ import {
     UnownedRefreshLockError,
     UnownedReleaseLockError,
     KeyRefreshedLockEvent,
-} from "@/lock/contracts/_module";
-import { type Promisable } from "@/utilities/_module";
-import { TimeSpan } from "@/utilities/_module";
-import { delay, LazyPromise } from "@/async/_module";
-import type { ISerde } from "@/serde/contracts/_module";
-import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module";
-import { Serde } from "@/serde/implementations/deriavables/_module";
+} from "@/lock/contracts/_module-exports";
+import { type Promisable } from "@/utilities/_module-exports";
+import { TimeSpan } from "@/utilities/_module-exports";
+import { delay, LazyPromise } from "@/async/_module-exports";
+import type { ISerde } from "@/serde/contracts/_module-exports";
+import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports";
+import { Serde } from "@/serde/implementations/deriavables/_module-exports";
 
 /**
  * @group Utilities

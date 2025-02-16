@@ -16,7 +16,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     RetryAsyncError,
 } from "@/async/async.errors";
-import { simplifyAsyncLazyable, type Func } from "@/utilities/_module";
+import { simplifyAsyncLazyable, type Func } from "@/utilities/_module-exports";
 
 /**
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.

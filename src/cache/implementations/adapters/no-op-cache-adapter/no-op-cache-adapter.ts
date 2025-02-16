@@ -3,7 +3,7 @@
  */
 
 import type { ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { TimeSpan } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module-exports";
 
 /**
  * This <i>NoOpCacheAdapter</i> will do nothing and is used for easily mocking {@link ICacheAdapter} for testing.

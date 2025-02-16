@@ -3,16 +3,16 @@
  */
 
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { TimeSpan, IDeinitizable, IInitizable } from "@/utilities/_module";
+import type { TimeSpan, IDeinitizable, IInitizable } from "@/utilities/_module-exports";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports";
 import { Kysely } from "kysely";
 import type { LibsqlDialectConfig } from "@libsql/kysely-libsql";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
-import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
+import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ISerde } from "@/serde/contracts/_module";
+import type { ISerde } from "@/serde/contracts/_module-exports";
 import type { Client } from "@libsql/client";
 
 /**

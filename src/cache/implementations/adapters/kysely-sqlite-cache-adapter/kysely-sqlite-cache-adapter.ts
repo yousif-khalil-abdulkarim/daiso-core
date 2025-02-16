@@ -2,13 +2,13 @@
  * @module Cache
  */
 
-import { type ICacheAdapter, TypeCacheError } from "@/cache/contracts/_module";
+import { type ICacheAdapter, TypeCacheError } from "@/cache/contracts/_module-exports";
 import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
-import { type ISerde } from "@/serde/contracts/_module";
-import type { IDeinitizable, IInitizable } from "@/utilities/_module";
-import { simplifyOneOrMoreStr, TimeSpan } from "@/utilities/_module";
-import { SqlSerde } from "@/serde/implementations/adapters/_module";
+import { type ISerde } from "@/serde/contracts/_module-exports";
+import type { IDeinitizable, IInitizable } from "@/utilities/_module-exports";
+import { simplifyOneOrMoreStr, TimeSpan } from "@/utilities/_module-exports";
+import { SqlSerde } from "@/serde/implementations/adapters/_module-exports";
 
 /**
  * @internal

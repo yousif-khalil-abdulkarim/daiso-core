@@ -4,8 +4,8 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { IGroupableEventBus } from "@/event-bus/contracts/event-bus.contract";
-import type { IFlexibleSerde, ISerializable } from "@/serde/contracts/_module";
-import type { ISerializedError, OneOrMore } from "@/utilities/_module";
+import type { IFlexibleSerde, ISerializable } from "@/serde/contracts/_module-exports";
+import type { ISerializedError, OneOrMore } from "@/utilities/_module-exports";
 
 /**
  * @group Errors

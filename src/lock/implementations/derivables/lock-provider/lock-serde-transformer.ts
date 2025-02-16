@@ -6,10 +6,10 @@ import {
     getConstructorName,
     TimeSpan,
     type OneOrMore,
-} from "@/utilities/_module";
-import type { LockEvents } from "@/lock/contracts/_module";
-import type { ILockAdapter } from "@/lock/contracts/_module";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
+} from "@/utilities/_module-exports";
+import type { LockEvents } from "@/lock/contracts/_module-exports";
+import type { ILockAdapter } from "@/lock/contracts/_module-exports";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports";
 import {
     Lock,
     type ISerializedLock,
@@ -17,10 +17,10 @@ import {
 import type {
     IEventBus,
     IGroupableEventBus,
-} from "@/event-bus/contracts/_module";
-import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module";
-import { EventBus } from "@/event-bus/implementations/derivables/_module";
-import type { ISerdeTransformer } from "@/serde/contracts/_module";
+} from "@/event-bus/contracts/_module-exports";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports";
+import type { ISerdeTransformer } from "@/serde/contracts/_module-exports";
 import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state";
 
 /**

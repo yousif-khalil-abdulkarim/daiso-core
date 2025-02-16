@@ -4,9 +4,9 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { IGroupableCache } from "@/cache/contracts/cache.contract";
-import { BaseEvent } from "@/event-bus/contracts/_module";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
-import type { OneOrMore, TimeSpan } from "@/utilities/_module";
+import { BaseEvent } from "@/event-bus/contracts/_module-exports";
+import type { IFlexibleSerde } from "@/serde/contracts/_module-exports";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports";
 
 /**
  * @group Events

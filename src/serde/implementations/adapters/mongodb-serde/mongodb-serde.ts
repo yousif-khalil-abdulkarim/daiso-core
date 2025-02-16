@@ -2,7 +2,7 @@
  * @module Serde
  */
 
-import { type ISerde } from "@/serde/contracts/_module";
+import { type ISerde } from "@/serde/contracts/_module-exports";
 import {
     DeserializationError,
     SerializationError,

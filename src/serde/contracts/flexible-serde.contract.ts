@@ -4,8 +4,8 @@
 
 import type { ISerializable } from "@/serde/contracts/serializable.contract";
 import type { ISerde } from "@/serde/contracts/serde.contract";
-import type { OneOrMore } from "@/utilities/_module";
-import type { BaseEvent } from "@/event-bus/contracts/_module";
+import type { OneOrMore } from "@/utilities/_module-exports";
+import type { BaseEvent } from "@/event-bus/contracts/_module-exports";
 
 /**
  * The <i>SerializableClass</i> contract defines standard way to make a class instance serializable and deserializable.

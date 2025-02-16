@@ -2,8 +2,8 @@
  * @module Lock
  */
 
-import type { LazyPromiseable, Result, TimeSpan } from "@/utilities/_module";
-import type { LazyPromise } from "@/async/_module";
+import type { LazyPromiseable, Result, TimeSpan } from "@/utilities/_module-exports";
+import type { LazyPromise } from "@/async/_module-exports";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnableToAquireLockError,
@@ -14,7 +14,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnownedReleaseLockError,
 } from "@/lock/contracts/lock.errors";
-import type { IEventListener } from "@/event-bus/contracts/_module";
+import type { IEventListener } from "@/event-bus/contracts/_module-exports";
 import type { LockEvents } from "@/lock/contracts/lock.events";
 
 /**

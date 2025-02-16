@@ -7,7 +7,7 @@ import type {
     IFlexibleSerde,
     ISerdeTransformer,
     ISerializable,
-} from "@/serde/contracts/_module";
+} from "@/serde/contracts/_module-exports";
 
 /**
  * @group Utilities

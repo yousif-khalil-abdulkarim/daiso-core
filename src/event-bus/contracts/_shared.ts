@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { Promisable } from "@/utilities/_module";
+import type { Promisable } from "@/utilities/_module-exports";
 
 /**
  * @group Contracts

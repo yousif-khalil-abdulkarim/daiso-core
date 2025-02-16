@@ -1,12 +1,12 @@
 import { describe, test, beforeEach, expect, afterEach } from "vitest";
-import { eventBusAdapterTestSuite } from "@/event-bus/implementations/test-utilities/_module";
+import { eventBusAdapterTestSuite } from "@/event-bus/implementations/test-utilities/_module-exports";
 import { RedisPubSubEventBusAdapter } from "@/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/redis-pub-sub-event-bus-adapter";
-import { TimeSpan } from "@/utilities/_module";
+import { TimeSpan } from "@/utilities/_module-exports";
 import type { StartedRedisContainer } from "@testcontainers/redis";
 import { RedisContainer } from "@testcontainers/redis";
 import Redis from "ioredis";
-import { Serde } from "@/serde/implementations/deriavables/_module";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module";
+import { Serde } from "@/serde/implementations/deriavables/_module-exports";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisPubSubEventBusAdapter", () => {

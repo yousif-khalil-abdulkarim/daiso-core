@@ -2,7 +2,7 @@
  * @module Async
  */
 
-import { TimeSpan } from "@/utilities/_module";
+import { TimeSpan } from "@/utilities/_module-exports";
 import {
     withJitter,
     type BackoffPolicy,

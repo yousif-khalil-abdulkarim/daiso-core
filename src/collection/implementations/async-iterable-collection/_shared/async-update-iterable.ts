@@ -6,7 +6,7 @@ import {
     type AsyncPredicate,
     type AsyncMap,
     type IAsyncCollection,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports";
 
 /**
  * @internal

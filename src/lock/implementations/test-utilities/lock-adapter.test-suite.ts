@@ -7,10 +7,10 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { type ILockAdapter } from "@/lock/contracts/_module";
-import { type Promisable } from "@/utilities/_module";
-import { TimeSpan } from "@/utilities/_module";
-import { delay } from "@/async/_module";
+import { type ILockAdapter } from "@/lock/contracts/_module-exports";
+import { type Promisable } from "@/utilities/_module-exports";
+import { TimeSpan } from "@/utilities/_module-exports";
+import { delay } from "@/async/_module-exports";
 
 /**
  * @group Utilities

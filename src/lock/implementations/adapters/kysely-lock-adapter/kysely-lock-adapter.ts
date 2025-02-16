@@ -2,14 +2,14 @@
  * @module Lock
  */
 
-import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module";
+import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module-exports";
 import type { Kysely } from "kysely";
 import {
     type IDeinitizable,
     type IInitizable,
     TimeSpan,
-} from "@/utilities/_module";
-import { simplifyOneOrMoreStr } from "@/utilities/_module";
+} from "@/utilities/_module-exports";
+import { simplifyOneOrMoreStr } from "@/utilities/_module-exports";
 
 /**
  * @internal

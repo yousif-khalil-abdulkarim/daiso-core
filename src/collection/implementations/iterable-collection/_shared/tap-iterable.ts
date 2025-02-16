@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import { type ICollection, type Tap } from "@/collection/contracts/_module";
+import { type ICollection, type Tap } from "@/collection/contracts/_module-exports";
 
 /**
  * @internal

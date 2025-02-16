@@ -5,7 +5,7 @@ import {
     TypeCollectionError,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports";
 import { ListCollection } from "@/collection/implementations/list-collection/_module";
 
 describe("class: ListCollection", () => {

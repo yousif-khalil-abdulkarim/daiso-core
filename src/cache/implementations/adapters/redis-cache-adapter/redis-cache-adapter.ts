@@ -4,10 +4,10 @@
 
 import { TypeCacheError } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import { simplifyOneOrMoreStr, type TimeSpan } from "@/utilities/_module";
+import { simplifyOneOrMoreStr, type TimeSpan } from "@/utilities/_module-exports";
 import { ReplyError, type Redis, type Result } from "ioredis";
-import type { ISerde } from "@/serde/contracts/_module";
-import { RedisSerde } from "@/serde/implementations/adapters/_module";
+import type { ISerde } from "@/serde/contracts/_module-exports";
+import { RedisSerde } from "@/serde/implementations/adapters/_module-exports";
 
 /**
  * @internal

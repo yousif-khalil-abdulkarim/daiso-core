@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module";
+import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports";
 import { RedisLockAdapter } from "@/lock/implementations/adapters/redis-lock-adapter/_module";
 import Redis from "ioredis";
 import {
     RedisContainer,
     type StartedRedisContainer,
 } from "@testcontainers/redis";
-import { TimeSpan } from "@/utilities/_module";
+import { TimeSpan } from "@/utilities/_module-exports";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisLockAdapter", () => {

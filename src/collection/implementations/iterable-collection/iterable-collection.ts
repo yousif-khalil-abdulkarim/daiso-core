@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module";
+import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module-exports";
 import {
     type Collapse,
     type Comparator,
@@ -20,7 +20,7 @@ import {
     type Reduce,
     EmptyCollectionError,
     type CrossJoinResult,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports";
 import {
     CrossJoinIterable,
     SlidingIteralbe,
@@ -55,8 +55,8 @@ import {
     SliceIterable,
     RepeatIterable,
 } from "@/collection/implementations/iterable-collection/_shared/_module";
-import { type Lazyable } from "@/utilities/_module";
-import { simplifyLazyable } from "@/utilities/_module";
+import { type Lazyable } from "@/utilities/_module-exports";
+import { simplifyLazyable } from "@/utilities/_module-exports";
 
 /**
  * All methods that return <i>{@link ICollection}</i> are executed lazly which means they will be executed when the <i>IterableCollection</i> is iterated with <i>forEach</i> method or "for of" loop.

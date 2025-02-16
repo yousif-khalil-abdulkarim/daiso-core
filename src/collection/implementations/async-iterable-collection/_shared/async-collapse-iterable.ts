@@ -9,7 +9,7 @@ import {
 import {
     type AsyncCollapse,
     type IAsyncCollection,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports";
 
 /**
  * @internal

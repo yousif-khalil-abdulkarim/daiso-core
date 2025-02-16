@@ -7,18 +7,18 @@ import {
     UnexpectedCacheError,
 } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { IDeinitizable } from "@/utilities/_module";
+import type { IDeinitizable } from "@/utilities/_module-exports";
 import {
     type TimeSpan,
     type IInitizable,
     simplifyOneOrMoreStr,
-} from "@/utilities/_module";
+} from "@/utilities/_module-exports";
 import type { CollectionOptions, Db, ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
-import type { ISerde } from "@/serde/contracts/_module";
+import type { ISerde } from "@/serde/contracts/_module-exports";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module";
-import { MongodbSerde } from "@/serde/implementations/adapters/_module";
+import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports";
+import { MongodbSerde } from "@/serde/implementations/adapters/_module-exports";
 
 /**
  * @group Adapters

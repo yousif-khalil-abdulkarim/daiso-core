@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module-exports";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ILockProvider } from "@/lock/contracts/lock-provider.contract";
 

@@ -2,7 +2,7 @@
  * @module Async
  */
 import { TimeoutAsyncError } from "@/async/async.errors";
-import type { TimeSpan } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module-exports";
 import type { Result } from "@/utilities/types";
 import { timeoutAndFail } from "@/async/utilities/timeout/timeout-and-fail";
 

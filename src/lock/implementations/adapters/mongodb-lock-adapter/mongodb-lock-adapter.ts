@@ -6,9 +6,9 @@ import {
     type IDeinitizable,
     type IInitizable,
     simplifyOneOrMoreStr,
-} from "@/utilities/_module";
-import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module";
-import { UnexpectedLockError } from "@/lock/contracts/_module";
+} from "@/utilities/_module-exports";
+import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module-exports";
+import { UnexpectedLockError } from "@/lock/contracts/_module-exports";
 import type { Collection, CollectionOptions, Db } from "mongodb";
 import { ObjectId } from "mongodb";
 

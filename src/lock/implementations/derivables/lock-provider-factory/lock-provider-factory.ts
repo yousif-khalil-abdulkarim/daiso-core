@@ -2,25 +2,25 @@
  * @module Lock
  */
 
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
-import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports";
+import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports";
 import type {
     IDatabaseLockAdapter,
     ILockAdapter,
-} from "@/lock/contracts/_module";
+} from "@/lock/contracts/_module-exports";
 import {
     registerLockErrorsToSerde,
     registerLockEventsToSerde,
-} from "@/lock/contracts/_module";
+} from "@/lock/contracts/_module-exports";
 import type { ILockProviderFactory } from "@/lock/contracts/lock-provider-factory.contract";
 import type { IGroupableLockProvider } from "@/lock/contracts/lock-provider.contract";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
+import type { IFlexibleSerde } from "@/serde/contracts/_module-exports";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
     type OneOrMore,
-} from "@/utilities/_module";
-import type { TimeSpan } from "@/utilities/_module";
+} from "@/utilities/_module-exports";
+import type { TimeSpan } from "@/utilities/_module-exports";
 import { LockProvider } from "@/lock/implementations/derivables/lock-provider/_module";
 
 /**

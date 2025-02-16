@@ -14,7 +14,7 @@ import type {
     Comparator,
     EnsureRecord,
     EnsureMap,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ItemNotFoundCollectionError,
@@ -27,10 +27,10 @@ import {
     TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
-} from "@/collection/contracts/_module";
-import type { AsyncLazyable, AsyncIterableValue } from "@/utilities/_module";
-import type { TimeSpan } from "@/utilities/_module";
-import type { LazyPromise } from "@/async/_module";
+} from "@/collection/contracts/_module-exports";
+import type { AsyncLazyable, AsyncIterableValue } from "@/utilities/_module-exports";
+import type { TimeSpan } from "@/utilities/_module-exports";
+import type { LazyPromise } from "@/async/_module-exports";
 
 export type AsyncCollapse<TValue> = TValue extends
     | Array<infer TItem>
