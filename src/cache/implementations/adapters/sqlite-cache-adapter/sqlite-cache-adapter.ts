@@ -4,7 +4,7 @@
 
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { SuperJsonSerde } from "@/serde/implementations/_module";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
 import type { TimeSpan, IInitizable, IDeinitizable } from "@/utilities/_module";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 import type { SqliteDatabase } from "kysely";
@@ -27,7 +27,7 @@ export type SqliteCacheAdapterSettings = {
 };
 
 /**
- * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
  * @group Adapters
  */
 export class SqliteCacheAdapter<TType = unknown>

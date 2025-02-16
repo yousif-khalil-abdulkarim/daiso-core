@@ -7,11 +7,7 @@ import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import { simplifyOneOrMoreStr, type TimeSpan } from "@/utilities/_module";
 import { ReplyError, type Redis, type Result } from "ioredis";
 import type { ISerde } from "@/serde/contracts/_module";
-import {
-    RedisSerde,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type SuperJsonSerde,
-} from "@/serde/implementations/_module";
+import { RedisSerde } from "@/serde/implementations/_module";
 
 /**
  * @internal

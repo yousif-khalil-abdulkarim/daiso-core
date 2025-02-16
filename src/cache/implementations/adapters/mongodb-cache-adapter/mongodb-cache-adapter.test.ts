@@ -5,7 +5,7 @@ import type { StartedMongoDBContainer } from "@testcontainers/mongodb";
 import { MongoDBContainer } from "@testcontainers/mongodb";
 import { TimeSpan } from "@/utilities/_module";
 import { MongodbCacheAdapter } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter";
-import { SuperJsonSerde } from "@/serde/implementations/_module";
+import { Serde, SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: MongodbCacheAdapter", () => {
@@ -25,7 +25,7 @@ describe("class: MongodbCacheAdapter", () => {
         createAdapter: async () => {
             const cacheAdapter = new MongodbCacheAdapter({
                 database: client.db("database"),
-                serde: new SuperJsonSerde(),
+                serde: new Serde(new SuperJsonSerdeAdapter()),
                 rootGroup: "@a",
             });
             await cacheAdapter.init();
