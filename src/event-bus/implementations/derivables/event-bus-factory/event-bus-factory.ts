@@ -101,9 +101,13 @@ export class EventBusFactory<TAdapters extends string = string>
     /**
      * @example
      * ```ts
-     * import { EventBusFactory, SuperJsonSerde. MemoryEventBusAdapter, RedisPubSubEventBusAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import { EventBusFactory } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import Redis from "ioredis";
-     * const serde = new SuperJsonSerde();
+     *
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new EventBusFactory({
      *   serde,
      *   adapters: {
@@ -118,7 +122,7 @@ export class EventBusFactory<TAdapters extends string = string>
      *     }),
      *     defaultAdapter: "memory"
      *   }
-     * })
+     * });
      * ```
      */
     constructor(settings: EventBusFactorySettings<TAdapters>) {
@@ -165,6 +169,43 @@ export class EventBusFactory<TAdapters extends string = string>
         return eventBusRecord;
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBusFactory } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import Redis from "ioredis";
+     *
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const cacheFactory = new EventBusFactory({
+     *   serde,
+     *   adapters: {
+     *     memory:new MemoryEventBusAdapter({
+     *       rootGroup: "@global"
+     *     }),
+     *     redis: new RedisPubSubEventBusAdapter({
+     *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION"),
+     *       listenerClient: new Redis("YOUR_REDIS_CONNECTION")
+     *       serde,
+     *       rootGroup: "@global"
+     *     }),
+     *     defaultAdapter: "memory"
+     *   }
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     * serde.registerEvent(AddEvent);
+     *
+     * // Will use the default adapter which is MemoryEventBusAdapter
+     * await cacheFactory.use().dispatch(new AddEvent({ a: 1, b: 2 }));
+     *
+     * // Will use the redis dapter which is RedisPubSubEventBusAdapter
+     * await cacheFactory.use("redis").dispatch(new AddEvent({ a: 1, b: 2 }));
+     * ```
+     */
     use<TEvents extends BaseEvent = BaseEvent>(
         adapterName: TAdapters | undefined = this.defaultAdapter,
     ): IGroupableEventBus<TEvents> {

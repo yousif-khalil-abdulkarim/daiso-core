@@ -31,7 +31,14 @@ export type IEventBusAdapter = {
      */
     dispatch(eventName: string, eventData: BaseEvent): PromiseLike<void>;
 
+    /**
+     * The <i>getGroup</i> method returns the group name.
+     */
     getGroup(): string;
 
+    /**
+     * The <i>withGroup</i> method returns a new <i>{@link IEventBusAdapter}</i> instance that groups events together.
+     * Only events in the same group will be listened.
+     */
     withGroup(group: string): IEventBusAdapter;
 };

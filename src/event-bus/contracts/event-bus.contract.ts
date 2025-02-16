@@ -41,8 +41,8 @@ export type Unsubscribe = () => LazyPromise<void>;
  */
 export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     /**
-     * The <i>addListener</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i>.
-     * A listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
+     * The <i>addListener</i> method is used for listening to <i>{@link BaseEvent}</i>.
+     * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     addListener<TEventClass extends EventClass<TEvents>>(
@@ -51,8 +51,8 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>addListenerMany</i> method is used for adding multiple <i>{@link Listener | listeners}</i> for certain <i>events</i>.
-     * A listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
+     * The <i>addListenerMany</i> method is used for listening to multiple <i>{@link BaseEvent}</i>.
+     * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     addListenerMany<TEventClass extends EventClass<TEvents>>(
@@ -61,7 +61,7 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>removeListener</i> method is used for removing <i>{@link Listener | listener}</i> for certain <i>event</i>.
+     * The <i>removeListener</i> method is used for stop listening to <i>{@link BaseEvent}</i>.
      * Removing unadded listener will have no effect and nothing will occur.
      * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
@@ -71,7 +71,7 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>removeListener</i> method is used for removing multiple <i>{@link Listener | listeners}</i> for certain <i>event</i>.
+     * The <i>removeListener</i> method is used for stop listening to multiple <i>{@link BaseEvent}</i>.
      * Removing unadded listener will have no effect and nothing will occur.
      * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
@@ -81,7 +81,7 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>listenOnce</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i> that is trigged only once.
+     * The <i>listenOnce</i> method is used for listening to <i>{@link BaseEvent}</i> once.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     listenOnce<TEventClass extends EventClass<TEvents>>(
@@ -90,8 +90,8 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>subscribe</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>event</i>.
-     * A listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
+     * The <i>subscribe</i> method is used for listening to <i>{@link BaseEvent}</i> and it returns a cleanup function that removes listener when called.
+     * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
     subscribe<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
@@ -99,8 +99,8 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<Unsubscribe>;
 
     /**
-     * The <i>subscribeMany</i> method is used for adding <i>{@link Listener | listener}</i> for multiple <i>events</i>.
-     * A listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
+     * The <i>subscribeMany</i> method is used for listening to multiple <i>{@link BaseEvent}</i> and it returns a cleanup function that removes listener when called.
+     * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
     subscribeMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
@@ -114,14 +114,14 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
  */
 export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
     /**
-     * The <i>dispatch</i> method is used for dispatching a <i>event</i>.
+     * The <i>dispatch</i> method is used for dispatching a <i>{@link BaseEvent}</i>.
 
      * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
      */
     dispatch(event: TEvents): LazyPromise<void>;
 
     /**
-     * The <i>dispatchMany</i> method is used for dispatching multiple <i>event</i>.
+     * The <i>dispatchMany</i> method is used for dispatching multiple <i>{@link BaseEvent}</i>.
 
      * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
      */
@@ -137,21 +137,7 @@ export type IEventBus<TEvents extends BaseEvent = BaseEvent> =
     IEventListener<TEvents> &
         IEventDispatcher<TEvents> & {
             /**
-             * The <i>getGroup</i> method returns the complete group.
-             * @example
-             * ```ts
-             * import { type IEventBus } from "@daiso-tech/core";
-             *
-             * async function main(eventBus: IEventBus): Promise<void> {
-             *   // Will be "@root"
-             *   console.log(eventBus.getGroup())
-             *
-             *   const eventBusA = eventBus.withGroup("a");
-             *
-             *   // Will be "@root/a"
-             *   console.log(eventBusA.getGroup())
-             * }
-             * ```
+             * The <i>getGroup</i> method returns the group name.
              */
             getGroup(): string;
         };
@@ -164,32 +150,8 @@ export type IEventBus<TEvents extends BaseEvent = BaseEvent> =
 export type IGroupableEventBus<TEvents extends BaseEvent = BaseEvent> =
     IEventBus<TEvents> & {
         /**
-         * The <i>withGroup</i> method returns new instance of <i>{@link IEventBus}</i> where all the events names will be prefixed with a given <i>group</i>.
-         * This useful for multitennat applications.
-         * @example
-         * ```ts
-         * import { type IEventBus } from "@daiso-tech/core";
-         *
-         * async function main(eventBus: IEventBus): Promise<void> {
-         *   const eventBusA = eventBus.withGroup("a");
-         *   await eventBusA.subscribe("add", (event) => {
-         *     // This will be logged
-         *     console.log("eventBusA:", event);
-         *   });
-         *
-         *   const eventBusB = eventBus.withGroup("b");
-         *   await eventBusB.subscribe("add", (event) => {
-         *     // This will never be logged
-         *     console.log("eventBusB:", event);
-         *   });
-         *
-         *   await eventBusA.dispatch({
-         *     type: "add",
-         *     a: 1,
-         *     b: 2
-         *   })
-         * }
-         * ```
+         * The <i>withGroup</i> method returns a new <i>{@link IEventBus}</i> instance that groups events together.
+         * Only events in the same group will be listened to. This useful for multitennat applications.
          */
         withGroup(group: OneOrMore<string>): IEventBus<TEvents>;
     };

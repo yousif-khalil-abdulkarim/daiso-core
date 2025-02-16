@@ -29,7 +29,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
     /**
      * @example
      * ```ts
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { EventEmitter } from "node:events";
      *
      * const eventEmitter = new EventEmitter();
@@ -40,7 +40,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
      * You can also provide an <i>EVentEmitter</i>.
      * @example
      * ```ts
-     * import { MemoryCacheAdapter } from "@daiso-tech/core";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { EventEmitter } from "node:events";
      *
      * const eventEmitter = new EventEmitter();

@@ -42,12 +42,14 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     /**
      * @example
      * ```ts
-     * import { RedisPubSubEventBusAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import Redis from "ioredis";
      *
      * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
      * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
-     * const serde = new SuperJsonSerde();
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const eventBusAdapter = new RedisPubSubEventBusAdapter({
      *   dispatcherClient,
      *   listenerClient,
