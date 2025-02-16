@@ -8,7 +8,7 @@ import {
     type TypeCacheError,
 } from "@/cache/contracts/cache.errors.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ICache } from "@/cache/contracts/cache.contract.js";
+import type { ICache } from "@/cache/contracts/cache.contract.js";
 
 /**
  * The <i>ICacheAdapter</i> contract defines a way for storing data as key-value pairs independent of data storage.

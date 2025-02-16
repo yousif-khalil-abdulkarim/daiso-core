@@ -4,9 +4,7 @@
     "version": "0.23.0",
     "author": "Yousif Abdulkarim",
     "license": "Apache-2.0",
-    "main": "./dist/cjs/_module.js",
-    "module": "./dist/esm/_module.js",
-    "types": "./dist/types/_module.d.ts",
+    "type": "module",
     "homepage": "https://yousif-khalil-abdulkarim.github.io/daiso-core/modules.html",
     "repository": {
         "type": "git",
@@ -43,16 +41,39 @@
     "files": [
         "./dist"
     ],
+    "exports": {
+        "./*": {
+            "import": "./dist/*/_module-exports.js",
+            "types": "./dist/*/_module-exports.d.ts"
+        },
+        "./*/implementations": {
+            "import": "./dist/*/implementations/_module-exports.js",
+            "types": "./dist/*/implementations/_module-exports.d.ts"
+        },
+        "./*/contracts": {
+            "import": "./dist/*/contracts/_module-exports.js",
+            "types": "./dist/*/contracts/_module-exports.d.ts"
+        },
+        "./*/implementations/adapters": {
+            "import": "./dist/*/implementations/adapters/_module-exports.js",
+            "types": "./dist/*/implementations/adapters/_module-exports.d.ts"
+        },
+        "./*/implementations/derivables": {
+            "import": "./dist/*/implementations/derivables/_module-exports.js",
+            "types": "./dist/*/implementations/derivables/_module-exports.d.ts"
+        },
+        "./*/implementations/test-utilities": {
+            "import": "./dist/*/implementations/test-utilities/_module-exports.js",
+            "types": "./dist/*/implementations/test-utilities/_module-exports.d.ts"
+        }
+    },
     "scripts": {
         "test": "npx vitest run",
         "test:watch": "npm run test -- watch",
         "check": "npx tsc --project \"./tsconfig.json\"",
         "lint": "npx eslint \"**/*.{js,jsx,ts,tsx}\"",
         "lint:fix": "npx eslint \"**/*.{js,jsx,ts,tsx}\" --fix",
-        "build": "npx rimraf dist && npm run build:cjs && npm run build:esm && npm run build:types",
-        "build:cjs": "npx tsc --project \"./tsconfig.cjs.json\" && npx tsc-alias -p \"./tsconfig.cjs.json\"",
-        "build:esm": "npx tsc --project \"./tsconfig.esm.json\" && npx tsc-alias -p \"./tsconfig.esm.json\"",
-        "build:types": "npx tsc --project \"./tsconfig.types.json\" && npx tsc-alias -p \"./tsconfig.types.json\"",
+        "build": "npx rimraf dist && npx tsc --project \"./tsconfig.build.json\" && npx tsc-alias -p \"./tsconfig.build.json\"",
         "docs": "npx typedoc",
         "release": "npm run build && npx changeset publish"
     },
