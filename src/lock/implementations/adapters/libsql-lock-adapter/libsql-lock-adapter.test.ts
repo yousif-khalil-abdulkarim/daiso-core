@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { databaseLockAdapterTestSuite } from "@/lock/implementations/_shared/_module";
+import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module";
 import { type Client, createClient } from "@libsql/client";
 import { LibsqlLockAdapter } from "@/lock/implementations/adapters/libsql-lock-adapter/libsql-lock-adapter";
 

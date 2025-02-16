@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import { lockAdapterTestSuite } from "@/lock/implementations/_shared/_module";
+import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module";
 import { MemoryLockAdapter } from "@/lock/implementations/adapters/memory-lock-adapter/_module";
 import type { ILockData } from "@/lock/contracts/_module";
 

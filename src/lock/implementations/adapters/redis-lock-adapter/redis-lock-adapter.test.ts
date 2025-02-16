@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { lockAdapterTestSuite } from "@/lock/implementations/_shared/_module";
+import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module";
 import { RedisLockAdapter } from "@/lock/implementations/adapters/redis-lock-adapter/_module";
 import Redis from "ioredis";
 import {

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { databaseLockAdapterTestSuite } from "@/lock/implementations/_shared/_module";
+import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module";
 import { MongoClient } from "mongodb";
 import type { StartedMongoDBContainer } from "@testcontainers/mongodb";
 import { MongoDBContainer } from "@testcontainers/mongodb";
