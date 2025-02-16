@@ -1,2 +1,2 @@
-export * from "@/cache/implementations/derivables/cache-factory/_module";
-export * from "@/cache/implementations/derivables/cache/_module";
+export * from "@/cache/implementations/derivables/cache-factory/_module.js";
+export * from "@/cache/implementations/derivables/cache/_module.js";

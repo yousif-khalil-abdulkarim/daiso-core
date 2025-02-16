@@ -5,20 +5,20 @@
 import {
     TypeCacheError,
     UnexpectedCacheError,
-} from "@/cache/contracts/cache.errors";
-import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { IDeinitizable } from "@/utilities/_module-exports";
+} from "@/cache/contracts/cache.errors.js";
+import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
+import type { IDeinitizable } from "@/utilities/_module-exports.js";
 import {
     type TimeSpan,
     type IInitizable,
     simplifyOneOrMoreStr,
-} from "@/utilities/_module-exports";
+} from "@/utilities/_module-exports.js";
 import type { CollectionOptions, Db, ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
-import type { ISerde } from "@/serde/contracts/_module-exports";
+import type { ISerde } from "@/serde/contracts/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports";
-import { MongodbSerde } from "@/serde/implementations/adapters/_module-exports";
+import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import { MongodbSerde } from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
  * @group Adapters

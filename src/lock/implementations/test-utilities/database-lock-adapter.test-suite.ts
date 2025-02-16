@@ -8,9 +8,9 @@ import {
     type beforeEach,
     vi,
 } from "vitest";
-import { type IDatabaseLockAdapter } from "@/lock/contracts/_module-exports";
-import { type Promisable } from "@/utilities/_module-exports";
-import { TimeSpan } from "@/utilities/_module-exports";
+import { type IDatabaseLockAdapter } from "@/lock/contracts/_module-exports.js";
+import { type Promisable } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  * @group Utilities

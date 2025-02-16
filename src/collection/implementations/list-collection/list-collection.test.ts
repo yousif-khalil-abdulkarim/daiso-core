@@ -5,8 +5,8 @@ import {
     TypeCollectionError,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
-} from "@/collection/contracts/_module-exports";
-import { ListCollection } from "@/collection/implementations/list-collection/_module";
+} from "@/collection/contracts/_module-exports.js";
+import { ListCollection } from "@/collection/implementations/list-collection/_module.js";
 
 describe("class: ListCollection", () => {
     describe("method: filter", () => {

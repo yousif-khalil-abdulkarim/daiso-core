@@ -11,10 +11,10 @@ import {
 import {
     TypeCacheError,
     type ICacheAdapter,
-} from "@/cache/contracts/_module-exports";
-import { type Promisable } from "@/utilities/_module-exports";
-import { TimeSpan } from "@/utilities/_module-exports";
-import { delay } from "@/async/_module-exports";
+} from "@/cache/contracts/_module-exports.js";
+import { type Promisable } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/utilities/_module-exports.js";
+import { delay } from "@/async/_module-exports.js";
 
 /**
  * @group Utilities

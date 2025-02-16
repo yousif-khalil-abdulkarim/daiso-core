@@ -5,7 +5,7 @@
 import {
     type ICollection,
     type Tap,
-} from "@/collection/contracts/_module-exports";
+} from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal

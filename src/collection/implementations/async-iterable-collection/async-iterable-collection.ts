@@ -5,7 +5,7 @@
 import type {
     EnsureMap,
     EnsureRecord,
-} from "@/collection/contracts/_module-exports";
+} from "@/collection/contracts/_module-exports.js";
 import {
     type AsyncCollapse,
     type AsyncPredicate,
@@ -23,7 +23,7 @@ import {
     type AsyncReduce,
     EmptyCollectionError,
     type CrossJoinResult,
-} from "@/collection/contracts/_module-exports";
+} from "@/collection/contracts/_module-exports.js";
 import {
     AsyncCrossJoinIterable,
     AsyncSlidingIteralbe,
@@ -60,15 +60,15 @@ import {
     AsyncTakeUntilAbortIterable,
     AsyncDelayIterable,
     AsyncTakeUntilTimeoutIterable,
-} from "@/collection/implementations/async-iterable-collection/_shared/_module";
+} from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
 import {
     type AsyncIterableValue,
     type AsyncLazyable,
-} from "@/utilities/_module-exports";
-import { simplifyAsyncLazyable } from "@/utilities/_module-exports";
-import type { TimeSpan } from "@/utilities/_module-exports";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports";
-import { LazyPromise } from "@/async/_module-exports";
+} from "@/utilities/_module-exports.js";
+import { simplifyAsyncLazyable } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  * @group Adapters

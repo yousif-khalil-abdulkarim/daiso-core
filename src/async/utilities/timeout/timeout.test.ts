@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { timeout } from "@/async/utilities/timeout/timeout";
-import { AsyncError, TimeoutAsyncError } from "@/async/async.errors";
-import { TimeSpan } from "@/utilities/time-span/_module";
+import { timeout } from "@/async/utilities/timeout/timeout.js";
+import { AsyncError, TimeoutAsyncError } from "@/async/async.errors.js";
+import { TimeSpan } from "@/utilities/_module-exports.js";
 
 describe("function: timeout", () => {
     test("should return AsyncError when timed out", async () => {

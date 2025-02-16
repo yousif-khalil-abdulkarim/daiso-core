@@ -5,13 +5,13 @@
 import {
     type ICacheAdapter,
     TypeCacheError,
-} from "@/cache/contracts/_module-exports";
+} from "@/cache/contracts/_module-exports.js";
 import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
-import { type ISerde } from "@/serde/contracts/_module-exports";
-import type { IDeinitizable, IInitizable } from "@/utilities/_module-exports";
-import { simplifyOneOrMoreStr, TimeSpan } from "@/utilities/_module-exports";
-import { SqlSerde } from "@/serde/implementations/adapters/_module-exports";
+import { type ISerde } from "@/serde/contracts/_module-exports.js";
+import type { IDeinitizable, IInitizable } from "@/utilities/_module-exports.js";
+import { simplifyOneOrMoreStr, TimeSpan } from "@/utilities/_module-exports.js";
+import { SqlSerde } from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
  * @internal

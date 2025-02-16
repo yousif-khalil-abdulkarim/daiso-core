@@ -2,8 +2,8 @@
  * @module Collection
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports";
-import { delay } from "@/async/_module-exports";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { delay } from "@/async/_module-exports.js";
 
 /**
  * @internal

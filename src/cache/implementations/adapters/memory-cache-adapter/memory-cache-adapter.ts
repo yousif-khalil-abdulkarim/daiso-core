@@ -3,12 +3,12 @@
  * @module Cache
  */
 
-import { TypeCacheError } from "@/cache/contracts/cache.errors";
-import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
+import { TypeCacheError } from "@/cache/contracts/cache.errors.js";
+import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
 import {
     simplifyOneOrMoreStr,
     type TimeSpan,
-} from "@/utilities/_module-exports";
+} from "@/utilities/_module-exports.js";
 
 /**
  * @group Adapters

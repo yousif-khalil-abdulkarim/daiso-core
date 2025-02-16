@@ -2,12 +2,12 @@
  * @module Async
  */
 
-import type { BackoffPolicy } from "@/async/backof-policies/_module";
-import type { TimeSpan } from "@/utilities/time-span/_module";
-import type { RetryPolicy } from "@/async/utilities/retry/_module";
-import { retryOrFail } from "@/async/utilities/retry/_module";
-import { timeoutAndFail } from "@/async/utilities/timeout/_module";
-import { abortAndFail } from "@/async/utilities/abort/_module";
+import type { BackoffPolicy } from "@/async/backof-policies/_module.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { RetryPolicy } from "@/async/utilities/retry/_module.js";
+import { retryOrFail } from "@/async/utilities/retry/_module.js";
+import { timeoutAndFail } from "@/async/utilities/timeout/_module.js";
+import { abortAndFail } from "@/async/utilities/abort/_module.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     AbortAsyncError,
@@ -15,8 +15,11 @@ import {
     TimeoutAsyncError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     RetryAsyncError,
-} from "@/async/async.errors";
-import { simplifyAsyncLazyable, type Func } from "@/utilities/_module-exports";
+} from "@/async/async.errors.js";
+import {
+    simplifyAsyncLazyable,
+    type Func,
+} from "@/utilities/_module-exports.js";
 
 /**
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.

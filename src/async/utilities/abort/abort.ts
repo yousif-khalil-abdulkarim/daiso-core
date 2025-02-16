@@ -1,9 +1,9 @@
 /**
  * @module Async
  */
-import type { Result } from "@/utilities/types";
-import { AbortAsyncError } from "@/async/async.errors";
-import { abortAndFail } from "@/async/utilities/abort/abort-and-fail";
+import type { Result } from "@/utilities/types.js";
+import { AbortAsyncError } from "@/async/async.errors.js";
+import { abortAndFail } from "@/async/utilities/abort/abort-and-fail.js";
 
 /**
  * @internal

@@ -2,13 +2,13 @@
  * @module Cache
  */
 
-import type { IEventListener } from "@/event-bus/contracts/_module-exports";
-import type { OneOrMore } from "@/utilities/_module-exports";
+import type { IEventListener } from "@/event-bus/contracts/_module-exports.js";
+import type { OneOrMore } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazyable,
     type GetOrAddValue,
-} from "@/utilities/_module-exports";
-import type { CacheEvents } from "@/cache/contracts/_module-exports";
+} from "@/utilities/_module-exports.js";
+import type { CacheEvents } from "@/cache/contracts/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type TypeCacheError,
@@ -16,9 +16,9 @@ import {
     type UnexpectedCacheError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type KeyNotFoundCacheError,
-} from "@/cache/contracts/_module-exports";
-import type { TimeSpan } from "@/utilities/_module-exports";
-import type { LazyPromise } from "@/async/_module-exports";
+} from "@/cache/contracts/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  * The <i>ICacheListener</i> contract defines a way for listening <i>{@link ICache}</i> operations.

@@ -20,10 +20,10 @@ import {
     KeysClearedCacheEvent,
     KeyIncrementedCacheEvent,
     KeyDecrementedCacheEvent,
-} from "@/cache/contracts/_module-exports";
-import { type Promisable } from "@/utilities/_module-exports";
-import { TimeSpan } from "@/utilities/_module-exports";
-import { delay, LazyPromise } from "@/async/_module-exports";
+} from "@/cache/contracts/_module-exports.js";
+import { type Promisable } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/utilities/_module-exports.js";
+import { delay, LazyPromise } from "@/async/_module-exports.js";
 
 /**
  * @group Utilities

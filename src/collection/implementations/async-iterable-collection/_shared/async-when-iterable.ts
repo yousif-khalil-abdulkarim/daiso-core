@@ -5,7 +5,7 @@
 import {
     type AsyncModifier,
     type IAsyncCollection,
-} from "@/collection/contracts/_module-exports";
+} from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal

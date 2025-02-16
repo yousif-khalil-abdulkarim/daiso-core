@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports";
+import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
 import Sqlite, { type Database } from "better-sqlite3";
-import { SqliteLockAdapter } from "@/lock/implementations/adapters/sqlite-lock-adapter/sqlite-lock-adapter";
-import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter";
+import { SqliteLockAdapter } from "@/lock/implementations/adapters/sqlite-lock-adapter/sqlite-lock-adapter.js";
+import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter.js";
 
 describe("class: DatabaseLockAdapter", () => {
     let database: Database;

@@ -1,1 +1,1 @@
-export * from "@/lock/implementations/adapters/mongodb-lock-adapter/mongodb-lock-adapter";
+export * from "@/lock/implementations/adapters/mongodb-lock-adapter/mongodb-lock-adapter.js";

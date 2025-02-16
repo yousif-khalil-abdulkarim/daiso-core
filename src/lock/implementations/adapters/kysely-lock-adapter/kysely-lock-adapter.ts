@@ -5,14 +5,14 @@
 import type {
     IDatabaseLockAdapter,
     ILockData,
-} from "@/lock/contracts/_module-exports";
+} from "@/lock/contracts/_module-exports.js";
 import type { Kysely } from "kysely";
 import {
     type IDeinitizable,
     type IInitizable,
     TimeSpan,
-} from "@/utilities/_module-exports";
-import { simplifyOneOrMoreStr } from "@/utilities/_module-exports";
+} from "@/utilities/_module-exports.js";
+import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
 
 /**
  * @internal

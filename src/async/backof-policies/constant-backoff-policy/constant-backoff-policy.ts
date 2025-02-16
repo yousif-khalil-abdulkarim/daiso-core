@@ -2,11 +2,11 @@
  * @module Async
  */
 
-import { TimeSpan } from "@/utilities/_module-exports";
+import { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     withJitter,
     type BackoffPolicy,
-} from "@/async/backof-policies/_shared";
+} from "@/async/backof-policies/_shared.js";
 
 /**
  * @group Backoff policies

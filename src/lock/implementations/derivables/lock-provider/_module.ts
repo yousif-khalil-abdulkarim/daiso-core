@@ -1,1 +1,1 @@
-export * from "@/lock/implementations/derivables/lock-provider/lock-provider";
+export * from "@/lock/implementations/derivables/lock-provider/lock-provider.js";

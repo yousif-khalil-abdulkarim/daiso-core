@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports";
+import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
 import Sqlite, { type Database } from "better-sqlite3";
-import { SqliteCacheAdapter } from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter";
-import { Serde } from "@/serde/implementations/deriavables/_module-exports";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports";
+import { SqliteCacheAdapter } from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter.js";
+import { Serde } from "@/serde/implementations/deriavables/_module-exports.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 
 describe("class: SqliteCacheAdapter", () => {
     let database: Database;

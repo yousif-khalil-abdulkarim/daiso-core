@@ -2,8 +2,8 @@
  * @module Cache
  */
 
-import type { ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import type { TimeSpan } from "@/utilities/_module-exports";
+import type { ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  * This <i>NoOpCacheAdapter</i> will do nothing and is used for easily mocking {@link ICacheAdapter} for testing.

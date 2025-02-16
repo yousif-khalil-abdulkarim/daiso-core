@@ -2,12 +2,12 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports";
-import { UnexpectedCacheError } from "@/cache/contracts/_module-exports";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { UnexpectedCacheError } from "@/cache/contracts/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
     ILockAdapter,
-} from "@/lock/contracts/_module-exports";
+} from "@/lock/contracts/_module-exports.js";
 
 /**
  * @internal

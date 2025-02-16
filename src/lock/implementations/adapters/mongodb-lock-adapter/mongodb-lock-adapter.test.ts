@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports";
+import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
 import { MongoClient } from "mongodb";
 import type { StartedMongoDBContainer } from "@testcontainers/mongodb";
 import { MongoDBContainer } from "@testcontainers/mongodb";
-import { TimeSpan } from "@/utilities/_module-exports";
-import { MongodbLockAdapter } from "@/lock/implementations/adapters/mongodb-lock-adapter/mongodb-lock-adapter";
+import { TimeSpan } from "@/utilities/_module-exports.js";
+import { MongodbLockAdapter } from "@/lock/implementations/adapters/mongodb-lock-adapter/mongodb-lock-adapter.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: MongodbLockAdapter", () => {

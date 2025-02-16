@@ -2,14 +2,14 @@
  * @module Lock
  */
 
-import type { LazyPromiseable, Result } from "@/utilities/_module-exports";
-import type { TimeSpan } from "@/utilities/_module-exports";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports";
-import { LazyPromise } from "@/async/_module-exports";
+import type { LazyPromiseable, Result } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     ILockAdapter,
     LockEvents,
-} from "@/lock/contracts/_module-exports";
+} from "@/lock/contracts/_module-exports.js";
 import {
     UnexpectedErrorLockEvent,
     KeyAcquiredLockEvent,
@@ -24,7 +24,7 @@ import {
     UnownedReleaseLockError,
     UnownedReleaseLockEvent,
     type ILock,
-} from "@/lock/contracts/_module-exports";
+} from "@/lock/contracts/_module-exports.js";
 import type {
     EventClass,
     Listener,
@@ -33,11 +33,11 @@ import type {
     IGroupableEventBus,
     IEventBus,
     IEventDispatcher,
-} from "@/event-bus/contracts/_module-exports";
+} from "@/event-bus/contracts/_module-exports.js";
 import {
     type ILockStateRecord,
     LockState,
-} from "@/lock/implementations/derivables/lock-provider/lock-state";
+} from "@/lock/implementations/derivables/lock-provider/lock-state.js";
 
 /**
  * @internal

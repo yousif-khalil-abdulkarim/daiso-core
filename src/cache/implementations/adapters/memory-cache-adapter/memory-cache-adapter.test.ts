@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports";
-import { MemoryCacheAdapter } from "@/cache/implementations/adapters/memory-cache-adapter/_module";
+import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
+import { MemoryCacheAdapter } from "@/cache/implementations/adapters/memory-cache-adapter/_module.js";
 
 describe("class: MemoryCacheAdapter", () => {
     cacheAdapterTestSuite({

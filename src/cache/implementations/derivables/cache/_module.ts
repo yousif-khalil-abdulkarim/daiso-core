@@ -1,1 +1,1 @@
-export * from "@/cache/implementations/derivables/cache/cache";
+export * from "@/cache/implementations/derivables/cache/cache.js";

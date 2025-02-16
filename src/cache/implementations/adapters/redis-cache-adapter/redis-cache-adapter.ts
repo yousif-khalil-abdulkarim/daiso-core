@@ -2,15 +2,15 @@
  * @module Cache
  */
 
-import { TypeCacheError } from "@/cache/contracts/cache.errors";
-import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
+import { TypeCacheError } from "@/cache/contracts/cache.errors.js";
+import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
 import {
     simplifyOneOrMoreStr,
     type TimeSpan,
-} from "@/utilities/_module-exports";
+} from "@/utilities/_module-exports.js";
 import { ReplyError, type Redis, type Result } from "ioredis";
-import type { ISerde } from "@/serde/contracts/_module-exports";
-import { RedisSerde } from "@/serde/implementations/adapters/_module-exports";
+import type { ISerde } from "@/serde/contracts/_module-exports.js";
+import { RedisSerde } from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
  * @internal

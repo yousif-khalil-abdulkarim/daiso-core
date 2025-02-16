@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { delay } from "@/async/utilities/delay/_module";
-import { AbortAsyncError, AsyncError } from "@/async/async.errors";
-import { TimeSpan } from "@/utilities/time-span/_module";
+import { delay } from "@/async/utilities/_module.js";
+import { AbortAsyncError, AsyncError } from "@/async/async.errors.js";
+import { TimeSpan } from "@/utilities/_module-exports.js";
 
 describe("function: delay", () => {
     test("should throw AsyncError when aborted", async () => {

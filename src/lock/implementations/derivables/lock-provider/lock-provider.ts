@@ -6,24 +6,24 @@ import {
     simplifyOneOrMoreStr,
     TimeSpan,
     type OneOrMore,
-} from "@/utilities/_module-exports";
+} from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
     LockEvents,
-} from "@/lock/contracts/_module-exports";
+} from "@/lock/contracts/_module-exports.js";
 import {
     type ILock,
     type IGroupableLockProvider,
     type LockProviderCreateSettings,
     type ILockProvider,
     type ILockAdapter,
-} from "@/lock/contracts/_module-exports";
+} from "@/lock/contracts/_module-exports.js";
 import type {
     BackoffPolicy,
     LazyPromise,
     RetryPolicy,
-} from "@/async/_module-exports";
-import { Lock } from "@/lock/implementations/derivables/lock-provider/lock";
+} from "@/async/_module-exports.js";
+import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
 import type {
     EventClass,
     EventInstance,
@@ -31,14 +31,14 @@ import type {
     IGroupableEventBus,
     Listener,
     Unsubscribe,
-} from "@/event-bus/contracts/_module-exports";
-import { EventBus } from "@/event-bus/implementations/derivables/_module-exports";
-import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports";
+} from "@/event-bus/contracts/_module-exports.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { v4 } from "uuid";
-import type { IFlexibleSerde } from "@/serde/contracts/_module-exports";
-import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter";
-import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state";
-import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer";
+import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
+import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter.js";
+import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
+import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
 
 /**
  * @group Derivables

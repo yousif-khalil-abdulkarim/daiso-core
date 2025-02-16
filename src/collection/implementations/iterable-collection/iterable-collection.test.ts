@@ -5,8 +5,8 @@ import {
     TypeCollectionError,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
-} from "@/collection/contracts/_module-exports";
-import { IterableCollection } from "@/collection/implementations/iterable-collection/_module";
+} from "@/collection/contracts/_module-exports.js";
+import { IterableCollection } from "@/collection/implementations/iterable-collection/_module.js";
 
 describe("class: IterableCollection", () => {
     describe("method: filter", () => {

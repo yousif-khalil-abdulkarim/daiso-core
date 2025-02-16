@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { retryOrFail } from "@/async/utilities/retry/retry-or-fail";
-import { RetryAsyncError } from "@/async/async.errors";
+import { retryOrFail } from "@/async/utilities/retry/retry-or-fail.js";
+import { RetryAsyncError } from "@/async/async.errors.js";
 
 describe("function: retryOrFail", () => {
     test("Should throw RetryAsyncError when all atempts fail", async () => {

@@ -1,1 +1,1 @@
-export * from "@/serde/implementations/deriavables/serde";
+export * from "@/serde/implementations/deriavables/serde.js";

@@ -2,13 +2,13 @@
  * @module Cache
  */
 
-import type { IGroupableCache } from "@/cache/contracts/cache.contract";
+import type { IGroupableCache } from "@/cache/contracts/cache.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultAdapterNotDefinedError,
-} from "@/utilities/errors";
+} from "@/utilities/errors.js";
 
 /**
  * The <i>ICacheFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableCache}</i> dynamically.

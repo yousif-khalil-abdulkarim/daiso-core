@@ -2,20 +2,20 @@
  * @module Cache
  */
 
-import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
+import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 import type {
     TimeSpan,
     IInitizable,
     IDeinitizable,
-} from "@/utilities/_module-exports";
-import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
+} from "@/utilities/_module-exports.js";
+import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module.js";
 import type { SqliteDatabase } from "kysely";
 import { Kysely, SqliteDialect } from "kysely";
-import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports";
+import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ISerde } from "@/serde/contracts/_module-exports";
+import type { ISerde } from "@/serde/contracts/_module-exports.js";
 
 /**
  * @group Adapters

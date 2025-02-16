@@ -2,14 +2,14 @@
  * @module EventBus
  */
 
-import type { IGroupableEventBus } from "@/event-bus/contracts/event-bus.contract";
+import type { IGroupableEventBus } from "@/event-bus/contracts/event-bus.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultAdapterNotDefinedError,
-} from "@/utilities/_module-exports";
-import type { BaseEvent } from "@/event-bus/contracts/_shared";
+} from "@/utilities/_module-exports.js";
+import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
 
 /**
  * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableEventBus}</i> dynamically.

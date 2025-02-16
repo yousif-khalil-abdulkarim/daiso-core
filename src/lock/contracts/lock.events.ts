@@ -3,11 +3,11 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ILock } from "@/lock/contracts/lock.contract";
-import { BaseEvent } from "@/event-bus/contracts/_module-exports";
-import type { IFlexibleSerde } from "@/serde/contracts/_module-exports";
-import type { OneOrMore } from "@/utilities/types";
-import type { TimeSpan } from "@/utilities/_module-exports";
+import type { ILock } from "@/lock/contracts/lock.contract.js";
+import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
+import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
+import type { OneOrMore } from "@/utilities/types.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  * @group Events

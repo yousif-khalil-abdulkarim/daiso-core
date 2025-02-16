@@ -6,12 +6,12 @@ import {
     type IDeinitizable,
     type IInitizable,
     simplifyOneOrMoreStr,
-} from "@/utilities/_module-exports";
+} from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
     ILockData,
-} from "@/lock/contracts/_module-exports";
-import { UnexpectedLockError } from "@/lock/contracts/_module-exports";
+} from "@/lock/contracts/_module-exports.js";
+import { UnexpectedLockError } from "@/lock/contracts/_module-exports.js";
 import type { Collection, CollectionOptions, Db } from "mongodb";
 import { ObjectId } from "mongodb";
 

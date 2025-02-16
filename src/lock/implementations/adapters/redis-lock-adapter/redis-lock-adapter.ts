@@ -2,10 +2,10 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports";
-import { simplifyOneOrMoreStr } from "@/utilities/_module-exports";
-import type { ILockAdapter } from "@/lock/contracts/_module-exports";
-import type Redis from "ioredis";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
+import type { ILockAdapter } from "@/lock/contracts/_module-exports.js";
+import type { Redis } from "ioredis";
 import type { Result } from "ioredis";
 
 declare module "ioredis" {

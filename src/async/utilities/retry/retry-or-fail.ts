@@ -2,11 +2,11 @@
  * @module Async
  */
 
-import { delay } from "@/async/utilities/delay/_module";
-import { AbortAsyncError, RetryAsyncError } from "@/async/async.errors";
-import { exponentialBackoffPolicy } from "@/async/backof-policies/_module";
-import { TimeSpan } from "@/utilities/_module-exports";
-import type { BackoffPolicy } from "@/async/backof-policies/_module";
+import { delay } from "@/async/utilities/_module.js";
+import { AbortAsyncError, RetryAsyncError } from "@/async/async.errors.js";
+import { exponentialBackoffPolicy } from "@/async/backof-policies/_module.js";
+import { TimeSpan } from "@/utilities/_module-exports.js";
+import type { BackoffPolicy } from "@/async/backof-policies/_module.js";
 
 /**
  * @group Utilities

@@ -1,7 +1,7 @@
 /**
  * @module Async
  */
-import { AbortAsyncError } from "@/async/async.errors";
+import { AbortAsyncError } from "@/async/async.errors.js";
 
 /**
  * @internal

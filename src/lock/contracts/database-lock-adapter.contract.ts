@@ -3,7 +3,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ILockProvider } from "@/lock/contracts/lock-provider.contract";
+import type { ILockProvider } from "@/lock/contracts/lock-provider.contract.js";
 
 /**
  * @group Contracts

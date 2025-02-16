@@ -1,7 +1,7 @@
 import { describe, test, beforeEach, expect } from "vitest";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
-import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus";
-import { eventBusTestSuite } from "@/event-bus/implementations/test-utilities/_module-exports";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter.js";
+import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus.js";
+import { eventBusTestSuite } from "@/event-bus/implementations/test-utilities/_module-exports.js";
 import { EventEmitter } from "node:events";
 
 describe("class: EventBus", () => {

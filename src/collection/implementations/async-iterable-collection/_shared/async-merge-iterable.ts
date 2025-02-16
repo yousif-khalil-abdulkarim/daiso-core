@@ -2,8 +2,8 @@
  * @module Collection
  */
 
-import { isIterable } from "@/collection/implementations/_shared";
-import { type AsyncIterableValue } from "@/utilities/_module-exports";
+import { isIterable } from "@/collection/implementations/_shared.js";
+import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
 
 /**
  * @internal

@@ -2,8 +2,8 @@
  * @module Collection
  */
 
-import { type IAsyncCollection } from "@/collection/contracts/_module-exports";
-import { type AsyncIterableValue } from "@/utilities/_module-exports";
+import { type IAsyncCollection } from "@/collection/contracts/_module-exports.js";
+import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
 
 /**
  * @internal

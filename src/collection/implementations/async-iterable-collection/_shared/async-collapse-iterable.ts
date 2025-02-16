@@ -5,11 +5,11 @@
 import {
     isAsyncIterable,
     isIterable,
-} from "@/collection/implementations/_shared";
+} from "@/collection/implementations/_shared.js";
 import {
     type AsyncCollapse,
     type IAsyncCollection,
-} from "@/collection/contracts/_module-exports";
+} from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal
