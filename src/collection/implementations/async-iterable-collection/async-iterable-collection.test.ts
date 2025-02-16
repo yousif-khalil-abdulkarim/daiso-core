@@ -7,7 +7,7 @@ import {
     MultipleItemsFoundCollectionError,
 } from "@/collection/contracts/_module";
 import { AsyncIterableCollection } from "@/collection/implementations/async-iterable-collection/_module";
-import { LazyPromise } from "@/_module";
+import { LazyPromise } from "@/async/_module";
 
 describe("class: AsyncIterableCollection", () => {
     describe("method: filter", () => {

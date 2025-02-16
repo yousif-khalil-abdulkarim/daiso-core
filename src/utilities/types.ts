@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-import type { LazyPromise } from "@/_module";
+import type { LazyPromise } from "@/async/_module";
 
 export type OneOrMore<TItem> = TItem | [TItem, ...TItem[]];
 
