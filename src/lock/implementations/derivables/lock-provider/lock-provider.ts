@@ -28,10 +28,8 @@ import type {
     Listener,
     Unsubscribe,
 } from "@/event-bus/contracts/_module";
-import {
-    EventBus,
-    NoOpEventBusAdapter,
-} from "@/event-bus/implementations/_module";
+import { EventBus } from "@/event-bus/implementations/derivables/_module";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module";
 import { v4 } from "uuid";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
 import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter";

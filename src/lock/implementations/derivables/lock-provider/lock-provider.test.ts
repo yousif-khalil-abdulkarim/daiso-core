@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { MemoryLockAdapter } from "@/lock/implementations/adapters/_module";
 import { LockProvider } from "@/lock/implementations/derivables/lock-provider/lock-provider";
-import { EventBus } from "@/event-bus/implementations/_module";
+import { EventBus } from "@/event-bus/implementations/derivables/_module";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
 import { lockProviderTestSuite } from "@/lock/implementations/_shared/_module";
 import { Serde, SuperJsonSerdeAdapter } from "@/serde/implementations/_module";

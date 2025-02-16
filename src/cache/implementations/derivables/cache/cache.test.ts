@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module";
 import { Cache } from "@/cache/implementations/derivables/cache/cache";
-import { EventBus } from "@/event-bus/implementations/_module";
+import { EventBus } from "@/event-bus/implementations/derivables/_module";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
 import { cacheTestSuite } from "@/cache/implementations/_shared/_module";
 

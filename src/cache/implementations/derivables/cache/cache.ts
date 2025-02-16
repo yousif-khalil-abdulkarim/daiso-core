@@ -44,10 +44,8 @@ import type {
     EventClass,
     EventInstance,
 } from "@/event-bus/contracts/_module";
-import {
-    EventBus,
-    NoOpEventBusAdapter,
-} from "@/event-bus/implementations/_module";
+import { EventBus } from "@/event-bus/implementations/derivables/_module";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module";
 
 /**
  * @group Derivables

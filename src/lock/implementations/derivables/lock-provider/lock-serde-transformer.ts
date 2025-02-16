@@ -18,10 +18,8 @@ import type {
     IEventBus,
     IGroupableEventBus,
 } from "@/event-bus/contracts/_module";
-import {
-    EventBus,
-    NoOpEventBusAdapter,
-} from "@/event-bus/implementations/_module";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module";
+import { EventBus } from "@/event-bus/implementations/derivables/_module";
 import type { ISerdeTransformer } from "@/serde/contracts/_module";
 import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state";
 
