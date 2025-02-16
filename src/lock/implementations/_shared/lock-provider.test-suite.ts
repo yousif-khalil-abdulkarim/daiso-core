@@ -28,7 +28,7 @@ import { type Promisable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
 import { delay, LazyPromise } from "@/async/_module";
 import type { ISerde } from "@/serde/contracts/_module";
-import { NoOpSerde } from "@/serde/implementations/_module";
+import { NoOpSerdeAdapter, Serde } from "@/serde/implementations/_module";
 
 /**
  * @group Utilities
@@ -55,7 +55,7 @@ export function lockProviderTestSuite(
         createLockProvider,
         describe,
         beforeEach,
-        serde = new NoOpSerde(),
+        serde = new Serde(new NoOpSerdeAdapter()),
     } = settings;
     let lockProviderA: ILockProvider;
     let lockProviderB: ILockProvider;
