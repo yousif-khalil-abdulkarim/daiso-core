@@ -2,7 +2,10 @@
  * @module EventBus
  */
 
-import type { BaseEvent, Listener } from "@/event-bus/contracts/_module-exports";
+import type {
+    BaseEvent,
+    Listener,
+} from "@/event-bus/contracts/_module-exports";
 import type {
     IEventBusAdapter,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

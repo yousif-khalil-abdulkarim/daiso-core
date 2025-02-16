@@ -2,7 +2,10 @@
  * @module Collection
  */
 
-import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module-exports";
+import type {
+    EnsureMap,
+    EnsureRecord,
+} from "@/collection/contracts/_module-exports";
 import {
     type AsyncCollapse,
     type AsyncPredicate,

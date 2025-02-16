@@ -2,7 +2,10 @@
  * @module Cache
  */
 
-import { type ICacheAdapter, TypeCacheError } from "@/cache/contracts/_module-exports";
+import {
+    type ICacheAdapter,
+    TypeCacheError,
+} from "@/cache/contracts/_module-exports";
 import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
 import { type ISerde } from "@/serde/contracts/_module-exports";

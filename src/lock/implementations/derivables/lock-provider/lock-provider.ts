@@ -18,7 +18,11 @@ import {
     type ILockProvider,
     type ILockAdapter,
 } from "@/lock/contracts/_module-exports";
-import type { BackoffPolicy, LazyPromise, RetryPolicy } from "@/async/_module-exports";
+import type {
+    BackoffPolicy,
+    LazyPromise,
+    RetryPolicy,
+} from "@/async/_module-exports";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock";
 import type {
     EventClass,

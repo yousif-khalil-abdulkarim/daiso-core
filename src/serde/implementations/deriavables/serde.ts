@@ -3,7 +3,10 @@
  */
 
 import type { OneOrMore } from "@/utilities/_module-exports";
-import { getConstructorName, simplifyOneOrMoreStr } from "@/utilities/_module-exports";
+import {
+    getConstructorName,
+    simplifyOneOrMoreStr,
+} from "@/utilities/_module-exports";
 import type {
     IFlexibleSerde,
     IFlexibleSerdeAdapter,

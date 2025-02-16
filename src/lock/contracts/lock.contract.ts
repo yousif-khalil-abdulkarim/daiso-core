@@ -2,7 +2,11 @@
  * @module Lock
  */
 
-import type { LazyPromiseable, Result, TimeSpan } from "@/utilities/_module-exports";
+import type {
+    LazyPromiseable,
+    Result,
+    TimeSpan,
+} from "@/utilities/_module-exports";
 import type { LazyPromise } from "@/async/_module-exports";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

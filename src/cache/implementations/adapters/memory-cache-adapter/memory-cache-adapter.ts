@@ -5,7 +5,10 @@
 
 import { TypeCacheError } from "@/cache/contracts/cache.errors";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
-import { simplifyOneOrMoreStr, type TimeSpan } from "@/utilities/_module-exports";
+import {
+    simplifyOneOrMoreStr,
+    type TimeSpan,
+} from "@/utilities/_module-exports";
 
 /**
  * @group Adapters

@@ -4,7 +4,10 @@
 
 import type { IEventListener } from "@/event-bus/contracts/_module-exports";
 import type { OneOrMore } from "@/utilities/_module-exports";
-import { type AsyncLazyable, type GetOrAddValue } from "@/utilities/_module-exports";
+import {
+    type AsyncLazyable,
+    type GetOrAddValue,
+} from "@/utilities/_module-exports";
 import type { CacheEvents } from "@/cache/contracts/_module-exports";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

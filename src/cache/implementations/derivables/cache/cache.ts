@@ -2,7 +2,10 @@
  * @module Cache
  */
 
-import type { CacheEvents, WithTtlValue } from "@/cache/contracts/_module-exports";
+import type {
+    CacheEvents,
+    WithTtlValue,
+} from "@/cache/contracts/_module-exports";
 import {
     KeyFoundCacheEvent,
     KeyNotFoundCacheEvent,

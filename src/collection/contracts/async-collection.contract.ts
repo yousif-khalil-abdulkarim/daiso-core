@@ -28,7 +28,10 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
 } from "@/collection/contracts/_module-exports";
-import type { AsyncLazyable, AsyncIterableValue } from "@/utilities/_module-exports";
+import type {
+    AsyncLazyable,
+    AsyncIterableValue,
+} from "@/utilities/_module-exports";
 import type { TimeSpan } from "@/utilities/_module-exports";
 import type { LazyPromise } from "@/async/_module-exports";
 

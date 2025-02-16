@@ -2,7 +2,10 @@
  * @module Lock
  */
 
-import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module-exports";
+import type {
+    IDatabaseLockAdapter,
+    ILockData,
+} from "@/lock/contracts/_module-exports";
 import {
     type IDeinitizable,
     type IInitizable,

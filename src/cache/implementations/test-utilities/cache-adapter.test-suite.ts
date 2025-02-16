@@ -8,7 +8,10 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { TypeCacheError, type ICacheAdapter } from "@/cache/contracts/_module-exports";
+import {
+    TypeCacheError,
+    type ICacheAdapter,
+} from "@/cache/contracts/_module-exports";
 import { type Promisable } from "@/utilities/_module-exports";
 import { TimeSpan } from "@/utilities/_module-exports";
 import { delay } from "@/async/_module-exports";

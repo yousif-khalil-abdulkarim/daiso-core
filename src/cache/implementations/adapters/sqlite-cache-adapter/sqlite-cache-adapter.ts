@@ -5,7 +5,11 @@
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports";
-import type { TimeSpan, IInitizable, IDeinitizable } from "@/utilities/_module-exports";
+import type {
+    TimeSpan,
+    IInitizable,
+    IDeinitizable,
+} from "@/utilities/_module-exports";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 import type { SqliteDatabase } from "kysely";
 import { Kysely, SqliteDialect } from "kysely";

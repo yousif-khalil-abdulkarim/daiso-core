@@ -3,7 +3,10 @@
  */
 
 import { isIterable } from "@/collection/implementations/_shared";
-import type { EnsureMap, EnsureRecord } from "@/collection/contracts/_module-exports";
+import type {
+    EnsureMap,
+    EnsureRecord,
+} from "@/collection/contracts/_module-exports";
 import {
     type Collapse,
     type Comparator,

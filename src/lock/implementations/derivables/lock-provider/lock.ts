@@ -6,7 +6,10 @@ import type { LazyPromiseable, Result } from "@/utilities/_module-exports";
 import type { TimeSpan } from "@/utilities/_module-exports";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports";
 import { LazyPromise } from "@/async/_module-exports";
-import type { ILockAdapter, LockEvents } from "@/lock/contracts/_module-exports";
+import type {
+    ILockAdapter,
+    LockEvents,
+} from "@/lock/contracts/_module-exports";
 import {
     UnexpectedErrorLockEvent,
     KeyAcquiredLockEvent,
