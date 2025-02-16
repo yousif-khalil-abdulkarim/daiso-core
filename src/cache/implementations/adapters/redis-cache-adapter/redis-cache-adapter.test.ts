@@ -7,7 +7,7 @@ import {
     type StartedRedisContainer,
 } from "@testcontainers/redis";
 import { TimeSpan } from "@/utilities/_module";
-import { SuperJsonSerde } from "@/serde/implementations/_module";
+import { Serde, SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisCacheAdapter", () => {
@@ -25,7 +25,7 @@ describe("class: RedisCacheAdapter", () => {
         createAdapter: () =>
             new RedisCacheAdapter({
                 database: client,
-                serde: new SuperJsonSerde(),
+                serde: new Serde(new SuperJsonSerdeAdapter()),
                 rootGroup: "@a",
             }),
         test,

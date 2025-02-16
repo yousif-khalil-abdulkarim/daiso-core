@@ -4,7 +4,7 @@ import { LockProvider } from "@/lock/implementations/derivables/lock-provider/lo
 import { EventBus } from "@/event-bus/implementations/_module";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
 import { lockProviderTestSuite } from "@/lock/implementations/_shared/_module";
-import { SuperJsonSerde } from "@/serde/implementations/_module";
+import { Serde, SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
 import type { ILockData } from "@/lock/contracts/_module";
 
 describe("class: LockProvider", () => {
@@ -13,7 +13,7 @@ describe("class: LockProvider", () => {
             rootGroup: "@global",
         }),
     });
-    const serde = new SuperJsonSerde();
+    const serde = new Serde(new SuperJsonSerdeAdapter());
     let map: Map<string, ILockData>;
     beforeEach(() => {
         map = new Map();

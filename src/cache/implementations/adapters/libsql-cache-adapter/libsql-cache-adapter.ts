@@ -6,7 +6,7 @@ import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract";
 import type { TimeSpan, IDeinitizable, IInitizable } from "@/utilities/_module";
 import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { SuperJsonSerde } from "@/serde/implementations/_module";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
 import { Kysely } from "kysely";
 import type { LibsqlDialectConfig } from "@libsql/kysely-libsql";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
@@ -29,7 +29,7 @@ export type LibsqlCacheAdapterSettings = {
 };
 
 /**
- * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with an adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
  * @group Adapters
  */
 export class LibsqlCacheAdapter<TType = unknown>

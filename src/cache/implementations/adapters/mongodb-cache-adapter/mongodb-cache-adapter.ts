@@ -17,7 +17,7 @@ import type { CollectionOptions, Db, ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
 import type { ISerde } from "@/serde/contracts/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { SuperJsonSerde } from "@/serde/implementations/_module";
+import type { SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
 import { MongodbSerde } from "@/serde/implementations/_module";
 
 /**
@@ -43,7 +43,7 @@ type MongodbCacheDocument = {
 };
 
 /**
- * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with an adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
  * @group Adapters
  */
 export class MongodbCacheAdapter<TType = unknown>

@@ -6,7 +6,7 @@ import { type ISerde } from "@/serde/contracts/_module";
 import {
     RedisSerde,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    SuperJsonSerde,
+    SuperJsonSerdeAdapter,
 } from "@/serde/implementations/_module";
 import type {
     BaseEvent,
@@ -28,7 +28,7 @@ export type RedisPubSubEventBusAdapterSettings = {
 };
 
 /**
- * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with a <i>{@link SuperJsonSerdeAdapter}</i>.
  * @group Adapters
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
