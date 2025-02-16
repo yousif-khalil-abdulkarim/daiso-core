@@ -5,7 +5,7 @@ import { TimeSpan } from "@/utilities/_module";
 import type { StartedRedisContainer } from "@testcontainers/redis";
 import { RedisContainer } from "@testcontainers/redis";
 import Redis from "ioredis";
-import { SuperJsonSerde } from "@/serde/implementations/_module";
+import { Serde, SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisPubSubEventBusAdapter", () => {
@@ -22,7 +22,7 @@ describe("class: RedisPubSubEventBusAdapter", () => {
         await listenerClient.quit();
         await startedContainer.stop();
     }, timeout.toMilliseconds());
-    const serde = new SuperJsonSerde();
+    const serde = new Serde(new SuperJsonSerdeAdapter());
     eventBusAdapterTestSuite({
         createAdapter: () =>
             new RedisPubSubEventBusAdapter({

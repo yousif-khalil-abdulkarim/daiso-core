@@ -15,7 +15,7 @@ import { type Promisable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
 import { delay } from "@/async/_module";
 import type { IFlexibleSerde } from "@/serde/contracts/_module";
-import { NoOpSerde } from "@/serde/implementations/_module";
+import { NoOpSerdeAdapter, Serde } from "@/serde/implementations/_module";
 
 /**
  * @group Utilities
@@ -81,7 +81,7 @@ export function eventBusAdapterTestSuite(
         test,
         createAdapter,
         beforeEach,
-        serde = new NoOpSerde(),
+        serde = new Serde(new NoOpSerdeAdapter()),
     } = settings;
 
     let eventBusAdapterA: IEventBusAdapter;
