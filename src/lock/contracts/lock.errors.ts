@@ -4,7 +4,10 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ILock } from "@/lock/contracts/lock.contract.js";
-import type { ISerializedError, OneOrMore } from "@/utilities/_module-exports.js";
+import type {
+    ISerializedError,
+    OneOrMore,
+} from "@/utilities/_module-exports.js";
 import type {
     IFlexibleSerde,
     ISerializable,
