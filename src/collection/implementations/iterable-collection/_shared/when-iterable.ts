@@ -5,7 +5,7 @@
 import {
     type ICollection,
     type Modifier,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal

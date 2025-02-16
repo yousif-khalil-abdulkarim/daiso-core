@@ -24,9 +24,9 @@ import type {
     CrossJoinResult,
     EnsureMap,
     EnsureRecord,
-} from "@/collection/contracts/_module";
-import type { ISerializable } from "@/serde/contracts/_module";
-import type { Lazyable } from "@/utilities/_module";
+} from "@/collection/contracts/_module-exports.js";
+import type { ISerializable } from "@/serde/contracts/_module-exports.js";
+import type { Lazyable } from "@/utilities/_module-exports.js";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>

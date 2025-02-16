@@ -2,18 +2,21 @@
  * @module Lock
  */
 
-import type { IDatabaseLockAdapter, ILockData } from "@/lock/contracts/_module";
+import type {
+    IDatabaseLockAdapter,
+    ILockData,
+} from "@/lock/contracts/_module-exports.js";
 import {
     type IDeinitizable,
     type IInitizable,
     TimeSpan,
-} from "@/utilities/_module";
+} from "@/utilities/_module-exports.js";
 import { Kysely } from "kysely";
-import { KyselyTableNameTransformerPlugin } from "@/utilities/_module";
+import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports.js";
 import type { LibsqlDialectConfig } from "@libsql/kysely-libsql";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
-import { KyselyLockAdapter } from "@/lock/implementations/adapters/kysely-lock-adapter/_module";
-import type { Client } from "@libsql/client/.";
+import { KyselyLockAdapter } from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
+import type { Client } from "@libsql/client";
 
 /**
  * @group Adapters

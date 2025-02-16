@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import { type ICollection } from "@/collection/contracts/_module";
+import { type ICollection } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal

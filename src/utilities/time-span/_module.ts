@@ -1,1 +1,1 @@
-export * from "@/utilities/time-span/time-span";
+export * from "@/utilities/time-span/time-span.js";

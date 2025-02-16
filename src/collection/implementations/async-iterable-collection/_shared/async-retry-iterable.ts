@@ -1,7 +1,7 @@
 /**
  * @module Collection
  */
-import { retry, type RetrySettings } from "@/async/utilities/_module";
+import { retry, type RetrySettings } from "@/async/utilities/_module.js";
 
 /**
  * @internal

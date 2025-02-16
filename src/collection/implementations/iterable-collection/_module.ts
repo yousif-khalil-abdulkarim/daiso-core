@@ -1,1 +1,1 @@
-export * from "@/collection/implementations/iterable-collection/iterable-collection";
+export * from "@/collection/implementations/iterable-collection/iterable-collection.js";

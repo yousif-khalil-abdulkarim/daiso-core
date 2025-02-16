@@ -2,9 +2,9 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ILockProvider } from "@/lock/contracts/lock-provider.contract";
+import type { ILockProvider } from "@/lock/contracts/lock-provider.contract.js";
 
 /**
  * The <i>ILockAdapter</i> contract defines a way for managing locks independent of the underlying technology.

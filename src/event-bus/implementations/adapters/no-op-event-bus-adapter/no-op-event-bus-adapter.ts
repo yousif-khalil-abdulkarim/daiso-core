@@ -2,12 +2,15 @@
  * @module EventBus
  */
 
-import type { BaseEvent, Listener } from "@/event-bus/contracts/_module";
+import type {
+    BaseEvent,
+    Listener,
+} from "@/event-bus/contracts/_module-exports.js";
 import type {
     IEventBusAdapter,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventBus,
-} from "@/event-bus/contracts/_module";
+} from "@/event-bus/contracts/_module-exports.js";
 
 /**
  * This <i>NoOpEventBusAdapter</i> will do nothing and is used for easily mocking {@link IEventBus} for testing.

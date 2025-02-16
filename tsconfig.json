@@ -2,7 +2,7 @@
     "extends": "./tsconfig.base.json",
     "compilerOptions": {
         "noEmit": true,
-        "module": "CommonJS",
+        "module": "ESNext",
         "moduleResolution": "Node",
     },
     "include": ["src/**/*.ts", "vite.config.ts"],

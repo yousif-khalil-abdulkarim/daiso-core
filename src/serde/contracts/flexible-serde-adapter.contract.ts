@@ -2,7 +2,7 @@
  * @module Serde
  */
 
-import type { ISerde } from "@/serde/contracts/serde.contract";
+import type { ISerde } from "@/serde/contracts/serde.contract.js";
 
 /**
  * @group Contracts

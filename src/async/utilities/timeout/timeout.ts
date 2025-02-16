@@ -1,10 +1,10 @@
 /**
  * @module Async
  */
-import { TimeoutAsyncError } from "@/async/async.errors";
-import type { TimeSpan } from "@/utilities/_module";
-import type { Result } from "@/utilities/types";
-import { timeoutAndFail } from "@/async/utilities/timeout/timeout-and-fail";
+import { TimeoutAsyncError } from "@/async/async.errors.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { Result } from "@/utilities/types.js";
+import { timeoutAndFail } from "@/async/utilities/timeout/timeout-and-fail.js";
 
 /**
  * @internal

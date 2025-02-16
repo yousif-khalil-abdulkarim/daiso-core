@@ -2,10 +2,10 @@
  * @module Serde
  */
 
-import type { ISerializable } from "@/serde/contracts/serializable.contract";
-import type { ISerde } from "@/serde/contracts/serde.contract";
-import type { OneOrMore } from "@/utilities/_module";
-import type { BaseEvent } from "@/event-bus/contracts/_module";
+import type { ISerializable } from "@/serde/contracts/serializable.contract.js";
+import type { ISerde } from "@/serde/contracts/serde.contract.js";
+import type { OneOrMore } from "@/utilities/_module-exports.js";
+import type { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 
 /**
  * The <i>SerializableClass</i> contract defines standard way to make a class instance serializable and deserializable.

@@ -2,8 +2,8 @@
  * @module Collection
  */
 
-import { type TimeSpan } from "@/utilities/_module";
-import { abort } from "@/async/utilities/_module";
+import { type TimeSpan } from "@/utilities/_module-exports.js";
+import { abort } from "@/async/utilities/_module.js";
 
 /**
  * @internal

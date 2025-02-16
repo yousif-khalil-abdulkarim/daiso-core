@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/_shared/_module";
+import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
 import { type Client, createClient } from "@libsql/client";
-import { LibsqlCacheAdapter } from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter";
-import { Serde, SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
+import { LibsqlCacheAdapter } from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import { Serde } from "@/serde/implementations/deriavables/_module-exports.js";
 
 describe("class: LibsqlCacheAdapter", () => {
     let client: Client;

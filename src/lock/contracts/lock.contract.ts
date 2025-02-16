@@ -2,8 +2,12 @@
  * @module Lock
  */
 
-import type { LazyPromiseable, Result, TimeSpan } from "@/utilities/_module";
-import type { LazyPromise } from "@/async/_module";
+import type {
+    LazyPromiseable,
+    Result,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
+import type { LazyPromise } from "@/async/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnableToAquireLockError,
@@ -13,9 +17,9 @@ import type {
     KeyAlreadyAcquiredLockError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnownedReleaseLockError,
-} from "@/lock/contracts/lock.errors";
-import type { IEventListener } from "@/event-bus/contracts/_module";
-import type { LockEvents } from "@/lock/contracts/lock.events";
+} from "@/lock/contracts/lock.errors.js";
+import type { IEventListener } from "@/event-bus/contracts/_module-exports.js";
+import type { LockEvents } from "@/lock/contracts/lock.events.js";
 
 /**
  * The <i>ILockListener</i> contract defines a way for listening <i>{@link ILock}</i> operations.

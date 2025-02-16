@@ -2,10 +2,10 @@
  * @module Collection
  */
 
-import type { CrossJoinResult } from "@/collection/contracts/_module";
-import { type IAsyncCollection } from "@/collection/contracts/_module";
-import { type AsyncIterableValue } from "@/utilities/_module";
-import { isIterable } from "@/collection/implementations/_shared";
+import type { CrossJoinResult } from "@/collection/contracts/_module-exports.js";
+import { type IAsyncCollection } from "@/collection/contracts/_module-exports.js";
+import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
+import { isIterable } from "@/collection/implementations/_shared.js";
 
 /**
  * @internal

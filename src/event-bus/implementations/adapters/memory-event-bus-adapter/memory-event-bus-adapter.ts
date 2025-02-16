@@ -2,12 +2,12 @@
  * @module EventBus
  */
 
-import { simplifyOneOrMoreStr } from "@/utilities/_module";
+import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
 import type {
     BaseEvent,
     IEventBusAdapter,
     Listener,
-} from "@/event-bus/contracts/_module";
+} from "@/event-bus/contracts/_module-exports.js";
 import { EventEmitter } from "node:events";
 
 /**

@@ -3,9 +3,15 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ILock } from "@/lock/contracts/lock.contract";
-import type { ISerializedError, OneOrMore } from "@/utilities/_module";
-import type { IFlexibleSerde, ISerializable } from "@/serde/contracts/_module";
+import type { ILock } from "@/lock/contracts/lock.contract.js";
+import type {
+    ISerializedError,
+    OneOrMore,
+} from "@/utilities/_module-exports.js";
+import type {
+    IFlexibleSerde,
+    ISerializable,
+} from "@/serde/contracts/_module-exports.js";
 
 /**
  * @group Errors

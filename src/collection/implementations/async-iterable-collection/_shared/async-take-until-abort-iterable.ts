@@ -1,7 +1,7 @@
 /**
  * @module Collection
  */
-import { abort } from "@/async/utilities/_module";
+import { abort } from "@/async/utilities/_module.js";
 
 /**
  * @internal

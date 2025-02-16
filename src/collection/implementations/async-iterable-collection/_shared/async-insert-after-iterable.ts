@@ -5,8 +5,8 @@
 import {
     type AsyncPredicate,
     type IAsyncCollection,
-} from "@/collection/contracts/_module";
-import { type AsyncIterableValue } from "@/utilities/_module";
+} from "@/collection/contracts/_module-exports.js";
+import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
 
 /**
  * @internal

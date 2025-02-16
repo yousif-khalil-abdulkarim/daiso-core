@@ -5,19 +5,19 @@
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
-} from "@/utilities/_module";
-import type { IGroupableEventBus } from "@/event-bus/contracts/_module";
-import type { ICacheAdapter } from "@/cache/contracts/_module";
+} from "@/utilities/_module-exports.js";
+import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
+import type { ICacheAdapter } from "@/cache/contracts/_module-exports.js";
 import {
     registerCacheErrors,
     registerCacheEvents,
     type ICacheFactory,
     type IGroupableCache,
-} from "@/cache/contracts/_module";
-import { Cache } from "@/cache/implementations/derivables/cache/cache";
-import type { OneOrMore, TimeSpan } from "@/utilities/_module";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
-import type { IFlexibleSerde } from "@/serde/contracts/_module";
+} from "@/cache/contracts/_module-exports.js";
+import { Cache } from "@/cache/implementations/derivables/cache/cache.js";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
+import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 
 /**
  * @group Derivables

@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import { type Comparator } from "@/collection/contracts/_module";
+import { type Comparator } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal

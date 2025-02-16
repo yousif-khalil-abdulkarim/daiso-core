@@ -1,1 +1,1 @@
-export * from "@/collection/implementations/list-collection/list-collection";
+export * from "@/collection/implementations/list-collection/list-collection.js";

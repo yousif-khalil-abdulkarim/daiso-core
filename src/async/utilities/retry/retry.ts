@@ -2,10 +2,10 @@
  * @module Async
  */
 
-import { RetryAsyncError } from "@/async/async.errors";
-import type { Result } from "@/utilities/types";
-import type { RetrySettings } from "@/async/utilities/retry/retry-or-fail";
-import { retryOrFail } from "@/async/utilities/retry/retry-or-fail";
+import { RetryAsyncError } from "@/async/async.errors.js";
+import type { Result } from "@/utilities/types.js";
+import type { RetrySettings } from "@/async/utilities/retry/retry-or-fail.js";
+import { retryOrFail } from "@/async/utilities/retry/retry-or-fail.js";
 
 /**
  * @internal

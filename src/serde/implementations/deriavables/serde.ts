@@ -2,8 +2,11 @@
  * @module Serde
  */
 
-import type { OneOrMore } from "@/utilities/_module";
-import { getConstructorName, simplifyOneOrMoreStr } from "@/utilities/_module";
+import type { OneOrMore } from "@/utilities/_module-exports.js";
+import {
+    getConstructorName,
+    simplifyOneOrMoreStr,
+} from "@/utilities/_module-exports.js";
 import type {
     IFlexibleSerde,
     IFlexibleSerdeAdapter,
@@ -11,8 +14,8 @@ import type {
     ISerializable,
     SerializableClass,
     SerializableEventClass,
-} from "@/serde/contracts/_module";
-import { BaseEvent } from "@/event-bus/contracts/_module";
+} from "@/serde/contracts/_module-exports.js";
+import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 import {
     ArrayBufferSerdeTransformer,
     BufferSerdeTransformer,
@@ -36,7 +39,7 @@ import {
     DateSerdeTransformer,
     URLSerdeTransformer,
     URLSearchParamsSerdeTransformer,
-} from "@/serde/implementations/deriavables/serde-transformers";
+} from "@/serde/implementations/deriavables/serde-transformers.js";
 
 /**
  * @group Derivables

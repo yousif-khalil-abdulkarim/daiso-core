@@ -2,8 +2,8 @@
  * @module EventBus
  */
 
-import type { OneOrMore } from "@/utilities/_module";
-import type { LazyPromise } from "@/async/_module";
+import type { OneOrMore } from "@/utilities/_module-exports.js";
+import type { LazyPromise } from "@/async/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnableToDispatchEventBusError,
@@ -11,8 +11,8 @@ import {
     UnableToAddListenerEventBusError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnableToRemoveListenerEventBusError,
-} from "@/event-bus/contracts/event-bus.errors";
-import type { BaseEvent, Listener } from "@/event-bus/contracts/_shared";
+} from "@/event-bus/contracts/event-bus.errors.js";
+import type { BaseEvent, Listener } from "@/event-bus/contracts/_shared.js";
 
 /**
  * @group Contracts

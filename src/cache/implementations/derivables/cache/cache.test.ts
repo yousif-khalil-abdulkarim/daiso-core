@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module";
-import { Cache } from "@/cache/implementations/derivables/cache/cache";
-import { EventBus } from "@/event-bus/implementations/_module";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
-import { cacheTestSuite } from "@/cache/implementations/_shared/_module";
+import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
+import { Cache } from "@/cache/implementations/derivables/cache/cache.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter.js";
+import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
 
 describe("class: Cache", () => {
     const eventBus = new EventBus<any>({

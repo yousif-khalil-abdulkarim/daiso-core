@@ -2,8 +2,8 @@
  * @module Lock
  */
 
-import type { OneOrMore, TimeSpan } from "@/utilities/_module";
-import type { ILock, ILockListener } from "@/lock/contracts/lock.contract";
+import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
+import type { ILock, ILockListener } from "@/lock/contracts/lock.contract.js";
 
 /**
  * @group Contracts

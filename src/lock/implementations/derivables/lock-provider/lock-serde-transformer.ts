@@ -6,24 +6,22 @@ import {
     getConstructorName,
     TimeSpan,
     type OneOrMore,
-} from "@/utilities/_module";
-import type { LockEvents } from "@/lock/contracts/_module";
-import type { ILockAdapter } from "@/lock/contracts/_module";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module";
+} from "@/utilities/_module-exports.js";
+import type { LockEvents } from "@/lock/contracts/_module-exports.js";
+import type { ILockAdapter } from "@/lock/contracts/_module-exports.js";
+import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import {
     Lock,
     type ISerializedLock,
-} from "@/lock/implementations/derivables/lock-provider/lock";
+} from "@/lock/implementations/derivables/lock-provider/lock.js";
 import type {
     IEventBus,
     IGroupableEventBus,
-} from "@/event-bus/contracts/_module";
-import {
-    EventBus,
-    NoOpEventBusAdapter,
-} from "@/event-bus/implementations/_module";
-import type { ISerdeTransformer } from "@/serde/contracts/_module";
-import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state";
+} from "@/event-bus/contracts/_module-exports.js";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import type { ISerdeTransformer } from "@/serde/contracts/_module-exports.js";
+import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
 
 /**
  * @internal

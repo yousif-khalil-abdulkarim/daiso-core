@@ -3,9 +3,15 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { IGroupableCache } from "@/cache/contracts/cache.contract";
-import type { IFlexibleSerde, ISerializable } from "@/serde/contracts/_module";
-import type { ISerializedError, OneOrMore } from "@/utilities/_module";
+import type { IGroupableCache } from "@/cache/contracts/cache.contract.js";
+import type {
+    IFlexibleSerde,
+    ISerializable,
+} from "@/serde/contracts/_module-exports.js";
+import type {
+    ISerializedError,
+    OneOrMore,
+} from "@/utilities/_module-exports.js";
 
 /**
  * @group Errors

@@ -2,20 +2,20 @@
  * @module EventBus
  */
 
-import { type ISerde } from "@/serde/contracts/_module";
+import { type ISerde } from "@/serde/contracts/_module-exports.js";
 import {
     RedisSerde,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     SuperJsonSerdeAdapter,
-} from "@/serde/implementations/_module";
+} from "@/serde/implementations/adapters/_module-exports.js";
 import type {
     BaseEvent,
     IEventBusAdapter,
     Listener,
-} from "@/event-bus/contracts/_module";
-import type Redis from "ioredis";
+} from "@/event-bus/contracts/_module-exports.js";
+import type { Redis } from "ioredis";
 import { EventEmitter } from "node:events";
-import { simplifyOneOrMoreStr } from "@/utilities/_module";
+import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
 
 /**
  * @group Adapters

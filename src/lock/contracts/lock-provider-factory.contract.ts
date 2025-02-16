@@ -2,13 +2,13 @@
  * @module Lock
  */
 
-import type { IGroupableLockProvider } from "@/lock/contracts/lock-provider.contract";
+import type { IGroupableLockProvider } from "@/lock/contracts/lock-provider.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultAdapterNotDefinedError,
-} from "@/utilities/errors";
+} from "@/utilities/errors.js";
 
 /**
  * The <i>ILockProviderFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableLockProvider}</i> dynamically.

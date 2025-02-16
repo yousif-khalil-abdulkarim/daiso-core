@@ -1,7 +1,7 @@
 import type {
     IFlexibleSerdeAdapter,
     ISerdeTransformerAdapter,
-} from "@/serde/contracts/flexible-serde-adapter.contract";
+} from "@/serde/contracts/flexible-serde-adapter.contract.js";
 
 export class NoOpSerdeAdapter<TSerializedValue>
     implements IFlexibleSerdeAdapter<TSerializedValue>

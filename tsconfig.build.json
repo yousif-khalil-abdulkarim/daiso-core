@@ -1,0 +1,13 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "sourceMap": true,
+        "declaration": true,
+        "removeComments": true,
+        "module": "ESNext",
+        "moduleResolution": "Node"
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules/*", "vite.config.ts", "**/*.test.ts"]
+}

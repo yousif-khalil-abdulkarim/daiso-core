@@ -2,14 +2,14 @@
  * @module Async
  */
 
-import { type TimeSpan } from "@/utilities/_module";
+import { type TimeSpan } from "@/utilities/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     AsyncError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     AbortAsyncError,
-} from "@/async/async.errors";
-import { abortAndFail } from "@/async/utilities/abort/_module";
+} from "@/async/async.errors.js";
+import { abortAndFail } from "@/async/utilities/abort/_module.js";
 
 /**
  * The <i>delay</i> function creates a promise that will be fulfilled after given <i>time</i> and can be aborted by providing <i>abortSignal</i>.

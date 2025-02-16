@@ -2,13 +2,19 @@
  * @module Cache
  */
 
-import { type ICacheAdapter, TypeCacheError } from "@/cache/contracts/_module";
+import {
+    type ICacheAdapter,
+    TypeCacheError,
+} from "@/cache/contracts/_module-exports.js";
 import type { Transaction } from "kysely";
 import { sql, type Kysely } from "kysely";
-import { type ISerde } from "@/serde/contracts/_module";
-import type { IDeinitizable, IInitizable } from "@/utilities/_module";
-import { simplifyOneOrMoreStr, TimeSpan } from "@/utilities/_module";
-import { SqlSerde } from "@/serde/implementations/_module";
+import { type ISerde } from "@/serde/contracts/_module-exports.js";
+import type {
+    IDeinitizable,
+    IInitizable,
+} from "@/utilities/_module-exports.js";
+import { simplifyOneOrMoreStr, TimeSpan } from "@/utilities/_module-exports.js";
+import { SqlSerde } from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
  * @internal

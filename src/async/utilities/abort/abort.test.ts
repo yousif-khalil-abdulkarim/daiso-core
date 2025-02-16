@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { abort } from "@/async/utilities/abort/abort";
-import { AbortAsyncError, AsyncError } from "@/async/async.errors";
+import { abort } from "@/async/utilities/abort/abort.js";
+import { AbortAsyncError, AsyncError } from "@/async/async.errors.js";
 
 describe("function: abort", () => {
     test("should retrun AsyncError when aborted", async () => {

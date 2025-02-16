@@ -2,9 +2,12 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module";
-import { simplifyOneOrMoreStr } from "@/utilities/_module";
-import type { ILockAdapter, ILockData } from "@/lock/contracts/_module";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
+import type {
+    ILockAdapter,
+    ILockData,
+} from "@/lock/contracts/_module-exports.js";
 
 /**
  * @group Adapters

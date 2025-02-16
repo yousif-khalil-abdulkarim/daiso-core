@@ -1,12 +1,12 @@
-import { TimeSpan } from "@/utilities/_module";
+import { TimeSpan } from "@/utilities/_module-exports.js";
 import { describe, test, expect } from "vitest";
-import { LazyPromise } from "@/async/utilities/lazy-promise/lazy-promise";
+import { LazyPromise } from "@/async/utilities/lazy-promise/lazy-promise.js";
 import {
     AbortAsyncError,
     AsyncError,
     RetryAsyncError,
     TimeoutAsyncError,
-} from "@/async/async.errors";
+} from "@/async/async.errors.js";
 
 describe("class: LazyPromise", () => {
     describe("static method: wrapFn", () => {

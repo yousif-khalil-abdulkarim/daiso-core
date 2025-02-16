@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import { TimeSpan } from "@/utilities/_module";
+import { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  * @internal

@@ -5,11 +5,11 @@
 import type {
     ISerdeTransformerAdapter,
     IFlexibleSerdeAdapter,
-} from "@/serde/contracts/_module";
+} from "@/serde/contracts/_module-exports.js";
 import {
     DeserializationError,
     SerializationError,
-} from "@/serde/contracts/serde.errors";
+} from "@/serde/contracts/serde.errors.js";
 import { SuperJSON } from "superjson-cjs";
 
 /**

@@ -6,7 +6,7 @@ import {
     type Predicate,
     type ICollection,
     type Map,
-} from "@/collection/contracts/_module";
+} from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal

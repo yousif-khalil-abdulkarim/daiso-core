@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import { MemoryLockAdapter } from "@/lock/implementations/adapters/_module";
-import { LockProvider } from "@/lock/implementations/derivables/lock-provider/lock-provider";
-import { EventBus } from "@/event-bus/implementations/_module";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter";
-import { lockProviderTestSuite } from "@/lock/implementations/_shared/_module";
-import { Serde, SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
-import type { ILockData } from "@/lock/contracts/_module";
+import { MemoryLockAdapter } from "@/lock/implementations/adapters/_module-exports.js";
+import { LockProvider } from "@/lock/implementations/derivables/lock-provider/lock-provider.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter.js";
+import { lockProviderTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
+import { Serde } from "@/serde/implementations/deriavables/_module-exports.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import type { ILockData } from "@/lock/contracts/_module-exports.js";
 
 describe("class: LockProvider", () => {
     const eventBus = new EventBus({
