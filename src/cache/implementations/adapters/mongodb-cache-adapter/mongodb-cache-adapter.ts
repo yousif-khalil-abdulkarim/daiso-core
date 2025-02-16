@@ -17,8 +17,8 @@ import type { CollectionOptions, Db, ObjectId } from "mongodb";
 import { MongoServerError, type Collection } from "mongodb";
 import type { ISerde } from "@/serde/contracts/_module";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { SuperJsonSerdeAdapter } from "@/serde/implementations/_module";
-import { MongodbSerde } from "@/serde/implementations/_module";
+import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module";
+import { MongodbSerde } from "@/serde/implementations/adapters/_module";
 
 /**
  * @group Adapters

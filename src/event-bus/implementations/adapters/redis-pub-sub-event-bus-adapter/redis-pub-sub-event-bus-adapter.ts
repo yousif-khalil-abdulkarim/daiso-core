@@ -7,7 +7,7 @@ import {
     RedisSerde,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     SuperJsonSerdeAdapter,
-} from "@/serde/implementations/_module";
+} from "@/serde/implementations/adapters/_module";
 import type {
     BaseEvent,
     IEventBusAdapter,

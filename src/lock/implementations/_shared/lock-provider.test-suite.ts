@@ -28,7 +28,8 @@ import { type Promisable } from "@/utilities/_module";
 import { TimeSpan } from "@/utilities/_module";
 import { delay, LazyPromise } from "@/async/_module";
 import type { ISerde } from "@/serde/contracts/_module";
-import { NoOpSerdeAdapter, Serde } from "@/serde/implementations/_module";
+import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module";
+import { Serde } from "@/serde/implementations/deriavables/_module";
 
 /**
  * @group Utilities

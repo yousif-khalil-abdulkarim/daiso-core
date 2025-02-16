@@ -8,7 +8,7 @@ import { sql, type Kysely } from "kysely";
 import { type ISerde } from "@/serde/contracts/_module";
 import type { IDeinitizable, IInitizable } from "@/utilities/_module";
 import { simplifyOneOrMoreStr, TimeSpan } from "@/utilities/_module";
-import { SqlSerde } from "@/serde/implementations/_module";
+import { SqlSerde } from "@/serde/implementations/adapters/_module";
 
 /**
  * @internal
