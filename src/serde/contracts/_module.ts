@@ -1,4 +1,5 @@
 export * from "@/serde/contracts/deserializer.contract";
+export * from "@/serde/contracts/flexible-serde-adapter.contract";
 export * from "@/serde/contracts/flexible-serde.contract";
 export * from "@/serde/contracts/serde.contract";
 export * from "@/serde/contracts/serde.errors";
