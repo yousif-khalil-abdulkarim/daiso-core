@@ -1,3 +1,6 @@
+/**
+ * @module Serde
+ */
 import type { ISerdeTransformer } from "@/serde/contracts/_module-exports.js";
 import {
     getConstructorName,

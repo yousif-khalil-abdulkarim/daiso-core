@@ -1,8 +1,14 @@
+/**
+ * @module Serde
+ */
 import type {
     IFlexibleSerdeAdapter,
     ISerdeTransformerAdapter,
 } from "@/serde/contracts/flexible-serde-adapter.contract.js";
 
+/**
+ * @group Adapters
+ */
 export class NoOpSerdeAdapter<TSerializedValue>
     implements IFlexibleSerdeAdapter<TSerializedValue>
 {

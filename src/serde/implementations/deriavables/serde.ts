@@ -157,11 +157,22 @@ export type SerdeSettings = {
 };
 
 /**
+ * <i>Serde</i> class can be derived from any <i>{@link IFlexibleSerdeAdapter}</i>.
  * @group Derivables
  */
 export class Serde<TSerializedValue>
     implements IFlexibleSerde<TSerializedValue>
 {
+    /**
+     * @example
+     * ```ts
+     * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     *
+     * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
+     * ```
+     */
     constructor(
         private readonly serdeAdapter: IFlexibleSerdeAdapter<TSerializedValue>,
         settings: SerdeSettings = {},
@@ -258,14 +269,79 @@ export class Serde<TSerializedValue>
         }
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     *
+     * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
+     *
+     * const value = { a: 1, b: 2 };
+     * const serializedValue = serde.serialize(value);
+     *
+     * // Will print out { a: 1, b: 2} as json string, this because of the SuperJsonSerdeAdapter
+     * console.log(serializedValue);
+     * ```
+     */
     serialize<TValue>(value: TValue): TSerializedValue {
         return this.serdeAdapter.serialize(value);
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     *
+     * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
+     *
+     * const value = { a: 1, b: 2 };
+     * const deserializedValue = serde.deserialize(serde.serialize(value));
+     *
+     * // Will print out { a: 1, b: 2}
+     * console.log(serializedValue);
+     *
+     * // Will print false
+     * console.log(value === serializedValue);
+     * ```
+     */
     deserialize<TValue>(serializedValue: TSerializedValue): TValue {
         return this.serdeAdapter.deserialize(serializedValue);
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
+     *
+     * class AddEvent extends BaseEvent<{ a: number; b: number }> {}
+     *
+     * serde.registerEvent(AddEvent);
+     *
+     * const event = new AddEvent({ a: 1, b: 2 });
+     * const deserializedEvent = serde.deserialize(serde.serialize(event));
+     *
+     * // Will print 1
+     * console.log(deserializedEvent.fields.a);
+     *
+     * // Will print 2
+     * console.log(deserializedEvent.fields.b);
+     *
+     * // Will print true
+     * console.log(deserializedEvent instanceof AddEvent);
+     *
+     * // Will print false
+     * console.log(event === deserializedEvent);
+     * ```
+     */
     registerEvent<TFields extends Record<string, unknown>>(
         eventClass: SerializableEventClass<TFields>,
         prefix?: OneOrMore<string>,
@@ -287,6 +363,54 @@ export class Serde<TSerializedValue>
         );
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { ISerializable } from "@daiso-tech/core/serde/contracts";
+     *
+     * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
+     *
+     * type ISerializedUser = {
+     *   name: string;
+     *   age: number
+     * };
+     *
+     * class User implements ISerializable<ISerializedUser> {
+     *   static deserialize(serializedUser: ISerializedUser): User {
+     *     return new User(serializedUser.name, serializedUser.age);
+     *   }
+     *
+     *   constructor(public readonly name: string, public readonly age: number) {}
+     *
+     *   serialize(): ISerializedUser {
+     *     return {
+     *       name: this.name,
+     *       age: this.age,
+     *     };
+     *   }
+     * }
+     *
+     * serde.registerClass(AddEvent);
+     *
+     * const user = new User("Carl", 30);
+     * const deserializedUser = serde.deserialize(serde.serialize(user));
+     *
+     * // Will print "Carl"
+     * console.log(deserializedUser.name);
+     *
+     * // Will print 30
+     * console.log(deserializedUser.age);
+     *
+     * // Will print true
+     * console.log(deserializedUser instanceof User);
+     *
+     * // Will print false
+     * console.log(user === deserializedUser);
+     * ```
+     */
     registerClass<TSerializedClassInstance>(
         class_: SerializableClass<TSerializedClassInstance>,
         prefix?: OneOrMore<string>,
@@ -318,6 +442,67 @@ export class Serde<TSerializedValue>
         );
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     *
+     * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
+     *
+     * type ISerializedUser = {
+     *   name: string;
+     *   age: number
+     * };
+     *
+     * class User implements ISerializable<ISerializedUser> {
+     *   static deserialize(serializedUser: ISerializedUser): User {
+     *     return new User(serializedUser.name, serializedUser.age);
+     *   }
+     *
+     *   constructor(public readonly name: string, public readonly age: number) {}
+     *
+     *   serialize(): ISerializedUser {
+     *     return {
+     *       name: this.name,
+     *       age: this.age,
+     *     };
+     *   }
+     * }
+     *
+     * serde.registerCustom<ISerializedUser, User>({
+     *   name: User.name,
+     *   isApplicable: (value): value is User => {
+     *     return value instanceof User;
+     *   },
+     *   serialize: (value: User): ISerializedUser => {
+     *     return {
+     *       name: value.name,
+     *       age: value.age
+     *     };
+     *   },
+     *   deserialize: (value: ISerializedUser): User => {
+     *     return new User(value.name, value.age);
+     *   }
+     * });
+     *
+     * const user = new User("Carl", 30);
+     * const deserializedUser = serde.deserialize(serde.serialize(user));
+     *
+     * // Will print "Carl"
+     * console.log(deserializedUser.name);
+     *
+     * // Will print 30
+     * console.log(deserializedUser.age);
+     *
+     * // Will print true
+     * console.log(deserializedUser instanceof User);
+     *
+     * // Will print false
+     * console.log(user === deserializedUser);
+     * ```
+     */
     registerCustom<TCustomSerialized, TCustomDeserialized>(
         transformer: ISerdeTransformer<TCustomSerialized, TCustomDeserialized>,
         prefix?: OneOrMore<string>,

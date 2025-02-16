@@ -10,7 +10,7 @@ import type {
 } from "@/serde/contracts/_module-exports.js";
 
 /**
- * @group Utilities
+ * @group Test utilities
  */
 export type FlexibleSerdeAdapterSuiteSettings = {
     expect: ExpectStatic;
@@ -19,7 +19,22 @@ export type FlexibleSerdeAdapterSuiteSettings = {
 };
 
 /**
- * @group Utilities
+ * The <i>flexibleSerdeAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IFlexibleSerdeAdapter}</i> with <i>vitest</i>.
+ * @group Test utilities
+ * @example
+ * ```ts
+ * import { describe, expect, test } from "vitest";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+ * import { flexibleSerdeAdapterTestSuite } from "@daiso-tech/core/serde/implementations/test-utilities";
+ *
+ * describe("class: SuperJsonSerdeAdapter", () => {
+ *     flexibleSerdeAdapterTestSuite({
+ *         createAdapter: () => new SuperJsonSerdeAdapter(),
+ *         expect,
+ *         test,
+ *     });
+ * });
+ * ```
  */
 export function flexibleSerdeAdapterTestSuite(
     settings: FlexibleSerdeAdapterSuiteSettings,
