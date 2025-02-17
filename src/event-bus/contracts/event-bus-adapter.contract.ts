@@ -3,7 +3,7 @@
  */
 
 import type {
-    EventListener,
+    EventListenerFn,
     BaseEvent,
 } from "@/event-bus/contracts/_shared.js";
 
@@ -16,19 +16,19 @@ import type {
  */
 export type IEventBusAdapter = {
     /**
-     * The <i>addListener</i> method is used for adding <i>{@link EventListener | listener}</i> for certain <i>eventName</i>.
+     * The <i>addListener</i> method is used for adding <i>{@link EventListenerFn | listener}</i> for certain <i>eventName</i>.
      */
     addListener(
         eventName: string,
-        listener: EventListener<BaseEvent>,
+        listener: EventListenerFn<BaseEvent>,
     ): PromiseLike<void>;
 
     /**
-     * The <i>removeListener</i> method is used for removing <i>{@link EventListener | listener}</i> for certain <i>eventName</i>.
+     * The <i>removeListener</i> method is used for removing <i>{@link EventListenerFn | listener}</i> for certain <i>eventName</i>.
      */
     removeListener(
         eventName: string,
-        listener: EventListener<BaseEvent>,
+        listener: EventListenerFn<BaseEvent>,
     ): PromiseLike<void>;
 
     /**

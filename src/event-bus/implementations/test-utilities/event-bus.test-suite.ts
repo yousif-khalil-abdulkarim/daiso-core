@@ -11,6 +11,7 @@ import {
 import {
     BaseEvent,
     type IEventBus,
+    type IEventListenerObject,
     type IGroupableEventBus,
 } from "@/event-bus/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
@@ -138,8 +139,10 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     type: TestEventA.name,
                 });
                 let result: TestEventA | null = null;
-                const listener = (event: TestEventA) => {
-                    result = event;
+                const listener: IEventListenerObject<TestEventA> = {
+                    handler(event: TestEventA): void {
+                        result = event;
+                    },
                 };
                 await eventBusA.addListener(TestEventA, listener);
                 await eventBusA.removeListener(TestEventA, listener);
@@ -194,9 +197,12 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     type: TestEventB.name,
                 });
                 let result: TestEventA | TestEventB | null = null;
-                const listener = (event: TestEventA | TestEventB) => {
-                    result = event;
-                };
+                const listener: IEventListenerObject<TestEventA | TestEventB> =
+                    {
+                        handler(event: TestEventA | TestEventB): void {
+                            result = event;
+                        },
+                    };
                 await eventBusA.addListenerMany(
                     [TestEventA, TestEventB],
                     listener,
@@ -236,9 +242,12 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     type: TestEventA.name,
                 });
                 let result: TestEventA | null = null;
-                const listener = (event: TestEventA) => {
-                    result = event;
-                };
+                class Listener implements IEventListenerObject<TestEventA> {
+                    handler(event: TestEventA): Promisable<void> {
+                        result = event;
+                    }
+                }
+                const listener = new Listener();
                 const unsubscribe = await eventBusA.subscribe(
                     TestEventA,
                     listener,
@@ -295,9 +304,12 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     type: TestEventB.name,
                 });
                 let result: BaseEvent | null = null;
-                const listener = (event: BaseEvent) => {
-                    result = event;
-                };
+                class Listener implements IEventListenerObject<BaseEvent> {
+                    handler(event: BaseEvent): Promisable<void> {
+                        result = event;
+                    }
+                }
+                const listener = new Listener();
                 const unsubscribe = await eventBusA.subscribeMany(
                     [TestEventA, TestEventB],
                     listener,

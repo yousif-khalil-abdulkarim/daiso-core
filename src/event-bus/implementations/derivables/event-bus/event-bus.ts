@@ -7,6 +7,8 @@ import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     EventClass,
     EventInstance,
+    EventListenerFn,
+    IEventListenerObject,
     Unsubscribe,
 } from "@/event-bus/contracts/_module-exports.js";
 import {
@@ -73,6 +75,10 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
+    private readonly listenerObjectMap = new Map<
+        IEventListenerObject<any>,
+        EventListenerFn<any>
+    >();
 
     /**
      * @example
@@ -162,6 +168,34 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         return this.adapter.getGroup();
     }
 
+    private ensureListenerObject<TEvent>(
+        listener: IEventListenerObject<TEvent>,
+    ): EventListenerFn<TEvent> {
+        let listenerFn = this.listenerObjectMap.get(listener);
+        if (listenerFn !== undefined) {
+            return listenerFn;
+        }
+        listenerFn = listener.handler.bind(listener);
+        this.listenerObjectMap.set(listener, listenerFn);
+        return listenerFn;
+    }
+
+    private resolveListener<TEvent>(
+        listener: EventListener<TEvent>,
+    ): EventListenerFn<TEvent> {
+        if (typeof listener === "function") {
+            return listener;
+        }
+        return this.ensureListenerObject(listener);
+    }
+
+    private deleteListener<TEvent>(listener: EventListener<TEvent>): void {
+        if (typeof listener === "function") {
+            return;
+        }
+        this.listenerObjectMap.delete(listener);
+    }
+
     /**
      * @example
      * ```ts
@@ -187,14 +221,14 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
+            const resolvedListener = this.resolveListener(
+                listener,
+            ) as EventListenerFn<BaseEvent>;
             try {
-                await this.adapter.addListener(
-                    event.name,
-                    listener as EventListener<BaseEvent>,
-                );
+                await this.adapter.addListener(event.name, resolvedListener);
             } catch (error: unknown) {
                 throw new UnableToAddListenerEventBusError(
-                    `A listener with name of "${listener.name}" could not added for "${String(event)}" event`,
+                    `A listener with name of "${resolvedListener.name}" could not added for "${String(event)}" event`,
                     error,
                 );
             }
@@ -226,14 +260,15 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
+            const resolvedListener = this.resolveListener(
+                listener,
+            ) as EventListenerFn<BaseEvent>;
             try {
-                await this.adapter.removeListener(
-                    event.name,
-                    listener as EventListener<BaseEvent>,
-                );
+                await this.adapter.removeListener(event.name, resolvedListener);
+                this.deleteListener(listener);
             } catch (error: unknown) {
                 throw new UnableToRemoveListenerEventBusError(
-                    `A listener with name of "${listener.name}" could not removed of "${String(event)}" event`,
+                    `A listener with name of "${resolvedListener.name}" could not removed of "${String(event)}" event`,
                     error,
                 );
             }
@@ -343,7 +378,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 event_: EventInstance<TEventClass>,
             ) => {
                 try {
-                    await listener(event_);
+                    const resolvedListener = this.resolveListener(listener);
+                    await resolvedListener(event_);
                 } finally {
                     await this.removeListener(event, wrappedListener);
                 }

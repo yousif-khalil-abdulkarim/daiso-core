@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { OneOrMore } from "@/utilities/_module-exports.js";
+import type { OneOrMore, Promisable } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -12,10 +12,8 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnableToRemoveListenerEventBusError,
 } from "@/event-bus/contracts/event-bus.errors.js";
-import type {
-    BaseEvent,
-    EventListener,
-} from "@/event-bus/contracts/_shared.js";
+import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
+import { type EventListenerFn } from "@/event-bus/contracts/_shared.js";
 
 /**
  *
@@ -43,6 +41,24 @@ export type EventInstance<TEventClass extends EventClass<BaseEvent>> =
  * @group Contracts
  */
 export type Unsubscribe = () => LazyPromise<void>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * @group Contracts
+ */
+export type IEventListenerObject<TEvent> = {
+    handler(event: TEvent): Promisable<void>;
+};
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * @group Contracts
+ */
+export type EventListener<TEvent> =
+    | EventListenerFn<TEvent>
+    | IEventListenerObject<TEvent>;
 
 /**
  * The <i>IEventListenable</i> contract defines a way listening to events independent of underlying technology
