@@ -2,7 +2,10 @@
  * @module EventBus
  */
 
-import type { EventListener, BaseEvent } from "@/event-bus/contracts/_shared.js";
+import type {
+    EventListener,
+    BaseEvent,
+} from "@/event-bus/contracts/_shared.js";
 
 /**
  * The <i>IEventBusAdapter</i> contract defines a way for dispatching and listening to events independent of underlying technology.

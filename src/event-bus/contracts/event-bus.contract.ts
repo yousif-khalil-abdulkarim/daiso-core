@@ -12,7 +12,10 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnableToRemoveListenerEventBusError,
 } from "@/event-bus/contracts/event-bus.errors.js";
-import type { BaseEvent, EventListener } from "@/event-bus/contracts/_shared.js";
+import type {
+    BaseEvent,
+    EventListener,
+} from "@/event-bus/contracts/_shared.js";
 
 /**
  *
