@@ -8,9 +8,10 @@ import type {
     IFlexibleSerde,
     ISerializable,
 } from "@/serde/contracts/_module-exports.js";
-import type {
-    ISerializedError,
-    OneOrMore,
+import {
+    CORE,
+    type ISerializedError,
+    type OneOrMore,
 } from "@/utilities/_module-exports.js";
 
 /**
@@ -130,10 +131,10 @@ export function registerEventBusErrors(serde: OneOrMore<IFlexibleSerde>): void {
     }
     for (const serde_ of serde) {
         serde_
-            .registerClass(EventBusError)
-            .registerClass(UnexpectedEventBusError)
-            .registerClass(UnableToRemoveListenerEventBusError)
-            .registerClass(UnableToAddListenerEventBusError)
-            .registerClass(UnableToDispatchEventBusError);
+            .registerClass(EventBusError, CORE)
+            .registerClass(UnexpectedEventBusError, CORE)
+            .registerClass(UnableToRemoveListenerEventBusError, CORE)
+            .registerClass(UnableToAddListenerEventBusError, CORE)
+            .registerClass(UnableToDispatchEventBusError, CORE);
     }
 }

@@ -6,7 +6,11 @@
 import type { IGroupableCache } from "@/cache/contracts/cache.contract.js";
 import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
-import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
+import {
+    CORE,
+    type OneOrMore,
+    type TimeSpan,
+} from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -134,14 +138,14 @@ export function registerCacheEvents(serde: OneOrMore<IFlexibleSerde>): void {
     }
     for (const serde_ of serde) {
         serde_
-            .registerEvent(KeyFoundCacheEvent)
-            .registerEvent(KeyNotFoundCacheEvent)
-            .registerEvent(KeyAddedCacheEvent)
-            .registerEvent(KeyUpdatedCacheEvent)
-            .registerEvent(KeyRemovedCacheEvent)
-            .registerEvent(KeyIncrementedCacheEvent)
-            .registerEvent(KeyDecrementedCacheEvent)
-            .registerEvent(KeysClearedCacheEvent)
-            .registerEvent(UnexpectedCacheErrorEvent);
+            .registerEvent(KeyFoundCacheEvent, CORE)
+            .registerEvent(KeyNotFoundCacheEvent, CORE)
+            .registerEvent(KeyAddedCacheEvent, CORE)
+            .registerEvent(KeyUpdatedCacheEvent, CORE)
+            .registerEvent(KeyRemovedCacheEvent, CORE)
+            .registerEvent(KeyIncrementedCacheEvent, CORE)
+            .registerEvent(KeyDecrementedCacheEvent, CORE)
+            .registerEvent(KeysClearedCacheEvent, CORE)
+            .registerEvent(UnexpectedCacheErrorEvent, CORE);
     }
 }

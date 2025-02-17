@@ -4,9 +4,10 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ILock } from "@/lock/contracts/lock.contract.js";
-import type {
-    ISerializedError,
-    OneOrMore,
+import {
+    CORE,
+    type ISerializedError,
+    type OneOrMore,
 } from "@/utilities/_module-exports.js";
 import type {
     IFlexibleSerde,
@@ -239,11 +240,11 @@ export function registerLockErrorsToSerde(
     }
     for (const serde_ of serde) {
         serde_
-            .registerClass(LockError)
-            .registerClass(UnexpectedLockError)
-            .registerClass(UnableToAquireLockError)
-            .registerClass(UnableToReleaseLockError)
-            .registerClass(KeyAlreadyAcquiredLockError)
-            .registerClass(UnownedReleaseLockError);
+            .registerClass(LockError, CORE)
+            .registerClass(UnexpectedLockError, CORE)
+            .registerClass(UnableToAquireLockError, CORE)
+            .registerClass(UnableToReleaseLockError, CORE)
+            .registerClass(KeyAlreadyAcquiredLockError, CORE)
+            .registerClass(UnownedReleaseLockError, CORE);
     }
 }

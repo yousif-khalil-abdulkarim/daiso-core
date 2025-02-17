@@ -3,6 +3,7 @@
  */
 
 import {
+    CORE,
     simplifyOneOrMoreStr,
     TimeSpan,
     type OneOrMore,
@@ -227,7 +228,7 @@ export class LockProvider implements IGroupableLockProvider {
             serde = [serde];
         }
         for (const serde_ of serde) {
-            serde_.registerCustom(transformer);
+            serde_.registerCustom(transformer, CORE);
         }
     }
 
