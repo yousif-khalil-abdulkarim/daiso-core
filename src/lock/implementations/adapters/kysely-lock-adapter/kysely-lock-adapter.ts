@@ -12,7 +12,7 @@ import {
     type IInitizable,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
-import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
+import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -195,7 +195,7 @@ export class KyselyLockAdapter
     withGroup(group: string): IDatabaseLockAdapter {
         return new KyselyLockAdapter({
             database: this.database,
-            rootGroup: simplifyOneOrMoreStr([this.group, group]),
+            rootGroup: resolveOneOrMoreStr([this.group, group]),
         });
     }
 }

@@ -24,7 +24,7 @@ import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
     isArrayEmpty,
-    simplifyOneOrMoreStr,
+    resolveOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 
 /**
@@ -135,7 +135,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      */
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
-            adapter: this.adapter.withGroup(simplifyOneOrMoreStr(group)),
+            adapter: this.adapter.withGroup(resolveOneOrMoreStr(group)),
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,

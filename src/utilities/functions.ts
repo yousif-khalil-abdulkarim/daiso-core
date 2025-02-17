@@ -38,6 +38,7 @@ export async function resolveAsyncLazyable<TValue>(
 export function isArrayEmpty(array: any[]): boolean {
     return array.length === 0;
 }
+
 /**
  * @internal
  */
@@ -55,7 +56,7 @@ export function isObjectEmpty(
 /**
  * @internal
  */
-export function simplifyOneOrMoreStr(name: OneOrMore<string>): string {
+export function resolveOneOrMoreStr(name: OneOrMore<string>): string {
     if (Array.isArray(name)) {
         name = name.filter((str) => str.length > 0).join("/");
     }

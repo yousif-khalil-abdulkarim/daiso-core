@@ -4,7 +4,7 @@
 
 import {
     CORE,
-    simplifyOneOrMoreStr,
+    resolveOneOrMoreStr,
     TimeSpan,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
@@ -569,8 +569,8 @@ export class LockProvider implements IGroupableLockProvider {
             lockEventBus: this.eventBus,
             adapter: this.adapter,
             defaultRefreshTime: this.defaultRefreshTime,
-            key: simplifyOneOrMoreStr(key),
-            owner: simplifyOneOrMoreStr(owner),
+            key: resolveOneOrMoreStr(key),
+            owner: resolveOneOrMoreStr(owner),
             ttl,
             lazyPromiseSettings: {
                 backoffPolicy: this.backoffPolicy,
@@ -648,7 +648,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     withGroup(group: OneOrMore<string>): ILockProvider {
         return new LockProvider({
-            adapter: this.adapter.withGroup(simplifyOneOrMoreStr(group)),
+            adapter: this.adapter.withGroup(resolveOneOrMoreStr(group)),
             eventBus: this.eventBus,
             defaultTtl: this.defaultTtl,
             defaultRefreshTime: this.defaultRefreshTime,

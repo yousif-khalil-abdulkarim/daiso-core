@@ -13,7 +13,7 @@ import type {
     IDeinitizable,
     IInitizable,
 } from "@/utilities/_module-exports.js";
-import { simplifyOneOrMoreStr, TimeSpan } from "@/utilities/_module-exports.js";
+import { resolveOneOrMoreStr, TimeSpan } from "@/utilities/_module-exports.js";
 import { SqlSerde } from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
@@ -88,7 +88,7 @@ export class KyselySqliteCacheAdapter<TType = unknown>
             expiredKeysRemovalInterval: this.expiredKeysRemovalInterval,
             serde: this.serde,
             shouldRemoveExpiredKeys: this.shouldRemoveExpiredKeys,
-            rootGroup: simplifyOneOrMoreStr([this.group, group]),
+            rootGroup: resolveOneOrMoreStr([this.group, group]),
         });
     }
 

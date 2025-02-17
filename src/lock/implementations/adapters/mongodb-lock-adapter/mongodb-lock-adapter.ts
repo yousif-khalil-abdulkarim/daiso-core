@@ -5,7 +5,7 @@
 import {
     type IDeinitizable,
     type IInitizable,
-    simplifyOneOrMoreStr,
+    resolveOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
@@ -263,7 +263,7 @@ export class MongodbLockAdapter
             database: this.database,
             collectionName: this.collectionName,
             collectionSettings: this.collectionSettings,
-            rootGroup: simplifyOneOrMoreStr([this.group, group]),
+            rootGroup: resolveOneOrMoreStr([this.group, group]),
         });
     }
 }

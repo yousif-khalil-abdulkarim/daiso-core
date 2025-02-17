@@ -29,7 +29,7 @@ import {
     isArrayEmpty,
     isObjectEmpty,
     resolveAsyncLazyable,
-    simplifyOneOrMoreStr,
+    resolveOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 import type {
     AsyncLazyable,
@@ -465,7 +465,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     withGroup(group: OneOrMore<string>): ICache<TType> {
         return new Cache({
-            adapter: this.adapter.withGroup(simplifyOneOrMoreStr(group)),
+            adapter: this.adapter.withGroup(resolveOneOrMoreStr(group)),
             defaultTtl: this.defaultTtl,
             eventBus: this.groupdEventBus,
             retryAttempts: this.retryAttempts,

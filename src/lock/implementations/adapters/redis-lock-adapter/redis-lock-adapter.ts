@@ -3,7 +3,7 @@
  */
 
 import type { TimeSpan } from "@/utilities/_module-exports.js";
-import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
+import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import type { ILockAdapter } from "@/lock/contracts/_module-exports.js";
 import type { Redis } from "ioredis";
 import type { Result } from "ioredis";
@@ -143,11 +143,11 @@ export class RedisLockAdapter implements ILockAdapter {
     }
 
     private getPrefix(): string {
-        return simplifyOneOrMoreStr([this.group, "__KEY__"]);
+        return resolveOneOrMoreStr([this.group, "__KEY__"]);
     }
 
     private withPrefix(key: string): string {
-        return simplifyOneOrMoreStr([this.getPrefix(), key]);
+        return resolveOneOrMoreStr([this.getPrefix(), key]);
     }
 
     async acquire(
@@ -192,7 +192,7 @@ export class RedisLockAdapter implements ILockAdapter {
     withGroup(group: string): ILockAdapter {
         return new RedisLockAdapter({
             database: this.database,
-            rootGroup: simplifyOneOrMoreStr([this.group, group]),
+            rootGroup: resolveOneOrMoreStr([this.group, group]),
         });
     }
 }
