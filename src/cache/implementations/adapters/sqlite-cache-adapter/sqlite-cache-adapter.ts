@@ -42,12 +42,14 @@ export class SqliteCacheAdapter<TType = unknown>
     /**
      * @example
      * ```ts
-     * import { SqliteCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
      * import Sqlite from "better-sqlite3";
      *
      * (async () => {
      *   const database = new Sqlite("local.db");
-     *   const serde = new SuperJsonSerde();
+     *   const serde = new Serde(new SuperJsonSerdeAdapter());
      *   const cacheAdapter = new SqliteCacheAdapter({
      *     database,
      *     serde,

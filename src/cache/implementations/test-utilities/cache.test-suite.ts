@@ -26,7 +26,7 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import { delay, LazyPromise } from "@/async/_module-exports.js";
 
 /**
- * @group Utilities
+ * @group Test utilities
  */
 export type CacheTestSuiteSettings = {
     expect: ExpectStatic;
@@ -38,48 +38,42 @@ export type CacheTestSuiteSettings = {
 
 /**
  * The <i>cacheTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICache}</i> with <i>vitest</i>.
- * @group Utilities
+ * @group Test utilities
  * @example
  * ```ts
- * import Redis from "ioredis";
- * import { afterEach, beforeEach, describe, expect, test } from "vitest";
- * import { RedisContainer, type StartedRedisContainer } from "@testcontainers/redis";
- * import { SuperJsonSerde, TimeSpan, RedisCacheAdapter, cacheTestSuite, MemorycacheAdapter } from "@daiso-tech/core";
+ * import { beforeEach, describe, expect, test } from "vitest";
+ * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+ * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
+ * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+ * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+ * import { cacheTestSuite } from "@daiso-tech/core/cache/implementations/test-utilities";
  *
- * const TIMEOUT = TimeSpan.fromMinutes(2);
  * describe("class: Cache", () => {
- *   let database: Redis;
- *   let startedContainer: StartedRedisContainer;
- *   const eventBus = new EventBus({
- *     adapter: new MemorycacheAdapter({
- *       rootGroup: "@global"
- *     })
- *   }):
- *   const serde = new SuperJsonSerde();
- *   beforeEach(async () => {
- *     startedContainer = await new RedisContainer("redis:7.4.2").start();
- *     database = new Redis(startedContainer.getConnectionUrl());
- *   }, TIMEOUT.toMilliseconds());
- *   afterEach(async () => {
- *     await database.quit();
- *     await startedContainer.stop();
- *   }, TIMEOUT.toMilliseconds());
- *   cacheTestSuite({
- *     createCache: () =>
- *       new Cache(
- *         new RedisCacheAdapter({
- *           database,
- *           serde,
- *           rootGroup: "@a",
+ *     const eventBus = new EventBus<any>({
+ *         adapter: new MemoryEventBusAdapter({
+ *             rootGroup: "@global",
  *         }),
- *         { eventBus }
- *       ),
- *     test,
- *     beforeEach,
- *     expect,
- *     describe,
- *   });
+ *     });
+ *     let map: Map<string, unknown>;
+ *     beforeEach(() => {
+ *         map = new Map();
+ *     });
+ *     cacheTestSuite({
+ *         createCache: () =>
+ *             new Cache({
+ *                 adapter: new MemoryCacheAdapter({
+ *                     rootGroup: "@a",
+ *                     map,
+ *                 }),
+ *                 eventBus,
+ *             }),
+ *         beforeEach,
+ *         describe,
+ *         expect,
+ *         test,
+ *     });
  * });
+ *
  * ```
  */
 export function cacheTestSuite(settings: CacheTestSuiteSettings): void {

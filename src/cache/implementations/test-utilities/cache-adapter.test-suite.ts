@@ -17,7 +17,7 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/_module-exports.js";
 
 /**
- * @group Utilities
+ * @group Test utilities
  */
 export type CacheAdapterTestSuiteSettings = {
     expect: ExpectStatic;
@@ -29,40 +29,47 @@ export type CacheAdapterTestSuiteSettings = {
 
 /**
  * The <i>cacheAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICacheAdapter}</i> with <i>vitest</i>.
- * @group Utilities
+ * @group Test utilities
  * @example
  * ```ts
- * import Redis from "ioredis";
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
- * import { RedisContainer, type StartedRedisContainer } from "@testcontainers/redis";
- * import { SuperJsonSerde, TimeSpan, RedisCacheAdapter, cacheAdapterTestSuite } from "@daiso-tech/core";
+ * import { cacheAdapterTestSuite } from "@daiso-tech/core/cache/implementations/test-utilities";
+ * import { RedisCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+ * import { Redis } from "ioredis";
+ * import {
+ *     RedisContainer,
+ *     type StartedRedisContainer,
+ * } from "@testcontainers/redis";
+ * import { TimeSpan } from "@daiso-tech/core/utilities";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+ * import { Serde } from "@daiso-tech/core/serde/implementations/deriavables";
  *
- * const TIMEOUT = TimeSpan.fromMinutes(2);
+ * const timeout = TimeSpan.fromMinutes(2);
  * describe("class: RedisCacheAdapter", () => {
- *   let database: Redis;
- *   let startedContainer: StartedRedisContainer;
- *   const serde = new SuperJsonSerde();
- *   beforeEach(async () => {
- *     startedContainer = await new RedisContainer("redis:7.4.2").start();
- *     database = new Redis(startedContainer.getConnectionUrl());
- *   }, TIMEOUT.toMilliseconds());
- *   afterEach(async () => {
- *     await database.quit();
- *     await startedContainer.stop();
- *   }, TIMEOUT.toMilliseconds());
- *   cacheAdapterTestSuite({
- *     createAdapter: () =>
- *       new RedisCacheAdapter({
- *         database,
- *         serde,
- *         rootGroup: "@a"
- *       }),
- *     test,
- *     beforeEach,
- *     expect,
- *     describe,
- *   });
+ *     let client: Redis;
+ *     let startedContainer: StartedRedisContainer;
+ *     beforeEach(async () => {
+ *         startedContainer = await new RedisContainer("redis:7.4.2").start();
+ *         client = new Redis(startedContainer.getConnectionUrl());
+ *     }, timeout.toMilliseconds());
+ *     afterEach(async () => {
+ *         await client.quit();
+ *         await startedContainer.stop();
+ *     }, timeout.toMilliseconds());
+ *     cacheAdapterTestSuite({
+ *         createAdapter: () =>
+ *             new RedisCacheAdapter({
+ *                 database: client,
+ *                 serde: new Serde(new SuperJsonSerdeAdapter()),
+ *                 rootGroup: "@a",
+ *             }),
+ *         test,
+ *         beforeEach,
+ *         expect,
+ *         describe,
+ *     });
  * });
+ *
  * ```
  */
 export function cacheAdapterTestSuite(

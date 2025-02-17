@@ -44,12 +44,14 @@ export class LibsqlCacheAdapter<TType = unknown>
     /***
      * @example
      * ```ts
-     * import { LibsqlCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { LibsqlCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import { createClient } from "@libsql/client";
      *
      * (async () => {
      *   const database = createClient({ url: "file:local.db" });
-     *   const serde = new SuperJsonSerde();
+     *   const serde = new Serde(new SuperJsonSerdeAdapter());
      *   const cacheAdapter = new LibsqlCacheAdapter({
      *     database,
      *     serde,

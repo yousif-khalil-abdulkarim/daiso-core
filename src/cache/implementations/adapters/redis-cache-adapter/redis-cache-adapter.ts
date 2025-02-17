@@ -10,7 +10,11 @@ import {
 } from "@/utilities/_module-exports.js";
 import { ReplyError, type Redis, type Result } from "ioredis";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
-import { RedisSerde } from "@/serde/implementations/adapters/_module-exports.js";
+import {
+    RedisSerde,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type SuperJsonSerdeAdapter,
+} from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
  * @internal
@@ -102,7 +106,7 @@ export type RedisCacheAdapterSettings = {
 };
 
 /**
- * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, such as <i>{@link SuperJsonSerde}</i>.
+ * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
  * @group Adapters
  */
 export class RedisCacheAdapter<TType = unknown>
@@ -128,11 +132,13 @@ export class RedisCacheAdapter<TType = unknown>
     /**
      * @example
      * ```ts
-     * import { RedisCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { RedisCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
      * import Redis from "ioredis";
      *
      * const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
-     * const serde = new SuperJsonSerde();
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheAdapter = new RedisCacheAdapter({
      *   database,
      *   serde,
