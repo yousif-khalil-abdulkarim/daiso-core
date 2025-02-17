@@ -29,9 +29,11 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import { delay, LazyPromise } from "@/async/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { Serde } from "@/serde/implementations/deriavables/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
  * @group Utilities
  */
 export type LockProviderTestSuiteSettings = {
@@ -45,7 +47,51 @@ export type LockProviderTestSuiteSettings = {
 
 /**
  * The <i>lockProviderTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ILock}</i> with <i>vitest</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
  * @group Utilities
+ * ```ts
+ * import { beforeEach, describe, expect, test } from "vitest";
+ * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+ * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+ * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+ * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+ * import { lockProviderTestSuite } from "@daiso-tech/core/lock/implementations/test-utilities";
+ * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+ * import type { ILockData } from "@daiso-tech/core/lock/contracts";
+ *
+ * describe("class: LockProvider", () => {
+ *     const eventBus = new EventBus({
+ *         adapter: new MemoryEventBusAdapter({
+ *             rootGroup: "@global",
+ *         }),
+ *     });
+ *     const serde = new Serde(new SuperJsonSerdeAdapter());
+ *     let map: Map<string, ILockData>;
+ *     beforeEach(() => {
+ *         map = new Map();
+ *     });
+ *     lockProviderTestSuite({
+ *         createLockProvider: () => {
+ *             const lockProvider = new LockProvider({
+ *                 serde,
+ *                 adapter: new MemoryLockAdapter({
+ *                     rootGroup: "@a",
+ *                     map,
+ *                 }),
+ *                 eventBus,
+ *             });
+ *             return lockProvider;
+ *         },
+ *         beforeEach,
+ *         describe,
+ *         expect,
+ *         test,
+ *         serde,
+ *     });
+ * });
+ * ```
  */
 export function lockProviderTestSuite(
     settings: LockProviderTestSuiteSettings,

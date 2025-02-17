@@ -7,6 +7,8 @@ import type { Listener, BaseEvent } from "@/event-bus/contracts/_shared.js";
 /**
  * The <i>IEventBusAdapter</i> contract defines a way for dispatching and listening to events independent of underlying technology.
  * This contract is not meant to be used directly, instead you should use <i>IEventBus</i>
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
 export type IEventBusAdapter = {
@@ -31,7 +33,14 @@ export type IEventBusAdapter = {
      */
     dispatch(eventName: string, eventData: BaseEvent): PromiseLike<void>;
 
+    /**
+     * The <i>getGroup</i> method returns the group name.
+     */
     getGroup(): string;
 
+    /**
+     * The <i>withGroup</i> method returns a new <i>{@link IEventBusAdapter}</i> instance that groups events together.
+     * Only events in the same group will be listened.
+     */
     withGroup(group: string): IEventBusAdapter;
 };

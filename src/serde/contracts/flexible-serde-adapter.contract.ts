@@ -5,6 +5,8 @@
 import type { ISerde } from "@/serde/contracts/serde.contract.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Contracts
  */
 export type ISerdeTransformerAdapter<TDeserializedValue, TSerializedValue> = {
@@ -19,6 +21,8 @@ export type ISerdeTransformerAdapter<TDeserializedValue, TSerializedValue> = {
 
 /**
  * The <i>IFlexibleSerdeAdapter</i> contract defines a standard way to serialize and deserialize both plain data and custom classes.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Contracts
  */
 export type IFlexibleSerdeAdapter<TSerializedValue = unknown> =

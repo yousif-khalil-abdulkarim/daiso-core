@@ -1,8 +1,16 @@
+/**
+ * @module Serde
+ */
 import type {
     IFlexibleSerdeAdapter,
     ISerdeTransformerAdapter,
 } from "@/serde/contracts/flexible-serde-adapter.contract.js";
 
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/adapters"```
+ * @group Adapters
+ */
 export class NoOpSerdeAdapter<TSerializedValue>
     implements IFlexibleSerdeAdapter<TSerializedValue>
 {

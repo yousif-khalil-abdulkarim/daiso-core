@@ -13,6 +13,8 @@ import { abortAndFail } from "@/async/utilities/abort/_module.js";
 
 /**
  * The <i>delay</i> function creates a promise that will be fulfilled after given <i>time</i> and can be aborted by providing <i>abortSignal</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  * @throws {AsyncError} {@link AsyncError}
  * @throws {AbortAsyncError} {@link AbortAsyncError}

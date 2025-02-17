@@ -5,8 +5,8 @@
         "sourceMap": true,
         "declaration": true,
         "removeComments": true,
-        "module": "ESNext",
-        "moduleResolution": "Node"
+        "module": "NodeNext",
+        "moduleResolution": "nodenext",
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules/*", "vite.config.ts", "**/*.test.ts"]

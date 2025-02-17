@@ -2,8 +2,8 @@
     "extends": "./tsconfig.base.json",
     "compilerOptions": {
         "noEmit": true,
-        "module": "ESNext",
-        "moduleResolution": "Node",
+        "module": "NodeNext",
+        "moduleResolution": "nodenext",
     },
     "include": ["src/**/*.ts", "vite.config.ts"],
     "exclude": ["node_modules/*"]

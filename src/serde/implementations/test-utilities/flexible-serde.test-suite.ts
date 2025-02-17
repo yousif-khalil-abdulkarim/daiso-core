@@ -10,20 +10,41 @@ import type {
 } from "@/serde/contracts/_module-exports.js";
 
 /**
- * @group Utilities
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/test-utilities"```
+ * @group Test utilities
  */
 export type FlexibleSerdeSuiteSettings = {
     expect: ExpectStatic;
     test: TestAPI;
-    create: () => IFlexibleSerde;
+    createSerde: () => IFlexibleSerde;
 };
 /**
- * @group Utilities
+ * The <i>flexibleSerdeTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IFlexibleSerde}</i> with <i>vitest</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/test-utilities"```
+ * @group Test utilities
+ * @example
+ * ```ts
+ * import { describe, test, expect } from "vitest";
+ * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+ * import { flexibleSerdeTestSuite } from "@daiso-tech/core/serde/implementations/test-utilities";
+ *
+ * describe("class: Serde", () => {
+ *     flexibleSerdeTestSuite({
+ *         createSerde: () => new Serde(new SuperJsonSerdeAdapter()),
+ *         test,
+ *         expect,
+ *     });
+ * });
+ *
+ * ```
  */
 export function flexibleSerdeTestSuite(
     settings: FlexibleSerdeSuiteSettings,
 ): void {
-    const { expect, test, create } = settings;
+    const { expect, test, createSerde } = settings;
     let flexibleSerde: IFlexibleSerde;
 
     type SerializedUser = {
@@ -60,7 +81,7 @@ export function flexibleSerdeTestSuite(
     }
 
     beforeEach(() => {
-        flexibleSerde = create();
+        flexibleSerde = createSerde();
     });
     test("Should work with positive integer", () => {
         const value = 1;

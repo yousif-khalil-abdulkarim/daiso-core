@@ -20,6 +20,8 @@ import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import type { Client } from "@libsql/client";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export type LibsqlCacheAdapterSettings = {
@@ -34,6 +36,8 @@ export type LibsqlCacheAdapterSettings = {
 
 /**
  * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with an adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export class LibsqlCacheAdapter<TType = unknown>
@@ -44,12 +48,14 @@ export class LibsqlCacheAdapter<TType = unknown>
     /***
      * @example
      * ```ts
-     * import { LibsqlCacheAdapter, SuperJsonSerde } from "@daiso-tech/core";
+     * import { LibsqlCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import { createClient } from "@libsql/client";
      *
      * (async () => {
      *   const database = createClient({ url: "file:local.db" });
-     *   const serde = new SuperJsonSerde();
+     *   const serde = new Serde(new SuperJsonSerdeAdapter());
      *   const cacheAdapter = new LibsqlCacheAdapter({
      *     database,
      *     serde,

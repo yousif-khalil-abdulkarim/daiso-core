@@ -38,6 +38,8 @@ import {
  *
  * This means that combining all methods ensures the <i>retryAttempts</i> method will continue retrying even if the timeout is triggered,
  * while the <i>abort</i> method takes priority to cancel all operations if activated.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
 export class LazyPromise<TValue> implements PromiseLike<TValue> {

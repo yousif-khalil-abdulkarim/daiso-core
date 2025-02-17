@@ -9,11 +9,15 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import type { BackoffPolicy } from "@/async/backof-policies/_module.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
 export type RetryPolicy = (error: unknown) => boolean;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
 export type RetrySettings = {

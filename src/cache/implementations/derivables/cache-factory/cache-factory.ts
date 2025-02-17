@@ -20,6 +20,8 @@ import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
  * @group Derivables
  */
 export type CacheAdapters<TAdapters extends string> = Partial<
@@ -27,6 +29,8 @@ export type CacheAdapters<TAdapters extends string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
  * @group Derivables
  */
 export type CacheFactorySettings<TAdapters extends string = string> = {
@@ -97,6 +101,8 @@ type CacheRecord<TAdapters extends string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
  * @group Derivables
  */
 export class CacheFactory<TAdapters extends string = string>
@@ -117,13 +123,18 @@ export class CacheFactory<TAdapters extends string = string>
     /**
      * @example
      * ```ts
-     * import { CacheFactory, MemoryCacheAdapter, RedisCacheAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import { CacheFactory } from "@daiso-tech/core/cache/implementations/derivables";
+     * import { MemoryCacheAdapter, RedisCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import Redis from "ioredis"
      *
      * const eventBus = new EventBus({
      *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
      * });
-     * const serde = new SuperJsonSerde();
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
      *   serde,
      *   adapters: {
@@ -195,6 +206,44 @@ export class CacheFactory<TAdapters extends string = string>
         return cacheRecord;
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { CacheFactory } from "@daiso-tech/core/cache/implementations/derivables";
+     * import { MemoryCacheAdapter, RedisCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import Redis from "ioredis"
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const cacheFactory = new CacheFactory({
+     *   serde,
+     *   adapters: {
+     *     memory: new MemoryCacheAdapter({
+     *       rootGroup: "@global"
+     *     }),
+     *     redis: new RedisCacheAdapter({
+     *       client: new Redis("YOUR_REDIS_CONNECTION"),
+     *       serde,
+     *       rootGroup: "@global"
+     *     }),
+     *   },
+     *   defaultAdapter: "memory",
+     *   eventBus,
+     * });
+     *
+     * // Will add key to cache using the default adapter which is MemoryCacheAdapter
+     * await cacheFactory.use().add("a", 1);
+     *
+     * // Will add key to cache using the redis adapter which is RedisCacheAdapter
+     * await cacheFactory.use("redis").add("a", 1);
+     * ```
+     */
     use<TType = unknown>(
         adapterName: TAdapters | undefined = this.defaultAdapter,
     ): IGroupableCache<TType> {

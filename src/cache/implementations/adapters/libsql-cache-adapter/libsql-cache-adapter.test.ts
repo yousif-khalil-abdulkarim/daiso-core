@@ -3,7 +3,7 @@ import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_m
 import { type Client, createClient } from "@libsql/client";
 import { LibsqlCacheAdapter } from "@/cache/implementations/adapters/libsql-cache-adapter/libsql-cache-adapter.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { Serde } from "@/serde/implementations/deriavables/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 
 describe("class: LibsqlCacheAdapter", () => {
     let client: Client;

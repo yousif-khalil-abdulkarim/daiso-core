@@ -38,6 +38,8 @@ export type Collapse<TValue> = TValue extends
 /**
  * The <i>ICollection</i> contract offers a fluent and efficient approach to working with {@link Iterable} objects.
  * <i>ICollection</i> is immutable.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Contracts
  * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
  */

@@ -19,6 +19,8 @@ import { KyselyLockAdapter } from "@/lock/implementations/adapters/kysely-lock-a
 import type { Client } from "@libsql/client";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
  * @group Adapters
  */
 export type LibsqlLockAdapterSettings = {
@@ -34,6 +36,8 @@ export type LibsqlLockAdapterSettings = {
  *
  * Note in order to use <i>LibsqlLockAdapter</i> correctly, ensure you use a single, consistent database across all server instances.
  * This means you can't use libsql embedded replicas.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
  * @group Adapters
  */
 export class LibsqlLockAdapter
@@ -44,7 +48,7 @@ export class LibsqlLockAdapter
     /***
      * @example
      * ```ts
-     * import { LibsqlCacheAdapter } from "@daiso-tech/core";
+     * import { LibsqlCacheAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      * import { createClient } from "@libsql/client";
      *
      * (async () => {

@@ -4,6 +4,7 @@
     "exclude": [
         "./src/**/*.test.ts",
         "./src/**/_module.ts",
+        "./src/**/_module-exports.ts",
     ],
     "navigation": {
         "includeGroups": true,

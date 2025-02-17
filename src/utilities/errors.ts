@@ -3,6 +3,8 @@
  */
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Errors
  */
 export class FactoryError extends Error {
@@ -13,6 +15,8 @@ export class FactoryError extends Error {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Errors
  */
 export class DefaultAdapterNotDefinedError extends FactoryError {
@@ -23,6 +27,8 @@ export class DefaultAdapterNotDefinedError extends FactoryError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Errors
  */
 export class UnregisteredAdapterError extends FactoryError {

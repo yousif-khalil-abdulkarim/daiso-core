@@ -24,6 +24,8 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
 import { LockProvider } from "@/lock/implementations/derivables/lock-provider/_module.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
 export type LockAdapters<TAdapters extends string> = Partial<
@@ -31,6 +33,8 @@ export type LockAdapters<TAdapters extends string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
 export type LockProviderFactorySettings<TAdapters extends string> = {
@@ -113,6 +117,8 @@ type LockProviderRecord<TAdapters extends string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
 export class LockProviderFactory<TAdapters extends string>
@@ -135,13 +141,18 @@ export class LockProviderFactory<TAdapters extends string>
     /**
      * @example
      * ```ts
-     * import { LockProviderFactory, MemoryLockAdapter, RedisLockAdapter, EventBus, MemoryEventBusAdapter } from "@daiso-tech/core";
+     * import { LockProviderFactory } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter, RedisLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import Redis from "ioredis"
      *
      * const eventBus = new EventBus({
      *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
      * });
-     * const serde = new SuperJsonSerde();
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new LockProviderFactory({
      *   serde,
      *   adapters: {
@@ -222,6 +233,43 @@ export class LockProviderFactory<TAdapters extends string>
         return cacheRecord;
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { LockProviderFactory } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter, RedisLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import Redis from "ioredis"
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const lockProviderFactory = new LockProviderFactory({
+     *   serde,
+     *   adapters: {
+     *     memory: new MemoryLockAdapter({
+     *       rootGroup: "@global"
+     *     }),
+     *     redis: new RedisLockAdapter({
+     *       client: new Redis("YOUR_REDIS_CONNECTION"),
+     *       rootGroup: "@global"
+     *     }),
+     *   },
+     *   defaultAdapter: "memory",
+     *   eventBus,
+     * });
+     *
+     * // Will create and acquire the lock with default adapter which is MemoryEventBusAdapter
+     * await lockProviderFactory.use().create("a").acquire();
+     *
+     * // Will create and acquire the lock with redis adapter which is RedisLockAdapter
+     * await lockProviderFactory.use("redis").create("a").acquire();
+     * ```
+     */
     use(
         adapterName: TAdapters | undefined = this.defaultAdapter,
     ): IGroupableLockProvider {

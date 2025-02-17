@@ -11,6 +11,8 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export type MemoryCacheAdapterSettings = {
@@ -20,6 +22,8 @@ export type MemoryCacheAdapterSettings = {
 
 /**
  * To utilize the <i>MemoryCacheAdapter</i>, you must create instance of it.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export class MemoryCacheAdapter<TType = unknown>
@@ -37,7 +41,7 @@ export class MemoryCacheAdapter<TType = unknown>
     /**
      *  @example
      * ```ts
-     * import { MemoryCacheAdapter } from "@daiso-tech/core";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      *
      * const cacheAdapter = new MemoryCacheAdapter({
      *   rootGroup: "@cache"
@@ -46,7 +50,7 @@ export class MemoryCacheAdapter<TType = unknown>
      * You can also provide an <i>Map</i>.
      * @example
      * ```ts
-     * import { MemoryCacheAdapter } from "@daiso-tech/core";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      *
      * const map = new Map<any, any>();
      * const cacheAdapter = new MemoryCacheAdapter({

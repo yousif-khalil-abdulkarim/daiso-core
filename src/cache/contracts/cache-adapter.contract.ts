@@ -13,6 +13,8 @@ import type { ICache } from "@/cache/contracts/cache.contract.js";
 /**
  * The <i>ICacheAdapter</i> contract defines a way for storing data as key-value pairs independent of data storage.
  * This contract is not meant to be used directly, instead you should use <i>{@link ICache}</i> contract.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
  */
 export type ICacheAdapter<TType = unknown> = {

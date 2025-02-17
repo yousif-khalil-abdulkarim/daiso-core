@@ -14,6 +14,8 @@ import type {
 } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors
  */
 export class CacheError
@@ -42,6 +44,8 @@ export class CacheError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors
  */
 export class UnexpectedCacheError
@@ -64,6 +68,8 @@ export class UnexpectedCacheError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors
  */
 export class TypeCacheError
@@ -86,6 +92,8 @@ export class TypeCacheError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors
  */
 export class KeyNotFoundCacheError
@@ -109,6 +117,8 @@ export class KeyNotFoundCacheError
 
 /**
  * The <i>registerCacheErrors</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors
  */
 export function registerCacheErrors(serde: OneOrMore<IFlexibleSerde>): void {

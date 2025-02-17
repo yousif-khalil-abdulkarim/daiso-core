@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
-import { Cache } from "@/cache/implementations/derivables/cache/cache.js";
+import { Cache } from "@/cache/implementations/derivables/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
 
 describe("class: Cache", () => {

@@ -28,6 +28,8 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
 export type EventBusSettings = {
@@ -60,6 +62,8 @@ export type EventBusSettings = {
 
 /**
  * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
 export class EventBus<TEvents extends BaseEvent = BaseEvent>
@@ -74,13 +78,13 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     /**
      * @example
      * ```ts
-     * import { EventBus, MemoryEventBusAdapter, registerEventErrors, SuperJsonSerde } from "@daiso-tech/core";
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus = new EventBus({
+     * const eventBus: IGroupableEventBus = new EventBus({
      *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
      * });
-     * const serde = new SuperJsonSerde();
-     * registerEventErrors(serde)
      * ```
      */
     constructor(settings: EventBusSettings) {
@@ -108,6 +112,27 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             .setTimeout(this.timeout);
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus, IEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * // Will print "@global"
+     * console.log(eventBus.getGroup());
+     *
+     * const groupedEventBus: IEventBus = eventBus.withGroup("company-1");
+     *
+     * // Will print "@global/company-1"
+     * console.log(groupedEventBus.getGroup());
+     * ```
+     */
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
             adapter: this.adapter.withGroup(simplifyOneOrMoreStr(group)),
@@ -118,10 +143,46 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * // Will print "@global"
+     * console.log(eventBus.getGroup());
+     * ```
+     */
     getGroup(): string {
         return this.adapter.getGroup();
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     *
+     * const listener: Listener<AddEvent> = event => {
+     *   console.log(event);
+     * }
+     * await eventBus.addListener(AddEvent, listener);
+     * ```
+     */
     addListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: Listener<EventInstance<TEventClass>>,
@@ -141,6 +202,26 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     *
+     * const listener: Listener<AddEvent> = event => {
+     *   console.log(event);
+     * }
+     * await eventBus.removeListener(AddEvent, listener);
+     * ```
+     */
     removeListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: Listener<EventInstance<TEventClass>>,
@@ -160,6 +241,27 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
+     *
+     * const listener: Listener<AddEvent | SubEvent> = event => {
+     *   console.log(event)
+     * }
+     * await eventBus.addListenerMany([AddEvent, SubEvent], listener);
+     * ```
+     */
     addListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
         listener: Listener<EventInstance<TEventClass>>,
@@ -176,6 +278,27 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
+     *
+     * const listener: Listener<AddEvent | SubEvent> = event => {
+     *   console.log(event);
+     * }
+     * await eventBus.removeListenerMany([AddEvent, SubEvent], listener);
+     * ```
+     */
     removeListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
         listener: Listener<EventInstance<TEventClass>>,
@@ -192,6 +315,26 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     *
+     * const listener: Listener<AddEvent> = event => {
+     *   console.log(event);
+     * }
+     * await eventBus.listenOnce(AddEvent, listener);
+     * ```
+     */
     listenOnce<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: Listener<EventInstance<TEventClass>>,
@@ -210,6 +353,26 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     *
+     * const unsubscribe = await eventBus.subscribe(AddEvent, event => {
+     *   console.log(event);
+     * });
+     * await unsubscribe();
+     * ```
+     */
     subscribe<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: Listener<EventInstance<TEventClass>>,
@@ -217,6 +380,27 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         return this.subscribeMany([event], listener);
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
+     *
+     * const unsubscribe = await eventBus.subscribeMany([AddEvent, SubEvent], event => {
+     *   console.log(event);
+     * });
+     * await unsubscribe();
+     * ```
+     */
     subscribeMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
         listener: Listener<EventInstance<TEventClass>>,
@@ -232,6 +416,33 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
+     *
+     * await eventBus.dispatch([
+     *   new AddEvent({
+     *     a: 1,
+     *     b: 2,
+     *   }),
+     *   new SubEvent({
+     *     c: 4,
+     *     d: 3
+     *   })
+     * ]);
+     * ```
+     */
     dispatchMany(events: TEvents[]): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {
@@ -251,6 +462,30 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
+     *
+     * await eventBus.dispatch(
+     *   new AddEvent({
+     *     a: 1,
+     *     b: 2,
+     *   })
+     * );
+     * ```
+     * ```
+     */
     dispatch(event: TEvents): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {

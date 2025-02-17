@@ -14,6 +14,8 @@ import type {
 } from "@/serde/contracts/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
  */
 export class LockError
@@ -38,6 +40,8 @@ export class LockError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
  */
 export class UnexpectedLockError
@@ -67,6 +71,8 @@ export class UnexpectedLockError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
  */
 export class UnableToAquireLockError
@@ -96,6 +102,8 @@ export class UnableToAquireLockError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
  */
 export class UnableToReleaseLockError
@@ -125,6 +133,8 @@ export class UnableToReleaseLockError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
  */
 export class KeyAlreadyAcquiredLockError
@@ -154,6 +164,8 @@ export class KeyAlreadyAcquiredLockError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
  */
 export class UnownedReleaseLockError
@@ -183,6 +195,8 @@ export class UnownedReleaseLockError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
  */
 export class UnownedRefreshLockError
@@ -213,6 +227,8 @@ export class UnownedRefreshLockError
 
 /**
  * The <i>registerLockErrorsToSerde</i> function registers all <i>{@link ILock}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
  */
 export function registerLockErrorsToSerde(
