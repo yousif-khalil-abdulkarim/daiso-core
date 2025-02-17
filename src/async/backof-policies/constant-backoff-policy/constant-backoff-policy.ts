@@ -9,6 +9,8 @@ import {
 } from "@/async/backof-policies/_shared.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Backoff policies
  */
 export type ConstantBackoffPolicySettings = {
@@ -29,6 +31,8 @@ export type ConstantBackoffPolicySettings = {
 
 /**
  * Constant backoff policy with jitter
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Backoff policies
  */
 export function constantBackoffPolicy(

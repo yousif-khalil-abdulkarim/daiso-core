@@ -3,6 +3,8 @@
  */
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
  */
 export class AsyncError extends Error {
@@ -13,6 +15,8 @@ export class AsyncError extends Error {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
  */
 export class AbortAsyncError extends AsyncError {
@@ -23,6 +27,8 @@ export class AbortAsyncError extends AsyncError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
  */
 export class TimeoutAsyncError extends AsyncError {
@@ -33,6 +39,8 @@ export class TimeoutAsyncError extends AsyncError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
  */
 export type RetryAsyncErrorData = {
@@ -41,6 +49,8 @@ export type RetryAsyncErrorData = {
 };
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
  */
 export class RetryAsyncError extends AsyncError {

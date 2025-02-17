@@ -7,6 +7,8 @@ import type { BackoffPolicy } from "@/async/backof-policies/_shared.js";
 import { withJitter } from "@/async/backof-policies/_shared.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Backoff policies
  */
 export type ExponentialBackoffPolicySettings = {
@@ -35,6 +37,8 @@ export type ExponentialBackoffPolicySettings = {
 
 /**
  * Exponential backoff policy with jitter
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Backoff policies
  */
 export function exponentialBackoffPolicy(
