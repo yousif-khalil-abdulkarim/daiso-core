@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
+import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import type {
     BaseEvent,
     IEventBusAdapter,
@@ -66,13 +66,13 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
 
     withGroup(group: string): IEventBusAdapter {
         return new MemoryEventBusAdapter({
-            rootGroup: simplifyOneOrMoreStr([this.group, group]),
+            rootGroup: resolveOneOrMoreStr([this.group, group]),
             eventEmitter: this.eventEmitter,
         });
     }
 
     private withPrefix(event: string): string {
-        return simplifyOneOrMoreStr([this.group, event]);
+        return resolveOneOrMoreStr([this.group, event]);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await

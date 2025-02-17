@@ -6,7 +6,7 @@
 import { TypeCacheError } from "@/cache/contracts/cache.errors.js";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
 import {
-    simplifyOneOrMoreStr,
+    resolveOneOrMoreStr,
     type TimeSpan,
 } from "@/utilities/_module-exports.js";
 
@@ -66,11 +66,11 @@ export class MemoryCacheAdapter<TType = unknown>
     }
 
     private getPrefix(): string {
-        return simplifyOneOrMoreStr([this.group, "__KEY__"]);
+        return resolveOneOrMoreStr([this.group, "__KEY__"]);
     }
 
     private withPrefix(key: string): string {
-        return simplifyOneOrMoreStr([this.getPrefix(), key]);
+        return resolveOneOrMoreStr([this.getPrefix(), key]);
     }
 
     async get(key: string): Promise<TType | null> {
@@ -159,7 +159,7 @@ export class MemoryCacheAdapter<TType = unknown>
     withGroup(group: string): ICacheAdapter<TType> {
         return new MemoryCacheAdapter({
             map: this.map,
-            rootGroup: simplifyOneOrMoreStr([this.group, group]),
+            rootGroup: resolveOneOrMoreStr([this.group, group]),
         });
     }
 }

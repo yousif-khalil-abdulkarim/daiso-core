@@ -5,7 +5,7 @@
 import type { OneOrMore } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
-    simplifyOneOrMoreStr,
+    resolveOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 import type {
     IFlexibleSerde,
@@ -511,10 +511,10 @@ export class Serde<TSerializedValue>
         transformer: ISerdeTransformer<TCustomSerialized, TCustomDeserialized>,
         prefix?: OneOrMore<string>,
     ): this {
-        let name = simplifyOneOrMoreStr(transformer.name);
+        let name = resolveOneOrMoreStr(transformer.name);
         if (prefix !== undefined) {
-            prefix = simplifyOneOrMoreStr(prefix);
-            name = simplifyOneOrMoreStr([prefix, name]);
+            prefix = resolveOneOrMoreStr(prefix);
+            name = resolveOneOrMoreStr([prefix, name]);
         }
         this.serdeAdapter.registerCustom({
             name,

@@ -15,7 +15,7 @@ import type {
 } from "@/event-bus/contracts/_module-exports.js";
 import type { Redis } from "ioredis";
 import { EventEmitter } from "node:events";
-import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
+import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -84,12 +84,12 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
             listenerClient: this.listenerClient,
             dispatcherClient: this.dispatcherClient,
             serde: this.baseSerde,
-            rootGroup: simplifyOneOrMoreStr([this.group, group]),
+            rootGroup: resolveOneOrMoreStr([this.group, group]),
         });
     }
 
     private withPrefix(eventName: string): string {
-        return simplifyOneOrMoreStr([this.group, eventName]);
+        return resolveOneOrMoreStr([this.group, eventName]);
     }
 
     private redisListener = (channel: string, message: string): void => {

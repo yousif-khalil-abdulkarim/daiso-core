@@ -23,8 +23,7 @@ import {
 import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
-    isArrayEmpty,
-    simplifyOneOrMoreStr,
+    resolveOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 
 /**
@@ -135,7 +134,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      */
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
-            adapter: this.adapter.withGroup(simplifyOneOrMoreStr(group)),
+            adapter: this.adapter.withGroup(resolveOneOrMoreStr(group)),
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
@@ -267,7 +266,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            if (isArrayEmpty(events)) {
+            if (events.length === 0) {
                 return;
             }
             const promises: PromiseLike<void>[] = [];
@@ -304,7 +303,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         listener: Listener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            if (isArrayEmpty(events)) {
+            if (events.length === 0) {
                 return;
             }
             const promises: PromiseLike<void>[] = [];

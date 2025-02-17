@@ -3,7 +3,7 @@
  */
 
 import type { TimeSpan } from "@/utilities/_module-exports.js";
-import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
+import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import type {
     ILockAdapter,
     ILockData,
@@ -64,11 +64,11 @@ export class MemoryLockAdapter implements ILockAdapter {
     }
 
     private getPrefix(): string {
-        return simplifyOneOrMoreStr([this.group, "__KEY__"]);
+        return resolveOneOrMoreStr([this.group, "__KEY__"]);
     }
 
     private withPrefix(key: string): string {
-        return simplifyOneOrMoreStr([this.getPrefix(), key]);
+        return resolveOneOrMoreStr([this.getPrefix(), key]);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
@@ -161,7 +161,7 @@ export class MemoryLockAdapter implements ILockAdapter {
     withGroup(group: string): ILockAdapter {
         return new MemoryLockAdapter({
             map: this.map,
-            rootGroup: simplifyOneOrMoreStr([this.group, group]),
+            rootGroup: resolveOneOrMoreStr([this.group, group]),
         });
     }
 }

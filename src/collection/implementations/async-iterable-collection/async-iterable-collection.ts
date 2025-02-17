@@ -65,7 +65,7 @@ import {
     type AsyncIterableValue,
     type AsyncLazyable,
 } from "@/utilities/_module-exports.js";
-import { simplifyAsyncLazyable } from "@/utilities/_module-exports.js";
+import { resolveAsyncLazyable } from "@/utilities/_module-exports.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
@@ -1033,7 +1033,7 @@ export class AsyncIterableCollection<TInput = unknown>
                     return item as TOutput;
                 }
             }
-            return await simplifyAsyncLazyable(defaultValue);
+            return await resolveAsyncLazyable(defaultValue);
         });
     }
 
@@ -1073,7 +1073,7 @@ export class AsyncIterableCollection<TInput = unknown>
             if (matchedItem) {
                 return matchedItem;
             }
-            return await simplifyAsyncLazyable(defaultValue);
+            return await resolveAsyncLazyable(defaultValue);
         });
     }
 
@@ -1109,7 +1109,7 @@ export class AsyncIterableCollection<TInput = unknown>
                 index++;
                 beforeItem = item;
             }
-            return await simplifyAsyncLazyable(defaultValue);
+            return await resolveAsyncLazyable(defaultValue);
         });
     }
 
@@ -1145,7 +1145,7 @@ export class AsyncIterableCollection<TInput = unknown>
                 hasMatched = await predicateFn(item, index, this);
                 index++;
             }
-            return await simplifyAsyncLazyable(defaultValue);
+            return await resolveAsyncLazyable(defaultValue);
         });
     }
 

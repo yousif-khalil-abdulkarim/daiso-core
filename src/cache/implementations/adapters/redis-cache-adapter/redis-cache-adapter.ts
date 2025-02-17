@@ -5,7 +5,7 @@
 import { TypeCacheError } from "@/cache/contracts/cache.errors.js";
 import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
 import {
-    simplifyOneOrMoreStr,
+    resolveOneOrMoreStr,
     type TimeSpan,
 } from "@/utilities/_module-exports.js";
 import { ReplyError, type Redis, type Result } from "ioredis";
@@ -160,11 +160,11 @@ export class RedisCacheAdapter<TType = unknown>
     }
 
     private getPrefix(): string {
-        return simplifyOneOrMoreStr([this.group, "__KEY__"]);
+        return resolveOneOrMoreStr([this.group, "__KEY__"]);
     }
 
     private withPrefix(key: string): string {
-        return simplifyOneOrMoreStr([this.getPrefix(), key]);
+        return resolveOneOrMoreStr([this.getPrefix(), key]);
     }
 
     async get(key: string): Promise<TType | null> {
@@ -281,7 +281,7 @@ export class RedisCacheAdapter<TType = unknown>
     async clear(): Promise<void> {
         for await (const _ of new ClearIterable(
             this.database,
-            simplifyOneOrMoreStr([escapeRedisChars(this.getPrefix()), "*"]),
+            resolveOneOrMoreStr([escapeRedisChars(this.getPrefix()), "*"]),
         )) {
             /* Empty */
         }
@@ -295,7 +295,7 @@ export class RedisCacheAdapter<TType = unknown>
         return new RedisCacheAdapter({
             database: this.database,
             serde: this.baseSerde,
-            rootGroup: simplifyOneOrMoreStr([this.group, group]),
+            rootGroup: resolveOneOrMoreStr([this.group, group]),
         });
     }
 }

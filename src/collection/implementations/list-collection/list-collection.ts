@@ -26,7 +26,7 @@ import {
     type CrossJoinResult,
 } from "@/collection/contracts/_module-exports.js";
 import { type Lazyable } from "@/utilities/_module-exports.js";
-import { simplifyLazyable } from "@/utilities/_module-exports.js";
+import { resolveLazyable } from "@/utilities/_module-exports.js";
 
 /**
  * All methods in <i>ListCollection</i> are executed eagerly.
@@ -975,7 +975,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                 return firstItem as TOutput;
             }
         }
-        return simplifyLazyable(defaultValue);
+        return resolveLazyable(defaultValue);
     }
 
     firstOrFail<TOutput extends TInput>(
@@ -1014,7 +1014,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                 return lastItem as TOutput;
             }
         }
-        return simplifyLazyable(defaultValue);
+        return resolveLazyable(defaultValue);
     }
 
     lastOrFail<TOutput extends TInput>(
@@ -1041,7 +1041,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                 return beforeItem;
             }
         }
-        return simplifyLazyable(defaultValue);
+        return resolveLazyable(defaultValue);
     }
 
     beforeOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput {
@@ -1066,7 +1066,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                 return beforeItem;
             }
         }
-        return simplifyLazyable(defaultValue);
+        return resolveLazyable(defaultValue);
     }
 
     afterOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput {
