@@ -127,12 +127,14 @@ export type CacheEvents<TType = unknown> =
     | UnexpectedCacheErrorEvent;
 
 /**
- * The <i>registerCacheEvents</i> function registers all <i>{@link IGroupableCache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The <i>registerCacheEventsToSerde</i> function registers all <i>{@link IGroupableCache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export function registerCacheEvents(serde: OneOrMore<IFlexibleSerde>): void {
+export function registerCacheEventsToSerde(
+    serde: OneOrMore<IFlexibleSerde>,
+): void {
     if (!Array.isArray(serde)) {
         serde = [serde];
     }

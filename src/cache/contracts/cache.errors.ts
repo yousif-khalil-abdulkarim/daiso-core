@@ -117,12 +117,14 @@ export class KeyNotFoundCacheError
 }
 
 /**
- * The <i>registerCacheErrors</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The <i>registerCacheErrorsToSerde</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors
  */
-export function registerCacheErrors(serde: OneOrMore<IFlexibleSerde>): void {
+export function registerCacheErrorsToSerde(
+    serde: OneOrMore<IFlexibleSerde>,
+): void {
     if (!Array.isArray(serde)) {
         serde = [serde];
     }
