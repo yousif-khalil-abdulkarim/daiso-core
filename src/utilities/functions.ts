@@ -31,13 +31,6 @@ export async function resolveAsyncLazyable<TValue>(
     }
     return lazyable;
 }
-/**
- * @internal
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isArrayEmpty(array: any[]): boolean {
-    return array.length === 0;
-}
 
 /**
  * @internal

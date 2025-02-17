@@ -26,7 +26,6 @@ import {
 } from "@/cache/contracts/_module-exports.js";
 import { type IGroupableCache } from "@/cache/contracts/_module-exports.js";
 import {
-    isArrayEmpty,
     isObjectEmpty,
     resolveAsyncLazyable,
     resolveOneOrMoreStr,
@@ -812,7 +811,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
         return this.createLayPromise(async () => {
-            if (isArrayEmpty(keys)) {
+            if (keys.length === 0) {
                 return {};
             }
             const valuePromises: PromiseLike<boolean>[] = [];
@@ -845,7 +844,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
         return this.createLayPromise(async () => {
-            if (isArrayEmpty(keys)) {
+            if (keys.length === 0) {
                 return {};
             }
             const valuePromises: PromiseLike<boolean>[] = [];
@@ -871,7 +870,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, TType | null>> {
         return this.createLayPromise(async () => {
-            if (isArrayEmpty(keys)) {
+            if (keys.length === 0) {
                 return {};
             }
             const valuePromises: PromiseLike<TType | null>[] = [];
@@ -1108,7 +1107,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     ): LazyPromise<Record<TKeys, TType>> {
         return this.createLayPromise(async () => {
             const keys = Object.keys(keysWithDefaults);
-            if (isArrayEmpty(keys)) {
+            if (keys.length === 0) {
                 return {};
             }
             const valuePromises: PromiseLike<TType>[] = [];
@@ -1258,7 +1257,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         keys: TKeys[],
     ): LazyPromise<Record<TKeys, boolean>> {
         return this.createLayPromise(async () => {
-            if (isArrayEmpty(keys)) {
+            if (keys.length === 0) {
                 return {} as Record<TKeys, boolean>;
             }
             const valuePromises: PromiseLike<boolean>[] = [];
