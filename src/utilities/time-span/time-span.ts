@@ -5,6 +5,8 @@
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Time utilities
  */
 export type ISerializedTimeSpan = {
@@ -14,6 +16,8 @@ export type ISerializedTimeSpan = {
 /**
  * The <i>TimeSpan</i> class is used for representing time interval that is the difference between two times measured in a number of days, hours, minutes, and seconds.
  * <i>TimeSpan</i> cannot be negative.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Time utilities
  */
 export class TimeSpan implements ISerializable<ISerializedTimeSpan> {
