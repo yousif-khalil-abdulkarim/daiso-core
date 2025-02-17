@@ -17,6 +17,7 @@ export type FlexibleSerdeAdapterSuiteSettings = {
     test: TestAPI;
     createAdapter: () => IFlexibleSerdeAdapter;
 };
+
 /**
  * @group Utilities
  */

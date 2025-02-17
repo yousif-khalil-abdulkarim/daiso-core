@@ -5,7 +5,7 @@ import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-
 
 describe("class: Serde", () => {
     flexibleSerdeTestSuite({
-        create: () => new Serde(new SuperJsonSerdeAdapter()),
+        createSerde: () => new Serde(new SuperJsonSerdeAdapter()),
         test,
         expect,
     });

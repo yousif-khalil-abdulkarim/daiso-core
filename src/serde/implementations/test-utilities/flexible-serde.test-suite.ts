@@ -15,7 +15,7 @@ import type {
 export type FlexibleSerdeSuiteSettings = {
     expect: ExpectStatic;
     test: TestAPI;
-    create: () => IFlexibleSerde;
+    createSerde: () => IFlexibleSerde;
 };
 /**
  * @group Utilities
@@ -23,7 +23,7 @@ export type FlexibleSerdeSuiteSettings = {
 export function flexibleSerdeTestSuite(
     settings: FlexibleSerdeSuiteSettings,
 ): void {
-    const { expect, test, create } = settings;
+    const { expect, test, createSerde } = settings;
     let flexibleSerde: IFlexibleSerde;
 
     type SerializedUser = {
@@ -60,7 +60,7 @@ export function flexibleSerdeTestSuite(
     }
 
     beforeEach(() => {
-        flexibleSerde = create();
+        flexibleSerde = createSerde();
     });
     test("Should work with positive integer", () => {
         const value = 1;
