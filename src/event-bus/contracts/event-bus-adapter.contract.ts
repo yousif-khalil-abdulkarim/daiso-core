@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { Listener, BaseEvent } from "@/event-bus/contracts/_shared.js";
+import type { EventListener, BaseEvent } from "@/event-bus/contracts/_shared.js";
 
 /**
  * The <i>IEventBusAdapter</i> contract defines a way for dispatching and listening to events independent of underlying technology.
@@ -13,19 +13,19 @@ import type { Listener, BaseEvent } from "@/event-bus/contracts/_shared.js";
  */
 export type IEventBusAdapter = {
     /**
-     * The <i>addListener</i> method is used for adding <i>{@link Listener | listener}</i> for certain <i>eventName</i>.
+     * The <i>addListener</i> method is used for adding <i>{@link EventListener | listener}</i> for certain <i>eventName</i>.
      */
     addListener(
         eventName: string,
-        listener: Listener<BaseEvent>,
+        listener: EventListener<BaseEvent>,
     ): PromiseLike<void>;
 
     /**
-     * The <i>removeListener</i> method is used for removing <i>{@link Listener | listener}</i> for certain <i>eventName</i>.
+     * The <i>removeListener</i> method is used for removing <i>{@link EventListener | listener}</i> for certain <i>eventName</i>.
      */
     removeListener(
         eventName: string,
-        listener: Listener<BaseEvent>,
+        listener: EventListener<BaseEvent>,
     ): PromiseLike<void>;
 
     /**

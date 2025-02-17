@@ -13,7 +13,7 @@ import {
     type IEventBus,
     type IGroupableEventBus,
     type IEventBusAdapter,
-    type Listener,
+    type EventListener,
     type BaseEvent,
     UnableToDispatchEventBusError,
     UnableToRemoveListenerEventBusError,
@@ -184,13 +184,13 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      */
     addListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {
                 await this.adapter.addListener(
                     event.name,
-                    listener as Listener<BaseEvent>,
+                    listener as EventListener<BaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new UnableToAddListenerEventBusError(
@@ -223,13 +223,13 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      */
     removeListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {
                 await this.adapter.removeListener(
                     event.name,
-                    listener as Listener<BaseEvent>,
+                    listener as EventListener<BaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new UnableToRemoveListenerEventBusError(
@@ -263,7 +263,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      */
     addListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
             if (events.length === 0) {
@@ -300,7 +300,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      */
     removeListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
             if (events.length === 0) {
@@ -336,7 +336,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      */
     listenOnce<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
             const wrappedListener = async (
@@ -374,7 +374,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      */
     subscribe<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.subscribeMany([event], listener);
     }
@@ -402,7 +402,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      */
     subscribeMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.createLayPromise(async () => {
             await this.addListenerMany(events, listener);

@@ -6,7 +6,7 @@ import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import type {
     BaseEvent,
     IEventBusAdapter,
-    Listener,
+    EventListener,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventEmitter } from "node:events";
 
@@ -78,7 +78,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
     // eslint-disable-next-line @typescript-eslint/require-await
     async addListener(
         eventName: string,
-        listener: Listener<BaseEvent>,
+        listener: EventListener<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.on(this.withPrefix(eventName), listener);
@@ -87,7 +87,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
     // eslint-disable-next-line @typescript-eslint/require-await
     async removeListener(
         eventName: string,
-        listener: Listener<BaseEvent>,
+        listener: EventListener<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.off(this.withPrefix(eventName), listener);
