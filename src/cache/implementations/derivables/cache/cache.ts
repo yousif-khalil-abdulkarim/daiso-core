@@ -28,7 +28,7 @@ import { type IGroupableCache } from "@/cache/contracts/_module-exports.js";
 import {
     isArrayEmpty,
     isObjectEmpty,
-    simplifyAsyncLazyable,
+    resolveAsyncLazyable,
     simplifyOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 import type {
@@ -997,7 +997,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLayPromise(async () => {
             const value = await this.get(key);
             if (value === null) {
-                return await simplifyAsyncLazyable(defaultValue);
+                return await resolveAsyncLazyable(defaultValue);
             }
             return value;
         });
@@ -1437,7 +1437,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLayPromise(async () => {
             const value = await this.get(key);
             if (value === null) {
-                const simplifiedValueToAdd = await simplifyAsyncLazyable(
+                const simplifiedValueToAdd = await resolveAsyncLazyable(
                     valueToAdd as AsyncLazyable<TType>,
                 );
                 await this.add(key, simplifiedValueToAdd, ttl);

@@ -19,7 +19,7 @@ export function resolveLazyable<TValue>(lazyable: Lazyable<TValue>): TValue {
 /**
  * @internal
  */
-export async function simplifyAsyncLazyable<TValue>(
+export async function resolveAsyncLazyable<TValue>(
     lazyable: AsyncLazyable<TValue>,
 ): Promise<TValue> {
     if (typeof lazyable === "function") {

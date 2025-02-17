@@ -17,7 +17,7 @@ import {
     RetryAsyncError,
 } from "@/async/async.errors.js";
 import {
-    simplifyAsyncLazyable,
+    resolveAsyncLazyable,
     type Func,
 } from "@/utilities/_module-exports.js";
 
@@ -117,7 +117,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * })();
      */
     constructor(asyncFn: () => PromiseLike<TValue>) {
-        this.asyncFn = async () => simplifyAsyncLazyable(asyncFn);
+        this.asyncFn = async () => resolveAsyncLazyable(asyncFn);
     }
 
     private applyTimeout(): void {
