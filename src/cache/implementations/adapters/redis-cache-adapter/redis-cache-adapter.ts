@@ -97,6 +97,8 @@ declare module "ioredis" {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export type RedisCacheAdapterSettings = {
@@ -107,6 +109,8 @@ export type RedisCacheAdapterSettings = {
 
 /**
  * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export class RedisCacheAdapter<TType = unknown>

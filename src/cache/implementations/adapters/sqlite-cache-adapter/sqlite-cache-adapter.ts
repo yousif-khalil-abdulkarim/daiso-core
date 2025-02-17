@@ -18,6 +18,8 @@ import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports.js
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export type SqliteCacheAdapterSettings = {
@@ -32,6 +34,8 @@ export type SqliteCacheAdapterSettings = {
 
 /**
  * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export class SqliteCacheAdapter<TType = unknown>

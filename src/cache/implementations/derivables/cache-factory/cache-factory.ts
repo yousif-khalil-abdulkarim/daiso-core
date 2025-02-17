@@ -20,6 +20,8 @@ import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
  * @group Derivables
  */
 export type CacheAdapters<TAdapters extends string> = Partial<
@@ -27,6 +29,8 @@ export type CacheAdapters<TAdapters extends string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
  * @group Derivables
  */
 export type CacheFactorySettings<TAdapters extends string = string> = {
@@ -97,6 +101,8 @@ type CacheRecord<TAdapters extends string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
  * @group Derivables
  */
 export class CacheFactory<TAdapters extends string = string>

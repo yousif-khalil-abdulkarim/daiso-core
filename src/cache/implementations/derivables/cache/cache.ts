@@ -53,6 +53,8 @@ import { EventBus } from "@/event-bus/implementations/derivables/_module-exports
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
  * @group Derivables
  */
 export type CacheSettings = {
@@ -96,6 +98,8 @@ export type CacheSettings = {
 
 /**
  * <i>Cache</i> class can be derived from any <i>{@link ICacheAdapter}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
  * @group Derivables
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {

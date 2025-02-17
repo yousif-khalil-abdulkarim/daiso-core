@@ -22,6 +22,8 @@ import type { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  * The <i>ICacheListener</i> contract defines a way for listening <i>{@link ICache}</i> operations.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
  */
 export type ICacheListener<TType = unknown> = IEventListener<
@@ -29,6 +31,8 @@ export type ICacheListener<TType = unknown> = IEventListener<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
  */
 export type WithTtlValue<TType> = {
@@ -42,6 +46,8 @@ export type WithTtlValue<TType> = {
 /**
  * The <i>ICache</i> contract defines a way for storing data as key-value pairs independent of data storage.
  * It commes with more convient methods compared to <i>ICacheAdapter</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
  */
 export type ICache<TType = unknown> = ICacheListener & {
@@ -202,6 +208,8 @@ export type ICache<TType = unknown> = ICacheListener & {
 /**
  * The <i>IGroupableCache</i> contract defines a way for storing data as key-value pairs independent of data storage.
  * It commes with one extra method which is useful for multitennat applications compared to <i>{@link ICache}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
  */
 export type IGroupableCache<TType = unknown> = ICache<TType> & {

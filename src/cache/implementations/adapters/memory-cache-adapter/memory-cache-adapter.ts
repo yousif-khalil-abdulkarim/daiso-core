@@ -11,6 +11,8 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export type MemoryCacheAdapterSettings = {
@@ -20,6 +22,8 @@ export type MemoryCacheAdapterSettings = {
 
 /**
  * To utilize the <i>MemoryCacheAdapter</i>, you must create instance of it.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
 export class MemoryCacheAdapter<TType = unknown>

@@ -17,6 +17,8 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/test-utilities"```
  * @group Test utilities
  */
 export type CacheAdapterTestSuiteSettings = {
@@ -29,6 +31,8 @@ export type CacheAdapterTestSuiteSettings = {
 
 /**
  * The <i>cacheAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICacheAdapter}</i> with <i>vitest</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/test-utilities"```
  * @group Test utilities
  * @example
  * ```ts

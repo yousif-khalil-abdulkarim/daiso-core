@@ -12,6 +12,8 @@ import {
 
 /**
  * The <i>ICacheFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableCache}</i> dynamically.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
  */
 export type ICacheFactory<TAdapters extends string = string> = {

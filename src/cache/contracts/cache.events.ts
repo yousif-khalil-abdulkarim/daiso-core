@@ -9,6 +9,8 @@ import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export class KeyFoundCacheEvent<TType = unknown> extends BaseEvent<{
@@ -18,6 +20,8 @@ export class KeyFoundCacheEvent<TType = unknown> extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export class KeyNotFoundCacheEvent extends BaseEvent<{
@@ -26,6 +30,8 @@ export class KeyNotFoundCacheEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export class KeyAddedCacheEvent<TType = unknown> extends BaseEvent<{
@@ -36,6 +42,8 @@ export class KeyAddedCacheEvent<TType = unknown> extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export class KeyUpdatedCacheEvent<TType = unknown> extends BaseEvent<{
@@ -45,6 +53,8 @@ export class KeyUpdatedCacheEvent<TType = unknown> extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export class KeyRemovedCacheEvent extends BaseEvent<{
@@ -53,6 +63,8 @@ export class KeyRemovedCacheEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export class KeyIncrementedCacheEvent extends BaseEvent<{
@@ -62,6 +74,8 @@ export class KeyIncrementedCacheEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export class KeyDecrementedCacheEvent extends BaseEvent<{
@@ -71,6 +85,8 @@ export class KeyDecrementedCacheEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export class KeysClearedCacheEvent extends BaseEvent<{
@@ -78,6 +94,8 @@ export class KeysClearedCacheEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export class UnexpectedCacheErrorEvent extends BaseEvent<{
@@ -89,6 +107,8 @@ export class UnexpectedCacheErrorEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export type CacheEvents<TType = unknown> =
@@ -104,6 +124,8 @@ export type CacheEvents<TType = unknown> =
 
 /**
  * The <i>registerCacheEvents</i> function registers all <i>{@link IGroupableCache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
 export function registerCacheEvents(serde: OneOrMore<IFlexibleSerde>): void {
