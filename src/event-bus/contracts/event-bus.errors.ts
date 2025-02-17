@@ -120,12 +120,14 @@ export class UnableToDispatchEventBusError extends UnexpectedEventBusError {
 }
 
 /**
- * The <i>registerEventBusErrors</i> function registers all <i>{@link IGroupableEventBus}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The <i>registerEventBusErrorsToSerde</i> function registers all <i>{@link IGroupableEventBus}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
  */
-export function registerEventBusErrors(serde: OneOrMore<IFlexibleSerde>): void {
+export function registerEventBusErrorsToSerde(
+    serde: OneOrMore<IFlexibleSerde>,
+): void {
     if (!Array.isArray(serde)) {
         serde = [serde];
     }
