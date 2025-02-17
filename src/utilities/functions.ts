@@ -9,7 +9,7 @@ import { type AsyncLazyable } from "@/utilities/types.js";
 /**
  * @internal
  */
-export function simplifyLazyable<TValue>(lazyable: Lazyable<TValue>): TValue {
+export function resolveLazyable<TValue>(lazyable: Lazyable<TValue>): TValue {
     if (typeof lazyable === "function") {
         const getValue = lazyable as () => TValue;
         return getValue();

@@ -59,7 +59,7 @@ import {
     RepeatIterable,
 } from "@/collection/implementations/iterable-collection/_shared/_module.js";
 import { type Lazyable } from "@/utilities/_module-exports.js";
-import { simplifyLazyable } from "@/utilities/_module-exports.js";
+import { resolveLazyable } from "@/utilities/_module-exports.js";
 
 /**
  * All methods that return <i>{@link ICollection}</i> are executed lazly which means they will be executed when the <i>IterableCollection</i> is iterated with <i>forEach</i> method or "for of" loop.
@@ -869,7 +869,7 @@ export class IterableCollection<TInput = unknown>
             }
             index++;
         }
-        return simplifyLazyable(defaultValue);
+        return resolveLazyable(defaultValue);
     }
 
     firstOrFail<TOutput extends TInput>(
@@ -904,7 +904,7 @@ export class IterableCollection<TInput = unknown>
         if (matchedItem) {
             return matchedItem;
         }
-        return simplifyLazyable(defaultValue);
+        return resolveLazyable(defaultValue);
     }
 
     lastOrFail<TOutput extends TInput>(
@@ -934,7 +934,7 @@ export class IterableCollection<TInput = unknown>
             index++;
             beforeItem = item;
         }
-        return simplifyLazyable(defaultValue);
+        return resolveLazyable(defaultValue);
     }
 
     beforeOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput {
@@ -962,7 +962,7 @@ export class IterableCollection<TInput = unknown>
             hasMatched = predicateFn(item, index, this);
             index++;
         }
-        return simplifyLazyable(defaultValue);
+        return resolveLazyable(defaultValue);
     }
 
     afterOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput {
