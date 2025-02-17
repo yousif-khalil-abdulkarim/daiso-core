@@ -28,6 +28,8 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
 export type EventBusSettings = {
@@ -60,6 +62,8 @@ export type EventBusSettings = {
 
 /**
  * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
 export class EventBus<TEvents extends BaseEvent = BaseEvent>

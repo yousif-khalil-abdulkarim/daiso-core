@@ -18,6 +18,8 @@ import { EventEmitter } from "node:events";
 import { simplifyOneOrMoreStr } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/adapters"```
  * @group Adapters
  */
 export type RedisPubSubEventBusAdapterSettings = {
@@ -29,6 +31,8 @@ export type RedisPubSubEventBusAdapterSettings = {
 
 /**
  * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with a <i>{@link SuperJsonSerdeAdapter}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/adapters"```
  * @group Adapters
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {

@@ -11,6 +11,8 @@ import type {
 import { EventEmitter } from "node:events";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/adapters"```
  * @group Adapters
  */
 export type MemoryEventBusAdapterSettings = {
@@ -20,6 +22,8 @@ export type MemoryEventBusAdapterSettings = {
 
 /**
  * To utilize the <i>MemoryEventBusAdapter</i>, you must create instance of it.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/adapters"```
  * @group Adapters
  */
 export class MemoryEventBusAdapter implements IEventBusAdapter {

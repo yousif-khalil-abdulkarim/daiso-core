@@ -13,6 +13,8 @@ import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
 
 /**
  * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableEventBus}</i> dynamically.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
 export type IEventBusFactory<TAdapters extends string = string> = {

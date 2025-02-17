@@ -19,6 +19,8 @@ import {
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
 export type EventBusAdapters<TAdapters extends string = string> = Partial<
@@ -26,6 +28,8 @@ export type EventBusAdapters<TAdapters extends string = string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
 export type EventBusFactorySettings<TAdapters extends string = string> = {
@@ -84,6 +88,8 @@ type EventBusRecord<TAdapters extends string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
 export class EventBusFactory<TAdapters extends string = string>

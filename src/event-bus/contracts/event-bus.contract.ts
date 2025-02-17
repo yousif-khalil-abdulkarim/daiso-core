@@ -15,6 +15,8 @@ import {
 import type { BaseEvent, Listener } from "@/event-bus/contracts/_shared.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
 export type EventClass<TEvents extends BaseEvent> = {
@@ -22,6 +24,8 @@ export type EventClass<TEvents extends BaseEvent> = {
 };
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
 export type EventInstance<TEventClass extends EventClass<BaseEvent>> =
@@ -31,12 +35,16 @@ export type EventInstance<TEventClass extends EventClass<BaseEvent>> =
         ? TInstance
         : never;
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
 export type Unsubscribe = () => LazyPromise<void>;
 
 /**
  * The <i>IEventListener</i> contract defines a way listening to events independent of underlying technology
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
 export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
@@ -110,6 +118,8 @@ export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
 
 /**
  * The <i>IEventDispatcher</i> contract defines a way for dispatching to events independent of underlying technology.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
 export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
@@ -131,6 +141,8 @@ export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
 /**
  * The <i>IEventBus</i> contract defines a way for dispatching and listening to events independent of underlying technology.
  * It commes with more convient methods compared to <i>IEventBusAdapter</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
 export type IEventBus<TEvents extends BaseEvent = BaseEvent> =
@@ -145,6 +157,8 @@ export type IEventBus<TEvents extends BaseEvent = BaseEvent> =
 /**
  * The <i>IGroupableEventBus</i> contract defines a way for dispatching and listening to events independent of underlying technology.
  * It commes with one extra method which is useful for multitennat applications compared to <i>IEventBus</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
 export type IGroupableEventBus<TEvents extends BaseEvent = BaseEvent> =

@@ -14,6 +14,8 @@ import type {
 } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
  */
 export class EventBusError
@@ -42,6 +44,8 @@ export class EventBusError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
  */
 export class UnexpectedEventBusError extends EventBusError {
@@ -61,6 +65,8 @@ export class UnexpectedEventBusError extends EventBusError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
  */
 export class UnableToRemoveListenerEventBusError extends UnexpectedEventBusError {
@@ -80,6 +86,8 @@ export class UnableToRemoveListenerEventBusError extends UnexpectedEventBusError
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
  */
 export class UnableToAddListenerEventBusError extends UnexpectedEventBusError {
@@ -99,6 +107,8 @@ export class UnableToAddListenerEventBusError extends UnexpectedEventBusError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
  */
 export class UnableToDispatchEventBusError extends UnexpectedEventBusError {
@@ -110,6 +120,8 @@ export class UnableToDispatchEventBusError extends UnexpectedEventBusError {
 
 /**
  * The <i>registerEventBusErrors</i> function registers all <i>{@link IGroupableEventBus}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
  */
 export function registerEventBusErrors(serde: OneOrMore<IFlexibleSerde>): void {

@@ -19,6 +19,8 @@ import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/test-utilities"```
  * @group Test utilities
  */
 export type EventBusAdapterTestSuiteSettings = {
@@ -32,6 +34,8 @@ export type EventBusAdapterTestSuiteSettings = {
 
 /**
  * The <i>eventBusAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IEventBusAdapter}</i> with vitest.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/test-utilities"```
  * @group Test utilities
  * @example
  * ```ts
