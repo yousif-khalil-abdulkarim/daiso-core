@@ -18,7 +18,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnownedReleaseLockError,
 } from "@/lock/contracts/lock.errors.js";
-import type { IEventListener } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 import type { LockEvents } from "@/lock/contracts/lock.events.js";
 
 /**
@@ -27,7 +27,7 @@ import type { LockEvents } from "@/lock/contracts/lock.events.js";
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
-export type ILockListener = IEventListener<LockEvents>;
+export type ILockListener = IEventListenable<LockEvents>;
 
 /**
  *

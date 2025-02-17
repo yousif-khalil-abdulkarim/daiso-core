@@ -41,12 +41,12 @@ import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     IGroupableEventBus,
     IEventBus,
-    Listener,
+    EventListener,
     Unsubscribe,
     EventClass,
     EventInstance,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IEventListener,
+    IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
@@ -173,7 +173,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -203,14 +203,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     addListener<TEventClass extends EventClass<CacheEvents>>(
         eventName: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -241,14 +241,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     addListenerMany<TEventClass extends EventClass<CacheEvents>>(
         eventNames: TEventClass[],
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.addListenerMany(eventNames, listener);
     }
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -278,14 +278,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     removeListener<TEventClass extends EventClass<CacheEvents>>(
         eventName: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -315,14 +315,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     removeListenerMany<TEventClass extends EventClass<CacheEvents>>(
         eventNames: TEventClass[],
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListenerMany(eventNames, listener);
     }
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -352,14 +352,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     listenOnce<TEventClass extends EventClass<CacheEvents>>(
         eventName: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -390,14 +390,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     subscribe<TEventClass extends EventClass<CacheEvents>>(
         eventName: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -428,7 +428,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     subscribeMany<TEventClass extends EventClass<CacheEvents>>(
         eventNames: TEventClass[],
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribeMany(eventNames, listener);
     }

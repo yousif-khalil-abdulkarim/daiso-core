@@ -4,7 +4,7 @@
 
 import type {
     BaseEvent,
-    Listener,
+    EventListenerFn,
 } from "@/event-bus/contracts/_module-exports.js";
 import type {
     IEventBusAdapter,
@@ -29,14 +29,14 @@ export class NoOpEventBusAdapter implements IEventBusAdapter {
 
     addListener(
         _eventName: string,
-        _listener: Listener<BaseEvent>,
+        _listener: EventListenerFn<BaseEvent>,
     ): PromiseLike<void> {
         return Promise.resolve();
     }
 
     removeListener(
         _eventName: string,
-        _listener: Listener<BaseEvent>,
+        _listener: EventListenerFn<BaseEvent>,
     ): PromiseLike<void> {
         return Promise.resolve();
     }

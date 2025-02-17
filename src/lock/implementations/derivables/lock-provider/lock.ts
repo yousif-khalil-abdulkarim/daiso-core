@@ -27,7 +27,7 @@ import {
 } from "@/lock/contracts/_module-exports.js";
 import type {
     EventClass,
-    Listener,
+    EventListener,
     EventInstance,
     Unsubscribe,
     IGroupableEventBus,
@@ -395,49 +395,49 @@ export class Lock implements ILock {
 
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.addListener(event, listener);
     }
 
     addListenerMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.addListenerMany(events, listener);
     }
 
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.removeListener(event, listener);
     }
 
     removeListenerMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.removeListenerMany(events, listener);
     }
 
     listenOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.listenOnce(event, listener);
     }
 
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockEventBus.subscribe(event, listener);
     }
 
     subscribeMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
-        listener: Listener<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockEventBus.subscribeMany(events, listener);
     }
