@@ -9,6 +9,8 @@ import type { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 
 /**
  * The <i>SerializableClass</i> contract defines standard way to make a class instance serializable and deserializable.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Contracts
  */
 export type SerializableClass<TSerializedValue> = {
@@ -19,12 +21,16 @@ export type SerializableClass<TSerializedValue> = {
 };
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Contracts
  */
 export type SerializableEventClass<TFields extends Record<string, unknown>> =
     new (fields: any) => BaseEvent<TFields>;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Contracts
  */
 export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
@@ -39,6 +45,8 @@ export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
 
 /**
  * The <i>IFlexibleSerde</i> contract defines a standard way to serialize and deserialize both plain data and custom classes.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Contracts
  */
 export interface IFlexibleSerde<TSerializedValue = unknown>

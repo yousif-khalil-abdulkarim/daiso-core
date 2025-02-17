@@ -42,6 +42,8 @@ import {
 } from "@/serde/implementations/deriavables/serde-transformers.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/deriavables"```
  * @group Derivables
  */
 export type SerdeSettings = {
@@ -158,6 +160,8 @@ export type SerdeSettings = {
 
 /**
  * <i>Serde</i> class can be derived from any <i>{@link IFlexibleSerdeAdapter}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/deriavables"```
  * @group Derivables
  */
 export class Serde<TSerializedValue>

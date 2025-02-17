@@ -3,6 +3,8 @@
  */
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Errors
  */
 export class SerdeError extends Error {
@@ -13,6 +15,8 @@ export class SerdeError extends Error {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Errors
  */
 export class SerializationError extends SerdeError {
@@ -23,6 +27,8 @@ export class SerializationError extends SerdeError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Errors
  */
 export class DeserializationError extends SerdeError {

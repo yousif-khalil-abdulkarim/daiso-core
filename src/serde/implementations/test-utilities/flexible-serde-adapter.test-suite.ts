@@ -10,6 +10,8 @@ import type {
 } from "@/serde/contracts/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/test-utilities"```
  * @group Test utilities
  */
 export type FlexibleSerdeAdapterSuiteSettings = {
@@ -20,6 +22,8 @@ export type FlexibleSerdeAdapterSuiteSettings = {
 
 /**
  * The <i>flexibleSerdeAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IFlexibleSerdeAdapter}</i> with <i>vitest</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/test-utilities"```
  * @group Test utilities
  * @example
  * ```ts
