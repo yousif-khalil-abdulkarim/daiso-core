@@ -34,37 +34,6 @@ export type ILock = ILockListener & {
     /**
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
-     * @example
-     * ```ts
-     * import { type ILock, TimeSpan } from "@daiso-tech/core";
-     *
-     * // The function will execute sequentially when called concurrently as long you use the same lock.
-     * async function main(lock: ILock): Promise<void> {
-     *   await lock.run(async () => {
-     *     console.log("1.");
-     *     await delay(TimeSpan.fromMilliseconds(1));
-     *     console.log("2.");
-     *   });
-     * }
-     * ```
-     * You can also pass in a <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { type ILock, TimeSpan } from "@daiso-tech/core";
-     *
-     * function fn(): LazyPromise<void> {
-     *   return new LazyPromise(async () => {
-     *     console.log("1.");
-     *     await delay(TimeSpan.fromMilliseconds(1));
-     *     console.log("2.");
-     *   });
-     * }
-     *
-     * // The function will execute sequentially when called concurrently as long you use the same lock.
-     * async function main(lock: ILock): Promise<void> {
-     *   await lock.run(fn());
-     * }
-     * ```
      */
     run<TValue = void>(
         asyncFn: LazyPromiseable<TValue>,
@@ -74,37 +43,6 @@ export type ILock = ILockListener & {
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
-     * @example
-     * ```ts
-     * import { type ILock, TimeSpan } from "@daiso-tech/core";
-     *
-     * // The function will execute sequentially when called concurrently as long you use the same lock.
-     * async function main(lock: ILock): Promise<void> {
-     *   await lock.runOrFail(async () => {
-     *     console.log("1.");
-     *     await delay(TimeSpan.fromMilliseconds(1));
-     *     console.log("2.");
-     *   });
-     * }
-     * ```
-     * You can also pass in a <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { type ILock, TimeSpan } from "@daiso-tech/core";
-     *
-     * function fn(): LazyPromise<void> {
-     *   return new LazyPromise(async () => {
-     *     console.log("1.");
-     *     await delay(TimeSpan.fromMilliseconds(1));
-     *     console.log("2.");
-     *   });
-     * }
-     *
-     * // The function will execute sequentially when called concurrently as long you use the same lock.
-     * async function main(lock: ILock): Promise<void> {
-     *   await lock.runOrFail(fn());
-     * }
-     * ```
      */
     runOrFail<TValue = void>(
         asyncFn: LazyPromiseable<TValue>,
@@ -115,23 +53,6 @@ export type ILock = ILockListener & {
      * Throws an error if a different owner attempts to release the lock.
      * Returns true if the lock is acquired otherwise true is returned.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
-     * @example
-     * ```ts
-     * import { type ILock, TimeSpan } from "@daiso-tech/core";
-     *
-     * // The function will execute sequentially when called concurrently as long you use the same lock.
-     * async function main(lock: ILock): Promise<void> {
-     *   try {
-     *     await lock.acquire();
-     *     console.log("1.");
-     *     await delay(TimeSpan.fromMilliseconds(1));
-     *     console.log("2.");
-     *   }
-     *   finally {
-     *     await lock.release();
-     *   }
-     * }
-     * ```
      */
     acquire(): LazyPromise<boolean>;
 
@@ -140,23 +61,6 @@ export type ILock = ILockListener & {
      * Throws an error if already acquired.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
-     * @example
-     * ```ts
-     * import type { ILock, TimeSpan } from "@daiso-tech/core";
-     *
-     * // The function will execute sequentially when called concurrently as long you use the same lock.
-     * async function main(lock: ILock): Promise<void> {
-     *   try {
-     *     await lock.acquireOrFail();
-     *     console.log("1.");
-     *     await delay(TimeSpan.fromMilliseconds(1));
-     *     console.log("2.");
-     *   }
-     *   finally {
-     *     await lock.releaseOrFail();
-     *   }
-     * }
-     * ```
      */
     acquireOrFail(): LazyPromise<void>;
 
@@ -164,23 +68,6 @@ export type ILock = ILockListener & {
      * The <i>release</i> method releases a lock if owned by the same owner.
      * Returns true if the lock is released otherwise false is returned.
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
-     * @example
-     * ```ts
-     * import type { ILock, TimeSpan } from "@daiso-tech/core";
-     *
-     * // The function will execute sequentially when called concurrently as long you use the same lock.
-     * async function main(lock: ILock): Promise<void> {
-     *   try {
-     *     await lock.acquire();
-     *     console.log("1.");
-     *     await delay(TimeSpan.fromMilliseconds(1));
-     *     console.log("2.");
-     *   }
-     *   finally {
-     *     await lock.release();
-     *   }
-     * }
-     * ```
      */
     release(): LazyPromise<boolean>;
 
@@ -189,23 +76,6 @@ export type ILock = ILockListener & {
      * Throws an error if a different owner attempts to release the lock.
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      * @throws {UnownedReleaseLockError} {@link UnownedReleaseLockError}
-     * @example
-     * ```ts
-     * import type { ILock, TimeSpan } from "@daiso-tech/core";
-     *
-     * // The function will execute sequentially when called concurrently as long you use the same lock.
-     * async function main(lock: ILock): Promise<void> {
-     *   try {
-     *     await lock.acquireOrFail();
-     *     console.log("1.");
-     *     await delay(TimeSpan.fromMilliseconds(1));
-     *     console.log("2.");
-     *   }
-     *   finally {
-     *     await lock.releaseOrFail();
-     *   }
-     * }
-     * ```
      */
     releaseOrFail(): LazyPromise<void>;
 

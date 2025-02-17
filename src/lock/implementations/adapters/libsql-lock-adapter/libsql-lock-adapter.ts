@@ -44,7 +44,7 @@ export class LibsqlLockAdapter
     /***
      * @example
      * ```ts
-     * import { LibsqlCacheAdapter } from "@daiso-tech/core";
+     * import { LibsqlCacheAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      * import { createClient } from "@libsql/client";
      *
      * (async () => {

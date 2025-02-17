@@ -54,7 +54,7 @@ export class MongodbLockAdapter
     /**
      * @example
      * ```ts
-     * import { MongodbLockAdapter } from "@daiso-tech/core";
+     * import { MongodbLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      * import { MongoClient } from "mongodb";
      *
      * (async () => {

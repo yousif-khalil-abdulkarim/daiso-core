@@ -42,7 +42,7 @@ export class SqliteLockAdapter
     /**
      * @example
      * ```ts
-     * import { SqliteLockAdapter } from "@daiso-tech/core";
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      * import Sqlite from "better-sqlite3";
      *
      * (async () => {

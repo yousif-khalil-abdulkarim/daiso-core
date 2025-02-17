@@ -94,7 +94,6 @@ export class Lock implements ILock {
     private readonly defaultRefreshTime: TimeSpan;
     private readonly lazyPromiseSettings: LockSettings["lazyPromiseSettings"];
     private readonly state: LockState;
-    private readonly expirationInMs: number | null;
 
     constructor(settings: LockSettings) {
         const {
@@ -109,7 +108,6 @@ export class Lock implements ILock {
             stateRecord,
             expirationInMs,
         } = settings;
-        this.expirationInMs = expirationInMs;
         this.lockProviderEventDispatcher = lockProviderEventDispatcher;
         this.lockEventBus = lockEventBus.withGroup([adapter.getGroup(), key]);
         this.defaultRefreshTime = defaultRefreshTime;

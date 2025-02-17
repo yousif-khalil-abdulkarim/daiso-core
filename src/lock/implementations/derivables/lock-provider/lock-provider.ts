@@ -31,6 +31,8 @@ import type {
     IGroupableEventBus,
     Listener,
     Unsubscribe,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    IEventListener,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
@@ -149,23 +151,27 @@ export class LockProvider implements IGroupableLockProvider {
     private stateRecord: ILockStateRecord = {};
 
     /**
-     *@example
+     * @example
      * ```ts
-     * import { LockProvider, MemoryLockAdapter, EventBus, MemoryEventBusAdapter, registerLockEvents, reigsterLockErrors, SuperJsonSerde } from "@daiso-tech/core";
+     * import type { IGroupableLockProvider } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
      *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
      * });
-     * const serde = new SuperJsonSerde();
-     * const lockProvider = new LockProvider({
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
      *   serde,
      *   adapter: new MemoryLockAdapter({
      *     rootGroup: "@global"
      *   }),
      *   eventBus,
      * });
-     * registerLockEvents(serde);
-     * reigsterLockErrors(serde);
      * ```
      */
     constructor(settings: LockProviderSettings) {
@@ -221,6 +227,40 @@ export class LockProvider implements IGroupableLockProvider {
         }
     }
 
+    /**
+     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     *
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
+     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const listener: Listener<LockEvents> = event => {
+     *   console.log(event);
+     * }
+     * await lockProvider.addListener(KeyAcquiredLockEvent, listener);
+     * ```
+     */
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Listener<EventInstance<TEventClass>>,
@@ -228,6 +268,40 @@ export class LockProvider implements IGroupableLockProvider {
         return this.lockProviderEventBus.addListener(event, listener);
     }
 
+    /**
+     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     *
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
+     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const listener: Listener<LockEvents> = event => {
+     *   console.log(event);
+     * }
+     * await lockProvider.addListenerMany([KeyAcquiredLockEvent], listener);
+     * ```
+     */
     addListenerMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
         listener: Listener<EventInstance<TEventClass>>,
@@ -235,6 +309,40 @@ export class LockProvider implements IGroupableLockProvider {
         return this.lockProviderEventBus.addListenerMany(events, listener);
     }
 
+    /**
+     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     *
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
+     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const listener: Listener<LockEvents> = event => {
+     *   console.log(event);
+     * }
+     * await lockProvider.removeListener(KeyAcquiredLockEvent, listener);
+     * ```
+     */
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Listener<EventInstance<TEventClass>>,
@@ -242,6 +350,40 @@ export class LockProvider implements IGroupableLockProvider {
         return this.lockProviderEventBus.removeListener(event, listener);
     }
 
+    /**
+     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     *
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
+     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const listener: Listener<LockEvents> = event => {
+     *   console.log(event);
+     * }
+     * await lockProvider.removeListenerMany([KeyAcquiredLockEvent], listener);
+     * ```
+     */
     removeListenerMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
         listener: Listener<EventInstance<TEventClass>>,
@@ -249,6 +391,40 @@ export class LockProvider implements IGroupableLockProvider {
         return this.lockProviderEventBus.removeListenerMany(events, listener);
     }
 
+    /**
+     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     *
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
+     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const listener: Listener<LockEvents> = event => {
+     *   console.log(event);
+     * }
+     * await lockProvider.listenOnce(KeyAcquiredLockEvent, listener);
+     * ```
+     */
     listenOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Listener<EventInstance<TEventClass>>,
@@ -256,6 +432,41 @@ export class LockProvider implements IGroupableLockProvider {
         return this.lockProviderEventBus.listenOnce(event, listener);
     }
 
+    /**
+     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     *
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
+     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const listener: Listener<LockEvents> = event => {
+     *   console.log(event);
+     * }
+     * const unsubscribe = await lockProvider.subscribe(KeyAcquiredLockEvent, listener);
+     * await unsubscribe();
+     * ```
+     */
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Listener<EventInstance<TEventClass>>,
@@ -263,6 +474,41 @@ export class LockProvider implements IGroupableLockProvider {
         return this.lockProviderEventBus.subscribe(event, listener);
     }
 
+    /**
+     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     *
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
+     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const listener: Listener<LockEvents> = event => {
+     *   console.log(event);
+     * }
+     * const unsubscribe = await lockProvider.subscribeMany([KeyAcquiredLockEvent], listener);
+     * await unsubscribe();
+     * ```
+     */
     subscribeMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
         listener: Listener<EventInstance<TEventClass>>,
@@ -270,6 +516,43 @@ export class LockProvider implements IGroupableLockProvider {
         return this.lockProviderEventBus.subscribeMany(events, listener);
     }
 
+    /**
+     * ```ts
+     * import type { IGroupableLockProvider } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * // You can use the lock
+     * const lockA = lockProvider.create("a");
+     *
+     * // You can provide ttl
+     * const lockB = lockProvider.create("b", {
+     *   ttl: TimeSpan.fromMinutes(2),
+     * });
+     *
+     * // You can provide a custom owner. By default the owner will be unique random value.
+     * const lockB = lockProvider.create("b", {
+     *   owner: "user-1"
+     * });
+     * ```
+     */
     create(
         key: OneOrMore<string>,
         settings: LockProviderCreateSettings = {},
@@ -295,10 +578,69 @@ export class LockProvider implements IGroupableLockProvider {
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableLockProvider } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * // Will print "@global"
+     * console.log(lockProvider.getGroup());
+     * ```
+     */
     getGroup(): string {
         return this.adapter.getGroup();
     }
 
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableLockProvider, ILockProvider } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * // Will print "@global"
+     * console.log(lockProvider.getGroup());
+     *
+     * const groupedLockProvider: ILockProvider = lockProvider.withGroup("company-1");
+     *
+     * // Will print "@global/company-1"
+     * console.log(groupedLockProvider.getGroup());
+     * ```
+     */
     withGroup(group: OneOrMore<string>): ILockProvider {
         return new LockProvider({
             adapter: this.adapter.withGroup(simplifyOneOrMoreStr(group)),

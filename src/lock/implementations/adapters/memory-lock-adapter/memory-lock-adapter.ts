@@ -35,7 +35,7 @@ export class MemoryLockAdapter implements ILockAdapter {
     /**
      *  @example
      * ```ts
-     * import { MemoryLockAdapter } from "@daiso-tech/core";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      *
      * const lockAdapter = new MemoryLockAdapter({
      *   rootGroup: "@cache"
@@ -44,7 +44,7 @@ export class MemoryLockAdapter implements ILockAdapter {
      * You can also provide an <i>Map</i>.
      * @example
      * ```ts
-     * import { MemoryLockAdapter } from "@daiso-tech/core";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      *
      * const map = new Map<any, any>();
      * const lockAdapter = new MemoryLockAdapter({
