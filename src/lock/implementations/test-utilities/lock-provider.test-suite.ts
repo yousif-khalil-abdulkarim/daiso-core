@@ -29,7 +29,7 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import { delay, LazyPromise } from "@/async/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { Serde } from "@/serde/implementations/deriavables/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 
 /**
  * @group Utilities
@@ -53,7 +53,7 @@ export type LockProviderTestSuiteSettings = {
  * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
  * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
  * import { lockProviderTestSuite } from "@daiso-tech/core/lock/implementations/test-utilities";
- * import { Serde } from "@daiso-tech/core/serde/implementations/deriavables";
+ * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
  * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
  * import type { ILockData } from "@daiso-tech/core/lock/contracts";
  *

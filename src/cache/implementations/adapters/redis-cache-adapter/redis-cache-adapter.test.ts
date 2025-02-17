@@ -8,7 +8,7 @@ import {
 } from "@testcontainers/redis";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { Serde } from "@/serde/implementations/deriavables/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisCacheAdapter", () => {

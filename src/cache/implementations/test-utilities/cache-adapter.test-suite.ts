@@ -42,7 +42,7 @@ export type CacheAdapterTestSuiteSettings = {
  * } from "@testcontainers/redis";
  * import { TimeSpan } from "@daiso-tech/core/utilities";
  * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
- * import { Serde } from "@daiso-tech/core/serde/implementations/deriavables";
+ * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
  *
  * const timeout = TimeSpan.fromMinutes(2);
  * describe("class: RedisCacheAdapter", () => {

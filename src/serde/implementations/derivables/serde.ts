@@ -39,7 +39,7 @@ import {
     DateSerdeTransformer,
     URLSerdeTransformer,
     URLSearchParamsSerdeTransformer,
-} from "@/serde/implementations/deriavables/serde-transformers.js";
+} from "@/serde/implementations/derivables/serde-transformers.js";
 
 /**
  *

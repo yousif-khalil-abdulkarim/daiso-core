@@ -17,7 +17,7 @@ import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
-import { Serde } from "@/serde/implementations/deriavables/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
