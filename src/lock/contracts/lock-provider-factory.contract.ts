@@ -12,6 +12,8 @@ import {
 
 /**
  * The <i>ILockProviderFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableLockProvider}</i> dynamically.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
 export type ILockProviderFactory<TAdapters extends string = string> = {

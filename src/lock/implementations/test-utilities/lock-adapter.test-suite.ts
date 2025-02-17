@@ -13,6 +13,8 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
  * @group Utilities
  */
 export type LockAdapterTestSuiteSettings = {
@@ -25,6 +27,8 @@ export type LockAdapterTestSuiteSettings = {
 
 /**
  * The <i>lockAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ILockAdapter}</i> with <i>vitest</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
  * @group Utilities
  * @example
  * ```ts

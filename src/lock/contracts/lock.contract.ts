@@ -23,11 +23,15 @@ import type { LockEvents } from "@/lock/contracts/lock.events.js";
 
 /**
  * The <i>ILockListener</i> contract defines a way for listening <i>{@link ILock}</i> operations.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
 export type ILockListener = IEventListener<LockEvents>;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
 export type ILock = ILockListener & {

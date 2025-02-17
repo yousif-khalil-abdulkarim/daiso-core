@@ -9,6 +9,8 @@ import type { ILockProvider } from "@/lock/contracts/lock-provider.contract.js";
 /**
  * The <i>ILockAdapter</i> contract defines a way for managing locks independent of the underlying technology.
  * This contract is not meant to be used directly, instead you should use <i>{@link ILockProvider}</i> contract.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
 export type ILockAdapter = {

@@ -24,6 +24,8 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
 import { LockProvider } from "@/lock/implementations/derivables/lock-provider/_module.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
 export type LockAdapters<TAdapters extends string> = Partial<
@@ -31,6 +33,8 @@ export type LockAdapters<TAdapters extends string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
 export type LockProviderFactorySettings<TAdapters extends string> = {
@@ -113,6 +117,8 @@ type LockProviderRecord<TAdapters extends string> = Partial<
 >;
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
 export class LockProviderFactory<TAdapters extends string>

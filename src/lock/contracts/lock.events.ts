@@ -10,6 +10,8 @@ import type { OneOrMore } from "@/utilities/types.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export class KeyAcquiredLockEvent extends BaseEvent<{
@@ -19,6 +21,8 @@ export class KeyAcquiredLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export class KeyReleasedLockEvent extends BaseEvent<{
@@ -27,6 +31,8 @@ export class KeyReleasedLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export class KeyForceReleasedLockEvent extends BaseEvent<{
@@ -34,6 +40,8 @@ export class KeyForceReleasedLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export class UnownedReleaseLockEvent extends BaseEvent<{
@@ -42,6 +50,8 @@ export class UnownedReleaseLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export class UnownedRefreshLockEvent extends BaseEvent<{
@@ -50,6 +60,8 @@ export class UnownedRefreshLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export class KeyAlreadyAcquiredLockEvent extends BaseEvent<{
@@ -58,6 +70,8 @@ export class KeyAlreadyAcquiredLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export class KeyRefreshedLockEvent extends BaseEvent<{
@@ -67,6 +81,8 @@ export class KeyRefreshedLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export class UnexpectedErrorLockEvent extends BaseEvent<{
@@ -77,6 +93,8 @@ export class UnexpectedErrorLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export type LockEvents =
@@ -91,6 +109,8 @@ export type LockEvents =
 
 /**
  * The <i>registerLockEventsToSerde</i> function registers all <i>{@link ILock}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
 export function registerLockEventsToSerde(

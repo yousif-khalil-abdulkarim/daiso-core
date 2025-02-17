@@ -32,6 +32,8 @@ import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-expor
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
  * @group Utilities
  */
 export type LockProviderTestSuiteSettings = {
@@ -45,6 +47,8 @@ export type LockProviderTestSuiteSettings = {
 
 /**
  * The <i>lockProviderTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ILock}</i> with <i>vitest</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
  * @group Utilities
  * ```ts
  * import { beforeEach, describe, expect, test } from "vitest";

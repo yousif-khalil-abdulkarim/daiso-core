@@ -43,6 +43,8 @@ import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-pr
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
 export type LockProviderSettings = {
@@ -103,6 +105,8 @@ export type LockProviderSettings = {
  * Note the <i>{@link ILock}</i> instances created by the <i>LockProvider</i> class are serializable and deserializable,
  * allowing them to be seamlessly transferred across different servers, processes, and databases.
  * This can be done directly using <i>{@link IFlexibleSerde}</i> or indirectly through components that rely on <i>{@link IFlexibleSerde}</i> internally.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
 export class LockProvider implements IGroupableLockProvider {

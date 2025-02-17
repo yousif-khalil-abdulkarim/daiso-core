@@ -6,6 +6,8 @@ import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
 import type { ILock, ILockListener } from "@/lock/contracts/lock.contract.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
 export type LockProviderCreateSettings = {
@@ -16,6 +18,8 @@ export type LockProviderCreateSettings = {
 /**
  * The <i>ILockProvider</i> contract defines a way for managing locks independent of the underlying technology.
  * It commes with more convient methods compared to <i>ILockAdapter</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
 export type ILockProvider = ILockListener & {
@@ -38,6 +42,8 @@ export type ILockProvider = ILockListener & {
 /**
  * The <i>IGroupableLockProvider</i> contract defines a way for managing locks independent of the underlying technology.
  * It commes with one extra method which is useful for multitennat applications compared to <i>{@link ILockProvider}</i>.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
 export type IGroupableLockProvider = ILockProvider & {

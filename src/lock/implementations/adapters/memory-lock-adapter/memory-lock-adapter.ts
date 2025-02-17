@@ -10,6 +10,8 @@ import type {
 } from "@/lock/contracts/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
  * @group Adapters
  */
 export type MemoryLockAdapterSettings = {
@@ -20,6 +22,8 @@ export type MemoryLockAdapterSettings = {
 /**
  * Note the <i>MemoryLockAdapter</i> is limited to single process usage and cannot be shared across multiple servers or different processes.
  * This adapter is meant to be used for testing.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
  * @group Adapters
  */
 export class MemoryLockAdapter implements ILockAdapter {

@@ -16,6 +16,8 @@ import type { Collection, CollectionOptions, Db } from "mongodb";
 import { ObjectId } from "mongodb";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
  * @group Adapters
  */
 export type MongodbLockAdapterSettings = {
@@ -40,6 +42,8 @@ type MongodbLockDocument = {
  * To utilize the <i>MongodbLockAdapter</i>, you must install the <i>"mongodb"</i> package.
  *
  * Note in order to use <i>MongodbLockAdapter</i> correctly, ensure you use a single, consistent database across all server instances.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
  * @group Adapters
  */
 export class MongodbLockAdapter
