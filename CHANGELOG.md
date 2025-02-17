@@ -1,5 +1,26 @@
 # @daiso-tech/core
 
+## 0.24.0
+
+### Minor Changes
+
+-   1f1b344: Renamed function <i>registerEventBusErrors</i> to <i>registerEventBusErrorsToSerde</i>.
+-   78bad79: Made <i>ListCollection</i> and <i>IterableCollection</i> class serializable and deserializable.
+-   1f1b344: Renamed function <i>registerCacheErrors</i> to <i>registerCacheErrorsToSerde</i>
+-   8253d62: Changed <i>Lock</i> class so it now doesn't implement <i>ISerdeTransformer</i> contract.
+-   fadaaeb: - Changes
+    -   Converted the project to ESM only module.
+    -   Removed the main entrypoint and multiple entry points to the project via package.json exports field.
+-   4e4b1b8: Added new <i>Serde</i> class that implements <i>IFlexibleSerded</i> and that can be derivied from <i>IFlexibleSerdeAdapter</i>.
+-   1f1b344: Renamed function <i>registerCacheEvents</i> to <i>registerCacheEventsToSerde</i>
+-   66215ea: The <i>ISerdeTransformer</i> contract name field can now be bot a <i>string</i> and <i>string[]</i>.
+
+### Patch Changes
+
+-   7055619: Improved lock component documentation
+-   8253d62: Fixed a bug with <i>Lock</i> class serialization and deserialization
+-   1f1b344: Added new functions <i>registerCollectionsToSerde</i> and <i>registerCollectionErrorsToSerde</i>
+
 ## 0.23.0
 
 ### Minor Changes
