@@ -46,7 +46,7 @@ import type {
     EventClass,
     EventInstance,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IEventListener,
+    IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
@@ -173,7 +173,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -210,7 +210,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -248,7 +248,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -285,7 +285,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -322,7 +322,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -359,7 +359,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -397,7 +397,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     /**
      * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";

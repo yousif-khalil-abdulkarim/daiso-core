@@ -33,7 +33,7 @@ import type {
     Listener,
     Unsubscribe,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IEventListener,
+    IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
@@ -236,7 +236,7 @@ export class LockProvider implements IGroupableLockProvider {
      * You listen to different events of all locks created by <i>LockProvider</i> class.
      *
      * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
@@ -277,7 +277,7 @@ export class LockProvider implements IGroupableLockProvider {
      * You listen to different events of all locks created by <i>LockProvider</i> class.
      *
      * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
@@ -318,7 +318,7 @@ export class LockProvider implements IGroupableLockProvider {
      * You listen to different events of all locks created by <i>LockProvider</i> class.
      *
      * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
@@ -359,7 +359,7 @@ export class LockProvider implements IGroupableLockProvider {
      * You listen to different events of all locks created by <i>LockProvider</i> class.
      *
      * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
@@ -400,7 +400,7 @@ export class LockProvider implements IGroupableLockProvider {
      * You listen to different events of all locks created by <i>LockProvider</i> class.
      *
      * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
@@ -441,7 +441,7 @@ export class LockProvider implements IGroupableLockProvider {
      * You listen to different events of all locks created by <i>LockProvider</i> class.
      *
      * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
@@ -483,7 +483,7 @@ export class LockProvider implements IGroupableLockProvider {
      * You listen to different events of all locks created by <i>LockProvider</i> class.
      *
      * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListener}</i> ford details on how the method works.
+     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";

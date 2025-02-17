@@ -42,12 +42,12 @@ export type EventInstance<TEventClass extends EventClass<BaseEvent>> =
 export type Unsubscribe = () => LazyPromise<void>;
 
 /**
- * The <i>IEventListener</i> contract defines a way listening to events independent of underlying technology
+ * The <i>IEventListenable</i> contract defines a way listening to events independent of underlying technology
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
-export type IEventListener<TEvents extends BaseEvent = BaseEvent> = {
+export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     /**
      * The <i>addListener</i> method is used for listening to <i>{@link BaseEvent}</i>.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
@@ -146,7 +146,7 @@ export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
  * @group Contracts
  */
 export type IEventBus<TEvents extends BaseEvent = BaseEvent> =
-    IEventListener<TEvents> &
+    IEventListenable<TEvents> &
         IEventDispatcher<TEvents> & {
             /**
              * The <i>getGroup</i> method returns the group name.

@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import type { IEventListener } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 import type { OneOrMore } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazyable,
@@ -26,7 +26,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
  */
-export type ICacheListener<TType = unknown> = IEventListener<
+export type ICacheListener<TType = unknown> = IEventListenable<
     CacheEvents<TType>
 >;
 
