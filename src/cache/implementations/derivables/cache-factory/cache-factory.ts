@@ -9,8 +9,8 @@ import {
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type { ICacheAdapter } from "@/cache/contracts/_module-exports.js";
 import {
-    registerCacheErrors,
-    registerCacheEvents,
+    registerCacheErrorsToSerde,
+    registerCacheEventsToSerde,
     type ICacheFactory,
     type IGroupableCache,
 } from "@/cache/contracts/_module-exports.js";
@@ -182,10 +182,10 @@ export class CacheFactory<TAdapters extends string = string>
 
     private init(adapters: CacheAdapters<TAdapters>): CacheRecord<TAdapters> {
         if (this.shouldRegisterErrors) {
-            registerCacheErrors(this.serde);
+            registerCacheErrorsToSerde(this.serde);
         }
         if (this.shouldRegisterEvents) {
-            registerCacheEvents(this.serde);
+            registerCacheEventsToSerde(this.serde);
         }
         const cacheRecord: CacheRecord<TAdapters> = {};
         for (const key in adapters) {

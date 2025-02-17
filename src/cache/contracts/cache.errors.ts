@@ -8,9 +8,10 @@ import type {
     IFlexibleSerde,
     ISerializable,
 } from "@/serde/contracts/_module-exports.js";
-import type {
-    ISerializedError,
-    OneOrMore,
+import {
+    CORE,
+    type ISerializedError,
+    type OneOrMore,
 } from "@/utilities/_module-exports.js";
 
 /**
@@ -116,20 +117,22 @@ export class KeyNotFoundCacheError
 }
 
 /**
- * The <i>registerCacheErrors</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The <i>registerCacheErrorsToSerde</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors
  */
-export function registerCacheErrors(serde: OneOrMore<IFlexibleSerde>): void {
+export function registerCacheErrorsToSerde(
+    serde: OneOrMore<IFlexibleSerde>,
+): void {
     if (!Array.isArray(serde)) {
         serde = [serde];
     }
     for (const serde_ of serde) {
         serde_
-            .registerClass(CacheError)
-            .registerClass(UnexpectedCacheError)
-            .registerClass(TypeCacheError)
-            .registerClass(KeyNotFoundCacheError);
+            .registerClass(CacheError, CORE)
+            .registerClass(UnexpectedCacheError, CORE)
+            .registerClass(TypeCacheError, CORE)
+            .registerClass(KeyNotFoundCacheError, CORE);
     }
 }

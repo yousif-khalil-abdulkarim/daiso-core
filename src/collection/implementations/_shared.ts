@@ -2,6 +2,13 @@
  * @module Collection
  */
 
+import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
+import { CORE, type OneOrMore } from "@/utilities/_module-exports.js";
+import {
+    IterableCollection,
+    ListCollection,
+} from "@/collection/implementations/_module-exports.js";
+
 /**
  * @internal
  */
@@ -65,4 +72,23 @@ export function isAsyncIterable<TItem>(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         typeof value[Symbol.asyncIterator] === "function"
     );
+}
+
+/**
+ * The <i>registerCollectionsToSerde</i> function registers the <i>ListCollection</i> and <i>IterableCollection</i> classes with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/implementations"```
+ * @group Errors
+ */
+export function registerCollectionsToSerde(
+    serde: OneOrMore<IFlexibleSerde>,
+): void {
+    if (!Array.isArray(serde)) {
+        serde = [serde];
+    }
+    for (const serde_ of serde) {
+        serde_
+            .registerClass(ListCollection, CORE)
+            .registerClass(IterableCollection, CORE);
+    }
 }

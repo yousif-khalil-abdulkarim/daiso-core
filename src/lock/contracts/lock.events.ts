@@ -7,7 +7,7 @@ import type { ILock } from "@/lock/contracts/lock.contract.js";
 import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import type { OneOrMore } from "@/utilities/types.js";
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { CORE, type TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -121,11 +121,11 @@ export function registerLockEventsToSerde(
     }
     for (const serde_ of serde) {
         serde_
-            .registerEvent(KeyAcquiredLockEvent)
-            .registerEvent(KeyReleasedLockEvent)
-            .registerEvent(UnownedReleaseLockEvent)
-            .registerEvent(KeyAlreadyAcquiredLockEvent)
-            .registerEvent(UnownedRefreshLockEvent)
-            .registerEvent(UnexpectedErrorLockEvent);
+            .registerEvent(KeyAcquiredLockEvent, CORE)
+            .registerEvent(KeyReleasedLockEvent, CORE)
+            .registerEvent(UnownedReleaseLockEvent, CORE)
+            .registerEvent(KeyAlreadyAcquiredLockEvent, CORE)
+            .registerEvent(UnownedRefreshLockEvent, CORE)
+            .registerEvent(UnexpectedErrorLockEvent, CORE);
     }
 }
