@@ -30,6 +30,8 @@ import { simplifyLazyable } from "@/utilities/_module-exports.js";
 
 /**
  * All methods in <i>ListCollection</i> are executed eagerly.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/implementations"```
  * @group Adapters
  */
 export class ListCollection<TInput = unknown> implements ICollection<TInput> {

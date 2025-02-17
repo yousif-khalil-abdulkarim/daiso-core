@@ -71,6 +71,8 @@ import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/implementations"```
  * @group Adapters
  */
 export type AsyncIterableCollectionSettings = {

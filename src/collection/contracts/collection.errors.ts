@@ -3,6 +3,8 @@
  */
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
  */
 export class CollectionError extends Error {
@@ -13,6 +15,8 @@ export class CollectionError extends Error {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
  */
 export class UnexpectedCollectionError extends CollectionError {
@@ -23,6 +27,8 @@ export class UnexpectedCollectionError extends CollectionError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
  */
 export class ItemNotFoundCollectionError extends CollectionError {
@@ -33,6 +39,8 @@ export class ItemNotFoundCollectionError extends CollectionError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
  */
 export class MultipleItemsFoundCollectionError extends CollectionError {
@@ -43,6 +51,8 @@ export class MultipleItemsFoundCollectionError extends CollectionError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
  */
 export class TypeCollectionError extends CollectionError {
@@ -53,6 +63,8 @@ export class TypeCollectionError extends CollectionError {
 }
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
  */
 export class EmptyCollectionError extends CollectionError {

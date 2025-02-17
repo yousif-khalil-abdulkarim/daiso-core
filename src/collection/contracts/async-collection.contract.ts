@@ -35,6 +35,10 @@ import type {
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ */
 export type AsyncCollapse<TValue> = TValue extends
     | Array<infer TItem>
     | Iterable<infer TItem>
@@ -45,6 +49,8 @@ export type AsyncCollapse<TValue> = TValue extends
 /**
  * The <i>IAsyncCollection</i> contract offers a fluent and efficient approach to working with {@link AsyncIterable} objects.
  * <i>IAsyncCollection</i> is immutable.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Contracts
  * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
  */
