@@ -172,8 +172,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     /**
-     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * You can listen to different events of <i>Cache</i> class instance.
+     *
+     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -181,7 +183,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
@@ -195,10 +197,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   eventBus,
      * });
      *
-     * const listener: Listener<CacheEvents> = event => {
+     * const listener: EventListener<CacheEvents> = event => {
      *   console.log(event);
      * };
      * await cache.addListener(KeyAddedCacheEvent, listener);
+     * await cache.add("a", 1);
      * ```
      */
     addListener<TEventClass extends EventClass<CacheEvents>>(
@@ -209,8 +212,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     /**
-     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * You can listen to different events of <i>Cache</i> class instance.
+     *
+     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -218,8 +223,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
@@ -233,10 +238,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   eventBus,
      * });
      *
-     * const listener: Listener<CacheEvents> = event => {
+     * const listener: EventListener<CacheEvents> = event => {
      *   console.log(event);
      * };
      * await cache.addListenerMany([KeyAddedCacheEvent], listener);
+     * await cache.add("a", 1);
      * ```
      */
     addListenerMany<TEventClass extends EventClass<CacheEvents>>(
@@ -247,8 +253,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     /**
-     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * You can listen to different events of <i>Cache</i> class instance.
+     *
+     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -256,7 +264,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
@@ -270,10 +278,12 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   eventBus,
      * });
      *
-     * const listener: Listener<CacheEvents> = event => {
+     * const listener: EventListener<CacheEvents> = event => {
      *   console.log(event);
      * };
+     * await cache.addListener(KeyAddedCacheEvent, listener);
      * await cache.removeListener(KeyAddedCacheEvent, listener);
+     * await cache.add("a", 1);
      * ```
      */
     removeListener<TEventClass extends EventClass<CacheEvents>>(
@@ -284,8 +294,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     /**
-     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * You can listen to different events of <i>Cache</i> class instance.
+     *
+     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -293,7 +305,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
@@ -307,10 +319,12 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   eventBus,
      * });
      *
-     * const listener: Listener<CacheEvents> = event => {
+     * const listener: EventListener<CacheEvents> = event => {
      *   console.log(event);
      * };
+     * await cache.addListenerMany([KeyAddedCacheEvent], listener);
      * await cache.removeListenerMany(KeyAddedCacheEvent, listener);
+     * await cache.add("a", 1);
      * ```
      */
     removeListenerMany<TEventClass extends EventClass<CacheEvents>>(
@@ -321,8 +335,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     /**
-     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * You can listen to different events of <i>Cache</i> class instance.
+     *
+     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -330,7 +346,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
@@ -344,10 +360,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   eventBus,
      * });
      *
-     * const listener: Listener<CacheEvents> = event => {
+     * const listener: EventListener<CacheEvents> = event => {
      *   console.log(event);
      * };
      * await cache.listenOnce(KeyAddedCacheEvent, listener);
+     * await cache.add("a", 1);
      * ```
      */
     listenOnce<TEventClass extends EventClass<CacheEvents>>(
@@ -358,8 +375,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     /**
-     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * You can listen to different events of <i>Cache</i> class instance.
+     *
+     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -367,7 +386,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
@@ -381,10 +400,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   eventBus,
      * });
      *
-     * const listener: Listener<CacheEvents> = event => {
+     * const listener: EventListener<CacheEvents> = event => {
      *   console.log(event);
      * };
      * const unsubscribe = await cache.subscribe(KeyAddedCacheEvent, listener);
+     * await cache.add("a", 1);
      * await unsubscribe();
      * ```
      */
@@ -396,8 +416,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     /**
-     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * You can listen to different events of <i>Cache</i> class instance.
+     *
+     * Refer to <i>{@link CacheEvents}</i>, to se all events dispatched by <i>Cache</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
@@ -405,7 +427,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
@@ -419,10 +441,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   eventBus,
      * });
      *
-     * const listener: Listener<CacheEvents> = event => {
+     * const listener: EventListener<CacheEvents> = event => {
      *   console.log(event);
      * };
      * const unsubscribe = await cache.subscribeMany([KeyAddedCacheEvent], listener);
+     * await cache.add("a", 1);
      * await unsubscribe();
      * ```
      */
