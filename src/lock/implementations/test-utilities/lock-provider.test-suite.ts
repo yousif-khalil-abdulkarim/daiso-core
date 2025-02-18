@@ -227,8 +227,8 @@ export function lockProviderTestSuite(
                         return "a";
                     },
                     {
-                        time: TimeSpan.fromMilliseconds(1),
-                        interval: TimeSpan.fromMilliseconds(1),
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
                     },
                 );
 
@@ -249,8 +249,8 @@ export function lockProviderTestSuite(
                         return "a";
                     },
                     {
-                        time: TimeSpan.fromMilliseconds(1),
-                        interval: TimeSpan.fromMilliseconds(1),
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
                     },
                 );
 
@@ -270,8 +270,8 @@ export function lockProviderTestSuite(
                         return "a";
                     }),
                     {
-                        time: TimeSpan.fromMilliseconds(1),
-                        interval: TimeSpan.fromMilliseconds(1),
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
                     },
                 );
 
@@ -395,8 +395,8 @@ export function lockProviderTestSuite(
                 });
 
                 const result = await lock.acquireBlocking({
-                    time: TimeSpan.fromMilliseconds(1),
-                    interval: TimeSpan.fromMilliseconds(1),
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
                 });
 
                 expect(result).toBe(true);
@@ -1025,8 +1025,8 @@ export function lockProviderTestSuite(
                             await delay(TTL);
                         },
                         {
-                            time: TimeSpan.fromMilliseconds(1),
-                            interval: TimeSpan.fromMilliseconds(1),
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
                     await delay(TTL);
@@ -1058,8 +1058,8 @@ export function lockProviderTestSuite(
                             await delay(TTL);
                         },
                         {
-                            time: TimeSpan.fromMilliseconds(1),
-                            interval: TimeSpan.fromMilliseconds(1),
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
                     await delay(TTL);
@@ -1089,8 +1089,8 @@ export function lockProviderTestSuite(
                             await delay(TTL);
                         },
                         {
-                            time: TimeSpan.fromMilliseconds(1),
-                            interval: TimeSpan.fromMilliseconds(1),
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
                     await delay(TTL);
@@ -1249,8 +1249,8 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquireBlocking({
-                        time: TimeSpan.fromMilliseconds(1),
-                        interval: TimeSpan.fromMilliseconds(1),
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
                     });
                     await delay(TTL);
 
@@ -1270,8 +1270,8 @@ export function lockProviderTestSuite(
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquireBlocking({
-                        time: TimeSpan.fromMilliseconds(1),
-                        interval: TimeSpan.fromMilliseconds(1),
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
                     });
                     const unsubscribe = await lock.subscribe(
                         KeyAlreadyAcquiredLockEvent,
@@ -1281,8 +1281,8 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquireBlocking({
-                        time: TimeSpan.fromMilliseconds(1),
-                        interval: TimeSpan.fromMilliseconds(1),
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
                     });
                     await delay(TTL);
 
@@ -1699,8 +1699,8 @@ export function lockProviderTestSuite(
                             await delay(TTL);
                         },
                         {
-                            time: TimeSpan.fromMilliseconds(1),
-                            interval: TimeSpan.fromMilliseconds(1),
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
                     await delay(TTL);
@@ -1732,8 +1732,8 @@ export function lockProviderTestSuite(
                             await delay(TTL);
                         },
                         {
-                            time: TimeSpan.fromMilliseconds(1),
-                            interval: TimeSpan.fromMilliseconds(1),
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
                     await delay(TTL);
@@ -1763,8 +1763,8 @@ export function lockProviderTestSuite(
                             await delay(TTL);
                         },
                         {
-                            time: TimeSpan.fromMilliseconds(1),
-                            interval: TimeSpan.fromMilliseconds(1),
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
                     await delay(TTL);
@@ -2318,8 +2318,8 @@ export function lockProviderTestSuite(
                     return "a";
                 },
                 {
-                    time: TimeSpan.fromMilliseconds(1),
-                    interval: TimeSpan.fromMilliseconds(1),
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
                 },
             );
 
@@ -2383,8 +2383,8 @@ export function lockProviderTestSuite(
                 owner: ownerA,
             });
             const resultA = await lockA.acquireBlocking({
-                time: TimeSpan.fromMilliseconds(1),
-                interval: TimeSpan.fromMilliseconds(1),
+                time: TimeSpan.fromMilliseconds(5),
+                interval: TimeSpan.fromMilliseconds(5),
             });
 
             const ownerB = "c";
