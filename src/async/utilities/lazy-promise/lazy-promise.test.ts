@@ -7,6 +7,7 @@ import {
     RetryAsyncError,
     TimeoutAsyncError,
 } from "@/async/async.errors.js";
+import { delay } from "@/async/utilities/_module.js";
 
 describe("class: LazyPromise", () => {
     describe("static method: wrapFn", () => {
@@ -18,8 +19,7 @@ describe("class: LazyPromise", () => {
             const wrappedTestFn = LazyPromise.wrapFn(add);
             expect(await wrappedTestFn(1, 1)).toBe(2);
         });
-        // eslint-disable-next-line @typescript-eslint/require-await
-        test("Should return instance of LazyPromise", async () => {
+        test("Should return instance of LazyPromise", () => {
             // eslint-disable-next-line @typescript-eslint/require-await
             async function add(a: number, b: number) {
                 return a + b;
@@ -221,6 +221,55 @@ describe("class: LazyPromise", () => {
             expect(hasExecuted).toBe(false);
             promise.then();
             expect(hasExecuted).toBe(true);
+        });
+        test("Should execute onSucces callback when no error occurs", async () => {
+            const value = "a";
+            const promise = new LazyPromise(() => Promise.resolve(value));
+            let result: string | null = null;
+            promise.defer({
+                onSucces: (value) => {
+                    result = value;
+                },
+            });
+            await delay(TimeSpan.fromMilliseconds(1));
+            expect(result).toBe(value);
+        });
+        test("Should execute onError callback when error occurs", async () => {
+            const error = new Error("Message error");
+            const promise = new LazyPromise(() => Promise.reject(error));
+            let result: Error | null = null;
+            promise.defer({
+                onError: (error) => {
+                    result = error as Error;
+                },
+            });
+            await delay(TimeSpan.fromMilliseconds(1));
+            expect(result).toEqual(error);
+            expect(result).toBeInstanceOf(Error);
+        });
+        test("Should execute onFinally callback when no error occurs", async () => {
+            const promise = new LazyPromise(() => Promise.resolve("a"));
+            let result = false;
+            promise.defer({
+                onFinally: () => {
+                    result = true;
+                },
+            });
+            await delay(TimeSpan.fromMilliseconds(1));
+            expect(result).toBe(true);
+        });
+        test("Should execute onFinally callback when error occurs", async () => {
+            const promise = new LazyPromise(() =>
+                Promise.reject(new Error("Message error")),
+            );
+            let result = false;
+            promise.defer({
+                onFinally: () => {
+                    result = true;
+                },
+            });
+            await delay(TimeSpan.fromMilliseconds(1));
+            expect(result).toBe(true);
         });
     });
 });
