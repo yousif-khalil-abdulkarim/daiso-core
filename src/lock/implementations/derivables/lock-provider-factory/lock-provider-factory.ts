@@ -79,10 +79,22 @@ export type LockProviderFactorySettings<TAdapters extends string> = {
     defaultTtl?: TimeSpan | null;
 
     /**
+     * The default refresh time used in the <i>{@link ILock}</i> <i>acquireBlocking</i> and <i>runBlocking</i> methods.
+     * @default {TimeSpan.fromSeconds(1)}
+     */
+    defaultBlockingInterval?: TimeSpan;
+
+    /**
+     * The default refresh time used in the <i>{@link ILock}</i> <i>acquireBlocking</i> and <i>runBlocking</i> methods.
+     * @default {TimeSpan.fromMinutes(1)}
+     */
+    defaultBlockingTime?: TimeSpan;
+
+    /**
      * The default refreshtime used in the <i>{@link ILock}</i> <i>extend</i> method.
      * @default TimeSpan.fromMinutes(5);`
      */
-    defaultExtendTime?: TimeSpan;
+    defaultRefreshTime?: TimeSpan;
 
     /**
      * The default retry attempt to use in the returned <i>LazyPromise</i>.
@@ -132,7 +144,9 @@ export class LockProviderFactory<TAdapters extends string>
     private readonly createOwnerId?: () => string;
     private readonly eventBus?: IGroupableEventBus<any>;
     private readonly defaultTtl?: TimeSpan | null;
-    private readonly defaultExtendTime?: TimeSpan;
+    private readonly defaultBlockingInterval?: TimeSpan;
+    private readonly defaultBlockingTime?: TimeSpan;
+    private readonly defaultRefreshTime?: TimeSpan;
     private readonly retryAttempts?: number | null;
     private readonly backoffPolicy?: BackoffPolicy | null;
     private readonly retryPolicy?: RetryPolicy | null;
@@ -179,7 +193,9 @@ export class LockProviderFactory<TAdapters extends string>
             createOwnerId,
             eventBus,
             defaultTtl,
-            defaultExtendTime,
+            defaultBlockingInterval,
+            defaultBlockingTime,
+            defaultRefreshTime,
             retryAttempts,
             backoffPolicy,
             retryPolicy,
@@ -193,7 +209,9 @@ export class LockProviderFactory<TAdapters extends string>
         this.createOwnerId = createOwnerId;
         this.eventBus = eventBus;
         this.defaultTtl = defaultTtl;
-        this.defaultExtendTime = defaultExtendTime;
+        this.defaultBlockingInterval = defaultBlockingInterval;
+        this.defaultBlockingTime = defaultBlockingTime;
+        this.defaultRefreshTime = defaultRefreshTime;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
@@ -225,7 +243,9 @@ export class LockProviderFactory<TAdapters extends string>
                 backoffPolicy: this.backoffPolicy,
                 retryPolicy: this.retryPolicy,
                 timeout: this.timeout,
-                defaultRefreshTime: this.defaultExtendTime,
+                defaultBlockingInterval: this.defaultBlockingInterval,
+                defaultBlockingTime: this.defaultBlockingTime,
+                defaultRefreshTime: this.defaultRefreshTime,
                 createOwnerId: this.createOwnerId,
             });
             cacheRecord[key] = lockProvider;
