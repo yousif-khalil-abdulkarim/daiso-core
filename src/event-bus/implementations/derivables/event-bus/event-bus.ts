@@ -210,7 +210,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
      *
-     * const listener: Listener<AddEvent> = event => {
+     * const listener: EventListener<AddEvent> = event => {
      *   console.log(event);
      * }
      * await eventBus.addListener(AddEvent, listener);
@@ -249,7 +249,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
      *
-     * const listener: Listener<AddEvent> = event => {
+     * const listener: EventListener<AddEvent> = event => {
      *   console.log(event);
      * }
      * await eventBus.removeListener(AddEvent, listener);
@@ -290,7 +290,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
      * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
      *
-     * const listener: Listener<AddEvent | SubEvent> = event => {
+     * const listener: EventListener<AddEvent | SubEvent> = event => {
      *   console.log(event)
      * }
      * await eventBus.addListenerMany([AddEvent, SubEvent], listener);
@@ -327,7 +327,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
      * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
      *
-     * const listener: Listener<AddEvent | SubEvent> = event => {
+     * const listener: EventListener<AddEvent | SubEvent> = event => {
      *   console.log(event);
      * }
      * await eventBus.removeListenerMany([AddEvent, SubEvent], listener);
@@ -363,7 +363,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
      *
-     * const listener: Listener<AddEvent> = event => {
+     * const listener: EventListener<AddEvent> = event => {
      *   console.log(event);
      * }
      * await eventBus.listenOnce(AddEvent, listener);

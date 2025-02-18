@@ -18,6 +18,7 @@ The library provides modular solutions for the essential features needed in mode
 - EventBus component with support for pluggable adapters.
 
 ### In the future the following components will be added:
+- Command bus
 - Semaphore component
 - SharedLock (ReaderWriterLock) component
 - RateLimter component
@@ -25,7 +26,7 @@ The library provides modular solutions for the essential features needed in mode
 - MessageQueue component
 - TaskScheduler component
 - Notification component
-- Abstract FileStorage component 
+- Abstract file system component 
 
 This library is heavily inspired laravel but built in modular way where you can choose which part to use.
 
