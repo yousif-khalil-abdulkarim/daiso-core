@@ -21,12 +21,12 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 
 /**
- * The <i>ICacheListener</i> contract defines a way for listening <i>{@link ICache}</i> operations.
+ * The <i>ICacheListenable</i> contract defines a way for listening <i>{@link ICache}</i> operations.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
  */
-export type ICacheListener<TType = unknown> = IEventListenable<
+export type ICacheListenable<TType = unknown> = IEventListenable<
     CacheEvents<TType>
 >;
 
@@ -50,7 +50,7 @@ export type WithTtlValue<TType> = {
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
  */
-export type ICache<TType = unknown> = ICacheListener & {
+export type ICache<TType = unknown> = ICacheListenable & {
     /**
      * The <i>exists</i> method returns true when <i>key</i> is found otherwise false will be returned.
      */
