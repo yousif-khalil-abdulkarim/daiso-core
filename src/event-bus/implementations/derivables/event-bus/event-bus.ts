@@ -214,6 +214,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      *   console.log(event);
      * }
      * await eventBus.addListener(AddEvent, listener);
+     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
      * ```
      */
     addListener<TEventClass extends EventClass<TEvents>>(
@@ -252,6 +253,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * const listener: EventListener<AddEvent> = event => {
      *   console.log(event);
      * }
+     * await eventBus.addListener(AddEvent, listener);
+     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
      * await eventBus.removeListener(AddEvent, listener);
      * ```
      */
@@ -294,6 +297,10 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      *   console.log(event)
      * }
      * await eventBus.addListenerMany([AddEvent, SubEvent], listener);
+     * await eventBus.dispatchMany([
+     *   new AddEvent({ a: 1, b: 2 }),
+     *   new SubEvent({ c: 1, d: 2 }),
+     * ]);
      * ```
      */
     addListenerMany<TEventClass extends EventClass<TEvents>>(
@@ -330,6 +337,11 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * const listener: EventListener<AddEvent | SubEvent> = event => {
      *   console.log(event);
      * }
+     * await eventBus.addListenerMany([AddEvent, SubEvent], listener);
+     * await eventBus.dispatchMany([
+     *   new AddEvent({ a: 1, b: 2 }),
+     *   new SubEvent({ c: 1, d: 2 }),
+     * ]);
      * await eventBus.removeListenerMany([AddEvent, SubEvent], listener);
      * ```
      */
@@ -363,10 +375,11 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
      *
-     * const listener: EventListener<AddEvent> = event => {
+     * await eventBus.listenOnce(AddEvent, event => {
      *   console.log(event);
-     * }
-     * await eventBus.listenOnce(AddEvent, listener);
+     * });
+     *
+     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
      * ```
      */
     listenOnce<TEventClass extends EventClass<TEvents>>(
@@ -394,6 +407,42 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
+     *
+     * const eventBus: IGroupableEventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     *
+     * eventBus.asPromise(AddEvent).then(event => {
+     *   console.log(event);
+     * });
+     *
+     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
+     * ```
+     */
+    asPromise<TEventClass extends EventClass<TEvents>>(
+        event: TEventClass,
+    ): LazyPromise<EventInstance<TEventClass>> {
+        return new LazyPromise(
+            () =>
+                new Promise<EventInstance<TEventClass>>((resolve, reject) => {
+                    this.listenOnce(event, resolve).then(
+                        (event) => event,
+                        // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
+                        reject,
+                    );
+                }),
+        );
+    }
+
+    /**
+     * @example
+     * ```ts
+     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
@@ -405,6 +454,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * const unsubscribe = await eventBus.subscribe(AddEvent, event => {
      *   console.log(event);
      * });
+     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
      * await unsubscribe();
      * ```
      */
@@ -433,6 +483,10 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * const unsubscribe = await eventBus.subscribeMany([AddEvent, SubEvent], event => {
      *   console.log(event);
      * });
+     * await eventBus.dispatchMany([
+     *   new AddEvent({ a: 1, b: 2 }),
+     *   new SubEvent({ c: 1, d: 2 }),
+     * ]);
      * await unsubscribe();
      * ```
      */
@@ -466,15 +520,9 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
      * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
      *
-     * await eventBus.dispatch([
-     *   new AddEvent({
-     *     a: 1,
-     *     b: 2,
-     *   }),
-     *   new SubEvent({
-     *     c: 4,
-     *     d: 3
-     *   })
+     * await eventBus.dispatchMany([
+     *   new AddEvent({ a: 1, b: 2 }),
+     *   new SubEvent({ c: 1, d: 2 }),
      * ]);
      * ```
      */
@@ -510,15 +558,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
      *
-     * await eventBus.dispatch(
-     *   new AddEvent({
-     *     a: 1,
-     *     b: 2,
-     *   })
-     * );
-     * ```
+     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
      * ```
      */
     dispatch(event: TEvents): LazyPromise<void> {

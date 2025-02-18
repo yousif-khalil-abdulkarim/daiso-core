@@ -109,8 +109,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         c: number;
         d: number;
     }> {}
-    serde.registerEvent(AddEvent);
-    serde.registerEvent(SubEvent);
+    serde.registerEvent(AddEvent).registerEvent(SubEvent);
 
     let eventBusA: IEventBus<AddEvent | SubEvent>;
     let eventBusB: IEventBus<AddEvent | SubEvent>;
@@ -1194,6 +1193,31 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
             });
         });
+        describe("method: asPromise", () => {
+            test("Should be null when listener added and event is not triggered", () => {
+                let result: AddEvent | null = null;
+                const listener: EventListenerFn<AddEvent> = (event) => {
+                    result = event;
+                };
+                eventBusA.asPromise(AddEvent).then(listener);
+                expect(result).toBeNull();
+            });
+            test("Should be AddEvent when listener added and event is triggered", async () => {
+                let result: AddEvent | null = null;
+                const listener: EventListenerFn<AddEvent> = (event) => {
+                    result = event;
+                };
+                eventBusA.asPromise(AddEvent).then(listener);
+                const event: AddEvent = new AddEvent({
+                    a: 1,
+                    b: 2,
+                });
+                await eventBusA.dispatch(event);
+                await delay(TTL);
+                expect(result).toEqual(event);
+                expect(result).toBeInstanceOf(AddEvent);
+            });
+        });
     });
     describe("Group tests:", () => {
         test("method: addListener / dispatch", async () => {
@@ -1212,6 +1236,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 b: 2,
             });
             await eventBusA.dispatch(event);
+            await delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1233,6 +1258,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 b: 2,
             });
             await eventBusA.dispatch(event);
+            await delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1257,6 +1283,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
+            await delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1281,6 +1308,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
+            await delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1305,6 +1333,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
+            await delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1332,6 +1361,51 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
+            await delay(TTL);
+
+            expect(result_a).toEqual(event);
+            expect(result_a).toBeInstanceOf(AddEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: listenOnce", async () => {
+            let result_a: AddEvent | null = null;
+            await eventBusA.listenOnce(AddEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: AddEvent | null = null;
+            await eventBusB.listenOnce(AddEvent, (event) => {
+                result_b = event;
+            });
+
+            const event = new AddEvent({
+                a: 1,
+                b: 2,
+            });
+            await eventBusA.dispatch(event);
+            await delay(TTL);
+
+            expect(result_a).toEqual(event);
+            expect(result_a).toBeInstanceOf(AddEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: asPromise", async () => {
+            let result_a: AddEvent | null = null;
+            eventBusA.asPromise(AddEvent).then((event) => {
+                result_a = event;
+            });
+
+            let result_b: AddEvent | null = null;
+            eventBusB.asPromise(AddEvent).then((event) => {
+                result_b = event;
+            });
+
+            const event = new AddEvent({
+                a: 1,
+                b: 2,
+            });
+            await eventBusA.dispatch(event);
+            await delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);

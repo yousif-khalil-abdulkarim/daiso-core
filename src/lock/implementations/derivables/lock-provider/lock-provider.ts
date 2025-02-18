@@ -486,6 +486,12 @@ export class LockProvider implements IGroupableLockProvider {
         return this.lockProviderEventBus.listenOnce(event, listener);
     }
 
+    asPromise<TEventClass extends EventClass<LockEvents>>(
+        event: TEventClass,
+    ): LazyPromise<EventInstance<TEventClass>> {
+        return this.lockProviderEventBus.asPromise(event);
+    }
+
     /**
      * You can listen to different events of all locks created by <i>LockProvider</i> class instance.
      *
