@@ -50,6 +50,7 @@ export type LockProviderTestSuiteSettings = {
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
  * @group Utilities
+ * @example
  * ```ts
  * import { beforeEach, describe, expect, test } from "vitest";
  * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";

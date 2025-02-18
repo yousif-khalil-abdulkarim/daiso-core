@@ -233,16 +233,16 @@ export class LockProvider implements IGroupableLockProvider {
     }
 
     /**
-     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     * You can listen to different events of all locks created by <i>LockProvider</i> class instance.
      *
-     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>LockProvider</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -260,10 +260,12 @@ export class LockProvider implements IGroupableLockProvider {
      *   eventBus,
      * });
      *
-     * const listener: Listener<LockEvents> = event => {
+     * const listener: EventListener<LockEvents> = event => {
      *   console.log(event);
      * }
      * await lockProvider.addListener(KeyAcquiredLockEvent, listener);
+     * await lockProvider.removeListener(KeyAcquiredLockEvent, listener);
+     * await lockProvider.create("a").acquire();
      * ```
      */
     addListener<TEventClass extends EventClass<LockEvents>>(
@@ -274,16 +276,16 @@ export class LockProvider implements IGroupableLockProvider {
     }
 
     /**
-     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     * You can listen to different events of all locks created by <i>LockProvider</i> class instance.
      *
-     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>LockProvider</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -301,10 +303,12 @@ export class LockProvider implements IGroupableLockProvider {
      *   eventBus,
      * });
      *
-     * const listener: Listener<LockEvents> = event => {
+     * const listener: EventListener<LockEvents> = event => {
      *   console.log(event);
      * }
      * await lockProvider.addListenerMany([KeyAcquiredLockEvent], listener);
+     * await lockProvider.removeListenerMany([KeyAcquiredLockEvent], listener);
+     * await lockProvider.create("a").acquire();
      * ```
      */
     addListenerMany<TEventClass extends EventClass<LockEvents>>(
@@ -315,16 +319,16 @@ export class LockProvider implements IGroupableLockProvider {
     }
 
     /**
-     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     * You can listen to different events of all locks created by <i>LockProvider</i> class instance.
      *
-     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>LockProvider</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -342,10 +346,12 @@ export class LockProvider implements IGroupableLockProvider {
      *   eventBus,
      * });
      *
-     * const listener: Listener<LockEvents> = event => {
+     * const listener: EventListener<LockEvents> = event => {
      *   console.log(event);
      * }
+     * await lockProvider.addListener(KeyAcquiredLockEvent, listener);
      * await lockProvider.removeListener(KeyAcquiredLockEvent, listener);
+     * await lockProvider.create("a").acquire();
      * ```
      */
     removeListener<TEventClass extends EventClass<LockEvents>>(
@@ -356,16 +362,16 @@ export class LockProvider implements IGroupableLockProvider {
     }
 
     /**
-     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     * You can listen to different events of all locks created by <i>LockProvider</i> class instance.
      *
-     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>LockProvider</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -383,10 +389,12 @@ export class LockProvider implements IGroupableLockProvider {
      *   eventBus,
      * });
      *
-     * const listener: Listener<LockEvents> = event => {
+     * const listener: EventListener<LockEvents> = event => {
      *   console.log(event);
      * }
+     * await lockProvider.addListenerMany(KeyAcquiredLockEvent, listener);
      * await lockProvider.removeListenerMany([KeyAcquiredLockEvent], listener);
+     * await lockProvider.create("a").acquire();
      * ```
      */
     removeListenerMany<TEventClass extends EventClass<LockEvents>>(
@@ -397,16 +405,16 @@ export class LockProvider implements IGroupableLockProvider {
     }
 
     /**
-     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     * You can listen to different events of all locks created by <i>LockProvider</i> class instance.
      *
-     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>LockProvider</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -424,10 +432,11 @@ export class LockProvider implements IGroupableLockProvider {
      *   eventBus,
      * });
      *
-     * const listener: Listener<LockEvents> = event => {
+     * const listener: EventListener<LockEvents> = event => {
      *   console.log(event);
      * }
      * await lockProvider.listenOnce(KeyAcquiredLockEvent, listener);
+     * await lockProvider.create("a").acquire();
      * ```
      */
     listenOnce<TEventClass extends EventClass<LockEvents>>(
@@ -438,16 +447,16 @@ export class LockProvider implements IGroupableLockProvider {
     }
 
     /**
-     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     * You can listen to different events of all locks created by <i>LockProvider</i> class instance.
      *
-     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>LockProvider</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -465,10 +474,11 @@ export class LockProvider implements IGroupableLockProvider {
      *   eventBus,
      * });
      *
-     * const listener: Listener<LockEvents> = event => {
+     * const listener: EventListener<LockEvents> = event => {
      *   console.log(event);
      * }
      * const unsubscribe = await lockProvider.subscribe(KeyAcquiredLockEvent, listener);
+     * await lockProvider.create("a").acquire();
      * await unsubscribe();
      * ```
      */
@@ -480,16 +490,16 @@ export class LockProvider implements IGroupableLockProvider {
     }
 
     /**
-     * You listen to different events of all locks created by <i>LockProvider</i> class.
+     * You can listen to different events of all locks created by <i>LockProvider</i> class instance.
      *
-     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>Cache</i> class.
-     * Refer to <i>{@link IEventListenable}</i> ford details on how the method works.
+     * Refer to <i>{@link LockEvents}</i>, to se all events dispatched by <i>LockProvider</i> class instance.
+     * Refer to <i>{@link IEventListenable}</i> for details on how the method works.
      * @example
      * ```ts
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { Listener } from "@daiso-tech/core/event-bus/contracts";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -507,10 +517,11 @@ export class LockProvider implements IGroupableLockProvider {
      *   eventBus,
      * });
      *
-     * const listener: Listener<LockEvents> = event => {
+     * const listener: EventListener<LockEvents> = event => {
      *   console.log(event);
      * }
      * const unsubscribe = await lockProvider.subscribeMany([KeyAcquiredLockEvent], listener);
+     * await lockProvider.create("a").acquire();
      * await unsubscribe();
      * ```
      */
@@ -553,7 +564,7 @@ export class LockProvider implements IGroupableLockProvider {
      * });
      *
      * // You can provide a custom owner. By default the owner will be unique random value.
-     * const lockB = lockProvider.create("b", {
+     * const lockC = lockProvider.create("b", {
      *   owner: "user-1"
      * });
      * ```
