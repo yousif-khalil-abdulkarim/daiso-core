@@ -49,7 +49,7 @@ import type {
     IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 
 /**
  *
@@ -60,7 +60,14 @@ export type CacheSettings = {
     adapter: ICacheAdapter<any>;
 
     /**
-     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
+     * @default
+     * ```ts
+     * new EventBus({
+     *   adapter: new MemoryEventBusAdapter({
+     *     rootGroup: "@global"
+     *   })
+     * })
+     * ```
      */
     eventBus?: IGroupableEventBus<any>;
 
@@ -122,20 +129,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * @example
      * ```ts
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      * ```
      */
@@ -143,7 +143,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         const {
             adapter,
             eventBus: groupdEventBus = new EventBus({
-                adapter: new NoOpEventBusAdapter(),
+                adapter: new MemoryEventBusAdapter({
+                    rootGroup: "@global",
+                }),
             }),
             defaultTtl = null,
             retryAttempts = null,
@@ -182,19 +184,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const listener: EventListener<CacheEvents> = event => {
@@ -222,20 +218,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
      * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const listener: EventListener<CacheEvents> = event => {
@@ -263,19 +253,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const listener: EventListener<CacheEvents> = event => {
@@ -304,19 +288,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const listener: EventListener<CacheEvents> = event => {
@@ -345,19 +323,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const listener: EventListener<CacheEvents> = event => {
@@ -385,19 +357,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const listener: EventListener<CacheEvents> = event => {
@@ -426,19 +392,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const listener: EventListener<CacheEvents> = event => {
@@ -463,17 +423,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * // Will print "@global"
@@ -504,17 +458,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * // Will print "@global"
@@ -922,17 +870,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOr("a", -1);
@@ -947,17 +889,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOr("a", () => -1);
@@ -972,17 +908,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOr("a", async () => -1);
@@ -997,17 +927,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOr("a", new LazyPromise(async () => -1));
@@ -1032,17 +956,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOrMany({ a: -1 });
@@ -1057,17 +975,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOrMany({ a: () => -1 });
@@ -1082,17 +994,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOrMany({ a: async () => -1 });
@@ -1107,17 +1013,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOrMany({ a: new LazyPromise(async () => - 1) });
@@ -1160,17 +1060,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * await cache.add("a", 1);
@@ -1309,17 +1203,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result1 = await cache.getAndRemove("a");
@@ -1355,17 +1243,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOrAdd("a", -1);
@@ -1380,17 +1262,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOrAdd("a", () => -1);
@@ -1405,17 +1281,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOrAdd("a", async () => -1);
@@ -1430,17 +1300,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const cache: IGroupableCache = new Cache({
      *   adapter: new MemoryCacheAdapter({
      *     rootGroup: "@global"
      *   }),
-     *   eventBus,
      * });
      *
      * const result = await cache.getOrAdd("a", new LazyPromise(async () => -1));

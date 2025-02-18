@@ -59,14 +59,21 @@ export type CacheFactorySettings<TAdapters extends string = string> = {
     defaultAdapter?: NoInfer<TAdapters>;
 
     /**
-     * You can decide the default ttl value. If null is passed then no ttl will be used by default.
+     * You can decide the default ttl value. If null is passed then no ttl will be used and that's the default.
      */
     defaultTtl?: TimeSpan;
 
     /**
-     * In order to listen to events of <i>{@link Cache}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
+     * @default
+     * ```ts
+     * new EventBus({
+     *   adapter: new MemoryEventBusAdapter({
+     *     rootGroup: "@global"
+     *   })
+     * })
+     * ```
      */
-    eventBus: IGroupableEventBus<any>;
+    eventBus?: IGroupableEventBus<any>;
 
     /**
      * The default retry attempt to use in the returned <i>LazyPromise</i>.
@@ -110,7 +117,7 @@ export class CacheFactory<TAdapters extends string = string>
 {
     private readonly cacheRecord = {} as CacheRecord<TAdapters>;
     private readonly defaultAdapter?: TAdapters;
-    private readonly eventBus: IGroupableEventBus<any>;
+    private readonly eventBus?: IGroupableEventBus<any>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly retryAttempts?: number | null;
     private readonly backoffPolicy?: BackoffPolicy | null;
@@ -125,15 +132,10 @@ export class CacheFactory<TAdapters extends string = string>
      * ```ts
      * import { CacheFactory } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter, RedisCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import Redis from "ioredis"
      *
-     * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
      *   serde,
@@ -148,7 +150,6 @@ export class CacheFactory<TAdapters extends string = string>
      *     }),
      *   },
      *   defaultAdapter: "memory",
-     *   eventBus,
      * });
      * ```
      */
@@ -211,15 +212,10 @@ export class CacheFactory<TAdapters extends string = string>
      * ```ts
      * import { CacheFactory } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter, RedisCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import Redis from "ioredis"
      *
-     * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
      *   serde,

@@ -68,31 +68,50 @@ export type LockProviderFactorySettings<TAdapters extends string> = {
     createOwnerId?: () => string;
 
     /**
-     * In order to listen to events of <i>{@link LockProvider}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
+     * @default
+     * ```ts
+     * new EventBus({
+     *   adapter: new MemoryEventBusAdapter({
+     *     rootGroup: "@global"
+     *   })
+     * })
+     * ```
      */
     eventBus?: IGroupableEventBus<any>;
 
     /**
      * You can decide the default ttl value for <i>{@link ILock}</i> expiration. If null is passed then no ttl will be used by default.
-     * @default TimeSpan.fromMinutes(5);
+     * @default
+     * ```ts
+     * TimeSpan.fromMinutes(5);
+     * ```
      */
     defaultTtl?: TimeSpan | null;
 
     /**
      * The default refresh time used in the <i>{@link ILock}</i> <i>acquireBlocking</i> and <i>runBlocking</i> methods.
-     * @default {TimeSpan.fromSeconds(1)}
+     * @default
+     * ```ts
+     * TimeSpan.fromSeconds(1);
+     * ```
      */
     defaultBlockingInterval?: TimeSpan;
 
     /**
      * The default refresh time used in the <i>{@link ILock}</i> <i>acquireBlocking</i> and <i>runBlocking</i> methods.
-     * @default {TimeSpan.fromMinutes(1)}
+     * @default
+     * ```ts
+     * TimeSpan.fromMinutes(1)
+     * ```
      */
     defaultBlockingTime?: TimeSpan;
 
     /**
      * The default refreshtime used in the <i>{@link ILock}</i> <i>extend</i> method.
-     * @default TimeSpan.fromMinutes(5);`
+     * @default
+     * ```ts
+     * TimeSpan.fromMinutes(5);
+     * ```
      */
     defaultRefreshTime?: TimeSpan;
 
