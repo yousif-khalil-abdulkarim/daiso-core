@@ -68,7 +68,7 @@ export type EventListener<TEvent> =
  */
 export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     /**
-     * The <i>addListener</i> method is used for listening to <i>{@link BaseEvent}</i>.
+     * The <i>addListener</i> method is used for listening to a <i>{@link BaseEvent}</i>.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
@@ -88,7 +88,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>removeListener</i> method is used for stop listening to <i>{@link BaseEvent}</i>.
+     * The <i>removeListener</i> method is used for stop listening to a <i>{@link BaseEvent}</i>.
      * Removing unadded listener will have no effect and nothing will occur.
      * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
@@ -108,7 +108,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>listenOnce</i> method is used for listening to <i>{@link BaseEvent}</i> once.
+     * The <i>listenOnce</i> method is used for listening to a <i>{@link BaseEvent}</i> once.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     listenOnce<TEventClass extends EventClass<TEvents>>(
@@ -117,7 +117,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>subscribe</i> method is used for listening to <i>{@link BaseEvent}</i> and it returns a cleanup function that removes listener when called.
+     * The <i>subscribe</i> method is used for listening to a <i>{@link BaseEvent}</i> and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
     subscribe<TEventClass extends EventClass<TEvents>>(
