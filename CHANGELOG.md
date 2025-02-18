@@ -1,5 +1,24 @@
 # @daiso-tech/core
 
+## 0.25.0
+
+### Minor Changes
+
+-   a4349e5: Renamed <i>ILockListener</i> contract to <i>ILockListenable</i>.
+-   a4349e5: Renamed <i>ICacheListener</i> contract to <i>ICacheListenable</i>.
+-   92d7dd3: The <i>LockProvider</i> class and <i>LockProviderFactory</i> class uses <i>MemoryEventBusAdapter</i> by default now.
+-   76063a4: Renamed <i>IEventListener</i> contract to <i>IEventListenable</i>.
+-   89aa51e: Added 2 new methods for <i>ILock</i> contract, <i>acquireBlocking</i> and <i>runBlocking</i>.
+    They retry acquiring the lock at a set interval until the timeout is reached."
+-   76063a4: Renamed <i>Listener</i> type to <i>EventListener</i>
+-   76063a4: Enhanced the <i>IEventListenable</i> contract to support both function, object literal and class instance listeners, providing greater flexibility in event handling.
+-   afa57c7: Added new method <i>asPromise</i> to the <I>IEventBus<i>. The <i>asPromise</i> method returns <i>LazyPromise</i> objecet that resolves once the <i>BaseEvent</i> is dispatched.
+
+### Patch Changes
+
+-   57e4bb5: Updated documentation
+-   92d7dd3: The <i>Cache</i> class and <i>CacehFactory</i> class uses <i>MemoryEventBusAdapter</i> by default now.
+
 ## 0.24.0
 
 ### Minor Changes
