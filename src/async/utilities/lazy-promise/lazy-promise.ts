@@ -3,7 +3,7 @@
  */
 
 import type { BackoffPolicy } from "@/async/backof-policies/_module.js";
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { Promisable, TimeSpan } from "@/utilities/_module-exports.js";
 import type { RetryPolicy } from "@/async/utilities/retry/_module.js";
 import { retryOrFail } from "@/async/utilities/retry/_module.js";
 import { timeoutAndFail } from "@/async/utilities/timeout/_module.js";
@@ -20,6 +20,16 @@ import {
     resolveAsyncLazyable,
     type Func,
 } from "@/utilities/_module-exports.js";
+
+/**
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type DeferSettings<TValue> = {
+    onSucces?: (value: TValue) => Promisable<void>;
+    onError?: (error: unknown) => Promisable<void>;
+    onFinally?: () => Promisable<void>;
+};
 
 /**
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.
@@ -329,7 +339,41 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * console.log("Hello");
      * ```
      */
-    defer(): void {
-        this.then();
+    defer(callbacks: DeferSettings<TValue> = {}): void {
+        const { onSucces, onError, onFinally } = callbacks;
+
+        let onSuccesHandler: ((value: TValue) => Promise<TValue>) | undefined;
+        if (onSucces || onFinally) {
+            onSuccesHandler = async (value: TValue): Promise<TValue> => {
+                try {
+                    if (onSucces !== undefined) {
+                        await onSucces(value);
+                    }
+                    return value;
+                } finally {
+                    if (onFinally !== undefined) {
+                        await onFinally();
+                    }
+                }
+            };
+        }
+
+        let onErrorHandler: ((error: unknown) => Promise<unknown>) | undefined;
+        if (onError || onFinally) {
+            onErrorHandler = async (error: unknown): Promise<unknown> => {
+                try {
+                    if (onError !== undefined) {
+                        await onError(error);
+                    }
+                    return error;
+                } finally {
+                    if (onFinally !== undefined) {
+                        await onFinally();
+                    }
+                }
+            };
+        }
+
+        this.then(onSuccesHandler, onErrorHandler);
     }
 }
