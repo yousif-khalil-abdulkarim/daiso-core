@@ -28,40 +28,13 @@ import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-pr
  */
 export type LockSerdeTransformerSettings = {
     adapter: ILockAdapter;
-
-    /**
-     * In order to listen to events of <i>{@link LockProvider}</i> class you must pass in <i>{@link IGroupableEventBus}</i>.
-     */
     eventBus: IGroupableEventBus<any>;
-
-    /**
-     * The default refresh time used in the <i>{@link ILock}</i> <i>extend</i> method.
-     * @default TimeSpan.fromMinutes(5);
-     */
+    defaultBlockingTime: TimeSpan;
+    defaultBlockingInterval: TimeSpan;
     defaultRefreshTime: TimeSpan;
-
-    /**
-     * The default retry attempt to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
     retryAttempts?: number | null;
-
-    /**
-     * The default backof policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
     backoffPolicy?: BackoffPolicy | null;
-
-    /**
-     * The default retry policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
     retryPolicy?: RetryPolicy | null;
-
-    /**
-     * The default timeout to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
     timeout?: TimeSpan | null;
 };
 
@@ -72,6 +45,8 @@ export class LockSerdeTransformer
     implements ISerdeTransformer<Lock, ISerializedLock>
 {
     private readonly adapter: ILockAdapter;
+    private readonly defaultBlockingInterval: TimeSpan;
+    private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
@@ -84,6 +59,8 @@ export class LockSerdeTransformer
     constructor(settings: LockSerdeTransformerSettings) {
         const {
             adapter,
+            defaultBlockingInterval,
+            defaultBlockingTime,
             defaultRefreshTime,
             retryAttempts = null,
             backoffPolicy = null,
@@ -94,6 +71,8 @@ export class LockSerdeTransformer
             }),
         } = settings;
         this.adapter = adapter;
+        this.defaultBlockingInterval = defaultBlockingInterval;
+        this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
@@ -124,10 +103,12 @@ export class LockSerdeTransformer
         }
         const ttl = ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null;
         return new Lock({
+            defaultBlockingInterval: this.defaultBlockingInterval,
+            defaultBlockingTime: this.defaultBlockingTime,
+            defaultRefreshTime: this.defaultRefreshTime,
             lockProviderEventDispatcher: this.lockProviderEventBus,
             lockEventBus: this.eventBus,
             adapter,
-            defaultRefreshTime: this.defaultRefreshTime,
             key,
             owner,
             ttl,

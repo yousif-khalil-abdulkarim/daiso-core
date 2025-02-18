@@ -5,8 +5,9 @@
 import type { LazyPromiseable, Result } from "@/utilities/_module-exports.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import { delay, LazyPromise } from "@/async/_module-exports.js";
 import type {
+    AquireBlockingSettings,
     ILockAdapter,
     LockEvents,
 } from "@/lock/contracts/_module-exports.js";
@@ -61,6 +62,8 @@ export type LockSettings = {
     adapter: ILockAdapter;
     key: string;
     owner: string;
+    defaultBlockingInterval: TimeSpan;
+    defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
     ttl: TimeSpan | null;
     expirationInMs: number | null;
@@ -97,6 +100,8 @@ export class Lock implements ILock {
     private readonly key: string;
     private readonly owner: string;
     private readonly ttl: TimeSpan | null;
+    private readonly defaultBlockingInterval: TimeSpan;
+    private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly lazyPromiseSettings: LockSettings["lazyPromiseSettings"];
     private readonly state: LockState;
@@ -108,6 +113,8 @@ export class Lock implements ILock {
         const {
             lockProviderEventDispatcher,
             lockEventBus,
+            defaultBlockingInterval,
+            defaultBlockingTime,
             defaultRefreshTime,
             adapter,
             key,
@@ -119,6 +126,8 @@ export class Lock implements ILock {
         } = settings;
         this.lockProviderEventDispatcher = lockProviderEventDispatcher;
         this.lockEventBus = lockEventBus.withGroup([adapter.getGroup(), key]);
+        this.defaultBlockingInterval = defaultBlockingInterval;
+        this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
         this.adapter = adapter;
         this.key = key;
@@ -416,6 +425,132 @@ export class Lock implements ILock {
      * const lock = lockProvider.create("a");
      *
      * async function fn(): Promise<void> {
+     *   await lock.runBlocking(async () => {
+     *     console.log("START: ", 1);
+     *     // Let’s pretend we’re doing async database work.
+     *     await delay(TimeSpan.fromSeconds(2));
+     *     console.log("END: ", 2);
+     *   });
+     * }
+     *
+     * await Promise.allSettled([
+     *   fn(),
+     *   fn(),
+     *   fn(),
+     *   fn(),
+     * ]);
+     * ```
+     *
+     * You can also pass an <i>{@link LazyPromise}</i> instead of async function.
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     * import { delay } from "@daiso-tech/core/async";
+     * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const cache: IGroupableCache = new Cache({
+     *   // Let's pretend when the cache adapter increments a key it will occur in 2 async, get the value, increment the value in memory and update the key.
+     *   adapter: new MemoryCacheAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     * await cache.put("a", 0);
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * async function fn(): Promise<void> {
+     *   // The lock will ensure the key will be incremented correctly
+     *   await lock.runBlocking(cache.increment("a", 1));
+     * }
+     *
+     * await Promise.allSettled([
+     *   fn(),
+     *   fn(),
+     *   fn(),
+     *   fn(),
+     * ]);
+     * ```
+     */
+    runBlocking<TValue = void>(
+        asyncFn: LazyPromiseable<TValue>,
+        settings?: AquireBlockingSettings,
+    ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
+        return this.createLayPromise(
+            async (): Promise<Result<TValue, KeyAlreadyAcquiredLockError>> => {
+                if (typeof asyncFn === "function") {
+                    asyncFn = new LazyPromise(asyncFn);
+                }
+                try {
+                    const hasAquired = await this.acquireBlocking(settings);
+                    if (!hasAquired) {
+                        return [
+                            null,
+                            new KeyAlreadyAcquiredLockError(
+                                `Key "${this.key}" already acquired`,
+                            ),
+                        ];
+                    }
+
+                    return [await asyncFn, null];
+                } finally {
+                    await this.release();
+                }
+            },
+        ).setRetryPolicy((error) => error instanceof UnableToAquireLockError);
+    }
+
+    /**
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     * import { delay } from "@daiso-tech/core/async";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * async function fn(): Promise<void> {
      *   // Use try-finally when acquiring a lock to ensure it’s released if an error happens.
      *   try {
      *     const hasAquired = await lock.acquire();
@@ -540,6 +675,79 @@ export class Lock implements ILock {
                     `Key "${this.key}" already acquired`,
                 );
             }
+        });
+    }
+
+    /**
+     * @example
+     * ```ts
+     * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     * import { delay } from "@daiso-tech/core/async";
+     *
+     * const eventBus = new EventBus({
+     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     * });
+     * const serde = new Serde(SuperJsonSerdeAdapter);
+     * const lockProvider: IGroupableLockProvider = new LockProvider({
+     *   serde,
+     *   adapter: new MemoryLockAdapter({
+     *     rootGroup: "@global"
+     *   }),
+     *   eventBus,
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * async function fn(): Promise<void> {
+     *   // Use try-finally when acquiring a lock to ensure it’s released if an error happens.
+     *   try {
+     *     const hasAquired = await lock.acquireBlocking();
+     *     if (!hasAquired) {
+     *       return;
+     *     }
+     *     console.log("START: ", 1);
+     *     // Let’s pretend we’re doing async database work.
+     *     await delay(TimeSpan.fromSeconds(2));
+     *     console.log("END: ", 2);
+     *   }
+     *   finally {
+     *     await lock.release();
+     *   }
+     * }
+     *
+     * await Promise.allSettled([
+     *   fn(),
+     *   fn(),
+     *   fn(),
+     *   fn(),
+     * ]);
+     * ```
+     */
+    acquireBlocking(
+        settings: AquireBlockingSettings = {},
+    ): LazyPromise<boolean> {
+        return new LazyPromise(async () => {
+            const {
+                time = this.defaultBlockingInterval,
+                interval = this.defaultBlockingInterval,
+            } = settings;
+            const endDate = time.toEndDate();
+            while (endDate.getTime() > new Date().getTime()) {
+                const hasAquired = await this.acquire();
+                if (hasAquired) {
+                    return true;
+                }
+                await delay(interval);
+            }
+            return false;
         });
     }
 

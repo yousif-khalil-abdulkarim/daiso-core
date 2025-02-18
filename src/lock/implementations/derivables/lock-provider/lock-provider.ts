@@ -65,13 +65,25 @@ export type LockProviderSettings = {
 
     /**
      * You can decide the default ttl value for <i>{@link ILock}</i> expiration. If null is passed then no ttl will be used by default.
-     * @default TimeSpan.fromMinutes(5);
+     * @default {TimeSpan.fromMinutes(5)}
      */
     defaultTtl?: TimeSpan | null;
 
     /**
+     * The default refresh time used in the <i>{@link ILock}</i> <i>acquireBlocking</i> and <i>runBlocking</i> methods.
+     * @default {TimeSpan.fromSeconds(1)}
+     */
+    defaultBlockingInterval?: TimeSpan;
+
+    /**
+     * The default refresh time used in the <i>{@link ILock}</i> <i>acquireBlocking</i> and <i>runBlocking</i> methods.
+     * @default {TimeSpan.fromMinutes(1)}
+     */
+    defaultBlockingTime?: TimeSpan;
+
+    /**
      * The default refresh time used in the <i>{@link ILock}</i> <i>extend</i> method.
-     * @default TimeSpan.fromMinutes(5);
+     * @default {TimeSpan.fromMinutes(5)}
      */
     defaultRefreshTime?: TimeSpan;
 
@@ -146,6 +158,8 @@ export class LockProvider implements IGroupableLockProvider {
     private readonly createOwnerId: () => string;
     private readonly adapter: ILockAdapter;
     private readonly defaultTtl: TimeSpan;
+    private readonly defaultBlockingInterval: TimeSpan;
+    private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
@@ -184,6 +198,8 @@ export class LockProvider implements IGroupableLockProvider {
             createOwnerId = () => v4(),
             adapter,
             defaultTtl = LockProvider.DEFAULT_TTL,
+            defaultBlockingInterval = TimeSpan.fromSeconds(1),
+            defaultBlockingTime = TimeSpan.fromMinutes(1),
             defaultRefreshTime = LockProvider.DEFAULT_REFRESH_TIME,
             retryAttempts = null,
             backoffPolicy = null,
@@ -202,6 +218,8 @@ export class LockProvider implements IGroupableLockProvider {
         }
         this.serde = serde;
         this.defaultTtl = defaultTtl ?? LockProvider.DEFAULT_TTL;
+        this.defaultBlockingInterval = defaultBlockingInterval;
+        this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
@@ -214,6 +232,8 @@ export class LockProvider implements IGroupableLockProvider {
 
     private registerToSerde(): void {
         const transformer = new LockSerdeTransformer({
+            defaultBlockingInterval: this.defaultBlockingInterval,
+            defaultBlockingTime: this.defaultBlockingTime,
             adapter: this.adapter,
             backoffPolicy: this.backoffPolicy,
             defaultRefreshTime: this.defaultRefreshTime,
@@ -576,6 +596,8 @@ export class LockProvider implements IGroupableLockProvider {
         const { ttl = this.defaultTtl, owner = this.createOwnerId() } =
             settings;
         return new Lock({
+            defaultBlockingInterval: this.defaultBlockingInterval,
+            defaultBlockingTime: this.defaultBlockingTime,
             lockProviderEventDispatcher: this.lockProviderEventBus,
             lockEventBus: this.eventBus,
             adapter: this.adapter,

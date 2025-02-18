@@ -29,6 +29,10 @@ import type { LockEvents } from "@/lock/contracts/lock.events.js";
  */
 export type ILockListener = IEventListenable<LockEvents>;
 
+export type AquireBlockingSettings = {
+    time?: TimeSpan;
+    interval?: TimeSpan;
+};
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
@@ -36,6 +40,7 @@ export type ILockListener = IEventListenable<LockEvents>;
  */
 export type ILock = ILockListener & {
     /**
+     * The <i>run</i> method wraps an async function or <i>{@link LazyPromise}</i> with the <i>acquire</i> and <i>release</i> method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
@@ -44,6 +49,7 @@ export type ILock = ILockListener & {
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
 
     /**
+     * The <i>runOrFail</i> method wraps an async function or <i>{@link LazyPromise}</i> with the <i>acquireOrFail</i> and <i>release</i> method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
@@ -53,12 +59,29 @@ export type ILock = ILockListener & {
     ): LazyPromise<TValue>;
 
     /**
+     * The <i>runBlocking</i> method wraps an async function or <i>{@link LazyPromise}</i> with the <i>acquireBlocking</i> and <i>release</i> method.
+     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
+     * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
+     */
+    runBlocking<TValue = void>(
+        asyncFn: LazyPromiseable<TValue>,
+        settings?: AquireBlockingSettings,
+    ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
+
+    /**
      * The <i>acquire</i> method acquires a lock only if the lock is not already acquired.
-     * Throws an error if a different owner attempts to release the lock.
-     * Returns true if the lock is acquired otherwise true is returned.
+     * Returns true if the lock is acquired otherwise false is returned.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      */
     acquire(): LazyPromise<boolean>;
+
+    /**
+     * The <i>acquireBlocking</i> method acquires a lock only if the lock is not already acquired.
+     * If the lock is acquired, it retries every <i>settings.interval</i> until <i>settings.time</i> is reached.
+     * Returns true if the lock is acquired otherwise false is returned.
+     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
+     */
+    acquireBlocking(settings?: AquireBlockingSettings): LazyPromise<boolean>;
 
     /**
      * The <i>acquireOrFail</i> method acquires a lock only if the lock is not already acquired.
