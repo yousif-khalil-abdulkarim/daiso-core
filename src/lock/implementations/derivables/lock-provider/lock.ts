@@ -1137,6 +1137,12 @@ export class Lock implements ILock {
         return this.lockEventBus.listenOnce(event, listener);
     }
 
+    asPromise<TEventClass extends EventClass<LockEvents>>(
+        event: TEventClass,
+    ): LazyPromise<EventInstance<TEventClass>> {
+        return this.lockEventBus.asPromise(event);
+    }
+
     /**
      * You can listen to different events of the current <i>Lock</i> class instance.
      *

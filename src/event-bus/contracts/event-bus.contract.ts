@@ -117,6 +117,14 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
+     * The <i>asPromise</i> method returns <i>{@link LazyPromise}</i> objecet that resolves once the <i>{@link BaseEvent}</i> is dispatched.
+     * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
+     */
+    asPromise<TEventClass extends EventClass<TEvents>>(
+        event: TEventClass,
+    ): LazyPromise<EventInstance<TEventClass>>;
+
+    /**
      * The <i>subscribe</i> method is used for listening to a <i>{@link BaseEvent}</i> and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */

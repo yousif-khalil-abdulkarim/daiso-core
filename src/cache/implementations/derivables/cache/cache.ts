@@ -346,6 +346,12 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
+    asPromise<TEventClass extends EventClass<CacheEvents>>(
+        event: TEventClass,
+    ): LazyPromise<EventInstance<TEventClass>> {
+        return this.eventBus.asPromise(event);
+    }
+
     /**
      * You can listen to different events of <i>Cache</i> class instance.
      *
