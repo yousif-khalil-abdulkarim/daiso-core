@@ -22,12 +22,12 @@ import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js"
 import type { LockEvents } from "@/lock/contracts/lock.events.js";
 
 /**
- * The <i>ILockListener</i> contract defines a way for listening <i>{@link ILock}</i> operations.
+ * The <i>ILockListenable</i> contract defines a way for listening <i>{@link ILock}</i> operations.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
-export type ILockListener = IEventListenable<LockEvents>;
+export type ILockListenable = IEventListenable<LockEvents>;
 
 export type AquireBlockingSettings = {
     time?: TimeSpan;
@@ -38,7 +38,7 @@ export type AquireBlockingSettings = {
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
-export type ILock = ILockListener & {
+export type ILock = ILockListenable & {
     /**
      * The <i>run</i> method wraps an async function or <i>{@link LazyPromise}</i> with the <i>acquire</i> and <i>release</i> method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
