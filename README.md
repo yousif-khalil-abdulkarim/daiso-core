@@ -30,6 +30,6 @@ The library provides modular solutions for the essential features needed in mode
 
 This library is heavily inspired laravel but built in modular way where you can choose which part to use.
 
-#### NOTE: This library only a ESM (ecmascript) module.
+#### NOTE: This library only supports ESM (ecmascript) module.
 
 ### Visit the [docs](https://yousif-khalil-abdulkarim.github.io/daiso-core/) for more information!
