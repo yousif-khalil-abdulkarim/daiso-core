@@ -74,3 +74,27 @@ export type GetOrAddValue<TValue> = Awaited<
 export type LazyPromiseable<TValue> =
     | (() => PromiseLike<TValue>)
     | LazyPromise<TValue>;
+
+/**
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Contracts
+ */
+export type InvokableFn<TInput, TOutput> = (
+    value: TInput,
+) => Promisable<TOutput>;
+
+/**
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Contracts
+ */
+export type IInvokableObject<TInput, TOutput> = {
+    handler(value: TInput): Promisable<TOutput>;
+};
+
+/**
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Contracts
+ */
+export type Invokable<TInput, TOutput> =
+    | InvokableFn<TInput, TOutput>
+    | IInvokableObject<TInput, TOutput>;

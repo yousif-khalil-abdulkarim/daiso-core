@@ -2,14 +2,14 @@
  * @module EventBus
  */
 
-import type { Promisable } from "@/utilities/_module-exports.js";
+import type { InvokableFn } from "@/utilities/_module-exports.js";
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
-export type EventListenerFn<TEvent> = (event: TEvent) => Promisable<void>;
+export type EventListenerFn<TEvent> = InvokableFn<TEvent, void>;
 
 /**
  *
