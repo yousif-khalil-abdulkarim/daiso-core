@@ -5,37 +5,27 @@
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 
 /**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
- */
-export type ISerializedTimeSpan = {
-    timeInMs: number;
-};
-
-/**
  * The <i>TimeSpan</i> class is used for representing time interval that is the difference between two times measured in a number of days, hours, minutes, and seconds.
  * <i>TimeSpan</i> cannot be negative.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export class TimeSpan implements ISerializable<ISerializedTimeSpan> {
+export class TimeSpan implements ISerializable<number> {
     private static secondInMilliseconds = 1000;
     private static minuteInMilliseconds = 60 * TimeSpan.secondInMilliseconds;
     private static hourInMilliseconds = 60 * TimeSpan.minuteInMilliseconds;
     private static dayInMilliseconds = 24 * TimeSpan.hourInMilliseconds;
 
-    static deserialize(serializedValue: ISerializedTimeSpan): TimeSpan {
-        return new TimeSpan(serializedValue.timeInMs);
+    static deserialize(timeInMs: number): TimeSpan {
+        return new TimeSpan(timeInMs);
     }
 
     private constructor(private readonly milliseconds: number = 0) {
         this.milliseconds = Math.max(0, this.milliseconds);
     }
 
-    serialize(): ISerializedTimeSpan {
-        return {
-            timeInMs: this.toMilliseconds(),
-        };
+    serialize(): number {
+        return this.toMilliseconds();
     }
 
     static fromMilliseconds(milliseconds: number): TimeSpan {
