@@ -2,7 +2,10 @@
  * @module EventBus
  */
 
-import type { OneOrMore, Promisable } from "@/utilities/_module-exports.js";
+import type {
+    IInvokableObject,
+    OneOrMore,
+} from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,9 +50,7 @@ export type Unsubscribe = () => LazyPromise<void>;
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
-export type IEventListenerObject<TEvent> = {
-    handler(event: TEvent): Promisable<void>;
-};
+export type IEventListenerObject<TEvent> = IInvokableObject<TEvent, void>;
 
 /**
  *
