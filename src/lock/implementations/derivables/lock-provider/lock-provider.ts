@@ -42,6 +42,7 @@ import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter.js";
 import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
+import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
 
 /**
  *
@@ -144,34 +145,6 @@ export class LockProvider implements IGroupableLockProvider {
     private static DEFAULT_TTL = TimeSpan.fromMinutes(5);
     private static DEFAULT_REFRESH_TIME = TimeSpan.fromMinutes(5);
 
-    private static isDatabaseAdapter(
-        adapter: ILockAdapter | IDatabaseLockAdapter,
-    ): adapter is IDatabaseLockAdapter {
-        const adapter_ = adapter as Partial<
-            Record<string, (...args_: unknown[]) => unknown>
-        >;
-        return (
-            typeof adapter_["init"] === "function" &&
-            adapter_["init"].length === 0 &&
-            typeof adapter_["deInit"] === "function" &&
-            adapter_["deInit"].length === 0 &&
-            typeof adapter_["insert"] === "function" &&
-            adapter_["insert"].length === 3 &&
-            typeof adapter_["update"] === "function" &&
-            adapter_["update"].length === 3 &&
-            typeof adapter_["remove"] === "function" &&
-            adapter_["remove"].length === 2 &&
-            typeof adapter_["refresh"] === "function" &&
-            adapter_["refresh"].length === 3 &&
-            typeof adapter_["find"] === "function" &&
-            adapter_["find"].length === 1 &&
-            typeof adapter_["getGroup"] === "function" &&
-            adapter_["getGroup"].length === 0 &&
-            typeof adapter_["withGroup"] === "function" &&
-            adapter_["withGroup"].length === 1
-        );
-    }
-
     private readonly serde: OneOrMore<IFlexibleSerde>;
     private readonly createOwnerId: () => string;
     private readonly adapter: ILockAdapter;
@@ -231,7 +204,7 @@ export class LockProvider implements IGroupableLockProvider {
             serde,
         } = settings;
         this.createOwnerId = createOwnerId;
-        if (LockProvider.isDatabaseAdapter(adapter)) {
+        if (isDatabaseLockAdapter(adapter)) {
             this.adapter = new DatabaseLockAdapter(adapter);
         } else {
             this.adapter = adapter;
