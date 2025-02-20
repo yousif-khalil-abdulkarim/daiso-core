@@ -26,10 +26,15 @@ export type Promisable<TValue> = TValue | PromiseLike<TValue>;
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Contracts
  */
-export type AsyncLazyable<TValue> =
-    | TValue
+export type LazyPromiseable<TValue> =
     | LazyPromise<TValue>
     | (() => Promisable<TValue>);
+
+/**
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Contracts
+ */
+export type AsyncLazyable<TValue> = TValue | LazyPromiseable<TValue>;
 
 /**
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
@@ -66,14 +71,6 @@ export type Func<TArgs extends unknown[], TReturn> = (
 export type GetOrAddValue<TValue> = Awaited<
     TValue extends AnyFunction ? ReturnType<TValue> : TValue
 >;
-
-/**
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
- * @group Contracts
- */
-export type LazyPromiseable<TValue> =
-    | (() => PromiseLike<TValue>)
-    | LazyPromise<TValue>;
 
 /**
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```

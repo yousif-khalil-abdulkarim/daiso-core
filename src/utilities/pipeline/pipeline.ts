@@ -3,7 +3,12 @@
  */
 
 import { LazyPromise } from "@/async/_module-exports.js";
-import type { IInvokableObject, Invokable } from "@/utilities/types.js";
+import type {
+    AsyncLazyable,
+    IInvokableObject,
+    Invokable,
+} from "@/utilities/types.js";
+import { resolveAsyncLazyable } from "@/utilities/functions.js";
 
 /**
  * The <i>Pipeline</i> class provides a convenient way to pipe multiple functions and <i>{@link IInvokableObject}</i>,
@@ -13,7 +18,7 @@ import type { IInvokableObject, Invokable } from "@/utilities/types.js";
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev>
-    implements IInvokableObject<TInitial, TCurrent>
+    implements IInvokableObject<AsyncLazyable<TInitial>, TCurrent>
 {
     /**
      * @example
@@ -68,15 +73,16 @@ export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev>
         return new Pipeline(pipe);
     }
 
-    invoke(value: TInitial): LazyPromise<TCurrent> {
+    invoke(value: AsyncLazyable<TInitial>): LazyPromise<TCurrent> {
         return new LazyPromise(async () => {
             const [pipe, ...pipes] = this.pipes;
+            const resolvedValue = await resolveAsyncLazyable(value);
             if (pipe === undefined) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                return value as any;
+                return resolvedValue as any;
             }
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            let value_: TCurrent = await Pipeline.execute(value, pipe);
+            let value_: TCurrent = await Pipeline.execute(resolvedValue, pipe);
             for (const pipe of pipes) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 value_ = await Pipeline.execute(value, pipe);
