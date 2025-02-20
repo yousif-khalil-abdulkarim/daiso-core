@@ -2,11 +2,13 @@
  * @module EventBus
  */
 
-import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
+import {
+    resolveOneOrMoreStr,
+    type InvokableFn,
+} from "@/utilities/_module-exports.js";
 import type {
     BaseEvent,
     IEventBusAdapter,
-    EventListenerFn,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventEmitter } from "node:events";
 
@@ -78,7 +80,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
     // eslint-disable-next-line @typescript-eslint/require-await
     async addListener(
         eventName: string,
-        listener: EventListenerFn<BaseEvent>,
+        listener: InvokableFn<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.on(this.withPrefix(eventName), listener);
@@ -87,7 +89,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
     // eslint-disable-next-line @typescript-eslint/require-await
     async removeListener(
         eventName: string,
-        listener: EventListenerFn<BaseEvent>,
+        listener: InvokableFn<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.off(this.withPrefix(eventName), listener);

@@ -2,10 +2,7 @@
  * @module EventBus
  */
 
-import type {
-    IInvokableObject,
-    OneOrMore,
-} from "@/utilities/_module-exports.js";
+import type { Invokable, OneOrMore } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,7 +13,6 @@ import {
     UnableToRemoveListenerEventBusError,
 } from "@/event-bus/contracts/event-bus.errors.js";
 import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
-import { type EventListenerFn } from "@/event-bus/contracts/_shared.js";
 
 /**
  *
@@ -46,22 +42,6 @@ export type EventInstance<TEventClass extends EventClass<BaseEvent>> =
 export type Unsubscribe = () => LazyPromise<void>;
 
 /**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
- * @group Contracts
- */
-export type IEventListenerObject<TEvent> = IInvokableObject<TEvent, void>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
- * @group Contracts
- */
-export type EventListener<TEvent> =
-    | EventListenerFn<TEvent>
-    | IEventListenerObject<TEvent>;
-
-/**
  * The <i>IEventListenable</i> contract defines a way listening to events independent of underlying technology
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
@@ -75,7 +55,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      */
     addListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void>;
 
     /**
@@ -85,7 +65,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      */
     addListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void>;
 
     /**
@@ -95,7 +75,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      */
     removeListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void>;
 
     /**
@@ -105,7 +85,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      */
     removeListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void>;
 
     /**
@@ -114,7 +94,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      */
     listenOnce<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void>;
 
     /**
@@ -131,7 +111,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      */
     subscribe<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe>;
 
     /**
@@ -140,7 +120,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      */
     subscribeMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe>;
 };
 

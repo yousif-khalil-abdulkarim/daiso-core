@@ -33,6 +33,7 @@ import {
 import type {
     AsyncLazyable,
     GetOrAddValue,
+    Invokable,
     OneOrMore,
 } from "@/utilities/_module-exports.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
@@ -41,7 +42,6 @@ import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     IGroupableEventBus,
     IEventBus,
-    EventListener,
     Unsubscribe,
     EventClass,
     EventInstance,
@@ -184,7 +184,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable} from "@daiso-tech/core/event-bus/contracts";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
      * const cache: IGroupableCache = new Cache({
@@ -193,7 +193,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   }),
      * });
      *
-     * const listener: EventListener<CacheEvents> = event => {
+     * const listener: Invokable<CacheEvents> = event => {
      *   console.log(event);
      * };
      * await cache.addListener(KeyAddedCacheEvent, listener);
@@ -202,7 +202,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     addListener<TEventClass extends EventClass<CacheEvents>>(
         eventName: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.addListener(eventName, listener);
     }
@@ -218,8 +218,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable} from "@daiso-tech/core/event-bus/contracts";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
      * const cache: IGroupableCache = new Cache({
@@ -228,7 +228,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   }),
      * });
      *
-     * const listener: EventListener<CacheEvents> = event => {
+     * const listener: Invokable<CacheEvents> = event => {
      *   console.log(event);
      * };
      * await cache.addListenerMany([KeyAddedCacheEvent], listener);
@@ -237,7 +237,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     addListenerMany<TEventClass extends EventClass<CacheEvents>>(
         eventNames: TEventClass[],
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.addListenerMany(eventNames, listener);
     }
@@ -253,7 +253,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable} from "@daiso-tech/core/event-bus/contracts";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
      * const cache: IGroupableCache = new Cache({
@@ -262,7 +262,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   }),
      * });
      *
-     * const listener: EventListener<CacheEvents> = event => {
+     * const listener: Invokable<CacheEvents> = event => {
      *   console.log(event);
      * };
      * await cache.addListener(KeyAddedCacheEvent, listener);
@@ -272,7 +272,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     removeListener<TEventClass extends EventClass<CacheEvents>>(
         eventName: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
@@ -288,7 +288,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable} from "@daiso-tech/core/event-bus/contracts";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
      * const cache: IGroupableCache = new Cache({
@@ -297,7 +297,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   }),
      * });
      *
-     * const listener: EventListener<CacheEvents> = event => {
+     * const listener: Invokable<CacheEvents> = event => {
      *   console.log(event);
      * };
      * await cache.addListenerMany([KeyAddedCacheEvent], listener);
@@ -307,7 +307,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     removeListenerMany<TEventClass extends EventClass<CacheEvents>>(
         eventNames: TEventClass[],
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListenerMany(eventNames, listener);
     }
@@ -323,7 +323,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable} from "@daiso-tech/core/event-bus/contracts";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
      * const cache: IGroupableCache = new Cache({
@@ -332,7 +332,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   }),
      * });
      *
-     * const listener: EventListener<CacheEvents> = event => {
+     * const listener: Invokable<CacheEvents> = event => {
      *   console.log(event);
      * };
      * await cache.listenOnce(KeyAddedCacheEvent, listener);
@@ -341,7 +341,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     listenOnce<TEventClass extends EventClass<CacheEvents>>(
         eventName: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
@@ -363,7 +363,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable} from "@daiso-tech/core/event-bus/contracts";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
      * const cache: IGroupableCache = new Cache({
@@ -372,7 +372,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   }),
      * });
      *
-     * const listener: EventListener<CacheEvents> = event => {
+     * const listener: Invokable<CacheEvents> = event => {
      *   console.log(event);
      * };
      * const unsubscribe = await cache.subscribe(KeyAddedCacheEvent, listener);
@@ -382,7 +382,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     subscribe<TEventClass extends EventClass<CacheEvents>>(
         eventName: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
@@ -398,7 +398,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable} from "@daiso-tech/core/event-bus/contracts";
      * import { KeyAddedCacheEvent, type CacheEvents } from "@daiso-tech/core/cache/contracts";
      *
      * const cache: IGroupableCache = new Cache({
@@ -407,7 +407,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   }),
      * });
      *
-     * const listener: EventListener<CacheEvents> = event => {
+     * const listener: Invokable<CacheEvents> = event => {
      *   console.log(event);
      * };
      * const unsubscribe = await cache.subscribeMany([KeyAddedCacheEvent], listener);
@@ -417,7 +417,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     subscribeMany<TEventClass extends EventClass<CacheEvents>>(
         eventNames: TEventClass[],
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribeMany(eventNames, listener);
     }

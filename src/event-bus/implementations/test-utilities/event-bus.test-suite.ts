@@ -10,12 +10,14 @@ import {
 } from "vitest";
 import {
     BaseEvent,
-    type EventListenerFn,
     type IEventBus,
-    type IEventListenerObject,
     type IGroupableEventBus,
 } from "@/event-bus/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
+import {
+    type IInvokableObject,
+    type InvokableFn,
+    type Promisable,
+} from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
@@ -123,11 +125,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         describe("method: addListener, removeListener, dispatch", () => {
             describe("Should be null when listener is added and event is not triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<AddEvent> & {
+                    const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
                     } = {
                         result: null,
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         },
                     };
@@ -136,9 +138,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     await eventBusA.removeListener(AddEvent, listener);
                 });
                 test("Class instance listener", async () => {
-                    class Listener implements IEventListenerObject<AddEvent> {
+                    class Listener implements IInvokableObject<AddEvent> {
                         result: AddEvent | null = null;
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         }
                     }
@@ -149,7 +151,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Function listener", async () => {
                     let result = null as AddEvent | null;
-                    const listener: EventListenerFn<AddEvent> = (event) => {
+                    const listener: InvokableFn<AddEvent> = (event) => {
                         result = event;
                     };
                     await eventBusA.addListener(AddEvent, listener);
@@ -159,11 +161,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should be AddEvent when listener is added and event is triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<AddEvent> & {
+                    const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
                     } = {
                         result: null,
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         },
                     };
@@ -179,9 +181,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     await eventBusA.removeListener(AddEvent, listener);
                 });
                 test("Class instance listener", async () => {
-                    class Listener implements IEventListenerObject<AddEvent> {
+                    class Listener implements IInvokableObject<AddEvent> {
                         result: AddEvent | null = null;
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         }
                     }
@@ -199,7 +201,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Function listener", async () => {
                     let result = null as AddEvent | null;
-                    const listener: EventListenerFn<AddEvent> = (event) => {
+                    const listener: InvokableFn<AddEvent> = (event) => {
                         result = event;
                     };
                     await eventBusA.addListener(AddEvent, listener);
@@ -216,11 +218,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should be null when listener removed and event is triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<AddEvent> & {
+                    const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
                     } = {
                         result: null,
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         },
                     };
@@ -235,9 +237,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     expect(listener.result).toBeNull();
                 });
                 test("Class instance listener", async () => {
-                    class Listener implements IEventListenerObject<AddEvent> {
+                    class Listener implements IInvokableObject<AddEvent> {
                         result: AddEvent | null = null;
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         }
                     }
@@ -254,7 +256,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Function listener", async () => {
                     let result = null as AddEvent | null;
-                    const listener: EventListenerFn<AddEvent> = (event) => {
+                    const listener: InvokableFn<AddEvent> = (event) => {
                         result = event;
                     };
                     await eventBusA.addListener(AddEvent, listener);
@@ -272,15 +274,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         describe("method: addListenerMany, removeListenerMany, dispatchMany", () => {
             describe("Should be null when listener is added and event is not triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<
-                        AddEvent | SubEvent
-                    > & {
+                    const listener: IInvokableObject<AddEvent | SubEvent> & {
                         resultA: AddEvent | null;
                         resultB: SubEvent | null;
                     } = {
                         resultA: null,
                         resultB: null,
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -302,11 +302,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Class instance listener", async () => {
                     class Listener
-                        implements IEventListenerObject<AddEvent | SubEvent>
+                        implements IInvokableObject<AddEvent | SubEvent>
                     {
                         resultA: AddEvent | null = null;
                         resultB: SubEvent | null = null;
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -330,7 +330,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 test("Function listener", async () => {
                     let resultA = null as AddEvent | null;
                     let resultB = null as SubEvent | null;
-                    const listener: EventListenerFn<AddEvent | SubEvent> = (
+                    const listener: InvokableFn<AddEvent | SubEvent> = (
                         event,
                     ) => {
                         if (event instanceof AddEvent) {
@@ -354,15 +354,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should be AddEvent and SubEvent when listener is added and event is triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<
-                        AddEvent | SubEvent
-                    > & {
+                    const listener: IInvokableObject<AddEvent | SubEvent> & {
                         resultA: AddEvent | null;
                         resultB: SubEvent | null;
                     } = {
                         resultA: null,
                         resultB: null,
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -396,11 +394,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Class instance listener", async () => {
                     class Listener
-                        implements IEventListenerObject<AddEvent | SubEvent>
+                        implements IInvokableObject<AddEvent | SubEvent>
                     {
                         resultA: AddEvent | null = null;
                         resultB: SubEvent | null = null;
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -436,7 +434,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 test("Function listener", async () => {
                     let resultA = null as AddEvent | null;
                     let resultB = null as SubEvent | null;
-                    const listener: EventListenerFn<AddEvent | SubEvent> = (
+                    const listener: InvokableFn<AddEvent | SubEvent> = (
                         event,
                     ) => {
                         if (event instanceof AddEvent) {
@@ -472,15 +470,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should be null when listener removed and event is triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<
-                        AddEvent | SubEvent
-                    > & {
+                    const listener: IInvokableObject<AddEvent | SubEvent> & {
                         resultA: AddEvent | null;
                         resultB: SubEvent | null;
                     } = {
                         resultA: null,
                         resultB: null,
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -512,11 +508,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Class instance listener", async () => {
                     class Listener
-                        implements IEventListenerObject<AddEvent | SubEvent>
+                        implements IInvokableObject<AddEvent | SubEvent>
                     {
                         resultA: AddEvent | null = null;
                         resultB: SubEvent | null = null;
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -551,7 +547,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     let resultA: AddEvent | null = null;
                     let resultB: SubEvent | null = null;
 
-                    const listener: EventListenerFn<AddEvent | SubEvent> = (
+                    const listener: InvokableFn<AddEvent | SubEvent> = (
                         event: AddEvent | SubEvent,
                     ): Promisable<void> => {
                         if (event instanceof AddEvent) {
@@ -588,11 +584,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         describe("method: subscribe, dispatch", () => {
             describe("Should be null when listener is added and event is not triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<AddEvent> & {
+                    const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
                     } = {
                         result: null,
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         },
                     };
@@ -604,9 +600,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     await unsubscribe();
                 });
                 test("Class instance listener", async () => {
-                    class Listener implements IEventListenerObject<AddEvent> {
+                    class Listener implements IInvokableObject<AddEvent> {
                         result: AddEvent | null = null;
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         }
                     }
@@ -620,7 +616,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Function listener", async () => {
                     let result = null as AddEvent | null;
-                    const listener: EventListenerFn<AddEvent> = (event) => {
+                    const listener: InvokableFn<AddEvent> = (event) => {
                         result = event;
                     };
                     const unsubscribe = await eventBusA.subscribe(
@@ -633,11 +629,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should be AddEvent when listener is added and event is triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<AddEvent> & {
+                    const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
                     } = {
                         result: null,
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         },
                     };
@@ -656,9 +652,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     await unsubscribe();
                 });
                 test("Class instance listener", async () => {
-                    class Listener implements IEventListenerObject<AddEvent> {
+                    class Listener implements IInvokableObject<AddEvent> {
                         result: AddEvent | null = null;
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         }
                     }
@@ -679,7 +675,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Function listener", async () => {
                     let result = null as AddEvent | null;
-                    const listener: EventListenerFn<AddEvent> = (event) => {
+                    const listener: InvokableFn<AddEvent> = (event) => {
                         result = event;
                     };
                     const unsubscribe = await eventBusA.subscribe(
@@ -699,11 +695,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should be null when listener removed and event is triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<AddEvent> & {
+                    const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
                     } = {
                         result: null,
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         },
                     };
@@ -721,9 +717,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     expect(listener.result).toBeNull();
                 });
                 test("Class instance listener", async () => {
-                    class Listener implements IEventListenerObject<AddEvent> {
+                    class Listener implements IInvokableObject<AddEvent> {
                         result: AddEvent | null = null;
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         }
                     }
@@ -743,7 +739,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Function listener", async () => {
                     let result = null as AddEvent | null;
-                    const listener: EventListenerFn<AddEvent> = (event) => {
+                    const listener: InvokableFn<AddEvent> = (event) => {
                         result = event;
                     };
                     const unsubscribe = await eventBusA.subscribe(
@@ -764,15 +760,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         describe("method: subscribeMany, dispatchMany", () => {
             describe("Should be null when listener is added and event is not triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<
-                        AddEvent | SubEvent
-                    > & {
+                    const listener: IInvokableObject<AddEvent | SubEvent> & {
                         resultA: AddEvent | null;
                         resultB: SubEvent | null;
                     } = {
                         resultA: null,
                         resultB: null,
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -791,11 +785,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Class instance listener", async () => {
                     class Listener
-                        implements IEventListenerObject<AddEvent | SubEvent>
+                        implements IInvokableObject<AddEvent | SubEvent>
                     {
                         resultA: AddEvent | null = null;
                         resultB: SubEvent | null = null;
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -816,7 +810,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 test("Function listener", async () => {
                     let resultA = null as AddEvent | null;
                     let resultB = null as SubEvent | null;
-                    const listener: EventListenerFn<AddEvent | SubEvent> = (
+                    const listener: InvokableFn<AddEvent | SubEvent> = (
                         event,
                     ) => {
                         if (event instanceof AddEvent) {
@@ -837,15 +831,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should be AddEvent and SubEvent when listener is added and event is triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<
-                        AddEvent | SubEvent
-                    > & {
+                    const listener: IInvokableObject<AddEvent | SubEvent> & {
                         resultA: AddEvent | null;
                         resultB: SubEvent | null;
                     } = {
                         resultA: null,
                         resultB: null,
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -876,11 +868,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Class instance listener", async () => {
                     class Listener
-                        implements IEventListenerObject<AddEvent | SubEvent>
+                        implements IInvokableObject<AddEvent | SubEvent>
                     {
                         resultA: AddEvent | null = null;
                         resultB: SubEvent | null = null;
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -913,7 +905,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 test("Function listener", async () => {
                     let resultA = null as AddEvent | null;
                     let resultB = null as SubEvent | null;
-                    const listener: EventListenerFn<AddEvent | SubEvent> = (
+                    const listener: InvokableFn<AddEvent | SubEvent> = (
                         event,
                     ) => {
                         if (event instanceof AddEvent) {
@@ -946,15 +938,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should be null when listener removed and event is triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<
-                        AddEvent | SubEvent
-                    > & {
+                    const listener: IInvokableObject<AddEvent | SubEvent> & {
                         resultA: AddEvent | null;
                         resultB: SubEvent | null;
                     } = {
                         resultA: null,
                         resultB: null,
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -983,11 +973,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Class instance listener", async () => {
                     class Listener
-                        implements IEventListenerObject<AddEvent | SubEvent>
+                        implements IInvokableObject<AddEvent | SubEvent>
                     {
                         resultA: AddEvent | null = null;
                         resultB: SubEvent | null = null;
-                        handler(event: AddEvent | SubEvent): Promisable<void> {
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
                             if (event instanceof AddEvent) {
                                 this.resultA = event;
                             }
@@ -1019,7 +1009,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     let resultA: AddEvent | null = null;
                     let resultB: SubEvent | null = null;
 
-                    const listener: EventListenerFn<AddEvent | SubEvent> = (
+                    const listener: InvokableFn<AddEvent | SubEvent> = (
                         event: AddEvent | SubEvent,
                     ): Promisable<void> => {
                         if (event instanceof AddEvent) {
@@ -1053,11 +1043,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         describe("method: listenOnce", () => {
             describe("Should be null when listener added and event is not triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<AddEvent> & {
+                    const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
                     } = {
                         result: null,
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         },
                     };
@@ -1065,9 +1055,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     expect(listener.result).toBeNull();
                 });
                 test("Class instance listener", async () => {
-                    class Listener implements IEventListenerObject<AddEvent> {
+                    class Listener implements IInvokableObject<AddEvent> {
                         result: AddEvent | null = null;
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         }
                     }
@@ -1077,7 +1067,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Function listener", async () => {
                     let result: AddEvent | null = null;
-                    const listener: EventListenerFn<AddEvent> = (event) => {
+                    const listener: InvokableFn<AddEvent> = (event) => {
                         result = event;
                     };
                     await eventBusA.listenOnce(AddEvent, listener);
@@ -1086,11 +1076,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should be AddEvent when listener added and event is triggered", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<AddEvent> & {
+                    const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
                     } = {
                         result: null,
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         },
                     };
@@ -1105,9 +1095,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     expect(listener.result).toBeInstanceOf(AddEvent);
                 });
                 test("Class instance listener", async () => {
-                    class Listener implements IEventListenerObject<AddEvent> {
+                    class Listener implements IInvokableObject<AddEvent> {
                         result: AddEvent | null = null;
-                        handler(event: AddEvent): Promisable<void> {
+                        invoke(event: AddEvent): Promisable<void> {
                             this.result = event;
                         }
                     }
@@ -1124,7 +1114,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Function listener", async () => {
                     let result: AddEvent | null = null;
-                    const listener: EventListenerFn<AddEvent> = (event) => {
+                    const listener: InvokableFn<AddEvent> = (event) => {
                         result = event;
                     };
                     await eventBusA.listenOnce(AddEvent, listener);
@@ -1140,11 +1130,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             describe("Should only listen for event once", () => {
                 test("Object literal listener", async () => {
-                    const listener: IEventListenerObject<AddEvent> & {
+                    const listener: IInvokableObject<AddEvent> & {
                         i: number;
                     } = {
                         i: 0,
-                        handler(_event: AddEvent): Promisable<void> {
+                        invoke(_event: AddEvent): Promisable<void> {
                             this.i++;
                         },
                     };
@@ -1159,9 +1149,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     expect(listener.i).toBe(1);
                 });
                 test("Class instance listener", async () => {
-                    class Listener implements IEventListenerObject<AddEvent> {
+                    class Listener implements IInvokableObject<AddEvent> {
                         i = 0;
-                        handler(_event: AddEvent): Promisable<void> {
+                        invoke(_event: AddEvent): Promisable<void> {
                             this.i++;
                         }
                     }
@@ -1178,7 +1168,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 });
                 test("Function listener", async () => {
                     let i = 0;
-                    const listener: EventListenerFn<AddEvent> = () => {
+                    const listener: InvokableFn<AddEvent> = () => {
                         i++;
                     };
                     await eventBusA.listenOnce(AddEvent, listener);
@@ -1196,7 +1186,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         describe("method: asPromise", () => {
             test("Should be null when listener added and event is not triggered", () => {
                 let result: AddEvent | null = null;
-                const listener: EventListenerFn<AddEvent> = (event) => {
+                const listener: InvokableFn<AddEvent> = (event) => {
                     result = event;
                 };
                 eventBusA.asPromise(AddEvent).then(listener);
@@ -1204,7 +1194,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             test("Should be AddEvent when listener added and event is triggered", async () => {
                 let result: AddEvent | null = null;
-                const listener: EventListenerFn<AddEvent> = (event) => {
+                const listener: InvokableFn<AddEvent> = (event) => {
                     result = event;
                 };
                 eventBusA.asPromise(AddEvent).then(listener);
