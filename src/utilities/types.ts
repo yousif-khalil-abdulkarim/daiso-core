@@ -79,7 +79,7 @@ export type LazyPromiseable<TValue> =
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Contracts
  */
-export type InvokableFn<TInput, TOutput> = (
+export type InvokableFn<TInput = unknown, TOutput = unknown> = (
     value: TInput,
 ) => Promisable<TOutput>;
 
@@ -87,14 +87,14 @@ export type InvokableFn<TInput, TOutput> = (
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Contracts
  */
-export type IInvokableObject<TInput, TOutput> = {
-    handler(value: TInput): Promisable<TOutput>;
+export type IInvokableObject<TInput = unknown, TOutput = unknown> = {
+    invoke(value: TInput): Promisable<TOutput>;
 };
 
 /**
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Contracts
  */
-export type Invokable<TInput, TOutput> =
+export type Invokable<TInput = unknown, TOutput = unknown> =
     | InvokableFn<TInput, TOutput>
     | IInvokableObject<TInput, TOutput>;

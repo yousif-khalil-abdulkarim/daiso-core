@@ -3,7 +3,7 @@
  */
 
 import { LazyPromise } from "@/async/_module-exports.js";
-import type { Invokable } from "@/utilities/types.js";
+import type { IInvokableObject, Invokable } from "@/utilities/types.js";
 
 /**
  * The <i>Pipeline</i> class provides a convenient way to pipe multiple functions and <i>{@link IInvokableObject}</i>,
@@ -12,7 +12,9 @@ import type { Invokable } from "@/utilities/types.js";
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev> {
+export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev>
+    implements IInvokableObject<TInitial, TCurrent>
+{
     /**
      * @example
      * ```ts
@@ -23,18 +25,18 @@ export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev> {
      *   .start<string>()
      *   // You can extract the function if you want.
      *   // You can also pass in an object that implements IInvokableObject contract
-     *   .pipe(value => return value.length)
+     *   .pipe(value => value.length)
      *   .pipe(value => value === 0);
      *
      * // You can extend the previous pipeline
      * const isNotEmpty = isEmpty.pipe(isEmpty => !isEmpty);
      *
-     * const result1 = await isEmpty.execute("");
-     * // false
+     * const result1 = await isEmpty.invoke("");
+     * // true
      * console.log(result1);
      *
-     * const result2 = await isEmpty.execute("asdasd");
-     * // false
+     * const result2 = await isNotEmpty.invoke("asdasd");
+     * // true
      * console.log(result2);
      * ```
      */
@@ -49,7 +51,7 @@ export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev> {
         if (typeof pipe === "function") {
             return await pipe(value);
         }
-        return pipe.handler(value);
+        return pipe.invoke(value);
     }
 
     private readonly pipes: Invokable<any, any>[] = [];
@@ -66,7 +68,7 @@ export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev> {
         return new Pipeline(pipe);
     }
 
-    execute(value: TInitial): LazyPromise<TCurrent> {
+    invoke(value: TInitial): LazyPromise<TCurrent> {
         return new LazyPromise(async () => {
             const [pipe, ...pipes] = this.pipes;
             if (pipe === undefined) {

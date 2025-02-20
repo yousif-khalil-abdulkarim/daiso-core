@@ -2,7 +2,11 @@
  * @module Lock
  */
 
-import type { LazyPromiseable, Result } from "@/utilities/_module-exports.js";
+import type {
+    Invokable,
+    LazyPromiseable,
+    Result,
+} from "@/utilities/_module-exports.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import { delay, LazyPromise } from "@/async/_module-exports.js";
@@ -28,7 +32,6 @@ import {
 } from "@/lock/contracts/_module-exports.js";
 import type {
     EventClass,
-    EventListener,
     EventInstance,
     Unsubscribe,
     IGroupableEventBus,
@@ -154,7 +157,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -199,7 +202,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -279,7 +282,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -326,7 +329,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -402,7 +405,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -447,7 +450,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -528,7 +531,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -622,7 +625,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -684,7 +687,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -925,7 +928,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -945,7 +948,7 @@ export class Lock implements ILock {
      *
      * const lock = lockProvider.create("a");
      *
-     * const listener: EventListener<LockEvents> = event => {
+     * const listener: Invokable <LockEvents> = event => {
      *   console.log(event);
      * }
      * await lock.addListener(KeyAcquiredLockEvent, listener);
@@ -954,7 +957,7 @@ export class Lock implements ILock {
      */
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.addListener(event, listener);
     }
@@ -969,7 +972,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -989,7 +992,7 @@ export class Lock implements ILock {
      *
      * const lock = lockProvider.create("a");
      *
-     * const listener: EventListener<LockEvents> = event => {
+     * const listener: Invokable <LockEvents> = event => {
      *   console.log(event);
      * }
      * await lock.addListenerMany([KeyAcquiredLockEvent], listener);
@@ -998,7 +1001,7 @@ export class Lock implements ILock {
      */
     addListenerMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.addListenerMany(events, listener);
     }
@@ -1013,7 +1016,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -1033,7 +1036,7 @@ export class Lock implements ILock {
      *
      * const lock = lockProvider.create("a");
      *
-     * const listener: EventListener<LockEvents> = event => {
+     * const listener: Invokable <LockEvents> = event => {
      *   console.log(event);
      * }
      * await lock.addListener(KeyAcquiredLockEvent, listener);
@@ -1043,7 +1046,7 @@ export class Lock implements ILock {
      */
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.removeListener(event, listener);
     }
@@ -1058,7 +1061,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -1078,7 +1081,7 @@ export class Lock implements ILock {
      *
      * const lock = lockProvider.create("a");
      *
-     * const listener: EventListener<LockEvents> = event => {
+     * const listener: Invokable <LockEvents> = event => {
      *   console.log(event);
      * }
      * await lock.addListenerMany([KeyAcquiredLockEvent], listener);
@@ -1088,7 +1091,7 @@ export class Lock implements ILock {
      */
     removeListenerMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.removeListenerMany(events, listener);
     }
@@ -1103,7 +1106,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -1123,7 +1126,7 @@ export class Lock implements ILock {
      *
      * const lock = lockProvider.create("a");
      *
-     * const listener: EventListener<LockEvents> = event => {
+     * const listener: Invokable <LockEvents> = event => {
      *   console.log(event);
      * }
      * await lock.listenOnce(KeyAcquiredLockEvent, listener);
@@ -1132,7 +1135,7 @@ export class Lock implements ILock {
      */
     listenOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.listenOnce(event, listener);
     }
@@ -1153,7 +1156,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -1173,7 +1176,7 @@ export class Lock implements ILock {
      *
      * const lock = lockProvider.create("a");
      *
-     * const listener: EventListener<LockEvents> = event => {
+     * const listener: Invokable <LockEvents> = event => {
      *   console.log(event);
      * }
      * const unsubscribe = await lock.subscribe(KeyAcquiredLockEvent, listener);
@@ -1183,7 +1186,7 @@ export class Lock implements ILock {
      */
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockEventBus.subscribe(event, listener);
     }
@@ -1198,7 +1201,7 @@ export class Lock implements ILock {
      * import { type IGroupableLockProvider, type LockEvents, KeyAcquiredLockEvent } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import type { EventListener} from "@daiso-tech/core/event-bus/contracts";
+     * import type { Invokable } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
@@ -1218,7 +1221,7 @@ export class Lock implements ILock {
      *
      * const lock = lockProvider.create("a");
      *
-     * const listener: EventListener<LockEvents> = event => {
+     * const listener: Invokable <LockEvents> = event => {
      *   console.log(event);
      * }
      * const unsubscribe = await lock.subscribeMany([KeyAcquiredLockEvent], listener);
@@ -1228,7 +1231,7 @@ export class Lock implements ILock {
      */
     subscribeMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
-        listener: EventListener<EventInstance<TEventClass>>,
+        listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockEventBus.subscribeMany(events, listener);
     }
