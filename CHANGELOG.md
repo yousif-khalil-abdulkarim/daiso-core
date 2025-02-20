@@ -1,5 +1,16 @@
 # @daiso-tech/core
 
+## 0.26.0
+
+### Minor Changes
+
+-   a93ee80: The <i>Pipeline</i> class <i>invoke</i> method can now take function, async function, LazyPromise and reguler value
+-   70e2494: Changed <i>IInvokableObject</i> method name
+-   b34c3dc: The <i>LazyPromise</i> <i>defer</i> method now accepts callbacks <i>onSuccess</i>, <i>onFailure</i>, and <i>onFinally</i>.
+-   70e2494: Removed <i>IEventListenerObject</i> and <i>EventListener</i> types.
+-   84e333c: Added new <i>Pipeline</i> utility class makes it easy to chain multiple functions and <i>IInvokableObject</i> instances together. Each function or object in the pipeline can inspect or modify the input as it passes through. The <i>Pipeline</i> class is immutable, so you can safely extend or modify it without causing issues.
+-   0cc289d: Changed the serialization, deserialization of the <i>TimeSpan</i> class
+
 ## 0.25.0
 
 ### Minor Changes
