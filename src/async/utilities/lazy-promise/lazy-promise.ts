@@ -3,7 +3,11 @@
  */
 
 import type { BackoffPolicy } from "@/async/backof-policies/_module.js";
-import type { Promisable, TimeSpan } from "@/utilities/_module-exports.js";
+import type {
+    LazyPromiseable,
+    Promisable,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
 import type { RetryPolicy } from "@/async/utilities/retry/_module.js";
 import { retryOrFail } from "@/async/utilities/retry/_module.js";
 import { timeoutAndFail } from "@/async/utilities/timeout/_module.js";
@@ -126,8 +130,8 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *   await promise;
      * })();
      */
-    constructor(asyncFn: () => PromiseLike<TValue>) {
-        this.asyncFn = async () => resolveAsyncLazyable(asyncFn);
+    constructor(asyncFn: LazyPromiseable<TValue>) {
+        this.asyncFn = () => resolveAsyncLazyable(asyncFn);
     }
 
     private applyTimeout(): void {
