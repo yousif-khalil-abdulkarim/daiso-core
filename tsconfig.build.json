@@ -3,9 +3,7 @@
     "compilerOptions": {
         "outDir": "./dist",
         "sourceMap": true,
-        "declaration": true,
-        "module": "NodeNext",
-        "moduleResolution": "nodenext",
+        "declaration": true
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules/*", "vite.config.ts", "**/*.test.ts"]
