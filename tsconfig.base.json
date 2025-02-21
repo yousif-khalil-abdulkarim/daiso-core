@@ -27,6 +27,8 @@
         "noImplicitOverride": true,
         "noPropertyAccessFromIndexSignature": true,
         "skipLibCheck": true,
-        "verbatimModuleSyntax": true
+        "verbatimModuleSyntax": true,
+        "module": "NodeNext",
+        "moduleResolution": "nodenext",
     }
 }
