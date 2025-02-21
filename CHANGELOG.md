@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.26.1
+
+### Patch Changes
+
+-   2128106: Fixed a but <i>LockProvider</i> class
+
 ## 0.26.0
 
 ### Minor Changes
