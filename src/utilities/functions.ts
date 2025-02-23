@@ -49,9 +49,12 @@ export function isObjectEmpty(
 /**
  * @internal
  */
-export function resolveOneOrMoreStr(name: OneOrMore<string>): string {
+export function resolveOneOrMoreStr(
+    name: OneOrMore<string>,
+    joinStr = "/",
+): string {
     if (Array.isArray(name)) {
-        name = name.filter((str) => str.length > 0).join("/");
+        name = name.filter((str) => str.length > 0).join(joinStr);
     }
     return name;
 }
