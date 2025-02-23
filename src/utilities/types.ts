@@ -8,7 +8,13 @@ import type { LazyPromise } from "@/async/_module-exports.js";
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Contracts
  */
-export type OneOrMore<TItem> = TItem | [TItem, ...TItem[]];
+export type AtLeastOne<TItem> = [TItem, ...TItem[]];
+
+/**
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Contracts
+ */
+export type OneOrMore<TItem> = TItem | AtLeastOne<TItem>;
 
 /**
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
