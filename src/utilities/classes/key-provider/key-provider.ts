@@ -65,36 +65,12 @@ class Key {
  */
 export type KeyProviderSettings = {
     group?: OneOrMore<string>;
-
-    /**
-     * @default {true}
-     */
-    shouldPrefixKeys?: boolean;
-
-    /**
-     * @default {":"}
-     */
-    identifierDelimeter?: string;
-
-    /**
-     * @default {"/"}
-     */
-    keyDelimeter?: string;
-
-    /**
-     * @default {"_ky"}
-     */
-    keyIdentifier?: string;
-
-    /**
-     * @default {"_rt"}
-     */
-    rootIdentifier?: string;
-
-    /**
-     * @default {"_gp"}
-     */
-    groupIdentifier?: string;
+    shouldPrefixKeys: boolean;
+    identifierDelimeter: string;
+    keyDelimeter: string;
+    keyIdentifier: string;
+    rootIdentifier: string;
+    groupIdentifier: string;
 };
 
 /**
@@ -111,15 +87,15 @@ export class KeyProvider {
 
     constructor(
         private readonly prefix: OneOrMore<string>,
-        settings: KeyProviderSettings = {},
+        settings: KeyProviderSettings,
     ) {
         const {
             shouldPrefixKeys = true,
-            identifierDelimeter = ":",
-            keyDelimeter = "/",
-            keyIdentifier = "_ky",
-            rootIdentifier = "_rt",
-            groupIdentifier = "_gp",
+            identifierDelimeter,
+            keyDelimeter,
+            keyIdentifier,
+            rootIdentifier,
+            groupIdentifier,
             group,
         } = settings;
         this.rootIdentifier = rootIdentifier;
