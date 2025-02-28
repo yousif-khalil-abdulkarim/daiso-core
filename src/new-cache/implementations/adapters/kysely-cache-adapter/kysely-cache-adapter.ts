@@ -264,7 +264,6 @@ export class KyselyCacheAdapter<TType = unknown>
             .where(KyselyCacheAdapter.filterUnexpiredKeys([data.key]))
             .set({
                 value: this.serde.serialize(data.value),
-                expiration: data.expiration?.getTime() ?? null,
             })
             .executeTakeFirst();
         return Number(updateResult.numUpdatedRows);

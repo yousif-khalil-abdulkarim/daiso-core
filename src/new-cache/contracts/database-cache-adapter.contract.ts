@@ -40,7 +40,6 @@ export type ICacheInsert<TType = unknown> = {
 export type ICacheUpdate<TType = unknown> = {
     key: string;
     value: TType;
-    expiration?: Date | null;
 };
 
 /**
