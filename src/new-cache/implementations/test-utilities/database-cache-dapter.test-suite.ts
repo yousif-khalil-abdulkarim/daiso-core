@@ -9,6 +9,8 @@ import {
     type beforeEach,
 } from "vitest";
 import {
+    type ICacheData,
+    type ICacheDataExpiration,
     type ICacheInsert,
     type ICacheUpdate,
     type IDatabaseCacheAdapter,
@@ -46,124 +48,588 @@ export function databaseCacheAdapterTestSuite(
 
     describe("method: find", () => {
         test("Should return null when key doesnt exists", async () => {
-            const data = await adapter.find("a");
-            expect(data).toBeNull();
+            const findData = await adapter.find("a");
+            expect(findData).toBeNull();
         });
         test("Should return the value when key exists", async () => {
-            const data: ICacheInsert = {
+            const insertData: ICacheInsert = {
                 key: "a",
                 value: 1,
                 expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
             };
-            await adapter.insert(data);
-            const findData = await adapter.find(data.key);
-            expect(findData).toEqual(data);
+            await adapter.insert(insertData);
+            const findData = await adapter.find(insertData.key);
+            const result: ICacheData = {
+                expiration: insertData.expiration,
+                value: insertData.value,
+            };
+            expect(findData).toStrictEqual(result);
         });
     });
     describe("method: insert", () => {
         test("Should throw an error when key exists", async () => {
-            const data: ICacheInsert = {
+            const insertData: ICacheInsert = {
                 key: "a",
                 value: 1,
                 expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
             };
-            await adapter.insert(data);
-            const promise = adapter.insert(data);
+            await adapter.insert(insertData);
+            const promise = adapter.insert(insertData);
             await expect(promise).rejects.toBeDefined();
         });
     });
     describe("method: upsert", () => {
         test("Should return null when key doesnt exist", async () => {
-            const data: ICacheInsert = {
+            const upsertData: ICacheInsert = {
                 key: "a",
                 value: 1,
                 expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
             };
-            const prevData = await adapter.upsert(data);
+            const prevData = await adapter.upsert(upsertData);
             expect(prevData).toBeNull();
         });
-        test("Should return previousKey when key exist", async () => {
-            const data1: ICacheInsert = {
+        test("Should return previous key expiration when key exist", async () => {
+            const upsertData1: ICacheInsert = {
                 key: "a",
                 value: 1,
                 expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
             };
-            await adapter.upsert(data1);
-            const data2: ICacheInsert = {
-                key: "b",
+            await adapter.upsert(upsertData1);
+            const upsertData2: ICacheInsert = {
+                key: "a",
                 value: 2,
                 expiration: TimeSpan.fromMilliseconds(50).toEndDate(),
             };
-            const prevData = await adapter.upsert(data2);
-            expect(prevData).toEqual(data1);
+            const prevData = await adapter.upsert(upsertData2);
+            const result: ICacheDataExpiration = {
+                expiration: upsertData1.expiration,
+            };
+            expect({ expiration: prevData?.expiration }).toStrictEqual(result);
         });
         test("Should persist insertion when key doesnt exist", async () => {
-            const insert: ICacheInsert = {
+            const upsertData: ICacheInsert = {
                 key: "a",
                 value: 1,
                 expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
             };
-            await adapter.upsert(insert);
-            const findData = await adapter.find(insert.key);
-            expect(findData).toEqual(insert);
+            await adapter.upsert(upsertData);
+            const findData = await adapter.find(upsertData.key);
+            const result: ICacheData = {
+                value: upsertData.value,
+                expiration: upsertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
         });
         test("Should persist update when key exist", async () => {
-            const data1: ICacheInsert = {
+            const upsertData1: ICacheInsert = {
                 key: "a",
                 value: 1,
                 expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
             };
-            await adapter.upsert(data1);
-            const data2: ICacheInsert = {
-                key: "b",
+            await adapter.upsert(upsertData1);
+            const upsertData2: ICacheInsert = {
+                key: "a",
                 value: 2,
                 expiration: TimeSpan.fromMilliseconds(50).toEndDate(),
             };
-            await adapter.upsert(data2);
-            const findData = await adapter.find(data2.key);
-            expect(findData).toEqual(data2);
+            await adapter.upsert(upsertData2);
+            const findData = await adapter.find(upsertData2.key);
+            const result: ICacheData = {
+                value: upsertData2.value,
+                expiration: upsertData2.expiration,
+            };
+            expect(findData).toStrictEqual(result);
         });
     });
     describe("method: updateExpired", () => {
-        test.todo("Should not persist update when key has no expiration");
-        test.todo(
-            "Should not persist update when key has expiration but not expired",
-        );
-        test.todo("Should persist update when key has expiration and expired");
+        test("Should not persist update when key has no expiration", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheInsert = {
+                key: "a",
+                value: 2,
+                expiration: null,
+            };
+            await adapter.updateExpired(updateData);
+            const findData = await adapter.find(updateData.key);
+            const result: ICacheData = {
+                value: insertData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 0 when key has no expiration", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheInsert = {
+                key: "a",
+                value: 2,
+                expiration: null,
+            };
+            const result = await adapter.updateExpired(updateData);
+            expect(result).toBe(0);
+        });
+        test("Should not persist update when key has expiration but not expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheInsert = {
+                key: "a",
+                value: 2,
+                expiration: null,
+            };
+            await adapter.updateExpired(updateData);
+            const findData = await adapter.find(updateData.key);
+            const result: ICacheData = {
+                value: insertData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 0 update when key has expiration but not expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheInsert = {
+                key: "a",
+                value: 2,
+                expiration: null,
+            };
+            const result = await adapter.updateExpired(updateData);
+            expect(result).toBe(0);
+        });
+        test("Should persist update when key has expiration and expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheInsert = {
+                key: "a",
+                value: 2,
+                expiration: null,
+            };
+            await adapter.updateExpired(updateData);
+            const findData = await adapter.find(updateData.key);
+            const result: ICacheData = {
+                value: updateData.value,
+                expiration: updateData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 1 update when key has expiration and expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheInsert = {
+                key: "a",
+                value: 2,
+                expiration: null,
+            };
+            const result = await adapter.updateExpired(updateData);
+            expect(result).toBe(1);
+        });
     });
     describe("method: updateUnexpired", () => {
-        test.todo("Should persist update when key has no expiration");
-        test.todo(
-            "Should persist update when key has expiration but not expired",
-        );
-        test.todo(
-            "Should not persist update when key has expiration and expired",
-        );
+        test("Should persist update when key has no expiration", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate = {
+                key: "a",
+                value: 2,
+            };
+            await adapter.updateUnexpired(updateData);
+            const findData = await adapter.find(updateData.key);
+            const result: ICacheData = {
+                value: updateData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 1 when key has no expiration", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate = {
+                key: "a",
+                value: 2,
+            };
+            const result = await adapter.updateUnexpired(updateData);
+            expect(result).toBe(1);
+        });
+        test("Should persist update when key has expiration but not expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate = {
+                key: "a",
+                value: 2,
+            };
+            await adapter.updateUnexpired(updateData);
+            const findData = await adapter.find(updateData.key);
+            const result: ICacheData = {
+                value: updateData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 1 update when key has expiration but not expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate = {
+                key: "a",
+                value: 2,
+            };
+            const result = await adapter.updateUnexpired(updateData);
+            expect(result).toBe(1);
+        });
+        test("Should not persist update when key has expiration and expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate = {
+                key: "a",
+                value: 2,
+            };
+            await adapter.updateUnexpired(updateData);
+            const findData = await adapter.find(updateData.key);
+            const result: ICacheData = {
+                value: insertData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 0 update when key has expiration and expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate = {
+                key: "a",
+                value: 2,
+            };
+            const result = await adapter.updateUnexpired(updateData);
+            expect(result).toBe(0);
+        });
     });
     describe("method: incrementUnexpired", () => {
-        test.todo("Should persist update when key has no expiration");
-        test.todo(
-            "Should persist update when key has expiration but not expired",
-        );
-        test.todo(
-            "Should not persist update when key has expiration and expired",
-        );
+        test("Should persist update when key has no expiration", async () => {
+            const insertData: ICacheInsert<number> = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate<number> = {
+                key: "a",
+                value: 2,
+            };
+            await adapter.incrementUnexpired(updateData);
+            const findData = await adapter.find(updateData.key);
+            const result: ICacheData = {
+                value: insertData.value + updateData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 1 when key has no expiration", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate<number> = {
+                key: "a",
+                value: 2,
+            };
+            const result = await adapter.incrementUnexpired(updateData);
+            expect(result).toBe(1);
+        });
+        test("Should persist update when key has expiration but not expired", async () => {
+            const insertData: ICacheInsert<number> = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate<number> = {
+                key: "a",
+                value: 2,
+            };
+            await adapter.incrementUnexpired(updateData);
+            const findData = await adapter.find(updateData.key);
+            const result: ICacheData = {
+                value: insertData.value + updateData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 1 update when key has expiration but not expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate<number> = {
+                key: "a",
+                value: 2,
+            };
+            const result = await adapter.incrementUnexpired(updateData);
+            expect(result).toBe(1);
+        });
+        test("Should not persist update when key has expiration and expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate<number> = {
+                key: "a",
+                value: 2,
+            };
+            await adapter.incrementUnexpired(updateData);
+            const findData = await adapter.find(updateData.key);
+            const result: ICacheData = {
+                value: insertData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 0 update when key has expiration and expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData);
+            const updateData: ICacheUpdate<number> = {
+                key: "a",
+                value: 2,
+            };
+            const result = await adapter.incrementUnexpired(updateData);
+            expect(result).toBe(0);
+        });
+        test("Should throw an error when incrementing a number error", async () => {
+            await adapter.insert({
+                key: "a",
+                value: "A",
+                expiration: null,
+            });
+            const promise = adapter.incrementUnexpired({
+                key: "a",
+                value: 2,
+            });
+            await expect(promise).rejects.toBeDefined();
+        });
     });
     describe("method: removeExpiredMany", () => {
-        test.todo("Should not persist removal when key has no expiration");
-        test.todo(
-            "Should not persist removal when key has expiration but not expired",
-        );
-        test.todo("Should persist removal when key has expiration and expired");
+        test("Should not persist removal when key has no expiration", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData);
+            await adapter.removeExpiredMany([insertData.key]);
+            const findData = await adapter.find(insertData.key);
+            const result: ICacheData = {
+                value: insertData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 0 when key has no expiration", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData);
+            const result = await adapter.removeExpiredMany([insertData.key]);
+            expect(result).toBe(0);
+        });
+        test("Should not persist removal when key has expiration but not expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData);
+            await adapter.removeExpiredMany([insertData.key]);
+            const findData = await adapter.find(insertData.key);
+            const result: ICacheData = {
+                value: insertData.value,
+                expiration: insertData.expiration,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 0 removal when key has expiration but not expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData);
+            const result = await adapter.removeExpiredMany([insertData.key]);
+            expect(result).toBe(0);
+        });
+        test("Should persist removal when key has expiration and expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData);
+            await adapter.removeExpiredMany([insertData.key]);
+            const findData = await adapter.find(insertData.key);
+            expect(findData).toBeNull();
+        });
+        test("Should return number of removed keys when all keys has expiration and are expired", async () => {
+            const insertData1: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            const insertData2: ICacheInsert = {
+                key: "b",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData1);
+            await adapter.insert(insertData2);
+            const result = await adapter.removeExpiredMany([
+                insertData1.key,
+                insertData2.key,
+            ]);
+            expect(result).toBe(2);
+        });
     });
     describe("method: removeUnexpiredMany", () => {
-        test.todo("Should persist removal when key has no expiration");
-        test.todo(
-            "Should persist removal when key has expiration but not expired",
-        );
-        test.todo(
-            "Should not persist removal when key has expiration and expired",
-        );
+        test("Should persist removal when key has no expiration", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData);
+            await adapter.removeUnexpiredMany([insertData.key]);
+            const findData = await adapter.find(insertData.key);
+            expect(findData).toBeNull();
+        });
+        test("Should return number of removed keys when all keys has no expiration", async () => {
+            const insertData1: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: null,
+            };
+            const insertData2: ICacheInsert = {
+                key: "b",
+                value: 1,
+                expiration: null,
+            };
+            await adapter.insert(insertData1);
+            await adapter.insert(insertData2);
+            const result = await adapter.removeUnexpiredMany([
+                insertData1.key,
+                insertData2.key,
+            ]);
+            expect(result).toBe(2);
+        });
+        test("Should persist removal when key has expiration but not expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData);
+            await adapter.removeUnexpiredMany([insertData.key]);
+            const findData = await adapter.find(insertData.key);
+            expect(findData).toBeNull();
+        });
+        test("Should return number of removed keys when all key has expiration but not expired", async () => {
+            const insertData1: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            const insertData2: ICacheInsert = {
+                key: "b",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toEndDate(),
+            };
+            await adapter.insert(insertData1);
+            await adapter.insert(insertData2);
+            const result = await adapter.removeUnexpiredMany([
+                insertData1.key,
+                insertData2.key,
+            ]);
+            expect(result).toBe(2);
+        });
+        test("Should not persist removal when key has expiration and expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData);
+            await adapter.removeUnexpiredMany([insertData.key]);
+            const findData = await adapter.find(insertData.key);
+            const result: ICacheData = {
+                expiration: insertData.expiration,
+                value: insertData.value,
+            };
+            expect(findData).toStrictEqual(result);
+        });
+        test("Should return 0 removal when key has expiration and expired", async () => {
+            const insertData: ICacheInsert = {
+                key: "a",
+                value: 1,
+                expiration: TimeSpan.fromMilliseconds(25).toStartDate(),
+            };
+            await adapter.insert(insertData);
+            const result = await adapter.removeUnexpiredMany([insertData.key]);
+            expect(result).toBe(0);
+        });
     });
     describe("method: removeByKeyPrefix", () => {
         test("Should remove the keys that mathc the prefix", async () => {
@@ -196,7 +662,18 @@ export function databaseCacheAdapterTestSuite(
                 await adapter.find("b/1"),
                 await adapter.find("b/2"),
             ];
-            expect(result).toEqual([null, null, 1, 2]);
+            expect(result).toStrictEqual([
+                null,
+                null,
+                {
+                    value: 1,
+                    expiration: null,
+                },
+                {
+                    value: 2,
+                    expiration: null,
+                },
+            ]);
         });
     });
 }

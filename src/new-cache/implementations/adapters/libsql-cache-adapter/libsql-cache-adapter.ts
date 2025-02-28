@@ -4,7 +4,6 @@
 
 import type {
     ICacheData,
-    ICacheIncremnt,
     ICacheInsert,
     ICacheUpdate,
     IDatabaseCacheAdapter,
@@ -133,7 +132,7 @@ export class LibsqlCacheAdapter<TType = unknown>
         return await this.adapter.updateUnexpired(data);
     }
 
-    async incrementUnexpired(data: ICacheIncremnt): Promise<number> {
+    async incrementUnexpired(data: ICacheUpdate<number>): Promise<number> {
         return await this.adapter.incrementUnexpired(data);
     }
 

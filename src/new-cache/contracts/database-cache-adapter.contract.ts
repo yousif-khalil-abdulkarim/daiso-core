@@ -43,16 +43,6 @@ export type ICacheUpdate<TType = unknown> = {
 };
 
 /**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
- * @group Contracts
- */
-export type ICacheIncremnt = {
-    key: string;
-    value: number;
-};
-
-/**
  * The <i>IDatabaseCacheAdapter</i> contract defines a way for as key-value pairs independent of data storage.
  * This contract simplifies the implementation of cache adapters with CRUD-based databases, such as SQL databases and ORMs like TypeOrm and MikroOrm.
  *
@@ -77,7 +67,7 @@ export type IDatabaseCacheAdapter<TType = unknown> = {
     /**
      * The <i>incrementUnexpired</i> should always throw an error if the existing item is not a number type.
      */
-    incrementUnexpired(data: ICacheIncremnt): PromiseLike<number>;
+    incrementUnexpired(data: ICacheUpdate<number>): PromiseLike<number>;
 
     removeExpiredMany(keys: string[]): PromiseLike<number>;
 

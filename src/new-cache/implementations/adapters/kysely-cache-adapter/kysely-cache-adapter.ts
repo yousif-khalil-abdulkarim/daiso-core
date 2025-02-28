@@ -5,7 +5,6 @@
 import {
     TypeCacheError,
     type ICacheData,
-    type ICacheIncremnt,
     type ICacheInsert,
     type ICacheUpdate,
     type IDatabaseCacheAdapter,
@@ -209,10 +208,11 @@ export class KyselyCacheAdapter<TType = unknown>
     }
 
     async upsert(data: ICacheInsert<TType>): Promise<ICacheData<TType> | null> {
+        const expiration = data.expiration?.getTime() ?? null;
         return await this.transaction(async (trx) => {
             const prevRow = await trx
                 .selectFrom("cache")
-                .select(["cache.key", "cache.value"])
+                .select(["cache.key", "cache.value", "cache.expiration"])
                 .where(KyselyCacheAdapter.filterUnexpiredKeys([data.key]))
                 .executeTakeFirst();
 
@@ -222,7 +222,7 @@ export class KyselyCacheAdapter<TType = unknown>
                     .values({
                         key: data.key,
                         value: this.serde.serialize(data.value),
-                        expiration: data.expiration?.getTime() ?? null,
+                        expiration,
                     })
                     .executeTakeFirst();
             } catch {
@@ -231,7 +231,7 @@ export class KyselyCacheAdapter<TType = unknown>
                     .where("cache.key", "=", data.key)
                     .set({
                         value: this.serde.serialize(data.value),
-                        expiration: data.expiration?.getTime() ?? null,
+                        expiration,
                     })
                     .executeTakeFirst();
             }
@@ -241,7 +241,9 @@ export class KyselyCacheAdapter<TType = unknown>
             }
             return {
                 value: this.serde.deserialize(prevRow.value),
-                expiration: data.expiration ? new Date(data.expiration) : null,
+                expiration: prevRow.expiration
+                    ? new Date(prevRow.expiration)
+                    : null,
             };
         });
     }
@@ -269,7 +271,7 @@ export class KyselyCacheAdapter<TType = unknown>
         return Number(updateResult.numUpdatedRows);
     }
 
-    async incrementUnexpired(data: ICacheIncremnt): Promise<number> {
+    async incrementUnexpired(data: ICacheUpdate<number>): Promise<number> {
         return await this.transaction(async (trx) => {
             const row = await trx
                 .selectFrom("cache")
