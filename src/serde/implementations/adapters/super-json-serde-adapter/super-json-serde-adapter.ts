@@ -2,14 +2,12 @@
  * @module Serde
  */
 
-import type {
-    ISerdeTransformerAdapter,
-    IFlexibleSerdeAdapter,
-} from "@/serde/contracts/_module-exports.js";
 import {
+    type ISerdeTransformerAdapter,
+    type IFlexibleSerdeAdapter,
     DeserializationError,
     SerializationError,
-} from "@/serde/contracts/serde.errors.js";
+} from "@/serde/contracts/_module-exports.js";
 import { SuperJSON } from "superjson-cjs";
 
 /**

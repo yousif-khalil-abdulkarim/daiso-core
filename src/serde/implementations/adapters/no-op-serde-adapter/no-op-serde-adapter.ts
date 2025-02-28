@@ -4,7 +4,7 @@
 import type {
     IFlexibleSerdeAdapter,
     ISerdeTransformerAdapter,
-} from "@/serde/contracts/flexible-serde-adapter.contract.js";
+} from "@/serde/contracts/_module-exports.js";
 
 /**
  *

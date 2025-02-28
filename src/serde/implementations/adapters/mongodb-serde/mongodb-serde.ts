@@ -2,11 +2,11 @@
  * @module Serde
  */
 
-import { type ISerde } from "@/serde/contracts/_module-exports.js";
 import {
+    type ISerde,
     DeserializationError,
     SerializationError,
-} from "@/serde/contracts/serde.errors.js";
+} from "@/serde/contracts/_module-exports.js";
 
 /**
  * @internal
