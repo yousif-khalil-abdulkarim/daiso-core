@@ -2,7 +2,10 @@
  * @module Cache
  */
 
-import type { CacheEvents } from "@/new-cache/contracts/_module-exports.js";
+import type {
+    CacheEvents,
+    IDatabaseCacheAdapter,
+} from "@/new-cache/contracts/_module-exports.js";
 import {
     KeyFoundCacheEvent,
     KeyNotFoundCacheEvent,
@@ -24,6 +27,7 @@ import { type IGroupableCache } from "@/new-cache/contracts/_module-exports.js";
 import {
     isFactory,
     resolveAsyncLazyable,
+    resolveFactoryable,
     resolveOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 import {
@@ -35,6 +39,7 @@ import type {
     NoneFunction,
     TimeSpan,
     KeyPrefixer,
+    Factoryable,
 } from "@/utilities/_module-exports.js";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
@@ -47,10 +52,18 @@ import type {
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
-import {
-    type CacheAdapterFactoryable,
-    resolveCacheAdapterFactoryable,
-} from "@/new-cache/implementations/derivables/cache/resolve-cache-adapter-factoryable.js";
+import { isDatabaseCacheAdapter } from "@/new-cache/implementations/derivables/cache/is-database-cache-adapter.js";
+import { DatabaseCacheAdapter } from "@/new-cache/implementations/derivables/cache/database-cache-adapter.js";
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * @group Derivables
+ */
+export type CacheAdapterFactoryable<TType> = Factoryable<
+    string,
+    ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>
+>;
 
 /**
  *
@@ -118,6 +131,23 @@ export type CacheSettings = CacheSettingsBase & {
  * @group Derivables
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {
+    private static resolveCacheAdapter<TType>(
+        adapter: ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>,
+    ): ICacheAdapter<TType> {
+        if (isDatabaseCacheAdapter<TType>(adapter)) {
+            return new DatabaseCacheAdapter(adapter);
+        }
+        return adapter;
+    }
+
+    private static async resolveCacheAdapterFactoryable<TType>(
+        factoryable: CacheAdapterFactoryable<TType>,
+        rootPrefix: string,
+    ): Promise<ICacheAdapter<TType>> {
+        const adapter = await resolveFactoryable(factoryable, rootPrefix);
+        return Cache.resolveCacheAdapter(adapter);
+    }
+
     private static defaultRetryPolicy: RetryPolicy = (error: unknown) => {
         return !(
             error instanceof TypeCacheError ||
@@ -176,7 +206,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             );
         }
 
-        this.adapterPromise = resolveCacheAdapterFactoryable(
+        this.adapterPromise = Cache.resolveCacheAdapterFactoryable(
             this.adapterFactoryable,
             resolveOneOrMoreStr(this.keyPrefixer.rootPrefix),
         );
