@@ -18,7 +18,8 @@ type KeySettings = {
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 class Key {
     private readonly prefixArr: AtLeastOne<string>;
@@ -28,6 +29,10 @@ class Key {
     private readonly shouldPrefixKeys: boolean;
     private readonly keyIdentifier: string;
 
+    /**
+     *
+     * @internal
+     */
     constructor(settings: KeySettings) {
         const {
             prefixArr,
@@ -61,24 +66,24 @@ class Key {
 }
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type KeyProviderSettings = {
-    group?: OneOrMore<string>;
-    shouldPrefixKeys: boolean;
-    identifierDelimeter: string;
-    keyDelimeter: string;
-    keyIdentifier: string;
-    rootIdentifier: string;
-    groupIdentifier: string;
+export type KeyPrefixerSettings = {
+    identifierDelimeter?: string;
+    keyDelimeter?: string;
+    keyIdentifier?: string;
+    rootIdentifier?: string;
+    groupIdentifier?: string;
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export class KeyProvider {
-    private readonly group?: OneOrMore<string>;
-    private readonly shouldPrefixKeys: boolean;
+export class KeyPrefixer {
+    public group: OneOrMore<string> | null = null;
+    private shouldPrefixKeys: boolean = true;
     private readonly identifierDelimeter: string;
     private readonly keyDelimeter: string;
     private readonly rootIdentifier: string;
@@ -86,27 +91,23 @@ export class KeyProvider {
     private readonly keyIdentifier: string;
 
     constructor(
-        private readonly prefix: OneOrMore<string>,
-        settings: KeyProviderSettings,
+        public readonly rootPrefix: OneOrMore<string>,
+        settings: KeyPrefixerSettings = {},
     ) {
         const {
-            shouldPrefixKeys = true,
-            identifierDelimeter,
-            keyDelimeter,
-            keyIdentifier,
-            rootIdentifier,
-            groupIdentifier,
-            group,
+            identifierDelimeter = ":",
+            keyDelimeter = "/",
+            keyIdentifier = "_ky",
+            rootIdentifier = "_rt",
+            groupIdentifier = "_gp",
         } = settings;
         this.rootIdentifier = rootIdentifier;
         this.groupIdentifier = groupIdentifier;
         this.keyIdentifier = keyIdentifier;
-        this.shouldPrefixKeys = shouldPrefixKeys;
         this.identifierDelimeter = identifierDelimeter;
         this.keyDelimeter = keyDelimeter;
-        this.group = group;
-        this.validate(this.prefix);
-        if (this.group !== undefined) {
+        this.validate(this.rootPrefix);
+        if (this.group !== null) {
             this.validate(this.group);
         }
     }
@@ -126,9 +127,9 @@ export class KeyProvider {
     private getGroupPrefixArray(): AtLeastOne<string> {
         let array: AtLeastOne<string> = [
             this.rootIdentifier,
-            resolveOneOrMoreStr(this.prefix),
+            resolveOneOrMoreStr(this.rootPrefix),
         ];
-        if (this.group !== undefined) {
+        if (this.group !== null) {
             array = [
                 ...array,
                 this.groupIdentifier,
@@ -157,6 +158,40 @@ export class KeyProvider {
             this.getKeyPrefixArray(),
             this.identifierDelimeter,
         );
+    }
+
+    /**
+     * Chaining this method multiple times will have no effect.
+     */
+    withGroup(group: OneOrMore<string>): KeyPrefixer {
+        const keyProvider = new KeyPrefixer(this.rootPrefix, {
+            identifierDelimeter: this.identifierDelimeter,
+            keyDelimeter: this.keyDelimeter,
+            rootIdentifier: this.rootIdentifier,
+            groupIdentifier: this.groupIdentifier,
+            keyIdentifier: this.keyIdentifier,
+        });
+        if (keyProvider.group === null) {
+            keyProvider.group = group;
+        }
+        keyProvider.shouldPrefixKeys = this.shouldPrefixKeys;
+        return keyProvider;
+    }
+
+    /**
+     * Chaining this method multiple times will have no effect.
+     */
+    disablePrefix(): KeyPrefixer {
+        const keyProvider = new KeyPrefixer(this.rootPrefix, {
+            identifierDelimeter: this.identifierDelimeter,
+            keyDelimeter: this.keyDelimeter,
+            rootIdentifier: this.rootIdentifier,
+            groupIdentifier: this.groupIdentifier,
+            keyIdentifier: this.keyIdentifier,
+        });
+        keyProvider.shouldPrefixKeys = false;
+        keyProvider.group = this.group;
+        return keyProvider;
     }
 
     create(key: OneOrMore<string>): Key {
