@@ -3,22 +3,11 @@
  * @module Cache
  */
 
-import { TypeCacheError } from "@/cache/contracts/cache.errors.js";
-import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
 import {
-    resolveOneOrMoreStr,
-    type TimeSpan,
-} from "@/utilities/_module-exports.js";
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
- * @group Adapters
- */
-export type MemoryCacheAdapterSettings = {
-    rootGroup: string;
-    map?: Map<string, unknown>;
-};
+    TypeCacheError,
+    type ICacheAdapter,
+} from "@/cache/contracts/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  * To utilize the <i>MemoryCacheAdapter</i>, you must create instance of it.
@@ -26,56 +15,38 @@ export type MemoryCacheAdapterSettings = {
  * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
-export class MemoryCacheAdapter<TType = unknown>
-    implements ICacheAdapter<TType>
-{
-    private readonly group: string;
-
+export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
     private readonly timeoutMap = new Map<
         string,
         NodeJS.Timeout | string | number
     >();
-
-    private readonly map: Map<string, unknown>;
 
     /**
      *  @example
      * ```ts
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      *
-     * const cacheAdapter = new MemoryCacheAdapter({
-     *   rootGroup: "@cache"
-     * });
+     * const cacheAdapter = new MemoryCacheAdapter();
      * ```
-     * You can also provide an <i>Map</i>.
+     * You can also provide an <i>Map</i> that will be used for storing the data.
      * @example
      * ```ts
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      *
      * const map = new Map<any, any>();
-     * const cacheAdapter = new MemoryCacheAdapter({
-     *   rootGroup: "@cache",
-     *   map
-     * });
+     * const cacheAdapter = new MemoryCacheAdapter(map);
      * ```
      */
-    constructor(settings: MemoryCacheAdapterSettings) {
-        const { rootGroup, map = new Map<string, unknown>() } = settings;
-        this.map = map;
-        this.group = rootGroup;
-    }
-
-    private getPrefix(): string {
-        return resolveOneOrMoreStr([this.group, "__KEY__"]);
-    }
-
-    private withPrefix(key: string): string {
-        return resolveOneOrMoreStr([this.getPrefix(), key]);
-    }
+    constructor(private readonly map: Map<string, unknown> = new Map()) {}
 
     async get(key: string): Promise<TType | null> {
-        key = this.withPrefix(key);
-        return (this.map.get(key) as TType) ?? null;
+        return (this.map.get(key) ?? null) as TType;
+    }
+
+    async getAndRemove(key: string): Promise<TType | null> {
+        const value = await this.get(key);
+        await this.remove(key);
+        return value;
     }
 
     async add(
@@ -83,7 +54,6 @@ export class MemoryCacheAdapter<TType = unknown>
         value: TType,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
-        key = this.withPrefix(key);
         const hasNotKey = !this.map.has(key);
         if (hasNotKey) {
             this.map.set(key, value);
@@ -100,15 +70,6 @@ export class MemoryCacheAdapter<TType = unknown>
         return hasNotKey;
     }
 
-    async update(key: string, value: TType): Promise<boolean> {
-        key = this.withPrefix(key);
-        const hasKey = this.map.has(key);
-        if (hasKey) {
-            this.map.set(key, value);
-        }
-        return hasKey;
-    }
-
     async put(
         key: string,
         value: TType,
@@ -119,15 +80,15 @@ export class MemoryCacheAdapter<TType = unknown>
         return hasKey;
     }
 
-    async remove(key: string): Promise<boolean> {
-        key = this.withPrefix(key);
-        clearTimeout(this.timeoutMap.get(key));
-        this.timeoutMap.delete(key);
-        return this.map.delete(key);
+    async update(key: string, value: TType): Promise<boolean> {
+        const hasKey = this.map.has(key);
+        if (hasKey) {
+            this.map.set(key, value);
+        }
+        return hasKey;
     }
 
     async increment(key: string, value: number): Promise<boolean> {
-        key = this.withPrefix(key);
         const prevValue = this.map.get(key);
         const hasKey = prevValue !== undefined;
         if (hasKey) {
@@ -142,24 +103,36 @@ export class MemoryCacheAdapter<TType = unknown>
         return hasKey;
     }
 
-    async clear(): Promise<void> {
+    async remove(key: string): Promise<boolean> {
+        clearTimeout(this.timeoutMap.get(key));
+        this.timeoutMap.delete(key);
+        return this.map.delete(key);
+    }
+
+    async removeMany(keys: string[]): Promise<boolean> {
+        let deleteCount = 0;
+        for (const key of keys) {
+            clearTimeout(this.timeoutMap.get(key));
+            this.timeoutMap.delete(key);
+            const hasDeleted = this.map.delete(key);
+            if (hasDeleted) {
+                deleteCount++;
+            }
+        }
+        return deleteCount > 0;
+    }
+
+    async removeByKeyPrefix(prefix: string): Promise<void> {
+        if (prefix === "") {
+            this.map.clear();
+            return;
+        }
         for (const key of this.map.keys()) {
-            if (key.startsWith(this.getPrefix())) {
+            if (key.startsWith(prefix)) {
                 clearTimeout(this.timeoutMap.get(key));
                 this.timeoutMap.delete(key);
                 this.map.delete(key);
             }
         }
-    }
-
-    getGroup(): string {
-        return this.group;
-    }
-
-    withGroup(group: string): ICacheAdapter<TType> {
-        return new MemoryCacheAdapter({
-            map: this.map,
-            rootGroup: resolveOneOrMoreStr([this.group, group]),
-        });
     }
 }

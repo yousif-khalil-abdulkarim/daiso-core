@@ -27,7 +27,6 @@ describe("class: RedisCacheAdapter", () => {
             new RedisCacheAdapter({
                 database: client,
                 serde: new Serde(new SuperJsonSerdeAdapter()),
-                rootGroup: "@a",
             }),
         test,
         beforeEach,

@@ -1,6 +1,7 @@
 /**
  * @module Cache
  */
+
 import {
     type TestAPI,
     type SuiteAPI,
@@ -8,18 +9,18 @@ import {
     type beforeEach,
 } from "vitest";
 import {
-    KeyNotFoundCacheError,
-    KeyNotFoundCacheEvent,
-    KeyFoundCacheEvent,
     TypeCacheError,
     type IGroupableCache,
     type ICache,
+    KeyNotFoundCacheError,
+    KeyNotFoundCacheEvent,
     KeyAddedCacheEvent,
-    KeyUpdatedCacheEvent,
+    KeyDecrementedCacheEvent,
+    KeyFoundCacheEvent,
+    KeyIncrementedCacheEvent,
     KeyRemovedCacheEvent,
     KeysClearedCacheEvent,
-    KeyIncrementedCacheEvent,
-    KeyDecrementedCacheEvent,
+    KeyUpdatedCacheEvent,
 } from "@/cache/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
@@ -46,38 +47,24 @@ export type CacheTestSuiteSettings = {
  * @example
  * ```ts
  * import { beforeEach, describe, expect, test } from "vitest";
+ * import { cacheTestSuite } from "@daiso-tech/core/cache/implementations/test-utilities";
  * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
  * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
- * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
- * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
- * import { cacheTestSuite } from "@daiso-tech/core/cache/implementations/test-utilities";
+ * import { KeyPrefixer } from "@daiso-tech/core/utilities";
  *
  * describe("class: Cache", () => {
- *     const eventBus = new EventBus<any>({
- *         adapter: new MemoryEventBusAdapter({
- *             rootGroup: "@global",
- *         }),
- *     });
- *     let map: Map<string, unknown>;
- *     beforeEach(() => {
- *         map = new Map();
- *     });
  *     cacheTestSuite({
- *         createCache: () =>
- *             new Cache({
- *                 adapter: new MemoryCacheAdapter({
- *                     rootGroup: "@a",
- *                     map,
- *                 }),
- *                 eventBus,
- *             }),
- *         beforeEach,
- *         describe,
- *         expect,
- *         test,
- *     });
+ *       createCache: () =>
+ *           new Cache({
+ *               keyPrefixer: new KeyPrefixer("cache"),
+ *               adapter: new MemoryCacheAdapter(),
+ *           }),
+ *       test,
+ *       beforeEach,
+ *       expect,
+ *       describe,
+ *   });
  * });
- *
  * ```
  */
 export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
@@ -89,142 +76,71 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         cacheA = cache;
         cacheB = cache.withGroup("b");
     });
+
+    const TTL = TimeSpan.fromMilliseconds(50);
     describe("Api tests:", () => {
-        const TTL = TimeSpan.fromMilliseconds(50);
         describe("method: exists", () => {
             test("Should return true when key exists", async () => {
-                await cacheA.add("a", 1);
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
                 expect(await cacheA.exists("a")).toBe(true);
             });
-            test("Should return false when key doesnt exists", async () => {
+            test("Should return false when keys doesnt exists", async () => {
                 expect(await cacheA.exists("a")).toBe(false);
             });
-            test("Should return false when key is expired", async () => {
+            test("Should return false when key is experied", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.exists("a")).toBe(false);
-            });
-        });
-        describe("method: existsMany", () => {
-            test("Should return only true when all keys exists", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(await cacheA.existsMany(["a", "b"])).toEqual({
-                    a: true,
-                    b: true,
-                });
-            });
-            test("Should return only false when all keys doesnt exists", async () => {
-                expect(await cacheA.existsMany(["a", "b"])).toEqual({
-                    a: false,
-                    b: false,
-                });
-            });
-            test("Should return true and false when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.existsMany(["a", "b"])).toEqual({
-                    a: true,
-                    b: false,
-                });
-            });
-            test("Should return false when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.existsMany(["a"])).toEqual({
-                    a: false,
-                });
             });
         });
         describe("method: missing", () => {
             test("Should return false when key exists", async () => {
-                await cacheA.add("a", 1);
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
                 expect(await cacheA.missing("a")).toBe(false);
             });
-            test("Should return true when key doesnt exists", async () => {
+            test("Should return true when keys doesnt exists", async () => {
                 expect(await cacheA.missing("a")).toBe(true);
             });
-            test("Should return true when key is expired", async () => {
+            test("Should return true when key is experied", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.missing("a")).toBe(true);
-            });
-        });
-        describe("method: missingMany", () => {
-            test("Should return only false when all keys exists", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(await cacheA.missingMany(["a", "b"])).toEqual({
-                    a: false,
-                    b: false,
-                });
-            });
-            test("Should return only true when all keys doesnt exists", async () => {
-                expect(await cacheA.missingMany(["a", "b"])).toEqual({
-                    a: true,
-                    b: true,
-                });
-            });
-            test("Should return true and false when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.missingMany(["a", "b"])).toEqual({
-                    a: false,
-                    b: true,
-                });
-            });
-            test("Should return true when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.missingMany(["a"])).toEqual({
-                    a: true,
-                });
             });
         });
         describe("method: get", () => {
-            test("Should return value when key exists", async () => {
-                await cacheA.add("a", 1);
+            test("Should return the value when key exists", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(1);
             });
-            test("Should return null when key doesnt exists", async () => {
+            test("Should return null when keys doesnt exists", async () => {
                 expect(await cacheA.get("a")).toBeNull();
             });
-            test("Should return null when key is expired", async () => {
+            test("Should return null when key is experied", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.get("a")).toBeNull();
             });
         });
-        describe("method: getMany", () => {
-            test("Should return only values when all keys exists", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: 1,
-                    b: 1,
-                });
+        describe("method: getOrFail", () => {
+            test("Should return the value when key exists", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+                expect(await cacheA.getOrFail("a")).toBe(1);
             });
-            test("Should return only null when all keys doesnt exists", async () => {
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: null,
-                    b: null,
-                });
+            test("Should throw an KeyNotFoundCacheError when keys doesnt exists", async () => {
+                await expect(cacheA.getOrFail("a")).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
             });
-            test("Should return values and null when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: 1,
-                    b: null,
-                });
-            });
-            test("Should return null when key is expired", async () => {
+            test("Should throw an KeyNotFoundCacheError when key is experied", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.getMany(["a"])).toEqual({ a: null });
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await expect(cacheA.getOrFail("a")).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
             });
         });
         describe("method: getOr", () => {
@@ -283,531 +199,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 });
             });
         });
-        describe("method: getOrFail", () => {
-            test("Should return value when key exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.getOrFail("a")).toBe(1);
-            });
-            test("Should throw KeyNotFoundCacheError value when key doesnt exists", async () => {
-                await expect(cacheA.getOrFail("a")).rejects.toBeInstanceOf(
-                    KeyNotFoundCacheError,
-                );
-            });
-            test("Should throw KeyNotFoundCacheError value when key is expired exists", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                await expect(cacheA.getOrFail("a")).rejects.toBeInstanceOf(
-                    KeyNotFoundCacheError,
-                );
-            });
-        });
-        describe("method: getOrMany", () => {
-            test("Should return only values when all keys exists", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(await cacheA.getOrMany({ a: -1, b: -1 })).toEqual({
-                    a: 1,
-                    b: 1,
-                });
-            });
-            describe("Should return only default values when all keys doesnt exists", () => {
-                test("Value", async () => {
-                    expect(await cacheA.getOrMany({ a: -1, b: -1 })).toEqual({
-                        a: -1,
-                        b: -1,
-                    });
-                });
-                test("Function", async () => {
-                    expect(
-                        await cacheA.getOrMany({ a: () => -1, b: () => -1 }),
-                    ).toEqual({
-                        a: -1,
-                        b: -1,
-                    });
-                });
-                test("Async function", async () => {
-                    expect(
-                        await cacheA.getOrMany({
-                            a: () => Promise.resolve(-1),
-                            b: () => Promise.resolve(-1),
-                        }),
-                    ).toEqual({
-                        a: -1,
-                        b: -1,
-                    });
-                });
-                test("LazyPromise", async () => {
-                    expect(
-                        await cacheA.getOrMany({
-                            a: new LazyPromise(() => Promise.resolve(-1)),
-                            b: new LazyPromise(() => Promise.resolve(-1)),
-                        }),
-                    ).toEqual({
-                        a: -1,
-                        b: -1,
-                    });
-                });
-            });
-            describe("Should return default value when key is expired", () => {
-                test("Value", async () => {
-                    await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
-                    expect(
-                        await cacheA.getOrMany({
-                            a: -1,
-                        }),
-                    ).toEqual({
-                        a: -1,
-                    });
-                });
-                test("Function", async () => {
-                    await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
-                    expect(
-                        await cacheA.getOrMany({
-                            a: () => -1,
-                        }),
-                    ).toEqual({
-                        a: -1,
-                    });
-                });
-                test("Async function", async () => {
-                    await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
-                    expect(
-                        await cacheA.getOrMany({
-                            a: () => Promise.resolve(-1),
-                        }),
-                    ).toEqual({
-                        a: -1,
-                    });
-                });
-                test("LazyPromise", async () => {
-                    await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
-                    expect(
-                        await cacheA.getOrMany({
-                            a: new LazyPromise(() => Promise.resolve(-1)),
-                        }),
-                    ).toEqual({
-                        a: -1,
-                    });
-                });
-            });
-            test("Should return values and default values when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.getOrMany({ a: -1, b: -1 })).toEqual({
-                    a: 1,
-                    b: -1,
-                });
-            });
-        });
-        describe("method: add", () => {
-            test("Should return true when key doesnt exist", async () => {
-                expect(await cacheA.add("a", 1)).toBe(true);
-            });
-            test("Should return true when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.add("a", 1)).toBe(true);
-            });
-            test("Should persist value when key doesnt exist", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.get("a")).toBe(1);
-            });
-            test("Should persist value when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                await cacheA.add("a", 1);
-                expect(await cacheA.get("a")).toBe(1);
-            });
-            test("Should return false when key exist", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.add("a", 1)).toBe(false);
-            });
-            test("Should not persist value when key exist", async () => {
-                await cacheA.add("a", 1);
-                await cacheA.add("a", 2);
-                expect(await cacheA.get("a")).toBe(1);
-            });
-        });
-        describe("method: addMany", () => {
-            test("Should return only true when all keys doesnt exists", async () => {
-                expect(
-                    await cacheA.addMany({
-                        a: { value: 1 },
-                        b: { value: 1 },
-                    }),
-                ).toEqual({
-                    a: true,
-                    b: true,
-                });
-            });
-            test("Should return true when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.addMany({ a: { value: 1 } })).toEqual({
-                    a: true,
-                });
-            });
-            test("Should persist values when all keys doesnt exist", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: 1,
-                    b: 1,
-                });
-            });
-            test("Should persist value when key is expired", async () => {
-                await cacheA.add("a", -1, TTL);
-                await delay(TTL);
-                await cacheA.addMany({ a: { value: 1 } });
-                expect(await cacheA.get("a")).toBe(1);
-            });
-            test("Should return only false when all keys exists", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(
-                    await cacheA.addMany({
-                        a: { value: 1 },
-                        b: { value: 1 },
-                    }),
-                ).toEqual({
-                    a: false,
-                    b: false,
-                });
-            });
-            test("Should not persist values when key exist", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: 1,
-                    b: 1,
-                });
-            });
-            test("Should return true and false when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                expect(
-                    await cacheA.addMany({
-                        a: { value: 1 },
-                        b: { value: 1 },
-                    }),
-                ).toEqual({
-                    a: false,
-                    b: true,
-                });
-            });
-            test("Should persist and not persist values when some keys exists", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                });
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 2 },
-                });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: 1,
-                    b: 2,
-                });
-            });
-        });
-        describe("method: update", () => {
-            test("Should return true when key exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.update("a", -1)).toBe(true);
-            });
-            test("Should persist update when key exists", async () => {
-                await cacheA.add("a", 1);
-                await cacheA.update("a", -1);
-                expect(await cacheA.get("a")).toBe(-1);
-            });
-            test("Should return false when key doesnt exists", async () => {
-                expect(await cacheA.update("a", -1)).toBe(false);
-            });
-            test("Should return false when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.update("a", -1)).toBe(false);
-            });
-            test("Should not persist update when key doesnt exists", async () => {
-                await cacheA.update("a", -1);
-                expect(await cacheA.get("a")).toBeNull();
-            });
-            test("Should not persist update when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                await cacheA.update("a", -1);
-                expect(await cacheA.get("a")).toBeNull();
-            });
-        });
-        describe("method: updateMany", () => {
-            test("Should return only true when all keys exists", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(await cacheA.updateMany({ a: -1, b: -1 })).toEqual({
-                    a: true,
-                    b: true,
-                });
-            });
-            test("Should persist values when all keys exist", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                await cacheA.updateMany({ a: -1, b: -1 });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: -1,
-                    b: -1,
-                });
-            });
-            test("Should return only false when all keys doesnt exists", async () => {
-                expect(await cacheA.updateMany({ a: -1, b: -1 })).toEqual({
-                    a: false,
-                    b: false,
-                });
-            });
-            test("Should return false when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.updateMany({ a: -1 })).toEqual({
-                    a: false,
-                });
-            });
-            test("Should not persist values when all keys doesnt exist", async () => {
-                await cacheA.updateMany({ a: -1, b: -1 });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: null,
-                    b: null,
-                });
-            });
-            test("Should not persist update when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                await cacheA.updateMany({ a: -1 });
-                expect(await cacheA.get("a")).toBeNull();
-            });
-            test("Should return true and false when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.updateMany({ a: -1, b: -1 })).toEqual({
-                    a: true,
-                    b: false,
-                });
-            });
-            test("Should persist and not persist values when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                await cacheA.updateMany({ a: -1, b: -1 });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: -1,
-                    b: null,
-                });
-            });
-        });
-        describe("method: put", () => {
-            test("Should return true when key exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.put("a", -1)).toBe(true);
-            });
-            test("Should persist update when key exists", async () => {
-                await cacheA.add("a", 1);
-                await cacheA.put("a", -1);
-                expect(await cacheA.get("a")).toBe(-1);
-            });
-            test("Should return false when key doesnt exists", async () => {
-                expect(await cacheA.put("a", -1)).toBe(false);
-            });
-            test("Should return false when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.put("a", -1)).toBe(false);
-            });
-            test("Should persist insertion when key doesnt exists", async () => {
-                await cacheA.put("a", -1);
-                expect(await cacheA.get("a")).toBe(-1);
-            });
-            test("Should persist insertion when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                await cacheA.put("a", -1);
-                expect(await cacheA.get("a")).toBe(-1);
-            });
-            test("Should replace the ttl value", async () => {
-                const ttlA = TimeSpan.fromMilliseconds(100);
-                await cacheA.add("a", 1, ttlA);
-                const ttlB = TimeSpan.fromMilliseconds(50);
-                await cacheA.put("a", -1, ttlB);
-                await delay(ttlB);
-                expect(await cacheA.get("a")).toBeNull();
-            });
-        });
-        describe("method: putMany", () => {
-            test("Should return only true when all keys exists", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(
-                    await cacheA.putMany({
-                        a: { value: -1 },
-                        b: { value: -1 },
-                    }),
-                ).toEqual({
-                    a: true,
-                    b: true,
-                });
-            });
-            test("Should persist values when all keys exist", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                await cacheA.putMany({ a: { value: -1 }, b: { value: -1 } });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: -1,
-                    b: -1,
-                });
-            });
-            test("Should return only false when all keys doesnt exists", async () => {
-                expect(
-                    await cacheA.putMany({
-                        a: { value: -1 },
-                        b: { value: -1 },
-                    }),
-                ).toEqual({
-                    a: false,
-                    b: false,
-                });
-            });
-            test("Should return false when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.putMany({ a: { value: -1 } })).toEqual({
-                    a: false,
-                });
-            });
-            test("Should persist values when all keys doesnt exist", async () => {
-                await cacheA.putMany({ a: { value: -1 }, b: { value: -1 } });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: -1,
-                    b: -1,
-                });
-            });
-            test("Should persist insertion when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                await cacheA.putMany({ a: { value: -1 } });
-                expect(await cacheA.get("a")).toBe(-1);
-            });
-            test("Should return true and false when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                expect(
-                    await cacheA.putMany({
-                        a: { value: -1 },
-                        b: { value: -1 },
-                    }),
-                ).toEqual({
-                    a: true,
-                    b: false,
-                });
-            });
-            test("Should persist all values when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                await cacheA.putMany({ a: { value: -1 }, b: { value: -1 } });
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: -1,
-                    b: -1,
-                });
-            });
-            test("Should replace the ttl value", async () => {
-                const ttlA = TimeSpan.fromMilliseconds(100);
-                await cacheA.add("a", 1, ttlA);
-                const ttlB = TimeSpan.fromMilliseconds(50);
-                await cacheA.putMany({
-                    a: {
-                        value: -1,
-                        ttl: ttlB,
-                    },
-                });
-                await delay(ttlB);
-                expect(await cacheA.get("a")).toBeNull();
-            });
-        });
-        describe("method: remove", () => {
-            test("Should return true when key exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.remove("a")).toBe(true);
-            });
-            test("Should persist removal when key exists", async () => {
-                await cacheA.add("a", 1);
-                await cacheA.remove("a");
-                expect(await cacheA.get("a")).toBeNull();
-            });
-            test("Should return false when key doesnt exists", async () => {
-                expect(await cacheA.remove("a")).toBe(false);
-            });
-            test("Should return false when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.remove("a")).toBe(false);
-            });
-        });
-        describe("method: removeMany", () => {
-            test("Should return only true when all keys exists", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                expect(await cacheA.removeMany(["a", "b"])).toEqual({
-                    a: true,
-                    b: true,
-                });
-            });
-            test("Should persist values when all keys exist", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 1 },
-                });
-                await cacheA.removeMany(["a", "b"]);
-                expect(await cacheA.getMany(["a", "b"])).toEqual({
-                    a: null,
-                    b: null,
-                });
-            });
-            test("Should return only false when all keys doesnt exists", async () => {
-                expect(await cacheA.removeMany(["a", "b"])).toEqual({
-                    a: false,
-                    b: false,
-                });
-            });
-            test("Should return false when key is expired", async () => {
-                await cacheA.add("a", 1, TTL);
-                await delay(TTL);
-                expect(await cacheA.removeMany(["a"])).toEqual({ a: false });
-            });
-            test("Should return true and false when some keys exists", async () => {
-                await cacheA.add("a", 1);
-                expect(await cacheA.removeMany(["a", "b"])).toEqual({
-                    a: true,
-                    b: false,
-                });
-            });
-        });
         describe("method: getAndRemove", () => {
             test("Should return value when key exists", async () => {
-                await cacheA.add("a", 1);
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
                 expect(await cacheA.getAndRemove("a")).toBe(1);
             });
             test("Should return null when key doesnt exists", async () => {
@@ -815,12 +210,14 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return null when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.getAndRemove("a")).toBeNull();
             });
             test("Should persist removal when key exists", async () => {
-                await cacheA.add("a", 1);
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
                 await cacheA.getAndRemove("a");
+                await delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBeNull();
             });
         });
@@ -880,14 +277,128 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 });
             });
         });
+        describe("method: add", () => {
+            test("Should return true when key doesnt exists", async () => {
+                const result = await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+                expect(result).toBe(true);
+            });
+            test("Should return true when key is expired", async () => {
+                await cacheA.add("a", 1, TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                expect(await cacheA.add("a", 1, null)).toBe(true);
+            });
+            test("Should persist values when key doesnt exist", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+                expect(await cacheA.get("a")).toBe(1);
+            });
+            test("Should persist values when key is expired", async () => {
+                await cacheA.add("a", -1, TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await cacheA.add("a", 1, null);
+                expect(await cacheA.get("a")).toBe(1);
+            });
+            test("Should return false when key exists", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+                expect(await cacheA.add("a", 1, null)).toBe(false);
+            });
+            test("Should not persist value when key exist", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+                await cacheA.add("a", 2, null);
+                await delay(TTL.divide(4));
+                expect(await cacheA.get("a")).toBe(1);
+            });
+        });
+        describe("method: put", () => {
+            test("Should return true when key exists", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+                expect(await cacheA.put("a", -1, null)).toBe(true);
+            });
+            test("Should persist value when key exist", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+                await cacheA.put("a", -1, null);
+                await delay(TTL.divide(4));
+                expect(await cacheA.get("a")).toBe(-1);
+            });
+            test("Should return false when key doesnt exists", async () => {
+                expect(await cacheA.put("a", -1, null)).toBe(false);
+            });
+            test("Should return false when key is expired", async () => {
+                await cacheA.add("a", 1, TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                expect(await cacheA.put("a", -1, null)).toBe(false);
+            });
+            test("Should persist values when key doesnt exist", async () => {
+                await cacheA.put("a", -1, null);
+                await delay(TTL.divide(4));
+                expect(await cacheA.get("a")).toBe(-1);
+            });
+            test("Should persist values when key is expired", async () => {
+                await cacheA.add("a", 1, TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await cacheA.put("a", -1, null);
+                await delay(TTL.divide(4));
+                expect(await cacheA.get("a")).toBe(-1);
+            });
+            test("Should replace the ttl value", async () => {
+                const ttlA = TimeSpan.fromMilliseconds(100);
+                await cacheA.add("a", 1, ttlA);
+                await delay(TTL.divide(4));
+                const ttlB = TimeSpan.fromMilliseconds(50);
+                await cacheA.put("a", -1, ttlB);
+                await delay(ttlB);
+                expect(await cacheA.get("a")).toBeNull();
+            });
+        });
+        describe("method: update", () => {
+            test("Should return true when key exists", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+                expect(await cacheA.update("a", -1)).toBe(true);
+            });
+            test("Should persist value when key exist", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+                await cacheA.update("a", -1);
+                await delay(TTL.divide(4));
+                expect(await cacheA.get("a")).toBe(-1);
+            });
+            test("Should return false when key doesnt exists", async () => {
+                expect(await cacheA.update("a", -1)).toBe(false);
+            });
+            test("Should return false when key is expired", async () => {
+                await cacheA.add("a", 1, TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                expect(await cacheA.update("a", -1)).toBe(false);
+            });
+            test("Should not persist value when key doesnt exist", async () => {
+                await cacheA.update("a", -1);
+                await delay(TTL.divide(4));
+                expect(await cacheA.get("a")).toBeNull();
+            });
+            test("Should not persist value when key is expired", async () => {
+                await cacheA.add("a", 1, TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await cacheA.update("a", -1);
+                expect(await cacheA.get("a")).toBeNull();
+            });
+        });
         describe("method: increment", () => {
             test("Should return true when key exists", async () => {
-                await cacheA.add("a", 1);
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
                 expect(await cacheA.increment("a", 1)).toBe(true);
             });
             test("Should persist increment when key exists", async () => {
-                await cacheA.add("a", 1);
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
                 await cacheA.increment("a", 1);
+                await delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(2);
             });
             test("Should return false when key doesnt exists", async () => {
@@ -895,21 +406,23 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return false when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.increment("a", 1)).toBe(false);
             });
             test("Should not persist increment when key doesnt exists", async () => {
                 await cacheA.increment("a", 1);
+                await delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBeNull();
             });
             test("Should not persist increment when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
                 await cacheA.increment("a", 1);
                 expect(await cacheA.get("a")).toBeNull();
             });
             test("Should throw TypeCacheError key value is not number type", async () => {
-                await cacheA.add("a", "str");
+                await cacheA.add("a", "str", null);
+                await delay(TTL.divide(4));
                 await expect(cacheA.increment("a", 1)).rejects.toBeInstanceOf(
                     TypeCacheError,
                 );
@@ -917,12 +430,15 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         });
         describe("method: decrement", () => {
             test("Should return true when key exists", async () => {
-                await cacheA.add("a", 1);
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
                 expect(await cacheA.decrement("a", 1)).toBe(true);
             });
             test("Should persist decrement when key exists", async () => {
-                await cacheA.add("a", 1);
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
                 await cacheA.decrement("a", 1);
+                await delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(0);
             });
             test("Should return false when key doesnt exists", async () => {
@@ -930,47 +446,87 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return false when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.decrement("a", 1)).toBe(false);
             });
             test("Should not persist decrement when key doesnt exists", async () => {
                 await cacheA.decrement("a", 1);
+                await delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBeNull();
             });
             test("Should not persist decrement when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL);
+                await delay(TTL.addTimeSpan(TTL.divide(4)));
                 await cacheA.decrement("a", 1);
                 expect(await cacheA.get("a")).toBeNull();
             });
             test("Should throw TypeCacheError key value is not number type", async () => {
-                await cacheA.add("a", "str");
+                await cacheA.add("a", "str", null);
+                await delay(TTL.divide(4));
                 await expect(cacheA.decrement("a", 1)).rejects.toBeInstanceOf(
                     TypeCacheError,
                 );
             });
         });
+        describe("method: remove", () => {
+            test("Should return true when key exists", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+
+                const result = await cacheA.remove("a");
+
+                expect(result).toBe(true);
+            });
+            test("Should persist the key removal when key exists", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+
+                await cacheA.remove("a");
+                await delay(TTL.divide(4));
+
+                expect(await cacheA.get("a")).toEqual(null);
+            });
+        });
+        describe("method: removeMany", () => {
+            test("Should return true when one key exists", async () => {
+                await cacheA.add("a", 1, null);
+                await delay(TTL.divide(4));
+
+                const result = await cacheA.removeMany(["a", "b", "c"]);
+
+                expect(result).toBe(true);
+            });
+            test("Should persist removal of the keys that exists", async () => {
+                await cacheA.add("a", 1, null);
+                await cacheA.add("b", 2, null);
+                await cacheA.add("c", 3, null);
+                await delay(TTL.divide(4));
+
+                await cacheA.removeMany(["a", "b"]);
+                await delay(TTL.divide(4));
+
+                const result = [
+                    await cacheA.get("a"),
+                    await cacheA.get("b"),
+                    await cacheA.get("c"),
+                ];
+                expect(result).toEqual([null, null, 3]);
+            });
+        });
         describe("method: clear", () => {
             test("Should remove all keys", async () => {
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 2 },
-                    c: { value: 3 },
-                    d: { value: 4 },
-                    e: { value: 5 },
-                    f: { value: 6 },
-                });
+                await cacheA.add("a", 1);
+                await cacheA.add("b", 2);
+                await cacheA.add("c", 3);
+                await cacheA.add("d", 4);
                 await cacheA.clear();
-                expect(
-                    await cacheA.getMany(["a", "b", "c", "d", "e", "f"]),
-                ).toEqual({
-                    a: null,
-                    b: null,
-                    c: null,
-                    d: null,
-                    e: null,
-                    f: null,
-                });
+                const result = [
+                    await cacheA.get("a"),
+                    await cacheA.get("b"),
+                    await cacheA.get("c"),
+                    await cacheA.get("d"),
+                ];
+                expect(result).toStrictEqual([null, null, null, null]);
             });
         });
     });
@@ -1001,38 +557,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.exists("a");
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
-                await unsubscribe();
-            });
-        });
-        describe("method: existsMany", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyNotFoundCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.existsMany(["a"]);
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                await unsubscribe();
-            });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyFoundCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.add("a", 1);
-                await cacheA.existsMany(["a"]);
                 await delay(delayTime);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
@@ -1072,38 +596,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await unsubscribe();
             });
         });
-        describe("method: missingMany", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyNotFoundCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.missingMany(["a"]);
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                await unsubscribe();
-            });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyFoundCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.add("a", 1);
-                await cacheA.missingMany(["a"]);
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
-                await unsubscribe();
-            });
-        });
         describe("method: get", () => {
             test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
                 let event_ = null as KeyNotFoundCacheEvent | null;
@@ -1136,38 +628,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await unsubscribe();
             });
         });
-        describe("method: getMany", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyNotFoundCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.getMany(["a"]);
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                await unsubscribe();
-            });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyFoundCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.add("a", 1);
-                await cacheA.getMany(["a"]);
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
-                await unsubscribe();
-            });
-        });
         describe("method: getOr", () => {
             test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
                 let event_ = null as KeyNotFoundCacheEvent | null;
@@ -1193,38 +653,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getOr("a", 1);
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
-                await unsubscribe();
-            });
-        });
-        describe("method: getOrMany", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyNotFoundCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.getOrMany({ a: 1 });
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                await unsubscribe();
-            });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyFoundCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.add("a", 1);
-                await cacheA.getOrMany({ a: 1 });
                 await delay(delayTime);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
@@ -1289,27 +717,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await unsubscribe();
             });
         });
-        describe("method: addMany", () => {
-            test("Should dispatch KeyAddedCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyAddedCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyAddedCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                const ttl = TimeSpan.fromMilliseconds(20);
-                await cacheA.addMany({ a: { value: 1, ttl } });
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
-                expect(event_?.fields.ttl?.toMilliseconds()).toBe(
-                    ttl.toMilliseconds(),
-                );
-                await unsubscribe();
-            });
-        });
         describe("method: update", () => {
             test("Should dispatch KeyUpdatedCacheEvent when key exists", async () => {
                 let event_ = null as KeyUpdatedCacheEvent | null;
@@ -1336,38 +743,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.update("a", 2);
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                await unsubscribe();
-            });
-        });
-        describe("method: updateMany", () => {
-            test("Should dispatch KeyUpdatedCacheEvent when key exists", async () => {
-                let event_ = null as KeyUpdatedCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyUpdatedCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.add("a", 1);
-                await cacheA.updateMany({ a: 2 });
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(2);
-                await unsubscribe();
-            });
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyNotFoundCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cacheA.updateMany({ a: 2 });
                 await delay(delayTime);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
@@ -1404,45 +779,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.put("a", 1);
                 await cacheA.put("a", 2);
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(2);
-                await unsubscribe();
-            });
-        });
-        describe("method: putMany", () => {
-            test("Should dispatch KeyAddedCacheEvent when key exists", async () => {
-                let event_ = null as KeyAddedCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyAddedCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                const ttl = TimeSpan.fromMilliseconds(20);
-                await cacheA.putMany({ a: { value: 1, ttl } });
-                await delay(delayTime);
-                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
-                expect(event_?.fields.ttl?.toMilliseconds()).toBe(
-                    ttl.toMilliseconds(),
-                );
-                await unsubscribe();
-            });
-            test("Should dispatch KeyUpdatedCacheEvent when key exists", async () => {
-                let event_ = null as KeyUpdatedCacheEvent | null;
-                const unsubscribe = await cacheA.subscribe(
-                    KeyUpdatedCacheEvent,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-
-                const ttl = TimeSpan.fromMilliseconds(20);
-                await cacheA.putMany({ a: { value: 1, ttl } });
-                await cacheA.putMany({ a: { value: 2, ttl } });
                 await delay(delayTime);
                 expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
@@ -1683,11 +1019,9 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                         event_ = event;
                     },
                 );
-                await cacheA.addMany({
-                    a: { value: 1 },
-                    b: { value: 2 },
-                    c: { value: 3 },
-                });
+                await cacheA.add("a", 1);
+                await cacheA.add("b", 2);
+                await cacheA.add("c", 3);
                 await cacheA.clear();
                 await delay(delayTime);
                 expect(event_).toBeInstanceOf(KeysClearedCacheEvent);
@@ -1701,86 +1035,20 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             expect(await cacheA.exists("a")).toBe(true);
             expect(await cacheB.exists("a")).toBe(false);
         });
-        test("method: existsMany", async () => {
-            await cacheA.putMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            expect(await cacheA.existsMany(["a", "b"])).toEqual({
-                a: true,
-                b: true,
-            });
-            expect(await cacheB.existsMany(["a", "b"])).toEqual({
-                a: false,
-                b: false,
-            });
-        });
         test("method: missing", async () => {
             await cacheA.put("a", 1);
             expect(await cacheA.missing("a")).toBe(false);
             expect(await cacheB.missing("a")).toBe(true);
-        });
-        test("method: missingMany", async () => {
-            await cacheA.putMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            expect(await cacheA.missingMany(["a", "b"])).toEqual({
-                a: false,
-                b: false,
-            });
-            expect(await cacheB.missingMany(["a", "b"])).toEqual({
-                a: true,
-                b: true,
-            });
         });
         test("method: get", async () => {
             await cacheA.put("a", 1);
             expect(await cacheA.get("a")).toBe(1);
             expect(await cacheB.get("a")).toBeNull();
         });
-        test("method: getMany", async () => {
-            await cacheA.putMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            expect(await cacheA.getMany(["a", "b"])).toEqual({
-                a: 1,
-                b: 1,
-            });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({
-                a: null,
-                b: null,
-            });
-        });
         test("method: getOr", async () => {
             await cacheA.put("a", 1);
             expect(await cacheA.getOr("a", -1)).toBe(1);
             expect(await cacheB.getOr("a", -1)).toBe(-1);
-        });
-        test("method: getOrMany", async () => {
-            await cacheA.putMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            expect(
-                await cacheA.getOrMany({
-                    a: -1,
-                    b: -1,
-                }),
-            ).toEqual({
-                a: 1,
-                b: 1,
-            });
-            expect(
-                await cacheB.getOrMany({
-                    a: -1,
-                    b: -1,
-                }),
-            ).toEqual({
-                a: -1,
-                b: -1,
-            });
         });
         test("method: getOrFail", async () => {
             await cacheA.put("a", 1);
@@ -1795,18 +1063,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             expect(await cacheA.get("a")).toBe(1);
             expect(await cacheB.get("a")).toBe(2);
         });
-        test("method: addMany", async () => {
-            await cacheA.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheB.addMany({
-                a: { value: 2 },
-                b: { value: 2 },
-            });
-            expect(await cacheA.getMany(["a", "b"])).toEqual({ a: 1, b: 1 });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 2, b: 2 });
-        });
         test("method: update", async () => {
             await cacheA.add("a", 1);
             await cacheB.add("a", 1);
@@ -1815,43 +1071,11 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             expect(await cacheA.get("a")).toBe(2);
             expect(await cacheB.get("a")).toBe(3);
         });
-        test("method: updateMany", async () => {
-            await cacheA.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheB.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheA.updateMany({
-                a: 2,
-                b: 2,
-            });
-            await cacheB.updateMany({
-                a: 3,
-                b: 3,
-            });
-            expect(await cacheA.getMany(["a", "b"])).toEqual({ a: 2, b: 2 });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 3, b: 3 });
-        });
         test("method: put", async () => {
             await cacheA.put("a", 2);
             await cacheB.put("a", 3);
             expect(await cacheA.get("a")).toBe(2);
             expect(await cacheB.get("a")).toBe(3);
-        });
-        test("method: putMany", async () => {
-            await cacheA.putMany({
-                a: { value: 2 },
-                b: { value: 2 },
-            });
-            await cacheB.putMany({
-                a: { value: 3 },
-                b: { value: 3 },
-            });
-            expect(await cacheA.getMany(["a", "b"])).toEqual({ a: 2, b: 2 });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 3, b: 3 });
         });
         test("method: remove", async () => {
             await cacheA.add("a", 1);
@@ -1859,22 +1083,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             await cacheA.remove("a");
             expect(await cacheA.get("a")).toBeNull();
             expect(await cacheB.get("a")).toBe(1);
-        });
-        test("method: removeMany", async () => {
-            await cacheA.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheB.addMany({
-                a: { value: 1 },
-                b: { value: 1 },
-            });
-            await cacheA.removeMany(["a", "b"]);
-            expect(await cacheA.getMany(["a", "b"])).toEqual({
-                a: null,
-                b: null,
-            });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({ a: 1, b: 1 });
         });
         test("method: getAndRemove", async () => {
             await cacheA.add("a", 1);
@@ -1904,23 +1112,15 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             expect(await cacheB.get("a")).toBe(1);
         });
         test("method: clear", async () => {
-            await cacheA.addMany({
-                a: { value: 1 },
-                b: { value: 2 },
-            });
-            await cacheB.addMany({
-                a: { value: 1 },
-                b: { value: 2 },
-            });
+            await cacheA.add("a", 1);
+            await cacheA.add("b", 2);
+            await cacheB.add("a", 1);
+            await cacheB.add("b", 2);
             await cacheA.clear();
-            expect(await cacheA.getMany(["a", "b"])).toEqual({
-                a: null,
-                b: null,
-            });
-            expect(await cacheB.getMany(["a", "b"])).toEqual({
-                a: 1,
-                b: 2,
-            });
+            const resultA = [await cacheA.get("a"), await cacheA.get("b")];
+            expect(resultA).toEqual([null, null]);
+            const resultB = [await cacheB.get("a"), await cacheB.get("b")];
+            expect(resultB).toEqual([1, 2]);
         });
         test("method: addListener / dispatch", async () => {
             let result_a: KeyAddedCacheEvent | null = null;

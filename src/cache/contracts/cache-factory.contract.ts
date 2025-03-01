@@ -19,7 +19,7 @@ import {
 export type ICacheFactory<TAdapters extends string = string> = {
     /**
      * The <i>use</i> method will throw an error if you provide it unregisted adapter.
-     * If no default adapter is defined an error will be thrown by <i>use</i> method.
+     * If no default adapter is defined an error will be thrown.
      * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      */

@@ -2,90 +2,18 @@
  * @module Cache
  */
 
-import { TypeCacheError } from "@/cache/contracts/cache.errors.js";
-import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
 import {
-    resolveOneOrMoreStr,
-    type TimeSpan,
-} from "@/utilities/_module-exports.js";
-import { ReplyError, type Redis, type Result } from "ioredis";
+    TypeCacheError,
+    type ICacheAdapter,
+} from "@/cache/contracts/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { ReplyError, type Redis, type Result } from "ioredis";
 import {
-    RedisSerde,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type SuperJsonSerdeAdapter,
-} from "@/serde/implementations/adapters/_module-exports.js";
-
-/**
- * @internal
- */
-class ClearIterable implements AsyncIterable<void> {
-    constructor(
-        private readonly client: Redis,
-        private readonly pattern: string,
-    ) {}
-
-    async *[Symbol.asyncIterator](): AsyncIterator<void> {
-        let coursor = 0;
-        do {
-            const [_coursor, elements] = await this.client.scan(
-                coursor,
-                "MATCH",
-                this.pattern,
-            );
-            if (elements.length === 0) {
-                return;
-            }
-            await this.client.del(elements);
-            coursor++;
-            yield undefined;
-        } while (coursor !== 0);
-    }
-}
-
-/**
- * @internal
- */
-function escapeRedisChars(value: string): string {
-    const replacements: Record<string, string> = {
-        ",": "\\,",
-        ".": "\\.",
-        "<": "\\<",
-        ">": "\\>",
-        "{": "\\{",
-        "}": "\\}",
-        "[": "\\[",
-        "]": "\\]",
-        '"': '\\"',
-        "'": "\\'",
-        ":": "\\:",
-        ";": "\\;",
-        "!": "\\!",
-        "@": "\\@",
-        "#": "\\#",
-        $: "\\$",
-        "%": "\\%",
-        "^": "\\^",
-        "&": "\\&",
-        "*": "\\*",
-        "(": "\\(",
-        ")": "\\)",
-        "-": "\\-",
-        "+": "\\+",
-        "=": "\\=",
-        "~": "\\~",
-    };
-    return value.replace(
-        /,|\.|<|>|\{|\}|\[|\]|"|'|:|;|!|@|#|\$|%|\^|&|\*|\(|\)|-|\+|=|~/g,
-        (chunk) => {
-            const item = replacements[chunk];
-            if (item === undefined) {
-                throw new Error("Encounterd none existing field");
-            }
-            return item;
-        },
-    );
-}
+    ClearIterable,
+    escapeRedisChars,
+} from "@/cache/implementations/adapters/redis-cache-adapter/utilities.js";
+import { RedisCacheAdapterSerde } from "@/cache/implementations/adapters/redis-cache-adapter/redis-cache-adapter-serde.js";
 
 declare module "ioredis" {
     interface RedisCommander<Context> {
@@ -104,7 +32,6 @@ declare module "ioredis" {
 export type RedisCacheAdapterSettings = {
     database: Redis;
     serde: ISerde<string>;
-    rootGroup: string;
 };
 
 /**
@@ -113,9 +40,7 @@ export type RedisCacheAdapterSettings = {
  * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
-export class RedisCacheAdapter<TType = unknown>
-    implements ICacheAdapter<TType>
-{
+export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     private static isRedisTypeError(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
         value: any,
@@ -128,9 +53,7 @@ export class RedisCacheAdapter<TType = unknown>
         );
     }
 
-    private readonly baseSerde: ISerde<string>;
-    private readonly redisSerde: ISerde<string>;
-    private readonly group: string;
+    private readonly serde: ISerde<string>;
     private readonly database: Redis;
 
     /**
@@ -146,98 +69,14 @@ export class RedisCacheAdapter<TType = unknown>
      * const cacheAdapter = new RedisCacheAdapter({
      *   database,
      *   serde,
-     *   rootGroup: "@global"
      * });
      * ```
      */
     constructor(settings: RedisCacheAdapterSettings) {
-        const { database, serde, rootGroup } = settings;
+        const { database, serde } = settings;
         this.database = database;
-        this.group = rootGroup;
-        this.baseSerde = serde;
-        this.redisSerde = new RedisSerde(serde);
+        this.serde = new RedisCacheAdapterSerde(serde);
         this.initIncrementCommand();
-    }
-
-    private getPrefix(): string {
-        return resolveOneOrMoreStr([this.group, "__KEY__"]);
-    }
-
-    private withPrefix(key: string): string {
-        return resolveOneOrMoreStr([this.getPrefix(), key]);
-    }
-
-    async get(key: string): Promise<TType | null> {
-        key = this.withPrefix(key);
-        const value = await this.database.get(key);
-        if (value === null) {
-            return null;
-        }
-        return await this.redisSerde.deserialize(value);
-    }
-
-    async add(
-        key: string,
-        value: TType,
-        ttl: TimeSpan | null,
-    ): Promise<boolean> {
-        key = this.withPrefix(key);
-        if (ttl === null) {
-            const result = await this.database.set(
-                key,
-                this.redisSerde.serialize(value),
-                "NX",
-            );
-            return result === "OK";
-        }
-        const result = await this.database.set(
-            key,
-            this.redisSerde.serialize(value),
-            "PX",
-            ttl.toMilliseconds(),
-            "NX",
-        );
-        return result === "OK";
-    }
-
-    async update(key: string, value: TType): Promise<boolean> {
-        key = this.withPrefix(key);
-        const result = await this.database.set(
-            key,
-            this.redisSerde.serialize(value),
-            "XX",
-        );
-        return result === "OK";
-    }
-
-    async put(
-        key: string,
-        value: TType,
-        ttl: TimeSpan | null,
-    ): Promise<boolean> {
-        key = this.withPrefix(key);
-        if (ttl === null) {
-            const result = await this.database.set(
-                key,
-                this.redisSerde.serialize(value),
-                "GET",
-            );
-            return result !== null;
-        }
-        const result = await this.database.set(
-            key,
-            this.redisSerde.serialize(value),
-            "PX",
-            ttl.toMilliseconds(),
-            "GET",
-        );
-        return result !== null;
-    }
-
-    async remove(key: string): Promise<boolean> {
-        key = this.withPrefix(key);
-        const result = await this.database.del(key);
-        return result === 1;
     }
 
     private initIncrementCommand(): void {
@@ -259,12 +98,82 @@ export class RedisCacheAdapter<TType = unknown>
         });
     }
 
+    async get(key: string): Promise<TType | null> {
+        const value = await this.database.get(key);
+        if (value === null) {
+            return null;
+        }
+        return await this.serde.deserialize(value);
+    }
+
+    async getAndRemove(key: string): Promise<TType | null> {
+        const value = await this.database.getdel(key);
+        if (value === null) {
+            return null;
+        }
+        return this.serde.deserialize(value);
+    }
+
+    async add(
+        key: string,
+        value: TType,
+        ttl: TimeSpan | null,
+    ): Promise<boolean> {
+        if (ttl === null) {
+            const result = await this.database.set(
+                key,
+                this.serde.serialize(value),
+                "NX",
+            );
+            return result === "OK";
+        }
+        const result = await this.database.set(
+            key,
+            this.serde.serialize(value),
+            "PX",
+            ttl.toMilliseconds(),
+            "NX",
+        );
+        return result === "OK";
+    }
+
+    async put(
+        key: string,
+        value: TType,
+        ttl: TimeSpan | null,
+    ): Promise<boolean> {
+        if (ttl === null) {
+            const result = await this.database.set(
+                key,
+                this.serde.serialize(value),
+                "GET",
+            );
+            return result !== null;
+        }
+        const result = await this.database.set(
+            key,
+            this.serde.serialize(value),
+            "PX",
+            ttl.toMilliseconds(),
+            "GET",
+        );
+        return result !== null;
+    }
+
+    async update(key: string, value: TType): Promise<boolean> {
+        const result = await this.database.set(
+            key,
+            this.serde.serialize(value),
+            "XX",
+        );
+        return result === "OK";
+    }
+
     async increment(key: string, value: number): Promise<boolean> {
         try {
-            key = this.withPrefix(key);
             const redisResult = await this.database.daiso_cache_increment(
                 key,
-                this.redisSerde.serialize(value),
+                this.serde.serialize(value),
             );
             const keyExists = redisResult === 1;
             return keyExists;
@@ -278,24 +187,21 @@ export class RedisCacheAdapter<TType = unknown>
         }
     }
 
-    async clear(): Promise<void> {
+    async removeMany(keys: string[]): Promise<boolean> {
+        const deleteResult = await this.database.del(...keys);
+        return deleteResult > 0;
+    }
+
+    async removeByKeyPrefix(prefix: string): Promise<void> {
+        if (prefix === "") {
+            await this.database.flushdb();
+            return;
+        }
         for await (const _ of new ClearIterable(
             this.database,
-            resolveOneOrMoreStr([escapeRedisChars(this.getPrefix()), "*"]),
+            escapeRedisChars(prefix),
         )) {
             /* Empty */
         }
-    }
-
-    getGroup(): string {
-        return this.group;
-    }
-
-    withGroup(group: string): ICacheAdapter<TType> {
-        return new RedisCacheAdapter({
-            database: this.database,
-            serde: this.baseSerde,
-            rootGroup: resolveOneOrMoreStr([this.group, group]),
-        });
     }
 }

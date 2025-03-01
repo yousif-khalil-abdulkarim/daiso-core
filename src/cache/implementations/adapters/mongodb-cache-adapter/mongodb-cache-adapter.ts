@@ -5,20 +5,23 @@
 import {
     TypeCacheError,
     UnexpectedCacheError,
-} from "@/cache/contracts/cache.errors.js";
-import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
-import type { IDeinitizable } from "@/utilities/_module-exports.js";
-import {
-    type TimeSpan,
-    type IInitizable,
-    resolveOneOrMoreStr,
-} from "@/utilities/_module-exports.js";
-import type { CollectionOptions, Db, ObjectId } from "mongodb";
-import { MongoServerError, type Collection } from "mongodb";
+    type ICacheAdapter,
+} from "@/cache/contracts/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { MongodbSerde } from "@/serde/implementations/adapters/_module-exports.js";
+import { MongodbCacheAdapterSerde } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter-serde.js";
+import type {
+    IDeinitizable,
+    IInitizable,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
+import { MongoServerError, type ObjectId } from "mongodb";
+import {
+    type Collection,
+    type Filter,
+    type CollectionOptions,
+    type Db,
+} from "mongodb";
+import escapeStringRegexp from "escape-string-regexp";
 
 /**
  *
@@ -28,7 +31,6 @@ import { MongodbSerde } from "@/serde/implementations/adapters/_module-exports.j
 export type MongodbCacheAdapterSettings = {
     database: Db;
     serde: ISerde<string>;
-    rootGroup: string;
     collectionName?: string;
     collectionSettings?: CollectionOptions;
 };
@@ -39,9 +41,8 @@ export type MongodbCacheAdapterSettings = {
 type MongodbCacheDocument = {
     _id: ObjectId;
     key: string;
-    group: string;
     value: number | string;
-    expiresAt: Date | null;
+    expiration: Date | null;
 };
 
 /**
@@ -50,9 +51,47 @@ type MongodbCacheDocument = {
  * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
  * @group Adapters
  */
-export class MongodbCacheAdapter<TType = unknown>
+export class MongodbCacheAdapter<TType>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
+    private static filterUnexpiredKeys(
+        keys: string[],
+    ): Filter<MongodbCacheDocument> {
+        const hasNoExpiration: Filter<MongodbCacheDocument> = {
+            expiration: {
+                $eq: null,
+            },
+        };
+        const hasExpiration: Filter<MongodbCacheDocument> = {
+            expiration: {
+                $ne: null,
+            },
+        };
+        const hasNotExpired: Filter<MongodbCacheDocument> = {
+            expiration: {
+                $gt: new Date(),
+            },
+        };
+        const keysMatch = {
+            key: {
+                $in: keys,
+            },
+        };
+        return {
+            $and: [
+                keysMatch,
+                {
+                    $or: [
+                        hasNoExpiration,
+                        {
+                            $and: [hasExpiration, hasNotExpired],
+                        },
+                    ],
+                },
+            ],
+        };
+    }
+
     private static isMongodbIncrementError(
         value: unknown,
     ): value is MongoServerError {
@@ -65,14 +104,8 @@ export class MongodbCacheAdapter<TType = unknown>
         );
     }
 
-    private readonly mongodbSerde: ISerde<string | number>;
-    private readonly group: string;
-    private readonly baseSerde: ISerde<string>;
-    private readonly database: Db;
+    private readonly serde: ISerde<string | number>;
     private readonly collection: Collection<MongodbCacheDocument>;
-    private readonly collectionName: string;
-    private readonly collectionSettings?: CollectionOptions;
-
     /**
      * @example
      * ```ts
@@ -81,17 +114,15 @@ export class MongodbCacheAdapter<TType = unknown>
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
      * import { MongoClient } from "mongodb";
      *
-     * (async () => {
-     *   const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
-     *   const database = client.db("database");
-     *   const serde = new Serde(new SuperJsonSerdeAdapter());
-     *   const cacheAdapter = new MongodbCacheAdapter({
-     *     database,
-     *     serde,
-     *     rootGroup: "@global"
-     *   });
-     *   await cacheAdapter.init();
-     * })();
+     * const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
+     * const database = client.db("database");
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const cacheAdapter = new MongodbCacheAdapter({
+     *   database,
+     *   serde,
+     * });
+     * // You need initialize the adapter once before using it.
+     * await cacheAdapter.init();
      * ```
      */
     constructor(settings: MongodbCacheAdapterSettings) {
@@ -100,32 +131,12 @@ export class MongodbCacheAdapter<TType = unknown>
             collectionSettings,
             database,
             serde,
-            rootGroup,
         } = settings;
-        this.collectionName = collectionName;
-        this.database = database;
         this.collection = database.collection(
             collectionName,
             collectionSettings,
         );
-        this.collectionSettings = collectionSettings;
-        this.baseSerde = serde;
-        this.group = rootGroup;
-        this.mongodbSerde = new MongodbSerde(this.baseSerde);
-    }
-
-    getGroup(): string {
-        return this.group;
-    }
-
-    withGroup(group: string): ICacheAdapter<TType> {
-        return new MongodbCacheAdapter({
-            database: this.database,
-            serde: this.baseSerde,
-            collectionName: this.collectionName,
-            collectionSettings: this.collectionSettings,
-            rootGroup: resolveOneOrMoreStr([this.group, group]),
-        });
+        this.serde = new MongodbCacheAdapterSerde(serde);
     }
 
     /**
@@ -133,18 +144,22 @@ export class MongodbCacheAdapter<TType = unknown>
      * Note the <i>init</i> method needs to be called before using the adapter.
      */
     async init(): Promise<void> {
-        await this.collection.createIndex(
-            {
-                key: 1,
-                group: 1,
-            },
-            {
-                unique: true,
-            },
-        );
-        await this.collection.createIndex("expiresAt", {
-            expireAfterSeconds: 0,
-        });
+        try {
+            await this.collection.createIndex(
+                {
+                    key: 1,
+                    group: 1,
+                },
+                {
+                    unique: true,
+                },
+            );
+            await this.collection.createIndex("expiration", {
+                expireAfterSeconds: 0,
+            });
+        } catch {
+            /* Empty */
+        }
     }
 
     /**
@@ -153,35 +168,66 @@ export class MongodbCacheAdapter<TType = unknown>
      */
     async deInit(): Promise<void> {
         await this.collection.dropIndexes();
-        await this.database.dropCollection(this.collectionName);
+        await this.collection.drop();
+    }
+
+    private getDocValue(document: MongodbCacheDocument | null): TType | null {
+        if (document === null) {
+            return null;
+        }
+        const { expiration, value } = document;
+        if (expiration === null) {
+            return this.serde.deserialize(value);
+        }
+        const hasExpired = expiration.getTime() <= new Date().getTime();
+        if (hasExpired) {
+            return null;
+        }
+        return this.serde.deserialize(value);
     }
 
     async get(key: string): Promise<TType | null> {
         const document = await this.collection.findOne(
             {
                 key,
-                group: this.group,
             },
             {
                 projection: {
                     _id: 0,
-                    expiresAt: 1,
+                    expiration: 1,
                     value: 1,
                 },
             },
         );
+        return this.getDocValue(document);
+    }
+
+    async getAndRemove(key: string): Promise<TType | null> {
+        const document = await this.collection.findOneAndDelete(
+            {
+                key,
+            },
+            {
+                projection: {
+                    _id: 0,
+                    expiration: 1,
+                    value: 1,
+                },
+            },
+        );
+        return this.getDocValue(document);
+    }
+
+    private isDocExpired(document: MongodbCacheDocument | null): boolean {
         if (document === null) {
-            return null;
+            return true;
         }
-        const { expiresAt, value } = document;
-        if (expiresAt === null) {
-            return await this.mongodbSerde.deserialize(value);
+        const { expiration } = document;
+        if (expiration === null) {
+            return false;
         }
-        const hasExpired = expiresAt.getTime() <= new Date().getTime();
-        if (hasExpired) {
-            return null;
-        }
-        return await this.mongodbSerde.deserialize(value);
+        const hasExpired = expiration.getTime() <= new Date().getTime();
+        return hasExpired;
     }
 
     async add(
@@ -190,24 +236,22 @@ export class MongodbCacheAdapter<TType = unknown>
         ttl: TimeSpan | null,
     ): Promise<boolean> {
         const hasExpirationQuery = {
-            $ne: ["$expiresAt", null],
+            $ne: ["$expiration", null],
         };
         const hasExpiredQuery = {
-            $lte: ["$expiresAt", new Date()],
+            $lte: ["$expiration", new Date()],
         };
         const hasExpirationAndExpiredQuery = {
             $and: [hasExpirationQuery, hasExpiredQuery],
         };
-        const serializedValue = this.mongodbSerde.serialize(value);
+        const serializedValue = this.serde.serialize(value);
         const document = await this.collection.findOneAndUpdate(
             {
                 key,
-                group: this.group,
             },
             [
                 {
                     $set: {
-                        group: this.group,
                         value: {
                             $cond: {
                                 if: hasExpirationAndExpiredQuery,
@@ -215,11 +259,11 @@ export class MongodbCacheAdapter<TType = unknown>
                                 else: "$value",
                             },
                         },
-                        expiresAt: {
+                        expiration: {
                             $cond: {
                                 if: hasExpirationAndExpiredQuery,
                                 then: ttl?.toEndDate() ?? null,
-                                else: "$expiresAt",
+                                else: "$expiration",
                             },
                         },
                     },
@@ -229,69 +273,11 @@ export class MongodbCacheAdapter<TType = unknown>
                 upsert: true,
                 projection: {
                     _id: 0,
-                    expiresAt: 1,
+                    expiration: 1,
                 },
             },
         );
-        if (document === null) {
-            return true;
-        }
-        const { expiresAt } = document;
-        if (expiresAt === null) {
-            return false;
-        }
-        const hasExpired = expiresAt.getTime() <= new Date().getTime();
-        return hasExpired;
-    }
-
-    async update(key: string, value: TType): Promise<boolean> {
-        const hasNoExpiration = {
-            expiresAt: {
-                $eq: null,
-            },
-        };
-        const hasExpiration = {
-            expiresAt: {
-                $ne: null,
-            },
-        };
-        const hasNotExpired = {
-            expiresAt: {
-                $lte: new Date(),
-            },
-        };
-        const document = await this.collection.findOneAndUpdate(
-            {
-                key,
-                group: this.group,
-                $or: [
-                    hasNoExpiration,
-                    {
-                        $and: [hasExpiration, hasNotExpired],
-                    },
-                ],
-            },
-            {
-                $set: {
-                    value: this.mongodbSerde.serialize(value),
-                },
-            },
-            {
-                projection: {
-                    _id: 0,
-                    expiresAt: 1,
-                },
-            },
-        );
-        if (document === null) {
-            return false;
-        }
-        const { expiresAt } = document;
-        if (expiresAt === null) {
-            return true;
-        }
-        const hasExpired = expiresAt.getTime() <= new Date().getTime();
-        return !hasExpired;
+        return this.isDocExpired(document);
     }
 
     async put(
@@ -302,107 +288,57 @@ export class MongodbCacheAdapter<TType = unknown>
         const document = await this.collection.findOneAndUpdate(
             {
                 key,
-                group: this.group,
             },
             {
                 $set: {
-                    group: this.group,
-                    value: this.mongodbSerde.serialize(value),
-                    expiresAt: ttl?.toEndDate() ?? null,
+                    value: this.serde.serialize(value),
+                    expiration: ttl?.toEndDate() ?? null,
                 },
             },
             {
                 upsert: true,
                 projection: {
                     _id: 0,
-                    expiresAt: 1,
+                    expiration: 1,
                 },
             },
         );
-        if (document === null) {
-            return false;
-        }
-        const { expiresAt } = document;
-        if (expiresAt === null) {
-            return true;
-        }
-        const hasExpired = expiresAt.getTime() <= new Date().getTime();
-        return !hasExpired;
+        return !this.isDocExpired(document);
     }
 
-    async remove(key: string): Promise<boolean> {
-        const document = await this.collection.findOneAndDelete(
+    async update(key: string, value: TType): Promise<boolean> {
+        const updateResult = await this.collection.updateOne(
+            MongodbCacheAdapter.filterUnexpiredKeys([key]),
             {
-                key,
-                group: this.group,
-            },
-            {
-                projection: {
-                    _id: 0,
-                    expiresAt: 1,
+                $set: {
+                    value: this.serde.serialize(value),
                 },
             },
         );
-        if (document === null) {
-            return false;
+        if (!updateResult.acknowledged) {
+            throw new UnexpectedCacheError(
+                "Mongodb update was not acknowledged",
+            );
         }
-        const { expiresAt } = document;
-        if (expiresAt === null) {
-            return true;
-        }
-        const hasExpired = expiresAt.getTime() <= new Date().getTime();
-        return !hasExpired;
+        return updateResult.modifiedCount > 0;
     }
 
     async increment(key: string, value: number): Promise<boolean> {
         try {
-            const hasNoExpiration = {
-                expiresAt: {
-                    $eq: null,
-                },
-            };
-            const hasExpiration = {
-                expiresAt: {
-                    $ne: null,
-                },
-            };
-            const hasNotExpired = {
-                expiresAt: {
-                    $lte: new Date(),
-                },
-            };
-            const document = await this.collection.findOneAndUpdate(
-                {
-                    key,
-                    group: this.group,
-                    $or: [
-                        hasNoExpiration,
-                        {
-                            $and: [hasExpiration, hasNotExpired],
-                        },
-                    ],
-                },
+            const updateResult = await this.collection.updateOne(
+                MongodbCacheAdapter.filterUnexpiredKeys([key]),
                 {
                     $inc: {
                         value,
                     } as Record<string, number>,
                 },
-                {
-                    projection: {
-                        _id: 0,
-                        expiresAt: 1,
-                    },
-                },
             );
-            if (document === null) {
-                return false;
+            if (!updateResult.acknowledged) {
+                throw new UnexpectedCacheError(
+                    "Mongodb update was not acknowledged",
+                );
             }
-            const { expiresAt } = document;
-            if (expiresAt === null) {
-                return true;
-            }
-            const hasExpired = expiresAt.getTime() <= new Date().getTime();
-            return !hasExpired;
+            return updateResult.modifiedCount > 0;
         } catch (error: unknown) {
             if (MongodbCacheAdapter.isMongodbIncrementError(error)) {
                 throw new TypeCacheError(
@@ -413,9 +349,32 @@ export class MongodbCacheAdapter<TType = unknown>
         }
     }
 
-    async clear(): Promise<void> {
+    async removeMany(keys: string[]): Promise<boolean> {
+        const deleteResult = await this.collection.deleteMany(
+            MongodbCacheAdapter.filterUnexpiredKeys(keys),
+        );
+        if (!deleteResult.acknowledged) {
+            throw new UnexpectedCacheError(
+                "Mongodb deletion was not acknowledged",
+            );
+        }
+        return deleteResult.deletedCount > 0;
+    }
+
+    async removeByKeyPrefix(prefix: string): Promise<void> {
+        if (prefix === "") {
+            const mongodbResult = await this.collection.deleteMany();
+            if (!mongodbResult.acknowledged) {
+                throw new UnexpectedCacheError(
+                    "Mongodb deletion was not acknowledged",
+                );
+            }
+            return;
+        }
         const mongodbResult = await this.collection.deleteMany({
-            group: this.group,
+            key: {
+                $regex: new RegExp(`^${escapeStringRegexp(prefix)}`),
+            },
         });
         if (!mongodbResult.acknowledged) {
             throw new UnexpectedCacheError(

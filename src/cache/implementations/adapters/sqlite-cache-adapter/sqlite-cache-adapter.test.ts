@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
+import { databaseCacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
+import { SqliteCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
 import Sqlite, { type Database } from "better-sqlite3";
-import { SqliteCacheAdapter } from "@/cache/implementations/adapters/sqlite-cache-adapter/sqlite-cache-adapter.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 
@@ -13,18 +13,16 @@ describe("class: SqliteCacheAdapter", () => {
     afterEach(() => {
         database.close();
     });
-    cacheAdapterTestSuite({
+    databaseCacheAdapterTestSuite({
         createAdapter: async () => {
-            const cacheAdapter = new SqliteCacheAdapter({
+            const adapter = new SqliteCacheAdapter({
                 database: database,
                 tableName: "custom_table",
-                enableTransactions: true,
                 shouldRemoveExpiredKeys: false,
                 serde: new Serde(new SuperJsonSerdeAdapter()),
-                rootGroup: "@a",
             });
-            await cacheAdapter.init();
-            return cacheAdapter;
+            await adapter.init();
+            return adapter;
         },
         test,
         beforeEach,

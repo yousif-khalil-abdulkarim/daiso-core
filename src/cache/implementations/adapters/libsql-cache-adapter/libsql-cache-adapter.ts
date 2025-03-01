@@ -2,13 +2,19 @@
  * @module Cache
  */
 
-import { type ICacheAdapter } from "@/cache/contracts/cache-adapter.contract.js";
+import type {
+    ICacheData,
+    ICacheInsert,
+    ICacheUpdate,
+    IDatabaseCacheAdapter,
+} from "@/cache/contracts/_module-exports.js";
 import type {
     TimeSpan,
     IDeinitizable,
     IInitizable,
+    IPrunable,
 } from "@/utilities/_module-exports.js";
-import { KyselySqliteCacheAdapter } from "@/cache/implementations/adapters/kysely-sqlite-cache-adapter/_module.js";
+import { KyselyCacheAdapter } from "@/cache/implementations/adapters/kysely-cache-adapter/_module.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 import { Kysely } from "kysely";
@@ -28,10 +34,9 @@ export type LibsqlCacheAdapterSettings = {
     database: Client;
     tableName?: string;
     serde: ISerde<string>;
-    enableTransactions?: boolean;
+    disableTransaction?: boolean;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
-    rootGroup: string;
 };
 
 /**
@@ -41,9 +46,13 @@ export type LibsqlCacheAdapterSettings = {
  * @group Adapters
  */
 export class LibsqlCacheAdapter<TType = unknown>
-    implements ICacheAdapter<TType>, IInitizable, IDeinitizable
+    implements
+        IDatabaseCacheAdapter<TType>,
+        IInitizable,
+        IDeinitizable,
+        IPrunable
 {
-    private readonly cacheAdapter: KyselySqliteCacheAdapter<TType>;
+    private readonly adapter: KyselyCacheAdapter<TType>;
 
     /***
      * @example
@@ -53,16 +62,14 @@ export class LibsqlCacheAdapter<TType = unknown>
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import { createClient } from "@libsql/client";
      *
-     * (async () => {
-     *   const database = createClient({ url: "file:local.db" });
-     *   const serde = new Serde(new SuperJsonSerdeAdapter());
-     *   const cacheAdapter = new LibsqlCacheAdapter({
-     *     database,
-     *     serde,
-     *     rootGroup: "@global"
-     *   });
-     *   await cacheAdapter.init();
-     * })();
+     * const database = createClient({ url: "file:local.db" });
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const cacheAdapter = new LibsqlCacheAdapter({
+     *   database,
+     *   serde,
+     * });
+     * // You need initialize the adapter once before using it.
+     * await cacheAdapter.init();
      * ```
      */
     constructor(settings: LibsqlCacheAdapterSettings) {
@@ -70,14 +77,13 @@ export class LibsqlCacheAdapter<TType = unknown>
             database,
             tableName = "cache",
             serde,
-            enableTransactions = false,
+            disableTransaction,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,
-            rootGroup,
         } = settings;
 
-        this.cacheAdapter = new KyselySqliteCacheAdapter({
-            db: new Kysely({
+        this.adapter = new KyselyCacheAdapter({
+            database: new Kysely({
                 dialect: new LibsqlDialect({
                     client: database,
                 } as LibsqlDialectConfig),
@@ -88,74 +94,57 @@ export class LibsqlCacheAdapter<TType = unknown>
                 ],
             }),
             serde,
-            enableTransactions,
+            disableTransaction,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,
-            rootGroup,
         });
     }
 
-    getGroup(): string {
-        return this.cacheAdapter.getGroup();
+    async removeAllExpired(): Promise<void> {
+        await this.adapter.removeAllExpired();
     }
 
-    withGroup(group: string): ICacheAdapter<TType> {
-        return this.cacheAdapter.withGroup(group);
-    }
-
-    async removeExpiredKeys(): Promise<void> {
-        await this.cacheAdapter.removeExpiredKeys();
-    }
-
-    /**
-     * Removes the table where the cache values are stored and removes the table indexes.
-     * Note all cache data will be removed.
-     */
     async deInit(): Promise<void> {
-        await this.cacheAdapter.deInit();
+        await this.adapter.deInit();
     }
 
-    /**
-     * Creates the table where the cache values are stored and it's related indexes.
-     * Note the <i>init</i> method needs to be called before using the adapter.
-     */
     async init(): Promise<void> {
-        await this.cacheAdapter.init();
+        await this.adapter.init();
     }
 
-    async get(key: string): Promise<TType | null> {
-        return await this.cacheAdapter.get(key);
+    async insert(data: ICacheInsert<TType>): Promise<void> {
+        await this.adapter.insert(data);
     }
 
-    async add(
-        key: string,
-        value: TType,
-        ttl: TimeSpan | null,
-    ): Promise<boolean> {
-        return await this.cacheAdapter.add(key, value, ttl);
+    async upsert(data: ICacheInsert<TType>): Promise<ICacheData<TType> | null> {
+        return await this.adapter.upsert(data);
     }
 
-    async update(key: string, value: TType): Promise<boolean> {
-        return await this.cacheAdapter.update(key, value);
+    async find(key: string): Promise<ICacheData<TType> | null> {
+        return await this.adapter.find(key);
     }
 
-    async put(
-        key: string,
-        value: TType,
-        ttl: TimeSpan | null,
-    ): Promise<boolean> {
-        return await this.cacheAdapter.put(key, value, ttl);
+    async updateExpired(data: ICacheInsert<TType>): Promise<number> {
+        return await this.adapter.updateExpired(data);
     }
 
-    async remove(key: string): Promise<boolean> {
-        return await this.cacheAdapter.remove(key);
+    async updateUnexpired(data: ICacheUpdate<TType>): Promise<number> {
+        return await this.adapter.updateUnexpired(data);
     }
 
-    async increment(key: string, value: number): Promise<boolean> {
-        return await this.cacheAdapter.increment(key, value);
+    async incrementUnexpired(data: ICacheUpdate<number>): Promise<number> {
+        return await this.adapter.incrementUnexpired(data);
     }
 
-    async clear(): Promise<void> {
-        await this.cacheAdapter.clear();
+    async removeUnexpiredMany(keys: string[]): Promise<number> {
+        return await this.adapter.removeUnexpiredMany(keys);
+    }
+
+    async removeExpiredMany(keys: string[]): Promise<number> {
+        return await this.adapter.removeExpiredMany(keys);
+    }
+
+    async removeByKeyPrefix(prefix: string): Promise<void> {
+        await this.adapter.removeByKeyPrefix(prefix);
     }
 }
