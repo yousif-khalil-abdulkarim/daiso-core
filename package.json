@@ -129,6 +129,7 @@
     },
     "dependencies": {
         "@libsql/kysely-libsql": "^0.4.0",
+        "escape-string-regexp": "^5.0.0",
         "kysely": "^0.27.0",
         "superjson-cjs": "^2.2.3",
         "uuid": "^11.0.5"
