@@ -2,4 +2,4 @@
 "@daiso-tech/core": patch
 ---
 
-Fixed a but <i>LockProvider</i> class
+Fixed a bug with <i>LockProvider</i> class
