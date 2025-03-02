@@ -4,16 +4,8 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memo
 import EventEmitter from "node:events";
 
 describe("class: MemoryEventBusAdapter", () => {
-    let eventEmitter: EventEmitter;
-    beforeEach(() => {
-        eventEmitter = new EventEmitter();
-    });
     eventBusAdapterTestSuite({
-        createAdapter: () =>
-            new MemoryEventBusAdapter({
-                rootGroup: "@a",
-                eventEmitter,
-            }),
+        createAdapter: () => new MemoryEventBusAdapter(new EventEmitter()),
         test,
         beforeEach,
         expect,

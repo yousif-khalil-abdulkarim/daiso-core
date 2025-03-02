@@ -117,9 +117,7 @@ export class EventBusFactory<TAdapters extends string = string>
      * const cacheFactory = new EventBusFactory({
      *   serde,
      *   adapters: {
-     *     memory:new MemoryEventBusAdapter({
-     *       rootGroup: "@global"
-     *     }),
+     *     memory: new MemoryEventBusAdapter(),
      *     redis: new RedisPubSubEventBusAdapter({
      *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION"),
      *       listenerClient: new Redis("YOUR_REDIS_CONNECTION")
@@ -189,9 +187,7 @@ export class EventBusFactory<TAdapters extends string = string>
      * const cacheFactory = new EventBusFactory({
      *   serde,
      *   adapters: {
-     *     memory:new MemoryEventBusAdapter({
-     *       rootGroup: "@global"
-     *     }),
+     *     memory: new MemoryEventBusAdapter(),
      *     redis: new RedisPubSubEventBusAdapter({
      *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION"),
      *       listenerClient: new Redis("YOUR_REDIS_CONNECTION")

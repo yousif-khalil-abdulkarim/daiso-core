@@ -14,10 +14,7 @@ import type {
 } from "@/event-bus/contracts/_module-exports.js";
 import type { Redis } from "ioredis";
 import { EventEmitter } from "node:events";
-import {
-    resolveOneOrMoreStr,
-    type InvokableFn,
-} from "@/utilities/_module-exports.js";
+import { type InvokableFn } from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -28,7 +25,6 @@ export type RedisPubSubEventBusAdapterSettings = {
     dispatcherClient: Redis;
     listenerClient: Redis;
     serde: ISerde<string>;
-    rootGroup: string;
 };
 
 /**
@@ -38,9 +34,7 @@ export type RedisPubSubEventBusAdapterSettings = {
  * @group Adapters
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
-    private readonly group: string;
-    private readonly baseSerde: ISerde<string>;
-    private readonly redisSerde: ISerde<string>;
+    private readonly serde: ISerde<string>;
     private readonly dispatcherClient: Redis;
     private readonly listenerClient: Redis;
     private readonly eventEmitter = new EventEmitter();
@@ -60,7 +54,6 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
      *   dispatcherClient,
      *   listenerClient,
      *   serde,
-     *   rootGroup: "@global"
      * });
      * ```
      */
@@ -68,34 +61,14 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         dispatcherClient,
         listenerClient,
         serde,
-        rootGroup,
     }: RedisPubSubEventBusAdapterSettings) {
-        this.group = rootGroup;
         this.dispatcherClient = dispatcherClient;
         this.listenerClient = listenerClient;
-        this.baseSerde = serde;
-        this.redisSerde = new RedisSerde(serde);
-    }
-
-    getGroup(): string {
-        return this.group;
-    }
-
-    withGroup(group: string): IEventBusAdapter {
-        return new RedisPubSubEventBusAdapter({
-            listenerClient: this.listenerClient,
-            dispatcherClient: this.dispatcherClient,
-            serde: this.baseSerde,
-            rootGroup: resolveOneOrMoreStr([this.group, group]),
-        });
-    }
-
-    private withPrefix(eventName: string): string {
-        return resolveOneOrMoreStr([this.group, eventName]);
+        this.serde = new RedisSerde(serde);
     }
 
     private redisListener = (channel: string, message: string): void => {
-        this.eventEmitter.emit(channel, this.redisSerde.deserialize(message));
+        this.eventEmitter.emit(channel, this.serde.deserialize(message));
     };
 
     async addListener(
@@ -103,9 +76,9 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         listener: InvokableFn<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmitter.on(this.withPrefix(eventName), listener);
+        this.eventEmitter.on(eventName, listener);
 
-        await this.listenerClient.subscribe(this.withPrefix(eventName));
+        await this.listenerClient.subscribe(eventName);
 
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.listenerClient.on("message", this.redisListener);
@@ -116,15 +89,15 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         listener: InvokableFn<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmitter.off(this.withPrefix(eventName), listener);
+        this.eventEmitter.off(eventName, listener);
 
-        await this.listenerClient.unsubscribe(this.withPrefix(eventName));
+        await this.listenerClient.unsubscribe(eventName);
     }
 
     async dispatch(eventName: string, eventData: BaseEvent): Promise<void> {
         await this.dispatcherClient.publish(
-            this.withPrefix(eventName),
-            this.redisSerde.serialize(eventData),
+            eventName,
+            this.serde.serialize(eventData),
         );
     }
 }

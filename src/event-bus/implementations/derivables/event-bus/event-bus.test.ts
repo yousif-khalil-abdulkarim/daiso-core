@@ -16,10 +16,7 @@ describe("class: EventBus", () => {
         beforeEach,
         createEventBus: () =>
             new EventBus({
-                adapter: new MemoryEventBusAdapter({
-                    rootGroup: "@a",
-                    eventEmitter,
-                }),
+                adapter: new MemoryEventBusAdapter(eventEmitter),
             }),
     });
 });

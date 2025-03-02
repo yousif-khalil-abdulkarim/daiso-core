@@ -78,9 +78,7 @@ export type CacheSettingsBase = {
      * @default
      * ```ts
      * new EventBus({
-     *   adapter: new MemoryEventBusAdapter({
-     *     rootGroup: "@global"
-     *   })
+     *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
      */
@@ -255,9 +253,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             keyPrefixer,
             adapter,
             eventBus: groupdEventBus = new EventBus({
-                adapter: new MemoryEventBusAdapter({
-                    rootGroup: "@global",
-                }),
+                adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,
             retryAttempts = null,

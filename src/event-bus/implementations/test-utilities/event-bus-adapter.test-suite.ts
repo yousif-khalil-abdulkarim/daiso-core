@@ -95,117 +95,48 @@ export function eventBusAdapterTestSuite(
         serde = new Serde(new NoOpSerdeAdapter()),
     } = settings;
 
-    let eventBusAdapterA: IEventBusAdapter;
-    let eventBusAdapterB: IEventBusAdapter;
+    let adapter: IEventBusAdapter;
     beforeEach(async () => {
-        eventBusAdapterA = await createAdapter();
-        eventBusAdapterB = eventBusAdapterA.withGroup("b");
+        adapter = await createAdapter();
     });
 
     const TTL = TimeSpan.fromMilliseconds(50);
     class TestEvent extends BaseEvent {}
     serde.registerEvent(TestEvent);
-
-    describe("Api tests:", () => {
-        describe("method: addListener, removeListener, dispatch", () => {
-            test("Should be null when listener added and event is not triggered", async () => {
-                let result: BaseEvent | null = null;
-                await eventBusAdapterA.addListener(
-                    TestEvent.name,
-                    (event: BaseEvent) => {
-                        result = event;
-                    },
-                );
-                expect(result).toBeNull();
+    describe("method: addListener, removeListener, dispatch", () => {
+        test("Should be null when listener added and event is not triggered", async () => {
+            let result: BaseEvent | null = null;
+            await adapter.addListener(TestEvent.name, (event: BaseEvent) => {
+                result = event;
             });
-            test("Should be TestEvent when listener added and event is triggered", async () => {
-                let result: BaseEvent | null = null;
-                await eventBusAdapterA.addListener(
-                    TestEvent.name,
-                    (event: BaseEvent) => {
-                        result = event;
-                    },
-                );
-                const event = new TestEvent({
-                    type: BaseEvent.name,
-                });
-                await eventBusAdapterA.dispatch(TestEvent.name, event);
-                await delay(TTL);
-                expect(result).toEqual(event);
-                expect(result).toBeInstanceOf(TestEvent);
-            });
-            test("Should be null when listener removed and event is triggered", async () => {
-                let result: BaseEvent | null = null;
-                const listener = (event: BaseEvent) => {
-                    result = event;
-                };
-                await eventBusAdapterA.addListener(TestEvent.name, listener);
-                await eventBusAdapterA.removeListener(TestEvent.name, listener);
-                const event = new TestEvent({
-                    type: BaseEvent.name,
-                });
-                await eventBusAdapterA.dispatch(TestEvent.name, event);
-                await delay(TTL);
-                expect(result).toBeNull();
-            });
+            expect(result).toBeNull();
         });
-    });
-    describe("Group tests:", () => {
-        test("method: addListener / dispatch", async () => {
-            const event = new TestEvent({
-                type: "type",
+        test("Should be TestEvent when listener added and event is triggered", async () => {
+            let result: BaseEvent | null = null;
+            await adapter.addListener(TestEvent.name, (event: BaseEvent) => {
+                result = event;
             });
-
-            let result_a: BaseEvent | null = null;
-            await eventBusAdapterA.addListener(
-                TestEvent.name,
-                (event: BaseEvent) => {
-                    result_a = event;
-                },
-            );
-
-            let result_b: BaseEvent | null = null;
-            await eventBusAdapterB.addListener(
-                TestEvent.name,
-                (event: BaseEvent) => {
-                    result_b = event;
-                },
-            );
-
-            await eventBusAdapterA.dispatch(TestEvent.name, event);
+            const event = new TestEvent({
+                type: BaseEvent.name,
+            });
+            await adapter.dispatch(TestEvent.name, event);
             await delay(TTL);
-
-            expect(result_a).toEqual(event);
-            expect(result_a).toBeInstanceOf(TestEvent);
-            expect(result_b).toBeNull();
+            expect(result).toEqual(event);
+            expect(result).toBeInstanceOf(TestEvent);
         });
-        test("method: removeListener / addListener / dispatch", async () => {
-            const event = new TestEvent({
-                type: "type",
-            });
-
-            let result_a: BaseEvent | null = null;
-            await eventBusAdapterA.addListener(
-                TestEvent.name,
-                (event: BaseEvent) => {
-                    result_a = event;
-                },
-            );
-
-            let result_b: BaseEvent | null = null;
-            const listenerB = (event: BaseEvent) => {
-                result_b = event;
+        test("Should be null when listener removed and event is triggered", async () => {
+            let result: BaseEvent | null = null;
+            const listener = (event: BaseEvent) => {
+                result = event;
             };
-            await eventBusAdapterB.addListener(TestEvent.name, listenerB);
-            await eventBusAdapterB.removeListener(TestEvent.name, listenerB);
-
-            await eventBusAdapterA.dispatch(TestEvent.name, event);
-            await eventBusAdapterB.dispatch(TestEvent.name, event);
+            await adapter.addListener(TestEvent.name, listener);
+            await adapter.removeListener(TestEvent.name, listener);
+            const event = new TestEvent({
+                type: BaseEvent.name,
+            });
+            await adapter.dispatch(TestEvent.name, event);
             await delay(TTL);
-
-            expect(result_a).toEqual(event);
-            expect(result_a).toBeInstanceOf(TestEvent);
-            expect(result_b).toBeNull();
+            expect(result).toBeNull();
         });
     });
 }

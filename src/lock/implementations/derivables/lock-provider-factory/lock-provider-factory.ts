@@ -71,9 +71,7 @@ export type LockProviderFactorySettings<TAdapters extends string> = {
      * @default
      * ```ts
      * new EventBus({
-     *   adapter: new MemoryEventBusAdapter({
-     *     rootGroup: "@global"
-     *   })
+     *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
      */
@@ -183,7 +181,7 @@ export class LockProviderFactory<TAdapters extends string>
      * import Redis from "ioredis"
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new LockProviderFactory({
@@ -284,7 +282,7 @@ export class LockProviderFactory<TAdapters extends string>
      * import Redis from "ioredis"
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new LockProviderFactory({

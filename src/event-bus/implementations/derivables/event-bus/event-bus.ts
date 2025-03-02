@@ -91,7 +91,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * ```
      */
@@ -129,7 +129,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * // Will print "@global"
@@ -160,7 +160,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * // Will print "@global"
@@ -208,7 +208,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
@@ -249,7 +249,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
@@ -292,7 +292,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
@@ -333,7 +333,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
@@ -375,7 +375,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
@@ -415,7 +415,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
@@ -451,7 +451,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
@@ -479,7 +479,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
@@ -519,7 +519,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
@@ -559,7 +559,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      *
      * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      *
      * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
