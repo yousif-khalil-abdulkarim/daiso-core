@@ -28,7 +28,6 @@ import {
     isFactory,
     resolveAsyncLazyable,
     resolveFactoryable,
-    resolveOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazyable,
@@ -282,8 +281,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
         if (this.keyPrefixer.group) {
             this.eventBus = this.groupdEventBus.withGroup([
-                resolveOneOrMoreStr(this.keyPrefixer.rootPrefix),
-                resolveOneOrMoreStr(this.keyPrefixer.group),
+                this.keyPrefixer.rootPrefix,
+                this.keyPrefixer.group,
             ]);
         } else {
             this.eventBus = this.groupdEventBus.withGroup(
@@ -293,7 +292,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
         this.adapterPromise = Cache.resolveCacheAdapterFactoryable(
             this.adapterFactoryable,
-            resolveOneOrMoreStr(this.keyPrefixer.rootPrefix),
+            this.keyPrefixer.rootPrefix,
         );
     }
 
@@ -424,7 +423,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             const value = await this.get(key);
             if (value === null) {
                 throw new KeyNotFoundCacheError(
-                    `Key "${resolveOneOrMoreStr(key)}" is not found`,
+                    `Key "${this.keyPrefixer.create(key).resolved()}" is not found`,
                 );
             }
             return value;
@@ -852,7 +851,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     getGroup(): string | null {
         if (this.keyPrefixer.group) {
-            return resolveOneOrMoreStr(this.keyPrefixer.group);
+            return this.keyPrefixer.group;
         }
         return null;
     }
