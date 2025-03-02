@@ -26,25 +26,6 @@ export type MemoryEventBusAdapterSettings = {
  * @group Adapters
  */
 export class MemoryEventBusAdapter implements IEventBusAdapter {
-    /**
-     * @example
-     * ```ts
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { EventEmitter } from "node:events";
-     *
-     * const eventBusAdapter = new MemoryEventBusAdapter();
-     * ```
-     *
-     * You can also provide an <i>EVentEmitter</i>.
-     * @example
-     * ```ts
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { EventEmitter } from "node:events";
-     *
-     * const eventEmitter = new EventEmitter();
-     * const eventBusAdapter = new MemoryEventBusAdapter(new EventEmitter());
-     * ```
-     */
     constructor(
         private readonly eventEmitter: EventEmitter = new EventEmitter(),
     ) {

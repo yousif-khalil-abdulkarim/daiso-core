@@ -8,6 +8,8 @@ import type {
     Factoryable,
     FactoryFn,
     IFactoryObject,
+    Invokable,
+    InvokableFn,
     Lazyable,
     OneOrMore,
 } from "@/utilities/types.js";
@@ -150,4 +152,13 @@ export async function resolveFactoryable<TInput, TOutput>(
     } else {
         return factoryable;
     }
+}
+
+export function resolveInvokable<TInput, TOutput>(
+    invokable: Invokable<TInput, TOutput>,
+): InvokableFn<TInput, TOutput> {
+    if (typeof invokable === "function") {
+        return invokable;
+    }
+    return invokable.invoke.bind(invokable);
 }

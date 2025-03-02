@@ -4,6 +4,7 @@
 
 import {
     getConstructorName,
+    KeyPrefixer,
     TimeSpan,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
@@ -67,6 +68,7 @@ export class LockSerdeTransformer
             retryPolicy = null,
             timeout = null,
             eventBus = new EventBus({
+                keyPrefixer: new KeyPrefixer("event-bus"),
                 adapter: new NoOpEventBusAdapter(),
             }),
         } = settings;

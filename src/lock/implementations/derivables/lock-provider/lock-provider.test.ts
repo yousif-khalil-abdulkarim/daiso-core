@@ -7,9 +7,11 @@ import { lockProviderTestSuite } from "@/lock/implementations/test-utilities/_mo
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 import type { ILockData } from "@/lock/contracts/_module-exports.js";
+import { KeyPrefixer } from "@/utilities/_module-exports.js";
 
 describe("class: LockProvider", () => {
     const eventBus = new EventBus({
+        keyPrefixer: new KeyPrefixer("event-bus"),
         adapter: new MemoryEventBusAdapter(),
     });
     const serde = new Serde(new SuperJsonSerdeAdapter());

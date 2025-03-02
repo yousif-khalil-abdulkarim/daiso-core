@@ -39,24 +39,6 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     private readonly listenerClient: Redis;
     private readonly eventEmitter = new EventEmitter();
 
-    /**
-     * @example
-     * ```ts
-     * import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
-     * import Redis from "ioredis";
-     *
-     * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
-     * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
-     * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const eventBusAdapter = new RedisPubSubEventBusAdapter({
-     *   dispatcherClient,
-     *   listenerClient,
-     *   serde,
-     * });
-     * ```
-     */
     constructor({
         dispatcherClient,
         listenerClient,

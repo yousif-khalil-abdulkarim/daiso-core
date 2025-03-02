@@ -34,13 +34,13 @@ import {
     type Invokable,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
-import type {
-    NoneFunction,
-    TimeSpan,
+import {
+    type NoneFunction,
+    type TimeSpan,
     KeyPrefixer,
-    Factoryable,
+    type Factoryable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IFactoryObject,
+    type IFactoryObject,
 } from "@/utilities/_module-exports.js";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
@@ -55,16 +55,6 @@ import { EventBus } from "@/event-bus/implementations/derivables/_module-exports
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
 import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/database-cache-adapter.js";
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
- * @group Derivables
- */
-export type CacheAdapterFactoryable<TType> = Factoryable<
-    string,
-    ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>
->;
 
 /**
  *
@@ -114,6 +104,16 @@ export type CacheSettingsBase = {
      */
     timeout?: TimeSpan | null;
 };
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * @group Derivables
+ */
+export type CacheAdapterFactoryable<TType> = Factoryable<
+    string,
+    ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>
+>;
 
 /**
  *
@@ -253,6 +253,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             keyPrefixer,
             adapter,
             eventBus: groupdEventBus = new EventBus({
+                keyPrefixer: new KeyPrefixer("events"),
                 adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,

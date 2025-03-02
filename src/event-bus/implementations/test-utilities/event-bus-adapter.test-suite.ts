@@ -37,52 +37,6 @@ export type EventBusAdapterTestSuiteSettings = {
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/test-utilities"```
  * @group Test utilities
- * @example
- * ```ts
- * import { describe, test, beforeEach, expect, afterEach } from "vitest";
- * import type { StartedRedisContainer } from "@testcontainers/redis";
- * import { RedisContainer } from "@testcontainers/redis";
- * import Redis from "ioredis";
- * import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
- * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
- * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
- * import { eventBusAdapterTestSuite } from "@daiso-tech/core/event-bus/implementations/test-utilities";
- *
- * const TIMEOUT = TimeSpan.fromMinutes(2);
- * describe("class: RedisPubSubEventBusAdapter", () => {
- *   let dispatcherClient: Redis;
- *   let listenerClient: Redis;
- *   let startedContainer: StartedRedisContainer;
- *   const serde = new Serde(new SuperJsonSerdeAdapter());
- *
- *   beforeEach(async () => {
- *     startedContainer = await new RedisContainer().start();
- *     dispatcherClient = new Redis(startedContainer.getConnectionUrl());
- *     listenerClient = new Redis(startedContainer.getConnectionUrl());
- *   }, TIMEOUT.toMilliseconds());
- *
- *   afterEach(async () => {
- *     await dispatcherClient.quit();
- *     await listenerClient.quit();
- *     await startedContainer.stop();
- *   }, TIMEOUT.toMilliseconds());
- *
- *   eventBusAdapterTestSuite({
- *     createAdapter: () =>
- *       new RedisPubSubEventBusAdapter({
- *         dispatcherClient,
- *         listenerClient,
- *         serde,
- *         rootGroup: "@global"
- *       }),
- *     serde,
- *     test,
- *     beforeEach,
- *     expect,
- *     describe,
- *   });
- * });
- * ```
  */
 export function eventBusAdapterTestSuite(
     settings: EventBusAdapterTestSuiteSettings,

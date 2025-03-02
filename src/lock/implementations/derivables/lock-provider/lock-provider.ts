@@ -4,6 +4,7 @@
 
 import {
     CORE,
+    KeyPrefixer,
     resolveOneOrMoreStr,
     TimeSpan,
     type Invokable,
@@ -195,6 +196,7 @@ export class LockProvider implements IGroupableLockProvider {
             retryPolicy = null,
             timeout = null,
             eventBus = new EventBus({
+                keyPrefixer: new KeyPrefixer("event-bus"),
                 adapter: new MemoryEventBusAdapter(),
             }),
             serde,
