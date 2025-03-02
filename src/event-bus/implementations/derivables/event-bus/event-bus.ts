@@ -20,6 +20,7 @@ import {
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type {
+    Factoryable,
     Invokable,
     InvokableFn,
     KeyPrefixer,
@@ -28,6 +29,7 @@ import type {
 } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
+    resolveFactoryable,
     resolveInvokable,
 } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
@@ -67,11 +69,18 @@ export type EventBusSettingsBase = {
 
 /**
  *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * @group Derivables
+ */
+export type EventBusAdapterFactoryable = Factoryable<string, IEventBusAdapter>;
+
+/**
+ *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
 export type EventBusSettings = EventBusSettingsBase & {
-    adapter: IEventBusAdapter;
+    adapter: EventBusAdapterFactoryable;
 };
 
 /**
@@ -83,12 +92,13 @@ export type EventBusSettings = EventBusSettingsBase & {
 export class EventBus<TEvents extends BaseEvent = BaseEvent>
     implements IGroupableEventBus<TEvents>
 {
-    private readonly adapter: IEventBusAdapter;
+    private readonly adapterFactoryable: EventBusAdapterFactoryable;
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
     private readonly store = new ListenerStore();
+    private readonly adapterPromise: Promise<IEventBusAdapter>;
     private keyPrefixer: KeyPrefixer;
 
     constructor(settings: EventBusSettings) {
@@ -100,12 +110,16 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             retryPolicy = null,
             timeout = null,
         } = settings;
+        this.adapterFactoryable = adapter;
         this.keyPrefixer = keyPrefixer;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
-        this.adapter = adapter;
+        this.adapterPromise = resolveFactoryable(
+            this.adapterFactoryable,
+            this.keyPrefixer.rootPrefix,
+        );
     }
 
     private createLayPromise<TValue = void>(
@@ -121,7 +135,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
             keyPrefixer: this.keyPrefixer.withGroup(group),
-            adapter: this.adapter,
+            adapter: this.adapterFactoryable,
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
@@ -144,7 +158,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 listener,
             );
             try {
-                await this.adapter.addListener(
+                const adapter = await this.adapterPromise;
+                await adapter.addListener(
                     eventName.prefixed(),
                     resolvedListener as InvokableFn<BaseEvent>,
                 );
@@ -171,7 +186,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 return;
             }
             try {
-                await this.adapter.removeListener(
+                const adapter = await this.adapterPromise;
+                await adapter.removeListener(
                     eventName.prefixed(),
                     resolvedListener as InvokableFn<BaseEvent>,
                 );
@@ -275,6 +291,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     dispatchMany(events: TEvents[]): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {
+                const adapter = await this.adapterPromise;
                 const promises = events
                     .map((event) => ({
                         eventName: getConstructorName(event),
@@ -289,12 +306,12 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                         event,
                     }))
                     .map(({ eventName, event }) =>
-                        this.adapter.dispatch(eventName, event),
+                        adapter.dispatch(eventName, event),
                     );
                 await Promise.all(promises);
             } catch (error: unknown) {
                 throw new UnableToDispatchEventBusError(
-                    `Events of types "${events.map((event) => getConstructorName(event)).join(", ")}" could not be dispatched`,
+                    `Events of type${events.length === 0 ? "" : "s"} "${events.map((event) => getConstructorName(event)).join(", ")}" could not be dispatched`,
                     error,
                 );
             }
