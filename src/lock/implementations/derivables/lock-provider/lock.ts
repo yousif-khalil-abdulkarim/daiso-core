@@ -166,7 +166,7 @@ export class Lock implements ILock {
      * import { delay } from "@daiso-tech/core/async";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -214,7 +214,7 @@ export class Lock implements ILock {
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -291,7 +291,7 @@ export class Lock implements ILock {
      * import { delay } from "@daiso-tech/core/async";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -341,7 +341,7 @@ export class Lock implements ILock {
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -414,7 +414,7 @@ export class Lock implements ILock {
      * import { delay } from "@daiso-tech/core/async";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -462,7 +462,7 @@ export class Lock implements ILock {
      * import type { IGroupableCache } from "@daiso-tech/core/cache/contracts";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -540,7 +540,7 @@ export class Lock implements ILock {
      * import { delay } from "@daiso-tech/core/async";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -634,7 +634,7 @@ export class Lock implements ILock {
      * import { delay } from "@daiso-tech/core/async";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -696,7 +696,7 @@ export class Lock implements ILock {
      * import { delay } from "@daiso-tech/core/async";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -935,7 +935,7 @@ export class Lock implements ILock {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -979,7 +979,7 @@ export class Lock implements ILock {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -1023,7 +1023,7 @@ export class Lock implements ILock {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -1068,7 +1068,7 @@ export class Lock implements ILock {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -1113,7 +1113,7 @@ export class Lock implements ILock {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -1163,7 +1163,7 @@ export class Lock implements ILock {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -1208,7 +1208,7 @@ export class Lock implements ILock {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({

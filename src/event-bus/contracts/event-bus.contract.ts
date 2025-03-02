@@ -159,7 +159,7 @@ export type IEventBus<TEvents extends BaseEvent = BaseEvent> =
             /**
              * The <i>getGroup</i> method returns the group name.
              */
-            getGroup(): string;
+            getGroup(): string | null;
         };
 
 /**

@@ -64,9 +64,7 @@ export type LockProviderTestSuiteSettings = {
  *
  * describe("class: LockProvider", () => {
  *     const eventBus = new EventBus({
- *         adapter: new MemoryEventBusAdapter({
- *             rootGroup: "@global",
- *         }),
+ *         adapter: new MemoryEventBusAdapter(),
  *     });
  *     const serde = new Serde(new SuperJsonSerdeAdapter());
  *     let map: Map<string, ILockData>;

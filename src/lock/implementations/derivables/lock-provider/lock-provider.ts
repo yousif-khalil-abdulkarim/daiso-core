@@ -4,6 +4,7 @@
 
 import {
     CORE,
+    KeyPrefixer,
     resolveOneOrMoreStr,
     TimeSpan,
     type Invokable,
@@ -63,9 +64,7 @@ export type LockProviderSettings = {
      * @default
      * ```ts
      * new EventBus({
-     *   adapter: new MemoryEventBusAdapter({
-     *     rootGroup: "@global"
-     *   })
+     *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
      */
@@ -172,7 +171,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -197,9 +196,8 @@ export class LockProvider implements IGroupableLockProvider {
             retryPolicy = null,
             timeout = null,
             eventBus = new EventBus({
-                adapter: new MemoryEventBusAdapter({
-                    rootGroup: "@global",
-                }),
+                keyPrefixer: new KeyPrefixer("event-bus"),
+                adapter: new MemoryEventBusAdapter(),
             }),
             serde,
         } = settings;
@@ -262,7 +260,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -305,7 +303,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -348,7 +346,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -391,7 +389,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -434,7 +432,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -482,7 +480,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -525,7 +523,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -563,7 +561,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { TimeSpan } from "@daiso-tech/core/utilities";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -627,7 +625,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({
@@ -658,7 +656,7 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      *
      * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
+     *   adapter: new MemoryEventBusAdapter()
      * });
      * const serde = new Serde(SuperJsonSerdeAdapter);
      * const lockProvider: IGroupableLockProvider = new LockProvider({

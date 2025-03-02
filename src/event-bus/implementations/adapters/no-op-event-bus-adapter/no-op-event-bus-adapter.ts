@@ -17,14 +17,6 @@ import type { InvokableFn } from "@/utilities/types.js";
  * @group Adapters
  */
 export class NoOpEventBusAdapter implements IEventBusAdapter {
-    getGroup(): string {
-        return "";
-    }
-
-    withGroup(_group: string): IEventBusAdapter {
-        return new NoOpEventBusAdapter();
-    }
-
     addListener(
         _eventName: string,
         _listener: InvokableFn<BaseEvent>,

@@ -3,6 +3,7 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memo
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus.js";
 import { eventBusTestSuite } from "@/event-bus/implementations/test-utilities/_module-exports.js";
 import { EventEmitter } from "node:events";
+import { KeyPrefixer } from "@/utilities/_module-exports.js";
 
 describe("class: EventBus", () => {
     let eventEmitter: EventEmitter;
@@ -16,10 +17,8 @@ describe("class: EventBus", () => {
         beforeEach,
         createEventBus: () =>
             new EventBus({
-                adapter: new MemoryEventBusAdapter({
-                    rootGroup: "@a",
-                    eventEmitter,
-                }),
+                keyPrefixer: new KeyPrefixer("event-bus"),
+                adapter: new MemoryEventBusAdapter(eventEmitter),
             }),
     });
 });

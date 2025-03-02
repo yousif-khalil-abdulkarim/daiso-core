@@ -2,4 +2,4 @@
 "@daiso-tech/core": minor
 ---
 
-Updated the Cache class CacheFactory classes, they can now take factory function that returns a cache adapter.
+Updated the <i>Cache</i> and <i>CacheFactory</i> classes, they can now take factory function/object that returns a <i>ICacheAdapter</i> and <i>IDatabaseCacheAdapter</i>.

@@ -34,13 +34,13 @@ import {
     type Invokable,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
-import type {
-    NoneFunction,
-    TimeSpan,
+import {
+    type NoneFunction,
+    type TimeSpan,
     KeyPrefixer,
-    Factoryable,
+    type Factoryable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IFactoryObject,
+    type IFactoryObject,
 } from "@/utilities/_module-exports.js";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
@@ -61,16 +61,6 @@ import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/d
  * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
  * @group Derivables
  */
-export type CacheAdapterFactoryable<TType> = Factoryable<
-    string,
-    ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>
->;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
- * @group Derivables
- */
 export type CacheSettingsBase = {
     keyPrefixer: KeyPrefixer;
 
@@ -78,9 +68,7 @@ export type CacheSettingsBase = {
      * @default
      * ```ts
      * new EventBus({
-     *   adapter: new MemoryEventBusAdapter({
-     *     rootGroup: "@global"
-     *   })
+     *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
      */
@@ -116,6 +104,16 @@ export type CacheSettingsBase = {
      */
     timeout?: TimeSpan | null;
 };
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * @group Derivables
+ */
+export type CacheAdapterFactoryable<TType> = Factoryable<
+    string,
+    ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>
+>;
 
 /**
  *
@@ -255,9 +253,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             keyPrefixer,
             adapter,
             eventBus: groupdEventBus = new EventBus({
-                adapter: new MemoryEventBusAdapter({
-                    rootGroup: "@global",
-                }),
+                keyPrefixer: new KeyPrefixer("events"),
+                adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,
             retryAttempts = null,

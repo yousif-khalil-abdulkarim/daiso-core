@@ -4,7 +4,7 @@ import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module-exp
 
 describe("class: MemoryCacheAdapter", () => {
     cacheAdapterTestSuite({
-        createAdapter: () => new MemoryCacheAdapter(new Map<string, unknown>()),
+        createAdapter: () => new MemoryCacheAdapter(),
         test,
         beforeEach,
         expect,

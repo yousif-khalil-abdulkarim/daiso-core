@@ -2,10 +2,7 @@
  * @module EventBus
  */
 
-import {
-    resolveOneOrMoreStr,
-    type InvokableFn,
-} from "@/utilities/_module-exports.js";
+import { type InvokableFn } from "@/utilities/_module-exports.js";
 import type {
     BaseEvent,
     IEventBusAdapter,
@@ -29,52 +26,10 @@ export type MemoryEventBusAdapterSettings = {
  * @group Adapters
  */
 export class MemoryEventBusAdapter implements IEventBusAdapter {
-    private readonly group: string;
-    private readonly eventEmitter: EventEmitter;
-
-    /**
-     * @example
-     * ```ts
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { EventEmitter } from "node:events";
-     *
-     * const eventEmitter = new EventEmitter();
-     * const eventBusAdapter = new MemoryEventBusAdapter({
-     *   eventEmitter
-     * });
-     * ```
-     * You can also provide an <i>EVentEmitter</i>.
-     * @example
-     * ```ts
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { EventEmitter } from "node:events";
-     *
-     * const eventEmitter = new EventEmitter();
-     * const eventBusAdapter = new MemoryEventBusAdapter({
-     *   rootGroup: "@global",
-     *   eventEmitter
-     * });
-     * ```
-     */
-    constructor(settings: MemoryEventBusAdapterSettings) {
-        const { rootGroup, eventEmitter = new EventEmitter() } = settings;
+    constructor(
+        private readonly eventEmitter: EventEmitter = new EventEmitter(),
+    ) {
         this.eventEmitter = eventEmitter;
-        this.group = rootGroup;
-    }
-
-    getGroup(): string {
-        return this.group;
-    }
-
-    withGroup(group: string): IEventBusAdapter {
-        return new MemoryEventBusAdapter({
-            rootGroup: resolveOneOrMoreStr([this.group, group]),
-            eventEmitter: this.eventEmitter,
-        });
-    }
-
-    private withPrefix(event: string): string {
-        return resolveOneOrMoreStr([this.group, event]);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
@@ -83,7 +38,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
         listener: InvokableFn<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmitter.on(this.withPrefix(eventName), listener);
+        this.eventEmitter.on(eventName, listener);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
@@ -92,11 +47,11 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
         listener: InvokableFn<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.eventEmitter.off(this.withPrefix(eventName), listener);
+        this.eventEmitter.off(eventName, listener);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
     async dispatch(eventName: string, eventData: BaseEvent): Promise<void> {
-        this.eventEmitter.emit(this.withPrefix(eventName), eventData);
+        this.eventEmitter.emit(eventName, eventData);
     }
 }

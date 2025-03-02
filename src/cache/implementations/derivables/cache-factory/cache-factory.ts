@@ -97,10 +97,10 @@ export class CacheFactory<TAdapters extends string = string>
         });
     }
 
-    setTimeout(policy: TimeSpan): CacheFactory<TAdapters> {
+    setTimeout(timeout: TimeSpan): CacheFactory<TAdapters> {
         return new CacheFactory({
             ...this.settings,
-            timeout: policy,
+            timeout,
         });
     }
 

@@ -20,24 +20,27 @@ import {
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type {
-    IInvokableObject,
+    Factoryable,
     Invokable,
     InvokableFn,
+    KeyPrefixer,
     OneOrMore,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
-    resolveOneOrMoreStr,
+    resolveFactoryable,
+    resolveInvokable,
 } from "@/utilities/_module-exports.js";
+import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
-export type EventBusSettings = {
-    adapter: IEventBusAdapter;
+export type EventBusSettingsBase = {
+    keyPrefixer: KeyPrefixer;
 
     /**
      * The default retry attempt to use in the returned <i>LazyPromise</i>.
@@ -65,6 +68,22 @@ export type EventBusSettings = {
 };
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * @group Derivables
+ */
+export type EventBusAdapterFactoryable = Factoryable<string, IEventBusAdapter>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
+ * @group Derivables
+ */
+export type EventBusSettings = EventBusSettingsBase & {
+    adapter: EventBusAdapterFactoryable;
+};
+
+/**
  * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
@@ -73,41 +92,34 @@ export type EventBusSettings = {
 export class EventBus<TEvents extends BaseEvent = BaseEvent>
     implements IGroupableEventBus<TEvents>
 {
-    private readonly adapter: IEventBusAdapter;
+    private readonly adapterFactoryable: EventBusAdapterFactoryable;
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
-    private readonly listenerObjectMap = new Map<
-        IInvokableObject<any>,
-        InvokableFn<any>
-    >();
+    private readonly store = new ListenerStore();
+    private readonly adapterPromise: Promise<IEventBusAdapter>;
+    private keyPrefixer: KeyPrefixer;
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     * ```
-     */
     constructor(settings: EventBusSettings) {
         const {
+            keyPrefixer,
             adapter,
             retryAttempts = null,
             backoffPolicy = null,
             retryPolicy = null,
             timeout = null,
         } = settings;
+        this.adapterFactoryable = adapter;
+        this.keyPrefixer = keyPrefixer;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
-        this.adapter = adapter;
+        this.adapterPromise = resolveFactoryable(
+            this.adapterFactoryable,
+            this.keyPrefixer.rootPrefix,
+        );
     }
 
     private createLayPromise<TValue = void>(
@@ -120,30 +132,10 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             .setTimeout(this.timeout);
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus, IEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * // Will print "@global"
-     * console.log(eventBus.getGroup());
-     *
-     * const groupedEventBus: IEventBus = eventBus.withGroup("company-1");
-     *
-     * // Will print "@global/company-1"
-     * console.log(groupedEventBus.getGroup());
-     * ```
-     */
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
-            adapter: this.adapter.withGroup(resolveOneOrMoreStr(group)),
+            keyPrefixer: this.keyPrefixer.withGroup(group),
+            adapter: this.adapterFactoryable,
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
@@ -151,84 +143,24 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * // Will print "@global"
-     * console.log(eventBus.getGroup());
-     * ```
-     */
-    getGroup(): string {
-        return this.adapter.getGroup();
+    getGroup(): string | null {
+        return this.keyPrefixer.group;
     }
 
-    private ensureListenerObject<TEvent>(
-        listener: IInvokableObject<TEvent>,
-    ): InvokableFn<TEvent> {
-        let listenerFn = this.listenerObjectMap.get(listener);
-        if (listenerFn !== undefined) {
-            return listenerFn;
-        }
-        listenerFn = listener.invoke.bind(listener);
-        this.listenerObjectMap.set(listener, listenerFn);
-        return listenerFn;
-    }
-
-    private resolveListener<TEvent>(
-        listener: Invokable<TEvent>,
-    ): InvokableFn<TEvent> {
-        if (typeof listener === "function") {
-            return listener;
-        }
-        return this.ensureListenerObject(listener);
-    }
-
-    private deleteListener<TEvent>(listener: Invokable<TEvent>): void {
-        if (typeof listener === "function") {
-            return;
-        }
-        this.listenerObjectMap.delete(listener);
-    }
-
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     *
-     * const listener: Invokable<AddEvent> = event => {
-     *   console.log(event);
-     * }
-     * await eventBus.addListener(AddEvent, listener);
-     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
-     * ```
-     */
     addListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            const resolvedListener = this.resolveListener(listener);
+            const eventName = this.keyPrefixer.create(event.name);
+            const resolvedListener = this.store.getOrAdd(
+                eventName.prefixed(),
+                listener,
+            );
             try {
-                await this.adapter.addListener(
-                    event.name,
+                const adapter = await this.adapterPromise;
+                await adapter.addListener(
+                    eventName.prefixed(),
                     resolvedListener as InvokableFn<BaseEvent>,
                 );
             } catch (error: unknown) {
@@ -240,40 +172,25 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     *
-     * const listener: Invokable<AddEvent> = event => {
-     *   console.log(event);
-     * }
-     * await eventBus.addListener(AddEvent, listener);
-     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
-     * await eventBus.removeListener(AddEvent, listener);
-     * ```
-     */
     removeListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            const resolvedListener = this.resolveListener(listener);
+            const eventName = this.keyPrefixer.create(event.name);
+            const resolvedListener = this.store.getAndRemove(
+                eventName.prefixed(),
+                listener,
+            );
+            if (resolvedListener === null) {
+                return;
+            }
             try {
-                await this.adapter.removeListener(
-                    event.name,
+                const adapter = await this.adapterPromise;
+                await adapter.removeListener(
+                    eventName.prefixed(),
                     resolvedListener as InvokableFn<BaseEvent>,
                 );
-                this.deleteListener(listener);
             } catch (error: unknown) {
                 throw new UnableToRemoveListenerEventBusError(
                     `A listener with name of "${resolvedListener.name}" could not removed of "${String(event)}" event`,
@@ -283,31 +200,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
-     *
-     * const listener: Invokable<AddEvent | SubEvent> = event => {
-     *   console.log(event)
-     * }
-     * await eventBus.addListenerMany([AddEvent, SubEvent], listener);
-     * await eventBus.dispatchMany([
-     *   new AddEvent({ a: 1, b: 2 }),
-     *   new SubEvent({ c: 1, d: 2 }),
-     * ]);
-     * ```
-     */
     addListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
         listener: Invokable<EventInstance<TEventClass>>,
@@ -324,32 +216,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
-     *
-     * const listener: Invokable<AddEvent | SubEvent> = event => {
-     *   console.log(event);
-     * }
-     * await eventBus.addListenerMany([AddEvent, SubEvent], listener);
-     * await eventBus.dispatchMany([
-     *   new AddEvent({ a: 1, b: 2 }),
-     *   new SubEvent({ c: 1, d: 2 }),
-     * ]);
-     * await eventBus.removeListenerMany([AddEvent, SubEvent], listener);
-     * ```
-     */
     removeListenerMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
         listener: Invokable<EventInstance<TEventClass>>,
@@ -366,27 +232,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     *
-     * await eventBus.listenOnce(AddEvent, event => {
-     *   console.log(event);
-     * });
-     *
-     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
-     * ```
-     */
     listenOnce<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -396,7 +241,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 event_: EventInstance<TEventClass>,
             ) => {
                 try {
-                    const resolvedListener = this.resolveListener(listener);
+                    const resolvedListener = resolveInvokable(listener);
                     await resolvedListener(event_);
                 } finally {
                     await this.removeListener(event, wrappedListener);
@@ -406,27 +251,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent, type Listener } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     *
-     * eventBus.asPromise(AddEvent).then(event => {
-     *   console.log(event);
-     * });
-     *
-     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
-     * ```
-     */
     asPromise<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
     ): LazyPromise<EventInstance<TEventClass>> {
@@ -442,27 +266,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         );
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     *
-     * const unsubscribe = await eventBus.subscribe(AddEvent, event => {
-     *   console.log(event);
-     * });
-     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
-     * await unsubscribe();
-     * ```
-     */
     subscribe<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -470,31 +273,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         return this.subscribeMany([event], listener);
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
-     *
-     * const unsubscribe = await eventBus.subscribeMany([AddEvent, SubEvent], event => {
-     *   console.log(event);
-     * });
-     * await eventBus.dispatchMany([
-     *   new AddEvent({ a: 1, b: 2 }),
-     *   new SubEvent({ c: 1, d: 2 }),
-     * ]);
-     * await unsubscribe();
-     * ```
-     */
     subscribeMany<TEventClass extends EventClass<TEvents>>(
         events: TEventClass[],
         listener: Invokable<EventInstance<TEventClass>>,
@@ -510,73 +288,39 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     * class SubEvent extends BaseEvent<{ c: number, d: number }> {}
-     *
-     * await eventBus.dispatchMany([
-     *   new AddEvent({ a: 1, b: 2 }),
-     *   new SubEvent({ c: 1, d: 2 }),
-     * ]);
-     * ```
-     */
     dispatchMany(events: TEvents[]): LazyPromise<void> {
         return this.createLayPromise(async () => {
             try {
-                const promises: PromiseLike<void>[] = [];
-                for (const event of events) {
-                    promises.push(
-                        this.adapter.dispatch(getConstructorName(event), event),
+                const adapter = await this.adapterPromise;
+                const promises = events
+                    .map((event) => ({
+                        eventName: getConstructorName(event),
+                        event,
+                    }))
+                    .map(({ event, eventName }) => ({
+                        eventName: this.keyPrefixer.create(eventName),
+                        event,
+                    }))
+                    .map(({ event, eventName }) => ({
+                        eventName: eventName.prefixed(),
+                        event,
+                    }))
+                    .map(({ eventName, event }) =>
+                        adapter.dispatch(eventName, event),
                     );
-                }
                 await Promise.all(promises);
             } catch (error: unknown) {
                 throw new UnableToDispatchEventBusError(
-                    `Events of types "${events.map((event) => getConstructorName(event)).join(", ")}" could not be dispatched`,
+                    `Events of type${events.length === 0 ? "" : "s"} "${events.map((event) => getConstructorName(event)).join(", ")}" could not be dispatched`,
                     error,
                 );
             }
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import type { IGroupableEventBus } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const eventBus: IGroupableEventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter({ rootGroup: "@global" })
-     * });
-     *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
-     *
-     * await eventBus.dispatch(new AddEvent({ a: 1, b: 2,}));
-     * ```
-     */
     dispatch(event: TEvents): LazyPromise<void> {
         return this.createLayPromise(async () => {
-            try {
-                await this.adapter.dispatch(getConstructorName(event), event);
-            } catch (error: unknown) {
-                throw new UnableToDispatchEventBusError(
-                    `Event of type "${String(getConstructorName(event))}" could not be dispatched`,
-                    error,
-                );
-            }
+            await this.dispatchMany([event]);
         });
     }
 }

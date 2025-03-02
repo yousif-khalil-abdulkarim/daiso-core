@@ -30,7 +30,6 @@ describe("class: RedisPubSubEventBusAdapter", () => {
                 dispatcherClient,
                 listenerClient,
                 serde,
-                rootGroup: "@a",
             }),
         serde,
         test,
