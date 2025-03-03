@@ -52,12 +52,4 @@ export class DatabaseLockAdapter implements ILockAdapter {
         const result = await this.adapter.refresh(key, owner, ttl.toEndDate());
         return result > 0;
     }
-
-    getGroup(): string {
-        return this.adapter.getGroup();
-    }
-
-    withGroup(group: string): ILockAdapter {
-        return new DatabaseLockAdapter(this.adapter.withGroup(group));
-    }
 }

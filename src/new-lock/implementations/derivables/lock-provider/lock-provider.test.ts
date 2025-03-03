@@ -6,7 +6,6 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_mod
 import { lockProviderTestSuite } from "@/new-lock/implementations/test-utilities/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import type { ILockData } from "@/new-lock/contracts/_module-exports.js";
 import { KeyPrefixer } from "@/utilities/_module-exports.js";
 
 describe("class: LockProvider", () => {
@@ -15,18 +14,11 @@ describe("class: LockProvider", () => {
         adapter: new MemoryEventBusAdapter(),
     });
     const serde = new Serde(new SuperJsonSerdeAdapter());
-    let map: Map<string, ILockData>;
-    beforeEach(() => {
-        map = new Map();
-    });
     lockProviderTestSuite({
         createLockProvider: () => {
             const lockProvider = new LockProvider({
                 serde,
-                adapter: new MemoryLockAdapter({
-                    rootGroup: "@a",
-                    map,
-                }),
+                adapter: new MemoryLockAdapter(new Map()),
                 eventBus,
             });
             return lockProvider;

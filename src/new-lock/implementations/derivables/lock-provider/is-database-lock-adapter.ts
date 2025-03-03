@@ -23,10 +23,6 @@ export function isDatabaseLockAdapter(
         typeof adapter_["refresh"] === "function" &&
         adapter_["refresh"].length === 3 &&
         typeof adapter_["find"] === "function" &&
-        adapter_["find"].length === 1 &&
-        typeof adapter_["getGroup"] === "function" &&
-        adapter_["getGroup"].length === 0 &&
-        typeof adapter_["withGroup"] === "function" &&
-        adapter_["withGroup"].length === 1
+        adapter_["find"].length === 1
     );
 }

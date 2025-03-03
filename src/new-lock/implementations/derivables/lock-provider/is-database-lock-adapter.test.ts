@@ -40,12 +40,6 @@ describe("function: isDatabaseLockAdapter", () => {
             find: function (_key: string): PromiseLike<ILockData | null> {
                 throw new Error("Function not implemented.");
             },
-            getGroup: function (): string {
-                throw new Error("Function not implemented.");
-            },
-            withGroup: function (_group: string): IDatabaseLockAdapter {
-                throw new Error("Function not implemented.");
-            },
         };
         expect(isDatabaseLockAdapter(adapter)).toBe(true);
     });
@@ -72,12 +66,6 @@ describe("function: isDatabaseLockAdapter", () => {
                 _owner: string,
                 _ttl: TimeSpan,
             ): PromiseLike<boolean> {
-                throw new Error("Function not implemented.");
-            },
-            getGroup: function (): string {
-                throw new Error("Function not implemented.");
-            },
-            withGroup: function (_group: string): ILockAdapter {
                 throw new Error("Function not implemented.");
             },
         };
