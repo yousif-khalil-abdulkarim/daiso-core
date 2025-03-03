@@ -272,10 +272,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
 
-        if (isFactory(adapter)) {
-            this.keyPrefixer = this.keyPrefixer.disablePrefix();
-        }
-
         if (this.keyPrefixer.group) {
             this.eventBus = this.groupdEventBus.withGroup([
                 this.keyPrefixer.rootPrefix,
@@ -821,6 +817,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLazyPromise(async () => {
             try {
                 const adapter = await this.adapterPromise;
+
+                if (isFactory(this.adapterFactoryable)) {
+                    await adapter.removeAll();
+                    return;
+                }
                 await adapter.removeByKeyPrefix(
                     this.keyPrefixer.getKeyPrefix(),
                 );

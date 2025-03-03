@@ -111,6 +111,10 @@ export class DatabaseCacheAdapter<TType = unknown>
         }
     }
 
+    async removeAll(): Promise<void> {
+        await this.adapter.removeAll();
+    }
+
     async removeMany(keys: string[]): Promise<boolean> {
         const [promiseResult] = await Promise.allSettled([
             this.adapter.removeUnexpiredMany(keys),

@@ -45,6 +45,9 @@ describe("function: isDatabaseCacheAdapter", () => {
             ): PromiseLike<number> {
                 throw new Error("Function not implemented.");
             },
+            removeAll: function (): PromiseLike<void> {
+                throw new Error("Function not implemented.");
+            },
             removeByKeyPrefix: function (_prefix: string): PromiseLike<void> {
                 throw new Error("Function not implemented.");
             },
@@ -86,6 +89,9 @@ describe("function: isDatabaseCacheAdapter", () => {
                 throw new Error("Function not implemented.");
             },
             removeMany: function (_keys: string[]): PromiseLike<boolean> {
+                throw new Error("Function not implemented.");
+            },
+            removeAll: function (): PromiseLike<void> {
                 throw new Error("Function not implemented.");
             },
             removeByKeyPrefix: function (_prefix: string): PromiseLike<void> {

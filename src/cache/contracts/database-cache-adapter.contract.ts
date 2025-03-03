@@ -50,8 +50,14 @@ export type ICacheUpdate<TType = unknown> = {
  * @group Contracts
  */
 export type IDatabaseCacheAdapter<TType = unknown> = {
+    /**
+     * The <i>find</i> method returns the the <i>key</i> data which includs <i>{@link ICacheData}.value</i> and <i>{@link ICacheData}.expiration</i>.
+     */
     find(key: string): PromiseLike<ICacheData<TType> | null>;
 
+    /**
+     * The <i>insert</i> method inserts the given cache <i>data</i>.
+     */
     insert(data: ICacheInsert<TType>): PromiseLike<void>;
 
     /**
@@ -60,8 +66,14 @@ export type IDatabaseCacheAdapter<TType = unknown> = {
      */
     upsert(data: ICacheInsert<TType>): PromiseLike<ICacheDataExpiration | null>;
 
+    /**
+     * The <i>removeExpiredMany</i> method updates a expired <i>key</i>.
+     */
     updateExpired(data: ICacheInsert<TType>): PromiseLike<number>;
 
+    /**
+     * The <i>removeExpiredMany</i> method updates a unexpired <i>key</i>.
+     */
     updateUnexpired(data: ICacheUpdate<TType>): PromiseLike<number>;
 
     /**
@@ -69,9 +81,23 @@ export type IDatabaseCacheAdapter<TType = unknown> = {
      */
     incrementUnexpired(data: ICacheUpdate<number>): PromiseLike<number>;
 
+    /**
+     * The <i>removeExpiredMany</i> method removes multiple expired <i>keys</i>.
+     */
     removeExpiredMany(keys: string[]): PromiseLike<number>;
 
+    /**
+     * The <i>removeExpiredMany</i> method removes multiple unexpired <i>keys</i>.
+     */
     removeUnexpiredMany(keys: string[]): PromiseLike<number>;
 
+    /**
+     * The <i>removeAll</i> method removes all keys from the cache.
+     */
+    removeAll(): PromiseLike<void>;
+
+    /**
+     * The <i>removeByKeyPrefix</i> method removes all the keys in the cache that starts with the given <i>prefix</i>.
+     */
     removeByKeyPrefix(prefix: string): PromiseLike<void>;
 };

@@ -361,16 +361,16 @@ export class MongodbCacheAdapter<TType>
         return deleteResult.deletedCount > 0;
     }
 
-    async removeByKeyPrefix(prefix: string): Promise<void> {
-        if (prefix === "") {
-            const mongodbResult = await this.collection.deleteMany();
-            if (!mongodbResult.acknowledged) {
-                throw new UnexpectedCacheError(
-                    "Mongodb deletion was not acknowledged",
-                );
-            }
-            return;
+    async removeAll(): Promise<void> {
+        const mongodbResult = await this.collection.deleteMany();
+        if (!mongodbResult.acknowledged) {
+            throw new UnexpectedCacheError(
+                "Mongodb deletion was not acknowledged",
+            );
         }
+    }
+
+    async removeByKeyPrefix(prefix: string): Promise<void> {
         const mongodbResult = await this.collection.deleteMany({
             key: {
                 $regex: new RegExp(`^${escapeStringRegexp(prefix)}`),

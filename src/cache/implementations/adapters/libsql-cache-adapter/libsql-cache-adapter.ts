@@ -144,6 +144,9 @@ export class LibsqlCacheAdapter<TType = unknown>
         return await this.adapter.removeExpiredMany(keys);
     }
 
+    async removeAll(): Promise<void> {
+        await this.adapter.removeAll();
+    }
     async removeByKeyPrefix(prefix: string): Promise<void> {
         await this.adapter.removeByKeyPrefix(prefix);
     }

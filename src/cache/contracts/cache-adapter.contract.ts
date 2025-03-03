@@ -54,6 +54,11 @@ export type ICacheAdapter<TType = unknown> = {
     removeMany(keys: string[]): PromiseLike<boolean>;
 
     /**
+     * The <i>removeAll</i> method removes all keys from the cache.
+     */
+    removeAll(): PromiseLike<void>;
+
+    /**
      * The <i>removeByKeyPrefix</i> method removes all the keys in the cache that starts with the given <i>prefix</i>.
      */
     removeByKeyPrefix(prefix: string): PromiseLike<void>;

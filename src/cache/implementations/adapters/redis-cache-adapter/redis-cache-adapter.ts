@@ -9,10 +9,7 @@ import {
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import { ReplyError, type Redis, type Result } from "ioredis";
-import {
-    ClearIterable,
-    escapeRedisChars,
-} from "@/cache/implementations/adapters/redis-cache-adapter/utilities.js";
+import { ClearIterable } from "@/cache/implementations/adapters/redis-cache-adapter/utilities.js";
 import { RedisCacheAdapterSerde } from "@/cache/implementations/adapters/redis-cache-adapter/redis-cache-adapter-serde.js";
 
 declare module "ioredis" {
@@ -192,15 +189,12 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
         return deleteResult > 0;
     }
 
+    async removeAll(): Promise<void> {
+        await this.database.flushdb();
+    }
+
     async removeByKeyPrefix(prefix: string): Promise<void> {
-        if (prefix === "") {
-            await this.database.flushdb();
-            return;
-        }
-        for await (const _ of new ClearIterable(
-            this.database,
-            escapeRedisChars(prefix),
-        )) {
+        for await (const _ of new ClearIterable(this.database, prefix)) {
             /* Empty */
         }
     }

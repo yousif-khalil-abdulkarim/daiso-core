@@ -122,11 +122,12 @@ export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
         return deleteCount > 0;
     }
 
+    async removeAll(): Promise<void> {
+        this.map.clear();
+        this.timeoutMap.clear();
+    }
+
     async removeByKeyPrefix(prefix: string): Promise<void> {
-        if (prefix === "") {
-            this.map.clear();
-            return;
-        }
         for (const key of this.map.keys()) {
             if (key.startsWith(prefix)) {
                 clearTimeout(this.timeoutMap.get(key));

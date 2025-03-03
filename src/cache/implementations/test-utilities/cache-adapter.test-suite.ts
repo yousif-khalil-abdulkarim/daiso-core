@@ -298,19 +298,35 @@ export function cacheAdapterTestSuite(
             expect(result).toEqual([null, null, 3]);
         });
     });
+    describe("method: removeAll", () => {
+        test("Should remove all keys", async () => {
+            await adapter.add("cache/a", 1, null);
+            await adapter.add("cache/b", 2, null);
+            await adapter.add("c", 3, null);
+            await delay(TTL.divide(4));
+            await adapter.removeAll();
+            await delay(TTL.divide(4));
+            expect([
+                await adapter.get("cache/a"),
+                await adapter.get("cache/b"),
+                await adapter.get("c"),
+            ]).toEqual([null, null, null]);
+        });
+    });
     describe("method: removeByKeyPrefix", () => {
-        test(`Should remove all keys`, async () => {
+        test(`Should remove all keys that start with prefix "cache"`, async () => {
             await adapter.add("cache/a", 1, null);
             await adapter.add("cache/b", 2, null);
             await adapter.add("c", 3, null);
             await delay(TTL.divide(4));
             await adapter.removeByKeyPrefix("cache");
             await delay(TTL.divide(4));
-            expect([
-                await adapter.get("a"),
-                await adapter.get("b"),
+            const result = [
+                await adapter.get("cache/a"),
+                await adapter.get("cache/b"),
                 await adapter.get("c"),
-            ]).toEqual([null, null, 3]);
+            ];
+            expect(result).toEqual([null, null, 3]);
         });
     });
 }
