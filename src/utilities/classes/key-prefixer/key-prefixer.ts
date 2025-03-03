@@ -51,11 +51,11 @@ class Key implements IKey {
         this.keyIdentifier = keyIdentifier;
     }
 
-    resolved(): string {
+    get resolved(): string {
         return resolveOneOrMoreStr(this.key);
     }
 
-    prefixed(): string {
+    get prefixed(): string {
         return resolveOneOrMoreStr(
             [
                 ...this.prefixArr,
@@ -115,14 +115,22 @@ export class KeyPrefixer implements IKeyPrefixer {
         }
     }
 
-    get group(): string | null {
+    get group(): OneOrMore<string> | null {
+        return this._group;
+    }
+
+    get resolvedGroup(): string | null {
         if (this._group === null) {
             return null;
         }
         return resolveOneOrMoreStr(this._group);
     }
 
-    get rootPrefix(): string {
+    get rootPrefix(): OneOrMore<string> {
+        return this.rootPrefix;
+    }
+
+    get resolvedRootPrefix(): string {
         return resolveOneOrMoreStr(this._rootPrefix);
     }
 
@@ -153,7 +161,7 @@ export class KeyPrefixer implements IKeyPrefixer {
         return [...array, this.keyIdentifier];
     }
 
-    getKeyPrefix(): string {
+    get keyPrefix(): string {
         return resolveOneOrMoreStr(
             this.getKeyPrefixArray(),
             this.identifierDelimeter,

@@ -10,9 +10,9 @@ import type { OneOrMore } from "@/utilities/types.js";
  * @group KeyPrefixer
  */
 export type IKey = {
-    resolved(): string;
+    readonly resolved: string;
 
-    prefixed(): string;
+    readonly prefixed: string;
 };
 
 /**
@@ -21,11 +21,15 @@ export type IKey = {
  * @group KeyPrefixer
  */
 export type IKeyPrefixer = {
-    readonly group: string | null;
+    readonly group: OneOrMore<string> | null;
 
-    readonly rootPrefix: string;
+    readonly resolvedGroup: string | null;
 
-    getKeyPrefix(): string;
+    readonly rootPrefix: OneOrMore<string>;
+
+    readonly resolvedRootPrefix: string;
+
+    readonly keyPrefix: string;
 
     create(key: OneOrMore<string>): IKey;
 

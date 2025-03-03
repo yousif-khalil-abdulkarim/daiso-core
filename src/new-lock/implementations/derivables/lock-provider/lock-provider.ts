@@ -232,20 +232,20 @@ export class LockProvider implements IGroupableLockProvider {
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
 
-        if (this.keyPrefixer.group) {
+        if (this.keyPrefixer.resolvedGroup) {
             this.eventBus = this.groupableEventBus.withGroup([
-                this.keyPrefixer.rootPrefix,
-                this.keyPrefixer.group,
+                this.keyPrefixer.resolvedRootPrefix,
+                this.keyPrefixer.resolvedGroup,
             ]);
         } else {
             this.eventBus = this.groupableEventBus.withGroup(
-                this.keyPrefixer.rootPrefix,
+                this.keyPrefixer.resolvedRootPrefix,
             );
         }
 
         this.adapterPromise = LockProvider.resolveLockAdapterFactoryable(
             this.adapterFactoryable,
-            this.keyPrefixer.rootPrefix,
+            this.keyPrefixer.resolvedRootPrefix,
         );
     }
 
@@ -323,24 +323,24 @@ export class LockProvider implements IGroupableLockProvider {
 
         const keyObj = this.keyPrefixer.create(key);
         let lockEventBus: IEventBus<LockEvents>;
-        if (this.keyPrefixer.group) {
+        if (this.keyPrefixer.resolvedGroup) {
             lockEventBus = this.groupableEventBus.withGroup([
-                this.keyPrefixer.rootPrefix,
-                this.keyPrefixer.group,
-                keyObj.resolved(),
+                this.keyPrefixer.resolvedRootPrefix,
+                this.keyPrefixer.resolvedGroup,
+                keyObj.resolved,
             ]);
         } else {
             lockEventBus = this.groupableEventBus.withGroup([
-                this.keyPrefixer.rootPrefix,
-                keyObj.resolved(),
+                this.keyPrefixer.resolvedRootPrefix,
+                keyObj.resolved,
             ]);
         }
 
         return new Lock({
             adapterPromise: this.adapterPromise,
-            group: this.keyPrefixer.group,
+            group: this.keyPrefixer.resolvedGroup,
             createLazyPromise: this.createLazyPromise.bind(this),
-            lockState: new LockState(this.lockStore, keyObj.prefixed()),
+            lockState: new LockState(this.lockStore, keyObj.prefixed),
             lockEventBus: lockEventBus,
             lockProviderEventDispatcher: this.eventBus,
             key: keyObj,
@@ -354,7 +354,7 @@ export class LockProvider implements IGroupableLockProvider {
     }
 
     getGroup(): string | null {
-        return this.keyPrefixer.group;
+        return this.keyPrefixer.resolvedGroup;
     }
 
     withGroup(group: OneOrMore<string>): ILockProvider {

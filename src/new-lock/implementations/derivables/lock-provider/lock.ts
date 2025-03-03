@@ -46,8 +46,8 @@ import type { LockState } from "@/new-lock/implementations/derivables/lock-provi
  * @internal
  */
 export type ISerializedLock = {
-    group: string | null;
-    key: string;
+    group: OneOrMore<string> | null;
+    key: OneOrMore<string>;
     owner: string;
     ttlInMs: number | null;
     expirationInMs: number | null;
@@ -85,7 +85,7 @@ export class Lock implements ILock {
     static serialize(deserializedValue: Lock): ISerializedLock {
         return {
             group: deserializedValue.group,
-            key: deserializedValue.key.resolved(),
+            key: deserializedValue.key.resolved,
             owner: deserializedValue.owner,
             ttlInMs: deserializedValue.ttl?.toMilliseconds() ?? null,
             expirationInMs:
@@ -212,7 +212,7 @@ export class Lock implements ILock {
                         return [
                             null,
                             new KeyAlreadyAcquiredLockError(
-                                `Key "${this.key.resolved()}" already acquired`,
+                                `Key "${this.key.resolved}" already acquired`,
                             ),
                         ];
                     }
@@ -260,7 +260,7 @@ export class Lock implements ILock {
                         return [
                             null,
                             new KeyAlreadyAcquiredLockError(
-                                `Key "${this.key.resolved()}" already acquired`,
+                                `Key "${this.key.resolved}" already acquired`,
                             ),
                         ];
                     }
@@ -279,14 +279,14 @@ export class Lock implements ILock {
                 const adapter = await this.adapterPromise;
                 this.lockState.remove();
                 const hasAquired = await adapter.acquire(
-                    this.key.prefixed(),
+                    this.key.prefixed,
                     this.owner,
                     this.ttl,
                 );
                 if (hasAquired) {
                     this.lockState.set(this.ttl);
                     const event = new KeyAcquiredLockEvent({
-                        key: this.key.resolved(),
+                        key: this.key.resolved,
                         owner: this.owner,
                         ttl: this.ttl,
                     });
@@ -294,7 +294,7 @@ export class Lock implements ILock {
                     this.lockProviderEventDispatcher.dispatch(event).defer();
                 } else {
                     const event = new KeyAlreadyAcquiredLockEvent({
-                        key: this.key.resolved(),
+                        key: this.key.resolved,
                         owner: this.owner,
                     });
                     this.lockEventBus.dispatch(event).defer();
@@ -303,7 +303,7 @@ export class Lock implements ILock {
                 return hasAquired;
             } catch (error: unknown) {
                 const event = new UnexpectedErrorLockEvent({
-                    key: this.key.resolved(),
+                    key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
@@ -320,7 +320,7 @@ export class Lock implements ILock {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
                 throw new KeyAlreadyAcquiredLockError(
-                    `Key "${this.key.resolved()}" already acquired`,
+                    `Key "${this.key.resolved}" already acquired`,
                 );
             }
         });
@@ -351,20 +351,20 @@ export class Lock implements ILock {
             try {
                 const adapter = await this.adapterPromise;
                 const hasReleased = await adapter.release(
-                    this.key.prefixed(),
+                    this.key.prefixed,
                     this.owner,
                 );
                 if (hasReleased) {
                     this.lockState.remove();
                     const event = new KeyReleasedLockEvent({
-                        key: this.key.resolved(),
+                        key: this.key.resolved,
                         owner: this.owner,
                     });
                     this.lockEventBus.dispatch(event).defer();
                     this.lockProviderEventDispatcher.dispatch(event).defer();
                 } else {
                     const event = new UnownedReleaseLockEvent({
-                        key: this.key.resolved(),
+                        key: this.key.resolved,
                         owner: this.owner,
                     });
                     this.lockEventBus.dispatch(event).defer();
@@ -373,7 +373,7 @@ export class Lock implements ILock {
                 return hasReleased;
             } catch (error: unknown) {
                 const event = new UnexpectedErrorLockEvent({
-                    key: this.key.resolved(),
+                    key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
@@ -390,7 +390,7 @@ export class Lock implements ILock {
             const hasRelased = await this.release();
             if (!hasRelased) {
                 throw new UnownedReleaseLockError(
-                    `Unonwed release on key "${this.key.resolved()}" by owner "${this.owner}"`,
+                    `Unonwed release on key "${this.key.resolved}" by owner "${this.owner}"`,
                 );
             }
         });
@@ -400,16 +400,16 @@ export class Lock implements ILock {
         return this.createLazyPromise(async () => {
             try {
                 const adapter = await this.adapterPromise;
-                await adapter.forceRelease(this.key.prefixed());
+                await adapter.forceRelease(this.key.prefixed);
                 this.lockState.remove();
                 const event = new KeyForceReleasedLockEvent({
-                    key: this.key.resolved(),
+                    key: this.key.resolved,
                 });
                 this.lockEventBus.dispatch(event).defer();
                 this.lockProviderEventDispatcher.dispatch(event).defer();
             } catch (error: unknown) {
                 const event = new UnexpectedErrorLockEvent({
-                    key: this.key.resolved(),
+                    key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
@@ -428,7 +428,7 @@ export class Lock implements ILock {
                 return this.lockState.isExpired();
             } catch (error: unknown) {
                 const event = new UnexpectedErrorLockEvent({
-                    key: this.key.resolved(),
+                    key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
@@ -452,13 +452,13 @@ export class Lock implements ILock {
             try {
                 const adapter = await this.adapterPromise;
                 const hasRefreshed = await adapter.refresh(
-                    this.key.prefixed(),
+                    this.key.prefixed,
                     this.owner,
                     ttl,
                 );
                 if (hasRefreshed) {
                     const event = new KeyRefreshedLockEvent({
-                        key: this.key.resolved(),
+                        key: this.key.resolved,
                         owner: this.owner,
                         ttl,
                     });
@@ -467,7 +467,7 @@ export class Lock implements ILock {
                     this.lockProviderEventDispatcher.dispatch(event).defer();
                 } else {
                     const event = new UnownedRefreshLockEvent({
-                        key: this.key.resolved(),
+                        key: this.key.resolved,
                         owner: this.owner,
                     });
                     this.lockEventBus.dispatch(event).defer();
@@ -476,7 +476,7 @@ export class Lock implements ILock {
                 return hasRefreshed;
             } catch (error: unknown) {
                 const event = new UnexpectedErrorLockEvent({
-                    key: this.key.resolved(),
+                    key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
@@ -493,7 +493,7 @@ export class Lock implements ILock {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
                 throw new UnownedRefreshLockError(
-                    `Unonwed refresh on key "${this.key.resolved()}" by owner "${this.owner}"`,
+                    `Unonwed refresh on key "${this.key.resolved}" by owner "${this.owner}"`,
                 );
             }
         });
