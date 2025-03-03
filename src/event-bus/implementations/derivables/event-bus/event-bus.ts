@@ -23,7 +23,7 @@ import type {
     Factoryable,
     Invokable,
     InvokableFn,
-    KeyPrefixer,
+    IKeyPrefixer,
     OneOrMore,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
@@ -40,7 +40,7 @@ import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/
  * @group Derivables
  */
 export type EventBusSettingsBase = {
-    keyPrefixer: KeyPrefixer;
+    keyPrefixer: IKeyPrefixer;
 
     /**
      * The default retry attempt to use in the returned <i>LazyPromise</i>.
@@ -99,7 +99,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     private readonly timeout: TimeSpan | null;
     private readonly store = new ListenerStore();
     private readonly adapterPromise: Promise<IEventBusAdapter>;
-    private keyPrefixer: KeyPrefixer;
+    private keyPrefixer: IKeyPrefixer;
 
     constructor(settings: EventBusSettings) {
         const {

@@ -16,6 +16,7 @@ import { resolveAsyncLazyable } from "@/utilities/functions.js";
  * Pipeline class is immutable meaning you can extend it without causing problems.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Pipeline
  */
 export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev>
     implements IInvokableObject<AsyncLazyable<TInitial>, TCurrent>

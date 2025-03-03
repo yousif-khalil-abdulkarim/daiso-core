@@ -9,6 +9,7 @@ import type { ISerializable } from "@/serde/contracts/_module-exports.js";
  * <i>TimeSpan</i> cannot be negative.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group TimeSpan
  */
 export class TimeSpan implements ISerializable<number> {
     private static secondInMilliseconds = 1000;

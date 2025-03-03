@@ -4,6 +4,10 @@
 
 import { resolveOneOrMoreStr } from "@/utilities/functions.js";
 import type { AtLeastOne, OneOrMore } from "@/utilities/types.js";
+import type {
+    IKey,
+    IKeyPrefixer,
+} from "@/utilities/classes/key-prefixer/key-prefixer.contract.js";
 
 /**
  * @internal
@@ -14,19 +18,18 @@ type KeySettings = {
     identifierDelimeter: string;
     keyDelimeter: string;
     keyIdentifier: string;
-    shouldPrefixKeys: boolean;
 };
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group KeyPrefixer
  */
-class Key {
+class Key implements IKey {
     private readonly prefixArr: AtLeastOne<string>;
     private readonly key: OneOrMore<string>;
     private readonly identifierDelimeter: string;
     private readonly keyDelimeter: string;
-    private readonly shouldPrefixKeys: boolean;
     private readonly keyIdentifier: string;
 
     /**
@@ -39,27 +42,26 @@ class Key {
             key,
             identifierDelimeter,
             keyDelimeter,
-            shouldPrefixKeys,
             keyIdentifier,
         } = settings;
         this.prefixArr = prefixArr;
         this.key = key;
         this.identifierDelimeter = identifierDelimeter;
         this.keyDelimeter = keyDelimeter;
-        this.shouldPrefixKeys = shouldPrefixKeys;
         this.keyIdentifier = keyIdentifier;
     }
 
     resolved(): string {
-        return resolveOneOrMoreStr(this.key, this.keyDelimeter);
+        return resolveOneOrMoreStr(this.key);
     }
 
     prefixed(): string {
-        if (!this.shouldPrefixKeys) {
-            return this.resolved();
-        }
         return resolveOneOrMoreStr(
-            [...this.prefixArr, this.keyIdentifier, this.resolved()],
+            [
+                ...this.prefixArr,
+                this.keyIdentifier,
+                resolveOneOrMoreStr(this.key, this.keyDelimeter),
+            ],
             this.identifierDelimeter,
         );
     }
@@ -68,6 +70,7 @@ class Key {
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group KeyPrefixer
  */
 export type KeyPrefixerSettings = {
     identifierDelimeter?: string;
@@ -80,10 +83,10 @@ export type KeyPrefixerSettings = {
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group KeyPrefixer
  */
-export class KeyPrefixer {
+export class KeyPrefixer implements IKeyPrefixer {
     private _group: OneOrMore<string> | null = null;
-    private shouldPrefixKeys: boolean = true;
     private readonly identifierDelimeter: string;
     private readonly keyDelimeter: string;
     private readonly rootIdentifier: string;
@@ -135,7 +138,7 @@ export class KeyPrefixer {
         }
     }
 
-    private getGroupPrefixArray(): AtLeastOne<string> {
+    private getKeyPrefixArray(): AtLeastOne<string> {
         let array: AtLeastOne<string> = [
             this.rootIdentifier,
             resolveOneOrMoreStr(this._rootPrefix, this.keyDelimeter),
@@ -147,24 +150,10 @@ export class KeyPrefixer {
                 resolveOneOrMoreStr(this._group, this.keyDelimeter),
             ];
         }
-        return array;
-    }
-
-    getGroupPrefix(): string {
-        return resolveOneOrMoreStr(
-            this.getGroupPrefixArray(),
-            this.identifierDelimeter,
-        );
-    }
-
-    private getKeyPrefixArray(): AtLeastOne<string> {
-        return [...this.getGroupPrefixArray(), this.keyIdentifier];
+        return [...array, this.keyIdentifier];
     }
 
     getKeyPrefix(): string {
-        if (!this.shouldPrefixKeys) {
-            return "";
-        }
         return resolveOneOrMoreStr(
             this.getKeyPrefixArray(),
             this.identifierDelimeter,
@@ -185,23 +174,6 @@ export class KeyPrefixer {
         if (keyProvider._group === null) {
             keyProvider._group = group;
         }
-        keyProvider.shouldPrefixKeys = this.shouldPrefixKeys;
-        return keyProvider;
-    }
-
-    /**
-     * Chaining this method multiple times will have no effect.
-     */
-    disablePrefix(): KeyPrefixer {
-        const keyProvider = new KeyPrefixer(this._rootPrefix, {
-            identifierDelimeter: this.identifierDelimeter,
-            keyDelimeter: this.keyDelimeter,
-            rootIdentifier: this.rootIdentifier,
-            groupIdentifier: this.groupIdentifier,
-            keyIdentifier: this.keyIdentifier,
-        });
-        keyProvider.shouldPrefixKeys = false;
-        keyProvider._group = this._group;
         return keyProvider;
     }
 
@@ -212,7 +184,6 @@ export class KeyPrefixer {
             keyDelimeter: this.keyDelimeter,
             identifierDelimeter: this.identifierDelimeter,
             prefixArr: this.getKeyPrefixArray(),
-            shouldPrefixKeys: this.shouldPrefixKeys,
             keyIdentifier: this.keyIdentifier,
         });
     }
