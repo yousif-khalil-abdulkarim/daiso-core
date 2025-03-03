@@ -22,6 +22,7 @@ export function isDatabaseCacheAdapter<TType>(
         typeof adapter_["incrementUnexpired"] === "function" &&
         typeof adapter_["removeExpiredMany"] === "function" &&
         typeof adapter_["removeUnexpiredMany"] === "function" &&
+        typeof adapter_["removeAll"] === "function" &&
         typeof adapter_["removeByKeyPrefix"] === "function"
     );
 }

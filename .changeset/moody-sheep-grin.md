@@ -2,4 +2,4 @@
 "@daiso-tech/core": minor
 ---
 
-Removed withGroup and group methods from <i>ICacheAdapter</i>.
+Removed <i>withGroup</i> and <i>group</i> methods from <i>ICacheAdapter</i>. Added <i>removeAll</i> method to <i>ICacheAdapter</i>.

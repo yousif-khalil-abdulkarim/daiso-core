@@ -315,11 +315,11 @@ export class KyselyCacheAdapter<TType = unknown>
         return Number(deleteResult.numDeletedRows);
     }
 
+    async removeAll(): Promise<void> {
+        await this.database.deleteFrom("cache").execute();
+    }
+
     async removeByKeyPrefix(prefix: string): Promise<void> {
-        if (prefix === "") {
-            await this.database.deleteFrom("cache").execute();
-            return;
-        }
         await this.database
             .deleteFrom("cache")
             .where("cache.key", "like", `${prefix}%`)

@@ -665,46 +665,61 @@ export function databaseCacheAdapterTestSuite(
             expect(result).toBe(0);
         });
     });
+    describe("method: removeAll", () => {
+        test("Should remove all keys", async () => {
+            await adapter.insert({
+                key: "cache/a",
+                value: 1,
+                expiration: null,
+            });
+            await adapter.insert({
+                key: "cache/b",
+                value: 2,
+                expiration: null,
+            });
+            await adapter.insert({
+                key: "c",
+                value: 3,
+                expiration: null,
+            });
+            await adapter.removeAll();
+            expect([
+                await adapter.find("cache/a"),
+                await adapter.find("cache/b"),
+                await adapter.find("c"),
+            ]).toEqual([null, null, null]);
+        });
+    });
     describe("method: removeByKeyPrefix", () => {
         test("Should remove the keys that mathc the prefix", async () => {
             await adapter.insert({
-                key: "a/1",
+                key: "cache/a",
                 value: 1,
                 expiration: null,
             });
             await adapter.insert({
-                key: "a/2",
+                key: "cache/b",
                 value: 2,
                 expiration: null,
             });
             await adapter.insert({
-                key: "b/1",
-                value: 1,
-                expiration: null,
-            });
-            await adapter.insert({
-                key: "b/2",
-                value: 2,
+                key: "c",
+                value: 3,
                 expiration: null,
             });
 
-            await adapter.removeByKeyPrefix("a");
+            await adapter.removeByKeyPrefix("cache");
 
             const result = [
-                await adapter.find("a/1"),
-                await adapter.find("a/2"),
-                await adapter.find("b/1"),
-                await adapter.find("b/2"),
+                await adapter.find("cache/a"),
+                await adapter.find("cache/b"),
+                await adapter.find("c"),
             ];
             expect(result).toStrictEqual([
                 null,
                 null,
                 {
-                    value: 1,
-                    expiration: null,
-                },
-                {
-                    value: 2,
+                    value: 3,
                     expiration: null,
                 },
             ]);
