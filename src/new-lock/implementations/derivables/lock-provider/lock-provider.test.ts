@@ -20,6 +20,7 @@ describe("class: LockProvider", () => {
                 serde,
                 adapter: new MemoryLockAdapter(new Map()),
                 eventBus,
+                keyPrefixer: new KeyPrefixer("lock"),
             });
             return lockProvider;
         },

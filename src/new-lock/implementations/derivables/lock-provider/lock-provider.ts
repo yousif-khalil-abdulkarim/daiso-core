@@ -2,8 +2,17 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
-import { type Invokable, type OneOrMore } from "@/utilities/_module-exports.js";
+import {
+    TimeSpan,
+    type Factoryable,
+    type IKeyPrefixer,
+} from "@/utilities/_module-exports.js";
+import {
+    KeyPrefixer,
+    resolveFactoryable,
+    type Invokable,
+    type OneOrMore,
+} from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
     LockEvents,
@@ -15,19 +24,30 @@ import {
     type ILockProvider,
     type ILockAdapter,
 } from "@/new-lock/contracts/_module-exports.js";
-import type {
-    BackoffPolicy,
+import {
     LazyPromise,
-    RetryPolicy,
+    type BackoffPolicy,
+    type RetryPolicy,
 } from "@/async/_module-exports.js";
 import type {
     EventClass,
     EventInstance,
+    IEventBus,
     IGroupableEventBus,
     Unsubscribe,
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
+import { isDatabaseLockAdapter } from "@/new-lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
+import { DatabaseLockAdapter } from "@/new-lock/implementations/derivables/lock-provider/database-lock-adapter.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
+import { v4 } from "uuid";
+import { Lock } from "@/new-lock/implementations/derivables/lock-provider/lock.js";
+import {
+    LockState,
+    type ILockStore,
+} from "@/new-lock/implementations/derivables/lock-provider/lock-state.js";
 
 /**
  *
@@ -35,6 +55,8 @@ import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
  * @group Derivables
  */
 export type LockProviderSettingsBase = {
+    keyPrefixer: IKeyPrefixer;
+
     serde: OneOrMore<IFlexibleSerde>;
 
     /**
@@ -80,7 +102,7 @@ export type LockProviderSettingsBase = {
     defaultBlockingTime?: TimeSpan;
 
     /**
-     * The default refresh time used in the <i>{@link ILock}</i> <i>extend</i> method.
+     * The default refresh time used in the <i>{@link ILock}</i> <i>referesh</i> method.
      * ```ts
      * TimeSpan.fromMinutes(5);
      * ```
@@ -117,8 +139,18 @@ export type LockProviderSettingsBase = {
  * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
+export type LockAdapterFactoryable = Factoryable<
+    string,
+    ILockAdapter | IDatabaseLockAdapter
+>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
+ * @group Derivables
+ */
 export type LockProviderSettings = LockProviderSettingsBase & {
-    adapter: ILockAdapter | IDatabaseLockAdapter;
+    adapter: LockAdapterFactoryable;
 };
 
 /**
@@ -132,75 +164,214 @@ export type LockProviderSettings = LockProviderSettingsBase & {
  * @group Derivables
  */
 export class LockProvider implements IGroupableLockProvider {
-    constructor(settings: LockProviderSettings) {}
+    private static resolveLockAdapter(
+        adapter: ILockAdapter | IDatabaseLockAdapter,
+    ): ILockAdapter {
+        if (isDatabaseLockAdapter(adapter)) {
+            return new DatabaseLockAdapter(adapter);
+        }
+        return adapter;
+    }
+
+    private static async resolveLockAdapterFactoryable(
+        factoryable: LockAdapterFactoryable,
+        rootPrefix: string,
+    ): Promise<ILockAdapter> {
+        const adapter = await resolveFactoryable(factoryable, rootPrefix);
+        return LockProvider.resolveLockAdapter(adapter);
+    }
+
+    private lockStore: ILockStore = {};
+    private readonly groupableEventBus: IGroupableEventBus<LockEvents>;
+    private readonly eventBus: IEventBus<LockEvents>;
+    private readonly adapterFactoryable: LockAdapterFactoryable;
+    private readonly adapterPromise: Promise<ILockAdapter>;
+    private readonly retryAttempts: number | null;
+    private readonly backoffPolicy: BackoffPolicy | null;
+    private readonly retryPolicy: RetryPolicy | null;
+    private readonly timeout: TimeSpan | null;
+    private readonly keyPrefixer: IKeyPrefixer;
+    private readonly createOwnerId: () => string;
+    private readonly serde: OneOrMore<IFlexibleSerde>;
+    private readonly defaultTtl: TimeSpan | null;
+    private readonly defaultBlockingInterval: TimeSpan;
+    private readonly defaultBlockingTime: TimeSpan;
+    private readonly defaultRefreshTime: TimeSpan;
+
+    constructor(settings: LockProviderSettings) {
+        const {
+            defaultTtl = TimeSpan.fromMinutes(5),
+            defaultBlockingInterval = TimeSpan.fromSeconds(1),
+            defaultBlockingTime = TimeSpan.fromMinutes(1),
+            defaultRefreshTime = TimeSpan.fromMinutes(5),
+            createOwnerId = () => v4(),
+            serde,
+            keyPrefixer,
+            adapter,
+            eventBus: groupableEventBus = new EventBus({
+                keyPrefixer: new KeyPrefixer("events"),
+                adapter: new MemoryEventBusAdapter(),
+            }),
+            retryAttempts = null,
+            backoffPolicy = null,
+            retryPolicy = null,
+            timeout = null,
+        } = settings;
+
+        this.defaultBlockingInterval = defaultBlockingInterval;
+        this.defaultBlockingTime = defaultBlockingTime;
+        this.defaultRefreshTime = defaultRefreshTime;
+        this.serde = serde;
+        this.createOwnerId = createOwnerId;
+        this.keyPrefixer = keyPrefixer;
+        this.groupableEventBus = groupableEventBus;
+        this.adapterFactoryable = adapter;
+        this.defaultTtl = defaultTtl;
+        this.retryAttempts = retryAttempts;
+        this.backoffPolicy = backoffPolicy;
+        this.retryPolicy = retryPolicy;
+        this.timeout = timeout;
+
+        if (this.keyPrefixer.group) {
+            this.eventBus = this.groupableEventBus.withGroup([
+                this.keyPrefixer.rootPrefix,
+                this.keyPrefixer.group,
+            ]);
+        } else {
+            this.eventBus = this.groupableEventBus.withGroup(
+                this.keyPrefixer.rootPrefix,
+            );
+        }
+
+        this.adapterPromise = LockProvider.resolveLockAdapterFactoryable(
+            this.adapterFactoryable,
+            this.keyPrefixer.rootPrefix,
+        );
+    }
+
+    private createLazyPromise<TValue = void>(
+        asyncFn: () => PromiseLike<TValue>,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(asyncFn)
+            .setRetryAttempts(this.retryAttempts)
+            .setBackoffPolicy(this.backoffPolicy)
+            .setRetryPolicy(this.retryPolicy)
+            .setTimeout(this.timeout);
+    }
 
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        throw new Error("Method not implemented.");
+        return this.eventBus.addListener(event, listener);
     }
 
     addListenerMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        throw new Error("Method not implemented.");
+        return this.eventBus.addListenerMany(events, listener);
     }
 
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        throw new Error("Method not implemented.");
+        return this.eventBus.removeListener(event, listener);
     }
 
     removeListenerMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        throw new Error("Method not implemented.");
+        return this.eventBus.removeListenerMany(events, listener);
     }
 
     listenOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        throw new Error("Method not implemented.");
+        return this.eventBus.listenOnce(event, listener);
     }
 
     asPromise<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
     ): LazyPromise<EventInstance<TEventClass>> {
-        throw new Error("Method not implemented.");
+        return this.eventBus.asPromise(event);
     }
 
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
-        throw new Error("Method not implemented.");
+        return this.eventBus.subscribe(event, listener);
     }
 
     subscribeMany<TEventClass extends EventClass<LockEvents>>(
         events: TEventClass[],
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
-        throw new Error("Method not implemented.");
+        return this.eventBus.subscribeMany(events, listener);
     }
 
     create(
         key: OneOrMore<string>,
-        settings?: LockProviderCreateSettings,
+        settings: LockProviderCreateSettings = {},
     ): ILock {
-        throw new Error("Method not implemented.");
+        const { ttl = this.defaultTtl, owner = this.createOwnerId() } =
+            settings;
+
+        const keyObj = this.keyPrefixer.create(key);
+        let lockEventBus: IEventBus<LockEvents>;
+        if (this.keyPrefixer.group) {
+            lockEventBus = this.groupableEventBus.withGroup([
+                this.keyPrefixer.rootPrefix,
+                this.keyPrefixer.group,
+                keyObj.resolved(),
+            ]);
+        } else {
+            lockEventBus = this.groupableEventBus.withGroup([
+                this.keyPrefixer.rootPrefix,
+                keyObj.resolved(),
+            ]);
+        }
+
+        return new Lock({
+            adapterPromise: this.adapterPromise,
+            group: this.keyPrefixer.group,
+            createLazyPromise: this.createLazyPromise.bind(this),
+            lockState: new LockState(this.lockStore, keyObj.prefixed()),
+            lockEventBus: lockEventBus,
+            lockProviderEventDispatcher: this.eventBus,
+            key: keyObj,
+            owner,
+            ttl,
+            expirationInMs: null,
+            defaultBlockingInterval: this.defaultBlockingInterval,
+            defaultBlockingTime: this.defaultBlockingTime,
+            defaultRefreshTime: this.defaultRefreshTime,
+        });
     }
 
-    getGroup(): string {
-        throw new Error("Method not implemented.");
+    getGroup(): string | null {
+        return this.keyPrefixer.group;
     }
 
     withGroup(group: OneOrMore<string>): ILockProvider {
-        throw new Error("Method not implemented.");
+        return new LockProvider({
+            adapter: this.adapterFactoryable,
+            keyPrefixer: this.keyPrefixer.withGroup(group),
+            serde: this.serde,
+            createOwnerId: this.createOwnerId,
+            eventBus: this.groupableEventBus,
+            defaultTtl: this.defaultTtl,
+            defaultBlockingInterval: this.defaultBlockingInterval,
+            defaultBlockingTime: this.defaultBlockingTime,
+            defaultRefreshTime: this.defaultRefreshTime,
+            retryAttempts: this.retryAttempts,
+            backoffPolicy: this.backoffPolicy,
+            retryPolicy: this.retryPolicy,
+            timeout: this.timeout,
+        });
     }
 }
