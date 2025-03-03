@@ -55,6 +55,7 @@ import { EventBus } from "@/event-bus/implementations/derivables/_module-exports
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
 import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/database-cache-adapter.js";
+import type { IKeyPrefixer } from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -62,7 +63,7 @@ import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/d
  * @group Derivables
  */
 export type CacheSettingsBase = {
-    keyPrefixer: KeyPrefixer;
+    keyPrefixer: IKeyPrefixer;
 
     /**
      * @default
@@ -163,7 +164,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
-    private readonly keyPrefixer: KeyPrefixer;
+    private readonly keyPrefixer: IKeyPrefixer;
 
     /**
      *
