@@ -5,7 +5,6 @@
 import {
     type IDeinitizable,
     type IInitizable,
-    resolveOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
@@ -22,7 +21,6 @@ import { ObjectId } from "mongodb";
  */
 export type MongodbLockAdapterSettings = {
     database: Db;
-    rootGroup: string;
     collectionName?: string;
     collectionSettings?: CollectionOptions;
 };
@@ -33,7 +31,6 @@ export type MongodbLockAdapterSettings = {
 type MongodbLockDocument = {
     _id: ObjectId;
     key: string;
-    group: string;
     owner: string;
     expiresAt: Date | null;
 };
@@ -49,11 +46,9 @@ type MongodbLockDocument = {
 export class MongodbLockAdapter
     implements IDatabaseLockAdapter, IDeinitizable, IInitizable
 {
-    private readonly group: string;
     private readonly database: Db;
     private readonly collection: Collection<MongodbLockDocument>;
     private readonly collectionName: string;
-    private readonly collectionSettings?: CollectionOptions;
 
     /**
      * @example
@@ -76,7 +71,6 @@ export class MongodbLockAdapter
         collectionName = "cache",
         collectionSettings,
         database,
-        rootGroup,
     }: MongodbLockAdapterSettings) {
         this.collectionName = collectionName;
         this.database = database;
@@ -84,8 +78,6 @@ export class MongodbLockAdapter
             collectionName,
             collectionSettings,
         );
-        this.collectionSettings = collectionSettings;
-        this.group = rootGroup;
     }
 
     async removeExpiredKeys(): Promise<void> {
@@ -104,7 +96,6 @@ export class MongodbLockAdapter
         await this.collection.createIndex(
             {
                 key: 1,
-                group: 1,
             },
             {
                 unique: true,
@@ -133,7 +124,6 @@ export class MongodbLockAdapter
             _id: new ObjectId(),
             key,
             owner,
-            group: this.group,
             expiresAt: expiration,
         });
         if (!insertResult.acknowledged) {
@@ -151,7 +141,6 @@ export class MongodbLockAdapter
         const updateResult = await this.collection.updateOne(
             {
                 key,
-                group: this.group,
 
                 $and: [
                     {
@@ -185,7 +174,6 @@ export class MongodbLockAdapter
         if (owner === null) {
             const deleteResult = await this.collection.deleteOne({
                 key,
-                group: this.group,
             });
             if (!deleteResult.acknowledged) {
                 throw new UnexpectedLockError(
@@ -196,7 +184,6 @@ export class MongodbLockAdapter
         }
         const deleteResult = await this.collection.deleteOne({
             key,
-            group: this.group,
             owner,
         });
         if (!deleteResult.acknowledged) {
@@ -214,7 +201,6 @@ export class MongodbLockAdapter
         const updateResult = await this.collection.updateOne(
             {
                 key,
-                group: this.group,
                 owner,
             },
             {
@@ -235,7 +221,6 @@ export class MongodbLockAdapter
         const document = await this.collection.findOne(
             {
                 key: key,
-                group: this.group,
             },
             {
                 projection: {
@@ -252,18 +237,5 @@ export class MongodbLockAdapter
             owner: document.owner,
             expiration: document.expiresAt,
         };
-    }
-
-    getGroup(): string {
-        return this.group;
-    }
-
-    withGroup(group: string): IDatabaseLockAdapter {
-        return new MongodbLockAdapter({
-            database: this.database,
-            collectionName: this.collectionName,
-            collectionSettings: this.collectionSettings,
-            rootGroup: resolveOneOrMoreStr([this.group, group]),
-        });
     }
 }

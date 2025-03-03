@@ -3,7 +3,6 @@
  */
 
 import type { TimeSpan } from "@/utilities/_module-exports.js";
-import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import type { ILockAdapter } from "@/new-lock/contracts/_module-exports.js";
 import type { Redis } from "ioredis";
 import type { Result } from "ioredis";
@@ -25,16 +24,6 @@ declare module "ioredis" {
 }
 
 /**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
- * @group Adapters
- */
-export type RedisLockAdapterSettings = {
-    database: Redis;
-    rootGroup: string;
-};
-
-/**
  * To utilize the <i>RedisLockAdapter</i>, you must install the <i>"ioredis"</i> package.
  *
  * Note in order to use <i>RedisLockAdapter</i> correctly, ensure you use a single, consistent database across all server instances.
@@ -43,9 +32,6 @@ export type RedisLockAdapterSettings = {
  * @group Adapters
  */
 export class RedisLockAdapter implements ILockAdapter {
-    private readonly group: string;
-    private readonly database: Redis;
-
     /**
      * @example
      * ```ts
@@ -61,10 +47,7 @@ export class RedisLockAdapter implements ILockAdapter {
      * });
      * ```
      */
-    constructor(settings: RedisLockAdapterSettings) {
-        const { database, rootGroup } = settings;
-        this.database = database;
-        this.group = rootGroup;
+    constructor(private readonly database: Redis) {
         this.initAquireCommand();
         this.initReleaseCommand();
         this.initRefreshComand();
@@ -142,20 +125,11 @@ export class RedisLockAdapter implements ILockAdapter {
         });
     }
 
-    private getPrefix(): string {
-        return resolveOneOrMoreStr([this.group, "__KEY__"]);
-    }
-
-    private withPrefix(key: string): string {
-        return resolveOneOrMoreStr([this.getPrefix(), key]);
-    }
-
     async acquire(
         key: string,
         owner: string,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
-        key = this.withPrefix(key);
         const result = await this.database.daiso_lock_acquire(
             key,
             owner,
@@ -165,34 +139,20 @@ export class RedisLockAdapter implements ILockAdapter {
     }
 
     async release(key: string, owner: string): Promise<boolean> {
-        key = this.withPrefix(key);
         const result = await this.database.daiso_lock_release(key, owner);
         return result === 1;
     }
 
     async forceRelease(key: string): Promise<void> {
-        key = this.withPrefix(key);
         await this.database.del(key);
     }
 
     async refresh(key: string, owner: string, ttl: TimeSpan): Promise<boolean> {
-        key = this.withPrefix(key);
         const result = await this.database.daiso_lock_refresh(
             key,
             owner,
             ttl.toMilliseconds().toString(),
         );
         return Boolean(result);
-    }
-
-    getGroup(): string {
-        return this.group;
-    }
-
-    withGroup(group: string): ILockAdapter {
-        return new RedisLockAdapter({
-            database: this.database,
-            rootGroup: resolveOneOrMoreStr([this.group, group]),
-        });
     }
 }

@@ -40,15 +40,4 @@ export type ILockAdapter = {
      * Returns true if the update occured otherwise false is returned.
      */
     refresh(key: string, owner: string, ttl: TimeSpan): PromiseLike<boolean>;
-
-    /**
-     * The <i>getGroup</i> method returns the group name.
-     */
-    getGroup(): string;
-
-    /**
-     * The <i>withGroup</i> method returns a new <i>{@link IDatabaseLockAdapter}</i> instance that groups locks together.
-     * Only locks in the same group will be acquired and released, leaving locks outside the group unaffected.
-     */
-    withGroup(group: string): ILockAdapter;
 };

@@ -24,7 +24,6 @@ describe("class: MongodbLockAdapter", () => {
         createAdapter: async () => {
             const lockAdapter = new MongodbLockAdapter({
                 database: client.db("database"),
-                rootGroup: "@a",
             });
             await lockAdapter.init();
             return lockAdapter;

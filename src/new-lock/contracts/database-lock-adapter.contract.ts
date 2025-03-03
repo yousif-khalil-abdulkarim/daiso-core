@@ -57,15 +57,4 @@ export type IDatabaseLockAdapter = {
      * The <i>find</i> method will return a lock by the given <i>key</i>.
      */
     find(key: string): PromiseLike<ILockData | null>;
-
-    /**
-     * The <i>getGroup</i> method returns the group name.
-     */
-    getGroup(): string;
-
-    /**
-     * The <i>withGroup</i> method returns a new <i>{@link IDatabaseLockAdapter}</i> instance that groups locks together.
-     * Only locks in the same group will be acquired and released, leaving locks outside the group unaffected.
-     */
-    withGroup(group: string): IDatabaseLockAdapter;
 };
