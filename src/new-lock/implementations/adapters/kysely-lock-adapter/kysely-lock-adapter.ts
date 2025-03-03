@@ -77,11 +77,9 @@ export class KyselyLockAdapter
         await this.database.schema
             .createTable("lock")
             .ifNotExists()
-            .addColumn("group", "varchar(255)")
-            .addColumn("key", "varchar(255)")
+            .addColumn("key", "varchar(255)", (col) => col.primaryKey())
             .addColumn("owner", "varchar(255)")
             .addColumn("expiresAt", "bigint")
-            .addPrimaryKeyConstraint("cache_unique_columns", ["group", "key"])
             .execute();
         await this.database.schema
             .createIndex("lock_expiresAt")
