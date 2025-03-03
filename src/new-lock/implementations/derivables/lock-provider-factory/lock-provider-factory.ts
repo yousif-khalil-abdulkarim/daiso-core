@@ -14,7 +14,7 @@ import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { IKeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     LockProvider,
     type LockProviderSettingsBase,
@@ -52,6 +52,13 @@ export class LockProviderFactory<TAdapters extends string>
     constructor(
         private readonly settings: LockProviderFactorySettings<TAdapters>,
     ) {}
+
+    setKeyPrefixer(keyPrefixer: IKeyPrefixer): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            keyPrefixer,
+        });
+    }
 
     setCreateOwnerId(createId: () => string): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
