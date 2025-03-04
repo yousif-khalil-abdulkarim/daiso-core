@@ -1114,13 +1114,16 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         test("method: clear", async () => {
             await cacheA.add("a", 1);
             await cacheA.add("b", 2);
-            await cacheB.add("a", 1);
-            await cacheB.add("b", 2);
+            await cacheB.add("a", 3);
+            await cacheB.add("b", 4);
             await cacheA.clear();
-            const resultA = [await cacheA.get("a"), await cacheA.get("b")];
-            expect(resultA).toEqual([null, null]);
-            const resultB = [await cacheB.get("a"), await cacheB.get("b")];
-            expect(resultB).toEqual([1, 2]);
+            const resultA = [
+                await cacheA.get("a"),
+                await cacheA.get("b"),
+                await cacheB.get("a"),
+                await cacheB.get("b"),
+            ];
+            expect(resultA).toEqual([null, null, 3, 4]);
         });
         test("method: addListener / dispatch", async () => {
             let result_a: KeyAddedCacheEvent | null = null;

@@ -193,7 +193,7 @@ export class LockProvider implements IGroupableLockProvider {
         let { serde } = settings;
         const adapter = await resolveFactoryable(
             factoryable,
-            keyPrefixer.resolvedRootPrefix,
+            keyPrefixer.keyPrefix,
         );
         const resolvedAdapter = LockProvider.resolveLockAdapter(adapter);
         const transformer = new LockSerdeTransformer({
@@ -219,7 +219,7 @@ export class LockProvider implements IGroupableLockProvider {
     private readonly groupableEventBus: IGroupableEventBus<LockEvents>;
     private readonly eventBus: IEventBus<LockEvents>;
     private readonly adapterFactoryable: LockAdapterFactoryable;
-    private readonly adapterPromise: Promise<ILockAdapter>;
+    private readonly adapterPromise: PromiseLike<ILockAdapter>;
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
@@ -276,18 +276,20 @@ export class LockProvider implements IGroupableLockProvider {
             ]);
         }
 
-        this.adapterPromise = LockProvider.resolveLockAdapterFactoryable(
-            this.adapterFactoryable,
-            {
-                serde,
-                lockStore: this.lockStore,
-                keyPrefixer,
-                createLazyPromise: this.createLazyPromise.bind(this),
-                defaultBlockingInterval,
-                defaultBlockingTime,
-                defaultRefreshTime,
-                groupableEventBus,
-            },
+        this.adapterPromise = new LazyPromise(async () =>
+            LockProvider.resolveLockAdapterFactoryable(
+                this.adapterFactoryable,
+                {
+                    serde,
+                    lockStore: this.lockStore,
+                    keyPrefixer,
+                    createLazyPromise: this.createLazyPromise.bind(this),
+                    defaultBlockingInterval,
+                    defaultBlockingTime,
+                    defaultRefreshTime,
+                    groupableEventBus,
+                },
+            ),
         );
     }
 

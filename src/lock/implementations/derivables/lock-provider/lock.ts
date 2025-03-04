@@ -61,7 +61,7 @@ export type LockSettings = {
     createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
-    adapterPromise: Promise<ILockAdapter>;
+    adapterPromise: PromiseLike<ILockAdapter>;
     lockState: LockState;
     lockEventBus: IEventBus<LockEvents>;
     lockProviderEventDispatcher: IEventDispatcher<LockEvents>;
@@ -96,7 +96,7 @@ export class Lock implements ILock {
     private readonly createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
-    private readonly adapterPromise: Promise<ILockAdapter>;
+    private readonly adapterPromise: PromiseLike<ILockAdapter>;
     private readonly lockState: LockState;
     private readonly lockEventBus: IEventBus<LockEvents>;
     private readonly lockProviderEventDispatcher: IEventDispatcher<LockEvents>;

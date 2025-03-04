@@ -118,7 +118,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         this.timeout = timeout;
         this.adapterPromise = resolveFactoryable(
             this.adapterFactoryable,
-            this.keyPrefixer.resolvedRootPrefix,
+            this.keyPrefixer.keyPrefix,
         );
     }
 
