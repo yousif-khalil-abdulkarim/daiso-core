@@ -273,15 +273,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
 
+        this.eventBus = this.groupdEventBus.withGroup(
+            this.keyPrefixer.resolvedRootPrefix,
+        );
         if (this.keyPrefixer.resolvedGroup) {
             this.eventBus = this.groupdEventBus.withGroup([
                 this.keyPrefixer.resolvedRootPrefix,
                 this.keyPrefixer.resolvedGroup,
             ]);
-        } else {
-            this.eventBus = this.groupdEventBus.withGroup(
-                this.keyPrefixer.resolvedRootPrefix,
-            );
         }
 
         this.adapterPromise = Cache.resolveCacheAdapterFactoryable(

@@ -48,6 +48,8 @@ import {
     LockState,
     type ILockStore,
 } from "@/new-lock/implementations/derivables/lock-provider/lock-state.js";
+import type { LockSerdeTransformerSettings } from "@/new-lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
+import { LockSerdeTransformer } from "@/new-lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
 
 /**
  *
@@ -175,10 +177,42 @@ export class LockProvider implements IGroupableLockProvider {
 
     private static async resolveLockAdapterFactoryable(
         factoryable: LockAdapterFactoryable,
-        rootPrefix: string,
+        settings: Omit<LockSerdeTransformerSettings, "adapter"> & {
+            serde: OneOrMore<IFlexibleSerde>;
+        },
     ): Promise<ILockAdapter> {
-        const adapter = await resolveFactoryable(factoryable, rootPrefix);
-        return LockProvider.resolveLockAdapter(adapter);
+        const {
+            lockStore,
+            keyPrefixer,
+            createLazyPromise,
+            defaultBlockingInterval,
+            defaultBlockingTime,
+            defaultRefreshTime,
+            groupableEventBus,
+        } = settings;
+        let { serde } = settings;
+        const adapter = await resolveFactoryable(
+            factoryable,
+            keyPrefixer.resolvedRootPrefix,
+        );
+        const resolvedAdapter = LockProvider.resolveLockAdapter(adapter);
+        const transformer = new LockSerdeTransformer({
+            keyPrefixer,
+            adapter: resolvedAdapter,
+            createLazyPromise,
+            lockStore,
+            defaultBlockingInterval,
+            defaultBlockingTime,
+            defaultRefreshTime,
+            groupableEventBus,
+        });
+        if (!Array.isArray(serde)) {
+            serde = [serde];
+        }
+        for (const serde_ of serde) {
+            serde_.registerCustom(transformer);
+        }
+        return resolvedAdapter;
     }
 
     private lockStore: ILockStore = {};
@@ -192,11 +226,11 @@ export class LockProvider implements IGroupableLockProvider {
     private readonly timeout: TimeSpan | null;
     private readonly keyPrefixer: IKeyPrefixer;
     private readonly createOwnerId: () => string;
-    private readonly serde: OneOrMore<IFlexibleSerde>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
+    private readonly serde: OneOrMore<IFlexibleSerde>;
 
     constructor(settings: LockProviderSettings) {
         const {
@@ -218,10 +252,10 @@ export class LockProvider implements IGroupableLockProvider {
             timeout = null,
         } = settings;
 
+        this.serde = serde;
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
-        this.serde = serde;
         this.createOwnerId = createOwnerId;
         this.keyPrefixer = keyPrefixer;
         this.groupableEventBus = groupableEventBus;
@@ -231,21 +265,29 @@ export class LockProvider implements IGroupableLockProvider {
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
+        this.eventBus = this.eventBus = this.groupableEventBus.withGroup(
+            this.keyPrefixer.resolvedRootPrefix,
+        );
 
         if (this.keyPrefixer.resolvedGroup) {
             this.eventBus = this.groupableEventBus.withGroup([
                 this.keyPrefixer.resolvedRootPrefix,
                 this.keyPrefixer.resolvedGroup,
             ]);
-        } else {
-            this.eventBus = this.groupableEventBus.withGroup(
-                this.keyPrefixer.resolvedRootPrefix,
-            );
         }
 
         this.adapterPromise = LockProvider.resolveLockAdapterFactoryable(
             this.adapterFactoryable,
-            this.keyPrefixer.resolvedRootPrefix,
+            {
+                serde,
+                lockStore: this.lockStore,
+                keyPrefixer,
+                createLazyPromise: this.createLazyPromise.bind(this),
+                defaultBlockingInterval,
+                defaultBlockingTime,
+                defaultRefreshTime,
+                groupableEventBus,
+            },
         );
     }
 
@@ -322,16 +364,14 @@ export class LockProvider implements IGroupableLockProvider {
             settings;
 
         const keyObj = this.keyPrefixer.create(key);
-        let lockEventBus: IEventBus<LockEvents>;
+        let lockEventBus = this.groupableEventBus.withGroup([
+            this.keyPrefixer.resolvedRootPrefix,
+            keyObj.resolved,
+        ]);
         if (this.keyPrefixer.resolvedGroup) {
             lockEventBus = this.groupableEventBus.withGroup([
                 this.keyPrefixer.resolvedRootPrefix,
                 this.keyPrefixer.resolvedGroup,
-                keyObj.resolved,
-            ]);
-        } else {
-            lockEventBus = this.groupableEventBus.withGroup([
-                this.keyPrefixer.resolvedRootPrefix,
                 keyObj.resolved,
             ]);
         }

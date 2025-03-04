@@ -2,13 +2,13 @@
  * @module Lock
  */
 
-import type {
-    IKey,
-    Invokable,
-    LazyPromiseable,
-    OneOrMore,
-    Result,
-    TimeSpan,
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import {
+    type IKey,
+    type Invokable,
+    type LazyPromiseable,
+    type OneOrMore,
+    type Result,
 } from "@/utilities/_module-exports.js";
 import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import {
@@ -57,7 +57,7 @@ export type ISerializedLock = {
  * @internal
  */
 export type LockSettings = {
-    group: string | null;
+    group: OneOrMore<string> | null;
     createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
@@ -106,7 +106,7 @@ export class Lock implements ILock {
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
-    private readonly group: string | null;
+    private readonly group: OneOrMore<string> | null;
 
     /**
      * @internal
