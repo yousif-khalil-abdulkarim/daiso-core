@@ -1,5 +1,33 @@
 # @daiso-tech/core
 
+## 0.27.0
+
+### Minor Changes
+
+-   5a2a996: Updated the <i>Cache</i> and <i>CacheFactory</i> classes, they can now take factory function/object that returns a <i>ICacheAdapter</i> and <i>IDatabaseCacheAdapter</i>.
+-   0602f10: Made the <i>LockProviderFactory</i> class configurable by using the builder pattern.
+-   9c8b932: Made the <i>CacheFactory</i> class configurable by using the builder pattern.
+-   5a2a996: Removed <i>withGroup</i> and <i>group</i> methods from <i>ICacheAdapter</i>. Added <i>removeAll</i> method to <i>ICacheAdapter</i>.
+-   0602f10: Updated the <i>LockProvider</i> and <i>LockProviderFactory</i> classes, they can now take factory function/object that returns a <i>ILockAdapter</i> or <i>IDatabaseLockAdapter</i>.
+-   5a2a996: Removed the following methods from <i>ICache</i> contract:
+    -   <i>existsMany</i>
+    -   <i>missingMany</i>
+    -   <i>getMany</i>
+    -   <i>getOrMany</i>
+    -   <i>addMany</i>
+    -   <i>updateMany</i>
+    -   <i>putMany</i>
+        Changed the <i>removeMany<i> method, it now returns a boolean.
+-   b9d03e1: Removed <i>withGroup</i> and <i>group</i> methods from <i>IEventBusAdapter</i> contract.
+-   0602f10: Removed <i>withGroup</i> and <i>group</i> methods from <i>ILockAdapter</i> and <i>IDatabaseLockAdapter</i>.
+-   9c8b932: Made the <i>EventBusFactory</i> class configurable by using the builder pattern.
+-   5a2a996: Added <i>IDatabaseCacheAdapter</i> contract.
+-   b9d03e1: Updated the <i>EventBus</i> and <i>EventBusFactory</i> classes, they can now take factory function/object that returns a <i>IEventBusAdapter</i>.
+
+### Patch Changes
+
+-   5a2a996: Fixed a bug with <i>LockProvider</i> class
+
 ## 0.26.1
 
 ### Patch Changes
