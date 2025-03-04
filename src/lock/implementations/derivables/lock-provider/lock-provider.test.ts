@@ -23,8 +23,8 @@ describe("class: LockProvider", () => {
             createLockProvider: () => {
                 const lockProvider = new LockProvider({
                     serde,
-                    adapter: new MemoryLockAdapter(new Map()),
                     eventBus,
+                    adapter: new MemoryLockAdapter(),
                     keyPrefixer: new KeyPrefixer("lock"),
                 });
                 return lockProvider;
@@ -46,11 +46,13 @@ describe("class: LockProvider", () => {
         });
         lockProviderTestSuite({
             createLockProvider: () => {
-                const lockProvider = new LockProvider({
+                return new LockProvider({
                     serde,
-                    async adapter(prefix: string): Promise<SqliteLockAdapter> {
+                    adapter: async (
+                        prefix: string,
+                    ): Promise<SqliteLockAdapter> => {
                         const adapter = new SqliteLockAdapter({
-                            database: database,
+                            database,
                             tableName: `custom_table_${prefix}`,
                             shouldRemoveExpiredKeys: false,
                         });
@@ -60,7 +62,6 @@ describe("class: LockProvider", () => {
                     eventBus,
                     keyPrefixer: new KeyPrefixer("lock"),
                 });
-                return lockProvider;
             },
             beforeEach,
             describe,
