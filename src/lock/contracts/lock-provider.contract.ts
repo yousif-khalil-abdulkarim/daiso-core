@@ -3,10 +3,7 @@
  */
 
 import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
-import type {
-    ILock,
-    ILockListenable,
-} from "@/lock/contracts/lock.contract.js";
+import type { ILock, ILockListenable } from "@/lock/contracts/lock.contract.js";
 
 /**
  *
