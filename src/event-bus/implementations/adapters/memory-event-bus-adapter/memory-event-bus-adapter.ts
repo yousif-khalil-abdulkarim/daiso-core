@@ -10,16 +10,6 @@ import type {
 import { EventEmitter } from "node:events";
 
 /**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/adapters"```
- * @group Adapters
- */
-export type MemoryEventBusAdapterSettings = {
-    rootGroup: string;
-    eventEmitter?: EventEmitter;
-};
-
-/**
  * To utilize the <i>MemoryEventBusAdapter</i>, you must create instance of it.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/adapters"```
