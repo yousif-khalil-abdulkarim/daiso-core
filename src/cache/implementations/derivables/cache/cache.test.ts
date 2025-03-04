@@ -34,8 +34,10 @@ describe("class: Cache", () => {
         });
         cacheTestSuite({
             createCache: () => {
-                const cache = new Cache({
-                    async adapter(prefix: string): Promise<SqliteCacheAdapter> {
+                return new Cache({
+                    adapter: async (
+                        prefix: string,
+                    ): Promise<SqliteCacheAdapter> => {
                         const tableName = `custom_table_${prefix}`;
                         const adapter = new SqliteCacheAdapter({
                             serde: new Serde(new SuperJsonSerdeAdapter()),
@@ -48,7 +50,6 @@ describe("class: Cache", () => {
                     },
                     keyPrefixer: new KeyPrefixer("cache"),
                 });
-                return cache;
             },
             beforeEach,
             describe,
