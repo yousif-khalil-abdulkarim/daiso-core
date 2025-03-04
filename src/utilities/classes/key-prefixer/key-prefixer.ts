@@ -51,6 +51,10 @@ class Key implements IKey {
         this.keyIdentifier = keyIdentifier;
     }
 
+    get original(): OneOrMore<string> {
+        return this.key;
+    }
+
     get resolved(): string {
         return resolveOneOrMoreStr(this.key);
     }
@@ -115,7 +119,7 @@ export class KeyPrefixer implements IKeyPrefixer {
         }
     }
 
-    get group(): OneOrMore<string> | null {
+    get originalGroup(): OneOrMore<string> | null {
         return this._group;
     }
 
@@ -126,8 +130,8 @@ export class KeyPrefixer implements IKeyPrefixer {
         return resolveOneOrMoreStr(this._group);
     }
 
-    get rootPrefix(): OneOrMore<string> {
-        return this.rootPrefix;
+    get originalRootPrefix(): OneOrMore<string> {
+        return this.originalRootPrefix;
     }
 
     get resolvedRootPrefix(): string {
