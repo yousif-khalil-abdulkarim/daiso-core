@@ -21,11 +21,7 @@ describe("class: RedisLockAdapter", () => {
         await startedContainer.stop();
     }, timeout.toMilliseconds());
     lockAdapterTestSuite({
-        createAdapter: () =>
-            new RedisLockAdapter({
-                database: client,
-                rootGroup: "@a",
-            }),
+        createAdapter: () => new RedisLockAdapter(client),
         test,
         beforeEach,
         expect,

@@ -7,21 +7,21 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 /**
  * @internal
  */
-export type ILockStateData = {
+export type ILockState = {
     expiration: Date | null;
 };
 
 /**
  * @internal
  */
-export type ILockStateRecord = Partial<Record<string, ILockStateData>>;
+export type ILockStore = Partial<Record<string, ILockState>>;
 
 /**
  * @internal
  */
 export class LockState {
     constructor(
-        private stateRecord: ILockStateRecord,
+        private stateRecord: ILockStore,
         private readonly key: string,
     ) {}
 

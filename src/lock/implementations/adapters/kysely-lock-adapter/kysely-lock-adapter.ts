@@ -12,13 +12,11 @@ import {
     type IInitizable,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
-import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
  */
 type KyselyLockTable = {
-    group: string;
     key: string;
     owner: string;
     // In ms since unix epoch
@@ -37,7 +35,6 @@ type KyselyTables = {
  */
 type KyselySettings = {
     database: Kysely<KyselyTables>;
-    rootGroup: string;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
 };
@@ -48,7 +45,6 @@ type KyselySettings = {
 export class KyselyLockAdapter
     implements IDatabaseLockAdapter, IDeinitizable, IInitizable
 {
-    private readonly group: string;
     private readonly database: Kysely<KyselyTables>;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;
@@ -57,14 +53,12 @@ export class KyselyLockAdapter
     constructor(settings: KyselySettings) {
         const {
             database,
-            rootGroup,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
         } = settings;
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.database = database;
-        this.group = rootGroup;
     }
 
     async deInit(): Promise<void> {
@@ -83,11 +77,9 @@ export class KyselyLockAdapter
         await this.database.schema
             .createTable("lock")
             .ifNotExists()
-            .addColumn("group", "varchar(255)")
-            .addColumn("key", "varchar(255)")
+            .addColumn("key", "varchar(255)", (col) => col.primaryKey())
             .addColumn("owner", "varchar(255)")
             .addColumn("expiresAt", "bigint")
-            .addPrimaryKeyConstraint("cache_unique_columns", ["group", "key"])
             .execute();
         await this.database.schema
             .createIndex("lock_expiresAt")
@@ -119,7 +111,6 @@ export class KyselyLockAdapter
             .values({
                 key,
                 owner,
-                group: this.group,
                 expiresAt: expiration?.getTime() ?? null,
             })
             .execute();
@@ -133,7 +124,6 @@ export class KyselyLockAdapter
         const updateResult = await this.database
             .updateTable("lock")
             .where("lock.key", "=", key)
-            .where("lock.group", "=", this.group)
             // Has expired
             .where((eb) =>
                 eb.and([
@@ -150,7 +140,6 @@ export class KyselyLockAdapter
         await this.database
             .deleteFrom("lock")
             .where("lock.key", "=", key)
-            .where("lock.group", "=", this.group)
             .$if(owner !== null, (query) =>
                 query.where("lock.owner", "=", owner),
             )
@@ -165,7 +154,6 @@ export class KyselyLockAdapter
         const updateResult = await this.database
             .updateTable("lock")
             .where("lock.key", "=", key)
-            .where("lock.group", "=", this.group)
             .where("lock.owner", "=", owner)
             .set({ expiresAt: expiration.getTime() })
             .executeTakeFirst();
@@ -176,7 +164,6 @@ export class KyselyLockAdapter
         const row = await this.database
             .selectFrom("lock")
             .where("lock.key", "=", key)
-            .where("lock.group", "=", this.group)
             .select(["lock.owner", "lock.expiresAt"])
             .executeTakeFirst();
         if (row === undefined) {
@@ -186,16 +173,5 @@ export class KyselyLockAdapter
             expiration: row.expiresAt ? new Date(row.expiresAt) : null,
             owner: row.owner,
         };
-    }
-
-    getGroup(): string {
-        return this.group;
-    }
-
-    withGroup(group: string): IDatabaseLockAdapter {
-        return new KyselyLockAdapter({
-            database: this.database,
-            rootGroup: resolveOneOrMoreStr([this.group, group]),
-        });
     }
 }

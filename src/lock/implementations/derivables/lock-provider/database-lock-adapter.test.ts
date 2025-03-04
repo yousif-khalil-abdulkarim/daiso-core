@@ -18,7 +18,6 @@ describe("class: DatabaseLockAdapter", () => {
                 database: database,
                 tableName: "custom_table",
                 shouldRemoveExpiredKeys: false,
-                rootGroup: "@a",
             });
             await databaseLockAdapter.init();
             return new DatabaseLockAdapter(databaseLockAdapter);
