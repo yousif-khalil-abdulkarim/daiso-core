@@ -285,7 +285,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
         this.adapterPromise = Cache.resolveCacheAdapterFactoryable(
             this.adapterFactoryable,
-            this.keyPrefixer.resolvedRootPrefix,
+            this.keyPrefixer.keyPrefix,
         );
     }
 
@@ -809,18 +809,18 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             try {
                 const adapter = await this.adapterPromise;
 
+                const promise = this.eventBus.dispatch(
+                    new KeysClearedCacheEvent({
+                        group: this.getGroup(),
+                    }),
+                );
                 if (isFactory(this.adapterFactoryable)) {
                     await adapter.removeAll();
+                    promise.defer();
                     return;
                 }
                 await adapter.removeByKeyPrefix(this.keyPrefixer.keyPrefix);
-                this.eventBus
-                    .dispatch(
-                        new KeysClearedCacheEvent({
-                            group: this.getGroup(),
-                        }),
-                    )
-                    .defer();
+                promise.defer();
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
