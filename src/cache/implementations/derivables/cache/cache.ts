@@ -273,20 +273,19 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
 
-        if (this.keyPrefixer.group) {
+        this.eventBus = this.groupdEventBus.withGroup(
+            this.keyPrefixer.resolvedRootPrefix,
+        );
+        if (this.keyPrefixer.resolvedGroup) {
             this.eventBus = this.groupdEventBus.withGroup([
-                this.keyPrefixer.rootPrefix,
-                this.keyPrefixer.group,
+                this.keyPrefixer.resolvedRootPrefix,
+                this.keyPrefixer.resolvedGroup,
             ]);
-        } else {
-            this.eventBus = this.groupdEventBus.withGroup(
-                this.keyPrefixer.rootPrefix,
-            );
         }
 
         this.adapterPromise = Cache.resolveCacheAdapterFactoryable(
             this.adapterFactoryable,
-            this.keyPrefixer.rootPrefix,
+            this.keyPrefixer.resolvedRootPrefix,
         );
     }
 
@@ -374,13 +373,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             const keyObj = this.keyPrefixer.create(key);
             try {
                 const adapter = await this.adapterPromise;
-                const value = await adapter.get(keyObj.prefixed());
+                const value = await adapter.get(keyObj.prefixed);
                 if (value === null) {
                     this.eventBus
                         .dispatch(
                             new KeyNotFoundCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                             }),
                         )
                         .defer();
@@ -389,7 +388,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyFoundCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                                 value,
                             }),
                         )
@@ -401,7 +400,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                     .dispatch(
                         new UnexpectedCacheErrorEvent({
                             group: this.getGroup(),
-                            keys: [keyObj.resolved()],
+                            keys: [keyObj.resolved],
                             method: this.get.name,
                             error,
                         }),
@@ -417,7 +416,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             const value = await this.get(key);
             if (value === null) {
                 throw new KeyNotFoundCacheError(
-                    `Key "${this.keyPrefixer.create(key).resolved()}" is not found`,
+                    `Key "${this.keyPrefixer.create(key).resolved}" is not found`,
                 );
             }
             return value;
@@ -429,13 +428,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             const keyObj = this.keyPrefixer.create(key);
             try {
                 const adapter = await this.adapterPromise;
-                const value = await adapter.getAndRemove(keyObj.prefixed());
+                const value = await adapter.getAndRemove(keyObj.prefixed);
                 if (value === null) {
                     this.eventBus
                         .dispatch(
                             new KeyNotFoundCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                             }),
                         )
                         .defer();
@@ -444,7 +443,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyFoundCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                                 value,
                             }),
                         )
@@ -453,7 +452,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyRemovedCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                             }),
                         )
                         .defer();
@@ -464,7 +463,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                     .dispatch(
                         new UnexpectedCacheErrorEvent({
                             group: this.getGroup(),
-                            keys: [keyObj.resolved()],
+                            keys: [keyObj.resolved],
                             method: this.get.name,
                             error,
                         }),
@@ -516,17 +515,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             const keyObj = this.keyPrefixer.create(key);
             try {
                 const adapter = await this.adapterPromise;
-                const hasAdded = await adapter.add(
-                    keyObj.prefixed(),
-                    value,
-                    ttl,
-                );
+                const hasAdded = await adapter.add(keyObj.prefixed, value, ttl);
                 if (hasAdded) {
                     this.eventBus
                         .dispatch(
                             new KeyAddedCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                                 value,
                                 ttl,
                             }),
@@ -539,7 +534,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                     .dispatch(
                         new UnexpectedCacheErrorEvent({
                             group: this.getGroup(),
-                            keys: [keyObj.resolved()],
+                            keys: [keyObj.resolved],
                             value,
                             method: this.add.name,
                             error,
@@ -561,7 +556,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             try {
                 const adapter = await this.adapterPromise;
                 const hasUpdated = await adapter.put(
-                    keyObj.prefixed(),
+                    keyObj.prefixed,
                     value,
                     ttl,
                 );
@@ -570,7 +565,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyUpdatedCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                                 value,
                             }),
                         )
@@ -580,7 +575,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyAddedCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                                 value,
                                 ttl,
                             }),
@@ -593,7 +588,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                     .dispatch(
                         new UnexpectedCacheErrorEvent({
                             group: this.getGroup(),
-                            keys: [keyObj.resolved()],
+                            keys: [keyObj.resolved],
                             value,
                             method: this.put.name,
                             error,
@@ -610,16 +605,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             const keyObj = this.keyPrefixer.create(key);
             try {
                 const adapter = await this.adapterPromise;
-                const hasUpdated = await adapter.update(
-                    keyObj.prefixed(),
-                    value,
-                );
+                const hasUpdated = await adapter.update(keyObj.prefixed, value);
                 if (hasUpdated) {
                     this.eventBus
                         .dispatch(
                             new KeyUpdatedCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                                 value,
                             }),
                         )
@@ -629,7 +621,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyNotFoundCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                             }),
                         )
                         .defer();
@@ -640,7 +632,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                     .dispatch(
                         new UnexpectedCacheErrorEvent({
                             group: this.getGroup(),
-                            keys: [keyObj.resolved()],
+                            keys: [keyObj.resolved],
                             value,
                             method: this.update.name,
                             error,
@@ -661,7 +653,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             try {
                 const adapter = await this.adapterPromise;
                 const hasUpdated = await adapter.increment(
-                    keyObj.prefixed(),
+                    keyObj.prefixed,
                     value,
                 );
                 if (hasUpdated && value > 0) {
@@ -669,7 +661,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyIncrementedCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                                 value,
                             }),
                         )
@@ -680,7 +672,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyDecrementedCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                                 value: -value,
                             }),
                         )
@@ -691,7 +683,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyNotFoundCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                             }),
                         )
                         .defer();
@@ -702,7 +694,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                     .dispatch(
                         new UnexpectedCacheErrorEvent({
                             group: this.getGroup(),
-                            keys: [keyObj.resolved()],
+                            keys: [keyObj.resolved],
                             value,
                             method: this.increment.name,
                             error,
@@ -728,15 +720,13 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             const keyObj = this.keyPrefixer.create(key);
             try {
                 const adapter = await this.adapterPromise;
-                const hasRemoved = await adapter.removeMany([
-                    keyObj.prefixed(),
-                ]);
+                const hasRemoved = await adapter.removeMany([keyObj.prefixed]);
                 if (hasRemoved) {
                     this.eventBus
                         .dispatch(
                             new KeyRemovedCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                             }),
                         )
                         .defer();
@@ -745,7 +735,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         .dispatch(
                             new KeyNotFoundCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                             }),
                         )
                         .defer();
@@ -756,7 +746,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                     .dispatch(
                         new UnexpectedCacheErrorEvent({
                             group: this.getGroup(),
-                            keys: [keyObj.resolved()],
+                            keys: [keyObj.resolved],
                             method: this.remove.name,
                             error,
                         }),
@@ -776,14 +766,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             try {
                 const adapter = await this.adapterPromise;
                 const hasRemovedAtLeastOne = await adapter.removeMany(
-                    keyObjArr.map((keyObj) => keyObj.prefixed()),
+                    keyObjArr.map((keyObj) => keyObj.prefixed),
                 );
                 if (hasRemovedAtLeastOne) {
                     const events = keyObjArr.map(
                         (keyObj) =>
                             new KeyRemovedCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                             }),
                     );
                     this.eventBus.dispatchMany(events).defer();
@@ -792,7 +782,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         (keyObj) =>
                             new KeyNotFoundCacheEvent({
                                 group: this.getGroup(),
-                                key: keyObj.resolved(),
+                                key: keyObj.resolved,
                             }),
                     );
                     this.eventBus.dispatchMany(events).defer();
@@ -803,7 +793,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                     .dispatch(
                         new UnexpectedCacheErrorEvent({
                             group: this.getGroup(),
-                            keys: keyObjArr.map((keyObj) => keyObj.resolved()),
+                            keys: keyObjArr.map((keyObj) => keyObj.resolved),
                             method: this.remove.name,
                             error,
                         }),
@@ -823,9 +813,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                     await adapter.removeAll();
                     return;
                 }
-                await adapter.removeByKeyPrefix(
-                    this.keyPrefixer.getKeyPrefix(),
-                );
+                await adapter.removeByKeyPrefix(this.keyPrefixer.keyPrefix);
                 this.eventBus
                     .dispatch(
                         new KeysClearedCacheEvent({
@@ -849,8 +837,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     getGroup(): string | null {
-        if (this.keyPrefixer.group) {
-            return this.keyPrefixer.group;
+        if (this.keyPrefixer.resolvedGroup) {
+            return this.keyPrefixer.resolvedGroup;
         }
         return null;
     }

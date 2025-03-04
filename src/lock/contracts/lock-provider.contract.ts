@@ -36,7 +36,7 @@ export type ILockProvider = ILockListenable & {
     /**
      * The <i>getGroup</i> method returns the group name.
      */
-    getGroup(): string;
+    getGroup(): string | null;
 };
 
 /**

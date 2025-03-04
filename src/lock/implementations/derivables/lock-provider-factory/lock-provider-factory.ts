@@ -8,20 +8,17 @@ import type {
     IDatabaseLockAdapter,
     ILockAdapter,
 } from "@/lock/contracts/_module-exports.js";
-import {
-    registerLockErrorsToSerde,
-    registerLockEventsToSerde,
-} from "@/lock/contracts/_module-exports.js";
 import type { ILockProviderFactory } from "@/lock/contracts/lock-provider-factory.contract.js";
 import type { IGroupableLockProvider } from "@/lock/contracts/lock-provider.contract.js";
-import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
-    type OneOrMore,
 } from "@/utilities/_module-exports.js";
-import type { TimeSpan } from "@/utilities/_module-exports.js";
-import { LockProvider } from "@/lock/implementations/derivables/lock-provider/_module.js";
+import type { IKeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
+import {
+    LockProvider,
+    type LockProviderSettingsBase,
+} from "@/lock/implementations/derivables/lock-provider/_module.js";
 
 /**
  *
@@ -37,113 +34,12 @@ export type LockAdapters<TAdapters extends string> = Partial<
  * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
  * @group Derivables
  */
-export type LockProviderFactorySettings<TAdapters extends string> = {
-    /**
-     * You can pass one or more <i>{@link IFlexibleSerde}</i> that will be used to register all <i>{@link ILock}</i> related errors and events.
-     * @default {true}
-     */
-    serde: OneOrMore<IFlexibleSerde>;
+export type LockProviderFactorySettings<TAdapters extends string> =
+    LockProviderSettingsBase & {
+        adapters: LockAdapters<TAdapters>;
 
-    /**
-     * If set to true, all <i>{@link ILock}</i> related errors will be registered with the specified <i>IFlexibleSerde</i> during constructor initialization.
-     * This ensures that all <i>{@link ILock}</i> related errors will be serialized correctly.
-     * @default {true}
-     */
-    shouldRegisterErrors?: boolean;
-
-    /**
-     * If set to true, all <i>{@link ILock}</i> related events will be registered with the specified <i>IFlexibleSerde</i> during constructor initialization.
-     * This ensures that all <i>{@link ILock}</i> related events will be serialized correctly.
-     * @default {true}
-     */
-    shouldRegisterEvents?: boolean;
-
-    adapters: LockAdapters<TAdapters>;
-
-    defaultAdapter?: NoInfer<TAdapters>;
-
-    /**
-     * You can pass your owner id generator function.
-     */
-    createOwnerId?: () => string;
-
-    /**
-     * @default
-     * ```ts
-     * new EventBus({
-     *   adapter: new MemoryEventBusAdapter()
-     * })
-     * ```
-     */
-    eventBus?: IGroupableEventBus<any>;
-
-    /**
-     * You can decide the default ttl value for <i>{@link ILock}</i> expiration. If null is passed then no ttl will be used by default.
-     * @default
-     * ```ts
-     * TimeSpan.fromMinutes(5);
-     * ```
-     */
-    defaultTtl?: TimeSpan | null;
-
-    /**
-     * The default refresh time used in the <i>{@link ILock}</i> <i>acquireBlocking</i> and <i>runBlocking</i> methods.
-     * @default
-     * ```ts
-     * TimeSpan.fromSeconds(1);
-     * ```
-     */
-    defaultBlockingInterval?: TimeSpan;
-
-    /**
-     * The default refresh time used in the <i>{@link ILock}</i> <i>acquireBlocking</i> and <i>runBlocking</i> methods.
-     * @default
-     * ```ts
-     * TimeSpan.fromMinutes(1)
-     * ```
-     */
-    defaultBlockingTime?: TimeSpan;
-
-    /**
-     * The default refreshtime used in the <i>{@link ILock}</i> <i>extend</i> method.
-     * @default
-     * ```ts
-     * TimeSpan.fromMinutes(5);
-     * ```
-     */
-    defaultRefreshTime?: TimeSpan;
-
-    /**
-     * The default retry attempt to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    retryAttempts?: number | null;
-
-    /**
-     * The default backof policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    backoffPolicy?: BackoffPolicy | null;
-
-    /**
-     * The default retry policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    retryPolicy?: RetryPolicy | null;
-
-    /**
-     * The default timeout to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    timeout?: TimeSpan | null;
-};
-
-/**
- * @internal
- */
-type LockProviderRecord<TAdapters extends string> = Partial<
-    Record<TAdapters, IGroupableLockProvider>
->;
+        defaultAdapter?: NoInfer<TAdapters>;
+    };
 
 /**
  *
@@ -153,121 +49,89 @@ type LockProviderRecord<TAdapters extends string> = Partial<
 export class LockProviderFactory<TAdapters extends string>
     implements ILockProviderFactory<TAdapters>
 {
-    private readonly serde: OneOrMore<IFlexibleSerde>;
-    private readonly shouldRegisterErrors?: boolean;
-    private readonly shouldRegisterEvents?: boolean;
-    private readonly defaultAdapter?: NoInfer<TAdapters>;
-    private readonly lockProviderRecord: LockProviderRecord<TAdapters>;
-    private readonly createOwnerId?: () => string;
-    private readonly eventBus?: IGroupableEventBus<any>;
-    private readonly defaultTtl?: TimeSpan | null;
-    private readonly defaultBlockingInterval?: TimeSpan;
-    private readonly defaultBlockingTime?: TimeSpan;
-    private readonly defaultRefreshTime?: TimeSpan;
-    private readonly retryAttempts?: number | null;
-    private readonly backoffPolicy?: BackoffPolicy | null;
-    private readonly retryPolicy?: RetryPolicy | null;
-    private readonly timeout?: TimeSpan | null;
+    constructor(
+        private readonly settings: LockProviderFactorySettings<TAdapters>,
+    ) {}
 
-    /**
-     * @example
-     * ```ts
-     * import { LockProviderFactory } from "@daiso-tech/core/lock/implementations/derivables";
-     * import { MemoryLockAdapter, RedisLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
-     * import Redis from "ioredis"
-     *
-     * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter()
-     * });
-     * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const lockProviderFactory = new LockProviderFactory({
-     *   serde,
-     *   adapters: {
-     *     memory: new MemoryLockAdapter({
-     *       rootGroup: "@global"
-     *     }),
-     *     redis: new RedisLockAdapter({
-     *       client: new Redis("YOUR_REDIS_CONNECTION"),
-     *       rootGroup: "@global"
-     *     }),
-     *   },
-     *   defaultAdapter: "memory",
-     *   eventBus,
-     * });
-     * ```
-     */
-    constructor(settings: LockProviderFactorySettings<TAdapters>) {
-        const {
-            serde,
-            shouldRegisterErrors = true,
-            shouldRegisterEvents = true,
-            adapters,
-            defaultAdapter,
-            createOwnerId,
-            eventBus,
-            defaultTtl,
-            defaultBlockingInterval,
-            defaultBlockingTime,
-            defaultRefreshTime,
-            retryAttempts,
-            backoffPolicy,
-            retryPolicy,
-            timeout,
-        } = settings;
-
-        this.serde = serde;
-        this.shouldRegisterErrors = shouldRegisterErrors;
-        this.shouldRegisterEvents = shouldRegisterEvents;
-        this.defaultAdapter = defaultAdapter;
-        this.createOwnerId = createOwnerId;
-        this.eventBus = eventBus;
-        this.defaultTtl = defaultTtl;
-        this.defaultBlockingInterval = defaultBlockingInterval;
-        this.defaultBlockingTime = defaultBlockingTime;
-        this.defaultRefreshTime = defaultRefreshTime;
-        this.retryAttempts = retryAttempts;
-        this.backoffPolicy = backoffPolicy;
-        this.retryPolicy = retryPolicy;
-        this.timeout = timeout;
-        this.lockProviderRecord = this.init(adapters);
+    setKeyPrefixer(keyPrefixer: IKeyPrefixer): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            keyPrefixer,
+        });
     }
 
-    private init(
-        adapters: LockAdapters<TAdapters>,
-    ): LockProviderRecord<TAdapters> {
-        if (this.shouldRegisterErrors) {
-            registerLockErrorsToSerde(this.serde);
-        }
-        if (this.shouldRegisterEvents) {
-            registerLockEventsToSerde(this.serde);
-        }
-        const cacheRecord: LockProviderRecord<TAdapters> = {};
-        for (const key in adapters) {
-            const { [key]: adapter } = adapters;
-            if (adapter === undefined) {
-                continue;
-            }
-            const lockProvider = new LockProvider({
-                adapter,
-                serde: this.serde,
-                eventBus: this.eventBus,
-                defaultTtl: this.defaultTtl,
-                retryAttempts: this.retryAttempts,
-                backoffPolicy: this.backoffPolicy,
-                retryPolicy: this.retryPolicy,
-                timeout: this.timeout,
-                defaultBlockingInterval: this.defaultBlockingInterval,
-                defaultBlockingTime: this.defaultBlockingTime,
-                defaultRefreshTime: this.defaultRefreshTime,
-                createOwnerId: this.createOwnerId,
-            });
-            cacheRecord[key] = lockProvider;
-        }
-        return cacheRecord;
+    setCreateOwnerId(createId: () => string): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            createOwnerId: createId,
+        });
+    }
+
+    setEventBus(
+        eventBus: IGroupableEventBus<any>,
+    ): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            eventBus,
+        });
+    }
+
+    setDefaultTtl(ttl: TimeSpan): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            defaultTtl: ttl,
+        });
+    }
+
+    setDefaultBlockingInterval(
+        interval: TimeSpan,
+    ): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            defaultBlockingInterval: interval,
+        });
+    }
+
+    setDefaultBlockingTime(time: TimeSpan): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            defaultBlockingTime: time,
+        });
+    }
+
+    setDefaultRefreshTime(time: TimeSpan): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            defaultRefreshTime: time,
+        });
+    }
+
+    setRetryAttempts(attempts: number): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            retryAttempts: attempts,
+        });
+    }
+
+    setBackoffPolicy(policy: BackoffPolicy): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            backoffPolicy: policy,
+        });
+    }
+
+    setRetryPolicy(policy: RetryPolicy): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            retryPolicy: policy,
+        });
+    }
+
+    setTimeout(timeout: TimeSpan): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            timeout,
+        });
     }
 
     /**
@@ -308,15 +172,18 @@ export class LockProviderFactory<TAdapters extends string>
      * ```
      */
     use(
-        adapterName: TAdapters | undefined = this.defaultAdapter,
+        adapterName: TAdapters | undefined = this.settings.defaultAdapter,
     ): IGroupableLockProvider {
         if (adapterName === undefined) {
             throw new DefaultAdapterNotDefinedError(LockProviderFactory.name);
         }
-        const lockProvider = this.lockProviderRecord[adapterName];
-        if (lockProvider === undefined) {
+        const adapter = this.settings.adapters[adapterName];
+        if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        return lockProvider;
+        return new LockProvider({
+            adapter,
+            ...this.settings,
+        });
     }
 }

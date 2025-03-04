@@ -17,7 +17,6 @@ describe("class: SqliteLockAdapter", () => {
                 database: database,
                 tableName: "custom_table",
                 shouldRemoveExpiredKeys: false,
-                rootGroup: "@a",
             });
             await lockAdapter.init();
             return lockAdapter;

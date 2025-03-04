@@ -2,41 +2,42 @@
  * @module Lock
  */
 
-import {
-    getConstructorName,
-    KeyPrefixer,
-    TimeSpan,
-    type OneOrMore,
-} from "@/utilities/_module-exports.js";
-import type { LockEvents } from "@/lock/contracts/_module-exports.js";
-import type { ILockAdapter } from "@/lock/contracts/_module-exports.js";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
+import type { ISerdeTransformer } from "@/serde/contracts/_module-exports.js";
 import {
     Lock,
     type ISerializedLock,
 } from "@/lock/implementations/derivables/lock-provider/lock.js";
+import type { OneOrMore } from "@/utilities/types.js";
 import type {
-    IEventBus,
-    IGroupableEventBus,
-} from "@/event-bus/contracts/_module-exports.js";
-import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import type { ISerdeTransformer } from "@/serde/contracts/_module-exports.js";
-import type { ILockStateRecord } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
+    ILockAdapter,
+    LockEvents,
+} from "@/lock/contracts/_module-exports.js";
+import {
+    LockState,
+    type ILockStore,
+} from "@/lock/implementations/derivables/lock-provider/lock-state.js";
+import {
+    getConstructorName,
+    TimeSpan,
+    type IKeyPrefixer,
+} from "@/utilities/_module-exports.js";
+import type { LazyPromise } from "@/async/_module-exports.js";
+import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
 
 /**
  * @internal
  */
 export type LockSerdeTransformerSettings = {
     adapter: ILockAdapter;
-    eventBus: IGroupableEventBus<any>;
-    defaultBlockingTime: TimeSpan;
+    lockStore: ILockStore;
+    keyPrefixer: IKeyPrefixer;
+    createLazyPromise: <TValue = void>(
+        asyncFn: () => PromiseLike<TValue>,
+    ) => LazyPromise<TValue>;
     defaultBlockingInterval: TimeSpan;
+    defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
-    retryAttempts?: number | null;
-    backoffPolicy?: BackoffPolicy | null;
-    retryPolicy?: RetryPolicy | null;
-    timeout?: TimeSpan | null;
+    groupableEventBus: IGroupableEventBus<LockEvents>;
 };
 
 /**
@@ -46,42 +47,35 @@ export class LockSerdeTransformer
     implements ISerdeTransformer<Lock, ISerializedLock>
 {
     private readonly adapter: ILockAdapter;
+    private readonly lockStore: ILockStore;
+    private readonly keyPrefixer: IKeyPrefixer;
+    private readonly createLazyPromise: <TValue = void>(
+        asyncFn: () => PromiseLike<TValue>,
+    ) => LazyPromise<TValue>;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
-    private readonly retryAttempts: number | null;
-    private readonly backoffPolicy: BackoffPolicy | null;
-    private readonly retryPolicy: RetryPolicy | null;
-    private readonly timeout: TimeSpan | null;
-    private readonly eventBus: IGroupableEventBus<LockEvents>;
-    private readonly lockProviderEventBus: IEventBus<LockEvents>;
-    private stateRecord: ILockStateRecord = {};
+    private readonly groupableEventBus: IGroupableEventBus<LockEvents>;
 
     constructor(settings: LockSerdeTransformerSettings) {
         const {
             adapter,
+            lockStore,
+            keyPrefixer,
+            createLazyPromise,
             defaultBlockingInterval,
             defaultBlockingTime,
             defaultRefreshTime,
-            retryAttempts = null,
-            backoffPolicy = null,
-            retryPolicy = null,
-            timeout = null,
-            eventBus = new EventBus({
-                keyPrefixer: new KeyPrefixer("event-bus"),
-                adapter: new NoOpEventBusAdapter(),
-            }),
+            groupableEventBus,
         } = settings;
         this.adapter = adapter;
+        this.lockStore = lockStore;
+        this.keyPrefixer = keyPrefixer;
+        this.createLazyPromise = createLazyPromise;
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
-        this.retryAttempts = retryAttempts;
-        this.backoffPolicy = backoffPolicy;
-        this.retryPolicy = retryPolicy;
-        this.timeout = timeout;
-        this.eventBus = eventBus;
-        this.lockProviderEventBus = eventBus.withGroup(adapter.getGroup());
+        this.groupableEventBus = groupableEventBus;
     }
 
     get name(): OneOrMore<string> {
@@ -93,35 +87,47 @@ export class LockSerdeTransformer
     }
 
     deserialize(serializedValue: ISerializedLock): Lock {
-        const { group, key, owner, ttlInMs } = serializedValue;
-        let adapter = this.adapter;
-        const rootGroup = adapter.getGroup();
-        const isRoot = group === rootGroup;
+        const { group, key, owner, ttlInMs, expirationInMs } = serializedValue;
+        const isRoot = group === null;
+        let keyPrefixer = this.keyPrefixer;
         if (!isRoot) {
-            const groupWithouRoot = group.slice(
-                this.adapter.getGroup().length + 1,
-            );
-            adapter = adapter.withGroup(groupWithouRoot);
+            keyPrefixer = this.keyPrefixer.withGroup(group);
         }
-        const ttl = ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null;
+
+        const keyObj = keyPrefixer.create(key);
+        let lockEventBus = this.groupableEventBus.withGroup(
+            keyPrefixer.resolvedRootPrefix,
+        );
+        let lockProviderEventDispatcher = this.groupableEventBus.withGroup([
+            keyPrefixer.resolvedRootPrefix,
+            keyObj.resolved,
+        ]);
+
+        if (keyPrefixer.resolvedGroup) {
+            lockEventBus = this.groupableEventBus.withGroup([
+                keyPrefixer.resolvedRootPrefix,
+                keyPrefixer.resolvedGroup,
+            ]);
+            lockProviderEventDispatcher = this.groupableEventBus.withGroup([
+                keyPrefixer.resolvedRootPrefix,
+                keyPrefixer.resolvedGroup,
+                keyObj.resolved,
+            ]);
+        }
         return new Lock({
+            group,
+            createLazyPromise: this.createLazyPromise,
+            adapterPromise: Promise.resolve(this.adapter),
+            lockState: new LockState(this.lockStore, keyObj.prefixed),
+            lockEventBus,
+            lockProviderEventDispatcher,
+            key: keyObj,
+            owner,
+            ttl: ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null,
+            expirationInMs,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
-            lockProviderEventDispatcher: this.lockProviderEventBus,
-            lockEventBus: this.eventBus,
-            adapter,
-            key,
-            owner,
-            ttl,
-            lazyPromiseSettings: {
-                backoffPolicy: this.backoffPolicy,
-                retryAttempts: this.retryAttempts,
-                retryPolicy: this.retryPolicy,
-                timeout: this.timeout,
-            },
-            stateRecord: this.stateRecord,
-            expirationInMs: serializedValue.expirationInMs,
         });
     }
 

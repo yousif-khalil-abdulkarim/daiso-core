@@ -118,7 +118,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         this.timeout = timeout;
         this.adapterPromise = resolveFactoryable(
             this.adapterFactoryable,
-            this.keyPrefixer.rootPrefix,
+            this.keyPrefixer.resolvedRootPrefix,
         );
     }
 
@@ -144,7 +144,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     }
 
     getGroup(): string | null {
-        return this.keyPrefixer.group;
+        return this.keyPrefixer.resolvedGroup;
     }
 
     addListener<TEventClass extends EventClass<TEvents>>(
@@ -154,13 +154,13 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         return this.createLayPromise(async () => {
             const eventName = this.keyPrefixer.create(event.name);
             const resolvedListener = this.store.getOrAdd(
-                eventName.prefixed(),
+                eventName.prefixed,
                 listener,
             );
             try {
                 const adapter = await this.adapterPromise;
                 await adapter.addListener(
-                    eventName.prefixed(),
+                    eventName.prefixed,
                     resolvedListener as InvokableFn<BaseEvent>,
                 );
             } catch (error: unknown) {
@@ -179,7 +179,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         return this.createLayPromise(async () => {
             const eventName = this.keyPrefixer.create(event.name);
             const resolvedListener = this.store.getAndRemove(
-                eventName.prefixed(),
+                eventName.prefixed,
                 listener,
             );
             if (resolvedListener === null) {
@@ -188,7 +188,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             try {
                 const adapter = await this.adapterPromise;
                 await adapter.removeListener(
-                    eventName.prefixed(),
+                    eventName.prefixed,
                     resolvedListener as InvokableFn<BaseEvent>,
                 );
             } catch (error: unknown) {
@@ -302,7 +302,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                         event,
                     }))
                     .map(({ event, eventName }) => ({
-                        eventName: eventName.prefixed(),
+                        eventName: eventName.prefixed,
                         event,
                     }))
                     .map(({ eventName, event }) =>

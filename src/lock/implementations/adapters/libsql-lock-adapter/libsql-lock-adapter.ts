@@ -28,7 +28,6 @@ export type LibsqlLockAdapterSettings = {
     tableName?: string;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
-    rootGroup: string;
 };
 
 /**
@@ -67,7 +66,6 @@ export class LibsqlLockAdapter
             tableName = "lock",
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
-            rootGroup,
         } = settings;
 
         this.databaseLockAdapter = new KyselyLockAdapter({
@@ -81,7 +79,6 @@ export class LibsqlLockAdapter
                     }),
                 ],
             }),
-            rootGroup,
             expiredKeysRemovalInterval,
             shouldRemoveExpiredKeys,
         });
@@ -137,13 +134,5 @@ export class LibsqlLockAdapter
 
     async find(key: string): Promise<ILockData | null> {
         return await this.databaseLockAdapter.find(key);
-    }
-
-    getGroup(): string {
-        return this.databaseLockAdapter.getGroup();
-    }
-
-    withGroup(group: string): IDatabaseLockAdapter {
-        return this.databaseLockAdapter.withGroup(group);
     }
 }
