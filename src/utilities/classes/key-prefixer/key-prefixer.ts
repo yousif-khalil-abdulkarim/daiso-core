@@ -17,7 +17,6 @@ type KeySettings = {
     key: OneOrMore<string>;
     identifierDelimeter: string;
     keyDelimeter: string;
-    keyIdentifier: string;
 };
 
 /**
@@ -30,25 +29,17 @@ class Key implements IKey {
     private readonly key: OneOrMore<string>;
     private readonly identifierDelimeter: string;
     private readonly keyDelimeter: string;
-    private readonly keyIdentifier: string;
 
     /**
      *
      * @internal
      */
     constructor(settings: KeySettings) {
-        const {
-            prefixArr,
-            key,
-            identifierDelimeter,
-            keyDelimeter,
-            keyIdentifier,
-        } = settings;
+        const { prefixArr, key, identifierDelimeter, keyDelimeter } = settings;
         this.prefixArr = prefixArr;
         this.key = key;
         this.identifierDelimeter = identifierDelimeter;
         this.keyDelimeter = keyDelimeter;
-        this.keyIdentifier = keyIdentifier;
     }
 
     get original(): OneOrMore<string> {
@@ -63,7 +54,6 @@ class Key implements IKey {
         return resolveOneOrMoreStr(
             [
                 ...this.prefixArr,
-                this.keyIdentifier,
                 resolveOneOrMoreStr(this.key, this.keyDelimeter),
             ],
             this.identifierDelimeter,
@@ -196,7 +186,6 @@ export class KeyPrefixer implements IKeyPrefixer {
             keyDelimeter: this.keyDelimeter,
             identifierDelimeter: this.identifierDelimeter,
             prefixArr: this.getKeyPrefixArray(),
-            keyIdentifier: this.keyIdentifier,
         });
     }
 }
