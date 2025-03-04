@@ -2872,7 +2872,7 @@ export function lockProviderTestSuite(
         test("Should preserve state", async () => {
             const key = "a";
             const owner = "b";
-            const lock = lockProviderB.create(key, {
+            const lock = lockProviderA.create(key, {
                 owner,
             });
 
@@ -2887,7 +2887,7 @@ export function lockProviderTestSuite(
         test("Should preserve owner", async () => {
             const key = "a";
             const owner = "b";
-            const lock = lockProviderB.create(key, {
+            const lock = lockProviderA.create(key, {
                 owner,
             });
 
@@ -2901,7 +2901,7 @@ export function lockProviderTestSuite(
             const key = "a";
             const owner = "b";
             const ttl = TTL.multiply(2);
-            const lock = lockProviderB.create(key, {
+            const lock = lockProviderA.create(key, {
                 owner,
                 ttl,
             });

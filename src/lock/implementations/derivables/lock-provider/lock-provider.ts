@@ -193,7 +193,7 @@ export class LockProvider implements IGroupableLockProvider {
         let { serde } = settings;
         const adapter = await resolveFactoryable(
             factoryable,
-            keyPrefixer.resolvedRootPrefix,
+            keyPrefixer.keyPrefix,
         );
         const resolvedAdapter = LockProvider.resolveLockAdapter(adapter);
         const transformer = new LockSerdeTransformer({
