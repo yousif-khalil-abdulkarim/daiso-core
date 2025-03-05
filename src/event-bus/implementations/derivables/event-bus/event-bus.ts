@@ -31,6 +31,8 @@ import {
     getConstructorName,
     resolveFactoryable,
     resolveInvokable,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type IFactoryObject,
 } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 
@@ -69,7 +71,7 @@ export type EventBusSettingsBase = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
  * @group Derivables
  */
 export type EventBusAdapterFactoryable = Factoryable<string, IEventBusAdapter>;
@@ -101,6 +103,73 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     private readonly adapterPromise: PromiseLike<IEventBusAdapter>;
     private keyPrefixer: IKeyPrefixer;
 
+    /**
+     * @example
+     * ```ts
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { KeyPrefixer } from "@daiso-tech/utilities";
+     *
+     * const eventBus = new EventBus({
+     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   adapter: new MemoryEventBusAdapter()
+     * });
+     * ```
+     *
+     * You can pass factory function that will create an adapter for every group.
+     * @example
+     * ```ts
+     * import type { IEventBusAdapter } from "@daiso-tech/core/event-bus/contracts";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { KeyPrefixer, type Promiseable } from "@daiso-tech/utilities";
+     *
+     * const store: Partial<Record<string, IEventBusAdapter>> = {};
+     *
+     * async function cahceAdapterFactory(prefix: string): Promiseable<IEventBusAdapter> {
+     *   let adapter = store[prefix];
+     *   if (adapter === undefined) {
+     *     adapter = new MemoryEventBusAdapter();
+     *     store[prefix] = adapter;
+     *   }
+     *   return adapter;
+     * }
+     *
+     * const eventBus = new EventBus({
+     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   adapter: cahceAdapterFactory
+     * });
+     * ```
+     *
+     * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
+     * @example
+     * ```ts
+     * import type { IEventBusAdapter } from "@daiso-tech/core/event-bus/contracts";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/utilities";
+     *
+     *
+     * class EventBusAdapterFactory implements IFactoryObject<string, IEventBusAdapter> {
+     *   private store: Partial<Record<string, IEventBusAdapter>> = {};
+     *
+     *   async use(prefix: string): Promiseable<IEventBusAdapter> {
+     *     let adapter = this.store[prefix];
+     *     if (adapter === undefined) {
+     *       adapter = new MemoryEventBusAdapter();
+     *       store[prefix] = adapter;
+     *     }
+     *     return adapter;
+     *   }
+     * }
+     *
+     * const cahceAdapterFactory = new EventBusAdapterFactory();
+     * const eventBus = new EventBus({
+     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   adapter: cahceAdapterFactory
+     * });
+     * ```
+     */
     constructor(settings: EventBusSettings) {
         const {
             keyPrefixer,

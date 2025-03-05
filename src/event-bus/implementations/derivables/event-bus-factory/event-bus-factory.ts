@@ -87,6 +87,82 @@ export class EventBusFactory<TAdapters extends string = string>
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBusFactory } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/utilities";
+     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
+     * import Redis from "ioredis";
+     *
+     * class EventBusAdapterFactory implements IFactoryObject<string, IEventBusAdapter> {
+     *   private store: Partial<Record<string, IEventBusAdapter>> = {};
+     *
+     *   async use(prefix: string): Promiseable<IEventBusAdapter> {
+     *     let adapter = this.store[prefix];
+     *     if (adapter === undefined) {
+     *       adapter = new MemoryEventBusAdapter();
+     *       store[prefix] = adapter;
+     *     }
+     *     return adapter;
+     *   }
+     * }
+     *
+     * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
+     * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const eventBusFactory = new EventBusFactory({
+     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   adapters: {
+     *     memory: new MemoryEventBusAdapter(),
+     *     memorFactory: new EventBusAdapterFactory(),
+     *     redis: new RedisPubSubEventBusAdapter({
+     *       serde,
+     *       dispatcherClient,
+     *       listenerClient,
+     *     }),
+     *   },
+     *   defaultAdapter: "memory"
+     * });
+     *
+     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     *
+     * // Will dispatch AddEvent using the default adapter which is MemoryEventBusAdapter
+     * await eventBusFactory
+     *   .use()
+     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
+     *
+     * // Will dispatch AddEvent using the redis adapter which is RedisPubSubEventBusAdapter
+     * await eventBusFactory
+     *   .use("redis")
+     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
+     *
+     * // You can change the default settings of the returned EventBus instance.
+     * await eventBusFactory
+     *   .setRetryAttempts(4)
+     *   .use("sqlite")
+     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
+     *
+     * // You can reuse the settings
+     * const retryableEventBusFactory = eventBusFactory
+     *   .setRetryAttempts(4);
+     *
+     * await retryableEventBusFactory
+     *   .use()
+     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
+     *
+     * // You can extend the settings
+     * const extendedEventBusFactory = retryableEventBusFactory
+     *   .setTimeout(TimeSpan.fromSeconds(1));
+     *
+     * await extendedEventBusFactory
+     *   .use()
+     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
+     * ```
+     */
     use<TEvents extends BaseEvent = BaseEvent>(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
     ): IGroupableEventBus<TEvents> {

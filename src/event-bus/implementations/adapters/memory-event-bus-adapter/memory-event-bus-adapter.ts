@@ -16,6 +16,23 @@ import { EventEmitter } from "node:events";
  * @group Adapters
  */
 export class MemoryEventBusAdapter implements IEventBusAdapter {
+    /**
+     *  @example
+     * ```ts
+     * import { MemoryEventBus } from "@daiso-tech/core/event-bus/implementations/adapters";
+     *
+     * const eventBusAdapter = new MemoryEventBus();
+     * ```
+     * You can also provide an <i>{@link EventEmitter}</i> that will be used for storing the data.
+     * @example
+     * ```ts
+     * import { MemoryEventBus } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { EventEmitter } from "node:events";
+     *
+     * const eventEmitter = new EventEmitter<any, any>();
+     * const eventBusAdapter = new MemoryEventBus(eventEmitter);
+     * ```
+     */
     constructor(
         private readonly eventEmitter: EventEmitter = new EventEmitter(),
     ) {
