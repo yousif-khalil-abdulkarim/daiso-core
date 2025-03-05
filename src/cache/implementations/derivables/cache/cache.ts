@@ -424,7 +424,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     }
 
     getOrFail(key: OneOrMore<string>): LazyPromise<TType> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
                 throw new KeyNotFoundCacheError(
@@ -490,7 +490,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         key: OneOrMore<string>,
         defaultValue: AsyncLazyable<NoneFunction<TType>>,
     ): LazyPromise<TType> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
                 const simplifiedValueToAdd =
@@ -506,7 +506,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         valueToAdd: AsyncLazyable<NoneFunction<TType>>,
         ttl?: TimeSpan | null,
     ): LazyPromise<TType> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
                 const simplifiedValueToAdd =
