@@ -21,11 +21,10 @@ import { abortAndFail } from "@/async/utilities/abort/_module.js";
  * @example
  * ```ts
  * import { delay, TimeSpan } from "@daiso-tech/core";
- * (async () => {
- *   console.log("a");
- *   await delay(TimeSpan.fromSeconds(2));
- *   console.log("b");
- * })();
+ *
+ * console.log("a");
+ * await delay(TimeSpan.fromSeconds(2));
+ * console.log("b");
  */
 export async function delay(
     time: TimeSpan,
