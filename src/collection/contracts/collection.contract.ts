@@ -6,25 +6,27 @@ import type {
     Comparator,
     Predicate,
     ForEach,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ItemNotFoundCollectionError,
     Map,
     Modifier,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    MultipleItemsFoundCollectionError,
     Tap,
     Transform,
+    Reduce,
+    CrossJoinResult,
+    EnsureMap,
+    EnsureRecord,
+} from "@/collection/contracts/_shared.js";
+import type {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ItemNotFoundCollectionError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    MultipleItemsFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
-    Reduce,
-    CrossJoinResult,
-    EnsureMap,
-    EnsureRecord,
-} from "@/collection/contracts/_module-exports.js";
+} from "@/collection/contracts/collection.errors.js";
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 import type { Lazyable } from "@/utilities/_module-exports.js";
 
