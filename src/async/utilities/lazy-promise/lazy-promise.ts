@@ -24,6 +24,7 @@ import {
     resolveAsyncLazyable,
     type Func,
 } from "@/utilities/_module-exports.js";
+import { delay } from "@/async/utilities/_module.js";
 
 /**
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
@@ -33,6 +34,18 @@ export type DeferSettings<TValue> = {
     onSucces?: (value: TValue) => Promisable<void>;
     onError?: (error: unknown) => Promisable<void>;
     onFinally?: () => Promisable<void>;
+};
+
+/**
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type LazyPromiseSettings = {
+    retryAttempts?: number | null;
+    backoffPolicy?: BackoffPolicy | null;
+    retryPolicy?: RetryPolicy | null;
+    abortSignal?: AbortSignal | null;
+    timeout?: TimeSpan | null;
 };
 
 /**
@@ -61,12 +74,11 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * The <i>wrapFn</i> is convience method used for wrapping a async method with a <i>LazyPromise</i>.
      * @example
      * ```ts
-     * import { LazyPromise, TimeSpan } from "@daiso-tech/core";
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
      * import { readFile as readFileNodeJs } from "node:fs/promises";
      *
-     * const readFile = LazyPromise.wrapFn(readFileNodeJs, {
-     *   retryAttempts: 3
-     * });
+     * const readFile = LazyPromise.wrapFn(readFileNodeJs);
      *
      * const file = await readFile("none_existing_file.txt")
      *   .setRetryAttempts(4)
@@ -75,8 +87,30 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static wrapFn<TParameters extends unknown[], TReturn>(
         fn: Func<TParameters, PromiseLike<TReturn>>,
+        settings?: LazyPromiseSettings,
     ): Func<TParameters, LazyPromise<TReturn>> {
-        return (...parameters) => new LazyPromise(() => fn(...parameters));
+        return (...parameters) =>
+            new LazyPromise(() => fn(...parameters), settings);
+    }
+
+    /**
+     * The <i>delay</i> method creates a <i>{@link LazyPromise}</i> that will be fulfilled after given <i>time</i>.
+     *
+     * @throws {AsyncError} {@link AsyncError}
+     * @throws {AbortAsyncError} {@link AbortAsyncError}
+     * @example
+     * ```ts
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     *
+     * console.log("a");
+     * await LazyPromise.delay(TimeSpan.fromSeconds(2));
+     * console.log("b");
+     */
+    static delay(time: TimeSpan): LazyPromise<void> {
+        return new LazyPromise(async () => {
+            await delay(time);
+        });
     }
 
     /**
@@ -110,17 +144,13 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     private promise: PromiseLike<TValue> | null = null;
-    private attempts: number | null = null;
-    private backoffPolicy_: BackoffPolicy | null = null;
-    private retryPolicy_: RetryPolicy | null = null;
-    private abortSignal: AbortSignal | null = null;
-    private time: TimeSpan | null = null;
     private asyncFn: () => PromiseLike<TValue>;
+    private readonly settings: Required<LazyPromiseSettings>;
 
     /**
      * @example
      * ```ts
-     * import { LazyPromise } from "@daiso-tech/core";
+     * import { LazyPromise } from "@daiso-tech/core/async";
      *
      * const promise = new LazyPromise(async () => {
      *   console.log("I am lazy");
@@ -129,34 +159,45 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * // "I am lazy" will only logged when awaited or then method i called.
      * await promise;
      */
-    constructor(asyncFn: LazyPromiseable<TValue>) {
+    constructor(
+        asyncFn: LazyPromiseable<TValue>,
+        settings: LazyPromiseSettings = {},
+    ) {
         this.asyncFn = () => resolveAsyncLazyable(asyncFn);
+        this.settings = {
+            retryAttempts: null,
+            backoffPolicy: null,
+            retryPolicy: null,
+            abortSignal: null,
+            timeout: null,
+            ...settings,
+        };
     }
 
     private applyTimeout(): void {
-        if (this.time !== null) {
+        if (this.settings.timeout !== null) {
             const oldAsyncFn = this.asyncFn;
             const newAsyncFn = () => {
-                if (this.time === null) {
+                if (this.settings.timeout === null) {
                     throw new Error(`LazyPromise["time"] field is null`);
                 }
-                return timeoutAndFail(oldAsyncFn, this.time);
+                return timeoutAndFail(oldAsyncFn, this.settings.timeout);
             };
             this.asyncFn = newAsyncFn;
         }
     }
 
     private applyRetry(): void {
-        if (this.attempts !== null) {
+        if (this.settings.retryAttempts !== null) {
             const oldAsyncFn = this.asyncFn;
             const newAsyncFn = () => {
-                if (this.attempts === null) {
+                if (this.settings.retryAttempts === null) {
                     throw new Error(`LazyPromise["attempts"] field is null`);
                 }
                 return retryOrFail(oldAsyncFn, {
-                    backoffPolicy: this.backoffPolicy_ ?? undefined,
-                    retryPolicy: this.retryPolicy_ ?? undefined,
-                    maxAttempts: this.attempts,
+                    backoffPolicy: this.settings.backoffPolicy ?? undefined,
+                    retryPolicy: this.settings.retryPolicy ?? undefined,
+                    maxAttempts: this.settings.retryAttempts,
                 });
             };
             this.asyncFn = newAsyncFn;
@@ -164,13 +205,13 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     private applyAbort() {
-        if (this.abortSignal !== null) {
+        if (this.settings.abortSignal !== null) {
             const oldAsyncFn = this.asyncFn;
             const newAsyncFn = () => {
-                if (this.abortSignal === null) {
+                if (this.settings.abortSignal === null) {
                     throw new Error(`LazyPromise["abortSignal"] field is null`);
                 }
-                return abortAndFail(oldAsyncFn, this.abortSignal);
+                return abortAndFail(oldAsyncFn, this.settings.abortSignal);
             };
             this.asyncFn = newAsyncFn;
         }
@@ -207,7 +248,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * The <i>setRetryAttempts</i> method is used for setting max retry attempts.
      * @example
      * ```ts
-     * import { LazyPromise } from "@daiso-tech/core";
+     * import { LazyPromise } from "@daiso-tech/core/async";
      *
      * const promise =
      *   new LazyPromise(async () => {
@@ -220,15 +261,18 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * await promise;
      * ```
      */
-    setRetryAttempts(attempts: number | null): this {
-        this.attempts = attempts;
-        return this;
+    setRetryAttempts(attempts: number | null): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            retryAttempts: attempts,
+        });
     }
 
     /**
      * The <i>setBackoffPolicy</i> method is used for setting a custom <i>{@link BackoffPolicy}</i>.
      * ```ts
-     * import { LazyPromise, linearBackoffPolicy } from "@daiso-tech/core";
+     * import { LazyPromise, linearBackoffPolicy } from "@daiso-tech/core/async";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
      *
      * const promise =
      *   new LazyPromise(async () => {
@@ -242,16 +286,18 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * await promise;
      * ```
      */
-    setBackoffPolicy(policy: BackoffPolicy | null): this {
-        this.backoffPolicy_ = policy;
-        return this;
+    setBackoffPolicy(policy: BackoffPolicy | null): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            backoffPolicy: policy,
+        });
     }
 
     /**
      * The <i>setRetryPolicy</i> method is used for setting a custom <i>{@link BackoffPolicy}</i>.
      * @example
      * ```ts
-     * import { LazyPromise } from "@daiso-tech/core";
+     * import { LazyPromise } from "@daiso-tech/core/async";
      *
      * class ErrorA extends Error {}
      *
@@ -268,20 +314,23 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * await promise;
      * ```
      */
-    setRetryPolicy(policy: RetryPolicy | null): this {
-        this.retryPolicy_ = policy;
-        return this;
+    setRetryPolicy(policy: RetryPolicy | null): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            retryPolicy: policy,
+        });
     }
 
     /**
      * The <i>setTimeout</i> method aborts the <i>LazyPromise</i> if it exceeds the given <i>time</i> by throwning an error.
      * @example
      * ```ts
-     * import { LazyPromise, delay, TimeSpan } from "@daiso-tech/core";
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
      *
      * const promise =
      *   new LazyPromise(async () => {
-     *     await delay(TimeSpan.fromMinutes(1));
+     *     await LazyPromise.delay(TimeSpan.fromMinutes(1));
      *   })
      *   .setTimeout(TimeSpan.fromSeconds(1));
      *
@@ -289,21 +338,24 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * await promise;
      * ```
      */
-    setTimeout(time: TimeSpan | null): this {
-        this.time = time;
-        return this;
+    setTimeout(time: TimeSpan | null): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            timeout: time,
+        });
     }
 
     /**
      * The <i>setAbortSignal</i> method aborts the <i>LazyPromise</i> by the passed in <i>abortSignal</i>.
      * @example
      * ```ts
-     * import { LazyPromise, delay, TimeSpan } from "@daiso-tech/core";
+     * import { LazyPromise } from "@daiso-tech/core";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
      *
      * const abortController = new AbortController();
      * const promise =
      *   new LazyPromise(async () => {
-     *     await delay(TimeSpan.fromMinutes(1));
+     *     await LazyPromise.delay(TimeSpan.fromMinutes(1));
      *   })
      *   .setAbortSignal(abortController.signal);
      *
@@ -315,20 +367,23 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * await promise;
      * ```
      */
-    setAbortSignal(abortSignal: AbortSignal | null): this {
-        this.abortSignal = abortSignal;
-        return this;
+    setAbortSignal(abortSignal: AbortSignal | null): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            abortSignal,
+        });
     }
 
     /**
      * The <i>defer</i> method executes the <i>LazyPromise</i> without awaiting it.
      * @example
      * ```ts
-     * import { LazyPromise, delay, TimeSpan } from "@daiso-tech/core";
+     * import { LazyPromise } from "@daiso-tech/core";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
      *
      * const promise =
      *   new LazyPromise(async () => {
-     *     await delay(TimeSpan.fromSeconds(1));
+     *     await LazyPromise.delay(TimeSpan.fromSeconds(1));
      *     // Will be loged after one second
      *     console.log("Done !");
      *   });

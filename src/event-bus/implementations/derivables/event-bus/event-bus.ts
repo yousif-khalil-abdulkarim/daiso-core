@@ -193,14 +193,15 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         );
     }
 
-    private createLayPromise<TValue = void>(
+    private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(asyncFn)
-            .setRetryAttempts(this.retryAttempts)
-            .setBackoffPolicy(this.backoffPolicy)
-            .setRetryPolicy(this.retryPolicy)
-            .setTimeout(this.timeout);
+        return new LazyPromise(asyncFn, {
+            retryAttempts: this.retryAttempts,
+            backoffPolicy: this.backoffPolicy,
+            retryPolicy: this.retryPolicy,
+            timeout: this.timeout,
+        });
     }
 
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
@@ -222,7 +223,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        return this.createLayPromise(async () => {
+        return this.createLazyPromise(async () => {
             const eventName = this.keyPrefixer.create(event.name);
             const resolvedListener = this.store.getOrAdd(
                 eventName.prefixed,
@@ -247,7 +248,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        return this.createLayPromise(async () => {
+        return this.createLazyPromise(async () => {
             const eventName = this.keyPrefixer.create(event.name);
             const resolvedListener = this.store.getAndRemove(
                 eventName.prefixed,
@@ -275,7 +276,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         events: TEventClass[],
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        return this.createLayPromise(async () => {
+        return this.createLazyPromise(async () => {
             if (events.length === 0) {
                 return;
             }
@@ -291,7 +292,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         events: TEventClass[],
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        return this.createLayPromise(async () => {
+        return this.createLazyPromise(async () => {
             if (events.length === 0) {
                 return;
             }
@@ -307,7 +308,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
-        return this.createLayPromise(async () => {
+        return this.createLazyPromise(async () => {
             const wrappedListener = async (
                 event_: EventInstance<TEventClass>,
             ) => {
@@ -348,10 +349,10 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         events: TEventClass[],
         listener: Invokable<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
-        return this.createLayPromise(async () => {
+        return this.createLazyPromise(async () => {
             await this.addListenerMany(events, listener);
             const unsubscribe = () => {
-                return this.createLayPromise(async () => {
+                return this.createLazyPromise(async () => {
                     await this.removeListenerMany(events, listener);
                 });
             };
@@ -360,7 +361,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     }
 
     dispatchMany(events: TEvents[]): LazyPromise<void> {
-        return this.createLayPromise(async () => {
+        return this.createLazyPromise(async () => {
             try {
                 const adapter = await this.adapterPromise;
                 const promises = events
@@ -390,7 +391,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     }
 
     dispatch(event: TEvents): LazyPromise<void> {
-        return this.createLayPromise(async () => {
+        return this.createLazyPromise(async () => {
             await this.dispatchMany([event]);
         });
     }

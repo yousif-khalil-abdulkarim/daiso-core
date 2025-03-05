@@ -7,7 +7,6 @@ import {
     RetryAsyncError,
     TimeoutAsyncError,
 } from "@/async/async.errors.js";
-import { delay } from "@/async/utilities/_module.js";
 
 describe("class: LazyPromise", () => {
     describe("static method: wrapFn", () => {
@@ -26,6 +25,35 @@ describe("class: LazyPromise", () => {
             }
             const wrappedTestFn = LazyPromise.wrapFn(add);
             expect(wrappedTestFn(1, 1)).toBeInstanceOf(LazyPromise);
+        });
+    });
+    describe("static method: delay", () => {
+        test("should throw AsyncError when aborted", async () => {
+            const abortController = new AbortController();
+            const outputPromise = LazyPromise.delay(
+                TimeSpan.fromMilliseconds(50),
+            ).setAbortSignal(abortController.signal);
+            setTimeout(() => {
+                abortController.abort();
+            }, 25);
+            await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
+        });
+        test("should throw AbortAsyncError when aborted", async () => {
+            const abortController = new AbortController();
+            const outputPromise = LazyPromise.delay(
+                TimeSpan.fromMilliseconds(50),
+            ).setAbortSignal(abortController.signal);
+            setTimeout(() => {
+                abortController.abort();
+            }, 25);
+            await expect(outputPromise).rejects.toBeInstanceOf(AbortAsyncError);
+        });
+        test("should return value when not aborted", async () => {
+            const abortController = new AbortController();
+            const outputPromise = LazyPromise.delay(
+                TimeSpan.fromMilliseconds(50),
+            ).setAbortSignal(abortController.signal);
+            await expect(outputPromise).resolves.toBeUndefined();
         });
     });
     describe("method: setRetryPolicy / setBackoffPolicy / setRetryAttempts", () => {
@@ -231,7 +259,7 @@ describe("class: LazyPromise", () => {
                     result = value;
                 },
             });
-            await delay(TimeSpan.fromMilliseconds(1));
+            await LazyPromise.delay(TimeSpan.fromMilliseconds(1));
             expect(result).toBe(value);
         });
         test("Should execute onError callback when error occurs", async () => {
@@ -243,7 +271,7 @@ describe("class: LazyPromise", () => {
                     result = error as Error;
                 },
             });
-            await delay(TimeSpan.fromMilliseconds(1));
+            await LazyPromise.delay(TimeSpan.fromMilliseconds(1));
             expect(result).toEqual(error);
             expect(result).toBeInstanceOf(Error);
         });
@@ -255,7 +283,7 @@ describe("class: LazyPromise", () => {
                     result = true;
                 },
             });
-            await delay(TimeSpan.fromMilliseconds(1));
+            await LazyPromise.delay(TimeSpan.fromMilliseconds(1));
             expect(result).toBe(true);
         });
         test("Should execute onFinally callback when error occurs", async () => {
@@ -268,7 +296,7 @@ describe("class: LazyPromise", () => {
                     result = true;
                 },
             });
-            await delay(TimeSpan.fromMilliseconds(1));
+            await LazyPromise.delay(TimeSpan.fromMilliseconds(1));
             expect(result).toBe(true);
         });
     });

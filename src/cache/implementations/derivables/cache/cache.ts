@@ -303,11 +303,12 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(asyncFn)
-            .setRetryAttempts(this.retryAttempts)
-            .setBackoffPolicy(this.backoffPolicy)
-            .setRetryPolicy(this.retryPolicy)
-            .setTimeout(this.timeout);
+        return new LazyPromise(asyncFn, {
+            retryAttempts: this.retryAttempts,
+            backoffPolicy: this.backoffPolicy,
+            retryPolicy: this.retryPolicy,
+            timeout: this.timeout,
+        });
     }
 
     addListener<TEventClass extends EventClass<CacheEvents<TType>>>(
