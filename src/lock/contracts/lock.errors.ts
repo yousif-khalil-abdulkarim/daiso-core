@@ -6,6 +6,7 @@
 import type { ILock } from "@/lock/contracts/lock.contract.js";
 import {
     CORE,
+    resolveOneOrMore,
     type ISerializedError,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
@@ -235,10 +236,7 @@ export class UnownedRefreshLockError
 export function registerLockErrorsToSerde(
     serde: OneOrMore<IFlexibleSerde>,
 ): void {
-    if (!Array.isArray(serde)) {
-        serde = [serde];
-    }
-    for (const serde_ of serde) {
+    for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerClass(LockError, CORE)
             .registerClass(UnexpectedLockError, CORE)

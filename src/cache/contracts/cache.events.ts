@@ -8,6 +8,7 @@ import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import {
     CORE,
+    resolveOneOrMore,
     type OneOrMore,
     type TimeSpan,
 } from "@/utilities/_module-exports.js";
@@ -135,10 +136,7 @@ export type CacheEvents<TType = unknown> =
 export function registerCacheEventsToSerde(
     serde: OneOrMore<IFlexibleSerde>,
 ): void {
-    if (!Array.isArray(serde)) {
-        serde = [serde];
-    }
-    for (const serde_ of serde) {
+    for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerEvent(KeyFoundCacheEvent, CORE)
             .registerEvent(KeyNotFoundCacheEvent, CORE)
