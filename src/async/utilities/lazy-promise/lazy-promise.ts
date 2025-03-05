@@ -429,6 +429,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *
      * // Will be logged immediately
      * console.log("Hello");
+     * await LazyPromise.delay(TimeSpan.fromSeconds(2));
      * ```
      */
     defer(): void {
