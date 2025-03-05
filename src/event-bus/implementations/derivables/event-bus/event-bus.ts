@@ -98,7 +98,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     private readonly retryPolicy: RetryPolicy | null;
     private readonly timeout: TimeSpan | null;
     private readonly store = new ListenerStore();
-    private readonly adapterPromise: Promise<IEventBusAdapter>;
+    private readonly adapterPromise: PromiseLike<IEventBusAdapter>;
     private keyPrefixer: IKeyPrefixer;
 
     constructor(settings: EventBusSettings) {
@@ -116,9 +116,11 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.timeout = timeout;
-        this.adapterPromise = resolveFactoryable(
-            this.adapterFactoryable,
-            this.keyPrefixer.keyPrefix,
+        this.adapterPromise = new LazyPromise(() =>
+            resolveFactoryable(
+                this.adapterFactoryable,
+                this.keyPrefixer.keyPrefix,
+            ),
         );
     }
 

@@ -111,6 +111,7 @@ export function lockProviderTestSuite(
         lockProviderB = lockProvider.withGroup("b");
     });
     const TTL = TimeSpan.fromMilliseconds(50);
+    const DELAY_TIME = TimeSpan.fromMilliseconds(50);
     describe("Api tests:", () => {
         describe("method: run", () => {
             test("Should return string when lock is available", async () => {
@@ -121,7 +122,7 @@ export function lockProviderTestSuite(
                 });
 
                 const [result, error] = await lock.run(async () => {
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
                     return "a";
                 });
 
@@ -137,7 +138,7 @@ export function lockProviderTestSuite(
 
                 await lock.acquire();
                 const [result, error] = await lock.run(async () => {
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
                     return "a";
                 });
 
@@ -153,7 +154,7 @@ export function lockProviderTestSuite(
 
                 const [result, error] = await lock.run(
                     new LazyPromise(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                         return "a";
                     }),
                 );
@@ -171,7 +172,7 @@ export function lockProviderTestSuite(
                 });
 
                 const result = await lock.runOrFail(async () => {
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
                     return "a";
                 });
 
@@ -186,7 +187,7 @@ export function lockProviderTestSuite(
 
                 await lock.acquire();
                 const result = lock.runOrFail(async () => {
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
                     return "a";
                 });
 
@@ -203,7 +204,7 @@ export function lockProviderTestSuite(
 
                 const result = await lock.runOrFail(
                     new LazyPromise(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                         return "a";
                     }),
                 );
@@ -221,7 +222,7 @@ export function lockProviderTestSuite(
 
                 const [result, error] = await lock.runBlocking(
                     async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                         return "a";
                     },
                     {
@@ -243,7 +244,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 const [result, error] = await lock.runBlocking(
                     async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                         return "a";
                     },
                     {
@@ -264,7 +265,7 @@ export function lockProviderTestSuite(
 
                 const [result, error] = await lock.runBlocking(
                     new LazyPromise(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                         return "a";
                     }),
                     {
@@ -293,7 +294,7 @@ export function lockProviderTestSuite(
                 );
                 await lock.runBlocking(
                     async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     },
                     {
                         time: TimeSpan.fromMilliseconds(55),
@@ -941,9 +942,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -968,9 +969,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -993,9 +994,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1020,14 +1021,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(TTL);
+                            await delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1053,14 +1054,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(TTL);
+                            await delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1084,14 +1085,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(TTL);
+                            await delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1115,9 +1116,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.runOrFail(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1142,9 +1143,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.runOrFail(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1168,9 +1169,9 @@ export function lockProviderTestSuite(
 
                     try {
                         await lock.runOrFail(async () => {
-                            await delay(TTL);
+                            await delay(DELAY_TIME);
                         });
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1197,7 +1198,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1223,7 +1224,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1250,7 +1251,7 @@ export function lockProviderTestSuite(
                         time: TimeSpan.fromMilliseconds(5),
                         interval: TimeSpan.fromMilliseconds(5),
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1282,7 +1283,7 @@ export function lockProviderTestSuite(
                         time: TimeSpan.fromMilliseconds(5),
                         interval: TimeSpan.fromMilliseconds(5),
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1306,7 +1307,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquireOrFail();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1333,7 +1334,7 @@ export function lockProviderTestSuite(
 
                     try {
                         await lock.acquireOrFail();
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1360,7 +1361,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock.release();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1386,7 +1387,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock2.release();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner2);
@@ -1410,7 +1411,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock.releaseOrFail();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1437,7 +1438,7 @@ export function lockProviderTestSuite(
                     );
                     try {
                         await lock2.releaseOrFail();
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1468,7 +1469,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock2.forceRelease();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     await unsubscribe();
@@ -1494,7 +1495,7 @@ export function lockProviderTestSuite(
                     await delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock.refresh(newTTL);
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1526,7 +1527,7 @@ export function lockProviderTestSuite(
                     await delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock2.refresh(newTTL);
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner2);
@@ -1553,7 +1554,7 @@ export function lockProviderTestSuite(
                     await delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock.refreshOrFail(newTTL);
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1586,7 +1587,7 @@ export function lockProviderTestSuite(
                     const newTTL = TTL.multiply(2);
                     try {
                         await lock2.refreshOrFail(newTTL);
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1615,9 +1616,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1642,9 +1643,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1667,9 +1668,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1694,14 +1695,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(TTL);
+                            await delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1727,14 +1728,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(TTL);
+                            await delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1758,14 +1759,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(TTL);
+                            await delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1789,9 +1790,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.runOrFail(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1816,9 +1817,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.runOrFail(async () => {
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     });
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1842,9 +1843,9 @@ export function lockProviderTestSuite(
 
                     try {
                         await lock.runOrFail(async () => {
-                            await delay(TTL);
+                            await delay(DELAY_TIME);
                         });
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1871,7 +1872,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1897,7 +1898,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1921,7 +1922,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1947,7 +1948,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1971,7 +1972,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquireOrFail();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1998,7 +1999,7 @@ export function lockProviderTestSuite(
 
                     try {
                         await lock.acquireOrFail();
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -2025,7 +2026,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock.release();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -2051,7 +2052,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock2.release();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner2);
@@ -2075,7 +2076,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock.releaseOrFail();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -2102,7 +2103,7 @@ export function lockProviderTestSuite(
                     );
                     try {
                         await lock2.releaseOrFail();
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -2133,7 +2134,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock2.forceRelease();
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     await unsubscribe();
@@ -2159,7 +2160,7 @@ export function lockProviderTestSuite(
                     await delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock.refresh(newTTL);
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -2191,7 +2192,7 @@ export function lockProviderTestSuite(
                     await delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock2.refresh(newTTL);
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner2);
@@ -2218,7 +2219,7 @@ export function lockProviderTestSuite(
                     await delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock.refreshOrFail(newTTL);
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -2251,7 +2252,7 @@ export function lockProviderTestSuite(
                     const newTTL = TTL.multiply(2);
                     try {
                         await lock2.refreshOrFail(newTTL);
-                        await delay(TTL);
+                        await delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -2272,7 +2273,7 @@ export function lockProviderTestSuite(
                 owner: ownerA,
             });
             const promiseA = lockA.run(async () => {
-                await delay(TTL);
+                await delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2281,7 +2282,7 @@ export function lockProviderTestSuite(
                 owner: ownerB,
             });
             const promiseB = lockB.run(async () => {
-                await delay(TTL);
+                await delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2302,7 +2303,7 @@ export function lockProviderTestSuite(
                 owner: ownerA,
             });
             const promiseA = lockA.run(async () => {
-                await delay(TTL);
+                await delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2312,7 +2313,7 @@ export function lockProviderTestSuite(
             });
             const promiseB = lockB.runBlocking(
                 async () => {
-                    await delay(TTL);
+                    await delay(DELAY_TIME);
                     return "a";
                 },
                 {
@@ -2338,7 +2339,7 @@ export function lockProviderTestSuite(
                 owner: ownerA,
             });
             const promiseA = lockA.runOrFail(async () => {
-                await delay(TTL);
+                await delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2347,7 +2348,7 @@ export function lockProviderTestSuite(
                 owner: ownerB,
             });
             const promiseB = lockB.runOrFail(async () => {
-                await delay(TTL);
+                await delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2569,7 +2570,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lockA.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2589,7 +2590,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lockA.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2612,7 +2613,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2638,7 +2639,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2664,7 +2665,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2690,7 +2691,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2717,7 +2718,7 @@ export function lockProviderTestSuite(
                 );
 
                 await lockA.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2742,7 +2743,7 @@ export function lockProviderTestSuite(
                 );
 
                 await lockA.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2774,7 +2775,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2806,7 +2807,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2832,7 +2833,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2861,7 +2862,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(TTL);
+                await delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();

@@ -78,6 +78,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
     });
 
     const TTL = TimeSpan.fromMilliseconds(50);
+    const DELAY_TIME = TimeSpan.fromMilliseconds(50);
     describe("Api tests:", () => {
         describe("method: exists", () => {
             test("Should return true when key exists", async () => {
@@ -531,7 +532,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         });
     });
     describe("Event tests:", () => {
-        const delayTime = TimeSpan.fromMilliseconds(50);
         describe("method: exists", () => {
             test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
                 let event_ = null as KeyNotFoundCacheEvent | null;
@@ -542,7 +542,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.exists("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -557,7 +557,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.exists("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -574,7 +574,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.missing("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -589,7 +589,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.missing("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -606,7 +606,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.get("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -621,7 +621,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.get("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -638,7 +638,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.getOr("a", 1);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -653,7 +653,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getOr("a", 1);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -674,7 +674,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 } catch {
                     /* Empty */
                 }
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -689,7 +689,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getOrFail("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -707,7 +707,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 const ttl = TimeSpan.fromMilliseconds(20);
                 await cacheA.add("a", 1, ttl);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -728,7 +728,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.update("a", 2);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(2);
@@ -743,7 +743,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.update("a", 2);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -760,7 +760,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 const ttl = TimeSpan.fromMilliseconds(20);
                 await cacheA.put("a", 1, ttl);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -779,7 +779,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.put("a", 1);
                 await cacheA.put("a", 2);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(2);
@@ -797,7 +797,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.remove("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -811,7 +811,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.remove("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -828,7 +828,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.removeMany(["a"]);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -842,7 +842,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.removeMany(["a"]);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -858,7 +858,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.getAndRemove("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -873,7 +873,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getAndRemove("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -889,7 +889,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getAndRemove("a");
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -905,7 +905,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.getOrAdd("a", 1);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -920,7 +920,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getOrAdd("a", 1);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -936,7 +936,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 const ttl = TimeSpan.fromMilliseconds(50);
                 await cacheA.getOrAdd("a", 1, ttl);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -957,7 +957,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.increment("a", 1);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyIncrementedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -972,7 +972,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.increment("a", 1);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -989,7 +989,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.decrement("a", 1);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyDecrementedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -1004,7 +1004,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.decrement("a", 1);
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -1023,7 +1023,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cacheA.add("b", 2);
                 await cacheA.add("c", 3);
                 await cacheA.clear();
-                await delay(delayTime);
+                await delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeysClearedCacheEvent);
                 await unsubscribe();
             });
@@ -1137,6 +1137,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
 
             await cacheA.add("a", 1);
+            await delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1153,6 +1154,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
 
             await cacheA.add("a", 1);
+            await delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1172,6 +1174,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
             await cacheA.add("a", 1);
             await cacheB.add("a", 1);
+            await delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1191,6 +1194,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
             await cacheA.add("a", 1);
             await cacheB.add("a", 1);
+            await delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1213,6 +1217,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
             await cacheA.add("a", 1);
             await cacheB.add("a", 1);
+            await delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1235,6 +1240,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
             await cacheA.add("a", 1);
             await cacheB.add("a", 1);
+            await delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();

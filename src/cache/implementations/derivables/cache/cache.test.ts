@@ -1,14 +1,11 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
-import {
-    MemoryCacheAdapter,
-    SqliteCacheAdapter,
-} from "@/cache/implementations/adapters/_module-exports.js";
+import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
 import { Cache } from "@/cache/implementations/derivables/_module-exports.js";
 import { KeyPrefixer } from "@/utilities/_module-exports.js";
-import Sqlite, { type Database } from "better-sqlite3";
-import { Serde } from "@/serde/implementations/derivables/serde.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import type { ICacheAdapter } from "@/cache/contracts/_module-exports.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 
 describe("class: Cache", () => {
     describe("Without factory:", () => {
@@ -17,6 +14,10 @@ describe("class: Cache", () => {
                 new Cache({
                     keyPrefixer: new KeyPrefixer("cache"),
                     adapter: new MemoryCacheAdapter(),
+                    eventBus: new EventBus({
+                        keyPrefixer: new KeyPrefixer("event-bus"),
+                        adapter: new MemoryEventBusAdapter(),
+                    }),
                 }),
             test,
             beforeEach,
@@ -25,30 +26,26 @@ describe("class: Cache", () => {
         });
     });
     describe("With factory:", () => {
-        let database: Database;
+        let store: Partial<Record<string, ICacheAdapter>> = {};
         beforeEach(() => {
-            database = new Sqlite(":memory:");
-        });
-        afterEach(() => {
-            database.close();
+            store = {};
         });
         cacheTestSuite({
             createCache: () => {
                 return new Cache({
-                    adapter: async (
-                        prefix: string,
-                    ): Promise<SqliteCacheAdapter> => {
-                        const tableName = `custom_table_${prefix}`;
-                        const adapter = new SqliteCacheAdapter({
-                            serde: new Serde(new SuperJsonSerdeAdapter()),
-                            database,
-                            tableName,
-                            shouldRemoveExpiredKeys: false,
-                        });
-                        await adapter.init();
+                    adapter: (prefix: string): ICacheAdapter => {
+                        let adapter = store[prefix];
+                        if (adapter === undefined) {
+                            adapter = new MemoryCacheAdapter();
+                            store[prefix] = adapter;
+                        }
                         return adapter;
                     },
                     keyPrefixer: new KeyPrefixer("cache"),
+                    eventBus: new EventBus({
+                        keyPrefixer: new KeyPrefixer("event-bus"),
+                        adapter: new MemoryEventBusAdapter(),
+                    }),
                 });
             },
             beforeEach,

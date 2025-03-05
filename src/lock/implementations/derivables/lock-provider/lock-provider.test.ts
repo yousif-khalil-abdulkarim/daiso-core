@@ -1,8 +1,5 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import {
-    MemoryLockAdapter,
-    SqliteLockAdapter,
-} from "@/lock/implementations/adapters/_module-exports.js";
+import { beforeEach, describe, expect, test } from "vitest";
+import { MemoryLockAdapter } from "@/lock/implementations/adapters/_module-exports.js";
 import { LockProvider } from "@/lock/implementations/derivables/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
@@ -10,7 +7,7 @@ import { lockProviderTestSuite } from "@/lock/implementations/test-utilities/_mo
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 import { KeyPrefixer } from "@/utilities/_module-exports.js";
-import Sqlite, { type Database } from "better-sqlite3";
+import type { ILockAdapter } from "@/lock/contracts/_module-exports.js";
 
 describe("class: LockProvider", () => {
     const eventBus = new EventBus({
@@ -37,26 +34,20 @@ describe("class: LockProvider", () => {
         });
     });
     describe("With factory:", () => {
-        let database: Database;
+        let store: Partial<Record<string, ILockAdapter>> = {};
         beforeEach(() => {
-            database = new Sqlite(":memory:");
-        });
-        afterEach(() => {
-            database.close();
+            store = {};
         });
         lockProviderTestSuite({
             createLockProvider: () => {
                 return new LockProvider({
                     serde,
-                    adapter: async (
-                        prefix: string,
-                    ): Promise<SqliteLockAdapter> => {
-                        const adapter = new SqliteLockAdapter({
-                            database,
-                            tableName: `custom_table_${prefix}`,
-                            shouldRemoveExpiredKeys: false,
-                        });
-                        await adapter.init();
+                    adapter: (prefix: string): ILockAdapter => {
+                        let adapter = store[prefix];
+                        if (adapter === undefined) {
+                            adapter = new MemoryLockAdapter();
+                            store[prefix] = adapter;
+                        }
                         return adapter;
                     },
                     eventBus,
