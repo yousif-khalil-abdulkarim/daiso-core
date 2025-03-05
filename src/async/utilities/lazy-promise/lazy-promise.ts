@@ -30,22 +30,33 @@ import { delay } from "@/async/utilities/_module.js";
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export type DeferSettings<TValue> = {
-    onSucces?: (value: TValue) => Promisable<void>;
-    onError?: (error: unknown) => Promisable<void>;
-    onFinally?: () => Promisable<void>;
-};
+export type LazyPromiseOnFinally = () => Promisable<void>;
 
 /**
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export type LazyPromiseSettings = {
+export type LazyPromiseOnSuccess<TValue> = (value: TValue) => Promisable<void>;
+
+/**
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type LazyPromiseOnError = (error: unknown) => Promisable<void>;
+
+/**
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type LazyPromiseSettings<TValue = unknown> = {
     retryAttempts?: number | null;
     backoffPolicy?: BackoffPolicy | null;
     retryPolicy?: RetryPolicy | null;
     abortSignal?: AbortSignal | null;
     timeout?: TimeSpan | null;
+    onFinally?: LazyPromiseOnFinally;
+    onSuccess?: LazyPromiseOnSuccess<TValue>;
+    onError?: LazyPromiseOnError;
 };
 
 /**
@@ -87,10 +98,10 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static wrapFn<TParameters extends unknown[], TReturn>(
         fn: Func<TParameters, PromiseLike<TReturn>>,
-        settings?: LazyPromiseSettings,
+        settings?: LazyPromiseSettings<TReturn>,
     ): Func<TParameters, LazyPromise<TReturn>> {
         return (...parameters) =>
-            new LazyPromise(() => fn(...parameters), settings);
+            new LazyPromise<TReturn>(() => fn(...parameters), settings);
     }
 
     /**
@@ -117,7 +128,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * The <i>all<i> method works similarly to <i>{@link Promise.all}</i> with the key distinction that it operates lazily.
      */
     static all<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue[]> {
-        return new LazyPromise(async () => Promise.all(promises));
+        return new LazyPromise<TValue[]>(async () => Promise.all(promises));
     }
 
     /**
@@ -126,7 +137,9 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     static allSettled<TValue>(
         promises: LazyPromise<TValue>[],
     ): LazyPromise<PromiseSettledResult<TValue>[]> {
-        return new LazyPromise(async () => Promise.allSettled(promises));
+        return new LazyPromise<PromiseSettledResult<TValue>[]>(async () =>
+            Promise.allSettled(promises),
+        );
     }
 
     /**
@@ -145,7 +158,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
 
     private promise: PromiseLike<TValue> | null = null;
     private asyncFn: () => PromiseLike<TValue>;
-    private readonly settings: Required<LazyPromiseSettings>;
+    private readonly settings: Required<LazyPromiseSettings<TValue>>;
 
     /**
      * @example
@@ -161,7 +174,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     constructor(
         asyncFn: LazyPromiseable<TValue>,
-        settings: LazyPromiseSettings = {},
+        settings: LazyPromiseSettings<TValue> = {},
     ) {
         this.asyncFn = () => resolveAsyncLazyable(asyncFn);
         this.settings = {
@@ -170,6 +183,9 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
             retryPolicy: null,
             abortSignal: null,
             timeout: null,
+            onFinally: () => {},
+            onSuccess: (_value: TValue) => {},
+            onError: () => {},
             ...settings,
         };
     }
@@ -374,6 +390,27 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         });
     }
 
+    onFinally(cb: LazyPromiseOnFinally): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            onFinally: cb,
+        });
+    }
+
+    onSuccess(cb: LazyPromiseOnSuccess<TValue>): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            onSuccess: cb,
+        });
+    }
+
+    onError(cb: LazyPromiseOnError): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            onError: cb,
+        });
+    }
+
     /**
      * The <i>defer</i> method executes the <i>LazyPromise</i> without awaiting it.
      * @example
@@ -394,40 +431,24 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * console.log("Hello");
      * ```
      */
-    defer(callbacks: DeferSettings<TValue> = {}): void {
-        const { onSucces, onError, onFinally } = callbacks;
+    defer(): void {
+        const onSuccesHandler = async (value: TValue): Promise<TValue> => {
+            try {
+                await this.settings.onSuccess(value);
+                return value;
+            } finally {
+                await this.settings.onFinally();
+            }
+        };
 
-        let onSuccesHandler: ((value: TValue) => Promise<TValue>) | undefined;
-        if (onSucces || onFinally) {
-            onSuccesHandler = async (value: TValue): Promise<TValue> => {
-                try {
-                    if (onSucces !== undefined) {
-                        await onSucces(value);
-                    }
-                    return value;
-                } finally {
-                    if (onFinally !== undefined) {
-                        await onFinally();
-                    }
-                }
-            };
-        }
-
-        let onErrorHandler: ((error: unknown) => Promise<unknown>) | undefined;
-        if (onError || onFinally) {
-            onErrorHandler = async (error: unknown): Promise<unknown> => {
-                try {
-                    if (onError !== undefined) {
-                        await onError(error);
-                    }
-                    return error;
-                } finally {
-                    if (onFinally !== undefined) {
-                        await onFinally();
-                    }
-                }
-            };
-        }
+        const onErrorHandler = async (error: unknown): Promise<unknown> => {
+            try {
+                await this.settings.onError(error);
+                return error;
+            } finally {
+                await this.settings.onFinally();
+            }
+        };
 
         this.then(onSuccesHandler, onErrorHandler);
     }
