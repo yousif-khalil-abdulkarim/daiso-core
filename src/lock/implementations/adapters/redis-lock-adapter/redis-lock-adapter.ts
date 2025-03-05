@@ -40,11 +40,7 @@ export class RedisLockAdapter implements ILockAdapter {
      *
      * const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
      * const serde = new SuperJsonSerde();
-     * const lockAdapter = new RedisLockAdapter({
-     *   database,
-     *   serde,
-     *   rootGroup: "@global"
-     * });
+     * const lockAdapter = new RedisLockAdapter(database);
      * ```
      */
     constructor(private readonly database: Redis) {

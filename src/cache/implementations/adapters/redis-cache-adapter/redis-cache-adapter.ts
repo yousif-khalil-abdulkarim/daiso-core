@@ -11,6 +11,8 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
 import { ReplyError, type Redis, type Result } from "ioredis";
 import { ClearIterable } from "@/cache/implementations/adapters/redis-cache-adapter/utilities.js";
 import { RedisCacheAdapterSerde } from "@/cache/implementations/adapters/redis-cache-adapter/redis-cache-adapter-serde.js";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 
 declare module "ioredis" {
     interface RedisCommander<Context> {

@@ -56,19 +56,17 @@ export class MongodbLockAdapter
      * import { MongodbLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      * import { MongoClient } from "mongodb";
      *
-     * (async () => {
-     *   const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
-     *   const database = client.db("database");
-     *   const lockAdapter = new MongodbLockAdapter({
-     *     database,
-     *     rootGroup: "@global"
-     *   });
-     *   await lockAdapter.init();
-     * })();
+     * const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
+     * const database = client.db("database");
+     * const lockAdapter = new MongodbLockAdapter({
+     *   database
+     * });
+     * // You need initialize the adapter once before using it.
+     * await lockAdapter.init()
      * ```
      */
     constructor({
-        collectionName = "cache",
+        collectionName = "lock",
         collectionSettings,
         database,
     }: MongodbLockAdapterSettings) {
@@ -107,8 +105,8 @@ export class MongodbLockAdapter
     }
 
     /**
-     * Removes the collection where the cache values are stored and all it's related indexes.
-     * Note all cache data will be removed.
+     * Removes the collection where the lock keys are stored and all it's related indexes.
+     * Note all lock data will be removed.
      */
     async deInit(): Promise<void> {
         await this.collection.dropIndexes();

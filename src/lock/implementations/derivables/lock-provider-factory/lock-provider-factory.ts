@@ -139,36 +139,53 @@ export class LockProviderFactory<TAdapters extends string>
      * ```ts
      * import { LockProviderFactory } from "@daiso-tech/core/lock/implementations/derivables";
      * import { MemoryLockAdapter, RedisLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
      * import Redis from "ioredis"
      *
-     * const eventBus = new EventBus({
-     *   adapter: new MemoryEventBusAdapter()
-     * });
-     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new LockProviderFactory({
-     *   serde,
+     *   keyPrefixer: new KeyPrefixer("lock"),
      *   adapters: {
-     *     memory: new MemoryLockAdapter({
-     *       rootGroup: "@global"
-     *     }),
-     *     redis: new RedisLockAdapter({
-     *       client: new Redis("YOUR_REDIS_CONNECTION"),
-     *       rootGroup: "@global"
-     *     }),
+     *     memory: new MemoryLockAdapter(),
+     *     redis: new RedisLockAdapter(client),
      *   },
      *   defaultAdapter: "memory",
-     *   eventBus,
      * });
      *
-     * // Will create and acquire the lock with default adapter which is MemoryEventBusAdapter
-     * await lockProviderFactory.use().create("a").acquire();
+     * // Will acquire key using the default adapter which is MemoryLockAdapter
+     * await lockProviderFactory
+     *   .use()
+     *   .create("a")
+     *   .acquire();
      *
-     * // Will create and acquire the lock with redis adapter which is RedisLockAdapter
-     * await lockProviderFactory.use("redis").create("a").acquire();
+     * // Will acquire key using the redis adapter which is RedisLockAdapter
+     * await lockProviderFactory
+     *   .use("redis")
+     *   .create("a")
+     *   .acquire();
+     *
+     * // You can change the default settings of the returned Lock instance.
+     * await lockProviderFactory
+     *   .setDefaultTtl(TimeSpan.fromMinutes(2))
+     *   .use("sqlite")
+     *   .create("a")
+     *   .acquire();
+     *
+     * // You can reuse the settings
+     * const longLivedLockProviderFactory = lockProviderFactory
+     *   .setDefaultTtl(TimeSpan.fromMinutes(2));
+     *
+     * await longLivedLockProviderFactory
+     *   .use()
+     *   .create("a")
+     *   .acquire();
+     *
+     * // You can extend the settings
+     * const extendedLockProviderFactory = longLivedLockProviderFactory
+     *   .setTimeout(TimeSpan.fromSeconds(1));
+     *
+     * await extendedLockProviderFactory
+     *   .use()
+     *   .create("a")
+     *   .acquire();
      * ```
      */
     use(

@@ -7,6 +7,8 @@ import {
     TimeSpan,
     type Factoryable,
     type IKeyPrefixer,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type IFactoryObject,
 } from "@/utilities/_module-exports.js";
 import {
     KeyPrefixer,
@@ -70,7 +72,12 @@ export type LockProviderSettingsBase = {
     /**
      * @default
      * ```ts
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
      * new EventBus({
+     *   keyPrefixer: new KeyPrefixer("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
@@ -230,6 +237,101 @@ export class LockProvider implements IGroupableLockProvider {
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<IFlexibleSerde>;
 
+    /**
+     * @example
+     * ```ts
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const database = new Sqlite("local.db");
+     * const lockAdapter = new SqliteLockAdapter({
+     *   database,
+     * });
+     * // You need initialize the adapter once before using it.
+     * await lockAdapter.init();
+     *
+     * const lockProvider = new LockProvider({
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   adapter: lockAdapter,
+     * });
+     * ```
+     *
+     * You can pass factory function that will create an adapter for every group.
+     * @example
+     * ```ts
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const database = new Sqlite("local.db");
+     * const lockAdapter = new SqliteLockAdapter({
+     *   database,
+     * });
+     * // You need initialize the adapter once before using it.
+     * await lockAdapter.init();
+     *
+     * const lockProvider = new LockProvider({
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   adapter: lockAdapter,
+     * });
+     * ```
+     *
+     * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
+     * @example
+     * ```ts
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { ILockAdapter } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { KeyPrefixer, type Promiseable } from "@daiso-tech/core/utilities";
+     *
+     * async function lockAdapterFactory(prefix: string): Promiseable<ILockAdapter> {
+     *   const database = new Sqlite("local.db");
+     *   const database = new Sqlite("local.db");
+     *   const lockAdapter = new SqliteLockAdapter({
+     *     database,
+     *     tableName: `lock_${prefix}`,
+     *   });
+     *   // You need initialize the adapter once before using it.
+     *   await lockAdapter.init();
+     *   return lockAdapter;
+     * }
+     *
+     *
+     * const lockProvider = new LockProvider({
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   adapter: lockAdapterFactory,
+     * });
+     * ```
+     *
+     * You can pass factory function that will create an adapter for every group.
+     * @example
+     * ```ts
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import type { ILockAdapter } from "@daiso-tech/core/lock/contracts";
+     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
+     *
+     * class LockAdapterFactory implementations IFactoryObject<string, ILockAdapter> {
+     *   async use(prefix: string): Promiseable<ILockAdapter> {
+     *     const database = new Sqlite("local.db");
+     *     const database = new Sqlite("local.db");
+     *     const lockAdapter = new SqliteLockAdapter({
+     *       database,
+     *       tableName: `lock_${prefix}`,
+     *     });
+     *     // You need initialize the adapter once before using it.
+     *     await lockAdapter.init();
+     *     return lockAdapter;
+     *   }
+     * }
+     *
+     * const lockProvider = new LockProvider({
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   adapter: new LockAdapterFactory(),
+     * });
+     * ```
+     */
     constructor(settings: LockProviderSettings) {
         const {
             defaultTtl = TimeSpan.fromMinutes(5),

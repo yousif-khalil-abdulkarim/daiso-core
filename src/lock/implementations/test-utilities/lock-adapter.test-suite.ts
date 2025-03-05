@@ -56,10 +56,7 @@ export type LockAdapterTestSuiteSettings = {
  *     }, timeout.toMilliseconds());
  *     lockAdapterTestSuite({
  *         createAdapter: () =>
- *             new RedisLockAdapter({
- *                 database: client,
- *                 rootGroup: "@a",
- *             }),
+ *             new RedisLockAdapter(client),
  *         test,
  *         beforeEach,
  *         expect,

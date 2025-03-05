@@ -18,8 +18,6 @@ import { type AsyncLazyable } from "@/utilities/types.js";
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export function resolveLazyable<TValue>(lazyable: Lazyable<TValue>): TValue {
     if (typeof lazyable === "function") {
@@ -31,8 +29,6 @@ export function resolveLazyable<TValue>(lazyable: Lazyable<TValue>): TValue {
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export async function resolveAsyncLazyable<TValue>(
     lazyable: AsyncLazyable<TValue>,
@@ -49,8 +45,6 @@ export async function resolveAsyncLazyable<TValue>(
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export function isObjectEmpty(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,8 +59,6 @@ export function isObjectEmpty(
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export function resolveOneOrMore<TType>(value: OneOrMore<TType>): TType[] {
     if (Array.isArray(value)) {
@@ -79,8 +71,6 @@ export function resolveOneOrMore<TType>(value: OneOrMore<TType>): TType[] {
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export function resolveOneOrMoreStr(
     name: OneOrMore<string>,
@@ -91,12 +81,8 @@ export function resolveOneOrMoreStr(
         .join(joinStr);
 }
 
-resolveOneOrMoreStr([]);
-
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export function getConstructorName(instance: object): string {
     return instance.constructor.name;
@@ -104,8 +90,6 @@ export function getConstructorName(instance: object): string {
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export function isFactoryFn<TInput, TOutput>(
     factory: Factoryable<TInput, TOutput>,
@@ -115,8 +99,6 @@ export function isFactoryFn<TInput, TOutput>(
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export function isFactoryObject<TInput, TOutput>(
     factory: Factoryable<TInput, TOutput>,
@@ -130,8 +112,6 @@ export function isFactoryObject<TInput, TOutput>(
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export function isFactory<TInput, TOutput>(
     factoryable: Factoryable<TInput, TOutput>,
@@ -141,8 +121,6 @@ export function isFactory<TInput, TOutput>(
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export function resolveFactory<TInput, TOutput>(
     factory: Factory<TInput, TOutput>,
@@ -155,8 +133,6 @@ export function resolveFactory<TInput, TOutput>(
 
 /**
  * @internal
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export async function resolveFactoryable<TInput, TOutput>(
     factoryable: Factoryable<TInput, TOutput>,
@@ -170,6 +146,9 @@ export async function resolveFactoryable<TInput, TOutput>(
     }
 }
 
+/**
+ * @internal
+ */
 export function resolveInvokable<TInput, TOutput>(
     invokable: Invokable<TInput, TOutput>,
 ): InvokableFn<TInput, TOutput> {

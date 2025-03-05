@@ -111,20 +111,21 @@ export class CacheFactory<TAdapters extends string = string>
      * import { MemoryCacheAdapter, RedisCacheAdapter, SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
-     * import { KeyPrefixer, type IFactoryObject, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { KeyPrefixer, TimeSpan, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      * import Sqlite from "better-sqlite3";
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      *
-     * function cahceAdapterFactory(prefix: string): Promise<SqliteCacheAdapter> {
+     * async function cahceAdapterFactory(prefix: string): Promiseable<SqliteCacheAdapter> {
      *   const database = new Sqlite("local.db");
      *   const cacheAdapter = new SqliteCacheAdapter({
      *     database,
      *     serde,
-     *     tableName: prefix
+     *     tableName: `cache_${prefix}`
      *   });
      *   await cacheAdapter.init();
+     *   return cacheAdapter;
      * }
      *
      * const cacheFactory = new CacheFactory({
@@ -152,10 +153,26 @@ export class CacheFactory<TAdapters extends string = string>
      *   .use("redis")
      *   .add("a", 1);
      *
-     * // You can change the default settings of the CacheFactory instance
+     * // You can change the default settings of the returned Cache instance.
      * await cacheFactory
      *   .setDefaultTtl(TimeSpan.fromMinutes(2))
      *   .use("sqlite")
+     *   .add("a", 1);
+     *
+     * // You can reuse the settings
+     * const longLivedCacheFactory = cacheFactory
+     *   .setDefaultTtl(TimeSpan.fromMinutes(2));
+     *
+     * await longLivedCacheFactory
+     *   .use()
+     *   .add("a", 1);
+     *
+     * // You can extend the settings
+     * const extendedCacheFactory = longLivedCacheFactory
+     *   .setTimeout(TimeSpan.fromSeconds(1));
+     *
+     * await extendedCacheFactory
+     *   .use()
      *   .add("a", 1);
      * ```
      */

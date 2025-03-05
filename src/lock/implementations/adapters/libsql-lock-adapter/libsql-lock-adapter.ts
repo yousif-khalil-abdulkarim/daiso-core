@@ -47,17 +47,15 @@ export class LibsqlLockAdapter
     /***
      * @example
      * ```ts
-     * import { LibsqlCacheAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { LibsqlLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      * import { createClient } from "@libsql/client";
      *
-     * (async () => {
-     *   const database = createClient({ url: "file:local.db" });
-     *   const lockAdapter = new LibsqlCacheAdapter({
+     * const database = createClient({ url: "file:local.db" });
+     * const lockAdapter = new LibsqlLockAdapter({
      *     database,
-     *     rootGroup: "@global"
-     *   });
-     *   await lockAdapter.init();
-     * })();
+     * });
+     * // You need initialize the adapter once before using it.
+     * await lockAdapter.init();
      * ```
      */
     constructor(settings: LibsqlLockAdapterSettings) {
@@ -89,15 +87,15 @@ export class LibsqlLockAdapter
     }
 
     /**
-     * Removes the table where the cache values are stored and removes the table indexes.
-     * Note all cache data will be removed.
+     * Removes the table where the lock keys are stored and removes the table indexes.
+     * Note all lock data will be removed.
      */
     async deInit(): Promise<void> {
         await this.databaseLockAdapter.deInit();
     }
 
     /**
-     * Creates the table where the cache values are stored and it's related indexes.
+     * Creates the table where the lock keys are stored and it's related indexes.
      * Note the <i>init</i> method needs to be called before using the adapter.
      */
     async init(): Promise<void> {
