@@ -37,7 +37,7 @@ describe("class: EventBus", () => {
             createEventBus: () =>
                 new EventBus({
                     keyPrefixer: new KeyPrefixer("event-bus"),
-                    adapter: (prefix) => {
+                    adapter: (prefix): IEventBusAdapter => {
                         let adapter = store[prefix];
                         if (adapter === undefined) {
                             adapter = new MemoryEventBusAdapter();
