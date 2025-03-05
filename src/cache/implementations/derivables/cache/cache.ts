@@ -158,7 +158,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly groupdEventBus: IGroupableEventBus<CacheEvents<TType>>;
     private readonly eventBus: IEventBus<CacheEvents<TType>>;
     private readonly adapterFactoryable: CacheAdapterFactoryable<TType>;
-    private readonly adapterPromise: Promise<ICacheAdapter<TType>>;
+    private readonly adapterPromise: PromiseLike<ICacheAdapter<TType>>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
@@ -283,9 +283,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             ]);
         }
 
-        this.adapterPromise = Cache.resolveCacheAdapterFactoryable(
-            this.adapterFactoryable,
-            this.keyPrefixer.keyPrefix,
+        this.adapterPromise = new LazyPromise(() =>
+            Cache.resolveCacheAdapterFactoryable(
+                this.adapterFactoryable,
+                this.keyPrefixer.keyPrefix,
+            ),
         );
     }
 
