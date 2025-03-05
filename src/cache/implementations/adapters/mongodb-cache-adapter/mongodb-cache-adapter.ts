@@ -22,6 +22,8 @@ import {
     type Db,
 } from "mongodb";
 import escapeStringRegexp from "escape-string-regexp";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
  *
@@ -106,6 +108,7 @@ export class MongodbCacheAdapter<TType>
 
     private readonly serde: ISerde<string | number>;
     private readonly collection: Collection<MongodbCacheDocument>;
+
     /**
      * @example
      * ```ts

@@ -68,7 +68,12 @@ export type CacheSettingsBase = {
     /**
      * @default
      * ```ts
+     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
      * new EventBus({
+     *   keyPrefixer: new KeyPrefixer("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
@@ -192,26 +197,28 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * });
      * ```
      *
-     * You can pass factory function that will be used creating adapter for every group.
+     * You can pass factory function that will create an adapter for every group.
      * @example
      * ```ts
      * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { KeyPrefixer, type Promiseable } from "@daiso-tech/core/utilities";
      *
      *
-     * function cahceAdapterFactory(prefix: string): Promise<SqliteCacheAdapter> {
+     * async function cahceAdapterFactory(prefix: string): Promiseable<ICacheAdapter> {
      *   const database = new Sqlite("local.db");
      *   const serde = new Serde(new SuperJsonSerdeAdapter());
      *   const cacheAdapter = new SqliteCacheAdapter({
      *     database,
      *     serde,
-     *     tableName: prefix
+     *     tableName: `cache_${prefix}`
      *   });
      *   await cacheAdapter.init();
+     *   return cacheAdapter;
      * }
      *
      * const cache = new Cache({
@@ -220,26 +227,28 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * });
      * ```
      *
-     * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection library.
+     * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
      * @example
      * ```ts
      * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
      * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
-     * import { KeyPrefixer, type IFactoryObject } from "@daiso-tech/core/utilities";
+     * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
      *
-     * class CahceAdapterFactory implements IFactoryObject<string, SqliteCacheAdapter> {
-     *   use(prefix: string): Promise<SqliteCacheAdapter> {
+     * class CahceAdapterFactory implements IFactoryObject<string, ICacheAdapter> {
+     *   async use(prefix: string): Promiseable<ICacheAdapter> {
      *     const database = new Sqlite("local.db");
      *     const serde = new Serde(new SuperJsonSerdeAdapter());
      *     const cacheAdapter = new SqliteCacheAdapter({
      *       database,
      *       serde,
-     *       tableName: prefix
+     *       tableName: `cache_${prefix}`
      *     });
      *     await cacheAdapter.init();
+     *     return cacheAdapter;
      *   }
      * }
      * const cahceAdapterFactory = new CahceAdapterFactory();
@@ -254,7 +263,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             keyPrefixer,
             adapter,
             eventBus: groupdEventBus = new EventBus({
-                keyPrefixer: new KeyPrefixer("events"),
+                keyPrefixer: new KeyPrefixer("event-bus"),
                 adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,
