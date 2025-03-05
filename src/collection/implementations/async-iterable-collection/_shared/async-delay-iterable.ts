@@ -3,7 +3,7 @@
  */
 
 import type { TimeSpan } from "@/utilities/_module-exports.js";
-import { delay } from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  * @internal
@@ -20,7 +20,7 @@ export class AsyncDelayIterable<TValue> implements AsyncIterable<TValue> {
         yield result.value;
 
         while (!result.done) {
-            await delay(this.time);
+            await LazyPromise.delay(this.time);
             result = await iterator.next();
             if (result.done) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-return

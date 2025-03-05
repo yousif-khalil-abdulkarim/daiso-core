@@ -19,7 +19,7 @@ import {
     type Promisable,
 } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
-import { delay } from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
@@ -127,7 +127,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toEqual(event);
                     expect(listener.result).toBeInstanceOf(AddEvent);
                     await eventBusA.removeListener(AddEvent, listener);
@@ -146,7 +146,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toEqual(event);
                     expect(listener.result).toBeInstanceOf(AddEvent);
                     await eventBusA.removeListener(AddEvent, listener);
@@ -162,7 +162,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(result).toEqual(event);
                     expect(result).toBeInstanceOf(AddEvent);
                     await eventBusA.removeListener(AddEvent, listener);
@@ -185,7 +185,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toBeNull();
                 });
                 test("Class instance listener", async () => {
@@ -203,7 +203,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toBeNull();
                 });
                 test("Function listener", async () => {
@@ -218,7 +218,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(result).toBeNull();
                 });
             });
@@ -334,7 +334,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.resultA).toEqual(addEvent);
                     expect(listener.resultA).toBeInstanceOf(AddEvent);
                     expect(listener.resultB).toEqual(subEvent);
@@ -373,7 +373,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.resultA).toEqual(addEvent);
                     expect(listener.resultA).toBeInstanceOf(AddEvent);
                     expect(listener.resultB).toEqual(subEvent);
@@ -409,7 +409,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(resultA).toEqual(addEvent);
                     expect(resultA).toBeInstanceOf(AddEvent);
                     expect(resultB).toEqual(subEvent);
@@ -454,7 +454,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.resultA).toBeNull();
                     expect(listener.resultB).toBeNull();
                 });
@@ -491,7 +491,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.resultA).toBeNull();
                     expect(listener.resultB).toBeNull();
                 });
@@ -527,7 +527,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(resultA).toBeNull();
                     expect(resultB).toBeNull();
                 });
@@ -598,7 +598,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toEqual(event);
                     expect(listener.result).toBeInstanceOf(AddEvent);
                     await unsubscribe();
@@ -620,7 +620,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toEqual(event);
                     expect(listener.result).toBeInstanceOf(AddEvent);
                     await unsubscribe();
@@ -639,7 +639,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(result).toEqual(event);
                     expect(result).toBeInstanceOf(AddEvent);
                     await unsubscribe();
@@ -665,7 +665,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toBeNull();
                 });
                 test("Class instance listener", async () => {
@@ -686,7 +686,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toBeNull();
                 });
                 test("Function listener", async () => {
@@ -704,7 +704,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(result).toBeNull();
                 });
             });
@@ -811,7 +811,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.resultA).toEqual(addEvent);
                     expect(listener.resultA).toBeInstanceOf(AddEvent);
                     expect(listener.resultB).toEqual(subEvent);
@@ -847,7 +847,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.resultA).toEqual(addEvent);
                     expect(listener.resultA).toBeInstanceOf(AddEvent);
                     expect(listener.resultB).toEqual(subEvent);
@@ -880,7 +880,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(resultA).toEqual(addEvent);
                     expect(resultA).toBeInstanceOf(AddEvent);
                     expect(resultB).toEqual(subEvent);
@@ -919,7 +919,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.resultA).toBeNull();
                     expect(listener.resultB).toBeNull();
                 });
@@ -953,7 +953,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.resultA).toBeNull();
                     expect(listener.resultB).toBeNull();
                 });
@@ -986,7 +986,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         d: 2,
                     });
                     await eventBusA.dispatchMany([addEvent, subEvent]);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(resultA).toBeNull();
                     expect(resultB).toBeNull();
                 });
@@ -1042,7 +1042,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toEqual(event);
                     expect(listener.result).toBeInstanceOf(AddEvent);
                 });
@@ -1060,7 +1060,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.result).toEqual(event);
                     expect(listener.result).toBeInstanceOf(AddEvent);
                 });
@@ -1075,7 +1075,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         b: 2,
                     });
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(result).toEqual(event);
                     expect(result).toBeInstanceOf(AddEvent);
                 });
@@ -1097,7 +1097,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     });
                     await eventBusA.dispatch(event);
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.i).toBe(1);
                 });
                 test("Class instance listener", async () => {
@@ -1115,7 +1115,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     });
                     await eventBusA.dispatch(event);
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(listener.i).toBe(1);
                 });
                 test("Function listener", async () => {
@@ -1130,7 +1130,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     });
                     await eventBusA.dispatch(event);
                     await eventBusA.dispatch(event);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(i).toBe(1);
                 });
             });
@@ -1155,7 +1155,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     b: 2,
                 });
                 await eventBusA.dispatch(event);
-                await delay(TTL);
+                await LazyPromise.delay(TTL);
                 expect(result).toEqual(event);
                 expect(result).toBeInstanceOf(AddEvent);
             });
@@ -1178,7 +1178,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 b: 2,
             });
             await eventBusA.dispatch(event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1200,7 +1200,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 b: 2,
             });
             await eventBusA.dispatch(event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1225,7 +1225,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1250,7 +1250,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1275,7 +1275,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1303,7 +1303,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1325,7 +1325,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 b: 2,
             });
             await eventBusA.dispatch(event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);
@@ -1347,7 +1347,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 b: 2,
             });
             await eventBusA.dispatch(event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
 
             expect(result_a).toEqual(event);
             expect(result_a).toBeInstanceOf(AddEvent);

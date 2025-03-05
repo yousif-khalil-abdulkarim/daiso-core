@@ -31,7 +31,7 @@ import {
     type ILock,
     type ILockAdapter,
 } from "@/lock/contracts/_module-exports.js";
-import { delay, LazyPromise } from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     EventClass,
     EventInstance,
@@ -340,7 +340,7 @@ export class Lock implements ILock {
                 if (hasAquired) {
                     return true;
                 }
-                await delay(interval);
+                await LazyPromise.delay(interval);
             }
             return false;
         });

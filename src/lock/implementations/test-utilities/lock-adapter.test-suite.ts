@@ -10,7 +10,7 @@ import {
 import { type ILockAdapter } from "@/lock/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
-import { delay } from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
@@ -87,7 +87,7 @@ export function lockAdapterTestSuite(
             const key = "a";
             const owner = "b";
             await lockAdapterA.acquire(key, owner, ttl);
-            await delay(ttl);
+            await LazyPromise.delay(ttl);
             const result = await lockAdapterA.acquire(key, owner, null);
             expect(result).toBe(true);
         });
@@ -110,7 +110,7 @@ export function lockAdapterTestSuite(
             const key = "a";
             const owner = "b";
             await lockAdapterA.acquire(key, owner, ttl);
-            await delay(ttl.divide(2));
+            await LazyPromise.delay(ttl.divide(2));
             const result = await lockAdapterA.acquire(key, owner, null);
             expect(result).toBe(false);
         });
