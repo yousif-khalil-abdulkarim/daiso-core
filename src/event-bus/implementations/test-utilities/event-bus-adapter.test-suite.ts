@@ -13,7 +13,7 @@ import type { IEventBusAdapter } from "@/event-bus/contracts/_module-exports.js"
 import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
-import { delay } from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
@@ -74,7 +74,7 @@ export function eventBusAdapterTestSuite(
                 type: BaseEvent.name,
             });
             await adapter.dispatch(TestEvent.name, event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
             expect(result).toEqual(event);
             expect(result).toBeInstanceOf(TestEvent);
         });
@@ -89,7 +89,7 @@ export function eventBusAdapterTestSuite(
                 type: BaseEvent.name,
             });
             await adapter.dispatch(TestEvent.name, event);
-            await delay(TTL);
+            await LazyPromise.delay(TTL);
             expect(result).toBeNull();
         });
     });

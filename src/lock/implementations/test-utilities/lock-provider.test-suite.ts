@@ -26,7 +26,7 @@ import {
 } from "@/lock/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
-import { delay, LazyPromise } from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
@@ -119,7 +119,7 @@ export function lockProviderTestSuite(
                 });
 
                 const [result, error] = await lock.run(async () => {
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
                     return "a";
                 });
 
@@ -135,7 +135,7 @@ export function lockProviderTestSuite(
 
                 await lock.acquire();
                 const [result, error] = await lock.run(async () => {
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
                     return "a";
                 });
 
@@ -151,7 +151,7 @@ export function lockProviderTestSuite(
 
                 const [result, error] = await lock.run(
                     new LazyPromise(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                         return "a";
                     }),
                 );
@@ -169,7 +169,7 @@ export function lockProviderTestSuite(
                 });
 
                 const result = await lock.runOrFail(async () => {
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
                     return "a";
                 });
 
@@ -184,7 +184,7 @@ export function lockProviderTestSuite(
 
                 await lock.acquire();
                 const result = lock.runOrFail(async () => {
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
                     return "a";
                 });
 
@@ -201,7 +201,7 @@ export function lockProviderTestSuite(
 
                 const result = await lock.runOrFail(
                     new LazyPromise(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                         return "a";
                     }),
                 );
@@ -219,7 +219,7 @@ export function lockProviderTestSuite(
 
                 const [result, error] = await lock.runBlocking(
                     async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                         return "a";
                     },
                     {
@@ -241,7 +241,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 const [result, error] = await lock.runBlocking(
                     async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                         return "a";
                     },
                     {
@@ -262,7 +262,7 @@ export function lockProviderTestSuite(
 
                 const [result, error] = await lock.runBlocking(
                     new LazyPromise(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                         return "a";
                     }),
                     {
@@ -291,7 +291,7 @@ export function lockProviderTestSuite(
                 );
                 await lock.runBlocking(
                     async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     },
                     {
                         time: TimeSpan.fromMilliseconds(55),
@@ -695,7 +695,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquire();
-                await delay(ttl.addMilliseconds(25));
+                await LazyPromise.delay(ttl.addMilliseconds(25));
                 const result = await lock.isExpired();
 
                 expect(result).toBe(true);
@@ -740,7 +740,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquire();
-                await delay(ttl.addMilliseconds(25));
+                await LazyPromise.delay(ttl.addMilliseconds(25));
                 const result = await lock.isLocked();
 
                 expect(result).toBe(false);
@@ -757,7 +757,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquire();
-                await delay(ttl);
+                await LazyPromise.delay(ttl);
 
                 const result = await lock.refresh();
 
@@ -792,7 +792,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquire();
-                await delay(ttl.subtractMilliseconds(10));
+                await LazyPromise.delay(ttl.subtractMilliseconds(10));
                 await lock.refresh();
                 const time = await lock.getRemainingTime();
 
@@ -810,7 +810,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquire();
-                await delay(ttl);
+                await LazyPromise.delay(ttl);
 
                 const result = lock.refreshOrFail();
 
@@ -847,7 +847,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquireOrFail();
-                await delay(ttl.subtractMilliseconds(10));
+                await LazyPromise.delay(ttl.subtractMilliseconds(10));
                 await lock.refresh();
                 const time = await lock.getRemainingTime();
 
@@ -939,9 +939,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -966,9 +966,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -991,9 +991,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1018,14 +1018,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(DELAY_TIME);
+                            await LazyPromise.delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1051,14 +1051,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(DELAY_TIME);
+                            await LazyPromise.delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1082,14 +1082,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(DELAY_TIME);
+                            await LazyPromise.delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1113,9 +1113,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.runOrFail(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1140,9 +1140,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.runOrFail(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1166,9 +1166,9 @@ export function lockProviderTestSuite(
 
                     try {
                         await lock.runOrFail(async () => {
-                            await delay(DELAY_TIME);
+                            await LazyPromise.delay(DELAY_TIME);
                         });
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1195,7 +1195,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1221,7 +1221,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1248,7 +1248,7 @@ export function lockProviderTestSuite(
                         time: TimeSpan.fromMilliseconds(5),
                         interval: TimeSpan.fromMilliseconds(5),
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1280,7 +1280,7 @@ export function lockProviderTestSuite(
                         time: TimeSpan.fromMilliseconds(5),
                         interval: TimeSpan.fromMilliseconds(5),
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1304,7 +1304,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquireOrFail();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1331,7 +1331,7 @@ export function lockProviderTestSuite(
 
                     try {
                         await lock.acquireOrFail();
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1358,7 +1358,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock.release();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1384,7 +1384,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock2.release();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner2);
@@ -1408,7 +1408,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock.releaseOrFail();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1435,7 +1435,7 @@ export function lockProviderTestSuite(
                     );
                     try {
                         await lock2.releaseOrFail();
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1466,7 +1466,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock2.forceRelease();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     await unsubscribe();
@@ -1489,10 +1489,10 @@ export function lockProviderTestSuite(
                             event_ = event;
                         },
                     );
-                    await delay(TTL.divide(2));
+                    await LazyPromise.delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock.refresh(newTTL);
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1521,10 +1521,10 @@ export function lockProviderTestSuite(
                             event_ = event;
                         },
                     );
-                    await delay(TTL.divide(2));
+                    await LazyPromise.delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock2.refresh(newTTL);
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner2);
@@ -1548,10 +1548,10 @@ export function lockProviderTestSuite(
                             event_ = event;
                         },
                     );
-                    await delay(TTL.divide(2));
+                    await LazyPromise.delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock.refreshOrFail(newTTL);
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1580,11 +1580,11 @@ export function lockProviderTestSuite(
                             event_ = event;
                         },
                     );
-                    await delay(TTL.divide(2));
+                    await LazyPromise.delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     try {
                         await lock2.refreshOrFail(newTTL);
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1613,9 +1613,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1640,9 +1640,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1665,9 +1665,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.run(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1692,14 +1692,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(DELAY_TIME);
+                            await LazyPromise.delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1725,14 +1725,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(DELAY_TIME);
+                            await LazyPromise.delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1756,14 +1756,14 @@ export function lockProviderTestSuite(
 
                     await lock.runBlocking(
                         async () => {
-                            await delay(DELAY_TIME);
+                            await LazyPromise.delay(DELAY_TIME);
                         },
                         {
                             time: TimeSpan.fromMilliseconds(5),
                             interval: TimeSpan.fromMilliseconds(5),
                         },
                     );
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1787,9 +1787,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.runOrFail(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1814,9 +1814,9 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.runOrFail(async () => {
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     });
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -1840,9 +1840,9 @@ export function lockProviderTestSuite(
 
                     try {
                         await lock.runOrFail(async () => {
-                            await delay(DELAY_TIME);
+                            await LazyPromise.delay(DELAY_TIME);
                         });
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -1869,7 +1869,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1895,7 +1895,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1919,7 +1919,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1945,7 +1945,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquire();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1969,7 +1969,7 @@ export function lockProviderTestSuite(
                     );
 
                     await lock.acquireOrFail();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe("a");
                     expect(event_?.fields.owner).toBe(owner);
@@ -1996,7 +1996,7 @@ export function lockProviderTestSuite(
 
                     try {
                         await lock.acquireOrFail();
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -2023,7 +2023,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock.release();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -2049,7 +2049,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock2.release();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner2);
@@ -2073,7 +2073,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock.releaseOrFail();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -2100,7 +2100,7 @@ export function lockProviderTestSuite(
                     );
                     try {
                         await lock2.releaseOrFail();
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -2131,7 +2131,7 @@ export function lockProviderTestSuite(
                         },
                     );
                     await lock2.forceRelease();
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     await unsubscribe();
@@ -2154,10 +2154,10 @@ export function lockProviderTestSuite(
                             event_ = event;
                         },
                     );
-                    await delay(TTL.divide(2));
+                    await LazyPromise.delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock.refresh(newTTL);
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -2186,10 +2186,10 @@ export function lockProviderTestSuite(
                             event_ = event;
                         },
                     );
-                    await delay(TTL.divide(2));
+                    await LazyPromise.delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock2.refresh(newTTL);
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner2);
@@ -2213,10 +2213,10 @@ export function lockProviderTestSuite(
                             event_ = event;
                         },
                     );
-                    await delay(TTL.divide(2));
+                    await LazyPromise.delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     await lock.refreshOrFail(newTTL);
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
 
                     expect(event_?.fields.key).toBe(key);
                     expect(event_?.fields.owner).toBe(owner);
@@ -2245,11 +2245,11 @@ export function lockProviderTestSuite(
                             event_ = event;
                         },
                     );
-                    await delay(TTL.divide(2));
+                    await LazyPromise.delay(TTL.divide(2));
                     const newTTL = TTL.multiply(2);
                     try {
                         await lock2.refreshOrFail(newTTL);
-                        await delay(DELAY_TIME);
+                        await LazyPromise.delay(DELAY_TIME);
                     } catch {
                         /* Empty */
                     }
@@ -2270,7 +2270,7 @@ export function lockProviderTestSuite(
                 owner: ownerA,
             });
             const promiseA = lockA.run(async () => {
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2279,7 +2279,7 @@ export function lockProviderTestSuite(
                 owner: ownerB,
             });
             const promiseB = lockB.run(async () => {
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2300,7 +2300,7 @@ export function lockProviderTestSuite(
                 owner: ownerA,
             });
             const promiseA = lockA.run(async () => {
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2310,7 +2310,7 @@ export function lockProviderTestSuite(
             });
             const promiseB = lockB.runBlocking(
                 async () => {
-                    await delay(DELAY_TIME);
+                    await LazyPromise.delay(DELAY_TIME);
                     return "a";
                 },
                 {
@@ -2336,7 +2336,7 @@ export function lockProviderTestSuite(
                 owner: ownerA,
             });
             const promiseA = lockA.runOrFail(async () => {
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2345,7 +2345,7 @@ export function lockProviderTestSuite(
                 owner: ownerB,
             });
             const promiseB = lockB.runOrFail(async () => {
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 return "a";
             });
 
@@ -2517,9 +2517,9 @@ export function lockProviderTestSuite(
             });
             await Promise.all([lockA.acquire(), lockB.acquire()]);
 
-            await delay(ttl.divide(2));
+            await LazyPromise.delay(ttl.divide(2));
             await lockA.refresh();
-            await delay(ttl.divide(2));
+            await LazyPromise.delay(ttl.divide(2));
 
             const resultA = await lockA.isExpired();
             const resultB = await lockB.isExpired();
@@ -2541,9 +2541,9 @@ export function lockProviderTestSuite(
             });
             await Promise.all([lockA.acquire(), lockB.acquire()]);
 
-            await delay(ttl.divide(2));
+            await LazyPromise.delay(ttl.divide(2));
             await lockA.refreshOrFail();
-            await delay(ttl.divide(2));
+            await LazyPromise.delay(ttl.divide(2));
 
             const resultA = await lockA.isExpired();
             const resultB = await lockB.isExpired();
@@ -2567,7 +2567,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lockA.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2587,7 +2587,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lockA.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2610,7 +2610,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2636,7 +2636,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2662,7 +2662,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2688,7 +2688,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2715,7 +2715,7 @@ export function lockProviderTestSuite(
                 );
 
                 await lockA.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2740,7 +2740,7 @@ export function lockProviderTestSuite(
                 );
 
                 await lockA.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2772,7 +2772,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2804,7 +2804,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2830,7 +2830,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2859,7 +2859,7 @@ export function lockProviderTestSuite(
 
                 await lockA.acquire();
                 await lockB.acquire();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
 
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
@@ -2909,10 +2909,10 @@ export function lockProviderTestSuite(
                 serde.serialize(lock),
             );
             const delayTime = TTL;
-            await delay(delayTime);
+            await LazyPromise.delay(delayTime);
 
             expect(await deserializedLock.isLocked()).toBe(true);
-            await delay(delayTime);
+            await LazyPromise.delay(delayTime);
 
             expect(await deserializedLock.isLocked()).toBe(false);
         });

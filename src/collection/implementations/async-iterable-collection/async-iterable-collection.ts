@@ -335,11 +335,12 @@ export class AsyncIterableCollection<TInput = unknown>
     private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) {
-        return new LazyPromise(asyncFn)
-            .setRetryAttempts(this.retryAttempts)
-            .setBackoffPolicy(this.backoffPolicy)
-            .setRetryPolicy(this.retryPolicy)
-            .setTimeout(this.timeout);
+        return new LazyPromise(asyncFn, {
+            retryAttempts: this.retryAttempts,
+            backoffPolicy: this.backoffPolicy,
+            retryPolicy: this.retryPolicy,
+            timeout: this.timeout,
+        });
     }
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
@@ -1040,7 +1041,7 @@ export class AsyncIterableCollection<TInput = unknown>
     firstOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TOutput>(async () => {
             const item = await this.first(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundCollectionError("Item was not found");
@@ -1063,7 +1064,7 @@ export class AsyncIterableCollection<TInput = unknown>
             TOutput
         > = () => true,
     ): LazyPromise<TOutput | TExtended> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TOutput | TExtended>(async () => {
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {
@@ -1080,7 +1081,7 @@ export class AsyncIterableCollection<TInput = unknown>
     lastOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TOutput>(async () => {
             const item = await this.last(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundCollectionError("Item was not found");
@@ -1099,7 +1100,7 @@ export class AsyncIterableCollection<TInput = unknown>
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | TExtended> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TInput | TExtended>(async () => {
             let beforeItem: TInput | null = null,
                 index = 0;
             for await (const item of this) {
@@ -1116,7 +1117,7 @@ export class AsyncIterableCollection<TInput = unknown>
     beforeOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TInput>(async () => {
             const item = await this.before(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundCollectionError("Item was not found");
@@ -1152,7 +1153,7 @@ export class AsyncIterableCollection<TInput = unknown>
     afterOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TInput>(async () => {
             const item = await this.after(predicateFn);
             if (item === null) {
                 throw new ItemNotFoundCollectionError("Item was not found");
@@ -1164,7 +1165,7 @@ export class AsyncIterableCollection<TInput = unknown>
     sole<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
-        return this.createLazyPromise(async () => {
+        return this.createLazyPromise<TOutput>(async () => {
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries()) {
                 if (await predicateFn(item, index, this)) {

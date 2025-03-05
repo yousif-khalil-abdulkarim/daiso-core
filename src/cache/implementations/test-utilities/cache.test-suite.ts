@@ -24,7 +24,7 @@ import {
 } from "@/cache/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
-import { delay, LazyPromise } from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
@@ -83,7 +83,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: exists", () => {
             test("Should return true when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.exists("a")).toBe(true);
             });
             test("Should return false when keys doesnt exists", async () => {
@@ -91,14 +91,14 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return false when key is experied", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.exists("a")).toBe(false);
             });
         });
         describe("method: missing", () => {
             test("Should return false when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.missing("a")).toBe(false);
             });
             test("Should return true when keys doesnt exists", async () => {
@@ -106,14 +106,14 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return true when key is experied", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.missing("a")).toBe(true);
             });
         });
         describe("method: get", () => {
             test("Should return the value when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(1);
             });
             test("Should return null when keys doesnt exists", async () => {
@@ -121,14 +121,14 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return null when key is experied", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.get("a")).toBeNull();
             });
         });
         describe("method: getOrFail", () => {
             test("Should return the value when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.getOrFail("a")).toBe(1);
             });
             test("Should throw an KeyNotFoundCacheError when keys doesnt exists", async () => {
@@ -138,7 +138,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should throw an KeyNotFoundCacheError when key is experied", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 await expect(cacheA.getOrFail("a")).rejects.toBeInstanceOf(
                     KeyNotFoundCacheError,
                 );
@@ -173,24 +173,24 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             describe("Should return default value when key is expired", () => {
                 test("Value", async () => {
                     await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(await cacheA.getOr("a", -1)).toBe(-1);
                 });
                 test("Function", async () => {
                     await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(await cacheA.getOr("a", () => -1)).toBe(-1);
                 });
                 test("Async function", async () => {
                     await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(
                         await cacheA.getOr("a", () => Promise.resolve(-1)),
                     ).toBe(-1);
                 });
                 test("LazyPromise", async () => {
                     await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     expect(
                         await cacheA.getOr(
                             "a",
@@ -203,7 +203,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: getAndRemove", () => {
             test("Should return value when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.getAndRemove("a")).toBe(1);
             });
             test("Should return null when key doesnt exists", async () => {
@@ -211,14 +211,14 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return null when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.getAndRemove("a")).toBeNull();
             });
             test("Should persist removal when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 await cacheA.getAndRemove("a");
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBeNull();
             });
         });
@@ -251,25 +251,25 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             describe("Should persist insertion when key is expired", () => {
                 test("Value", async () => {
                     await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     await cacheA.getOrAdd("a", -1);
                     expect(await cacheA.get("a")).toBe(-1);
                 });
                 test("Function", async () => {
                     await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     await cacheA.getOrAdd("a", () => -1);
                     expect(await cacheA.get("a")).toBe(-1);
                 });
                 test("Async function", async () => {
                     await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     await cacheA.getOrAdd("a", () => Promise.resolve(-1));
                     expect(await cacheA.get("a")).toBe(-1);
                 });
                 test("LazyPromise", async () => {
                     await cacheA.add("a", 1, TTL);
-                    await delay(TTL);
+                    await LazyPromise.delay(TTL);
                     await cacheA.getOrAdd(
                         "a",
                         new LazyPromise(() => Promise.resolve(-1)),
@@ -281,49 +281,49 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: add", () => {
             test("Should return true when key doesnt exists", async () => {
                 const result = await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(result).toBe(true);
             });
             test("Should return true when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.add("a", 1, null)).toBe(true);
             });
             test("Should persist values when key doesnt exist", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(1);
             });
             test("Should persist values when key is expired", async () => {
                 await cacheA.add("a", -1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 await cacheA.add("a", 1, null);
                 expect(await cacheA.get("a")).toBe(1);
             });
             test("Should return false when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.add("a", 1, null)).toBe(false);
             });
             test("Should not persist value when key exist", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 await cacheA.add("a", 2, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(1);
             });
         });
         describe("method: put", () => {
             test("Should return true when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.put("a", -1, null)).toBe(true);
             });
             test("Should persist value when key exist", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 await cacheA.put("a", -1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(-1);
             });
             test("Should return false when key doesnt exists", async () => {
@@ -331,42 +331,42 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return false when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.put("a", -1, null)).toBe(false);
             });
             test("Should persist values when key doesnt exist", async () => {
                 await cacheA.put("a", -1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(-1);
             });
             test("Should persist values when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 await cacheA.put("a", -1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(-1);
             });
             test("Should replace the ttl value", async () => {
                 const ttlA = TimeSpan.fromMilliseconds(100);
                 await cacheA.add("a", 1, ttlA);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 const ttlB = TimeSpan.fromMilliseconds(50);
                 await cacheA.put("a", -1, ttlB);
-                await delay(ttlB);
+                await LazyPromise.delay(ttlB);
                 expect(await cacheA.get("a")).toBeNull();
             });
         });
         describe("method: update", () => {
             test("Should return true when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.update("a", -1)).toBe(true);
             });
             test("Should persist value when key exist", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 await cacheA.update("a", -1);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(-1);
             });
             test("Should return false when key doesnt exists", async () => {
@@ -374,17 +374,17 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return false when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.update("a", -1)).toBe(false);
             });
             test("Should not persist value when key doesnt exist", async () => {
                 await cacheA.update("a", -1);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBeNull();
             });
             test("Should not persist value when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 await cacheA.update("a", -1);
                 expect(await cacheA.get("a")).toBeNull();
             });
@@ -392,14 +392,14 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: increment", () => {
             test("Should return true when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.increment("a", 1)).toBe(true);
             });
             test("Should persist increment when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 await cacheA.increment("a", 1);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(2);
             });
             test("Should return false when key doesnt exists", async () => {
@@ -407,23 +407,23 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return false when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.increment("a", 1)).toBe(false);
             });
             test("Should not persist increment when key doesnt exists", async () => {
                 await cacheA.increment("a", 1);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBeNull();
             });
             test("Should not persist increment when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 await cacheA.increment("a", 1);
                 expect(await cacheA.get("a")).toBeNull();
             });
             test("Should throw TypeCacheError key value is not number type", async () => {
                 await cacheA.add("a", "str", null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 await expect(cacheA.increment("a", 1)).rejects.toBeInstanceOf(
                     TypeCacheError,
                 );
@@ -432,14 +432,14 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: decrement", () => {
             test("Should return true when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.decrement("a", 1)).toBe(true);
             });
             test("Should persist decrement when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 await cacheA.decrement("a", 1);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBe(0);
             });
             test("Should return false when key doesnt exists", async () => {
@@ -447,23 +447,23 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should return false when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 expect(await cacheA.decrement("a", 1)).toBe(false);
             });
             test("Should not persist decrement when key doesnt exists", async () => {
                 await cacheA.decrement("a", 1);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 expect(await cacheA.get("a")).toBeNull();
             });
             test("Should not persist decrement when key is expired", async () => {
                 await cacheA.add("a", 1, TTL);
-                await delay(TTL.addTimeSpan(TTL.divide(4)));
+                await LazyPromise.delay(TTL.addTimeSpan(TTL.divide(4)));
                 await cacheA.decrement("a", 1);
                 expect(await cacheA.get("a")).toBeNull();
             });
             test("Should throw TypeCacheError key value is not number type", async () => {
                 await cacheA.add("a", "str", null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
                 await expect(cacheA.decrement("a", 1)).rejects.toBeInstanceOf(
                     TypeCacheError,
                 );
@@ -472,7 +472,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: remove", () => {
             test("Should return true when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
 
                 const result = await cacheA.remove("a");
 
@@ -480,10 +480,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should persist the key removal when key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
 
                 await cacheA.remove("a");
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
 
                 expect(await cacheA.get("a")).toEqual(null);
             });
@@ -491,7 +491,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: removeMany", () => {
             test("Should return true when one key exists", async () => {
                 await cacheA.add("a", 1, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
 
                 const result = await cacheA.removeMany(["a", "b", "c"]);
 
@@ -501,10 +501,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cacheA.add("a", 1, null);
                 await cacheA.add("b", 2, null);
                 await cacheA.add("c", 3, null);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
 
                 await cacheA.removeMany(["a", "b"]);
-                await delay(TTL.divide(4));
+                await LazyPromise.delay(TTL.divide(4));
 
                 const result = [
                     await cacheA.get("a"),
@@ -542,7 +542,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.exists("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -557,7 +557,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.exists("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -574,7 +574,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.missing("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -589,7 +589,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.missing("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -606,7 +606,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.get("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -621,7 +621,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.get("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -638,7 +638,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.getOr("a", 1);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -653,7 +653,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getOr("a", 1);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -674,7 +674,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 } catch {
                     /* Empty */
                 }
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -689,7 +689,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getOrFail("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -707,7 +707,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 const ttl = TimeSpan.fromMilliseconds(20);
                 await cacheA.add("a", 1, ttl);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -728,7 +728,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.update("a", 2);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(2);
@@ -743,7 +743,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.update("a", 2);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -760,7 +760,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 const ttl = TimeSpan.fromMilliseconds(20);
                 await cacheA.put("a", 1, ttl);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -779,7 +779,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.put("a", 1);
                 await cacheA.put("a", 2);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(2);
@@ -797,7 +797,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.remove("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -811,7 +811,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.remove("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -828,7 +828,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.removeMany(["a"]);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -842,7 +842,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.removeMany(["a"]);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -858,7 +858,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.getAndRemove("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -873,7 +873,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getAndRemove("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -889,7 +889,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getAndRemove("a");
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -905,7 +905,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.getOrAdd("a", 1);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -920,7 +920,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.getOrAdd("a", 1);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -936,7 +936,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 const ttl = TimeSpan.fromMilliseconds(50);
                 await cacheA.getOrAdd("a", 1, ttl);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -957,7 +957,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.increment("a", 1);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyIncrementedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -972,7 +972,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.increment("a", 1);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -989,7 +989,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 );
                 await cacheA.add("a", 1);
                 await cacheA.decrement("a", 1);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyDecrementedCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 expect(event_?.fields.value).toBe(1);
@@ -1004,7 +1004,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     },
                 );
                 await cacheA.decrement("a", 1);
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
                 expect(event_?.fields.key).toBe("a");
                 await unsubscribe();
@@ -1023,7 +1023,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cacheA.add("b", 2);
                 await cacheA.add("c", 3);
                 await cacheA.clear();
-                await delay(DELAY_TIME);
+                await LazyPromise.delay(DELAY_TIME);
                 expect(event_).toBeInstanceOf(KeysClearedCacheEvent);
                 await unsubscribe();
             });
@@ -1137,7 +1137,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
 
             await cacheA.add("a", 1);
-            await delay(DELAY_TIME);
+            await LazyPromise.delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1154,7 +1154,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
 
             await cacheA.add("a", 1);
-            await delay(DELAY_TIME);
+            await LazyPromise.delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1174,7 +1174,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
             await cacheA.add("a", 1);
             await cacheB.add("a", 1);
-            await delay(DELAY_TIME);
+            await LazyPromise.delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1194,7 +1194,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
             await cacheA.add("a", 1);
             await cacheB.add("a", 1);
-            await delay(DELAY_TIME);
+            await LazyPromise.delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1217,7 +1217,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
             await cacheA.add("a", 1);
             await cacheB.add("a", 1);
-            await delay(DELAY_TIME);
+            await LazyPromise.delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
@@ -1240,7 +1240,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
             await cacheA.add("a", 1);
             await cacheB.add("a", 1);
-            await delay(DELAY_TIME);
+            await LazyPromise.delay(DELAY_TIME);
 
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
