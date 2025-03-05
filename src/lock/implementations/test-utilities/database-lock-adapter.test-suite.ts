@@ -53,7 +53,6 @@ export type DatabaseLockAdapterTestSuiteSettings = {
  *                database: client,
  *                 tableName: "custom_table",
  *                 shouldRemoveExpiredKeys: false,
- *                 rootGroup: "@a",
  *             });
  *             await lockAdapter.init();
  *             return lockAdapter;

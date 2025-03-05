@@ -26,9 +26,7 @@ export class MemoryLockAdapter implements ILockAdapter {
      * ```ts
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      *
-     * const lockAdapter = new MemoryLockAdapter({
-     *   rootGroup: "@cache"
-     * });
+     * const lockAdapter = new MemoryLockAdapter();
      * ```
      * You can also provide an <i>Map</i>.
      * @example
@@ -36,15 +34,10 @@ export class MemoryLockAdapter implements ILockAdapter {
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
      *
      * const map = new Map<any, any>();
-     * const lockAdapter = new MemoryLockAdapter({
-     *   rootGroup: "@cache",
-     *   map
-     * });
+     * const lockAdapter = new MemoryLockAdapter(map);
      * ```
      */
-    constructor(private readonly map = new Map<string, ILockData>()) {
-        this.map = map;
-    }
+    constructor(private readonly map = new Map<string, ILockData>()) {}
 
     // eslint-disable-next-line @typescript-eslint/require-await
     async acquire(
