@@ -3,7 +3,11 @@
  */
 
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
-import { CORE, type OneOrMore } from "@/utilities/_module-exports.js";
+import {
+    CORE,
+    resolveOneOrMore,
+    type OneOrMore,
+} from "@/utilities/_module-exports.js";
 import {
     IterableCollection,
     ListCollection,
@@ -83,10 +87,7 @@ export function isAsyncIterable<TItem>(
 export function registerCollectionsToSerde(
     serde: OneOrMore<IFlexibleSerde>,
 ): void {
-    if (!Array.isArray(serde)) {
-        serde = [serde];
-    }
-    for (const serde_ of serde) {
+    for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerClass(ListCollection, CORE)
             .registerClass(IterableCollection, CORE);

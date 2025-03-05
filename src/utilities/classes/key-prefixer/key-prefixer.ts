@@ -129,13 +129,14 @@ export class KeyPrefixer implements IKeyPrefixer {
     }
 
     private validate(key: OneOrMore<string>): void {
-        if (key.includes(this.rootIdentifier)) {
+        const resolvedKey = resolveOneOrMoreStr(key);
+        if (resolvedKey.includes(this.rootIdentifier)) {
             throw new Error("!!__MESSAGE__!!");
         }
-        if (key.includes(this.groupIdentifier)) {
+        if (resolvedKey.includes(this.groupIdentifier)) {
             throw new Error("!!__MESSAGE__!!");
         }
-        if (key.includes(this.keyIdentifier)) {
+        if (resolvedKey.includes(this.keyIdentifier)) {
             throw new Error("!!__MESSAGE__!!");
         }
     }

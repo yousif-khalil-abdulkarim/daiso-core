@@ -8,6 +8,7 @@ import type {
 } from "@/serde/contracts/_module-exports.js";
 import {
     CORE,
+    resolveOneOrMore,
     type ISerializedError,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
@@ -156,10 +157,7 @@ export class EmptyCollectionError extends CollectionError {
 export function registerCollectionErrorsToSerde(
     serde: OneOrMore<IFlexibleSerde>,
 ): void {
-    if (!Array.isArray(serde)) {
-        serde = [serde];
-    }
-    for (const serde_ of serde) {
+    for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerClass(CollectionError, CORE)
             .registerClass(UnexpectedCollectionError, CORE)

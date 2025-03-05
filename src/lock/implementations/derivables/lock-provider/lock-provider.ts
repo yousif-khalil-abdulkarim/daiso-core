@@ -3,6 +3,7 @@
  */
 
 import {
+    resolveOneOrMore,
     TimeSpan,
     type Factoryable,
     type IKeyPrefixer,
@@ -182,6 +183,7 @@ export class LockProvider implements IGroupableLockProvider {
         },
     ): Promise<ILockAdapter> {
         const {
+            serde,
             lockStore,
             keyPrefixer,
             createLazyPromise,
@@ -190,7 +192,6 @@ export class LockProvider implements IGroupableLockProvider {
             defaultRefreshTime,
             groupableEventBus,
         } = settings;
-        let { serde } = settings;
         const adapter = await resolveFactoryable(
             factoryable,
             keyPrefixer.keyPrefix,
@@ -206,10 +207,7 @@ export class LockProvider implements IGroupableLockProvider {
             defaultRefreshTime,
             groupableEventBus,
         });
-        if (!Array.isArray(serde)) {
-            serde = [serde];
-        }
-        for (const serde_ of serde) {
+        for (const serde_ of resolveOneOrMore(serde)) {
             serde_.registerCustom(transformer);
         }
         return resolvedAdapter;

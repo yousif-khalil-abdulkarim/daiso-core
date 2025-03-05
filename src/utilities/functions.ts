@@ -3,6 +3,7 @@
  */
 
 import { LazyPromise } from "@/async/_module-exports.js";
+import { isIterable } from "@/collection/implementations/_shared.js";
 import type {
     Factory,
     Factoryable,
@@ -67,15 +68,30 @@ export function isObjectEmpty(
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
+export function resolveOneOrMore<TType>(value: OneOrMore<TType>): TType[] {
+    if (Array.isArray(value)) {
+        return value;
+    } else if (isIterable(value)) {
+        return [...value];
+    }
+    return [value];
+}
+
+/**
+ * @internal
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ */
 export function resolveOneOrMoreStr(
     name: OneOrMore<string>,
     joinStr = "/",
 ): string {
-    if (Array.isArray(name)) {
-        name = name.filter((str) => str.length > 0).join(joinStr);
-    }
-    return name;
+    return resolveOneOrMore(name)
+        .filter((str) => str.length > 0)
+        .join(joinStr);
 }
+
+resolveOneOrMoreStr([]);
 
 /**
  * @internal

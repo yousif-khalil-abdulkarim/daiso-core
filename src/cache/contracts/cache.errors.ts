@@ -10,6 +10,7 @@ import type {
 } from "@/serde/contracts/_module-exports.js";
 import {
     CORE,
+    resolveOneOrMore,
     type ISerializedError,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
@@ -125,10 +126,7 @@ export class KeyNotFoundCacheError
 export function registerCacheErrorsToSerde(
     serde: OneOrMore<IFlexibleSerde>,
 ): void {
-    if (!Array.isArray(serde)) {
-        serde = [serde];
-    }
-    for (const serde_ of serde) {
+    for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerClass(CacheError, CORE)
             .registerClass(UnexpectedCacheError, CORE)

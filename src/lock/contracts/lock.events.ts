@@ -7,7 +7,11 @@ import type { ILock } from "@/lock/contracts/lock.contract.js";
 import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import type { OneOrMore } from "@/utilities/types.js";
-import { CORE, type TimeSpan } from "@/utilities/_module-exports.js";
+import {
+    CORE,
+    resolveOneOrMore,
+    type TimeSpan,
+} from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -116,10 +120,7 @@ export type LockEvents =
 export function registerLockEventsToSerde(
     serde: OneOrMore<IFlexibleSerde>,
 ): void {
-    if (!Array.isArray(serde)) {
-        serde = [serde];
-    }
-    for (const serde_ of serde) {
+    for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerEvent(KeyAcquiredLockEvent, CORE)
             .registerEvent(KeyReleasedLockEvent, CORE)

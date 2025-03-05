@@ -14,7 +14,7 @@ export type AtLeastOne<TItem> = [TItem, ...TItem[]];
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type OneOrMore<TItem> = TItem | AtLeastOne<TItem>;
+export type OneOrMore<TItem> = TItem | AtLeastOne<TItem> | Iterable<TItem>;
 
 /**
  *

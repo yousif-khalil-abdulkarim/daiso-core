@@ -513,8 +513,7 @@ export class Serde<TSerializedValue>
     ): this {
         let name = resolveOneOrMoreStr(transformer.name);
         if (prefix !== undefined) {
-            prefix = resolveOneOrMoreStr(prefix);
-            name = resolveOneOrMoreStr([prefix, name]);
+            name = resolveOneOrMoreStr([resolveOneOrMoreStr(prefix), name]);
         }
         this.serdeAdapter.registerCustom({
             name,
