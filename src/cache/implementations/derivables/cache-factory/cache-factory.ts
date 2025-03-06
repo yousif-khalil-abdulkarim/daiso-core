@@ -21,7 +21,7 @@ import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
 export type CacheAdapters<TAdapters extends string = string> = Partial<
@@ -30,7 +30,7 @@ export type CacheAdapters<TAdapters extends string = string> = Partial<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
 export type CacheFactorySettings<TAdapters extends string = string> =
@@ -42,7 +42,7 @@ export type CacheFactorySettings<TAdapters extends string = string> =
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
 export class CacheFactory<TAdapters extends string = string>
@@ -107,10 +107,10 @@ export class CacheFactory<TAdapters extends string = string>
     /**
      * @example
      * ```ts
-     * import { CacheFactory } from "@daiso-tech/core/cache/implementations/derivables";
-     * import { MemoryCacheAdapter, RedisCacheAdapter, SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+     * import { CacheFactory } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter, RedisCacheAdapter, SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import { KeyPrefixer, TimeSpan, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      * import Sqlite from "better-sqlite3";

@@ -27,7 +27,7 @@ import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_mo
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
  * @group Adapters
  */
 export type MongodbCacheAdapterSettings = {
@@ -50,7 +50,7 @@ type MongodbCacheDocument = {
 /**
  * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with an adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
  * @group Adapters
  */
 export class MongodbCacheAdapter<TType>
@@ -112,9 +112,9 @@ export class MongodbCacheAdapter<TType>
     /**
      * @example
      * ```ts
-     * import { MongodbCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
+     * import { MongodbCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import { MongoClient } from "mongodb";
      *
      * const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");

@@ -25,7 +25,7 @@ declare module "ioredis" {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
  * @group Adapters
  */
 export type RedisCacheAdapterSettings = {
@@ -36,7 +36,7 @@ export type RedisCacheAdapterSettings = {
 /**
  * To utilize the <i>RedisCacheAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
  * @group Adapters
  */
 export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
@@ -58,9 +58,9 @@ export class RedisCacheAdapter<TType> implements ICacheAdapter<TType> {
     /**
      * @example
      * ```ts
-     * import { RedisCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
+     * import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
      *
      * const database = new Redis("YOUR_REDIS_CONNECTION_STRING");

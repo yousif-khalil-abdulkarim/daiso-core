@@ -19,7 +19,7 @@ import { TimeSpan, type Promisable } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
  * @group Test utilities
  */
 export type DatabaseCacheAdapterTestSuiteSettings = {
@@ -33,16 +33,16 @@ export type DatabaseCacheAdapterTestSuiteSettings = {
 /**
  * The <i>databaseCacheAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IDatabaseCacheAdapter}</i> with <i>vitest</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
  * @group Test utilities
  * @example
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import Sqlite, { type Database } from "better-sqlite3";
- * import { databaseCacheAdapterTestSuite } from "@daiso-tech/core/cache/implementations/test-utilities";
- * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
- * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
- * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+ * import { databaseCacheAdapterTestSuite } from "@daiso-tech/core/cache/test-utilities";
+ * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+ * import { Serde } from "@daiso-tech/core/serde";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
  *
  * describe("class: SqliteCacheAdapter", () => {
  *     let database: Database;

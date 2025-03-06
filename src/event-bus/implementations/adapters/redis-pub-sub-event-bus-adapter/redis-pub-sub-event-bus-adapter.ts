@@ -18,7 +18,7 @@ import { type InvokableFn } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/adapters"```
  * @group Adapters
  */
 export type RedisPubSubEventBusAdapterSettings = {
@@ -30,7 +30,7 @@ export type RedisPubSubEventBusAdapterSettings = {
 /**
  * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with a <i>{@link SuperJsonSerdeAdapter}</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/adapters"```
  * @group Adapters
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
@@ -42,9 +42,9 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     /**
      *  @example
      * ```ts
-     * import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
+     * import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
      *
      * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");

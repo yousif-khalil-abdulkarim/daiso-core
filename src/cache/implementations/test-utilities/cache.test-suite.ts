@@ -28,7 +28,7 @@ import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
  * @group Test utilities
  */
 export type CacheTestSuiteSettings = {
@@ -42,14 +42,14 @@ export type CacheTestSuiteSettings = {
 /**
  * The <i>cacheTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICache}</i> with <i>vitest</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
  * @group Test utilities
  * @example
  * ```ts
  * import { beforeEach, describe, expect, test } from "vitest";
- * import { cacheTestSuite } from "@daiso-tech/core/cache/implementations/test-utilities";
- * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
- * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
+ * import { cacheTestSuite } from "@daiso-tech/core/cache/test-utilities";
+ * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+ * import { Cache } from "@daiso-tech/core/cache";
  * import { KeyPrefixer } from "@daiso-tech/core/utilities";
  *
  * describe("class: Cache", () => {

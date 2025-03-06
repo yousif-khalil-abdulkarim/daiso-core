@@ -33,7 +33,7 @@ import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
  * @group Utilities
  */
 export type LockProviderTestSuiteSettings = {
@@ -48,18 +48,18 @@ export type LockProviderTestSuiteSettings = {
 /**
  * The <i>lockProviderTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ILock}</i> with <i>vitest</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
  * @group Utilities
  * @example
  * ```ts
  * import { describe, expect, test } from "vitest";
- * import { MemoryLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
- * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
- * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
- * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
- * import { lockProviderTestSuite } from "@daiso-tech/core/lock/implementations/test-utilities";
- * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
- * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
+ * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+ * import { LockProvider } from "@daiso-tech/core/lock";
+ * import { EventBus } from "@daiso-tech/core/event-bus";
+ * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+ * import { lockProviderTestSuite } from "@daiso-tech/core/lock/test-utilities";
+ * import { Serde } from "@daiso-tech/core/serde";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
  * import type { ILockData } from "@daiso-tech/core/lock/contracts";
  * import { KeyPrefixer } from "@daiso-tech/core/utilities";
  *

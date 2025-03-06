@@ -8,7 +8,7 @@ import type {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/adapters"```
  * @group Adapters
  */
 export class NoOpSerdeAdapter<TSerializedValue>
