@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { Items, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type IKey,
     type Invokable,
@@ -142,7 +142,6 @@ export class Lock implements ILock {
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
     }
-
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -150,9 +149,9 @@ export class Lock implements ILock {
         return this.lockEventBus.addListener(event, listener);
     }
 
-    addListenerMany<TEventClass extends EventClass<LockEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    addListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.lockEventBus.addListenerMany(events, listener);
     }
@@ -164,9 +163,9 @@ export class Lock implements ILock {
         return this.lockEventBus.removeListener(event, listener);
     }
 
-    removeListenerMany<TEventClass extends EventClass<LockEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    removeListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.lockEventBus.removeListenerMany(events, listener);
     }
@@ -191,9 +190,9 @@ export class Lock implements ILock {
         return this.lockEventBus.subscribe(event, listener);
     }
 
-    subscribeMany<TEventClass extends EventClass<LockEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    subscribeMany<TEventClassArr extends EventClass<LockEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockEventBus.subscribeMany(events, listener);
     }

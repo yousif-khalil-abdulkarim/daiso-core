@@ -2,7 +2,11 @@
  * @module EventBus
  */
 
-import type { Invokable, OneOrMore } from "@/utilities/_module-exports.js";
+import type {
+    Invokable,
+    Items,
+    OneOrMore,
+} from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -63,9 +67,9 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
-    addListenerMany<TEventClass extends EventClass<TEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    addListenerMany<TEventClassArr extends EventClass<TEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void>;
 
     /**
@@ -83,9 +87,9 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      * Removing unadded listener will have no effect and nothing will occur.
      * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
-    removeListenerMany<TEventClass extends EventClass<TEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    removeListenerMany<TEventClassArr extends EventClass<TEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void>;
 
     /**
@@ -118,9 +122,9 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      * The <i>subscribeMany</i> method is used for listening to multiple <i>{@link BaseEvent}</i> and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
-    subscribeMany<TEventClass extends EventClass<TEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    subscribeMany<TEventClassArr extends EventClass<TEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<Unsubscribe>;
 };
 

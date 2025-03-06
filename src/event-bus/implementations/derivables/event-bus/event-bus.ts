@@ -26,6 +26,7 @@ import type {
     IKeyPrefixer,
     OneOrMore,
     TimeSpan,
+    Items,
 } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
@@ -272,9 +273,9 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    addListenerMany<TEventClass extends EventClass<TEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    addListenerMany<TEventClassArr extends EventClass<TEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             if (events.length === 0) {
@@ -288,9 +289,9 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    removeListenerMany<TEventClass extends EventClass<TEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    removeListenerMany<TEventClassArr extends EventClass<TEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             if (events.length === 0) {
@@ -345,9 +346,9 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         return this.subscribeMany([event], listener);
     }
 
-    subscribeMany<TEventClass extends EventClass<TEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    subscribeMany<TEventClassArr extends EventClass<TEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<Unsubscribe> {
         return this.createLazyPromise(async () => {
             await this.addListenerMany(events, listener);

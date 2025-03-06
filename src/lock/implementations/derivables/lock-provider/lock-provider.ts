@@ -9,6 +9,7 @@ import {
     type IKeyPrefixer,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type IFactoryObject,
+    type Items,
 } from "@/utilities/_module-exports.js";
 import {
     KeyPrefixer,
@@ -393,17 +394,6 @@ export class LockProvider implements IGroupableLockProvider {
         );
     }
 
-    private createLazyPromise<TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
-    ): LazyPromise<TValue> {
-        return new LazyPromise(asyncFn, {
-            retryAttempts: this.retryAttempts,
-            backoffPolicy: this.backoffPolicy,
-            retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
-        });
-    }
-
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -411,9 +401,9 @@ export class LockProvider implements IGroupableLockProvider {
         return this.eventBus.addListener(event, listener);
     }
 
-    addListenerMany<TEventClass extends EventClass<LockEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    addListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.eventBus.addListenerMany(events, listener);
     }
@@ -425,9 +415,9 @@ export class LockProvider implements IGroupableLockProvider {
         return this.eventBus.removeListener(event, listener);
     }
 
-    removeListenerMany<TEventClass extends EventClass<LockEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    removeListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListenerMany(events, listener);
     }
@@ -452,11 +442,22 @@ export class LockProvider implements IGroupableLockProvider {
         return this.eventBus.subscribe(event, listener);
     }
 
-    subscribeMany<TEventClass extends EventClass<LockEvents>>(
-        events: TEventClass[],
-        listener: Invokable<EventInstance<TEventClass>>,
+    subscribeMany<TEventClassArr extends EventClass<LockEvents>[]>(
+        events: [...TEventClassArr],
+        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribeMany(events, listener);
+    }
+
+    private createLazyPromise<TValue = void>(
+        asyncFn: () => PromiseLike<TValue>,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(asyncFn, {
+            retryAttempts: this.retryAttempts,
+            backoffPolicy: this.backoffPolicy,
+            retryPolicy: this.retryPolicy,
+            timeout: this.timeout,
+        });
     }
 
     create(
