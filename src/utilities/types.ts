@@ -4,6 +4,7 @@
 
 import type { LazyPromise } from "@/async/_module-exports.js";
 
+export type Items<TArray extends any[]> = TArray[number];
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
