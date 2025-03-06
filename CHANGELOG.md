@@ -1,5 +1,41 @@
 # @daiso-tech/core
 
+## 0.27.0
+
+### Minor Changes
+
+-   e6ad128: Added new method <i>onError</i> on <i>LazyPromise</i> class.
+-   5a2a996: Updated the <i>Cache</i> and <i>CacheFactory</i> classes, they can now take factory function/object that returns a <i>ICacheAdapter</i> and <i>IDatabaseCacheAdapter</i>.
+-   0602f10: Made the <i>LockProviderFactory</i> class configurable by using the builder pattern.
+-   d947cb3: Shortend the import paths
+-   e6ad128: Changed <i>LazyPromise</i> class to be immutable.
+-   9c8b932: Made the <i>CacheFactory</i> class configurable by using the builder pattern.
+-   e6ad128: Moved the <i>delay</i> function to <i>LazyPromise</i> class as a static method.
+-   e6ad128: Added new method <i>onSuccess</i> on <i>LazyPromise</i> class.
+-   5a2a996: Removed <i>withGroup</i> and <i>group</i> methods from <i>ICacheAdapter</i>. Added <i>removeAll</i> method to <i>ICacheAdapter</i>.
+-   e6ad128: Removed callbacks from <i>LazyPromise</i> <i>defer</i> method.
+-   0602f10: Updated the <i>LockProvider</i> and <i>LockProviderFactory</i> classes, they can now take factory function/object that returns a <i>ILockAdapter</i> or <i>IDatabaseLockAdapter</i>.
+-   5a2a996: Removed the following methods from <i>ICache</i> contract:
+    -   <i>existsMany</i>
+    -   <i>missingMany</i>
+    -   <i>getMany</i>
+    -   <i>getOrMany</i>
+    -   <i>addMany</i>
+    -   <i>updateMany</i>
+    -   <i>putMany</i>
+        Changed the <i>removeMany<i> method, it now returns a boolean.
+-   b9d03e1: Removed <i>withGroup</i> and <i>group</i> methods from <i>IEventBusAdapter</i> contract.
+-   0602f10: Removed <i>withGroup</i> and <i>group</i> methods from <i>ILockAdapter</i> and <i>IDatabaseLockAdapter</i>.
+-   9c8b932: Made the <i>EventBusFactory</i> class configurable by using the builder pattern.
+-   5a2a996: Added <i>IDatabaseCacheAdapter</i> contract.
+-   e6ad128: Added new method <i>onFinally</i> on <i>LazyPromise</i> class.
+-   b9d03e1: Updated the <i>EventBus</i> and <i>EventBusFactory</i> classes, they can now take factory function/object that returns a <i>IEventBusAdapter</i>.
+
+### Patch Changes
+
+-   5a2a996: Fixed a bug with <i>LockProvider</i> class
+-   dd22f21: Fixed a typecript bug with <i>IEventListenable</i> contract.
+
 ## 0.26.1
 
 ### Patch Changes
