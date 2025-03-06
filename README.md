@@ -33,3 +33,13 @@ This library is heavily inspired laravel but built in modular way where you can 
 #### NOTE: This library only supports ESM (ecmascript) module.
 
 ### Visit the [docs](https://yousif-khalil-abdulkarim.github.io/daiso-core/) for more information!
+
+@daiso-tech/core/cache/implementations/adapters
+@daiso-tech/core/cache/adapters
+
+
+@daiso-tech/core/cache/implementations/test-utilities
+@daiso-tech/core/cache/test-utilities
+
+@daiso-tech/core/cache/implementations/derivables
+@daiso-tech/core/cache

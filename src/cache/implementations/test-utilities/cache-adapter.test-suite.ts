@@ -18,7 +18,7 @@ import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
  * @group Test utilities
  */
 export type CacheAdapterTestSuiteSettings = {
@@ -32,7 +32,7 @@ export type CacheAdapterTestSuiteSettings = {
 /**
  * The <i>cacheAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICacheAdapter}</i> with <i>vitest</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
  * @group Test utilities
  * @example
  * ```ts
@@ -42,11 +42,11 @@ export type CacheAdapterTestSuiteSettings = {
  *   RedisContainer,
  *   type StartedRedisContainer,
  * } from "@testcontainers/redis";
- * import { cacheAdapterTestSuite } from "@daiso-tech/reoce/cache/implementations/test-utilities";
- * import { RedisCacheAdapter } from "@daiso-tech/reoce/cache/implementations/adapters";
- * import { TimeSpan } from "@daiso-tech/reoce/utilities";
- * import { SuperJsonSerdeAdapter } from "@daiso-tech/reoce/serde/implementations/adapters";
- * import { Serde } from "@daiso-tech/reoce/serde/implementations/derivables";
+ * import { cacheAdapterTestSuite } from "@daiso-tech/cache/implementations/test-utilities";
+ * import { RedisCacheAdapter } from "@daiso-tech/cache/implementations/adapters";
+ * import { TimeSpan } from "@daiso-tech/cache/utilities";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/cache/serde/implementations/adapters";
+ * import { Serde } from "@daiso-tech/cache/serde/implementations/derivables";
  *
  * const timeout = TimeSpan.fromMinutes(2);
  * describe("class: RedisCacheAdapter", () => {

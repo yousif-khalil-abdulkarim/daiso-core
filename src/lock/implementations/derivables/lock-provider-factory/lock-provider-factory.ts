@@ -22,7 +22,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
 export type LockAdapters<TAdapters extends string> = Partial<
@@ -31,7 +31,7 @@ export type LockAdapters<TAdapters extends string> = Partial<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
 export type LockProviderFactorySettings<TAdapters extends string> =
@@ -43,7 +43,7 @@ export type LockProviderFactorySettings<TAdapters extends string> =
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
 export class LockProviderFactory<TAdapters extends string>
@@ -137,8 +137,8 @@ export class LockProviderFactory<TAdapters extends string>
     /**
      * @example
      * ```ts
-     * import { LockProviderFactory } from "@daiso-tech/core/lock/implementations/derivables";
-     * import { MemoryLockAdapter, RedisLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { LockProviderFactory } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter, RedisLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import Redis from "ioredis"
      *
      * const lockProviderFactory = new LockProviderFactory({

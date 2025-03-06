@@ -43,26 +43,26 @@
     ],
     "exports": {
         "./*": {
-            "import": "./dist/*/_module-exports.js",
-            "types": "./dist/*/_module-exports.d.ts"
-        },
-        "./*/implementations": {
-            "import": "./dist/*/implementations/_module-exports.js",
-            "types": "./dist/*/implementations/_module-exports.d.ts"
+            "import": [
+                "./dist/*/_module-exports.js",
+                "./dist/*/implementations/_module-exports.js",
+                "./dist/*/implementations/derivables/_module-exports.js"
+            ],
+            "types": [
+                "./dist/*/_module-exports.d.ts",
+                "./dist/*/implementations/_module-exports.d.ts",
+                "./dist/*/implementations/derivables/_module-exports.d.ts"
+            ]
         },
         "./*/contracts": {
             "import": "./dist/*/contracts/_module-exports.js",
             "types": "./dist/*/contracts/_module-exports.d.ts"
         },
-        "./*/implementations/adapters": {
+        "./*/adapters": {
             "import": "./dist/*/implementations/adapters/_module-exports.js",
             "types": "./dist/*/implementations/adapters/_module-exports.d.ts"
         },
-        "./*/implementations/derivables": {
-            "import": "./dist/*/implementations/derivables/_module-exports.js",
-            "types": "./dist/*/implementations/derivables/_module-exports.d.ts"
-        },
-        "./*/implementations/test-utilities": {
+        "./*/test-utilities": {
             "import": "./dist/*/implementations/test-utilities/_module-exports.js",
             "types": "./dist/*/implementations/test-utilities/_module-exports.d.ts"
         }

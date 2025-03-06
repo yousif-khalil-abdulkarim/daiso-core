@@ -21,7 +21,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
 export type EventBusAdapters<TAdapters extends string = string> = Partial<
@@ -30,7 +30,7 @@ export type EventBusAdapters<TAdapters extends string = string> = Partial<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
 export type EventBusFactorySettings<TAdapters extends string = string> =
@@ -42,7 +42,7 @@ export type EventBusFactorySettings<TAdapters extends string = string> =
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
 export class EventBusFactory<TAdapters extends string = string>
@@ -91,11 +91,11 @@ export class EventBusFactory<TAdapters extends string = string>
      * @example
      * ```ts
      * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
-     * import { EventBusFactory } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { EventBusFactory } from "@daiso-tech/core/event-bus";
+     * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/utilities";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
      *
      * class EventBusAdapterFactory implements IFactoryObject<string, IEventBusAdapter> {

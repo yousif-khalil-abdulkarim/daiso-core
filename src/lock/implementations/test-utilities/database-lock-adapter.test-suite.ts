@@ -14,7 +14,7 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
  * @group Utilities
  */
 export type DatabaseLockAdapterTestSuiteSettings = {
@@ -28,13 +28,13 @@ export type DatabaseLockAdapterTestSuiteSettings = {
 /**
  * The <i>databaseLockAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IDatabaseLockAdapter}</i> with <i>vitest</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
  * @group Utilities
  * @example
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
- * import { databaseLockAdapterTestSuite } from "@@daiso-tech/core/lock/implementations/test-utilities";
- * import { LibsqlLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+ * import { databaseLockAdapterTestSuite } from "@@daiso-tech/core/lock/test-utilities";
+ * import { LibsqlLockAdapter } from "@daiso-tech/core/lock/adapters";
  * import { type Client, createClient } from "@libsql/client";
  *
  * describe("class: LibsqlLockAdapter", () => {

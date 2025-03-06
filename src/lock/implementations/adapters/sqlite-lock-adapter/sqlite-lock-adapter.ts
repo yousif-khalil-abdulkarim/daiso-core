@@ -18,7 +18,7 @@ import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports.js
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
  * @group Adapters
  */
 export type SqliteLockAdapterSettings = {
@@ -34,7 +34,7 @@ export type SqliteLockAdapterSettings = {
  * Note the <i>SqliteLockAdapter</i> is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes.
  * To use it correctly, ensure all process instances access the same consistent, persisted database.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
  * @group Adapters
  */
 export class SqliteLockAdapter
@@ -45,7 +45,7 @@ export class SqliteLockAdapter
     /**
      * @example
      * ```ts
-     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import Sqlite from "better-sqlite3";
      *
      * const database = new Sqlite("local.db");

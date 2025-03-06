@@ -39,7 +39,7 @@ import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
 export type EventBusSettingsBase = {
@@ -72,14 +72,14 @@ export type EventBusSettingsBase = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
 export type EventBusAdapterFactoryable = Factoryable<string, IEventBusAdapter>;
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
 export type EventBusSettings = EventBusSettingsBase & {
@@ -89,7 +89,7 @@ export type EventBusSettings = EventBusSettingsBase & {
 /**
  * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
 export class EventBus<TEvents extends BaseEvent = BaseEvent>
@@ -107,8 +107,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     /**
      * @example
      * ```ts
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { KeyPrefixer } from "@daiso-tech/utilities";
      *
      * const eventBus = new EventBus({
@@ -121,8 +121,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * @example
      * ```ts
      * import type { IEventBusAdapter } from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { KeyPrefixer, type Promiseable } from "@daiso-tech/utilities";
      *
      * const store: Partial<Record<string, IEventBusAdapter>> = {};
@@ -146,8 +146,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * @example
      * ```ts
      * import type { IEventBusAdapter } from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/utilities";
      *
      *

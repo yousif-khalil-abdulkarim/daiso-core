@@ -14,7 +14,7 @@ import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
  * @group Utilities
  */
 export type LockAdapterTestSuiteSettings = {
@@ -28,13 +28,13 @@ export type LockAdapterTestSuiteSettings = {
 /**
  * The <i>lockAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ILockAdapter}</i> with <i>vitest</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/test-utilities"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
  * @group Utilities
  * @example
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
- * import { lockAdapterTestSuite } from "@daiso-tech/core/lock/implementations/test-utilities";
- * import { RedisLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+ * import { lockAdapterTestSuite } from "@daiso-tech/core/lock/test-utilities";
+ * import { RedisLockAdapter } from "@daiso-tech/core/lock/adapters";
  * import { Redis } from "ioredis";
  * import {
  *     RedisContainer,

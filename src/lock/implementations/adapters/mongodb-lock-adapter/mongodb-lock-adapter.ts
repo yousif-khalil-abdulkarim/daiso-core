@@ -16,7 +16,7 @@ import { ObjectId } from "mongodb";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
  * @group Adapters
  */
 export type MongodbLockAdapterSettings = {
@@ -40,7 +40,7 @@ type MongodbLockDocument = {
  *
  * Note in order to use <i>MongodbLockAdapter</i> correctly, ensure you use a single, consistent database across all server instances.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
  * @group Adapters
  */
 export class MongodbLockAdapter
@@ -53,7 +53,7 @@ export class MongodbLockAdapter
     /**
      * @example
      * ```ts
-     * import { MongodbLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { MongodbLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { MongoClient } from "mongodb";
      *
      * const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");

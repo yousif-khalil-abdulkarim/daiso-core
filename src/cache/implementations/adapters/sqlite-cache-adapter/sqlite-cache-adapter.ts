@@ -24,7 +24,7 @@ import { KyselyCacheAdapter } from "@/cache/implementations/adapters/kysely-cach
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
  * @group Adapters
  */
 export type SqliteCacheAdapterSettings = {
@@ -38,7 +38,7 @@ export type SqliteCacheAdapterSettings = {
 /**
  * To utilize the <i>SqliteCacheAdapter</i>, you must install the <i>"better-sqlite3"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
  * @group Adapters
  */
 export class SqliteCacheAdapter<TType = unknown>
@@ -53,9 +53,9 @@ export class SqliteCacheAdapter<TType = unknown>
     /**
      * @example
      * ```ts
-     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
+     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
      *
      * const database = new Sqlite("local.db");

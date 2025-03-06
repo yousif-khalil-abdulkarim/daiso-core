@@ -20,7 +20,7 @@ import type { Client } from "@libsql/client";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
  * @group Adapters
  */
 export type LibsqlLockAdapterSettings = {
@@ -36,7 +36,7 @@ export type LibsqlLockAdapterSettings = {
  * Note in order to use <i>LibsqlLockAdapter</i> correctly, ensure you use a single, consistent database across all server instances.
  * This means you can't use libsql embedded replicas.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/adapters"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
  * @group Adapters
  */
 export class LibsqlLockAdapter
@@ -47,7 +47,7 @@ export class LibsqlLockAdapter
     /***
      * @example
      * ```ts
-     * import { LibsqlLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { LibsqlLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { createClient } from "@libsql/client";
      *
      * const database = createClient({ url: "file:local.db" });

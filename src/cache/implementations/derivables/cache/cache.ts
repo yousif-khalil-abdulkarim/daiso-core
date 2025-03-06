@@ -59,7 +59,7 @@ import type { IKeyPrefixer, Items } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
 export type CacheSettingsBase = {
@@ -68,8 +68,8 @@ export type CacheSettingsBase = {
     /**
      * @default
      * ```ts
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { KeyPrefixer } from "@daiso-tech/core/utilities";
      *
      * new EventBus({
@@ -113,7 +113,7 @@ export type CacheSettingsBase = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
 export type CacheAdapterFactoryable<TType> = Factoryable<
@@ -123,7 +123,7 @@ export type CacheAdapterFactoryable<TType> = Factoryable<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
 export type CacheSettings = CacheSettingsBase & {
@@ -132,7 +132,7 @@ export type CacheSettings = CacheSettingsBase & {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {
@@ -175,11 +175,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *
      * @example
      * ```ts
-     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
+     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
-     * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
+     * import { Cache } from "@daiso-tech/core/cache";
      * import { KeyPrefixer } from "@daiso-tech/core/utilities";
      *
      * const database = new Sqlite("local.db");
@@ -200,12 +200,12 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * You can pass factory function that will create an adapter for every group.
      * @example
      * ```ts
-     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
      * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
-     * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
+     * import { Cache } from "@daiso-tech/core/cache";
      * import { KeyPrefixer, type Promiseable } from "@daiso-tech/core/utilities";
      *
      *
@@ -230,12 +230,12 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
      * @example
      * ```ts
-     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/implementations/adapters";
+     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
      * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters"
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
-     * import { Cache } from "@daiso-tech/core/cache/implementations/derivables";
+     * import { Cache } from "@daiso-tech/core/cache";
      * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
      *
      * class CahceAdapterFactory implements IFactoryObject<string, ICacheAdapter> {

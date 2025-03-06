@@ -43,7 +43,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/deriavables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/deriavables"```
  * @group Derivables
  */
 export type SerdeSettings = {
@@ -161,7 +161,7 @@ export type SerdeSettings = {
 /**
  * <i>Serde</i> class can be derived from any <i>{@link IFlexibleSerdeAdapter}</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/implementations/deriavables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/deriavables"```
  * @group Derivables
  */
 export class Serde<TSerializedValue>
@@ -171,8 +171,8 @@ export class Serde<TSerializedValue>
      * @example
      * ```ts
      * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
      *
      * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
      * ```
@@ -277,8 +277,8 @@ export class Serde<TSerializedValue>
      * @example
      * ```ts
      * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
      *
      * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
      *
@@ -297,8 +297,8 @@ export class Serde<TSerializedValue>
      * @example
      * ```ts
      * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
      *
      * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
      *
@@ -320,8 +320,8 @@ export class Serde<TSerializedValue>
      * @example
      * ```ts
      * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
      * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      *
      * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
@@ -371,8 +371,8 @@ export class Serde<TSerializedValue>
      * @example
      * ```ts
      * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
      * import { ISerializable } from "@daiso-tech/core/serde/contracts";
      *
      * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
@@ -450,8 +450,8 @@ export class Serde<TSerializedValue>
      * @example
      * ```ts
      * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/implementations/adapters";
-     * import { Serde } from "@daiso-tech/core/serde/implementations/derivables";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
      *
      * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
      *

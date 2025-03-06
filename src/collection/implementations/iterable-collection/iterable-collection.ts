@@ -65,7 +65,7 @@ import { resolveLazyable } from "@/utilities/_module-exports.js";
  * All methods that return <i>{@link ICollection}</i> are executed lazly which means they will be executed when the <i>IterableCollection</i> is iterated with <i>forEach</i> method or "for of" loop.
  * The rest of the methods are executed eagerly.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/implementations"```
+ * IMPORT_PATH: ```"@daiso-tech/core/collection"```
  * @group Adapters
  */
 export class IterableCollection<TInput = unknown>

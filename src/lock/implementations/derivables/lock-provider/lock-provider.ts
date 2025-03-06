@@ -57,7 +57,7 @@ import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-pro
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
 export type LockProviderSettingsBase = {
@@ -73,8 +73,8 @@ export type LockProviderSettingsBase = {
     /**
      * @default
      * ```ts
-     * import { EventBus } from "@daiso-tech/core/event-bus/implementations/derivables";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/implementations/adapters";
+     * import { EventBus } from "@daiso-tech/core/event-bus";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { KeyPrefixer } from "@daiso-tech/core/utilities";
      *
      * new EventBus({
@@ -147,7 +147,7 @@ export type LockProviderSettingsBase = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
 export type LockAdapterFactoryable = Factoryable<
@@ -157,7 +157,7 @@ export type LockAdapterFactoryable = Factoryable<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
 export type LockProviderSettings = LockProviderSettingsBase & {
@@ -171,7 +171,7 @@ export type LockProviderSettings = LockProviderSettingsBase & {
  * allowing them to be seamlessly transferred across different servers, processes, and databases.
  * This can be done directly using <i>{@link IFlexibleSerde}</i> or indirectly through components that rely on <i>{@link IFlexibleSerde}</i> internally.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/implementations/derivables"```
+ * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
 export class LockProvider implements IGroupableLockProvider {
@@ -241,8 +241,8 @@ export class LockProvider implements IGroupableLockProvider {
     /**
      * @example
      * ```ts
-     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { LockProvider } from "@daiso-tech/core/lock";
      * import { KeyPrefixer } from "@daiso-tech/core/utilities";
      *
      * const database = new Sqlite("local.db");
@@ -261,8 +261,8 @@ export class LockProvider implements IGroupableLockProvider {
      * You can pass factory function that will create an adapter for every group.
      * @example
      * ```ts
-     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
-     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { LockProvider } from "@daiso-tech/core/lock";
      * import { KeyPrefixer } from "@daiso-tech/core/utilities";
      *
      * const database = new Sqlite("local.db");
@@ -281,9 +281,9 @@ export class LockProvider implements IGroupableLockProvider {
      * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
      * @example
      * ```ts
-     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import type { ILockAdapter } from "@daiso-tech/core/lock/contracts";
-     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { LockProvider } from "@daiso-tech/core/lock";
      * import { KeyPrefixer, type Promiseable } from "@daiso-tech/core/utilities";
      *
      * async function lockAdapterFactory(prefix: string): Promiseable<ILockAdapter> {
@@ -308,9 +308,9 @@ export class LockProvider implements IGroupableLockProvider {
      * You can pass factory function that will create an adapter for every group.
      * @example
      * ```ts
-     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/implementations/adapters";
+     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import type { ILockAdapter } from "@daiso-tech/core/lock/contracts";
-     * import { LockProvider } from "@daiso-tech/core/lock/implementations/derivables";
+     * import { LockProvider } from "@daiso-tech/core/lock";
      * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
      *
      * class LockAdapterFactory implementations IFactoryObject<string, ILockAdapter> {

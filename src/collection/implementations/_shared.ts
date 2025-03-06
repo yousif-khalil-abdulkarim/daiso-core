@@ -37,7 +37,7 @@ class RangeIterable implements Iterable<number> {
  * // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
  * ```
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/implementations"```
+ * IMPORT_PATH: ```"@daiso-tech/core/collection"```
  * @group Utilities
  */
 export function range(from: number, to: number): Iterable<number> {
@@ -47,7 +47,7 @@ export function range(from: number, to: number): Iterable<number> {
 /**
  * The <i>isIterable</i> returns true if the value is <i>{@link Iterable}</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/implementations"```
+ * IMPORT_PATH: ```"@daiso-tech/core/collection"```
  * @group Utilities
  */
 export function isIterable<TItem>(
@@ -64,7 +64,7 @@ export function isIterable<TItem>(
 /**
  * The <i>isAsyncIterable</i> returns true if the value is <i>{@link AsyncIterable}</i>.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/implementations"```
+ * IMPORT_PATH: ```"@daiso-tech/core/collection"```
  * @group Utilities
  */
 export function isAsyncIterable<TItem>(
@@ -81,7 +81,7 @@ export function isAsyncIterable<TItem>(
 /**
  * The <i>registerCollectionsToSerde</i> function registers the <i>ListCollection</i> and <i>IterableCollection</i> classes with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/implementations"```
+ * IMPORT_PATH: ```"@daiso-tech/core/collection"```
  * @group Errors
  */
 export function registerCollectionsToSerde(
