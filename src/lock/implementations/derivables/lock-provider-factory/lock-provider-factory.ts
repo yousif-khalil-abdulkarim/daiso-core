@@ -5,11 +5,9 @@
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
-    IDatabaseLockAdapter,
-    ILockAdapter,
+    ILockProviderFactory,
+    IGroupableLockProvider,
 } from "@/lock/contracts/_module-exports.js";
-import type { ILockProviderFactory } from "@/lock/contracts/lock-provider-factory.contract.js";
-import type { IGroupableLockProvider } from "@/lock/contracts/lock-provider.contract.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
@@ -17,6 +15,7 @@ import {
 import type { IKeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     LockProvider,
+    type LockAdapterFactoryable,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
 
@@ -26,7 +25,7 @@ import {
  * @group Derivables
  */
 export type LockAdapters<TAdapters extends string> = Partial<
-    Record<TAdapters, ILockAdapter | IDatabaseLockAdapter>
+    Record<TAdapters, LockAdapterFactoryable>
 >;
 
 /**
