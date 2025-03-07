@@ -460,6 +460,75 @@ export class Lock implements ILock {
         ).setRetryPolicy((error) => error instanceof UnableToAquireLockError);
     }
 
+    /**
+     * You can pass in a sync function or async function.
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * await lock.runBlockingOrFail(async () => {
+     *   console.log("START");
+     *   await LazyPromise.delay(TimeSpan.fromSeconds(10));
+     *   console.log("END");
+     * });
+     * ```
+     *
+     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * await lock.runBlockingOrFail(
+     *   new LazyPromise(async () => {
+     *     console.log("START");
+     *     await LazyPromise.delay(TimeSpan.fromSeconds(10));
+     *     console.log("END");
+     *   })
+     * );
+     * ```
+     */
+    runBlockingOrFail<TValue = void>(
+        asyncFn: LazyPromiseable<TValue>,
+        settings?: AquireBlockingSettings,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(async () => {
+            if (typeof asyncFn === "function") {
+                asyncFn = new LazyPromise(asyncFn);
+            }
+            try {
+                await this.acquireBlockingOrFail(settings);
+
+                return await asyncFn;
+            } finally {
+                await this.release();
+            }
+        }).setRetryPolicy((error) => error instanceof UnableToAquireLockError);
+    }
+
     acquire(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             try {
@@ -530,6 +599,19 @@ export class Lock implements ILock {
                 await LazyPromise.delay(interval);
             }
             return false;
+        });
+    }
+
+    acquireBlockingOrFail(
+        settings?: AquireBlockingSettings,
+    ): LazyPromise<void> {
+        return new LazyPromise(async () => {
+            const hasAquired = await this.acquireBlocking(settings);
+            if (!hasAquired) {
+                throw new KeyAlreadyAcquiredLockError(
+                    `Key "${this.key.resolved}" already acquired`,
+                );
+            }
         });
     }
 

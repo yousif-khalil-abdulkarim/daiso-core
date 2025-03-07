@@ -302,6 +302,102 @@ export function lockProviderTestSuite(
                 expect(index).toBeGreaterThan(1);
             });
         });
+        describe("method: runBlockingOrFail", () => {
+            test("Should return string when lock is available", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                const result = await lock.runBlockingOrFail(
+                    async () => {
+                        await LazyPromise.delay(DELAY_TIME);
+                        return "a";
+                    },
+                    {
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    },
+                );
+
+                expect(result).toBe("a");
+            });
+            test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                await lock.acquire();
+                const promise = lock.runBlockingOrFail(
+                    async () => {
+                        await LazyPromise.delay(DELAY_TIME);
+                        return "a";
+                    },
+                    {
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    },
+                );
+
+                await expect(promise).rejects.toBeInstanceOf(
+                    KeyAlreadyAcquiredLockError,
+                );
+            });
+            test("Should work with LazyPromise", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                const result = await lock.runBlockingOrFail(
+                    new LazyPromise(async () => {
+                        await LazyPromise.delay(DELAY_TIME);
+                        return "a";
+                    }),
+                    {
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    },
+                );
+
+                expect(result).toBe("a");
+            });
+            test("Should retry acquire the lock", async () => {
+                const key = "a";
+                const ttl = TimeSpan.fromMilliseconds(50);
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                await lock.acquire();
+                let index = 0;
+                await lock.addListener(
+                    KeyAlreadyAcquiredLockEvent,
+                    (_event) => {
+                        index++;
+                    },
+                );
+                try {
+                    await lock.runBlockingOrFail(
+                        async () => {
+                            await LazyPromise.delay(DELAY_TIME);
+                        },
+                        {
+                            time: TimeSpan.fromMilliseconds(55),
+                            interval: TimeSpan.fromMilliseconds(5),
+                        },
+                    );
+                } catch {
+                    /* Empty */
+                }
+
+                expect(index).toBeGreaterThan(1);
+            });
+        });
         describe("method: acquire", () => {
             test("Should return true when lock is available", async () => {
                 const key = "a";
@@ -405,12 +501,12 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquireBlocking({
-                    time: TimeSpan.fromMilliseconds(0),
-                    interval: TimeSpan.fromMilliseconds(0),
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
                 });
                 const result = await lock.acquireBlocking({
-                    time: TimeSpan.fromMilliseconds(0),
-                    interval: TimeSpan.fromMilliseconds(0),
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
                 });
 
                 expect(result).toBe(false);
@@ -425,8 +521,8 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquireBlocking({
-                    time: TimeSpan.fromMilliseconds(0),
-                    interval: TimeSpan.fromMilliseconds(0),
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
                 });
                 const result = await lock.isExpired();
 
@@ -442,8 +538,8 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquireBlocking({
-                    time: TimeSpan.fromMilliseconds(0),
-                    interval: TimeSpan.fromMilliseconds(0),
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
                 });
                 const result = await lock.isLocked();
 
@@ -468,6 +564,102 @@ export function lockProviderTestSuite(
                     time: TimeSpan.fromMilliseconds(55),
                     interval: TimeSpan.fromMilliseconds(5),
                 });
+
+                expect(index).toBeGreaterThan(1);
+            });
+        });
+        describe("method: acquireBlockingOrFail", () => {
+            test("Should not throw KeyAlreadyAcquiredLockError when lock is available", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                const promise = lock.acquireBlockingOrFail({
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
+                });
+
+                await expect(promise).resolves.toBeUndefined();
+            });
+            test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                await lock.acquireBlockingOrFail({
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
+                });
+                const promise = lock.acquireBlockingOrFail({
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
+                });
+
+                await expect(promise).rejects.toBeInstanceOf(
+                    KeyAlreadyAcquiredLockError,
+                );
+            });
+            test("Should not be expired when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquireBlockingOrFail({
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
+                });
+                const result = await lock.isExpired();
+
+                expect(result).toBe(false);
+            });
+            test("Should be loked when released by same owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const owner = "b";
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                await lock.acquireBlockingOrFail({
+                    time: TimeSpan.fromMilliseconds(5),
+                    interval: TimeSpan.fromMilliseconds(5),
+                });
+                const result = await lock.isLocked();
+
+                expect(result).toBe(true);
+            });
+            test("Should retry acquire the lock", async () => {
+                const key = "a";
+                const ttl = TimeSpan.fromMilliseconds(50);
+                const lock = lockProviderA.create(key, {
+                    ttl,
+                });
+
+                await lock.acquire();
+                let index = 0;
+                await lock.addListener(
+                    KeyAlreadyAcquiredLockEvent,
+                    (_event) => {
+                        index++;
+                    },
+                );
+                try {
+                    await lock.acquireBlockingOrFail({
+                        time: TimeSpan.fromMilliseconds(55),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    });
+                } catch {
+                    /* Empty */
+                }
 
                 expect(index).toBeGreaterThan(1);
             });
