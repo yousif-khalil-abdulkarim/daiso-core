@@ -63,6 +63,8 @@ export function isObjectEmpty(
 export function resolveOneOrMore<TType>(value: OneOrMore<TType>): TType[] {
     if (Array.isArray(value)) {
         return value;
+    } else if (typeof value === "string") {
+        return [value];
     } else if (isIterable(value)) {
         return [...value];
     }

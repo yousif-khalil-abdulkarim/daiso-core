@@ -37,6 +37,8 @@ import type {
     EventClass,
     EventInstance,
     IEventBus,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    IEventListenable,
     IGroupableEventBus,
     Unsubscribe,
 } from "@/event-bus/contracts/_module-exports.js";
@@ -394,6 +396,10 @@ export class LockProvider implements IGroupableLockProvider {
         );
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -401,6 +407,10 @@ export class LockProvider implements IGroupableLockProvider {
         return this.eventBus.addListener(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     addListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
         listener: Invokable<EventInstance<Items<TEventClassArr>>>,
@@ -408,6 +418,10 @@ export class LockProvider implements IGroupableLockProvider {
         return this.eventBus.addListenerMany(events, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -415,6 +429,10 @@ export class LockProvider implements IGroupableLockProvider {
         return this.eventBus.removeListener(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     removeListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
         listener: Invokable<EventInstance<Items<TEventClassArr>>>,
@@ -422,6 +440,10 @@ export class LockProvider implements IGroupableLockProvider {
         return this.eventBus.removeListenerMany(events, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     listenOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -429,12 +451,20 @@ export class LockProvider implements IGroupableLockProvider {
         return this.eventBus.listenOnce(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     asPromise<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
     ): LazyPromise<EventInstance<TEventClass>> {
         return this.eventBus.asPromise(event);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -442,6 +472,10 @@ export class LockProvider implements IGroupableLockProvider {
         return this.eventBus.subscribe(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     subscribeMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
         listener: Invokable<EventInstance<Items<TEventClassArr>>>,
@@ -460,6 +494,24 @@ export class LockProvider implements IGroupableLockProvider {
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     * ```
+     */
     create(
         key: OneOrMore<string>,
         settings: LockProviderCreateSettings = {},
@@ -497,10 +549,66 @@ export class LockProvider implements IGroupableLockProvider {
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * // Will log null because the lockProvider is not in a group
+     * console.log(lockProvider.getGroup());
+     *
+     * const groupedLockProvider = lockProvider.withGroup("group-a");
+     *
+     * // Will log "group-a" because the groupedLockProvider is in a group
+     * console.log(groupedLockProvider.getGroup());
+     * ```
+     */
     getGroup(): string | null {
         return this.keyPrefixer.resolvedGroup;
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const groupedLockProvider = lockProvider.withGroup("group-a");
+     *
+     * // Will log true because they are in different groups.
+     * console.log(
+     *   await lockProvider
+     *     .create("a")
+     *     .acquire()
+     * );
+     *
+     * // Will log true because the lockProviders are in different groups.
+     * console.log(
+     *   await groupedLockProvider
+     *     .create("a")
+     *     .acquire()
+     * );
+     * ```
+     */
     withGroup(group: OneOrMore<string>): ILockProvider {
         return new LockProvider({
             adapter: this.adapterFactoryable,

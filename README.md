@@ -28,18 +28,18 @@ The library provides modular solutions for the essential features needed in mode
 - Notification component
 - Abstract file system component 
 
-This library is heavily inspired laravel but built in modular way where you can choose which part to use.
-
 #### NOTE: This library only supports ESM (ecmascript) module.
 
+### Inspiration
+This library is inspired by [Laravel](https://laravel.com/docs/11.x/readme) and built with a modular design, so you can use only the parts you need.
+
+It also integrates ideas from other libraries:
+- [Symfony components](https://symfony.com/components), PHP
+- [Verrou](https://verrou.dev/docs/introduction), TypeScript
+- [Distributed lock](https://github.com/ZiggyCreatures/FusionCache), C#
+- [Bento cache](https://bentocache.dev/docs/introduction), TypeScript
+- [Fusion cache](https://github.com/ZiggyCreatures/FusionCache), C#
+- [Polly](https://www.pollydocs.org/), C#
+
+
 ### Visit the [docs](https://yousif-khalil-abdulkarim.github.io/daiso-core/) for more information!
-
-@daiso-tech/core/cache/implementations/adapters
-@daiso-tech/core/cache/adapters
-
-
-@daiso-tech/core/cache/implementations/test-utilities
-@daiso-tech/core/cache/test-utilities
-
-@daiso-tech/core/cache/implementations/derivables
-@daiso-tech/core/cache

@@ -38,6 +38,8 @@ import type {
     IEventBus,
     IEventDispatcher,
     Unsubscribe,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type { LockState } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
@@ -142,6 +144,11 @@ export class Lock implements ILock {
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
     }
+
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of the <i>{@link Lock}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -149,6 +156,10 @@ export class Lock implements ILock {
         return this.lockEventBus.addListener(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of the <i>{@link Lock}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     addListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
         listener: Invokable<EventInstance<Items<TEventClassArr>>>,
@@ -156,6 +167,10 @@ export class Lock implements ILock {
         return this.lockEventBus.addListenerMany(events, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of the <i>{@link Lock}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -163,6 +178,10 @@ export class Lock implements ILock {
         return this.lockEventBus.removeListener(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of the <i>{@link Lock}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     removeListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
         listener: Invokable<EventInstance<Items<TEventClassArr>>>,
@@ -170,6 +189,10 @@ export class Lock implements ILock {
         return this.lockEventBus.removeListenerMany(events, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of lock instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     listenOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -177,12 +200,20 @@ export class Lock implements ILock {
         return this.lockEventBus.listenOnce(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of lock instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     asPromise<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
     ): LazyPromise<EventInstance<TEventClass>> {
         return this.lockEventBus.asPromise(event);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of lock instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -190,6 +221,10 @@ export class Lock implements ILock {
         return this.lockEventBus.subscribe(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of lock instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     subscribeMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
         listener: Invokable<EventInstance<Items<TEventClassArr>>>,
@@ -197,6 +232,57 @@ export class Lock implements ILock {
         return this.lockEventBus.subscribeMany(events, listener);
     }
 
+    /**
+     * You can pass in a sync function or async function.
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * await lock.run(async () => {
+     *   console.log("START");
+     *   await LazyPromise.delay(TimeSpan.fromSeconds(10));
+     *   console.log("END");
+     * });
+     * ```
+     *
+     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * await lock.run(
+     *   new LazyPromise(async () => {
+     *     console.log("START");
+     *     await LazyPromise.delay(TimeSpan.fromSeconds(10));
+     *     console.log("END");
+     *   })
+     * );
+     * ```
+     */
     run<TValue = void>(
         asyncFn: LazyPromiseable<TValue>,
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
@@ -224,6 +310,57 @@ export class Lock implements ILock {
         ).setRetryPolicy((error) => error instanceof UnableToAquireLockError);
     }
 
+    /**
+     * You can pass in a sync function or async function.
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * await lock.runOrFail(async () => {
+     *   console.log("START");
+     *   await LazyPromise.delay(TimeSpan.fromSeconds(10));
+     *   console.log("END");
+     * });
+     * ```
+     *
+     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * await lock.runOrFail(
+     *   new LazyPromise(async () => {
+     *     console.log("START");
+     *     await LazyPromise.delay(TimeSpan.fromSeconds(10));
+     *     console.log("END");
+     *   })
+     * );
+     * ```
+     */
     runOrFail<TValue = void>(
         asyncFn: LazyPromiseable<TValue>,
     ): LazyPromise<TValue> {
@@ -244,6 +381,57 @@ export class Lock implements ILock {
         );
     }
 
+    /**
+     * You can pass in a sync function or async function.
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * await lock.runBlocking(async () => {
+     *   console.log("START");
+     *   await LazyPromise.delay(TimeSpan.fromSeconds(10));
+     *   console.log("END");
+     * });
+     * ```
+     *
+     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
+     * @example
+     * ```ts
+     * import { LockProvider } from "@daiso-tech/core/lock";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/adapter";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     *
+     * const lockProvider = new LockProvider({
+     *   adapter: new MemoryLockAdapter(),
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     * });
+     *
+     * const lock = lockProvider.create("a");
+     *
+     * await lock.runBlocking(
+     *   new LazyPromise(async () => {
+     *     console.log("START");
+     *     await LazyPromise.delay(TimeSpan.fromSeconds(10));
+     *     console.log("END");
+     *   })
+     * );
+     * ```
+     */
     runBlocking<TValue = void>(
         asyncFn: LazyPromiseable<TValue>,
         settings?: AquireBlockingSettings,
