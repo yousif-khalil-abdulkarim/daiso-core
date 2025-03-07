@@ -131,40 +131,58 @@ describe("class: LazyPromise", () => {
             await expect(promise).resolves.toBe("text");
         });
     });
-    describe("method: setTimeout", () => {
+    describe("method: setRetryTimeout", () => {
         test("should throw AsyncError when timed out", async () => {
-            const inputPromise = new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve("a");
-                }, TimeSpan.fromMilliseconds(50).toMilliseconds());
-            });
+            const outputPromise = new LazyPromise(async () => {
+                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                throw new Error("Unexpected error");
+            })
+                .setRetryAttempts(2)
+                .setBackoffPolicy(() => 15)
+                .setRetryTimeout(TimeSpan.fromMilliseconds(25));
+            await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
+        });
+        test("should throw RetryAsyncError when timed out", async () => {
+            const outputPromise = new LazyPromise(async () => {
+                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                throw new Error("Unexpected error");
+            })
+                .setRetryAttempts(2)
+                .setBackoffPolicy(() => 15)
+                .setRetryTimeout(TimeSpan.fromMilliseconds(25));
+            await expect(outputPromise).rejects.toBeInstanceOf(RetryAsyncError);
+        });
+        test("should return value when not timed out", async () => {
+            const outputPromise = new LazyPromise(async () => {
+                await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
+                return "a";
+            })
+                .setRetryAttempts(2)
+                .setBackoffPolicy(() => 0)
+                .setRetryTimeout(TimeSpan.fromMilliseconds(100));
+            await expect(outputPromise).resolves.toBe("a");
+        });
+    });
+    describe("method: setTotalTimeout", () => {
+        test("should throw AsyncError when timed out", async () => {
             const outputPromise = new LazyPromise(
-                () => inputPromise,
-            ).setRetryTimeout(TimeSpan.fromMilliseconds(25));
+                LazyPromise.delay(TimeSpan.fromMilliseconds(50)),
+            ).setTotalTimeout(TimeSpan.fromMilliseconds(25));
             await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
         });
         test("should throw TimeoutAsyncError when timed out", async () => {
-            const inputPromise = new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve("a");
-                }, TimeSpan.fromMilliseconds(100).toMilliseconds());
-            });
             const outputPromise = new LazyPromise(
-                () => inputPromise,
-            ).setRetryTimeout(TimeSpan.fromMilliseconds(25));
+                LazyPromise.delay(TimeSpan.fromMilliseconds(50)),
+            ).setTotalTimeout(TimeSpan.fromMilliseconds(25));
             await expect(outputPromise).rejects.toBeInstanceOf(
                 TimeoutAsyncError,
             );
         });
         test("should return value when not timed out", async () => {
-            const inputPromise = new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve("a");
-                }, TimeSpan.fromMilliseconds(50).toMilliseconds());
-            });
-            const outputPromise = new LazyPromise(
-                () => inputPromise,
-            ).setRetryTimeout(TimeSpan.fromMilliseconds(100));
+            const outputPromise = new LazyPromise(async () => {
+                await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
+                return "a";
+            }).setTotalTimeout(TimeSpan.fromMilliseconds(100));
             await expect(outputPromise).resolves.toBe("a");
         });
         test("Should forward error", async () => {
@@ -172,7 +190,7 @@ describe("class: LazyPromise", () => {
             // eslint-disable-next-line @typescript-eslint/require-await
             const promise = new LazyPromise(async () => {
                 throw new ErrorA();
-            }).setRetryTimeout(TimeSpan.fromSeconds(2));
+            }).setTotalTimeout(TimeSpan.fromSeconds(2));
             await expect(promise).rejects.toBeInstanceOf(ErrorA);
         });
     });

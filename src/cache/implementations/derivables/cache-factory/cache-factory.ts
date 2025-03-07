@@ -104,6 +104,13 @@ export class CacheFactory<TAdapters extends string = string>
         });
     }
 
+    setTotalTimeout(timeout: TimeSpan): CacheFactory<TAdapters> {
+        return new CacheFactory({
+            ...this.settings,
+            totalTimeout: timeout,
+        });
+    }
+
     /**
      * @example
      * ```ts
@@ -169,7 +176,7 @@ export class CacheFactory<TAdapters extends string = string>
      *
      * // You can extend the settings
      * const extendedCacheFactory = longLivedCacheFactory
-     *   .setTimeout(TimeSpan.fromSeconds(1));
+     *   .setRetryTimeout(TimeSpan.fromSeconds(1));
      *
      * await extendedCacheFactory
      *   .use()

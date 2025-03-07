@@ -67,7 +67,11 @@ import {
 } from "@/utilities/_module-exports.js";
 import { resolveAsyncLazyable } from "@/utilities/_module-exports.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
+import type {
+    BackoffPolicy,
+    LazyPromiseSettingsBase,
+    RetryPolicy,
+} from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
@@ -75,27 +79,7 @@ import { LazyPromise } from "@/async/_module-exports.js";
  * IMPORT_PATH: ```"@daiso-tech/core/collection"```
  * @group Adapters
  */
-export type AsyncIterableCollectionSettings = {
-    /**
-     * The default retry attempt to use in the returned <i>LazyPromise</i>.
-     */
-    retryAttempts?: number | null;
-
-    /**
-     * The default backof policy to use in the returned <i>LazyPromise</i>.
-     */
-    backoffPolicy?: BackoffPolicy | null;
-
-    /**
-     * The default retry policy to use in the returned <i>LazyPromise</i>.
-     */
-    retryPolicy?: RetryPolicy | null;
-
-    /**
-     * The default retry timeout to use in the returned <i>LazyPromise</i>.
-     */
-    retryTimeout?: TimeSpan | null;
-};
+export type AsyncIterableCollectionSettings = LazyPromiseSettingsBase;
 
 /**
  * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly.
@@ -250,6 +234,7 @@ export class AsyncIterableCollection<TInput = unknown>
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly retryTimeout: TimeSpan | null;
+    private readonly totalTimeout: TimeSpan | null;
 
     /**
      * The <i>constructor</i> takes an <i>{@link Iterable}</i> or <i>{@link AsyncIterable}</i>.
@@ -325,11 +310,13 @@ export class AsyncIterableCollection<TInput = unknown>
             retryPolicy = AsyncIterableCollection.defaultRetryPolicy,
             backoffPolicy = null,
             retryTimeout = null,
+            totalTimeout = null,
         } = settings;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.retryTimeout = retryTimeout;
+        this.totalTimeout = totalTimeout;
     }
 
     private createLazyPromise<TValue = void>(
@@ -340,6 +327,7 @@ export class AsyncIterableCollection<TInput = unknown>
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
             retryTimeout: this.retryTimeout,
+            totalTimeout: this.totalTimeout,
         });
     }
 

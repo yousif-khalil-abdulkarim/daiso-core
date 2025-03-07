@@ -87,6 +87,13 @@ export class EventBusFactory<TAdapters extends string = string>
         });
     }
 
+    setTotalTimeout(timeout: TimeSpan): EventBusFactory<TAdapters> {
+        return new EventBusFactory({
+            ...this.settings,
+            totalTimeout: timeout,
+        });
+    }
+
     /**
      * @example
      * ```ts
@@ -156,7 +163,7 @@ export class EventBusFactory<TAdapters extends string = string>
      *
      * // You can extend the settings
      * const extendedEventBusFactory = retryableEventBusFactory
-     *   .setTimeout(TimeSpan.fromSeconds(1));
+     *   .setRetryTimeout(TimeSpan.fromSeconds(1));
      *
      * await extendedEventBusFactory
      *   .use()

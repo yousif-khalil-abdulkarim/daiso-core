@@ -21,43 +21,67 @@ import {
     RetryAsyncError,
 } from "@/async/async.errors.js";
 import {
+    removeUndefinedProperties,
     resolveAsyncLazyable,
     type Func,
 } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/utilities/_module.js";
 
 /**
+ *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
 export type LazyPromiseOnFinally = () => Promisable<void>;
 
 /**
+ *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
 export type LazyPromiseOnSuccess<TValue> = (value: TValue) => Promisable<void>;
 
 /**
+ *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
 export type LazyPromiseOnError = (error: unknown) => Promisable<void>;
 
 /**
+ *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export type LazyPromiseSettings<TValue = unknown> = {
-    backoffPolicy?: BackoffPolicy | null;
-    retryAttempts?: number | null;
-    retryPolicy?: RetryPolicy | null;
-    retryTimeout?: TimeSpan | null;
-    abortSignal?: AbortSignal | null;
+export type LazyPromiseCallbacks<TValue = unknown> = {
     onFinally?: LazyPromiseOnFinally;
     onSuccess?: LazyPromiseOnSuccess<TValue>;
     onError?: LazyPromiseOnError;
 };
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type LazyPromiseSettingsBase = {
+    backoffPolicy?: BackoffPolicy | null;
+    retryAttempts?: number | null;
+    retryPolicy?: RetryPolicy | null;
+    retryTimeout?: TimeSpan | null;
+    totalTimeout?: TimeSpan | null;
+};
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type LazyPromiseSettings<TValue = unknown> =
+    LazyPromiseCallbacks<TValue> &
+        LazyPromiseSettingsBase & {
+            abortSignal?: AbortSignal | null;
+        };
 
 /**
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.
@@ -177,65 +201,86 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         settings: LazyPromiseSettings<TValue> = {},
     ) {
         this.asyncFn = () => resolveAsyncLazyable(asyncFn);
-        this.settings = {
+        this.settings = removeUndefinedProperties({
             retryAttempts: null,
             backoffPolicy: null,
             retryPolicy: null,
             retryTimeout: null,
+            totalTimeout: null,
             abortSignal: null,
             onFinally: () => {},
             onSuccess: (_value: TValue) => {},
             onError: () => {},
             ...settings,
-        };
+        });
     }
 
-    private applyTimeout(): void {
-        if (this.settings.retryTimeout !== null) {
-            const oldAsyncFn = this.asyncFn;
-            const newAsyncFn = () => {
-                if (this.settings.retryTimeout === null) {
-                    throw new Error(`LazyPromise["time"] field is null`);
-                }
-                return timeoutAndFail(oldAsyncFn, this.settings.retryTimeout);
-            };
-            this.asyncFn = newAsyncFn;
+    private applyRetryTimeout(): void {
+        if (this.settings.retryTimeout === null) {
+            return;
         }
+        const oldAsyncFn = this.asyncFn;
+        const newAsyncFn = () => {
+            if (this.settings.retryTimeout === null) {
+                throw new Error(`LazyPromise["time"] field is null`);
+            }
+            return timeoutAndFail(oldAsyncFn, this.settings.retryTimeout);
+        };
+        this.asyncFn = newAsyncFn;
     }
 
     private applyRetry(): void {
-        if (this.settings.retryAttempts !== null) {
-            const oldAsyncFn = this.asyncFn;
-            const newAsyncFn = () => {
-                if (this.settings.retryAttempts === null) {
-                    throw new Error(`LazyPromise["attempts"] field is null`);
-                }
-                return retryOrFail(oldAsyncFn, {
-                    backoffPolicy: this.settings.backoffPolicy ?? undefined,
-                    retryPolicy: this.settings.retryPolicy ?? undefined,
-                    maxAttempts: this.settings.retryAttempts,
-                });
-            };
-            this.asyncFn = newAsyncFn;
+        if (this.settings.retryAttempts === null) {
+            return;
         }
+
+        this.applyRetryTimeout();
+
+        const oldAsyncFn = this.asyncFn;
+        const newAsyncFn = () => {
+            if (this.settings.retryAttempts === null) {
+                throw new Error(`LazyPromise["attempts"] field is null`);
+            }
+            return retryOrFail(oldAsyncFn, {
+                backoffPolicy: this.settings.backoffPolicy ?? undefined,
+                retryPolicy: this.settings.retryPolicy ?? undefined,
+                maxAttempts: this.settings.retryAttempts,
+            });
+        };
+        this.asyncFn = newAsyncFn;
+    }
+
+    private applyTotalTimeout(): void {
+        if (this.settings.totalTimeout === null) {
+            return;
+        }
+        const oldAsyncFn = this.asyncFn;
+        const newAsyncFn = () => {
+            if (this.settings.totalTimeout === null) {
+                throw new Error(`LazyPromise["time"] field is null`);
+            }
+            return timeoutAndFail(oldAsyncFn, this.settings.totalTimeout);
+        };
+        this.asyncFn = newAsyncFn;
     }
 
     private applyAbort() {
-        if (this.settings.abortSignal !== null) {
-            const oldAsyncFn = this.asyncFn;
-            const newAsyncFn = () => {
-                if (this.settings.abortSignal === null) {
-                    throw new Error(`LazyPromise["abortSignal"] field is null`);
-                }
-                return abortAndFail(oldAsyncFn, this.settings.abortSignal);
-            };
-            this.asyncFn = newAsyncFn;
+        if (this.settings.abortSignal === null) {
+            return;
         }
+        const oldAsyncFn = this.asyncFn;
+        const newAsyncFn = () => {
+            if (this.settings.abortSignal === null) {
+                throw new Error(`LazyPromise["abortSignal"] field is null`);
+            }
+            return abortAndFail(oldAsyncFn, this.settings.abortSignal);
+        };
+        this.asyncFn = newAsyncFn;
     }
 
     private applySettings(): void {
-        this.applyTimeout();
         this.applyRetry();
+        this.applyTotalTimeout();
         this.applyAbort();
     }
 
@@ -338,7 +383,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>setTimeout</i> method aborts the <i>LazyPromise</i> if it exceeds the given <i>time</i> by throwning an error.
+     * The <i>setRetryTimeout</i> method aborts the each retry if it exceeds the given <i>time</i>.
      * @example
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
@@ -348,7 +393,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *   new LazyPromise(async () => {
      *     await LazyPromise.delay(TimeSpan.fromMinutes(1));
      *   })
-     *   .setTimeout(TimeSpan.fromSeconds(1));
+     *   .setRetryTimeout(TimeSpan.fromSeconds(1));
      *
      * // An timeout error will be thrown.
      * await promise;
@@ -358,6 +403,30 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         return new LazyPromise(this.asyncFn, {
             ...this.settings,
             retryTimeout: time,
+        });
+    }
+
+    /**
+     * The <i>setTotalTimeout</i> method aborts the <i>LazyPromise</i> if it exceeds the given <i>time</i> by throwning an error.
+     * @example
+     * ```ts
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     *
+     * const promise =
+     *   new LazyPromise(async () => {
+     *     await LazyPromise.delay(TimeSpan.fromMinutes(1));
+     *   })
+     *   .setRetryTimeout(TimeSpan.fromSeconds(1));
+     *
+     * // An timeout error will be thrown.
+     * await promise;
+     * ```
+     */
+    setTotalTimeout(time: TimeSpan | null): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            totalTimeout: time,
         });
     }
 

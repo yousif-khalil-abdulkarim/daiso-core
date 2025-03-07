@@ -42,7 +42,11 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type IFactoryObject,
 } from "@/utilities/_module-exports.js";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
+import type {
+    BackoffPolicy,
+    LazyPromiseSettingsBase,
+    RetryPolicy,
+} from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     IGroupableEventBus,
@@ -64,7 +68,7 @@ import type { IKeyPrefixer, Items } from "@/utilities/_module-exports.js";
  * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
-export type CacheSettingsBase = {
+export type CacheSettingsBase = LazyPromiseSettingsBase & {
     keyPrefixer: IKeyPrefixer;
 
     /**
@@ -87,30 +91,6 @@ export type CacheSettingsBase = {
      * @default {null}
      */
     defaultTtl?: TimeSpan | null;
-
-    /**
-     * The default retry attempt to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    retryAttempts?: number | null;
-
-    /**
-     * The default backof policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    backoffPolicy?: BackoffPolicy | null;
-
-    /**
-     * The default retry policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    retryPolicy?: RetryPolicy | null;
-
-    /**
-     * The default retry timeout to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    retryTimeout?: TimeSpan | null;
 };
 
 /**
@@ -171,6 +151,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
     private readonly retryTimeout: TimeSpan | null;
+    private readonly totalTimeout: TimeSpan | null;
     private readonly keyPrefixer: IKeyPrefixer;
 
     /**
@@ -273,6 +254,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             backoffPolicy = null,
             retryPolicy = Cache.defaultRetryPolicy,
             retryTimeout = null,
+            totalTimeout = null,
         } = settings;
 
         this.keyPrefixer = keyPrefixer;
@@ -283,6 +265,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
         this.retryTimeout = retryTimeout;
+        this.totalTimeout = totalTimeout;
 
         this.eventBus = this.groupdEventBus.withGroup(
             this.keyPrefixer.resolvedRootPrefix,
@@ -397,6 +380,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
             retryTimeout: this.retryTimeout,
+            totalTimeout: this.totalTimeout,
         });
     }
 

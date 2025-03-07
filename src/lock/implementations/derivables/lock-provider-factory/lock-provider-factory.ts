@@ -134,6 +134,13 @@ export class LockProviderFactory<TAdapters extends string>
         });
     }
 
+    setTotalTimeout(timeout: TimeSpan): LockProviderFactory<TAdapters> {
+        return new LockProviderFactory({
+            ...this.settings,
+            totalTimeout: timeout,
+        });
+    }
+
     /**
      * @example
      * ```ts
@@ -180,7 +187,7 @@ export class LockProviderFactory<TAdapters extends string>
      *
      * // You can extend the settings
      * const extendedLockProviderFactory = longLivedLockProviderFactory
-     *   .setTimeout(TimeSpan.fromSeconds(1));
+     *   .setRetryTimeout(TimeSpan.fromSeconds(1));
      *
      * await extendedLockProviderFactory
      *   .use()

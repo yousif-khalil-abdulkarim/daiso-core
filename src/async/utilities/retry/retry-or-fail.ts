@@ -27,6 +27,7 @@ export type RetrySettings = {
     maxAttempts?: number;
     backoffPolicy?: BackoffPolicy;
     retryPolicy?: RetryPolicy;
+    timeout?: TimeSpan | null;
 };
 
 /**
