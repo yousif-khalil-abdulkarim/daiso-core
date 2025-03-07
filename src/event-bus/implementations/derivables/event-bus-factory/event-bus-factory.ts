@@ -4,15 +4,15 @@
 
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import {
-    type IEventBusAdapter,
     type IGroupableEventBus,
     type IEventBusFactory,
     type BaseEvent,
 } from "@/event-bus/contracts/_module-exports.js";
 import {
     EventBus,
+    type EventBusAdapterFactoryable,
     type EventBusSettingsBase,
-} from "@/event-bus/implementations/derivables/event-bus/event-bus.js";
+} from "@/event-bus/implementations/derivables/event-bus/_module.js";
 import type { KeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
@@ -25,7 +25,7 @@ import {
  * @group Derivables
  */
 export type EventBusAdapters<TAdapters extends string = string> = Partial<
-    Record<TAdapters, IEventBusAdapter>
+    Record<TAdapters, EventBusAdapterFactoryable>
 >;
 
 /**
