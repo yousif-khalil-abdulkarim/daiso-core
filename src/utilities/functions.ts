@@ -61,11 +61,7 @@ export function isObjectEmpty(
  * @internal
  */
 export function resolveOneOrMore<TType>(value: OneOrMore<TType>): TType[] {
-    if (Array.isArray(value)) {
-        return value;
-    } else if (typeof value === "string") {
-        return [value];
-    } else if (isIterable(value)) {
+    if (isIterable(value)) {
         return [...value];
     }
     return [value];
@@ -78,6 +74,9 @@ export function resolveOneOrMoreStr(
     name: OneOrMore<string>,
     joinStr = "/",
 ): string {
+    if (typeof name === "string") {
+        return name;
+    }
     return resolveOneOrMore(name)
         .filter((str) => str.length > 0)
         .join(joinStr);

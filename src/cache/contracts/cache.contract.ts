@@ -212,7 +212,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns true if one of the keys where deleted otherwise false is returned.
      */
-    removeMany(keys: OneOrMore<string>[]): PromiseLike<boolean>;
+    removeMany(keys: Iterable<OneOrMore<string>>): PromiseLike<boolean>;
 
     /**
      * The <i>clear</i> method removes all the keys in the cache. If a cache is in a group then only the keys part of the group will be removed.
