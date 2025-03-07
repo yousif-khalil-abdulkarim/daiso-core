@@ -947,12 +947,15 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         });
     }
 
-    removeMany(keys: OneOrMore<string>[]): LazyPromise<boolean> {
+    removeMany(keys: Iterable<OneOrMore<string>>): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            if (keys.length === 0) {
+            const keysArr = [...keys];
+            if (keysArr.length === 0) {
                 return true;
             }
-            const keyObjArr = keys.map((key) => this.keyPrefixer.create(key));
+            const keyObjArr = keysArr.map((key) =>
+                this.keyPrefixer.create(key),
+            );
             try {
                 const adapter = await this.adapterPromise;
                 const hasRemovedAtLeastOne = await adapter.removeMany(
