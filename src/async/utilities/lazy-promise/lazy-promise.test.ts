@@ -140,7 +140,7 @@ describe("class: LazyPromise", () => {
             });
             const outputPromise = new LazyPromise(
                 () => inputPromise,
-            ).setTimeout(TimeSpan.fromMilliseconds(25));
+            ).setRetryTimeout(TimeSpan.fromMilliseconds(25));
             await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
         });
         test("should throw TimeoutAsyncError when timed out", async () => {
@@ -151,7 +151,7 @@ describe("class: LazyPromise", () => {
             });
             const outputPromise = new LazyPromise(
                 () => inputPromise,
-            ).setTimeout(TimeSpan.fromMilliseconds(25));
+            ).setRetryTimeout(TimeSpan.fromMilliseconds(25));
             await expect(outputPromise).rejects.toBeInstanceOf(
                 TimeoutAsyncError,
             );
@@ -164,7 +164,7 @@ describe("class: LazyPromise", () => {
             });
             const outputPromise = new LazyPromise(
                 () => inputPromise,
-            ).setTimeout(TimeSpan.fromMilliseconds(100));
+            ).setRetryTimeout(TimeSpan.fromMilliseconds(100));
             await expect(outputPromise).resolves.toBe("a");
         });
         test("Should forward error", async () => {
@@ -172,7 +172,7 @@ describe("class: LazyPromise", () => {
             // eslint-disable-next-line @typescript-eslint/require-await
             const promise = new LazyPromise(async () => {
                 throw new ErrorA();
-            }).setTimeout(TimeSpan.fromSeconds(2));
+            }).setRetryTimeout(TimeSpan.fromSeconds(2));
             await expect(promise).rejects.toBeInstanceOf(ErrorA);
         });
     });

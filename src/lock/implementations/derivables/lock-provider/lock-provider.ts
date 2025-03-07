@@ -141,10 +141,10 @@ export type LockProviderSettingsBase = {
     retryPolicy?: RetryPolicy | null;
 
     /**
-     * The default timeout to use in the returned <i>LazyPromise</i>.
+     * The default retry timeout to use in the returned <i>LazyPromise</i>.
      * @default {null}
      */
-    timeout?: TimeSpan | null;
+    retryTimeout?: TimeSpan | null;
 };
 
 /**
@@ -231,7 +231,7 @@ export class LockProvider implements IGroupableLockProvider {
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
-    private readonly timeout: TimeSpan | null;
+    private readonly retryTimeout: TimeSpan | null;
     private readonly keyPrefixer: IKeyPrefixer;
     private readonly createOwnerId: () => string;
     private readonly defaultTtl: TimeSpan | null;
@@ -352,7 +352,7 @@ export class LockProvider implements IGroupableLockProvider {
             retryAttempts = null,
             backoffPolicy = null,
             retryPolicy = null,
-            timeout = null,
+            retryTimeout = null,
         } = settings;
 
         this.serde = serde;
@@ -367,7 +367,7 @@ export class LockProvider implements IGroupableLockProvider {
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
-        this.timeout = timeout;
+        this.retryTimeout = retryTimeout;
         this.eventBus = this.eventBus = this.groupableEventBus.withGroup(
             this.keyPrefixer.resolvedRootPrefix,
         );
@@ -490,7 +490,7 @@ export class LockProvider implements IGroupableLockProvider {
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
+            retryTimeout: this.retryTimeout,
         });
     }
 
@@ -623,7 +623,7 @@ export class LockProvider implements IGroupableLockProvider {
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
+            retryTimeout: this.retryTimeout,
         });
     }
 }

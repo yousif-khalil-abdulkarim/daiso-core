@@ -49,11 +49,11 @@ export type LazyPromiseOnError = (error: unknown) => Promisable<void>;
  * @group Utilities
  */
 export type LazyPromiseSettings<TValue = unknown> = {
-    retryAttempts?: number | null;
     backoffPolicy?: BackoffPolicy | null;
+    retryAttempts?: number | null;
     retryPolicy?: RetryPolicy | null;
+    retryTimeout?: TimeSpan | null;
     abortSignal?: AbortSignal | null;
-    timeout?: TimeSpan | null;
     onFinally?: LazyPromiseOnFinally;
     onSuccess?: LazyPromiseOnSuccess<TValue>;
     onError?: LazyPromiseOnError;
@@ -181,8 +181,8 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
             retryAttempts: null,
             backoffPolicy: null,
             retryPolicy: null,
+            retryTimeout: null,
             abortSignal: null,
-            timeout: null,
             onFinally: () => {},
             onSuccess: (_value: TValue) => {},
             onError: () => {},
@@ -191,13 +191,13 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     private applyTimeout(): void {
-        if (this.settings.timeout !== null) {
+        if (this.settings.retryTimeout !== null) {
             const oldAsyncFn = this.asyncFn;
             const newAsyncFn = () => {
-                if (this.settings.timeout === null) {
+                if (this.settings.retryTimeout === null) {
                     throw new Error(`LazyPromise["time"] field is null`);
                 }
-                return timeoutAndFail(oldAsyncFn, this.settings.timeout);
+                return timeoutAndFail(oldAsyncFn, this.settings.retryTimeout);
             };
             this.asyncFn = newAsyncFn;
         }
@@ -261,30 +261,6 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>setRetryAttempts</i> method is used for setting max retry attempts.
-     * @example
-     * ```ts
-     * import { LazyPromise } from "@daiso-tech/core/async";
-     *
-     * const promise =
-     *   new LazyPromise(async () => {
-     *     console.log("A");
-     *     throw new Error("Error occured!");
-     *   })
-     *   .setRetryAttempts(3)
-     *
-     * // Will log "A" 3 times and then retry error will be thrown.
-     * await promise;
-     * ```
-     */
-    setRetryAttempts(attempts: number | null): LazyPromise<TValue> {
-        return new LazyPromise(this.asyncFn, {
-            ...this.settings,
-            retryAttempts: attempts,
-        });
-    }
-
-    /**
      * The <i>setBackoffPolicy</i> method is used for setting a custom <i>{@link BackoffPolicy}</i>.
      * ```ts
      * import { LazyPromise, linearBackoffPolicy } from "@daiso-tech/core/async";
@@ -306,6 +282,30 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         return new LazyPromise(this.asyncFn, {
             ...this.settings,
             backoffPolicy: policy,
+        });
+    }
+
+    /**
+     * The <i>setRetryAttempts</i> method is used for setting max retry attempts.
+     * @example
+     * ```ts
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     *
+     * const promise =
+     *   new LazyPromise(async () => {
+     *     console.log("A");
+     *     throw new Error("Error occured!");
+     *   })
+     *   .setRetryAttempts(3)
+     *
+     * // Will log "A" 3 times and then retry error will be thrown.
+     * await promise;
+     * ```
+     */
+    setRetryAttempts(attempts: number | null): LazyPromise<TValue> {
+        return new LazyPromise(this.asyncFn, {
+            ...this.settings,
+            retryAttempts: attempts,
         });
     }
 
@@ -354,10 +354,10 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * await promise;
      * ```
      */
-    setTimeout(time: TimeSpan | null): LazyPromise<TValue> {
+    setRetryTimeout(time: TimeSpan | null): LazyPromise<TValue> {
         return new LazyPromise(this.asyncFn, {
             ...this.settings,
-            timeout: time,
+            retryTimeout: time,
         });
     }
 

@@ -80,10 +80,10 @@ export class EventBusFactory<TAdapters extends string = string>
         });
     }
 
-    setTimeout(timeout: TimeSpan): EventBusFactory<TAdapters> {
+    setRetryTimeout(timeout: TimeSpan): EventBusFactory<TAdapters> {
         return new EventBusFactory({
             ...this.settings,
-            timeout,
+            retryTimeout: timeout,
         });
     }
 

@@ -92,9 +92,9 @@ export type AsyncIterableCollectionSettings = {
     retryPolicy?: RetryPolicy | null;
 
     /**
-     * The default timeout to use in the returned <i>LazyPromise</i>.
+     * The default retry timeout to use in the returned <i>LazyPromise</i>.
      */
-    timeout?: TimeSpan | null;
+    retryTimeout?: TimeSpan | null;
 };
 
 /**
@@ -249,7 +249,7 @@ export class AsyncIterableCollection<TInput = unknown>
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
-    private readonly timeout: TimeSpan | null;
+    private readonly retryTimeout: TimeSpan | null;
 
     /**
      * The <i>constructor</i> takes an <i>{@link Iterable}</i> or <i>{@link AsyncIterable}</i>.
@@ -324,12 +324,12 @@ export class AsyncIterableCollection<TInput = unknown>
             retryAttempts = null,
             retryPolicy = AsyncIterableCollection.defaultRetryPolicy,
             backoffPolicy = null,
-            timeout = null,
+            retryTimeout = null,
         } = settings;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
-        this.timeout = timeout;
+        this.retryTimeout = retryTimeout;
     }
 
     private createLazyPromise<TValue = void>(
@@ -339,7 +339,7 @@ export class AsyncIterableCollection<TInput = unknown>
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
+            retryTimeout: this.retryTimeout,
         });
     }
 

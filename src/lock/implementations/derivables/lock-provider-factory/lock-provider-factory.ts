@@ -127,10 +127,10 @@ export class LockProviderFactory<TAdapters extends string>
         });
     }
 
-    setTimeout(timeout: TimeSpan): LockProviderFactory<TAdapters> {
+    setRetryTimeout(timeout: TimeSpan): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
-            timeout,
+            retryTimeout: timeout,
         });
     }
 

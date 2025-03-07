@@ -64,10 +64,10 @@ export type EventBusSettingsBase = {
     retryPolicy?: RetryPolicy | null;
 
     /**
-     * The default timeout to use in the returned <i>LazyPromise</i>.
+     * The default retry timeout to use in the returned <i>LazyPromise</i>.
      * @default {null}
      */
-    timeout?: TimeSpan | null;
+    retryTimeout?: TimeSpan | null;
 };
 
 /**
@@ -99,7 +99,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
-    private readonly timeout: TimeSpan | null;
+    private readonly retryTimeout: TimeSpan | null;
     private readonly store = new ListenerStore();
     private readonly adapterPromise: PromiseLike<IEventBusAdapter>;
     private keyPrefixer: IKeyPrefixer;
@@ -178,14 +178,14 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             retryAttempts = null,
             backoffPolicy = null,
             retryPolicy = null,
-            timeout = null,
+            retryTimeout = null,
         } = settings;
         this.adapterFactoryable = adapter;
         this.keyPrefixer = keyPrefixer;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
-        this.timeout = timeout;
+        this.retryTimeout = retryTimeout;
         this.adapterPromise = new LazyPromise(() =>
             resolveFactoryable(
                 this.adapterFactoryable,
@@ -201,7 +201,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
+            retryTimeout: this.retryTimeout,
         });
     }
 
@@ -212,7 +212,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
+            retryTimeout: this.retryTimeout,
         });
     }
 
