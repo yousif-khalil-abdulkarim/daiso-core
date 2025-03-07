@@ -2,7 +2,11 @@
  * @module EventBus
  */
 
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
+import type {
+    BackoffPolicy,
+    LazyPromiseSettingsBase,
+    RetryPolicy,
+} from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     EventClass,
@@ -42,32 +46,8 @@ import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
-export type EventBusSettingsBase = {
+export type EventBusSettingsBase = LazyPromiseSettingsBase & {
     keyPrefixer: IKeyPrefixer;
-
-    /**
-     * The default retry attempt to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    retryAttempts?: number | null;
-
-    /**
-     * The default backof policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    backoffPolicy?: BackoffPolicy | null;
-
-    /**
-     * The default retry policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    retryPolicy?: RetryPolicy | null;
-
-    /**
-     * The default timeout to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    timeout?: TimeSpan | null;
 };
 
 /**
@@ -99,7 +79,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
-    private readonly timeout: TimeSpan | null;
+    private readonly retryTimeout: TimeSpan | null;
+    private readonly totalTimeout: TimeSpan | null;
     private readonly store = new ListenerStore();
     private readonly adapterPromise: PromiseLike<IEventBusAdapter>;
     private keyPrefixer: IKeyPrefixer;
@@ -178,14 +159,16 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             retryAttempts = null,
             backoffPolicy = null,
             retryPolicy = null,
-            timeout = null,
+            retryTimeout = null,
+            totalTimeout = null,
         } = settings;
+        this.totalTimeout = totalTimeout;
         this.adapterFactoryable = adapter;
         this.keyPrefixer = keyPrefixer;
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
-        this.timeout = timeout;
+        this.retryTimeout = retryTimeout;
         this.adapterPromise = new LazyPromise(() =>
             resolveFactoryable(
                 this.adapterFactoryable,
@@ -201,7 +184,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
+            retryTimeout: this.retryTimeout,
+            totalTimeout: this.totalTimeout,
         });
     }
 
@@ -212,7 +196,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
+            retryTimeout: this.retryTimeout,
         });
     }
 

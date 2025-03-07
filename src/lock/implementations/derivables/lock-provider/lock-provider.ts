@@ -31,6 +31,7 @@ import {
 import {
     LazyPromise,
     type BackoffPolicy,
+    type LazyPromiseSettingsBase,
     type RetryPolicy,
 } from "@/async/_module-exports.js";
 import type {
@@ -62,7 +63,7 @@ import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-pro
  * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
-export type LockProviderSettingsBase = {
+export type LockProviderSettingsBase = LazyPromiseSettingsBase & {
     keyPrefixer: IKeyPrefixer;
 
     serde: OneOrMore<IFlexibleSerde>;
@@ -121,30 +122,6 @@ export type LockProviderSettingsBase = {
      * ```
      */
     defaultRefreshTime?: TimeSpan;
-
-    /**
-     * The default retry attempt to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    retryAttempts?: number | null;
-
-    /**
-     * The default backof policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    backoffPolicy?: BackoffPolicy | null;
-
-    /**
-     * The default retry policy to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    retryPolicy?: RetryPolicy | null;
-
-    /**
-     * The default timeout to use in the returned <i>LazyPromise</i>.
-     * @default {null}
-     */
-    timeout?: TimeSpan | null;
 };
 
 /**
@@ -231,7 +208,8 @@ export class LockProvider implements IGroupableLockProvider {
     private readonly retryAttempts: number | null;
     private readonly backoffPolicy: BackoffPolicy | null;
     private readonly retryPolicy: RetryPolicy | null;
-    private readonly timeout: TimeSpan | null;
+    private readonly retryTimeout: TimeSpan | null;
+    private readonly totalTimeout: TimeSpan | null;
     private readonly keyPrefixer: IKeyPrefixer;
     private readonly createOwnerId: () => string;
     private readonly defaultTtl: TimeSpan | null;
@@ -352,7 +330,8 @@ export class LockProvider implements IGroupableLockProvider {
             retryAttempts = null,
             backoffPolicy = null,
             retryPolicy = null,
-            timeout = null,
+            retryTimeout = null,
+            totalTimeout = null,
         } = settings;
 
         this.serde = serde;
@@ -367,7 +346,8 @@ export class LockProvider implements IGroupableLockProvider {
         this.retryAttempts = retryAttempts;
         this.backoffPolicy = backoffPolicy;
         this.retryPolicy = retryPolicy;
-        this.timeout = timeout;
+        this.retryTimeout = retryTimeout;
+        this.totalTimeout = totalTimeout;
         this.eventBus = this.eventBus = this.groupableEventBus.withGroup(
             this.keyPrefixer.resolvedRootPrefix,
         );
@@ -490,7 +470,8 @@ export class LockProvider implements IGroupableLockProvider {
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
+            retryTimeout: this.retryTimeout,
+            totalTimeout: this.totalTimeout,
         });
     }
 
@@ -623,7 +604,7 @@ export class LockProvider implements IGroupableLockProvider {
             retryAttempts: this.retryAttempts,
             backoffPolicy: this.backoffPolicy,
             retryPolicy: this.retryPolicy,
-            timeout: this.timeout,
+            retryTimeout: this.retryTimeout,
         });
     }
 }
