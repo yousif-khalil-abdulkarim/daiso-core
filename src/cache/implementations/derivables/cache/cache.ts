@@ -50,6 +50,8 @@ import type {
     Unsubscribe,
     EventClass,
     EventInstance,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
@@ -300,6 +302,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         );
     }
 
+    /**
+     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     addListener<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -307,6 +313,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.eventBus.addListener(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     addListenerMany<TEventClassArr extends EventClass<CacheEvents<TType>>[]>(
         events: [...TEventClassArr],
         listener: Invokable<EventInstance<Items<TEventClassArr>>>,
@@ -314,6 +324,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.eventBus.addListenerMany(events, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     removeListener<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -321,6 +335,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.eventBus.removeListener(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     removeListenerMany<TEventClassArr extends EventClass<CacheEvents<TType>>[]>(
         events: [...TEventClassArr],
         listener: Invokable<EventInstance<Items<TEventClassArr>>>,
@@ -328,6 +346,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.eventBus.removeListenerMany(events, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     listenOnce<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -335,12 +357,20 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.eventBus.listenOnce(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     asPromise<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
     ): LazyPromise<EventInstance<TEventClass>> {
         return this.eventBus.asPromise(event);
     }
 
+    /**
+     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     subscribe<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
@@ -348,6 +378,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.eventBus.subscribe(event, listener);
     }
 
+    /**
+     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     subscribeMany<TEventClassArr extends EventClass<CacheEvents<TType>>[]>(
         events: [...TEventClassArr],
         listener: Invokable<EventInstance<Items<TEventClassArr>>>,
@@ -486,6 +520,78 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * const value = await cache.getOr("a", 1);
+     *
+     * // Will be 1
+     * console.log(value);
+     * ```
+     *
+     * You can also pass in a function
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * const value = await cache.getOr("a", () => 1);
+     *
+     * // Will be 1
+     * console.log(value);
+     * ```
+     *
+     * You can also pass in a async function. This is useful because it allows for retrieval of external data if the key doesnt't.
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * const value = await cache.getOr("a", async () => 1);
+     *
+     * // Will be 1
+     * console.log(value);
+     * ```
+     *
+     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer, LazyPromise } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * const value = await cache.getOr("a", new LazyPromise(async () => 1));
+     *
+     * // Will be 1
+     * console.log(value);
+     * ```
+     */
     getOr(
         key: OneOrMore<string>,
         defaultValue: AsyncLazyable<NoneFunction<TType>>,
@@ -501,6 +607,78 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * const value = await cache.getOrAdd("a", 1);
+     *
+     * // Will be 1
+     * console.log(value);
+     * ```
+     *
+     * You can also pass in a function
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * const value = await cache.getOrAdd("a", () => 1);
+     *
+     * // Will be 1
+     * console.log(value);
+     * ```
+     *
+     * You can also pass in a async function. This is useful because it allows for retrieval of external data if the key doesnt't.
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * const value = await cache.getOrAdd("a", async () => 1);
+     *
+     * // Will be 1
+     * console.log(value);
+     * ```
+     *
+     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer, LazyPromise } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * const value = await cache.getOrAdd("a", new LazyPromise(async () => 1));
+     *
+     * // Will be 1
+     * console.log(value);
+     * ```
+     */
     getOrAdd(
         key: OneOrMore<string>,
         valueToAdd: AsyncLazyable<NoneFunction<TType>>,
@@ -848,6 +1026,27 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         });
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * // Will log null because the cache is not in a group
+     * console.log(cache.getGroup());
+     *
+     * const groupedCache = cache.withGroup("group-a");
+     *
+     * // Will log "group-a" because the groupedCache is in a group
+     * console.log(groupedCache.getGroup());
+     * ```
+     */
     getGroup(): string | null {
         if (this.keyPrefixer.resolvedGroup) {
             return this.keyPrefixer.resolvedGroup;
@@ -855,6 +1054,28 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return null;
     }
 
+    /**
+     * @example
+     * ```ts
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     *
+     * const cache = new Cache({
+     *   adapter: new MemoryCacheAdapter(),
+     *   keyPrefixer: new KeyPrefixer("cache")
+     * });
+     *
+     * const groupedCache = cache.withGroup("group-a");
+     * await groupedCache.add("a", 1);
+     *
+     * // Will log "a".
+     * console.log(await groupedCache.get("a"));
+     *
+     * // Will log null because the caches are in different groups.
+     * console.log(await cache.get("a"));
+     * ```
+     */
     withGroup(group: OneOrMore<string>): ICache<TType> {
         const cache = new Cache<TType>({
             keyPrefixer: this.keyPrefixer.withGroup(group),

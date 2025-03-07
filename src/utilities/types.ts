@@ -61,21 +61,21 @@ export type AsyncIterableValue<TInput> =
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type AnyFunction = (...parameters: unknown[]) => unknown;
+export type Func<TArgs extends unknown[], TReturn> = (
+    ...args_: TArgs
+) => TReturn;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ */
+export type AnyFunction = Func<any[], any>;
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
 export type NoneFunction<TType> = Exclude<TType, AnyFunction>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
- */
-export type Func<TArgs extends unknown[], TReturn> = (
-    ...args_: TArgs
-) => TReturn;
 
 /**
  *

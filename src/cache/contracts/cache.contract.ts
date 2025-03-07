@@ -33,21 +33,38 @@ export type ICacheListenable<TType = unknown> = IEventListenable<
 export type ICacheBase<TType = unknown> = {
     /**
      * The <i>exists</i> method returns true when <i>key</i> is found otherwise false will be returned.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
      */
     exists(key: OneOrMore<string>): LazyPromise<boolean>;
 
     /**
      * The <i>missing</i> method returns true when <i>key</i> is not found otherwise false will be returned.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
      */
     missing(key: OneOrMore<string>): LazyPromise<boolean>;
 
     /**
      * The <i>get</i> method returns the value when <i>key</i> is found otherwise null will be returned.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
      */
     get(key: OneOrMore<string>): LazyPromise<TType | null>;
 
     /**
      * The <i>getOrFail</i> method returns the value when <i>key</i> is found otherwise an error will be thrown.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
      * @throws {KeyNotFoundCacheError} {@link KeyNotFoundCacheError}
      */
     getOrFail(key: OneOrMore<string>): LazyPromise<TType>;
@@ -55,12 +72,21 @@ export type ICacheBase<TType = unknown> = {
     /**
      * The <i>getAndRemove</i> method returns the value when <i>key</i> is found otherwise null will be returned.
      * The key will be removed after it is returned.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
      */
     getAndRemove(key: OneOrMore<string>): LazyPromise<TType | null>;
 
     /**
      * The <i>getOr</i> method will retrieve the given <i>key</i> if found otherwise <i>defaultValue</i> will be returned.
-     * The <i>defaultValue<i> can be async or sync function.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
+     * @param defaultValue - can be sync function, async function or <i>{@link LazyPromise}</i>.
      */
     getOr(
         key: OneOrMore<string>,
@@ -69,7 +95,12 @@ export type ICacheBase<TType = unknown> = {
 
     /**
      * The <i>getOrAdd</i> method will retrieve the given <i>key</i> if found otherwise <i>valueToAdd</i> will be added and returned.
-     * The <i>valueToAdd<i> can be async, sync function and <i>{@link LazyPromise}</i>.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
+     * @param valueToAdd - can be sync function, async function or <i>{@link LazyPromise}</i>.
      */
     getOrAdd(
         key: OneOrMore<string>,
@@ -78,8 +109,15 @@ export type ICacheBase<TType = unknown> = {
     ): LazyPromise<TType>;
 
     /**
-     * The <i>add</i> method adds a <i>key</i> with given <i>value</i> when key doesn't exists. Returns true when key doesn't exists otherwise false will be returned.
-     * You can provide a <i>ttl</i> value. If null is passed, the item will not expire.
+     * The <i>add</i> method adds a <i>key</i> with given <i>value</i> when key doesn't exists.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
+     * @param ttl - If null is passed, the item will not expire.
+     *
+     * @returns true when key doesn't exists otherwise false will be returned.
      */
     add(
         key: OneOrMore<string>,
@@ -88,8 +126,16 @@ export type ICacheBase<TType = unknown> = {
     ): LazyPromise<boolean>;
 
     /**
-     * The <i>put</i> method replaces th given <i>key</i> with the given <i>value</i> and <i>ttl</i> if the <i>key</i> exists othwerwise it will add the given <i>value</i> and <i>ttl</i>.
-     * Returns true if the <i>key</i> where replaced otherwise false is returned.
+     * The <i>put</i> method replaces th given <i>key</i> with the given <i>value</i> and <i>ttl</i> if the <i>key</i> exists
+     * othwerwise it will add the given <i>value</i> with the given <i>ttl</i>.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
+     * @param ttl - If null is passed, the item will not expire.
+     *
+     * @returns true if the <i>key</i> where replaced otherwise false is returned.
      */
     put(
         key: OneOrMore<string>,
@@ -98,14 +144,28 @@ export type ICacheBase<TType = unknown> = {
     ): LazyPromise<boolean>;
 
     /**
-     * The <i>update</i> method updates the given <i>key</i> with given <i>value</i>. Returns true if the <i>key</i> where updated otherwise false will be returned.
+     * The <i>update</i> method updates the given <i>key</i> with given <i>value</i>.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
+     * @returns true if the <i>key</i> where updated otherwise false will be returned.
      */
     update(key: OneOrMore<string>, value: TType): LazyPromise<boolean>;
 
     /**
-     * The <i>increment</i> method increments the given <i>key</i> with given <i>value</i>. Returns true if the <i>key</i> where incremented otherwise false will be returned.
-     * If <i>values</i> is not defined then it will increment the key with 1.
+     * The <i>increment</i> method increments the given <i>key</i> with given <i>value</i>.
      * An error will thrown if the key is not a number.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
+     * @param value - If not defined then it will be defaulted to 1.
+     *
+     * @returns true if the <i>key</i> where incremented otherwise false will be returned.
+     *
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
     increment(
@@ -114,9 +174,17 @@ export type ICacheBase<TType = unknown> = {
     ): LazyPromise<boolean>;
 
     /**
-     * The <i>decrement</i> method decrements the given <i>key</i> with given <i>value</i>. Returns true if the <i>key</i> where decremented otherwise false will be returned.
-     * If <i>values</i> is not defined then it will decrement the key with 1.
+     * The <i>decrement</i> method decrements the given <i>key</i> with given <i>value</i>.
      * An error will thrown if the key is not a number.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
+     * @param value - If not defined then it will be defaulted to 1.
+     *
+     * @returns true if the <i>key</i> where decremented otherwise false will be returned.
+     *
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
     decrement(
@@ -125,12 +193,24 @@ export type ICacheBase<TType = unknown> = {
     ): LazyPromise<boolean>;
 
     /**
-     * The <i>remove</i> method removes the given <i>key</i>. Returns true if the key is found otherwise false is returned.
+     * The <i>remove</i> method removes the given <i>key</i>.
+     *
+     * @param key - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
+     * @returns true if the key is found otherwise false is returned.
      */
     remove(key: OneOrMore<string>): LazyPromise<boolean>;
 
     /**
-     * The <i>removeMany</i> method removes many keys. Returns true if one of the keys where deleted otherwise false is returned.
+     * The <i>removeMany</i> method removes many keys.
+     *
+     * @param keys - The param items can be a string or an <i>Iterable</i> of strings.
+     * If the param items are an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
+     *
+     * @returns true if one of the keys where deleted otherwise false is returned.
      */
     removeMany(keys: OneOrMore<string>[]): PromiseLike<boolean>;
 
@@ -165,6 +245,10 @@ export type IGroupableCache<TType = unknown> = ICache<TType> & {
      * The <i>withGroup</i> method returns a new <i>{@link ICache}</i> instance that groups keys together.
      * Only keys in the same group will be updated, removed, or retrieved, leaving keys outside the group unaffected.
      * This useful for multitennat applications.
+     *
+     * @param group - can be a string or an <i>Iterable</i> of strings.
+     * If it's an <i>Iterable</i>, it will be joined into a single string.
+     * Think of an <i>Iterable</i> as representing a path.
      */
     withGroup(group: OneOrMore<string>): ICache<TType>;
 };
