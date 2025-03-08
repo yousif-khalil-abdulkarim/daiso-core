@@ -4,9 +4,12 @@
 import type {
     IFlexibleSerdeAdapter,
     ISerdeTransformerAdapter,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    IFlexibleSerde,
 } from "@/serde/contracts/_module-exports.js";
 
 /**
+ * This <i>NoOpSerdeAdapter</i> will do nothing and is used for easily mocking <i>{@link IFlexibleSerde}</i> for testing.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/serde/adapters"```
  * @group Adapters

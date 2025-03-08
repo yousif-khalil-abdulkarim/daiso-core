@@ -11,7 +11,7 @@ import type {
 import type { InvokableFn } from "@/utilities/types.js";
 
 /**
- * This <i>NoOpEventBusAdapter</i> will do nothing and is used for easily mocking {@link IEventBus} for testing.
+ * This <i>NoOpEventBusAdapter</i> will do nothing and is used for easily mocking <i>{@link IEventBus}</i> for testing.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/adapters"```
  * @group Adapters

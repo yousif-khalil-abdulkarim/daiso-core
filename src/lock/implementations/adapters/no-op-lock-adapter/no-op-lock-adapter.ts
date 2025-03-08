@@ -8,7 +8,7 @@ import type { ILockAdapter } from "@/lock/contracts/_module-exports.js";
 import type { ILockProvider } from "@/lock/contracts/_module-exports.js";
 
 /**
- * This <i>NoOpLockAdapter</i> will do nothing and is used for easily mocking {@link ILockProvider} for testing.
+ * This <i>NoOpLockAdapter</i> will do nothing and is used for easily mocking <i>{@link ILockProvider}</i> for testing.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
  * @group Adapters
