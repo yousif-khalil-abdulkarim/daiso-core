@@ -38,6 +38,7 @@ export type LockSerdeTransformerSettings = {
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
     groupableEventBus: IGroupableEventBus<LockEvents>;
+    serdeTransformerName: string;
 };
 
 /**
@@ -56,6 +57,7 @@ export class LockSerdeTransformer
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly groupableEventBus: IGroupableEventBus<LockEvents>;
+    private readonly serdeTransformerName: string;
 
     constructor(settings: LockSerdeTransformerSettings) {
         const {
@@ -67,7 +69,9 @@ export class LockSerdeTransformer
             defaultBlockingTime,
             defaultRefreshTime,
             groupableEventBus,
+            serdeTransformerName,
         } = settings;
+        this.serdeTransformerName = serdeTransformerName;
         this.adapter = adapter;
         this.lockStore = lockStore;
         this.keyPrefixer = keyPrefixer;
@@ -79,7 +83,11 @@ export class LockSerdeTransformer
     }
 
     get name(): OneOrMore<string> {
-        return ["lock", getConstructorName(this.adapter)];
+        return [
+            "lock",
+            this.serdeTransformerName,
+            getConstructorName(this.adapter),
+        ];
     }
 
     isApplicable(value: unknown): value is Lock {
