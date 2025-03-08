@@ -48,6 +48,47 @@ export type EventBusFactorySettings<TAdapters extends string = string> =
 export class EventBusFactory<TAdapters extends string = string>
     implements IEventBusFactory<TAdapters>
 {
+    /**
+     * @example
+     * ```ts
+     * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     * import { EventBusFactory } from "@daiso-tech/core/event-bus";
+     * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { KeyPrefixer, type IFactoryObject, type Promiseable, type FactoryFn } from "@daiso-tech/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
+     * import Redis from "ioredis";
+     *
+     * type Store = Partial<Record<string, IEventBusAdapter>> = {};
+     *
+     * async function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
+     *   return (prefix) => {
+     *     let adapter = store[prefix];
+     *     if (adapter === undefined) {
+     *       adapter = new MemoryEventBusAdapter();
+     *       store[prefix] = adapter;
+     *     }
+     *     return adapter;
+     *   }
+     * }
+     *
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const store: Store = {};
+     * const eventBusFactory = new EventBusFactory({
+     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   adapters: {
+     *     memory: new MemoryEventBusAdapter(),
+     *     memoryFactory: cahceAdapterFactory(store),
+     *     redis: new RedisPubSubEventBusAdapter({
+     *       serde,
+     *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+     *       listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+     *     }),
+     *   },
+     *   defaultAdapter: "memory"
+     * });
+     * ```
+     */
     constructor(
         private readonly settings: EventBusFactorySettings<TAdapters>,
     ) {}
@@ -100,16 +141,16 @@ export class EventBusFactory<TAdapters extends string = string>
      * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBusFactory } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/utilities";
+     * import { KeyPrefixer, type IFactoryObject, type Promiseable, type FactoryFn } from "@daiso-tech/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
      *
-     * class EventBusAdapterFactory implements IFactoryObject<string, IEventBusAdapter> {
-     *   private store: Partial<Record<string, IEventBusAdapter>> = {};
+     * type Store = Partial<Record<string, IEventBusAdapter>> = {};
      *
-     *   async use(prefix: string): Promiseable<IEventBusAdapter> {
-     *     let adapter = this.store[prefix];
+     * async function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
+     *   return (prefix) => {
+     *     let adapter = store[prefix];
      *     if (adapter === undefined) {
      *       adapter = new MemoryEventBusAdapter();
      *       store[prefix] = adapter;
@@ -121,15 +162,16 @@ export class EventBusFactory<TAdapters extends string = string>
      * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
      * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const store: Store = {};
      * const eventBusFactory = new EventBusFactory({
      *   keyPrefixer: new KeyPrefixer("event-bus"),
      *   adapters: {
      *     memory: new MemoryEventBusAdapter(),
-     *     memorFactory: new EventBusAdapterFactory(),
+     *     memoryFactory: cahceAdapterFactory(store),
      *     redis: new RedisPubSubEventBusAdapter({
      *       serde,
-     *       dispatcherClient,
-     *       listenerClient,
+     *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+     *       listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
      *     }),
      *   },
      *   defaultAdapter: "memory"
@@ -150,7 +192,7 @@ export class EventBusFactory<TAdapters extends string = string>
      * // You can change the default settings of the returned EventBus instance.
      * await eventBusFactory
      *   .setRetryAttempts(4)
-     *   .use("sqlite")
+     *   .use("memoryFactory")
      *   .dispatch(new AddEvent({ a: 1, b: 2 }));
      *
      * // You can reuse the settings

@@ -116,31 +116,34 @@ export class CacheFactory<TAdapters extends string = string>
      * @example
      * ```ts
      * import { CacheFactory } from "@daiso-tech/core/cache";
+     * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
      * import { MemoryCacheAdapter, RedisCacheAdapter, SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
+     * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { KeyPrefixer, TimeSpan, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
+     * import { KeyPrefixer, TimeSpan, type ISqliteDatabase, type FactoryFn } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      * import Sqlite from "better-sqlite3";
      *
-     * const serde = new Serde(new SuperJsonSerdeAdapter());
-     *
-     * async function cahceAdapterFactory(prefix: string): Promiseable<SqliteCacheAdapter> {
-     *   const database = new Sqlite("local.db");
-     *   const cacheAdapter = new SqliteCacheAdapter({
-     *     database,
-     *     serde,
-     *     tableName: `cache_${prefix}`
-     *   });
-     *   await cacheAdapter.init();
-     *   return cacheAdapter;
+     * function cahceAdapterFactory(database: ISqliteDatabase, serde: ISerde<string>): FactoryFn<string, ICacheAdapter> {
+     *   return async (prefix) => {
+     *     const cacheAdapter = new SqliteCacheAdapter({
+     *       database,
+     *       serde,
+     *       tableName: `cache_${prefix}`
+     *     });
+     *     await cacheAdapter.init();
+     *     return cacheAdapter;
+     *   }
      * }
      *
+     * const database = new Sqlite("local.db");
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
      *   serde,
      *   keyPrefixer: new KeyPrefixer("cache"),
      *   adapters: {
-     *     sqlite: cahceAdapterFactory,
+     *     sqlite: cahceAdapterFactory(database, serde),
      *     memory: new MemoryCacheAdapter(),
      *     redis: new RedisCacheAdapter({
      *       client: new Redis("YOUR_REDIS_CONNECTION"),
@@ -148,7 +151,6 @@ export class CacheFactory<TAdapters extends string = string>
      *     }),
      *   },
      *   defaultAdapter: "memory",
-     *   eventBus,
      * });
      *
      * // Will add key to cache using the default adapter which is MemoryCacheAdapter
