@@ -104,22 +104,25 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import type { IEventBusAdapter } from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { KeyPrefixer, type Promiseable } from "@daiso-tech/utilities";
+     * import { KeyPrefixer, type FactoryFn } from "@daiso-tech/utilities";
      *
-     * const store: Partial<Record<string, IEventBusAdapter>> = {};
+     * type Store = Partial<Record<string, IEventBusAdapter>> = {};
      *
-     * async function cahceAdapterFactory(prefix: string): Promiseable<IEventBusAdapter> {
-     *   let adapter = store[prefix];
-     *   if (adapter === undefined) {
-     *     adapter = new MemoryEventBusAdapter();
-     *     store[prefix] = adapter;
+     * async function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
+     *   return (prefix) => {
+     *     let adapter = store[prefix];
+     *     if (adapter === undefined) {
+     *       adapter = new MemoryEventBusAdapter();
+     *       store[prefix] = adapter;
+     *     }
+     *     return adapter;
      *   }
-     *   return adapter;
      * }
      *
+     * const store: Store = {}
      * const eventBus = new EventBus({
      *   keyPrefixer: new KeyPrefixer("event-bus"),
-     *   adapter: cahceAdapterFactory
+     *   adapter: cahceAdapterFactory(store)
      * });
      * ```
      *
@@ -131,9 +134,10 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/utilities";
      *
+     * type Store = Partial<Record<string, IEventBusAdapter>>;
      *
      * class EventBusAdapterFactory implements IFactoryObject<string, IEventBusAdapter> {
-     *   private store: Partial<Record<string, IEventBusAdapter>> = {};
+     *   constructor(private readonly store: Store) {}
      *
      *   async use(prefix: string): Promiseable<IEventBusAdapter> {
      *     let adapter = this.store[prefix];
@@ -145,10 +149,10 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      *   }
      * }
      *
-     * const cahceAdapterFactory = new EventBusAdapterFactory();
+     * const store: Store = {}
      * const eventBus = new EventBus({
      *   keyPrefixer: new KeyPrefixer("event-bus"),
-     *   adapter: cahceAdapterFactory
+     *   adapter: new EventBusAdapterFactory(store)
      * });
      * ```
      */

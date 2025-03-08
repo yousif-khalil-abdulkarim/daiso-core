@@ -121,7 +121,7 @@ export class KeyPrefixer implements IKeyPrefixer {
     }
 
     get originalRootPrefix(): OneOrMore<string> {
-        return this.originalRootPrefix;
+        return this._rootPrefix;
     }
 
     get resolvedRootPrefix(): string {

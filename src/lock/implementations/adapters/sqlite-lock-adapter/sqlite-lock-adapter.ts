@@ -9,10 +9,10 @@ import type {
 import {
     type IDeinitizable,
     type IInitizable,
+    type ISqliteDatabase,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
 import { KyselyLockAdapter } from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
-import type { SqliteDatabase } from "kysely";
 import { Kysely, SqliteDialect } from "kysely";
 import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports.js";
 
@@ -22,7 +22,7 @@ import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports.js
  * @group Adapters
  */
 export type SqliteLockAdapterSettings = {
-    database: SqliteDatabase;
+    database: ISqliteDatabase;
     tableName?: string;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;

@@ -16,8 +16,9 @@ import {
     type IDeinitizable,
     KyselyTableNameTransformerPlugin,
     type IPrunable,
+    type ISqliteDatabase,
 } from "@/utilities/_module-exports.js";
-import { Kysely, SqliteDialect, type SqliteDatabase } from "kysely";
+import { Kysely, SqliteDialect } from "kysely";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { KyselyCacheAdapter } from "@/cache/implementations/adapters/kysely-cache-adapter/_module.js";
@@ -28,7 +29,7 @@ import { KyselyCacheAdapter } from "@/cache/implementations/adapters/kysely-cach
  * @group Adapters
  */
 export type SqliteCacheAdapterSettings = {
-    database: SqliteDatabase;
+    database: ISqliteDatabase;
     tableName?: string;
     serde: ISerde<string>;
     expiredKeysRemovalInterval?: TimeSpan;

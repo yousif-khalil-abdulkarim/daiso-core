@@ -186,45 +186,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
      * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
      * import { Serde } from "@daiso-tech/core/serde";
+     * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache";
-     * import { KeyPrefixer, type Promiseable } from "@daiso-tech/core/utilities";
+     * import { KeyPrefixer, type ISqliteDatabase, type FactoryFn } from "@daiso-tech/core/utilities";
      *
-     *
-     * async function cahceAdapterFactory(prefix: string): Promiseable<ICacheAdapter> {
-     *   const database = new Sqlite("local.db");
-     *   const serde = new Serde(new SuperJsonSerdeAdapter());
-     *   const cacheAdapter = new SqliteCacheAdapter({
-     *     database,
-     *     serde,
-     *     tableName: `cache_${prefix}`
-     *   });
-     *   await cacheAdapter.init();
-     *   return cacheAdapter;
-     * }
-     *
-     * const cache = new Cache({
-     *   keyPrefixer: new KeyPrefixer("cache"),
-     *   adapter: cahceAdapterFactory,
-     * });
-     * ```
-     *
-     * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
-     * @example
-     * ```ts
-     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
-     * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
-     * import Sqlite from "better-sqlite3";
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
-     *
-     * class CahceAdapterFactory implements IFactoryObject<string, ICacheAdapter> {
-     *   async use(prefix: string): Promiseable<ICacheAdapter> {
-     *     const database = new Sqlite("local.db");
-     *     const serde = new Serde(new SuperJsonSerdeAdapter());
+     * function cahceAdapterFactory(database: ISqliteDatabase, serde: ISerde<string>): FactoryFn<string, ICacheAdapter> {
+     *   return async (prefix) => {
      *     const cacheAdapter = new SqliteCacheAdapter({
      *       database,
      *       serde,
@@ -234,10 +203,46 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *     return cacheAdapter;
      *   }
      * }
-     * const cahceAdapterFactory = new CahceAdapterFactory();
+     *
+     * const database = new Sqlite("local.db");
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cache = new Cache({
      *   keyPrefixer: new KeyPrefixer("cache"),
-     *   adapter: cahceAdapterFactory,
+     *   adapter: cahceAdapterFactory(database, serde),
+     * });
+     * ```
+     *
+     * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
+     * @example
+     * ```ts
+     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import type { ISerde } from "@daiso-tech/core/serde/contracts";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
+     * import Sqlite from "better-sqlite3";
+     * import { Cache } from "@daiso-tech/core/cache";
+     * import { KeyPrefixer, type ISqliteDatabase, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
+     *
+     * class CahceAdapterFactory implements IFactoryObject<string, ICacheAdapter> {
+     *   constructor(private readonly database: ISqliteDatabase, private readonly serde: ISerde<string>) {}
+     *
+     *   async use(prefix: string): Promiseable<ICacheAdapter> {
+     *     const cacheAdapter = new SqliteCacheAdapter({
+     *       database: this.database,
+     *       serde: this.serde,
+     *       tableName: `cache_${prefix}`
+     *     });
+     *     await cacheAdapter.init();
+     *     return cacheAdapter;
+     *   }
+     * }
+     *
+     * const database = new Sqlite("local.db");
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const cache = new Cache({
+     *   keyPrefixer: new KeyPrefixer("cache"),
+     *   adapter: new CahceAdapterFactory(database, serde),
      * });
      * ```
      */

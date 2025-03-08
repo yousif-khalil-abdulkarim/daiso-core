@@ -5,18 +5,19 @@
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
-    IDatabaseLockAdapter,
-    ILockAdapter,
+    ILockProviderFactory,
+    IGroupableLockProvider,
 } from "@/lock/contracts/_module-exports.js";
-import type { ILockProviderFactory } from "@/lock/contracts/lock-provider-factory.contract.js";
-import type { IGroupableLockProvider } from "@/lock/contracts/lock-provider.contract.js";
 import {
     DefaultAdapterNotDefinedError,
+    KeyPrefixer,
+    resolveOneOrMore,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
 import type { IKeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     LockProvider,
+    type LockAdapterFactoryable,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
 
@@ -26,7 +27,7 @@ import {
  * @group Derivables
  */
 export type LockAdapters<TAdapters extends string> = Partial<
-    Record<TAdapters, ILockAdapter | IDatabaseLockAdapter>
+    Record<TAdapters, LockAdapterFactoryable>
 >;
 
 /**
@@ -49,6 +50,48 @@ export type LockProviderFactorySettings<TAdapters extends string> =
 export class LockProviderFactory<TAdapters extends string>
     implements ILockProviderFactory<TAdapters>
 {
+    /**
+     * @example
+     * ```ts
+     * import { LockProviderFactory } from "@daiso-tech/core/lock";
+     * import type { ILockAdapter } from "@daiso-tech/core/lock/contracts";
+     * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import type { ISerde } from "@daiso-tech/core/serde/contracts";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { KeyPrefixer, TimeSpan, type ISqliteDatabase, type FactoryFn } from "@daiso-tech/core/utilities";
+     * import Redis from "ioredis"
+     * import Sqlite from "better-sqlite3";
+     *
+     * function lockAdapterFactory(database: ISqliteDatabase, serde: ISerde<string>): FactoryFn<string, ILockAdapter> {
+     *   return async (prefix) => {
+     *     const lockAdapter = new SqliteLockAdapter({
+     *       database,
+     *       serde,
+     *       tableName: `lock_${prefix}`
+     *     });
+     *     await lockAdapter.init();
+     *     return lockAdapter;
+     *   }
+     * }
+     *
+     * const database = new Sqlite("local.db");
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const lockProviderFactory = new LockProviderFactory({
+     *   serde,
+     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   adapters: {
+     *     sqlite: lockAdapterFactory(database, serde),
+     *     memory: new MemoryLockAdapter(),
+     *     redis: new RedisLockAdapter({
+     *       client: new Redis("YOUR_REDIS_CONNECTION"),
+     *       serde,
+     *     }),
+     *   },
+     *   defaultAdapter: "memory",
+     * });
+     * ```
+     */
     constructor(
         private readonly settings: LockProviderFactorySettings<TAdapters>,
     ) {}
@@ -145,14 +188,39 @@ export class LockProviderFactory<TAdapters extends string>
      * @example
      * ```ts
      * import { LockProviderFactory } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter, RedisLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import type { ILockAdapter } from "@daiso-tech/core/lock/contracts";
+     * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import type { ISerde } from "@daiso-tech/core/serde/contracts";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { KeyPrefixer, TimeSpan, type ISqliteDatabase, type FactoryFn } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
+     * import Sqlite from "better-sqlite3";
      *
+     * function lockAdapterFactory(database: ISqliteDatabase, serde: ISerde<string>): FactoryFn<string, ILockAdapter> {
+     *   return async (prefix) => {
+     *     const lockAdapter = new SqliteLockAdapter({
+     *       database,
+     *       serde,
+     *       tableName: `lock_${prefix}`
+     *     });
+     *     await lockAdapter.init();
+     *     return lockAdapter;
+     *   }
+     * }
+     *
+     * const database = new Sqlite("local.db");
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new LockProviderFactory({
+     *   serde,
      *   keyPrefixer: new KeyPrefixer("lock"),
      *   adapters: {
+     *     sqlite: lockAdapterFactory(database, serde),
      *     memory: new MemoryLockAdapter(),
-     *     redis: new RedisLockAdapter(client),
+     *     redis: new RedisLockAdapter({
+     *       client: new Redis("YOUR_REDIS_CONNECTION"),
+     *       serde,
+     *     }),
      *   },
      *   defaultAdapter: "memory",
      * });
@@ -205,9 +273,14 @@ export class LockProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
+        const { keyPrefixer } = this.settings;
         return new LockProvider({
-            adapter,
             ...this.settings,
+            adapter,
+            keyPrefixer: new KeyPrefixer([
+                ...resolveOneOrMore(keyPrefixer.originalRootPrefix),
+                adapterName,
+            ]),
         });
     }
 }
