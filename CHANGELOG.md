@@ -1,5 +1,29 @@
 # @daiso-tech/core
 
+## 0.28.0
+
+### Minor Changes
+
+-   f7c33fb: Added new <i>ICacheAdapter</i> class: <i>NoOpCacheAdapter</i> that is used for easily mocking <i>ICache</i> for testing.
+-   ceaac8a: Removed <i>setTimeout</i> method of <i>LazyPromise</i> class.
+-   f7c33fb: Added <i>ILockAdapter</i> class: <i>NoOpLockAdapter</i> that is used for easily mocking <i>ILockProvider</i> for testing.
+-   ceaac8a: Added new method to <i>LazyPromise</i> class:
+    -   <i>setRetryTimeout</i>: Sets a timeout for each retry attempt, ensuring it aborts if retry exceeds the specified time.
+-   ceaac8a: Added new method to <i>LazyPromise</i> class:
+    -   <i>setTotalTimeout</i>: Sets a timeout <i>LazyPromise</i>, ensuring it aborts if <i>LazyPromise</i> exceeds the specified time.
+-   8285a0d: Added new methods to ILock contract: runBlockingOrFail, and acquireBlockingOrFail.
+
+### Patch Changes
+
+-   8f69793: Updated documentation
+-   f7c33fb: Fixed a bug with <i>LockProviderFactory</i> class, now each named <i>ILockAdapter</i> has a unique <i>KeyPrefixer</i> instance.
+-   f7c33fb: Updated old types of <i>LockProviderFactory</i> class.
+-   f7c33fb: Fixed a bug with <i>CacheFactory</i> class, now each named <i>ICacheAdapter</i> has a unique <i>KeyPrefixer</i> instance.
+-   8f69793: Fixed a bug with resolving the OneOrMore type
+-   f7c33fb: Fixed a bug with <i>KeyPrefixer</i> class <i>originalRootPrefix</i> method.
+-   f7c33fb: Updated old types of <i>EventBusFactory</i> class.
+-   6cae88d: Updated the <i>ICache</i> contract: modified the <i>removeMany</i> method to accept an <i>Iterable</i> argument instead of an <i>Array</i>.
+
 ## 0.27.0
 
 ### Minor Changes
