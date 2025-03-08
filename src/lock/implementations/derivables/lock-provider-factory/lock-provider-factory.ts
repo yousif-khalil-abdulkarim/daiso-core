@@ -10,6 +10,8 @@ import type {
 } from "@/lock/contracts/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
+    KeyPrefixer,
+    resolveOneOrMore,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
 import type { IKeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
@@ -204,9 +206,14 @@ export class LockProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
+        const { keyPrefixer } = this.settings;
         return new LockProvider({
-            adapter,
             ...this.settings,
+            adapter,
+            keyPrefixer: new KeyPrefixer([
+                ...resolveOneOrMore(keyPrefixer.originalRootPrefix),
+                adapterName,
+            ]),
         });
     }
 }
