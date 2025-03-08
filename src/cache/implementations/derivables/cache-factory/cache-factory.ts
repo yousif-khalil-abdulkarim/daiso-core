@@ -4,6 +4,7 @@
 
 import {
     DefaultAdapterNotDefinedError,
+    resolveOneOrMore,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
@@ -16,7 +17,7 @@ import {
     type CacheSettingsBase,
     type CacheAdapterFactoryable,
 } from "@/cache/implementations/derivables/cache/_module.js";
-import type { KeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
+import { KeyPrefixer, type TimeSpan } from "@/utilities/_module-exports.js";
 import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 
 /**
@@ -193,9 +194,14 @@ export class CacheFactory<TAdapters extends string = string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
+        const { keyPrefixer } = this.settings;
         return new Cache({
-            adapter,
             ...this.settings,
+            adapter,
+            keyPrefixer: new KeyPrefixer([
+                ...resolveOneOrMore(keyPrefixer.originalRootPrefix),
+                adapterName,
+            ]),
         });
     }
 }
