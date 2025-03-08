@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.28.1
+
+### Patch Changes
+
+-   d597727: Fixed a bug in <i>LockProvider</i> where using two <i>ILockAdapter<i> instances with the same name caused ILock serialization/deserialization issues. Now, you can pass in unique prefix to <i>LockProvider</i> to differentiate them.
+
 ## 0.28.0
 
 ### Minor Changes
