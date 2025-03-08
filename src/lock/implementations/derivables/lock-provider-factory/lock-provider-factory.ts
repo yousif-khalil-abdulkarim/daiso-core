@@ -281,6 +281,7 @@ export class LockProviderFactory<TAdapters extends string>
                 ...resolveOneOrMore(keyPrefixer.originalRootPrefix),
                 adapterName,
             ]),
+            serdeTransformerName: adapterName,
         });
     }
 }

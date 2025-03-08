@@ -10,6 +10,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type IFactoryObject,
     type Items,
+    CORE,
 } from "@/utilities/_module-exports.js";
 import {
     KeyPrefixer,
@@ -67,6 +68,11 @@ export type LockProviderSettingsBase = LazyPromiseSettingsBase & {
     keyPrefixer: IKeyPrefixer;
 
     serde: OneOrMore<IFlexibleSerde>;
+
+    /**
+     * @default {""}
+     */
+    serdeTransformerName?: string;
 
     /**
      * You can pass your owner id generator function.
@@ -170,6 +176,7 @@ export class LockProvider implements IGroupableLockProvider {
         },
     ): Promise<ILockAdapter> {
         const {
+            serdeTransformerName,
             serde,
             lockStore,
             keyPrefixer,
@@ -193,9 +200,10 @@ export class LockProvider implements IGroupableLockProvider {
             defaultBlockingTime,
             defaultRefreshTime,
             groupableEventBus,
+            serdeTransformerName,
         });
         for (const serde_ of resolveOneOrMore(serde)) {
-            serde_.registerCustom(transformer);
+            serde_.registerCustom(transformer, CORE);
         }
         return resolvedAdapter;
     }
@@ -313,6 +321,7 @@ export class LockProvider implements IGroupableLockProvider {
             retryPolicy = null,
             retryTimeout = null,
             totalTimeout = null,
+            serdeTransformerName = "",
         } = settings;
 
         this.serde = serde;
@@ -352,6 +361,7 @@ export class LockProvider implements IGroupableLockProvider {
                     defaultBlockingTime,
                     defaultRefreshTime,
                     groupableEventBus,
+                    serdeTransformerName,
                 },
             ),
         );
