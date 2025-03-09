@@ -1,5 +1,16 @@
 # @daiso-tech/core
 
+## 0.29.0
+
+### Minor Changes
+
+-   c4058ae: Added <i>subscribeOnce</i> method to the <i>IEventBus</i> contract. It works like <i>listenOnce</i> but returns an <i>unsubscribe</i> function for easier management.
+
+### Patch Changes
+
+-   c4058ae: Fixed a bug in the <i>EventBus</i> class's <i>listenOnce</i> method: listener can now be removed before their first trigger.
+-   501e19c: Fixed major bug with package.json exports field
+
 ## 0.28.1
 
 ### Patch Changes
