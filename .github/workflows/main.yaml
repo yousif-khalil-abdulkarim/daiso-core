@@ -1,17 +1,16 @@
-on: 
-    pull_request
+on: pull_request
 jobs:
     lint:
         name: Linting
         runs-on: ubuntu-latest
-        steps: 
+        steps:
             - name: Checkout
               uses: actions/checkout@v4
 
             - name: Install Node js
               uses: actions/setup-node@v4
-              with: 
-                node-version: ${{ secrets.NODE_VERSION }}
+              with:
+                  node-version: ${{ secrets.NODE_VERSION }}
 
             - name: Install Dependencies
               run: npm ci
@@ -21,20 +20,20 @@ jobs:
     check:
         name: Checking
         runs-on: ubuntu-latest
-        steps: 
+        steps:
             - name: Checkout
               uses: actions/checkout@v4
 
             - name: Install Node js
               uses: actions/setup-node@v4
-              with: 
-                node-version: ${{ secrets.NODE_VERSION }}
+              with:
+                  node-version: ${{ secrets.NODE_VERSION }}
 
             - name: Install Dependencies
               run: npm ci
 
             - name: Checking
-              run: npm run check    
+              run: npm run check
     test:
         name: Testing
         runs-on: ubuntu-latest
@@ -44,8 +43,8 @@ jobs:
 
             - name: Install Node js
               uses: actions/setup-node@v4
-              with: 
-                node-version: ${{ secrets.NODE_VERSION }}
+              with:
+                  node-version: ${{ secrets.NODE_VERSION }}
 
             - name: Install Dependencies
               run: npm ci
