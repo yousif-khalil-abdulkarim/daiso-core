@@ -2,8 +2,7 @@
  * @module EventBus
  */
 
-import type { MessageBase } from "@/event-bus/contracts/_shared.js";
-import type { InvokableFn } from "@/utilities/_module-exports.js";
+import type { InvokableFn, MessageBase } from "@/utilities/_module-exports.js";
 
 /**
  * The <i>IEventBusAdapter</i> contract defines a way for dispatching and listening to events independent of underlying technology.

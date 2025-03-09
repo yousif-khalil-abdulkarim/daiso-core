@@ -5,10 +5,11 @@
 import type {
     Invokable,
     Items,
+    MessageBase,
     OneOrMore,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
-import {
+import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnableToDispatchEventBusError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,7 +17,6 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnableToRemoveListenerEventBusError,
 } from "@/event-bus/contracts/event-bus.errors.js";
-import type { MessageBase } from "@/event-bus/contracts/_shared.js";
 
 /**
  *

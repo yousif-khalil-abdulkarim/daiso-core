@@ -4,10 +4,10 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { IGroupableCache } from "@/cache/contracts/cache.contract.js";
-import { MessageBase } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import {
     CORE,
+    MessageBase,
     resolveOneOrMore,
     type OneOrMore,
     type TimeSpan,

@@ -9,11 +9,11 @@ import {
     type beforeEach,
 } from "vitest";
 import {
-    MessageBase,
     type IEventBus,
     type IGroupableEventBus,
 } from "@/event-bus/contracts/_module-exports.js";
 import {
+    MessageBase,
     type IInvokableObject,
     type InvokableFn,
     type Promisable,

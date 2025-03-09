@@ -4,11 +4,11 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ILock } from "@/lock/contracts/lock.contract.js";
-import { MessageBase } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import type { OneOrMore } from "@/utilities/types.js";
 import {
     CORE,
+    MessageBase,
     resolveOneOrMore,
     type TimeSpan,
 } from "@/utilities/_module-exports.js";

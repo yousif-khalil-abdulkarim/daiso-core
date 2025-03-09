@@ -17,7 +17,6 @@ import {
     type IEventBus,
     type IGroupableEventBus,
     type IEventBusAdapter,
-    type MessageBase,
     UnableToDispatchEventBusError,
     UnableToRemoveListenerEventBusError,
     UnableToAddListenerEventBusError,
@@ -31,6 +30,7 @@ import type {
     OneOrMore,
     TimeSpan,
     Items,
+    MessageBase,
 } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,

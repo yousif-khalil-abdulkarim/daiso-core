@@ -10,8 +10,7 @@ import {
     describe,
 } from "vitest";
 import type { IEventBusAdapter } from "@/event-bus/contracts/_module-exports.js";
-import { MessageBase } from "@/event-bus/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
+import { MessageBase, type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
@@ -55,7 +54,7 @@ export function eventBusAdapterTestSuite(
     });
 
     const TTL = TimeSpan.fromMilliseconds(50);
-    class TestEvent extends MessageBase {}
+    class TestEvent extends MessageBase<{ type: string }> {}
     serde.registerEvent(TestEvent);
     describe("method: addListener, removeListener, dispatch", () => {
         test("Should be null when listener added and event is not triggered", async () => {

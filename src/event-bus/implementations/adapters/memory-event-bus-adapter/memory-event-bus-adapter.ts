@@ -2,11 +2,9 @@
  * @module EventBus
  */
 
+import type { MessageBase } from "@/utilities/_module-exports.js";
 import { type InvokableFn } from "@/utilities/_module-exports.js";
-import type {
-    MessageBase,
-    IEventBusAdapter,
-} from "@/event-bus/contracts/_module-exports.js";
+import type { IEventBusAdapter } from "@/event-bus/contracts/_module-exports.js";
 import { EventEmitter } from "node:events";
 
 /**

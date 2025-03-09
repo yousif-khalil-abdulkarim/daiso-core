@@ -141,3 +141,13 @@ export type Factory<TInput, TOutput> =
 export type Factoryable<TInput, TOutput> =
     | NoneFunction<TOutput>
     | Factory<TInput, TOutput>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ */
+export abstract class MessageBase<
+    TFields extends Record<string, unknown> = Record<string, unknown>,
+> {
+    constructor(readonly fields: TFields) {}
+}

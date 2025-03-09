@@ -8,12 +8,10 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     SuperJsonSerdeAdapter,
 } from "@/serde/implementations/adapters/_module-exports.js";
-import type {
-    MessageBase,
-    IEventBusAdapter,
-} from "@/event-bus/contracts/_module-exports.js";
+import type { IEventBusAdapter } from "@/event-bus/contracts/_module-exports.js";
 import type { Redis } from "ioredis";
 import { EventEmitter } from "node:events";
+import type { MessageBase } from "@/utilities/_module-exports.js";
 import { type InvokableFn } from "@/utilities/_module-exports.js";
 
 /**

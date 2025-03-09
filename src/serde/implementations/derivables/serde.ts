@@ -5,6 +5,7 @@
 import type { OneOrMore } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
+    MessageBase,
     resolveOneOrMoreStr,
 } from "@/utilities/_module-exports.js";
 import type {
@@ -15,7 +16,6 @@ import type {
     SerializableClass,
     SerializableEventClass,
 } from "@/serde/contracts/_module-exports.js";
-import { MessageBase } from "@/event-bus/contracts/_module-exports.js";
 import {
     ArrayBufferSerdeTransformer,
     BufferSerdeTransformer,

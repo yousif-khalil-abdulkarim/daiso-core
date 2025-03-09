@@ -6,14 +6,17 @@ import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import {
     type IGroupableEventBus,
     type IEventBusFactory,
-    type MessageBase,
 } from "@/event-bus/contracts/_module-exports.js";
 import {
     EventBus,
     type EventBusAdapterFactoryable,
     type EventBusSettingsBase,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
-import type { KeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
+import type {
+    KeyPrefixer,
+    MessageBase,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
