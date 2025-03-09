@@ -6,9 +6,10 @@
     "license": "Apache-2.0",
     "type": "module",
     "homepage": "https://yousif-khalil-abdulkarim.github.io/daiso-core/modules.html",
+    "description": "The library offers flexible, framework-agnostic solutions for modern web applications, built on adaptable components that integrate seamlessly with popular frameworks like Next Js.",
     "repository": {
         "type": "git",
-        "url": "https://github.com/yousif-khalil-abdulkarim/daiso-core.git"
+        "url": "git+https://github.com/yousif-khalil-abdulkarim/daiso-core.git"
     },
     "keywords": [
         "Async collection",
@@ -42,29 +43,85 @@
         "./dist"
     ],
     "exports": {
-        "./*": {
-            "import": [
-                "./dist/*/_module-exports.js",
-                "./dist/*/implementations/_module-exports.js",
-                "./dist/*/implementations/derivables/_module-exports.js"
-            ],
-            "types": [
-                "./dist/*/_module-exports.d.ts",
-                "./dist/*/implementations/_module-exports.d.ts",
-                "./dist/*/implementations/derivables/_module-exports.d.ts"
-            ]
+        "./async": {
+            "types": "./dist/async/_module-exports.d.ts",
+            "import": "./dist/async/_module-exports.js"
         },
-        "./*/contracts": {
-            "import": "./dist/*/contracts/_module-exports.js",
-            "types": "./dist/*/contracts/_module-exports.d.ts"
+        "./cache": {
+            "types": "./dist/cache/implementations/derivables/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/derivables/_module-exports.js"
         },
-        "./*/adapters": {
-            "import": "./dist/*/implementations/adapters/_module-exports.js",
-            "types": "./dist/*/implementations/adapters/_module-exports.d.ts"
+        "./cache/contracts": {
+            "types": "./dist/cache/contracts/_module-exports.d.ts",
+            "import": "./dist/cache/contracts/_module-exports.js"
         },
-        "./*/test-utilities": {
-            "import": "./dist/*/implementations/test-utilities/_module-exports.js",
-            "types": "./dist/*/implementations/test-utilities/_module-exports.d.ts"
+        "./cache/adapters": {
+            "types": "./dist/cache/implementations/adapters/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/_module-exports.js"
+        },
+        "./cache/test-utilities": {
+            "types": "./dist/cache/implementations/test-utilities/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/test-utilities/_module-exports.js"
+        },
+        "./collection": {
+            "types": "./dist/collection/implementations/_module-exports.d.ts",
+            "import": "./dist/collection/implementations/_module-exports.js"
+        },
+        "./collection/contracts": {
+            "types": "./dist/collection/contracts/_module-exports.d.ts",
+            "import": "./dist/collection/contracts/_module-exports.js"
+        },
+        "./event-bus": {
+            "types": "./dist/event-bus/implementations/derivables/_module-exports.d.ts",
+            "import": "./dist/event-bus/implementations/derivables/_module-exports.js"
+        },
+        "./event-bus/contracts": {
+            "types": "./dist/event-bus/contracts/_module-exports.d.ts",
+            "import": "./dist/event-bus/contracts/_module-exports.js"
+        },
+        "./event-bus/adapters": {
+            "types": "./dist/event-bus/implementations/adapters/_module-exports.d.ts",
+            "import": "./dist/event-bus/implementations/adapters/_module-exports.js"
+        },
+        "./event-bus/test-utilities": {
+            "types": "./dist/event-bus/implementations/test-utilities/_module-exports.d.ts",
+            "import": "./dist/event-bus/implementations/test-utilities/_module-exports.js"
+        },
+        "./lock": {
+            "types": "./dist/lock/implementations/derivables/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/derivables/_module-exports.js"
+        },
+        "./lock/contracts": {
+            "types": "./dist/lock/contracts/_module-exports.d.ts",
+            "import": "./dist/lock/contracts/_module-exports.js"
+        },
+        "./lock/adapters": {
+            "types": "./dist/lock/implementations/adapters/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/_module-exports.js"
+        },
+        "./lock/test-utilities": {
+            "types": "./dist/lock/implementations/test-utilities/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/test-utilities/_module-exports.js"
+        },
+        "./serde": {
+            "types": "./dist/serde/implementations/derivables/_module-exports.d.ts",
+            "import": "./dist/serde/implementations/derivables/_module-exports.js"
+        },
+        "./serde/contracts": {
+            "types": "./dist/serde/contracts/_module-exports.d.ts",
+            "import": "./dist/serde/contracts/_module-exports.js"
+        },
+        "./serde/adapters": {
+            "types": "./dist/serde/implementations/adapters/_module-exports.d.ts",
+            "import": "./dist/serde/implementations/adapters/_module-exports.js"
+        },
+        "./serde/test-utilities": {
+            "types": "./dist/serde/implementations/test-utilities/_module-exports.d.ts",
+            "import": "./dist/serde/implementations/test-utilities/_module-exports.js"
+        },
+        "./utilities": {
+            "types": "./dist/utilities/_module-exports.d.ts",
+            "import": "./dist/utilities/_module-exports.js"
         }
     },
     "scripts": {
@@ -74,6 +131,8 @@
         "lint": "npx eslint \"**/*.{js,jsx,ts,tsx}\"",
         "lint:fix": "npx eslint \"**/*.{js,jsx,ts,tsx}\" --fix",
         "build": "npx rimraf dist && npx tsc --project \"./tsconfig.build.json\" && npx tsc-alias -p \"./tsconfig.build.json\"",
+        "publint": "npm run build && npx publint",
+        "check:all": "npm run check && npm run lint && npm run test && npm run publint",
         "docs": "npx typedoc",
         "release": "npm run build && npx changeset publish"
     },
@@ -98,6 +157,7 @@
         "eslint-plugin-vitest": "^0.5.4",
         "ioredis": "^5.4.1",
         "mongodb": "^6.10.0",
+        "publint": "^0.3.8",
         "rimraf": "^6.0.1",
         "tsc-alias": "^1.8.10",
         "typedoc": "^0.26.5",
