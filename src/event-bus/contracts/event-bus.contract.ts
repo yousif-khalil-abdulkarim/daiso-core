@@ -110,6 +110,15 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<EventInstance<TEventClass>>;
 
     /**
+     * The <i>subscribeOnce</i> method is used for listening to a <i>{@link BaseEvent}</i> once and it returns a cleanup function that removes listener when called.
+     * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
+     */
+    subscribeOnce<TEventClass extends EventClass<TEvents>>(
+        event: TEventClass,
+        listener: Invokable<EventInstance<TEventClass>>,
+    ): LazyPromise<Unsubscribe>;
+
+    /**
      * The <i>subscribe</i> method is used for listening to a <i>{@link BaseEvent}</i> and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */

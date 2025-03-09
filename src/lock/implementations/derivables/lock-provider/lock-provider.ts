@@ -436,6 +436,17 @@ export class LockProvider implements IGroupableLockProvider {
      * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
      * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
      */
+    subscribeOnce<TEventClass extends EventClass<LockEvents>>(
+        event: TEventClass,
+        listener: Invokable<EventInstance<TEventClass>>,
+    ): LazyPromise<Unsubscribe> {
+        return this.eventBus.subscribeOnce(event, listener);
+    }
+
+    /**
+     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,

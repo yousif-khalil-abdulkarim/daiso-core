@@ -168,7 +168,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     await eventBusA.removeListener(AddEvent, listener);
                 });
             });
-            describe("Should be null when listener removed and event is triggered", () => {
+            describe("Should be null when listener is removed and event is triggered", () => {
                 test("Object literal listener", async () => {
                     const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
@@ -420,7 +420,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     );
                 });
             });
-            describe("Should be null when listener removed and event is triggered", () => {
+            describe("Should be null when listener is removed and event is triggered", () => {
                 test("Object literal listener", async () => {
                     const listener: IInvokableObject<AddEvent | SubEvent> & {
                         resultA: AddEvent | null;
@@ -645,7 +645,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     await unsubscribe();
                 });
             });
-            describe("Should be null when listener removed and event is triggered", () => {
+            describe("Should be null when listener is removed by unsubscribe and event is triggered", () => {
                 test("Object literal listener", async () => {
                     const listener: IInvokableObject<AddEvent> & {
                         result: AddEvent | null;
@@ -699,6 +699,60 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         listener,
                     );
                     await unsubscribe();
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(result).toBeNull();
+                });
+            });
+            describe("Should be null when listener is removed by removeListener and event is triggered", () => {
+                test("Object literal listener", async () => {
+                    const listener: IInvokableObject<AddEvent> & {
+                        result: AddEvent | null;
+                    } = {
+                        result: null,
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        },
+                    };
+                    await eventBusA.subscribe(AddEvent, listener);
+                    await eventBusA.removeListener(AddEvent, listener);
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toBeNull();
+                });
+                test("Class instance listener", async () => {
+                    class Listener implements IInvokableObject<AddEvent> {
+                        result: AddEvent | null = null;
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        }
+                    }
+                    const listener = new Listener();
+                    await eventBusA.subscribe(AddEvent, listener);
+                    await eventBusA.removeListener(AddEvent, listener);
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toBeNull();
+                });
+                test("Function listener", async () => {
+                    let result = null as AddEvent | null;
+                    const listener: InvokableFn<AddEvent> = (event) => {
+                        result = event;
+                    };
+                    await eventBusA.subscribe(AddEvent, listener);
+                    await eventBusA.removeListener(AddEvent, listener);
                     const event = new AddEvent({
                         a: 1,
                         b: 2,
@@ -888,7 +942,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     await unsubscribe();
                 });
             });
-            describe("Should be null when listener removed and event is triggered", () => {
+            describe("Should be null when listener is removed by unsubscribe and event is triggered", () => {
                 test("Object literal listener", async () => {
                     const listener: IInvokableObject<AddEvent | SubEvent> & {
                         resultA: AddEvent | null;
@@ -989,6 +1043,377 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     await LazyPromise.delay(TTL);
                     expect(resultA).toBeNull();
                     expect(resultB).toBeNull();
+                });
+            });
+            describe("Should be null when listener is removed by removeListener and event is triggered", () => {
+                test("Object literal listener", async () => {
+                    const listener: IInvokableObject<AddEvent | SubEvent> & {
+                        resultA: AddEvent | null;
+                        resultB: SubEvent | null;
+                    } = {
+                        resultA: null,
+                        resultB: null,
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
+                            if (event instanceof AddEvent) {
+                                this.resultA = event;
+                            }
+                            if (event instanceof SubEvent) {
+                                this.resultB = event;
+                            }
+                        },
+                    };
+                    await eventBusA.subscribeMany(
+                        [AddEvent, SubEvent],
+                        listener,
+                    );
+                    await eventBusA.removeListenerMany(
+                        [AddEvent, SubEvent],
+                        listener,
+                    );
+                    const addEvent = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    const subEvent = new SubEvent({
+                        c: 1,
+                        d: 2,
+                    });
+                    await eventBusA.dispatchMany([addEvent, subEvent]);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.resultA).toBeNull();
+                    expect(listener.resultB).toBeNull();
+                });
+                test("Class instance listener", async () => {
+                    class Listener
+                        implements IInvokableObject<AddEvent | SubEvent>
+                    {
+                        resultA: AddEvent | null = null;
+                        resultB: SubEvent | null = null;
+                        invoke(event: AddEvent | SubEvent): Promisable<void> {
+                            if (event instanceof AddEvent) {
+                                this.resultA = event;
+                            }
+                            if (event instanceof SubEvent) {
+                                this.resultB = event;
+                            }
+                        }
+                    }
+                    const listener = new Listener();
+                    await eventBusA.subscribeMany(
+                        [AddEvent, SubEvent],
+                        listener,
+                    );
+                    await eventBusA.removeListenerMany(
+                        [AddEvent, SubEvent],
+                        listener,
+                    );
+                    const addEvent = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    const subEvent = new SubEvent({
+                        c: 1,
+                        d: 2,
+                    });
+                    await eventBusA.dispatchMany([addEvent, subEvent]);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.resultA).toBeNull();
+                    expect(listener.resultB).toBeNull();
+                });
+                test("Function listener", async () => {
+                    let resultA: AddEvent | null = null;
+                    let resultB: SubEvent | null = null;
+
+                    const listener: InvokableFn<AddEvent | SubEvent> = (
+                        event: AddEvent | SubEvent,
+                    ): Promisable<void> => {
+                        if (event instanceof AddEvent) {
+                            resultA = event;
+                        }
+                        if (event instanceof SubEvent) {
+                            resultB = event;
+                        }
+                    };
+                    await eventBusA.subscribeMany(
+                        [AddEvent, SubEvent],
+                        listener,
+                    );
+                    await eventBusA.removeListenerMany(
+                        [AddEvent, SubEvent],
+                        listener,
+                    );
+                    const addEvent = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    const subEvent = new SubEvent({
+                        c: 1,
+                        d: 2,
+                    });
+                    await eventBusA.dispatchMany([addEvent, subEvent]);
+                    await LazyPromise.delay(TTL);
+                    expect(resultA).toBeNull();
+                    expect(resultB).toBeNull();
+                });
+            });
+        });
+        describe("method: subscribeOnce", () => {
+            describe("Should be null when listener added and event is not triggered", () => {
+                test("Object literal listener", async () => {
+                    const listener: IInvokableObject<AddEvent> & {
+                        result: AddEvent | null;
+                    } = {
+                        result: null,
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        },
+                    };
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    expect(listener.result).toBeNull();
+                });
+                test("Class instance listener", async () => {
+                    class Listener implements IInvokableObject<AddEvent> {
+                        result: AddEvent | null = null;
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        }
+                    }
+                    const listener = new Listener();
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    expect(listener.result).toBeNull();
+                });
+                test("Function listener", async () => {
+                    let result: AddEvent | null = null;
+                    const listener: InvokableFn<AddEvent> = (event) => {
+                        result = event;
+                    };
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    expect(result).toBeNull();
+                });
+            });
+            describe("Should be AddEvent when listener added and event is triggered", () => {
+                test("Object literal listener", async () => {
+                    const listener: IInvokableObject<AddEvent> & {
+                        result: AddEvent | null;
+                    } = {
+                        result: null,
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        },
+                    };
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    const event: AddEvent = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toEqual(event);
+                    expect(listener.result).toBeInstanceOf(AddEvent);
+                });
+                test("Class instance listener", async () => {
+                    class Listener implements IInvokableObject<AddEvent> {
+                        result: AddEvent | null = null;
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        }
+                    }
+                    const listener = new Listener();
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    const event: AddEvent = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toEqual(event);
+                    expect(listener.result).toBeInstanceOf(AddEvent);
+                });
+                test("Function listener", async () => {
+                    let result: AddEvent | null = null;
+                    const listener: InvokableFn<AddEvent> = (event) => {
+                        result = event;
+                    };
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    const event: AddEvent = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(result).toEqual(event);
+                    expect(result).toBeInstanceOf(AddEvent);
+                });
+            });
+            describe("Should only listen for event once", () => {
+                test("Object literal listener", async () => {
+                    const listener: IInvokableObject<AddEvent> & {
+                        i: number;
+                    } = {
+                        i: 0,
+                        invoke(_event: AddEvent): Promisable<void> {
+                            this.i++;
+                        },
+                    };
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    const event: AddEvent = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.i).toBe(1);
+                });
+                test("Class instance listener", async () => {
+                    class Listener implements IInvokableObject<AddEvent> {
+                        i = 0;
+                        invoke(_event: AddEvent): Promisable<void> {
+                            this.i++;
+                        }
+                    }
+                    const listener = new Listener();
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    const event: AddEvent = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.i).toBe(1);
+                });
+                test("Function listener", async () => {
+                    let i = 0;
+                    const listener: InvokableFn<AddEvent> = () => {
+                        i++;
+                    };
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    const event: AddEvent = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(i).toBe(1);
+                });
+            });
+            describe("Should be null when listener is removed by unsubscribe function and event is triggered", () => {
+                test("Object literal listener", async () => {
+                    const listener: IInvokableObject<AddEvent> & {
+                        result: AddEvent | null;
+                    } = {
+                        result: null,
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        },
+                    };
+                    const unsubscribe = await eventBusA.subscribeOnce(
+                        AddEvent,
+                        listener,
+                    );
+                    await unsubscribe();
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toBeNull();
+                });
+                test("Class instance listener", async () => {
+                    class Listener implements IInvokableObject<AddEvent> {
+                        result: AddEvent | null = null;
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        }
+                    }
+                    const listener = new Listener();
+                    const unsubscribe = await eventBusA.subscribeOnce(
+                        AddEvent,
+                        listener,
+                    );
+                    await unsubscribe();
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toBeNull();
+                });
+                test("Function listener", async () => {
+                    let result = null as AddEvent | null;
+                    const listener: InvokableFn<AddEvent> = (event) => {
+                        result = event;
+                    };
+                    const unsubscribe = await eventBusA.subscribeOnce(
+                        AddEvent,
+                        listener,
+                    );
+                    await unsubscribe();
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(result).toBeNull();
+                });
+            });
+            describe("Should be null when listener is removed by removeListener method and event is triggered", () => {
+                test("Object literal listener", async () => {
+                    const listener: IInvokableObject<AddEvent> & {
+                        result: AddEvent | null;
+                    } = {
+                        result: null,
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        },
+                    };
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    await eventBusA.removeListener(AddEvent, listener);
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toBeNull();
+                });
+                test("Class instance listener", async () => {
+                    class Listener implements IInvokableObject<AddEvent> {
+                        result: AddEvent | null = null;
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        }
+                    }
+                    const listener = new Listener();
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    await eventBusA.removeListener(AddEvent, listener);
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toBeNull();
+                });
+                test("Function listener", async () => {
+                    let result = null as AddEvent | null;
+                    const listener: InvokableFn<AddEvent> = (event) => {
+                        result = event;
+                    };
+                    await eventBusA.subscribeOnce(AddEvent, listener);
+                    await eventBusA.removeListener(AddEvent, listener);
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(result).toBeNull();
                 });
             });
         });
@@ -1132,6 +1557,60 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     await eventBusA.dispatch(event);
                     await LazyPromise.delay(TTL);
                     expect(i).toBe(1);
+                });
+            });
+            describe("Should be null when listener is removed and event is triggered", () => {
+                test("Object literal listener", async () => {
+                    const listener: IInvokableObject<AddEvent> & {
+                        result: AddEvent | null;
+                    } = {
+                        result: null,
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        },
+                    };
+                    await eventBusA.listenOnce(AddEvent, listener);
+                    await eventBusA.removeListener(AddEvent, listener);
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toBeNull();
+                });
+                test("Class instance listener", async () => {
+                    class Listener implements IInvokableObject<AddEvent> {
+                        result: AddEvent | null = null;
+                        invoke(event: AddEvent): Promisable<void> {
+                            this.result = event;
+                        }
+                    }
+                    const listener = new Listener();
+                    await eventBusA.listenOnce(AddEvent, listener);
+                    await eventBusA.removeListener(AddEvent, listener);
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(listener.result).toBeNull();
+                });
+                test("Function listener", async () => {
+                    let result = null as AddEvent | null;
+                    const listener: InvokableFn<AddEvent> = (event) => {
+                        result = event;
+                    };
+                    await eventBusA.listenOnce(AddEvent, listener);
+                    await eventBusA.removeListener(AddEvent, listener);
+                    const event = new AddEvent({
+                        a: 1,
+                        b: 2,
+                    });
+                    await eventBusA.dispatch(event);
+                    await LazyPromise.delay(TTL);
+                    expect(result).toBeNull();
                 });
             });
         });
@@ -1303,6 +1782,28 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             });
             await eventBusA.dispatch(event);
             await eventBusB.dispatch(event);
+            await LazyPromise.delay(TTL);
+
+            expect(result_a).toEqual(event);
+            expect(result_a).toBeInstanceOf(AddEvent);
+            expect(result_b).toBeNull();
+        });
+        test("method: subscribeOnce", async () => {
+            let result_a: AddEvent | null = null;
+            await eventBusA.subscribeOnce(AddEvent, (event) => {
+                result_a = event;
+            });
+
+            let result_b: AddEvent | null = null;
+            await eventBusB.subscribeOnce(AddEvent, (event) => {
+                result_b = event;
+            });
+
+            const event = new AddEvent({
+                a: 1,
+                b: 2,
+            });
+            await eventBusA.dispatch(event);
             await LazyPromise.delay(TTL);
 
             expect(result_a).toEqual(event);
