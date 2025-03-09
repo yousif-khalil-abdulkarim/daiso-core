@@ -346,6 +346,21 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         );
     }
 
+    subscribeOnce<TEventClass extends EventClass<TEvents>>(
+        event: TEventClass,
+        listener: Invokable<EventInstance<TEventClass>>,
+    ): LazyPromise<Unsubscribe> {
+        return this.createLazyPromise(async () => {
+            await this.listenOnce(event, listener);
+            const unsubscribe = () => {
+                return this.createLazyPromise(async () => {
+                    await this.removeListener(event, listener);
+                });
+            };
+            return unsubscribe;
+        });
+    }
+
     subscribe<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,

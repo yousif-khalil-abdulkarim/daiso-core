@@ -359,6 +359,17 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
      * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
      */
+    subscribeOnce<TEventClass extends EventClass<CacheEvents<TType>>>(
+        event: TEventClass,
+        listener: Invokable<EventInstance<TEventClass>>,
+    ): LazyPromise<Unsubscribe> {
+        return this.eventBus.subscribeOnce(event, listener);
+    }
+
+    /**
+     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
+     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
+     */
     subscribe<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
         listener: Invokable<EventInstance<TEventClass>>,
