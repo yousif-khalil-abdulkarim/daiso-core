@@ -6,13 +6,17 @@ npm install @daiso-tech/core
 ```
 
 ## Description
-The library provides modular solutions for the essential features needed in modern web applications. Stop wasting time searching for packages or reinventing the wheel — this framework-agnostic library, built on adaptable components, works well with popular frameworks like Express.js, Fastify, Nest.js, Next.js, Nuxt.js, SvelteKit, and Remix.
+The library provides modular solutions for the essential features needed in modern web applications. Stop wasting time searching for packages or reinventing the wheel — this framework-agnostic library, built on adaptable components, works well with popular frameworks like Express.js, Fastify, Next.js, Nuxt.js, SvelteKit, and Remix.
 
 ### Current Library Features:
 - Immutable collection components:
   - Immutable <i>IterableCollection</i> that simplifies working with <i>Iterable</i>.
   - Immutable <i>ListCollection</i> that simplifies working with <i>Array</i>.
   - Immutable <i>AsyncIterableCollection</i> that simplifies working with <i>AsyncIterable</i>.
+- LazyPromise with support for: 
+  - Aborting it manually by using <i>AbortSignal</i>.
+  - Aborting it by timeout.
+  - Easily retrying when it fails
 - Cache component with support for pluggable adapters.
 - Lock component with supports for pluggable adapters.
 - EventBus component with support for pluggable adapters.
@@ -28,7 +32,9 @@ The library provides modular solutions for the essential features needed in mode
 - Notification component
 - Abstract file system component 
 
-#### NOTE: This library only supports ESM (ecmascript) module.
+#### NOTE !!: This library only supports ESM (ecmascript) module.
+
+#### NOTE !!: This library is under construction and breaking changes can occur.
 
 ### Inspiration
 This library is inspired by [Laravel](https://laravel.com/docs/11.x/readme) and built with a modular design, so you can use only the parts you need.
