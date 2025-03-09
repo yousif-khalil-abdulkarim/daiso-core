@@ -20,28 +20,29 @@ export class ListenerStore {
     ) {}
 
     getOrAdd<TInput, TOutput>(
-        eventName: string,
-        listener: Invokable<TInput, TOutput>,
+        key: [eventName: string, listener: Invokable<TInput, TOutput>],
+        value: InvokableFn<TInput, TOutput>,
     ): InvokableFn<TInput, TOutput> {
+        const [eventName, listener] = key;
         let eventMap = this.store.get(eventName);
         if (eventMap === undefined) {
             eventMap = new Map();
             this.store.set(eventName, eventMap);
         }
 
-        let listenerFn = eventMap.get(listener);
-        if (listenerFn === undefined) {
-            listenerFn = resolveInvokable(listener);
-            eventMap.set(listener, listenerFn);
+        let listenerFn_ = eventMap.get(listener);
+        if (listenerFn_ === undefined) {
+            listenerFn_ = resolveInvokable(value);
+            eventMap.set(listener, listenerFn_);
         }
 
-        return listenerFn;
+        return listenerFn_;
     }
 
     getAndRemove<TInput, TOutput>(
-        eventName: string,
-        listener: Invokable<TInput, TOutput>,
+        key: [eventName: string, listener: Invokable<TInput, TOutput>],
     ): InvokableFn<TInput, TOutput> | null {
+        const [eventName, listener] = key;
         const eventMap = this.store.get(eventName);
         if (eventMap === undefined) {
             return null;

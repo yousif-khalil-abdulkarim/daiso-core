@@ -215,8 +215,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         return this.createLazyPromise(async () => {
             const eventName = this.keyPrefixer.create(event.name);
             const resolvedListener = this.store.getOrAdd(
-                eventName.prefixed,
-                listener,
+                [eventName.prefixed, listener],
+                resolveInvokable(listener),
             );
             try {
                 const adapter = await this.adapterPromise;
@@ -225,7 +225,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                     resolvedListener as InvokableFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getAndRemove(eventName.prefixed, listener);
+                this.store.getAndRemove([eventName.prefixed, listener]);
                 throw new UnableToAddListenerEventBusError(
                     `A listener with name of "${resolvedListener.name}" could not added for "${String(event)}" event`,
                     error,
@@ -240,10 +240,10 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             const eventName = this.keyPrefixer.create(event.name);
-            const resolvedListener = this.store.getAndRemove(
+            const resolvedListener = this.store.getAndRemove([
                 eventName.prefixed,
                 listener,
-            );
+            ]);
             if (resolvedListener === null) {
                 return;
             }
@@ -306,10 +306,28 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                     const resolvedListener = resolveInvokable(listener);
                     await resolvedListener(event_);
                 } finally {
-                    await this.removeListener(event, wrappedListener);
+                    await this.removeListener(event, listener);
                 }
             };
-            await this.addListener(event, wrappedListener);
+
+            const eventName = this.keyPrefixer.create(event.name);
+            const resolvedListener = this.store.getOrAdd(
+                [eventName.prefixed, listener],
+                wrappedListener,
+            );
+            try {
+                const adapter = await this.adapterPromise;
+                await adapter.addListener(
+                    eventName.prefixed,
+                    resolvedListener as InvokableFn<BaseEvent>,
+                );
+            } catch (error: unknown) {
+                this.store.getAndRemove([eventName.prefixed, listener]);
+                throw new UnableToAddListenerEventBusError(
+                    `A listener with name of "${resolvedListener.name}" could not added for "${String(event)}" event`,
+                    error,
+                );
+            }
         });
     }
 
