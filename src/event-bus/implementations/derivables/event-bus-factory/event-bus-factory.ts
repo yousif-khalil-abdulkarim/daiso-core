@@ -6,7 +6,7 @@ import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import {
     type IGroupableEventBus,
     type IEventBusFactory,
-    type BaseEvent,
+    type MessageBase,
 } from "@/event-bus/contracts/_module-exports.js";
 import {
     EventBus,
@@ -51,7 +51,7 @@ export class EventBusFactory<TAdapters extends string = string>
     /**
      * @example
      * ```ts
-     * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     * import { type IEventBusAdapter, MessageBase } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBusFactory } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { KeyPrefixer, type IFactoryObject, type Promiseable, type FactoryFn } from "@daiso-tech/utilities";
@@ -138,7 +138,7 @@ export class EventBusFactory<TAdapters extends string = string>
     /**
      * @example
      * ```ts
-     * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     * import { type IEventBusAdapter, MessageBase } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBusFactory } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { KeyPrefixer, type IFactoryObject, type Promiseable, type FactoryFn } from "@daiso-tech/utilities";
@@ -177,7 +177,7 @@ export class EventBusFactory<TAdapters extends string = string>
      *   defaultAdapter: "memory"
      * });
      *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     * class AddEvent extends MessageBase<{ a: number, b: number }> {}
      *
      * // Will dispatch AddEvent using the default adapter which is MemoryEventBusAdapter
      * await eventBusFactory
@@ -212,7 +212,7 @@ export class EventBusFactory<TAdapters extends string = string>
      *   .dispatch(new AddEvent({ a: 1, b: 2 }));
      * ```
      */
-    use<TEvents extends BaseEvent = BaseEvent>(
+    use<TEvents extends MessageBase = MessageBase>(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
     ): IGroupableEventBus<TEvents> {
         if (adapterName === undefined) {

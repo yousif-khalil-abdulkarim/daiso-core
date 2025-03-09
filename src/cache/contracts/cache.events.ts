@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { IGroupableCache } from "@/cache/contracts/cache.contract.js";
-import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
+import { MessageBase } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import {
     CORE,
@@ -18,7 +18,7 @@ import {
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class KeyFoundCacheEvent<TType = unknown> extends BaseEvent<{
+export class KeyFoundCacheEvent<TType = unknown> extends MessageBase<{
     group: string | null;
     key: string;
     value: TType;
@@ -29,7 +29,7 @@ export class KeyFoundCacheEvent<TType = unknown> extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class KeyNotFoundCacheEvent extends BaseEvent<{
+export class KeyNotFoundCacheEvent extends MessageBase<{
     group: string | null;
     key: string;
 }> {}
@@ -39,7 +39,7 @@ export class KeyNotFoundCacheEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class KeyAddedCacheEvent<TType = unknown> extends BaseEvent<{
+export class KeyAddedCacheEvent<TType = unknown> extends MessageBase<{
     group: string | null;
     key: string;
     value: TType;
@@ -51,7 +51,7 @@ export class KeyAddedCacheEvent<TType = unknown> extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class KeyUpdatedCacheEvent<TType = unknown> extends BaseEvent<{
+export class KeyUpdatedCacheEvent<TType = unknown> extends MessageBase<{
     group: string | null;
     key: string;
     value: TType;
@@ -62,7 +62,7 @@ export class KeyUpdatedCacheEvent<TType = unknown> extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class KeyRemovedCacheEvent extends BaseEvent<{
+export class KeyRemovedCacheEvent extends MessageBase<{
     group: string | null;
     key: string;
 }> {}
@@ -72,18 +72,7 @@ export class KeyRemovedCacheEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class KeyIncrementedCacheEvent extends BaseEvent<{
-    group: string | null;
-    key: string;
-    value: number;
-}> {}
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
- * @group Events
- */
-export class KeyDecrementedCacheEvent extends BaseEvent<{
+export class KeyIncrementedCacheEvent extends MessageBase<{
     group: string | null;
     key: string;
     value: number;
@@ -94,7 +83,18 @@ export class KeyDecrementedCacheEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class KeysClearedCacheEvent extends BaseEvent<{
+export class KeyDecrementedCacheEvent extends MessageBase<{
+    group: string | null;
+    key: string;
+    value: number;
+}> {}
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
+ * @group Events
+ */
+export class KeysClearedCacheEvent extends MessageBase<{
     group: string | null;
 }> {}
 
@@ -103,7 +103,7 @@ export class KeysClearedCacheEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class UnexpectedCacheErrorEvent extends BaseEvent<{
+export class UnexpectedCacheErrorEvent extends MessageBase<{
     group: string | null;
     keys?: string[];
     value?: unknown;

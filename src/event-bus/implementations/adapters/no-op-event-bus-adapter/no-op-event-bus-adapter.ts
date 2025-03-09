@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
+import type { MessageBase } from "@/event-bus/contracts/_module-exports.js";
 import type {
     IEventBusAdapter,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,19 +19,19 @@ import type { InvokableFn } from "@/utilities/types.js";
 export class NoOpEventBusAdapter implements IEventBusAdapter {
     addListener(
         _eventName: string,
-        _listener: InvokableFn<BaseEvent>,
+        _listener: InvokableFn<MessageBase>,
     ): PromiseLike<void> {
         return Promise.resolve();
     }
 
     removeListener(
         _eventName: string,
-        _listener: InvokableFn<BaseEvent>,
+        _listener: InvokableFn<MessageBase>,
     ): PromiseLike<void> {
         return Promise.resolve();
     }
 
-    dispatch(_eventName: string, _eventData: BaseEvent): PromiseLike<void> {
+    dispatch(_eventName: string, _eventData: MessageBase): PromiseLike<void> {
         return Promise.resolve();
     }
 }

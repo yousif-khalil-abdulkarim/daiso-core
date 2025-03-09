@@ -15,7 +15,7 @@ import type {
     SerializableClass,
     SerializableEventClass,
 } from "@/serde/contracts/_module-exports.js";
-import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
+import { MessageBase } from "@/event-bus/contracts/_module-exports.js";
 import {
     ArrayBufferSerdeTransformer,
     BufferSerdeTransformer,
@@ -322,11 +322,11 @@ export class Serde<TSerializedValue>
      * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
+     * import { MessageBase } from "@daiso-tech/core/event-bus/contracts";
      *
      * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
      *
-     * class AddEvent extends BaseEvent<{ a: number; b: number }> {}
+     * class AddEvent extends MessageBase<{ a: number; b: number }> {}
      *
      * serde.registerEvent(AddEvent);
      *
@@ -350,16 +350,16 @@ export class Serde<TSerializedValue>
         eventClass: SerializableEventClass<TFields>,
         prefix?: OneOrMore<string>,
     ): this {
-        return this.registerCustom<BaseEvent<TFields>, TFields>(
+        return this.registerCustom<MessageBase<TFields>, TFields>(
             {
                 name: eventClass.name,
-                isApplicable(value: unknown): value is BaseEvent<TFields> {
-                    return value instanceof BaseEvent;
+                isApplicable(value: unknown): value is MessageBase<TFields> {
+                    return value instanceof MessageBase;
                 },
-                serialize(deserializedValue: BaseEvent<TFields>): TFields {
+                serialize(deserializedValue: MessageBase<TFields>): TFields {
                     return deserializedValue.fields;
                 },
-                deserialize(serializedValue: TFields): BaseEvent<TFields> {
+                deserialize(serializedValue: TFields): MessageBase<TFields> {
                     return new eventClass(serializedValue);
                 },
             },

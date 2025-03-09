@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ILock } from "@/lock/contracts/lock.contract.js";
-import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
+import { MessageBase } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import type { OneOrMore } from "@/utilities/types.js";
 import {
@@ -18,7 +18,7 @@ import {
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
-export class KeyAcquiredLockEvent extends BaseEvent<{
+export class KeyAcquiredLockEvent extends MessageBase<{
     key: string;
     owner: string;
     ttl: TimeSpan | null;
@@ -29,7 +29,7 @@ export class KeyAcquiredLockEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
-export class KeyReleasedLockEvent extends BaseEvent<{
+export class KeyReleasedLockEvent extends MessageBase<{
     key: string;
     owner: string;
 }> {}
@@ -39,7 +39,7 @@ export class KeyReleasedLockEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
-export class KeyForceReleasedLockEvent extends BaseEvent<{
+export class KeyForceReleasedLockEvent extends MessageBase<{
     key: string;
 }> {}
 
@@ -48,17 +48,7 @@ export class KeyForceReleasedLockEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
-export class UnownedReleaseLockEvent extends BaseEvent<{
-    key: string;
-    owner: string;
-}> {}
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
- * @group Events
- */
-export class UnownedRefreshLockEvent extends BaseEvent<{
+export class UnownedReleaseLockEvent extends MessageBase<{
     key: string;
     owner: string;
 }> {}
@@ -68,7 +58,7 @@ export class UnownedRefreshLockEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
-export class KeyAlreadyAcquiredLockEvent extends BaseEvent<{
+export class UnownedRefreshLockEvent extends MessageBase<{
     key: string;
     owner: string;
 }> {}
@@ -78,7 +68,17 @@ export class KeyAlreadyAcquiredLockEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
-export class KeyRefreshedLockEvent extends BaseEvent<{
+export class KeyAlreadyAcquiredLockEvent extends MessageBase<{
+    key: string;
+    owner: string;
+}> {}
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * @group Events
+ */
+export class KeyRefreshedLockEvent extends MessageBase<{
     key: string;
     owner: string;
     ttl: TimeSpan;
@@ -89,7 +89,7 @@ export class KeyRefreshedLockEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
  */
-export class UnexpectedErrorLockEvent extends BaseEvent<{
+export class UnexpectedErrorLockEvent extends MessageBase<{
     key: string;
     owner: string;
     ttl: TimeSpan | null;

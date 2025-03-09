@@ -5,7 +5,7 @@
 import type { ISerializable } from "@/serde/contracts/serializable.contract.js";
 import type { ISerde } from "@/serde/contracts/serde.contract.js";
 import type { OneOrMore } from "@/utilities/_module-exports.js";
-import type { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
+import type { MessageBase } from "@/event-bus/contracts/_module-exports.js";
 
 /**
  * The <i>SerializableClass</i> contract defines standard way to make a class instance serializable and deserializable.
@@ -26,7 +26,7 @@ export type SerializableClass<TSerializedValue> = {
  * @group Contracts
  */
 export type SerializableEventClass<TFields extends Record<string, unknown>> =
-    new (fields: any) => BaseEvent<TFields>;
+    new (fields: any) => MessageBase<TFields>;
 
 /**
  *
@@ -52,7 +52,7 @@ export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
 export interface IFlexibleSerde<TSerializedValue = unknown>
     extends ISerde<TSerializedValue> {
     /**
-     * The <i>registerEvent</i> method is used for registering custom <i>{@link BaseEvent}</i> for serialization and deserialization.
+     * The <i>registerEvent</i> method is used for registering custom <i>{@link MessageBase}</i> for serialization and deserialization.
      */
     registerEvent<TFields extends Record<string, unknown>>(
         eventClass: SerializableEventClass<TFields>,

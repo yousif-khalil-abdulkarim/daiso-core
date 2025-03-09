@@ -9,7 +9,7 @@ import {
     type beforeEach,
 } from "vitest";
 import {
-    BaseEvent,
+    MessageBase,
     type IEventBus,
     type IGroupableEventBus,
 } from "@/event-bus/contracts/_module-exports.js";
@@ -55,11 +55,11 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
     } = settings;
 
     const TTL = TimeSpan.fromMilliseconds(50);
-    class AddEvent extends BaseEvent<{
+    class AddEvent extends MessageBase<{
         a: number;
         b: number;
     }> {}
-    class SubEvent extends BaseEvent<{
+    class SubEvent extends MessageBase<{
         c: number;
         d: number;
     }> {}
@@ -1736,13 +1736,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             expect(result_b).toBeNull();
         });
         test("method: subscribe / dispatch", async () => {
-            let result_a: BaseEvent | null = null;
+            let result_a: MessageBase | null = null;
             await eventBusA.subscribe(AddEvent, (event) => {
                 result_a = event;
             });
 
-            let result_b: BaseEvent | null = null;
-            const listenerB = (event: BaseEvent) => {
+            let result_b: MessageBase | null = null;
+            const listenerB = (event: MessageBase) => {
                 result_b = event;
             };
             const unsubscribe = await eventBusB.subscribe(AddEvent, listenerB);

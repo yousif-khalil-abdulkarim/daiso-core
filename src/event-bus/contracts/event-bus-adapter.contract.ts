@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
+import type { MessageBase } from "@/event-bus/contracts/_shared.js";
 import type { InvokableFn } from "@/utilities/_module-exports.js";
 
 /**
@@ -18,7 +18,7 @@ export type IEventBusAdapter = {
      */
     addListener(
         eventName: string,
-        listener: InvokableFn<BaseEvent>,
+        listener: InvokableFn<MessageBase>,
     ): PromiseLike<void>;
 
     /**
@@ -26,11 +26,11 @@ export type IEventBusAdapter = {
      */
     removeListener(
         eventName: string,
-        listener: InvokableFn<BaseEvent>,
+        listener: InvokableFn<MessageBase>,
     ): PromiseLike<void>;
 
     /**
      * The <i>dispatch</i> method is used for dispatching one or multiple <i>events</i>.
      */
-    dispatch(eventName: string, eventData: BaseEvent): PromiseLike<void>;
+    dispatch(eventName: string, eventData: MessageBase): PromiseLike<void>;
 };

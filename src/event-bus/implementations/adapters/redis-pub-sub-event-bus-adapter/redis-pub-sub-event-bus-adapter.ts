@@ -9,7 +9,7 @@ import {
     SuperJsonSerdeAdapter,
 } from "@/serde/implementations/adapters/_module-exports.js";
 import type {
-    BaseEvent,
+    MessageBase,
     IEventBusAdapter,
 } from "@/event-bus/contracts/_module-exports.js";
 import type { Redis } from "ioredis";
@@ -73,7 +73,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
 
     async addListener(
         eventName: string,
-        listener: InvokableFn<BaseEvent>,
+        listener: InvokableFn<MessageBase>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.on(eventName, listener);
@@ -86,7 +86,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
 
     async removeListener(
         eventName: string,
-        listener: InvokableFn<BaseEvent>,
+        listener: InvokableFn<MessageBase>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.off(eventName, listener);
@@ -94,7 +94,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         await this.listenerClient.unsubscribe(eventName);
     }
 
-    async dispatch(eventName: string, eventData: BaseEvent): Promise<void> {
+    async dispatch(eventName: string, eventData: MessageBase): Promise<void> {
         await this.dispatcherClient.publish(
             eventName,
             this.serde.serialize(eventData),

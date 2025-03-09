@@ -17,7 +17,7 @@ import {
     type IEventBus,
     type IGroupableEventBus,
     type IEventBusAdapter,
-    type BaseEvent,
+    type MessageBase,
     UnableToDispatchEventBusError,
     UnableToRemoveListenerEventBusError,
     UnableToAddListenerEventBusError,
@@ -72,7 +72,7 @@ export type EventBusSettings = EventBusSettingsBase & {
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
-export class EventBus<TEvents extends BaseEvent = BaseEvent>
+export class EventBus<TEvents extends MessageBase = MessageBase>
     implements IGroupableEventBus<TEvents>
 {
     private readonly adapterFactoryable: EventBusAdapterFactoryable;
@@ -222,7 +222,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 const adapter = await this.adapterPromise;
                 await adapter.addListener(
                     eventName.prefixed,
-                    resolvedListener as InvokableFn<BaseEvent>,
+                    resolvedListener as InvokableFn<MessageBase>,
                 );
             } catch (error: unknown) {
                 this.store.getAndRemove([eventName.prefixed, listener]);
@@ -251,7 +251,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 const adapter = await this.adapterPromise;
                 await adapter.removeListener(
                     eventName.prefixed,
-                    resolvedListener as InvokableFn<BaseEvent>,
+                    resolvedListener as InvokableFn<MessageBase>,
                 );
             } catch (error: unknown) {
                 throw new UnableToRemoveListenerEventBusError(
@@ -319,7 +319,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 const adapter = await this.adapterPromise;
                 await adapter.addListener(
                     eventName.prefixed,
-                    resolvedListener as InvokableFn<BaseEvent>,
+                    resolvedListener as InvokableFn<MessageBase>,
                 );
             } catch (error: unknown) {
                 this.store.getAndRemove([eventName.prefixed, listener]);

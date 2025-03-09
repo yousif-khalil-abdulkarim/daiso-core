@@ -9,7 +9,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultAdapterNotDefinedError,
 } from "@/utilities/_module-exports.js";
-import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
+import type { MessageBase } from "@/event-bus/contracts/_shared.js";
 
 /**
  * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableEventBus}</i> dynamically.
@@ -24,7 +24,7 @@ export type IEventBusFactory<TAdapters extends string = string> = {
      * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      */
-    use<TEvents extends BaseEvent = BaseEvent>(
+    use<TEvents extends MessageBase = MessageBase>(
         adapterName?: TAdapters,
     ): IGroupableEventBus<TEvents>;
 };

@@ -10,7 +10,7 @@ import {
     describe,
 } from "vitest";
 import type { IEventBusAdapter } from "@/event-bus/contracts/_module-exports.js";
-import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
+import { MessageBase } from "@/event-bus/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
@@ -55,23 +55,23 @@ export function eventBusAdapterTestSuite(
     });
 
     const TTL = TimeSpan.fromMilliseconds(50);
-    class TestEvent extends BaseEvent {}
+    class TestEvent extends MessageBase {}
     serde.registerEvent(TestEvent);
     describe("method: addListener, removeListener, dispatch", () => {
         test("Should be null when listener added and event is not triggered", async () => {
-            let result: BaseEvent | null = null;
-            await adapter.addListener(TestEvent.name, (event: BaseEvent) => {
+            let result: MessageBase | null = null;
+            await adapter.addListener(TestEvent.name, (event: MessageBase) => {
                 result = event;
             });
             expect(result).toBeNull();
         });
         test("Should be TestEvent when listener added and event is triggered", async () => {
-            let result: BaseEvent | null = null;
-            await adapter.addListener(TestEvent.name, (event: BaseEvent) => {
+            let result: MessageBase | null = null;
+            await adapter.addListener(TestEvent.name, (event: MessageBase) => {
                 result = event;
             });
             const event = new TestEvent({
-                type: BaseEvent.name,
+                type: MessageBase.name,
             });
             await adapter.dispatch(TestEvent.name, event);
             await LazyPromise.delay(TTL);
@@ -79,14 +79,14 @@ export function eventBusAdapterTestSuite(
             expect(result).toBeInstanceOf(TestEvent);
         });
         test("Should be null when listener removed and event is triggered", async () => {
-            let result: BaseEvent | null = null;
-            const listener = (event: BaseEvent) => {
+            let result: MessageBase | null = null;
+            const listener = (event: MessageBase) => {
                 result = event;
             };
             await adapter.addListener(TestEvent.name, listener);
             await adapter.removeListener(TestEvent.name, listener);
             const event = new TestEvent({
-                type: BaseEvent.name,
+                type: MessageBase.name,
             });
             await adapter.dispatch(TestEvent.name, event);
             await LazyPromise.delay(TTL);
