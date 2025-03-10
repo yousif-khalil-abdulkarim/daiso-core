@@ -4,7 +4,7 @@
 
 import type { ICacheAdapter } from "@/cache/contracts/_module-exports.js";
 import type { IDatabaseCacheAdapter } from "@/cache/contracts/_module-exports.js";
-import type { AnyFunction } from "@/utilities/_module-exports.js";
+import type { AnyFunc } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -12,7 +12,7 @@ import type { AnyFunction } from "@/utilities/_module-exports.js";
 export function isDatabaseCacheAdapter<TType>(
     adapter: ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>,
 ): adapter is IDatabaseCacheAdapter<TType> {
-    const adapter_ = adapter as Record<string, AnyFunction>;
+    const adapter_ = adapter as Record<string, AnyFunc>;
     return (
         typeof adapter_["find"] === "function" &&
         typeof adapter_["insert"] === "function" &&

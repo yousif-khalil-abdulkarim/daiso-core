@@ -14,10 +14,10 @@ export type Func<TArgs extends unknown[], TReturn> = (
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type AnyFunction = Func<any[], any>;
+export type AnyFunc = Func<any[], any>;
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type NoneFunction<TType> = Exclude<TType, AnyFunction>;
+export type NoneFunc<TType> = Exclude<TType, AnyFunc>;

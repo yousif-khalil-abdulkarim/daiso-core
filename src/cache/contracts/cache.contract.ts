@@ -6,7 +6,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type {
     AsyncLazyable,
-    NoneFunction,
+    NoneFunc,
     OneOrMore,
 } from "@/utilities/_module-exports.js";
 import type { CacheEvents } from "@/cache/contracts/cache.events.js";
@@ -90,7 +90,7 @@ export type ICacheBase<TType = unknown> = {
      */
     getOr(
         key: OneOrMore<string>,
-        defaultValue: AsyncLazyable<NoneFunction<TType>>,
+        defaultValue: AsyncLazyable<NoneFunc<TType>>,
     ): LazyPromise<TType>;
 
     /**
@@ -104,7 +104,7 @@ export type ICacheBase<TType = unknown> = {
      */
     getOrAdd(
         key: OneOrMore<string>,
-        valueToAdd: AsyncLazyable<NoneFunction<TType>>,
+        valueToAdd: AsyncLazyable<NoneFunc<TType>>,
         ttl?: TimeSpan | null,
     ): LazyPromise<TType>;
 
