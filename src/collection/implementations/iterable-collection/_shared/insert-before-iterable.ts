@@ -4,7 +4,7 @@
 
 import {
     type SyncPredicate,
-    type ICollection,
+    type ISyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -14,8 +14,8 @@ export class InsertBeforeIterable<TInput, TExtended>
     implements Iterable<TInput | TExtended>
 {
     constructor(
-        private collection: ICollection<TInput>,
-        private predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
+        private collection: ISyncCollection<TInput>,
+        private predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
         private iterable: Iterable<TInput | TExtended>,
     ) {}
 

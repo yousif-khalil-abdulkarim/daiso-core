@@ -3,7 +3,7 @@
  */
 
 import {
-    type ICollection,
+    type ISyncCollection,
     type SyncMap,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -12,8 +12,12 @@ import {
  */
 export class FlatMapIterable<TInput, TOutput> implements Iterable<TOutput> {
     constructor(
-        private collection: ICollection<TInput>,
-        private mapFn: SyncMap<TInput, ICollection<TInput>, Iterable<TOutput>>,
+        private collection: ISyncCollection<TInput>,
+        private mapFn: SyncMap<
+            TInput,
+            ISyncCollection<TInput>,
+            Iterable<TOutput>
+        >,
     ) {}
 
     *[Symbol.iterator](): Iterator<TOutput> {

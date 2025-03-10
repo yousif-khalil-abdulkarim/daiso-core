@@ -1454,7 +1454,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * The <i>crossJoin</i> method cross joins the collection's values among <i>iterables</i>, returning a Cartesian product with all possible permutations.
      * @example
      * ```ts
-     * import { ICollection } from "@daiso-tech/core";;
+     * import { ISyncCollection } from "@daiso-tech/core";;
      *
      * async function(): Promise<void> {
      *   await collection
@@ -1471,7 +1471,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * ```
      * @example
      * ```ts
-     * import { ICollection } from "@daiso-tech/core";;
+     * import { ISyncCollection } from "@daiso-tech/core";;
      *
      * async function(): Promise<void> {
      *   await collection

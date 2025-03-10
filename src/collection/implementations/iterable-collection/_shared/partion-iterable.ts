@@ -4,23 +4,25 @@
 
 import {
     type SyncPredicate,
-    type ICollection,
+    type ISyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal
  */
-export class PartionIterable<TInput> implements Iterable<ICollection<TInput>> {
+export class PartionIterable<TInput>
+    implements Iterable<ISyncCollection<TInput>>
+{
     constructor(
-        private collection: ICollection<TInput>,
-        private predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
+        private collection: ISyncCollection<TInput>,
+        private predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
 
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
-        ) => ICollection<TInput>,
+        ) => ISyncCollection<TInput>,
     ) {}
 
-    *[Symbol.iterator](): Iterator<ICollection<TInput>> {
+    *[Symbol.iterator](): Iterator<ISyncCollection<TInput>> {
         const arrayA: TInput[] = [];
         const arrayB: TInput[] = [];
         for (const [index, item] of this.collection.entries()) {

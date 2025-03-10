@@ -5,7 +5,7 @@
 import { isIterable } from "@/collection/implementations/_shared.js";
 import type {
     CrossJoinResult,
-    ICollection,
+    ISyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -15,19 +15,19 @@ export class CrossJoinIterable<TInput, TExtended = TInput>
     implements Iterable<CrossJoinResult<TInput, TExtended>>
 {
     constructor(
-        private collection: ICollection<TInput>,
+        private collection: ISyncCollection<TInput>,
         private iterable: Iterable<TExtended>,
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
-        ) => ICollection<TInput>,
+        ) => ISyncCollection<TInput>,
     ) {}
 
     *[Symbol.iterator](): Iterator<CrossJoinResult<TInput, TExtended>> {
         const combinations = this.makeCollection([
             this.collection,
             this.makeCollection(this.iterable),
-        ] as ICollection<TInput | TExtended>[])
-            .reduce<ICollection<Array<TInput | TExtended>>>(
+        ] as ISyncCollection<TInput | TExtended>[])
+            .reduce<ISyncCollection<Array<TInput | TExtended>>>(
                 (a, b) => {
                     return a
                         .map((x) => {
@@ -35,7 +35,7 @@ export class CrossJoinIterable<TInput, TExtended = TInput>
                                 return [...x, y];
                             });
                         })
-                        .reduce<ICollection<Array<TInput | TExtended>>>(
+                        .reduce<ISyncCollection<Array<TInput | TExtended>>>(
                             (c, b) => c.append(b),
                             this.makeCollection<Array<TInput | TExtended>>([]),
                         );

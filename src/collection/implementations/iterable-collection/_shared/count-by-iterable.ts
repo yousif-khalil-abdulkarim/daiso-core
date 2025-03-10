@@ -3,7 +3,7 @@
  */
 
 import {
-    type ICollection,
+    type ISyncCollection,
     type SyncMap,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -14,8 +14,8 @@ export class CountByIterable<TInput, TOutput = TInput>
     implements Iterable<[TOutput, number]>
 {
     constructor(
-        private collection: ICollection<TInput>,
-        private selectFn: SyncMap<TInput, ICollection<TInput>, TOutput> = (
+        private collection: ISyncCollection<TInput>,
+        private selectFn: SyncMap<TInput, ISyncCollection<TInput>, TOutput> = (
             item,
         ) => item as unknown as TOutput,
     ) {}

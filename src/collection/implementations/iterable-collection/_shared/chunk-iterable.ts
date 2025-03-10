@@ -2,21 +2,23 @@
  * @module Collection
  */
 
-import { type ICollection } from "@/collection/contracts/_module-exports.js";
+import { type ISyncCollection } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal
  */
-export class ChunkIterable<TInput> implements Iterable<ICollection<TInput>> {
+export class ChunkIterable<TInput>
+    implements Iterable<ISyncCollection<TInput>>
+{
     constructor(
-        private collection: ICollection<TInput>,
+        private collection: ISyncCollection<TInput>,
         private chunkSize: number,
         private readonly makeCollection: <TInput>(
             iterable: Iterable<TInput>,
-        ) => ICollection<TInput>,
+        ) => ISyncCollection<TInput>,
     ) {}
 
-    *[Symbol.iterator](): Iterator<ICollection<TInput>> {
+    *[Symbol.iterator](): Iterator<ISyncCollection<TInput>> {
         const array: TInput[] = [];
         let currentChunkSize = 0;
         let isFirstIteration = true;

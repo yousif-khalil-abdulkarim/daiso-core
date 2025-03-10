@@ -4,7 +4,7 @@
 
 import {
     type SyncPredicate,
-    type ICollection,
+    type ISyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -12,8 +12,8 @@ import {
  */
 export class TakeUntilIterable<TInput> implements Iterable<TInput> {
     constructor(
-        private collection: ICollection<TInput>,
-        private predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
+        private collection: ISyncCollection<TInput>,
+        private predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
