@@ -14,7 +14,7 @@ import type {
     Comparator,
     EnsureRecord,
     EnsureMap,
-} from "@/collection/contracts/_shared.js";
+} from "@/collection/contracts/_shared/_module.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ItemNotFoundCollectionError,
