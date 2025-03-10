@@ -4,7 +4,7 @@
 
 import {
     type ICollection,
-    type Tap,
+    type SyncTap,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -13,7 +13,7 @@ import {
 export class TapIterable<TInput> implements Iterable<TInput> {
     constructor(
         private collection: ICollection<TInput>,
-        private callback: Tap<ICollection<TInput>>,
+        private callback: SyncTap<ICollection<TInput>>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {

@@ -6,7 +6,7 @@
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type Map<TInput, TCollection, TOutput> = (
+export type SyncMap<TInput, TCollection, TOutput> = (
     item: TInput,
     index: number,
     collection: TCollection,
@@ -16,7 +16,7 @@ export type Map<TInput, TCollection, TOutput> = (
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type AsyncMap_<TInput, TCollection, TOutput> = (
+export type AsyncMap<TInput, TCollection, TOutput> = (
     item: TInput,
     index: number,
     collection: TCollection,
@@ -26,6 +26,6 @@ export type AsyncMap_<TInput, TCollection, TOutput> = (
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type AsyncMap<TInput, TCollection, TOutput> =
-    | AsyncMap_<TInput, TCollection, TOutput>
-    | Map<TInput, TCollection, TOutput>;
+export type Map<TInput, TCollection, TOutput> =
+    | AsyncMap<TInput, TCollection, TOutput>
+    | SyncMap<TInput, TCollection, TOutput>;

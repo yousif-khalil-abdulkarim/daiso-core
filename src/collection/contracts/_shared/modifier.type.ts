@@ -6,13 +6,13 @@
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type Modifier<TInput, TOutput> = (collection: TInput) => TOutput;
+export type SyncModifier<TInput, TOutput> = (collection: TInput) => TOutput;
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type AsyncModifier_<TInput, TOutput> = (
+export type AsyncModifier<TInput, TOutput> = (
     collection: TInput,
 ) => PromiseLike<TOutput>;
 
@@ -20,6 +20,6 @@ export type AsyncModifier_<TInput, TOutput> = (
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type AsyncModifier<TInput, TOutput> =
-    | Modifier<TInput, TOutput>
-    | AsyncModifier_<TInput, TOutput>;
+export type Modifier<TInput, TOutput> =
+    | SyncModifier<TInput, TOutput>
+    | AsyncModifier<TInput, TOutput>;

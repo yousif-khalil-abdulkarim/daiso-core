@@ -6,13 +6,13 @@
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type Transform<TInput, TOutput> = (value: TInput) => TOutput;
+export type SyncTransform<TInput, TOutput> = (value: TInput) => TOutput;
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type AsyncTransform_<TInput, TOutput> = (
+export type AsyncTransform<TInput, TOutput> = (
     value: TInput,
 ) => PromiseLike<TOutput>;
 
@@ -20,6 +20,6 @@ export type AsyncTransform_<TInput, TOutput> = (
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type AsyncTransform<TInput, TOutput> =
-    | Transform<TInput, TOutput>
-    | AsyncTransform_<TInput, TOutput>;
+export type Transform<TInput, TOutput> =
+    | SyncTransform<TInput, TOutput>
+    | AsyncTransform<TInput, TOutput>;

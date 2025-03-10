@@ -3,7 +3,7 @@
  */
 
 import {
-    type Predicate,
+    type SyncPredicate,
     type ICollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -15,7 +15,7 @@ export class ChunkWhileIterable<TInput>
 {
     constructor(
         private collection: ICollection<TInput>,
-        private predicateFn: Predicate<TInput, ICollection<TInput>>,
+        private predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
         ) => ICollection<TInput>,

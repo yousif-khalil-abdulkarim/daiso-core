@@ -3,7 +3,7 @@
  */
 
 import {
-    type Predicate,
+    type SyncPredicate,
     type ICollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -13,7 +13,7 @@ import {
 export class PartionIterable<TInput> implements Iterable<ICollection<TInput>> {
     constructor(
         private collection: ICollection<TInput>,
-        private predicateFn: Predicate<TInput, ICollection<TInput>>,
+        private predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
 
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,

@@ -3,7 +3,7 @@
  */
 
 import {
-    type Predicate,
+    type SyncPredicate,
     type ICollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -13,7 +13,7 @@ import {
 export class TakeUntilIterable<TInput> implements Iterable<TInput> {
     constructor(
         private collection: ICollection<TInput>,
-        private predicateFn: Predicate<TInput, ICollection<TInput>>,
+        private predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {

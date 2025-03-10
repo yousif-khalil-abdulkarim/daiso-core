@@ -4,7 +4,7 @@
 
 import {
     type ICollection,
-    type Modifier,
+    type SyncModifier,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -16,7 +16,10 @@ export class WhenIterable<TInput, TExtended>
     constructor(
         private collection: ICollection<TInput>,
         private condition: () => boolean,
-        private callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
+        private callback: SyncModifier<
+            ICollection<TInput>,
+            ICollection<TExtended>
+        >,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput | TExtended> {

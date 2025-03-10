@@ -4,13 +4,13 @@
 
 import type {
     Comparator,
-    Predicate,
-    ForEach,
-    Map,
-    Modifier,
-    Tap,
-    Transform,
-    Reduce,
+    SyncPredicate,
+    SyncForEach,
+    SyncMap,
+    SyncModifier,
+    SyncTap,
+    SyncTransform,
+    SyncReduce,
     CrossJoinResult,
     EnsureMap,
     EnsureRecord,
@@ -84,7 +84,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         filter<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): ICollection<TOutput>;
 
         /**
@@ -104,7 +104,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         reject<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): ICollection<Exclude<TInput, TOutput>>;
 
         /**
@@ -125,7 +125,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         map<TOutput>(
-            mapFn: Map<TInput, ICollection<TInput>, TOutput>,
+            mapFn: SyncMap<TInput, ICollection<TInput>, TOutput>,
         ): ICollection<TOutput>;
 
         /**
@@ -163,14 +163,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        reduce(reduceFn: Reduce<TInput, ICollection<TInput>, TInput>): TInput;
         reduce(
-            reduceFn: Reduce<TInput, ICollection<TInput>, TInput>,
+            reduceFn: SyncReduce<TInput, ICollection<TInput>, TInput>,
+        ): TInput;
+        reduce(
+            reduceFn: SyncReduce<TInput, ICollection<TInput>, TInput>,
             // eslint-disable-next-line @typescript-eslint/unified-signatures
             initialValue: TInput,
         ): TInput;
         reduce<TOutput>(
-            reduceFn: Reduce<TInput, ICollection<TInput>, TOutput>,
+            reduceFn: SyncReduce<TInput, ICollection<TInput>, TOutput>,
             initialValue: TOutput,
         ): TOutput;
 
@@ -241,7 +243,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         flatMap<TOutput>(
-            mapFn: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
+            mapFn: SyncMap<TInput, ICollection<TInput>, Iterable<TOutput>>,
         ): ICollection<TOutput>;
 
         /**
@@ -261,8 +263,12 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         change<TFilterOutput extends TInput, TMapOutput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
-            mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
+            predicateFn: SyncPredicate<
+                TInput,
+                ICollection<TInput>,
+                TFilterOutput
+            >,
+            mapFn: SyncMap<TFilterOutput, ICollection<TInput>, TMapOutput>,
         ): ICollection<TInput | TFilterOutput | TMapOutput>;
 
         /**
@@ -296,7 +302,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         set(
             index: number,
-            value: TInput | Map<TInput, ICollection<TInput>, TInput>,
+            value: TInput | SyncMap<TInput, ICollection<TInput>, TInput>,
         ): ICollection<TInput>;
 
         /**
@@ -475,7 +481,9 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
+        percentage(
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
+        ): number;
 
         /**
          * The <i>some</i> method determines whether at least one item in the collection matches <i>predicateFn</i>.
@@ -493,7 +501,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         some<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): boolean;
 
         /**
@@ -512,7 +520,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         every<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): boolean;
 
         /**
@@ -564,7 +572,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         takeUntil(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): ICollection<TInput>;
 
         /**
@@ -584,7 +592,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         takeWhile(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): ICollection<TInput>;
 
         /**
@@ -622,7 +630,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         skipUntil(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): ICollection<TInput>;
 
         /**
@@ -642,7 +650,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         skipWhile(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): ICollection<TInput>;
 
         /**
@@ -664,7 +672,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         when<TExtended = TInput>(
             condition: boolean,
-            callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
+            callback: SyncModifier<ICollection<TInput>, ICollection<TExtended>>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -697,7 +705,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         whenEmpty<TExtended = TInput>(
-            callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
+            callback: SyncModifier<ICollection<TInput>, ICollection<TExtended>>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -718,7 +726,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         whenNot<TExtended = TInput>(
             condition: boolean,
-            callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
+            callback: SyncModifier<ICollection<TInput>, ICollection<TExtended>>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -750,7 +758,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         whenNotEmpty<TExtended = TInput>(
-            callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
+            callback: SyncModifier<ICollection<TInput>, ICollection<TExtended>>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -783,7 +791,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         pipe<TOutput = TInput>(
-            callback: Transform<ICollection<TInput>, TOutput>,
+            callback: SyncTransform<ICollection<TInput>, TOutput>,
         ): TOutput;
 
         /**
@@ -805,7 +813,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        tap(callback: Tap<ICollection<TInput>>): ICollection<TInput>;
+        tap(callback: SyncTap<ICollection<TInput>>): ICollection<TInput>;
 
         /**
          * The <i>chunk</i> method breaks the collection into multiple, smaller collections of size <i>chunkSize</i>.
@@ -846,7 +854,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         chunkWhile(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): ICollection<ICollection<TInput>>;
 
         /**
@@ -914,7 +922,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         partition(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): ICollection<ICollection<TInput>>;
 
         /**
@@ -994,7 +1002,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         groupBy<TOutput = TInput>(
-            selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
+            selectFn?: SyncMap<TInput, ICollection<TInput>, TOutput>,
         ): ICollection<[TOutput, ICollection<TInput>]>;
 
         /**
@@ -1036,7 +1044,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         countBy<TOutput = TInput>(
-            selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
+            selectFn?: SyncMap<TInput, ICollection<TInput>, TOutput>,
         ): ICollection<[TOutput, number]>;
 
         /**
@@ -1085,7 +1093,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         unique<TOutput = TInput>(
-            selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
+            selectFn?: SyncMap<TInput, ICollection<TInput>, TOutput>,
         ): ICollection<TInput>;
 
         /**
@@ -1141,7 +1149,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         difference<TOutput = TInput>(
             iterable: Iterable<TInput>,
-            selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
+            selectFn?: SyncMap<TInput, ICollection<TInput>, TOutput>,
         ): ICollection<TInput>;
 
         /**
@@ -1417,7 +1425,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         insertBefore<TExtended = TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
             iterable: Iterable<TInput | TExtended>,
         ): ICollection<TInput | TExtended>;
 
@@ -1438,7 +1446,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         insertAfter<TExtended = TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
             iterable: Iterable<TInput | TExtended>,
         ): ICollection<TInput | TExtended>;
 
@@ -1649,7 +1657,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * // 3
          */
         first<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): TOutput | null;
 
         /**
@@ -1706,7 +1714,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         firstOr<TOutput extends TInput, TExtended = TInput>(
             defaultValue: Lazyable<TExtended>,
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): TOutput | TExtended;
 
         /**
@@ -1751,7 +1759,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         firstOrFail<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): TOutput;
 
         /**
@@ -1795,7 +1803,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         last<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): TOutput | null;
 
         /**
@@ -1852,7 +1860,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         lastOr<TOutput extends TInput, TExtended = TInput>(
             defaultValue: Lazyable<TExtended>,
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): TOutput | TExtended;
 
         /**
@@ -1897,7 +1905,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         lastOrFail<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): TOutput;
 
         /**
@@ -1929,7 +1937,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         before(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): TInput | null;
 
         /**
@@ -1974,7 +1982,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         beforeOr<TExtended = TInput>(
             defaultValue: Lazyable<TExtended>,
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): TInput | TExtended;
 
         /**
@@ -2007,7 +2015,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         beforeOrFail(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): TInput;
 
         /**
@@ -2039,7 +2047,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         after(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): TInput | null;
 
         /**
@@ -2084,7 +2092,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         afterOr<TExtended = TInput>(
             defaultValue: Lazyable<TExtended>,
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): TInput | TExtended;
 
         /**
@@ -2117,7 +2125,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         afterOrFail(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): TInput;
 
         /**
@@ -2163,7 +2171,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         sole<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>, TOutput>,
         ): TOutput;
 
         /**
@@ -2199,7 +2207,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        count(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
+        count(predicateFn: SyncPredicate<TInput, ICollection<TInput>>): number;
 
         /**
          * The <i>size</i> returns the size of the collection.
@@ -2232,7 +2240,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         searchFirst(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         ): number;
 
         /**
@@ -2250,12 +2258,14 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        searchLast(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
+        searchLast(
+            predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
+        ): number;
 
         /**
          * The <i>forEach</i> method iterates through all items in the collection.
          */
-        forEach(callback: ForEach<TInput, ICollection<TInput>>): void;
+        forEach(callback: SyncForEach<TInput, ICollection<TInput>>): void;
 
         /**
          * The <i>toArray</i> method converts the collection to a new <i>{@link Array}</i>.
@@ -2270,7 +2280,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         toRecord(): EnsureRecord<TInput>;
 
         /**
-         * The <i>toMap</i> method converts the collection to a new <i>{@link Map}</i>.
+         * The <i>toMap</i> method converts the collection to a new <i>{@link SyncMap}</i>.
          * An error will be thrown if item is not a tuple of size 2.
          * @throws {TypeCollectionError} {@link TypeCollectionError}
          */

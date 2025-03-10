@@ -6,7 +6,7 @@
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type Predicate_<TInput, TCollection> = (
+export type SyncPredicateFn<TInput, TCollection> = (
     item: TInput,
     index: number,
     collection: TCollection,
@@ -16,7 +16,7 @@ export type Predicate_<TInput, TCollection> = (
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type PredicateGuard<
+export type SyncPredicateGuardFn<
     TInput,
     TCollection,
     TOutput extends TInput = TInput,
@@ -26,15 +26,19 @@ export type PredicateGuard<
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type Predicate<TInput, TCollection, TOutput extends TInput = TInput> =
-    | Predicate_<TInput, TCollection>
-    | PredicateGuard<TInput, TCollection, TOutput>;
+export type SyncPredicate<
+    TInput,
+    TCollection,
+    TOutput extends TInput = TInput,
+> =
+    | SyncPredicateFn<TInput, TCollection>
+    | SyncPredicateGuardFn<TInput, TCollection, TOutput>;
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type AsyncPredicate_<TInput, TCollection> = (
+export type AsyncPredicate<TInput, TCollection> = (
     item: TInput,
     index: number,
     collection: TCollection,
@@ -44,10 +48,6 @@ export type AsyncPredicate_<TInput, TCollection> = (
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type AsyncPredicate<
-    TInput,
-    TCollection,
-    TOutput extends TInput = TInput,
-> =
-    | AsyncPredicate_<TInput, TCollection>
-    | Predicate<TInput, TCollection, TOutput>;
+export type Predicate<TInput, TCollection, TOutput extends TInput = TInput> =
+    | AsyncPredicate<TInput, TCollection>
+    | SyncPredicate<TInput, TCollection, TOutput>;

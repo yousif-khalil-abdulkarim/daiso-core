@@ -3,7 +3,7 @@
  */
 
 import {
-    type Predicate,
+    type SyncPredicate,
     type ICollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -15,7 +15,7 @@ export class InsertAfterIterable<TInput, TExtended>
 {
     constructor(
         private collection: ICollection<TInput>,
-        private predicateFn: Predicate<TInput, ICollection<TInput>>,
+        private predicateFn: SyncPredicate<TInput, ICollection<TInput>>,
         private iterable: Iterable<TInput | TExtended>,
     ) {}
 

@@ -4,7 +4,7 @@
 
 import {
     type ICollection,
-    type Map,
+    type SyncMap,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -15,8 +15,9 @@ export class GroupByIterable<TInput, TOutput = TInput>
 {
     constructor(
         private collection: ICollection<TInput>,
-        private selectFn: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
-            item as unknown as TOutput,
+        private selectFn: SyncMap<TInput, ICollection<TInput>, TOutput> = (
+            item,
+        ) => item as unknown as TOutput,
 
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
