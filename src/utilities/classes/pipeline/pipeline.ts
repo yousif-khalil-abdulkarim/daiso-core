@@ -7,7 +7,7 @@ import type {
     AsyncLazyable,
     IInvokableObject,
     Invokable,
-} from "@/utilities/types.js";
+} from "@/utilities/types/_module.js";
 import { resolveAsyncLazyable } from "@/utilities/functions.js";
 
 /**

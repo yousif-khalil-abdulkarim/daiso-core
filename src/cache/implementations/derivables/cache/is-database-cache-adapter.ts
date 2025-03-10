@@ -4,7 +4,7 @@
 
 import type { ICacheAdapter } from "@/cache/contracts/_module-exports.js";
 import type { IDatabaseCacheAdapter } from "@/cache/contracts/_module-exports.js";
-import type { AnyFunction } from "@/utilities/types.js";
+import type { AnyFunction } from "@/utilities/_module-exports.js";
 
 /**
  * @internal

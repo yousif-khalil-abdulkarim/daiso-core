@@ -8,7 +8,7 @@ import type {
     AsyncLazyable,
     NoneFunction,
     OneOrMore,
-} from "@/utilities/types.js";
+} from "@/utilities/_module-exports.js";
 import type { CacheEvents } from "@/cache/contracts/cache.events.js";
 import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

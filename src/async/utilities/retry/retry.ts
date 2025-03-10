@@ -3,7 +3,7 @@
  */
 
 import { RetryAsyncError } from "@/async/async.errors.js";
-import type { Result } from "@/utilities/types.js";
+import type { Result } from "@/utilities/_module-exports.js";
 import type { RetrySettings } from "@/async/utilities/retry/retry-or-fail.js";
 import { retryOrFail } from "@/async/utilities/retry/retry-or-fail.js";
 

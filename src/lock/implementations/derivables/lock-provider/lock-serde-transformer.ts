@@ -7,7 +7,7 @@ import {
     Lock,
     type ISerializedLock,
 } from "@/lock/implementations/derivables/lock-provider/lock.js";
-import type { OneOrMore } from "@/utilities/types.js";
+import type { OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     ILockAdapter,
     LockEvents,

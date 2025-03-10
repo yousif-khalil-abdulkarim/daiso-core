@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-import type { OneOrMore } from "@/utilities/types.js";
+import type { OneOrMore } from "@/utilities/types/_module.js";
 
 /**
  *
