@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-import type { NoneFunc } from "@/utilities/types/func.type.js";
+import type { NoneFunc } from "@/utilities/types/none-func.type.js";
 import type { Promisable } from "@/utilities/types/promiseable.type.js";
 
 /**
