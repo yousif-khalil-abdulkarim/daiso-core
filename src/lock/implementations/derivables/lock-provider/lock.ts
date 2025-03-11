@@ -5,7 +5,6 @@
 import type { Items, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type IKey,
-    type Invokable,
     type LazyPromiseable,
     type OneOrMore,
     type Result,
@@ -40,6 +39,7 @@ import type {
     Unsubscribe,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
+    EventListener,
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type { LockState } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
@@ -151,7 +151,7 @@ export class Lock implements ILock {
      */
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.addListener(event, listener);
     }
@@ -162,7 +162,7 @@ export class Lock implements ILock {
      */
     addListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
-        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
+        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.lockEventBus.addListenerMany(events, listener);
     }
@@ -173,7 +173,7 @@ export class Lock implements ILock {
      */
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.removeListener(event, listener);
     }
@@ -184,7 +184,7 @@ export class Lock implements ILock {
      */
     removeListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
-        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
+        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.lockEventBus.removeListenerMany(events, listener);
     }
@@ -195,7 +195,7 @@ export class Lock implements ILock {
      */
     listenOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.listenOnce(event, listener);
     }
@@ -216,7 +216,7 @@ export class Lock implements ILock {
      */
     subscribeOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockEventBus.subscribeOnce(event, listener);
     }
@@ -227,7 +227,7 @@ export class Lock implements ILock {
      */
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockEventBus.subscribe(event, listener);
     }
@@ -238,7 +238,7 @@ export class Lock implements ILock {
      */
     subscribeMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
-        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
+        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockEventBus.subscribeMany(events, listener);
     }

@@ -15,7 +15,6 @@ import {
 import {
     KeyPrefixer,
     resolveFactoryable,
-    type Invokable,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
 import type {
@@ -38,6 +37,7 @@ import {
 import type {
     EventClass,
     EventInstance,
+    EventListener,
     IEventBus,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
@@ -373,7 +373,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.addListener(event, listener);
     }
@@ -384,7 +384,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     addListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
-        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
+        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.eventBus.addListenerMany(events, listener);
     }
@@ -395,7 +395,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListener(event, listener);
     }
@@ -406,7 +406,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     removeListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
-        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
+        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListenerMany(events, listener);
     }
@@ -417,7 +417,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     listenOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.listenOnce(event, listener);
     }
@@ -438,7 +438,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     subscribeOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribeOnce(event, listener);
     }
@@ -449,7 +449,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribe(event, listener);
     }
@@ -460,7 +460,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     subscribeMany<TEventClassArr extends EventClass<LockEvents>[]>(
         events: [...TEventClassArr],
-        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
+        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribeMany(events, listener);
     }

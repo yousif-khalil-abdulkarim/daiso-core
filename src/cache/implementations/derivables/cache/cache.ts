@@ -31,7 +31,6 @@ import {
 } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazyable,
-    type Invokable,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
 import {
@@ -56,6 +55,7 @@ import type {
     EventInstance,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
+    EventListener,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
@@ -296,7 +296,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     addListener<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.addListener(event, listener);
     }
@@ -307,7 +307,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     addListenerMany<TEventClassArr extends EventClass<CacheEvents<TType>>[]>(
         events: [...TEventClassArr],
-        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
+        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.eventBus.addListenerMany(events, listener);
     }
@@ -318,7 +318,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     removeListener<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListener(event, listener);
     }
@@ -329,7 +329,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     removeListenerMany<TEventClassArr extends EventClass<CacheEvents<TType>>[]>(
         events: [...TEventClassArr],
-        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
+        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListenerMany(events, listener);
     }
@@ -340,7 +340,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     listenOnce<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.listenOnce(event, listener);
     }
@@ -361,7 +361,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     subscribeOnce<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribeOnce(event, listener);
     }
@@ -372,7 +372,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     subscribe<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
-        listener: Invokable<EventInstance<TEventClass>>,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribe(event, listener);
     }
@@ -383,7 +383,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     subscribeMany<TEventClassArr extends EventClass<CacheEvents<TType>>[]>(
         events: [...TEventClassArr],
-        listener: Invokable<EventInstance<Items<TEventClassArr>>>,
+        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribeMany(events, listener);
     }

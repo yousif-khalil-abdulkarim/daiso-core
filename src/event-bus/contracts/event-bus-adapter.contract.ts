@@ -3,7 +3,14 @@
  */
 
 import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
-import type { InvokableFn } from "@/utilities/_module-exports.js";
+import type { Promisable } from "@/utilities/_module-exports.js";
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * @group Contracts
+ */
+export type EventListenerFn<TEvent> = (event: TEvent) => Promisable<unknown>;
 
 /**
  * The <i>IEventBusAdapter</i> contract defines a way for dispatching and listening to events independent of underlying technology.
@@ -14,19 +21,19 @@ import type { InvokableFn } from "@/utilities/_module-exports.js";
  */
 export type IEventBusAdapter = {
     /**
-     * The <i>addListener</i> method is used for adding <i>{@link InvokableFn | listener}</i> for certain <i>eventName</i>.
+     * The <i>addListener</i> method is used for adding <i>{@link EventListenerFn | listener}</i> for certain <i>eventName</i>.
      */
     addListener(
         eventName: string,
-        listener: InvokableFn<BaseEvent>,
+        listener: EventListenerFn<BaseEvent>,
     ): PromiseLike<void>;
 
     /**
-     * The <i>removeListener</i> method is used for removing <i>{@link InvokableFn | listener}</i> for certain <i>eventName</i>.
+     * The <i>removeListener</i> method is used for removing <i>{@link EventListenerFn | listener}</i> for certain <i>eventName</i>.
      */
     removeListener(
         eventName: string,
-        listener: InvokableFn<BaseEvent>,
+        listener: EventListenerFn<BaseEvent>,
     ): PromiseLike<void>;
 
     /**
