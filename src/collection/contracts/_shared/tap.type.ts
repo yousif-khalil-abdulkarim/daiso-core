@@ -2,11 +2,13 @@
  * @module Collection
  */
 
+import type { Promisable } from "@/utilities/_module-exports.js";
+
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type SyncTap<TCollection> = (collection: TCollection) => void;
+export type Tap<TCollection> = (collection: TCollection) => unknown;
 
 /**
  *
@@ -14,10 +16,4 @@ export type SyncTap<TCollection> = (collection: TCollection) => void;
  */
 export type AsyncTap<TCollection> = (
     collection: TCollection,
-) => PromiseLike<void>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
- */
-export type Tap<TCollection> = SyncTap<TCollection> | AsyncTap<TCollection>;
+) => Promisable<unknown>;

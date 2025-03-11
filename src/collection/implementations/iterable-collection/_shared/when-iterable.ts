@@ -3,8 +3,8 @@
  */
 
 import {
-    type ISyncCollection,
-    type SyncModifier,
+    type ICollection,
+    type Modifier,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -14,12 +14,9 @@ export class WhenIterable<TInput, TExtended>
     implements Iterable<TInput | TExtended>
 {
     constructor(
-        private collection: ISyncCollection<TInput>,
+        private collection: ICollection<TInput>,
         private condition: () => boolean,
-        private callback: SyncModifier<
-            ISyncCollection<TInput>,
-            ISyncCollection<TExtended>
-        >,
+        private callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput | TExtended> {
@@ -27,6 +24,6 @@ export class WhenIterable<TInput, TExtended>
             yield* this.callback(this.collection);
             return;
         }
-        yield* this.collection as ISyncCollection<TInput | TExtended>;
+        yield* this.collection as ICollection<TInput | TExtended>;
     }
 }

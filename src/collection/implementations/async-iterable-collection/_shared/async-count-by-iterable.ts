@@ -3,7 +3,7 @@
  */
 
 import {
-    type Map,
+    type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -15,7 +15,7 @@ export class AsyncCountByIterable<TInput, TOutput = TInput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private callback: Map<TInput, IAsyncCollection<TInput>, TOutput> = (
+        private callback: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput> = (
             item,
         ) => item as unknown as TOutput,
     ) {}

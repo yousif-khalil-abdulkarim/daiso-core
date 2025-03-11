@@ -149,7 +149,7 @@ export class EmptyCollectionError extends CollectionError {
 }
 
 /**
- * The <i>registerCollectionErrorsToSerde</i> function registers all <i>ISyncCollection</i> and <i>IAsyncCollection</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The <i>registerCollectionErrorsToSerde</i> function registers all <i>ICollection</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors

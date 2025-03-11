@@ -3,8 +3,8 @@
  */
 
 import {
-    type SyncPredicate,
-    type ISyncCollection,
+    type Predicate,
+    type ICollection,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -14,12 +14,8 @@ export class FilterIterable<TInput, TOutput extends TInput>
     implements Iterable<TOutput>
 {
     constructor(
-        private collection: ISyncCollection<TInput>,
-        private predicateFn: SyncPredicate<
-            TInput,
-            ISyncCollection<TInput>,
-            TOutput
-        >,
+        private collection: ICollection<TInput>,
+        private predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TOutput> {

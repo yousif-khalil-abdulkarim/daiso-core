@@ -3,8 +3,8 @@
  */
 
 import {
-    type ISyncCollection,
-    type SyncTap,
+    type ICollection,
+    type Tap,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -12,8 +12,8 @@ import {
  */
 export class TapIterable<TInput> implements Iterable<TInput> {
     constructor(
-        private collection: ISyncCollection<TInput>,
-        private callback: SyncTap<ISyncCollection<TInput>>,
+        private collection: ICollection<TInput>,
+        private callback: Tap<ICollection<TInput>>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {

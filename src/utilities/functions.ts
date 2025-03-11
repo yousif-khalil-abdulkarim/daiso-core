@@ -127,7 +127,7 @@ export function resolveFactory<TInput, TOutput>(
     factory: Factory<TInput, TOutput>,
 ): FactoryFn<TInput, TOutput> {
     if (isFactoryObject(factory)) {
-        return factory.use.bind(factory);
+        return factory.use.bind(factory) as FactoryFn<TInput, TOutput>;
     }
     return factory;
 }

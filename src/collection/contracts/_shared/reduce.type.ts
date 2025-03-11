@@ -2,11 +2,13 @@
  * @module Collection
  */
 
+import type { Promisable } from "@/utilities/_module-exports.js";
+
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type SyncReduce<TInput, TCollection, TOutput> = (
+export type Reduce<TInput, TCollection, TOutput> = (
     output: TOutput,
     item: TInput,
     index: number,
@@ -22,12 +24,4 @@ export type AsyncReduce<TInput, TCollection, TOutput> = (
     item: TInput,
     index: number,
     collection: TCollection,
-) => PromiseLike<TOutput>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
- */
-export type Reduce<TInput, TCollection, TOutput> =
-    | AsyncReduce<TInput, TCollection, TOutput>
-    | SyncReduce<TInput, TCollection, TOutput>;
+) => Promisable<TOutput>;
