@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import { type ICollection } from "@/collection/contracts/_module-exports.js";
+import { type ISyncCollection } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal
@@ -11,12 +11,12 @@ export class PadEndIterable<TInput, TExtended>
     implements Iterable<TInput | TExtended>
 {
     constructor(
-        private collection: ICollection<TInput>,
+        private collection: ISyncCollection<TInput>,
         private maxLength: number,
         private fillItems: Iterable<TExtended>,
         private makeCollection: <TInput>(
             iterable: Iterable<TInput | TExtended>,
-        ) => ICollection<TInput | TExtended>,
+        ) => ISyncCollection<TInput | TExtended>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput | TExtended> {
@@ -24,7 +24,7 @@ export class PadEndIterable<TInput, TExtended>
         const fillSize = fillCollections.size();
         const size = this.collection.size();
         const repeat = Math.floor((this.maxLength - size) / fillSize);
-        let resultCollection: ICollection<TInput | TExtended> =
+        let resultCollection: ISyncCollection<TInput | TExtended> =
             this.makeCollection<TInput>([]);
         for (let index = 0; index < repeat; index++) {
             resultCollection = resultCollection.append(fillCollections);

@@ -13,8 +13,8 @@ import type {
     InvokableFn,
     Lazyable,
     OneOrMore,
-} from "@/utilities/types.js";
-import { type AsyncLazyable } from "@/utilities/types.js";
+} from "@/utilities/types/_module.js";
+import { type AsyncLazyable } from "@/utilities/types/_module.js";
 
 /**
  * @internal

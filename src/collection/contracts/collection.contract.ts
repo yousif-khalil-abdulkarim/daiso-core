@@ -4,17 +4,17 @@
 
 import type {
     Comparator,
-    Predicate,
-    ForEach,
-    Map,
-    Modifier,
-    Tap,
-    Transform,
-    Reduce,
+    SyncPredicate,
+    SyncForEach,
+    SyncMap,
+    SyncModifier,
+    SyncTap,
+    SyncTransform,
+    SyncReduce,
     CrossJoinResult,
     EnsureMap,
     EnsureRecord,
-} from "@/collection/contracts/_shared.js";
+} from "@/collection/contracts/_shared/_module.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ItemNotFoundCollectionError,
@@ -33,19 +33,19 @@ import type { Lazyable } from "@/utilities/_module-exports.js";
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
     | Iterable<infer TItem>
-    | ICollection<infer TItem>
+    | ISyncCollection<infer TItem>
     ? TItem
     : TValue;
 
 /**
- * The <i>ICollection</i> contract offers a fluent and efficient approach to working with {@link Iterable} objects.
- * <i>ICollection</i> is immutable.
+ * The <i>ISyncCollection</i> contract offers a fluent and efficient approach to working with {@link Iterable} objects.
+ * <i>ISyncCollection</i> is immutable.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Contracts
  * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
  */
-export type ICollection<TInput = unknown> = Iterable<TInput> &
+export type ISyncCollection<TInput = unknown> = Iterable<TInput> &
     ISerializable<TInput[]> & {
         /**
          * The <i>toIterator</i> method converts the collection to a new iterator.
@@ -53,28 +53,28 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         toIterator(): Iterator<TInput, void>;
 
         /**
-         * The <i>entries</i> returns an ICollection of key, value pairs for every entry in the collection.
+         * The <i>entries</i> returns an ISyncCollection of key, value pairs for every entry in the collection.
          */
-        entries(): ICollection<[number, TInput]>;
+        entries(): ISyncCollection<[number, TInput]>;
 
         /**
-         * The <i>keys</i> method returns an ICollection of keys in the collection.
+         * The <i>keys</i> method returns an ISyncCollection of keys in the collection.
          */
-        keys(): ICollection<number>;
+        keys(): ISyncCollection<number>;
 
         /**
          * The <i>values</i> method returns a copy of the collection.
          */
-        values(): ICollection<TInput>;
+        values(): ISyncCollection<TInput>;
 
         /**
          * The <i>filter</i> method filters the collection using <i>predicateFn</i>, keeping only those items that pass <i>predicateFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4, 5, 6])
          *     .filter(item => 2 < item && item < 5)
@@ -84,17 +84,21 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         filter<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
-        ): ICollection<TOutput>;
+            predicateFn: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
+        ): ISyncCollection<TOutput>;
 
         /**
          * The <i>reject</i> method filters the collection using <i>predicateFn</i>, keeping only those items that not pass <i>predicateFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4, 5, 6])
          *     .reject(item => 2 < item && item < 5)
@@ -104,18 +108,22 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         reject<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
-        ): ICollection<Exclude<TInput, TOutput>>;
+            predicateFn: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
+        ): ISyncCollection<Exclude<TInput, TOutput>>;
 
         /**
          * The <i>map</i> method iterates through the collection and passes each item to <i>mapFn</i>.
          * The <i>mapFn</i> is free to modify the item and return it, thus forming a new collection of modified items.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4, 5])
          *     .map(item => item * 2)
@@ -125,18 +133,18 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         map<TOutput>(
-            mapFn: Map<TInput, ICollection<TInput>, TOutput>,
-        ): ICollection<TOutput>;
+            mapFn: SyncMap<TInput, ISyncCollection<TInput>, TOutput>,
+        ): ISyncCollection<TOutput>;
 
         /**
          * The <i>reduce</i> method executes <i> reduceFn </i> function on each item of the array, passing in the return value from the calculation on the preceding item.
          * The final result of running the reducer across all items of the array is a single value.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3]);
          *     .reduce((sum, item) => sum + item);
@@ -145,10 +153,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .append(["a", "b", "c"])
          *     .entries()
@@ -163,14 +171,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        reduce(reduceFn: Reduce<TInput, ICollection<TInput>, TInput>): TInput;
         reduce(
-            reduceFn: Reduce<TInput, ICollection<TInput>, TInput>,
+            reduceFn: SyncReduce<TInput, ISyncCollection<TInput>, TInput>,
+        ): TInput;
+        reduce(
+            reduceFn: SyncReduce<TInput, ISyncCollection<TInput>, TInput>,
             // eslint-disable-next-line @typescript-eslint/unified-signatures
             initialValue: TInput,
         ): TInput;
         reduce<TOutput>(
-            reduceFn: Reduce<TInput, ICollection<TInput>, TOutput>,
+            reduceFn: SyncReduce<TInput, ISyncCollection<TInput>, TOutput>,
             initialValue: TOutput,
         ): TOutput;
 
@@ -179,10 +189,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {TypeCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4])
          *     .map(item => item.toString())
@@ -191,10 +201,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4])
          *     .map(item => item.toString())
@@ -209,10 +219,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * The <i>collapse</i> method collapses a collection of iterables into a single, flat collection.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number[]>): void {
+         * function main(collection: ISyncCollection<number[]>): void {
          *   collection
          *     .append([[1, 2], [3, 4]])
          *     .collapse()
@@ -221,17 +231,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        collapse(): ICollection<Collapse<TInput>>;
+        collapse(): ISyncCollection<Collapse<TInput>>;
 
         /**
          * The <i>flatMap</i> method returns a new array formed by applying <i>mapFn</i> to each item of the array, and then collapses the result by one level.
          * It is identical to a <i>map</i> method followed by a <i>collapse</i> method.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string[]>): void {
+         * function main(collection: ISyncCollection<string[]>): void {
          *   collection
          *     .append([["a", "b"], ["c", "d"]])
          *     .flatMap(item => [item.length, ...item])
@@ -241,17 +251,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         flatMap<TOutput>(
-            mapFn: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
-        ): ICollection<TOutput>;
+            mapFn: SyncMap<TInput, ISyncCollection<TInput>, Iterable<TOutput>>,
+        ): ISyncCollection<TOutput>;
 
         /**
          * The <i>change</i> method changes only the items that passes <i>predicateFn</i> using <i>mapFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4, 5])
          *     .change(item => item % 2 === 0, item => item * 2)
@@ -261,18 +271,22 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         change<TFilterOutput extends TInput, TMapOutput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
-            mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
-        ): ICollection<TInput | TFilterOutput | TMapOutput>;
+            predicateFn: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TFilterOutput
+            >,
+            mapFn: SyncMap<TFilterOutput, ISyncCollection<TInput>, TMapOutput>,
+        ): ISyncCollection<TInput | TFilterOutput | TMapOutput>;
 
         /**
          * The <i>set</i> method changes a item by i>index</i> using <i>value</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4, 5])
          *     .set(1, -1)
@@ -282,10 +296,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4, 5])
          *     .set(1, (prevValue) => prevValue - 2)
@@ -296,17 +310,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         set(
             index: number,
-            value: TInput | Map<TInput, ICollection<TInput>, TInput>,
-        ): ICollection<TInput>;
+            value: TInput | SyncMap<TInput, ISyncCollection<TInput>, TInput>,
+        ): ISyncCollection<TInput>;
 
         /**
          * The <i>get</i> method returns the item by index. If the item is not found null will returned.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection = collection.append([1, 4, 2, 8, -2]);
          *
          *   // Will be 2
@@ -324,10 +338,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection = collection.append([1, 4, 2, 8, -2]);
          *
          *   // Will be 2
@@ -344,10 +358,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * The <i>page</i> method returns a new collection containing the items that would be present on <i> page </i> with custom <i> pageSize </i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4, 5, 6, 7, 8, 9])
          *     .page(2, 3)
@@ -356,7 +370,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        page(page: number, pageSize: number): ICollection<TInput>;
+        page(page: number, pageSize: number): ISyncCollection<TInput>;
 
         /**
          * The <i>sum</i> method returns the sum of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -365,10 +379,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3])
          *     .sum();
@@ -385,10 +399,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3])
          *     .average()
@@ -405,10 +419,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3])
          *     .median();
@@ -425,10 +439,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3])
          *     .min();
@@ -445,10 +459,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3])
          *     .max();
@@ -464,10 +478,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 1, 2, 2, 2, 3])
          *     .percentage(value => value === 1);
@@ -475,16 +489,18 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
+        percentage(
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
+        ): number;
 
         /**
          * The <i>some</i> method determines whether at least one item in the collection matches <i>predicateFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([0, 1, 2, 3, 4, 5])
          *     .some(item => item === 1);
@@ -493,17 +509,21 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         some<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
         ): boolean;
 
         /**
          * The <i>every</i> method determines whether all items in the collection matches <i>predicateFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([0, 1, 2, 3, 4, 5])
          *     .every(item => item < 6);
@@ -512,17 +532,21 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         every<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
         ): boolean;
 
         /**
          * The <i>take</i> method takes the first <i>limit</i> items.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([0, 1, 2, 3, 4, 5])
          *     .take(3)
@@ -533,10 +557,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          *
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([0, 1, 2, 3, 4, 5])
          *     .take(-2)
@@ -545,16 +569,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        take(limit: number): ICollection<TInput>;
+        take(limit: number): ISyncCollection<TInput>;
 
         /**
          * The <i>takeUntil</i> method takes items until <i>predicateFn</i> returns true.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4])
          *     .takeUntil(item => item >= 3)
@@ -564,17 +588,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         takeUntil(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
-        ): ICollection<TInput>;
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
+        ): ISyncCollection<TInput>;
 
         /**
          * The <i>takeWhile</i> method takes items until <i>predicateFn</i> returns false.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4])
          *     .takeWhile(item => item < 4)
@@ -584,17 +608,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         takeWhile(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
-        ): ICollection<TInput>;
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
+        ): ISyncCollection<TInput>;
 
         /**
          * The <i>skip</i> method skips the first <i>offset</i> items.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .append([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
          *     .skip(4)
@@ -603,16 +627,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        skip(offset: number): ICollection<TInput>;
+        skip(offset: number): ISyncCollection<TInput>;
 
         /**
          * The <i>skipUntil</i> method skips items until <i>predicateFn</i> returns true.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .skipUntil(item => item >= 3)
@@ -622,17 +646,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         skipUntil(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
-        ): ICollection<TInput>;
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
+        ): ISyncCollection<TInput>;
 
         /**
          * The <i>skipWhile</i> method skips items until <i>predicateFn</i> returns false.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .skipWhile(item => item <= 3)
@@ -642,17 +666,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         skipWhile(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
-        ): ICollection<TInput>;
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
+        ): ISyncCollection<TInput>;
 
         /**
          * The <i>when</i> method will execute <i>callback</i> when <i>condition</i> evaluates to true.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .when(true, collection => collection.append([-3]))
@@ -664,17 +688,20 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         when<TExtended = TInput>(
             condition: boolean,
-            callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
-        ): ICollection<TInput | TExtended>;
+            callback: SyncModifier<
+                ISyncCollection<TInput>,
+                ISyncCollection<TExtended>
+            >,
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>whenEmpty</i> method will execute <i>callback</i> when the collection is empty.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([])
          *     .whenEmpty(collection => collection.append([-3]))
@@ -684,10 +711,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1])
          *     .whenEmpty(collection => collection.append([-3]))
@@ -697,17 +724,20 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         whenEmpty<TExtended = TInput>(
-            callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
-        ): ICollection<TInput | TExtended>;
+            callback: SyncModifier<
+                ISyncCollection<TInput>,
+                ISyncCollection<TExtended>
+            >,
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>whenNot</i> method will execute <i>callback</i> when <i>condition</i> evaluates to false.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection.apppend([1, 2, 3, 4])
          *     .whenNot(true, collection => collection.append([-3]))
          *     .whenNot(false, collection => collection.append([20]))
@@ -718,17 +748,20 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         whenNot<TExtended = TInput>(
             condition: boolean,
-            callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
-        ): ICollection<TInput | TExtended>;
+            callback: SyncModifier<
+                ISyncCollection<TInput>,
+                ISyncCollection<TExtended>
+            >,
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>whenNotEmpty</i> method will execute <i>callback</i> when the collection is not empty.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection.apppend([])
          *     .whenNotEmpty(collection => collection.append([-3]))
          *     .toArray();
@@ -737,10 +770,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection = collection
          *     .apppend([1])
          *     .whenNotEmpty(collection => collection.append([-3]))
@@ -750,27 +783,30 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         whenNotEmpty<TExtended = TInput>(
-            callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
-        ): ICollection<TInput | TExtended>;
+            callback: SyncModifier<
+                ISyncCollection<TInput>,
+                ISyncCollection<TExtended>
+            >,
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>pipe</i> method passes the orignal collection to <i>callback</i> and returns the result from <i>callback</i>.
          * This method is useful when you want compose multiple smaller functions.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   function toNbrs<TInput>(
-         *     collection: ICollection<TInput>,
-         *   ): ICollection<number> {
+         *     collection: ISyncCollection<TInput>,
+         *   ): ISyncCollection<number> {
          *     return collection
          *       .map((item) => Number(item))
          *       .reject((nbr) => Number.isNaN(nbr));
          *   }
          *
-         *   function nbrToStr(collection: ICollection<number>): number[] {
+         *   function nbrToStr(collection: ISyncCollection<number>): number[] {
          *     return collection.repeat(2).toArray();
          *   }
          *
@@ -783,17 +819,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         pipe<TOutput = TInput>(
-            callback: Transform<ICollection<TInput>, TOutput>,
+            callback: SyncTransform<ISyncCollection<TInput>, TOutput>,
         ): TOutput;
 
         /**
          * The <i>tap</i> method passes a copy of the original collection to <i>callback</i>, allowing you to do something with the items while not affecting the original collection.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection.apppend([1, 2, 3, 4, 5, 6])
          *     .tap(collection => {
          *       collection
@@ -805,17 +841,19 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        tap(callback: Tap<ICollection<TInput>>): ICollection<TInput>;
+        tap(
+            callback: SyncTap<ISyncCollection<TInput>>,
+        ): ISyncCollection<TInput>;
 
         /**
          * The <i>chunk</i> method breaks the collection into multiple, smaller collections of size <i>chunkSize</i>.
          * If <i>chunkSize</i> is not divisible with total number of items then the last chunk will contain the remaining items.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection.apppend([1, 2, 3, 4, 5, 6, 7]);
          *   const chunks = collection.chunk(4);
          *   chunks.map(chunk => chunk.toArray()).toArray();
@@ -823,17 +861,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        chunk(chunkSize: number): ICollection<ICollection<TInput>>;
+        chunk(chunkSize: number): ISyncCollection<ISyncCollection<TInput>>;
 
         /**
          * The <i>chunkWhile</i> method breaks the collection into multiple, smaller collections based on the evaluation of <i>predicateFn</i>.
          * The chunk variable passed to the <i>predicateFn</i> may be used to inspect the previous item.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend("AABBCCCD")
          *     .chunkWhile((value, index, chunk) => {
@@ -846,17 +884,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         chunkWhile(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
-        ): ICollection<ICollection<TInput>>;
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
+        ): ISyncCollection<ISyncCollection<TInput>>;
 
         /**
          * The <i>split</i> method breaks a collection evenly into <i>chunkAmount</i> of chunks.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 5])
          *     .split(3)
@@ -867,10 +905,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 5, 6])
          *     .split(3)
@@ -881,10 +919,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 5, 6, 7])
          *     .split(3)
@@ -894,16 +932,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        split(chunkAmount: number): ICollection<ICollection<TInput>>;
+        split(chunkAmount: number): ISyncCollection<ISyncCollection<TInput>>;
 
         /**
          * The <i>partition</i> method is used to separate items that pass <i>predicateFn</i> from those that do not.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 5, 6])
          *     .partition(item => item < 3)
@@ -914,17 +952,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         partition(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
-        ): ICollection<ICollection<TInput>>;
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
+        ): ISyncCollection<ISyncCollection<TInput>>;
 
         /**
          * The <i>sliding</i> method returns a new collection of chunks representing a "sliding window" view of the items in the collection.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 5])
          *     .sliding(2)
@@ -937,17 +975,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         sliding(
             chunkSize: number,
             step?: number,
-        ): ICollection<ICollection<TInput>>;
+        ): ISyncCollection<ISyncCollection<TInput>>;
 
         /**
          * The <i>groupBy</i> method groups the collection's items by <i> selectFn </i>.
          * By default the equality check occurs on the item.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "a", "a", "b", "b", "c"])
          *     .groupBy()
@@ -971,10 +1009,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          * collection.apppend(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"]);
          *   const group = collection
          *     .groupBy(item => item.split("@")[1])
@@ -994,18 +1032,18 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         groupBy<TOutput = TInput>(
-            selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
-        ): ICollection<[TOutput, ICollection<TInput>]>;
+            selectFn?: SyncMap<TInput, ISyncCollection<TInput>, TOutput>,
+        ): ISyncCollection<[TOutput, ISyncCollection<TInput>]>;
 
         /**
          * The <i>countBy</i> method counts the occurrences of values in the collection by <i> selectFn </i>.
          * By default the equality check occurs on the item.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "a", "a", "b", "b", "c"])
          *     .countBy()
@@ -1020,10 +1058,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["alice@gmail.com", "bob@yahoo.com", "carlos@gmail.com"])
          *     .countBy(item => item.split("@")[1])
@@ -1036,18 +1074,18 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         countBy<TOutput = TInput>(
-            selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
-        ): ICollection<[TOutput, number]>;
+            selectFn?: SyncMap<TInput, ISyncCollection<TInput>, TOutput>,
+        ): ISyncCollection<[TOutput, number]>;
 
         /**
          * The <i>unique</i> method removes all duplicate values from the collection by <i> selectFn </i>.
          * By default the equality check occurs on the item.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 1, 2, 2, 3, 4, 2])
          *     .unique()
@@ -1057,7 +1095,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * type Phone = {
          *   name: string;
@@ -1066,7 +1104,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * };
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<Phone>): void {
+         * function main(collection: ISyncCollection<Phone>): void {
          *   collection
          *     .apppend([
          *       { name: "iPhone 6", brand: "Apple", type: "phone" },
@@ -1085,18 +1123,18 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         unique<TOutput = TInput>(
-            selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
-        ): ICollection<TInput>;
+            selectFn?: SyncMap<TInput, ISyncCollection<TInput>, TOutput>,
+        ): ISyncCollection<TInput>;
 
         /**
          * The <i>difference</i> method will return the values in the original collection that are not present in <i>iterable</i>.
          * By default the equality check occurs on the item.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 2, 3, 4, 5])
          *     .difference([2, 4, 6, 8])
@@ -1106,7 +1144,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * type Phone = {
          *   name: string;
@@ -1115,7 +1153,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * };
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<Phone>): void {
+         * function main(collection: ISyncCollection<Phone>): void {
          *   collection
          *     .apppend([
          *       { name: "iPhone 6", brand: "Apple", type: "phone" },
@@ -1141,17 +1179,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         difference<TOutput = TInput>(
             iterable: Iterable<TInput>,
-            selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
-        ): ICollection<TInput>;
+            selectFn?: SyncMap<TInput, ISyncCollection<TInput>, TOutput>,
+        ): ISyncCollection<TInput>;
 
         /**
          * The <i>repeat</i> method will repeat the original collection <i>amount</i> times.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3])
          *     .repeat(3)
@@ -1160,17 +1198,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        repeat(amount: number): ICollection<TInput>;
+        repeat(amount: number): ISyncCollection<TInput>;
 
         /**
          * The <i>padStart</i> method pads this collection with <i>fillItems</i> until the resulting collection size reaches <i>maxLength</i>.
          * The padding is applied from the start of this collection.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .append("abc")
          *     .padStart(10, "foo")
@@ -1180,7 +1218,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .append("abc")
          *     .padStart(6, "123465")
@@ -1190,7 +1228,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .append("abc")
          *     .padStart(8, "0")
@@ -1200,7 +1238,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .append("abc")
          *     .padStart(1, "_")
@@ -1212,17 +1250,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         padStart<TExtended = TInput>(
             maxLength: number,
             fillItems: Iterable<TExtended>,
-        ): ICollection<TInput | TExtended>;
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>padEnd</i> method pads this collection with <i>fillItems</i> until the resulting collection size reaches <i>maxLength</i>.
          * The padding is applied from the end of this collection.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .append("abc")
          *     .padEnd(10, "foo")
@@ -1232,10 +1270,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .append("abc")
          *     .padEnd(6, "123465")
@@ -1245,10 +1283,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .append("abc")
          *     .padEnd(8, "0")
@@ -1259,10 +1297,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .append("abc")
          *     .padEnd(1, "_")
@@ -1274,17 +1312,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         padEnd<TExtended = TInput>(
             maxLength: number,
             fillItems: Iterable<TExtended>,
-        ): ICollection<TInput | TExtended>;
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>slice</i> method creates porition of the original collection selected from <i>start</i> and <i>end</i>
          * where <i>start</i> and <i>end</i> (end not included) represent the index of items in the collection.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "b", "c", "d", "e", "f"])
          *     .slice(3)
@@ -1294,10 +1332,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "b", "c", "d", "e", "f"])
          *     .slice(undefined, 2)
@@ -1307,10 +1345,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "b", "c", "d", "e", "f"])
          *     .slice(2, 5)
@@ -1320,10 +1358,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "b", "c", "d", "e", "f"])
          *     .slice(-2)
@@ -1333,10 +1371,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "b", "c", "d", "e", "f"])
          *     .slice(undefined, -2)
@@ -1346,10 +1384,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "b", "c", "d", "e", "f"])
          *     .slice(-4, -2)
@@ -1358,16 +1396,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        slice(start?: number, end?: number): ICollection<TInput>;
+        slice(start?: number, end?: number): ISyncCollection<TInput>;
 
         /**
          * The <i>prepend</i> method adds <i>iterable</i> to the beginning of the collection.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 5])
          *     .prepend([-1, 20])
@@ -1378,16 +1416,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         prepend<TExtended = TInput>(
             iterable: Iterable<TInput | TExtended>,
-        ): ICollection<TInput | TExtended>;
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>append</i> method adds <i>iterable</i> to the end of the collection.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 5])
          *     .append([-1, -2])
@@ -1398,16 +1436,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         append<TExtended = TInput>(
             iterable: Iterable<TInput | TExtended>,
-        ): ICollection<TInput | TExtended>;
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>insertBefore</i> method adds <i>iterable</i> before the first item that matches <i>predicateFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 2, 3, 4, 5])
          *     .insertBefore(item => item === 2, [-1, 20])
@@ -1417,18 +1455,18 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         insertBefore<TExtended = TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
             iterable: Iterable<TInput | TExtended>,
-        ): ICollection<TInput | TExtended>;
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>insertAfter</i> method adds <i>iterable</i> after the first item that matches <i>predicateFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 2, 3, 4, 5])
          *     .insertAfter(item => item === 2, [-1, 20])
@@ -1438,18 +1476,18 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         insertAfter<TExtended = TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
             iterable: Iterable<TInput | TExtended>,
-        ): ICollection<TInput | TExtended>;
+        ): ISyncCollection<TInput | TExtended>;
 
         /**
          * The <i>crossJoin</i> method cross joins the collection's values among <i>iterables</i>, returning a Cartesian product with all possible permutations.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2])
          *     .cross(["a", "b"])
@@ -1464,10 +1502,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2])
          *     .cross(["a", "b"])
@@ -1488,17 +1526,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         crossJoin<TExtended>(
             iterable: Iterable<TExtended>,
-        ): ICollection<CrossJoinResult<TInput, TExtended>>;
+        ): ISyncCollection<CrossJoinResult<TInput, TExtended>>;
 
         /**
          * The <i>zip</i> method merges together the values of <i>iterable</i> with the values of the collection at their corresponding index.
          * The returned collection has size of the shortest collection.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["Chair", "Desk"]);
          *     .zip([100, 200]);
@@ -1508,10 +1546,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["Chair", "Desk", "Couch"])
          *     .zip([100, 200])
@@ -1521,10 +1559,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["Chair", "Desk"])
          *     .zip([100, 200, 300])
@@ -1535,16 +1573,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         zip<TExtended>(
             iterable: Iterable<TExtended>,
-        ): ICollection<[TInput, TExtended]>;
+        ): ISyncCollection<[TInput, TExtended]>;
 
         /**
          * The <i>sort</i> method sorts the collection. You can provide a <i>comparator</i> function.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([-1, 2, 4, 3])
          *     .sort()
@@ -1554,7 +1592,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * type Person = {
          *   name: string;
@@ -1562,7 +1600,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * };
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<Person>): void {
+         * function main(collection: ISyncCollection<Person>): void {
          *   collection
          *     .apppend([
          *       { name: "Anders", age: 30 },
@@ -1581,17 +1619,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        sort(comparator?: Comparator<TInput>): ICollection<TInput>;
+        sort(comparator?: Comparator<TInput>): ISyncCollection<TInput>;
 
         /**
          * The <i>reverse</i> method will reverse the order of the collection.
          * The reversing of the collection will be applied in chunks that are the size of <i> chunkSize </i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([-1, 2, 4, 3])
          *     .reverse()
@@ -1600,22 +1638,22 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        reverse(chunkSize?: number): ICollection<TInput>;
+        reverse(chunkSize?: number): ISyncCollection<TInput>;
 
         /**
          * The <i>shuffle</i> method randomly shuffles the items in the collection. You can provide a custom Math.random function by passing in <i>mathRandom</i>.
          */
-        shuffle(mathRandom?: () => number): ICollection<TInput>;
+        shuffle(mathRandom?: () => number): ISyncCollection<TInput>;
 
         /**
          * The <i>first</i> method returns the first item in the collection that passes <i> predicateFn </i>.
          * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than null i returned.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .first();
@@ -1624,10 +1662,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .first(item => item > 2);
@@ -1636,10 +1674,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .first(item => item > 10);
@@ -1649,7 +1687,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * // 3
          */
         first<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
         ): TOutput | null;
 
         /**
@@ -1657,10 +1699,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * By default it will get the first item. If the collection is empty or no items passes <i> predicateFn </i> than <i> defaultValue </i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .firstOr(-1);
@@ -1669,10 +1711,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .firstOr(-1, item => item > 2);
@@ -1681,10 +1723,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .firstOr(-1, item => item > 10);
@@ -1693,10 +1735,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .firstOr(() => -1, item => item > 10);
@@ -1706,7 +1748,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         firstOr<TOutput extends TInput, TExtended = TInput>(
             defaultValue: Lazyable<TExtended>,
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
         ): TOutput | TExtended;
 
         /**
@@ -1715,10 +1761,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .firstOrFail();
@@ -1727,10 +1773,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .firstOrFail(item => item > 2);
@@ -1739,10 +1785,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .firstOrFail(item => item > 10);
@@ -1751,7 +1797,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         firstOrFail<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
         ): TOutput;
 
         /**
@@ -1759,10 +1809,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than null i returned.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .last();
@@ -1771,10 +1821,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .last(item => item < 4);
@@ -1783,10 +1833,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .last(item => item > 10);
@@ -1795,7 +1845,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         last<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
         ): TOutput | null;
 
         /**
@@ -1803,10 +1857,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * By default it will get the last item. If the collection is empty or no items passes <i> predicateFn </i> than <i> defaultValue </i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .lastOr(-1);
@@ -1815,10 +1869,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .lastOr(-1, item => item < 4);
@@ -1827,10 +1881,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .lastOr(-1, item => item > 10);
@@ -1839,10 +1893,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .lastOr(() => -1, item => item > 10);
@@ -1852,7 +1906,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         lastOr<TOutput extends TInput, TExtended = TInput>(
             defaultValue: Lazyable<TExtended>,
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
         ): TOutput | TExtended;
 
         /**
@@ -1861,10 +1919,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .lastOrFail();
@@ -1873,10 +1931,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .lastOrFail(item => item < 4);
@@ -1885,10 +1943,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .lastOrFail(item => item > 10);
          *     .apppend([1, 2, 3, 4])
@@ -1897,7 +1955,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         lastOrFail<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
         ): TOutput;
 
         /**
@@ -1905,10 +1967,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * If the <i>predicateFn</i> does not match or matches the first item then null is returned.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .before(item => item === 2);
@@ -1917,10 +1979,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .before(item => item === 1);
@@ -1929,7 +1991,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         before(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
         ): TInput | null;
 
         /**
@@ -1937,10 +1999,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * If the collection is empty or the <i>predicateFn</i> does not match or matches the first item then <i>defaultValue</i> is returned.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .beforeOr(-1, item => item === 2);
@@ -1949,10 +2011,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .beforeOr(-1, item => item === 1);
@@ -1961,10 +2023,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .beforeOr(() => -1, item => item === 1);
@@ -1974,7 +2036,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         beforeOr<TExtended = TInput>(
             defaultValue: Lazyable<TExtended>,
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
         ): TInput | TExtended;
 
         /**
@@ -1983,10 +2045,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .beforeOrFail(item => item === 2);
@@ -1995,10 +2057,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .beforeOrFail(item => item === 1);
@@ -2007,7 +2069,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         beforeOrFail(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
         ): TInput;
 
         /**
@@ -2015,10 +2077,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then null is returned.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .after(item => item === 2);
@@ -2027,10 +2089,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .after(item => item === 4);
@@ -2039,7 +2101,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         after(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
         ): TInput | null;
 
         /**
@@ -2047,10 +2109,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * If the collection is empty or the <i>predicateFn</i> does not match or matches the last item then <i>defaultValue</i> is returned.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .afterOr(-1, item => item === 2);
@@ -2059,10 +2121,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .afterOr(-1, item => item === 4);
@@ -2071,10 +2133,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .afterOr(() => -1, item => item === 4);
@@ -2084,7 +2146,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         afterOr<TExtended = TInput>(
             defaultValue: Lazyable<TExtended>,
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
         ): TInput | TExtended;
 
         /**
@@ -2093,10 +2155,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {ItemNotFoundCollectionError} {@link ItemNotFoundCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .afterOrFail(item => item === 2);
@@ -2105,10 +2167,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4])
          *     .afterOrFail(item => item === 4);
@@ -2117,7 +2179,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         afterOrFail(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
         ): TInput;
 
         /**
@@ -2127,10 +2189,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * @throws {MultipleItemsFoundCollectionError} {@link MultipleItemsFoundCollectionError}
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 5])
          *     .sole(item => item === 4);
@@ -2139,10 +2201,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 4, 5])
          *     .sole(item => item === 4);
@@ -2151,10 +2213,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 5])
          *     .sole(item => item === 4);
@@ -2163,17 +2225,21 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         sole<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: SyncPredicate<
+                TInput,
+                ISyncCollection<TInput>,
+                TOutput
+            >,
         ): TOutput;
 
         /**
          * The <i>nth</i> method creates a new collection consisting of every n-th item.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "b", "c", "d", "e", "f"])
          *     .nth(4)
@@ -2182,16 +2248,16 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        nth(step: number): ICollection<TInput>;
+        nth(step: number): ISyncCollection<TInput>;
 
         /**
          * The <i>count</i> method returns the total number of items in the collection that passes <i>predicateFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<number>): void {
+         * function main(collection: ISyncCollection<number>): void {
          *   collection
          *     .apppend([1, 2, 3, 4, 5, 6])
          *     .count(value => value % 2 === 0);
@@ -2199,7 +2265,9 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        count(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
+        count(
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
+        ): number;
 
         /**
          * The <i>size</i> returns the size of the collection.
@@ -2220,10 +2288,10 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * The <i>searchFirst</i> return the index of the first item that matches <i>predicateFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "b", "b", "c"])
          *     .searchFirst(item => item === "b");
@@ -2232,17 +2300,17 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         searchFirst(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
         ): number;
 
         /**
          * The <i>searchLast</i> return the index of the last item that matches <i>predicateFn</i>.
          * @example
          * ```ts
-         * import type { ICollection } from "@daiso-tech/core";
+         * import type { ISyncCollection } from "@daiso-tech/core";
          *
          * // Assume the inputed collection is empty.
-         * function main(collection: ICollection<string>): void {
+         * function main(collection: ISyncCollection<string>): void {
          *   collection
          *     .apppend(["a", "b", "b", "c"])
          *     .searchLast(item => item === "b");
@@ -2250,12 +2318,14 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        searchLast(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
+        searchLast(
+            predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
+        ): number;
 
         /**
          * The <i>forEach</i> method iterates through all items in the collection.
          */
-        forEach(callback: ForEach<TInput, ICollection<TInput>>): void;
+        forEach(callback: SyncForEach<TInput, ISyncCollection<TInput>>): void;
 
         /**
          * The <i>toArray</i> method converts the collection to a new <i>{@link Array}</i>.
@@ -2270,7 +2340,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         toRecord(): EnsureRecord<TInput>;
 
         /**
-         * The <i>toMap</i> method converts the collection to a new <i>{@link Map}</i>.
+         * The <i>toMap</i> method converts the collection to a new <i>{@link SyncMap}</i>.
          * An error will be thrown if item is not a tuple of size 2.
          * @throws {TypeCollectionError} {@link TypeCollectionError}
          */

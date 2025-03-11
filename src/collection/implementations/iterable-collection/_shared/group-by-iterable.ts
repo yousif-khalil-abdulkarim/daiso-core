@@ -3,27 +3,28 @@
  */
 
 import {
-    type ICollection,
-    type Map,
+    type ISyncCollection,
+    type SyncMap,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal
  */
 export class GroupByIterable<TInput, TOutput = TInput>
-    implements Iterable<[TOutput, ICollection<TInput>]>
+    implements Iterable<[TOutput, ISyncCollection<TInput>]>
 {
     constructor(
-        private collection: ICollection<TInput>,
-        private selectFn: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
-            item as unknown as TOutput,
+        private collection: ISyncCollection<TInput>,
+        private selectFn: SyncMap<TInput, ISyncCollection<TInput>, TOutput> = (
+            item,
+        ) => item as unknown as TOutput,
 
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
-        ) => ICollection<TInput>,
+        ) => ISyncCollection<TInput>,
     ) {}
 
-    *[Symbol.iterator](): Iterator<[TOutput, ICollection<TInput>]> {
+    *[Symbol.iterator](): Iterator<[TOutput, ISyncCollection<TInput>]> {
         const map = new Map<TOutput, Array<TInput>>();
         for (const [index, item] of this.collection.entries()) {
             const key = this.selectFn(item, index, this.collection);
@@ -35,7 +36,7 @@ export class GroupByIterable<TInput, TOutput = TInput>
             array.push(item);
             map.set(key, array);
         }
-        yield* this.makeCollection(map).map<[TOutput, ICollection<TInput>]>(
+        yield* this.makeCollection(map).map<[TOutput, ISyncCollection<TInput>]>(
             ([key, value]) => [key, this.makeCollection(value)],
         );
     }

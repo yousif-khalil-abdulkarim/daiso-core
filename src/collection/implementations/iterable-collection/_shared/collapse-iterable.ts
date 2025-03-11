@@ -5,14 +5,14 @@
 import { isIterable } from "@/collection/implementations/_shared.js";
 import {
     type Collapse,
-    type ICollection,
+    type ISyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal
  */
 export class CollapseIterable<TInput> implements Iterable<Collapse<TInput>> {
-    constructor(private collection: ICollection<TInput>) {}
+    constructor(private collection: ISyncCollection<TInput>) {}
 
     *[Symbol.iterator](): Iterator<Collapse<TInput>> {
         for (const item of this.collection) {

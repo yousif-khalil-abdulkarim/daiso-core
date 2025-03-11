@@ -3,7 +3,7 @@
  */
 
 import {
-    type AsyncModifier,
+    type Modifier,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -16,7 +16,7 @@ export class AsyncWhenIterable<TInput, TExtended>
     constructor(
         private collection: IAsyncCollection<TInput>,
         private condition: () => boolean | PromiseLike<boolean>,
-        private callback: AsyncModifier<
+        private callback: Modifier<
             IAsyncCollection<TInput>,
             IAsyncCollection<TExtended>
         >,

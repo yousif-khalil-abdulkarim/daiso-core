@@ -3,25 +3,25 @@
  */
 
 import {
-    type Predicate,
-    type ICollection,
+    type SyncPredicate,
+    type ISyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal
  */
 export class ChunkWhileIterable<TInput>
-    implements Iterable<ICollection<TInput>>
+    implements Iterable<ISyncCollection<TInput>>
 {
     constructor(
-        private collection: ICollection<TInput>,
-        private predicateFn: Predicate<TInput, ICollection<TInput>>,
+        private collection: ISyncCollection<TInput>,
+        private predicateFn: SyncPredicate<TInput, ISyncCollection<TInput>>,
         private makeCollection: <TInput>(
             iterable: Iterable<TInput>,
-        ) => ICollection<TInput>,
+        ) => ISyncCollection<TInput>,
     ) {}
 
-    *[Symbol.iterator](): Iterator<ICollection<TInput>> {
+    *[Symbol.iterator](): Iterator<ISyncCollection<TInput>> {
         const array: TInput[] = [];
         for (const [index, item] of this.collection.entries()) {
             if (index === 0) {

@@ -6,7 +6,7 @@
 import type { ILock } from "@/lock/contracts/lock.contract.js";
 import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
-import type { OneOrMore } from "@/utilities/types.js";
+import type { OneOrMore } from "@/utilities/_module-exports.js";
 import {
     CORE,
     resolveOneOrMore,

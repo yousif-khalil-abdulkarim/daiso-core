@@ -3,8 +3,8 @@
  */
 
 import {
-    type ICollection,
-    type Map,
+    type ISyncCollection,
+    type SyncMap,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -12,9 +12,10 @@ import {
  */
 export class UniqueIterable<TInput, TOutput> implements Iterable<TInput> {
     constructor(
-        private collection: ICollection<TInput>,
-        private callback: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
-            item as unknown as TOutput,
+        private collection: ISyncCollection<TInput>,
+        private callback: SyncMap<TInput, ISyncCollection<TInput>, TOutput> = (
+            item,
+        ) => item as unknown as TOutput,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {

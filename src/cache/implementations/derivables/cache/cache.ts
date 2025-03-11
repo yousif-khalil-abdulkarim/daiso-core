@@ -35,7 +35,7 @@ import {
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
 import {
-    type NoneFunction,
+    type NoneFunc,
     type TimeSpan,
     KeyPrefixer,
     type Factoryable,
@@ -594,7 +594,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     getOr(
         key: OneOrMore<string>,
-        defaultValue: AsyncLazyable<NoneFunction<TType>>,
+        defaultValue: AsyncLazyable<NoneFunc<TType>>,
     ): LazyPromise<TType> {
         return this.createLazyPromise<TType>(async () => {
             const value = await this.get(key);
@@ -681,7 +681,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     getOrAdd(
         key: OneOrMore<string>,
-        valueToAdd: AsyncLazyable<NoneFunction<TType>>,
+        valueToAdd: AsyncLazyable<NoneFunc<TType>>,
         ttl?: TimeSpan | null,
     ): LazyPromise<TType> {
         return this.createLazyPromise<TType>(async () => {

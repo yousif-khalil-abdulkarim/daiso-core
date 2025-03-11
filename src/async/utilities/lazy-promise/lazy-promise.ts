@@ -23,7 +23,6 @@ import {
 import {
     removeUndefinedProperties,
     resolveAsyncLazyable,
-    type Func,
 } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/utilities/_module.js";
 
@@ -120,11 +119,11 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *   .timeout(TimeSpan.fromMinutes(1));
      * ```
      */
-    static wrapFn<TParameters extends unknown[], TReturn>(
-        fn: Func<TParameters, PromiseLike<TReturn>>,
+    static wrapFn<TArgs extends unknown[], TReturn>(
+        fn: (...args: TArgs) => PromiseLike<TReturn>,
         settings?: LazyPromiseSettings<TReturn>,
-    ): Func<TParameters, LazyPromise<TReturn>> {
-        return (...parameters) =>
+    ) {
+        return (...parameters: TArgs): PromiseLike<TReturn> =>
             new LazyPromise<TReturn>(() => fn(...parameters), settings);
     }
 

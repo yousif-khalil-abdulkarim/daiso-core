@@ -3,7 +3,7 @@
  */
 
 import {
-    type AsyncPredicate,
+    type Predicate,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -15,7 +15,7 @@ export class AsyncFilterIterable<TInput, TOutput extends TInput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private predicateFn: AsyncPredicate<
+        private predicateFn: Predicate<
             TInput,
             IAsyncCollection<TInput>,
             TOutput

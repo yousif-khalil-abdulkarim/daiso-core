@@ -3,7 +3,7 @@
  */
 import { TimeoutAsyncError } from "@/async/async.errors.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
-import type { Result } from "@/utilities/types.js";
+import type { Result } from "@/utilities/_module-exports.js";
 import { timeoutAndFail } from "@/async/utilities/timeout/timeout-and-fail.js";
 
 /**

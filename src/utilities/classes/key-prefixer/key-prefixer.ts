@@ -3,7 +3,7 @@
  */
 
 import { resolveOneOrMoreStr } from "@/utilities/functions.js";
-import type { AtLeastOne, OneOrMore } from "@/utilities/types.js";
+import type { AtLeastOne, OneOrMore } from "@/utilities/types/_module.js";
 import type {
     IKey,
     IKeyPrefixer,

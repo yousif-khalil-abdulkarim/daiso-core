@@ -1,7 +1,7 @@
 /**
  * @module Async
  */
-import type { Result } from "@/utilities/types.js";
+import type { Result } from "@/utilities/_module-exports.js";
 import { AbortAsyncError } from "@/async/async.errors.js";
 import { abortAndFail } from "@/async/utilities/abort/abort-and-fail.js";
 

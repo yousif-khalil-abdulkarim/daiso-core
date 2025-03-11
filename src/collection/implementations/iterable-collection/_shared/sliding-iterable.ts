@@ -2,19 +2,21 @@
  * @module Collection
  */
 
-import { type ICollection } from "@/collection/contracts/_module-exports.js";
+import { type ISyncCollection } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal
  */
-export class SlidingIteralbe<TInput> implements Iterable<ICollection<TInput>> {
+export class SlidingIteralbe<TInput>
+    implements Iterable<ISyncCollection<TInput>>
+{
     constructor(
-        private collection: ICollection<TInput>,
+        private collection: ISyncCollection<TInput>,
         private chunkSize: number,
         private step: number,
     ) {}
 
-    *[Symbol.iterator](): Iterator<ICollection<TInput>> {
+    *[Symbol.iterator](): Iterator<ISyncCollection<TInput>> {
         if (this.step <= 0) {
             return;
         }
