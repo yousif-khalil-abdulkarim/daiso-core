@@ -11,6 +11,26 @@ import type {
 import { resolveAsyncLazyable } from "@/utilities/functions.js";
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Pipeline
+ */
+export type IPipelineInvokableObject<TInitial, TCurrent> = IInvokableObject<
+    [value: AsyncLazyable<TInitial>],
+    PromiseLike<TCurrent>
+>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Pipeline
+ */
+export type IPipelineInvokable<TInitial, TCurrent> = Invokable<
+    [value: AsyncLazyable<TInitial>],
+    PromiseLike<TCurrent>
+>;
+
+/**
  * The <i>Pipeline</i> class provides a convenient way to pipe multiple functions and <i>{@link IInvokableObject}</i>,
  * giving each functions and <i>{@link IInvokableObject}</i> the opportunity to inspect or modify the input.
  * Pipeline class is immutable meaning you can extend it without causing problems.
@@ -19,7 +39,7 @@ import { resolveAsyncLazyable } from "@/utilities/functions.js";
  * @group Pipeline
  */
 export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev>
-    implements IInvokableObject<AsyncLazyable<TInitial>, TCurrent>
+    implements IPipelineInvokableObject<AsyncLazyable<TInitial>, TCurrent>
 {
     /**
      * @example
@@ -52,10 +72,10 @@ export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev>
 
     private static async execute<TInput, TOutput>(
         value: TInput,
-        pipe: Invokable<TInput, TOutput>,
+        pipe: IPipelineInvokable<TInput, TOutput>,
     ): Promise<TOutput> {
         if (typeof pipe === "function") {
-            return await pipe(value);
+            return pipe(value);
         }
         return pipe.invoke(value);
     }
@@ -67,14 +87,9 @@ export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev>
             this.pipes = [...this.pipes, pipe];
         }
     }
-
-    pipe<TInput extends TCurrent, TOutput>(
-        pipe: Invokable<TInput, TOutput>,
-    ): Pipeline<TInitial, TCurrent, TOutput> {
-        return new Pipeline(pipe);
-    }
-
-    invoke(value: AsyncLazyable<TInitial>): LazyPromise<TCurrent> {
+    invoke(
+        value: AsyncLazyable<AsyncLazyable<TInitial>>,
+    ): PromiseLike<TCurrent> {
         return new LazyPromise(async () => {
             const [pipe, ...pipes] = this.pipes;
             const resolvedValue = await resolveAsyncLazyable(value);
@@ -90,5 +105,11 @@ export class Pipeline<TInitial, TPrev = TInitial, TCurrent = TPrev>
             }
             return value_;
         });
+    }
+
+    pipe<TInput extends TCurrent, TOutput>(
+        pipe: IPipelineInvokable<TInput, TOutput>,
+    ): Pipeline<TInitial, TCurrent, TOutput> {
+        return new Pipeline(pipe);
     }
 }

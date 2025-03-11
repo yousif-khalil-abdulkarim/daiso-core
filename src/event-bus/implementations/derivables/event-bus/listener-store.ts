@@ -2,11 +2,11 @@
  * @module EventBus
  */
 
-import {
-    resolveInvokable,
-    type Invokable,
-    type InvokableFn,
-} from "@/utilities/_module-exports.js";
+import type {
+    EventListener,
+    EventListenerFn,
+} from "@/event-bus/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/functions.js";
 
 /**
  * @internal
@@ -15,14 +15,14 @@ export class ListenerStore {
     constructor(
         private readonly store = new Map<
             string,
-            Map<Invokable<any, any>, InvokableFn<any, any>>
+            Map<EventListener<any>, EventListenerFn<any>>
         >(),
     ) {}
 
-    getOrAdd<TInput, TOutput>(
-        key: [eventName: string, listener: Invokable<TInput, TOutput>],
-        value: InvokableFn<TInput, TOutput>,
-    ): InvokableFn<TInput, TOutput> {
+    getOrAdd<TInput>(
+        key: [eventName: string, listener: EventListener<TInput>],
+        value: EventListenerFn<TInput>,
+    ): EventListenerFn<TInput> {
         const [eventName, listener] = key;
         let eventMap = this.store.get(eventName);
         if (eventMap === undefined) {
@@ -39,9 +39,9 @@ export class ListenerStore {
         return listenerFn_;
     }
 
-    getAndRemove<TInput, TOutput>(
-        key: [eventName: string, listener: Invokable<TInput, TOutput>],
-    ): InvokableFn<TInput, TOutput> | null {
+    getAndRemove<TInput>(
+        key: [eventName: string, listener: EventListener<TInput>],
+    ): EventListenerFn<TInput> | null {
         const [eventName, listener] = key;
         const eventMap = this.store.get(eventName);
         if (eventMap === undefined) {

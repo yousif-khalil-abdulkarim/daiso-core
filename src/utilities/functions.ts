@@ -150,9 +150,9 @@ export async function resolveFactoryable<TInput, TOutput>(
 /**
  * @internal
  */
-export function resolveInvokable<TInput, TOutput>(
-    invokable: Invokable<TInput, TOutput>,
-): InvokableFn<TInput, TOutput> {
+export function resolveInvokable<TArgs extends unknown[], TReturn>(
+    invokable: Invokable<TArgs, TReturn>,
+): InvokableFn<TArgs, TReturn> {
     if (typeof invokable === "function") {
         return invokable;
     }

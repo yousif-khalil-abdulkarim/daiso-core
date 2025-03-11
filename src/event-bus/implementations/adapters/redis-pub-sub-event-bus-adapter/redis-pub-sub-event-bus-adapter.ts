@@ -10,11 +10,11 @@ import {
 } from "@/serde/implementations/adapters/_module-exports.js";
 import type {
     BaseEvent,
+    EventListenerFn,
     IEventBusAdapter,
 } from "@/event-bus/contracts/_module-exports.js";
 import type { Redis } from "ioredis";
 import { EventEmitter } from "node:events";
-import { type InvokableFn } from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -73,7 +73,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
 
     async addListener(
         eventName: string,
-        listener: InvokableFn<BaseEvent>,
+        listener: EventListenerFn<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.on(eventName, listener);
@@ -86,7 +86,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
 
     async removeListener(
         eventName: string,
-        listener: InvokableFn<BaseEvent>,
+        listener: EventListenerFn<BaseEvent>,
     ): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.eventEmitter.off(eventName, listener);
