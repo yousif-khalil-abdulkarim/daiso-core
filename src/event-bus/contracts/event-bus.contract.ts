@@ -51,7 +51,7 @@ export type Unsubscribe = () => LazyPromise<void>;
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
  */
-export type IEventListenerObject<TEvent> = IInvokableObject<TEvent>;
+export type IEventListenerObject<TEvent> = IInvokableObject<[event: TEvent]>;
 
 /**
  *
