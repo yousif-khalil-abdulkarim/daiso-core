@@ -3,9 +3,9 @@
  */
 
 import {
-    type SyncPredicate,
-    type ISyncCollection,
-    type SyncMap,
+    type Predicate,
+    type ICollection,
+    type Map,
 } from "@/collection/contracts/_module-exports.js";
 
 /**
@@ -15,17 +15,13 @@ export class ChangeIterable<TInput, TFilterOutput extends TInput, TMapOutput>
     implements Iterable<TInput | TFilterOutput | TMapOutput>
 {
     constructor(
-        private collection: ISyncCollection<TInput>,
-        private predicateFn: SyncPredicate<
+        private collection: ICollection<TInput>,
+        private predicateFn: Predicate<
             TInput,
-            ISyncCollection<TInput>,
+            ICollection<TInput>,
             TFilterOutput
         >,
-        private mapFn: SyncMap<
-            TFilterOutput,
-            ISyncCollection<TInput>,
-            TMapOutput
-        >,
+        private mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput | TFilterOutput | TMapOutput> {

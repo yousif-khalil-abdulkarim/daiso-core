@@ -3,7 +3,7 @@
  */
 
 import {
-    type Map,
+    type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -15,7 +15,7 @@ export class AsyncMapIterable<TInput, TOutput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private mapFn: Map<TInput, IAsyncCollection<TInput>, TOutput>,
+        private mapFn: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TOutput> {

@@ -8,19 +8,19 @@ import type {
 } from "@/collection/contracts/_module-exports.js";
 import {
     type AsyncCollapse,
-    type Predicate,
-    type ForEach,
-    type Map,
-    type Modifier,
-    type Tap,
-    type Transform,
+    type AsyncPredicate,
+    type AsyncForEach,
+    type AsyncMap,
+    type AsyncModifier,
+    type AsyncTap,
+    type AsyncTransform,
     type Comparator,
     type IAsyncCollection,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
     UnexpectedCollectionError,
     TypeCollectionError,
-    type Reduce,
+    type AsyncReduce,
     EmptyCollectionError,
     type CrossJoinResult,
 } from "@/collection/contracts/_module-exports.js";
@@ -63,7 +63,7 @@ import {
 } from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
 import {
     type AsyncIterableValue,
-    type AsyncLazyable,
+    type NEW_AsyncLazyable,
 } from "@/utilities/_module-exports.js";
 import { resolveAsyncLazyable } from "@/utilities/_module-exports.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
@@ -170,7 +170,7 @@ export class AsyncIterableCollection<TInput = unknown>
     static difference<TValue, TSelect>(
         iterableA: AsyncIterableValue<TValue>,
         iterableB: AsyncIterableValue<TValue>,
-        selectFn?: Map<TValue, IAsyncCollection<TValue>, TSelect>,
+        selectFn?: AsyncMap<TValue, IAsyncCollection<TValue>, TSelect>,
     ): IAsyncCollection<TValue> {
         return new AsyncIterableCollection(iterableA).difference(
             iterableB,
@@ -352,7 +352,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     filter<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): IAsyncCollection<TOutput> {
         return new AsyncIterableCollection<TOutput>(
             new AsyncFilterIterable(this, predicateFn),
@@ -360,7 +360,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     reject<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): IAsyncCollection<Exclude<TInput, TOutput>> {
         return this.filter(
             async (...arguments_) => !(await predicateFn(...arguments_)),
@@ -368,31 +368,31 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     map<TOutput>(
-        mapFn: Map<TInput, IAsyncCollection<TInput>, TOutput>,
+        mapFn: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
     ): IAsyncCollection<TOutput> {
         return new AsyncIterableCollection(new AsyncMapIterable(this, mapFn));
     }
 
     reduce(
-        reduceFn: Reduce<TInput, IAsyncCollection<TInput>, TInput>,
+        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
     ): LazyPromise<TInput>;
     reduce(
-        reduceFn: Reduce<TInput, IAsyncCollection<TInput>, TInput>,
+        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
         // eslint-disable-next-line @typescript-eslint/unified-signatures
         initialValue: TInput,
     ): LazyPromise<TInput>;
     reduce<TOutput>(
-        reduceFn: Reduce<TInput, IAsyncCollection<TInput>, TOutput>,
+        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue: TOutput,
     ): LazyPromise<TOutput>;
     reduce<TOutput = TInput>(
-        reduceFn: Reduce<TInput, IAsyncCollection<TInput>, TOutput>,
+        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue?: TOutput,
     ): LazyPromise<TOutput> {
         return this.createLazyPromise(async () => {
             if (initialValue === undefined && (await this.isEmpty())) {
                 throw new TypeCollectionError(
-                    "Reduce of empty array must be inputed a initial value",
+                    "AsyncReduce of empty array must be inputed a initial value",
                 );
             }
             if (initialValue !== undefined) {
@@ -442,7 +442,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     flatMap<TOutput>(
-        mapFn: Map<TInput, IAsyncCollection<TInput>, Iterable<TOutput>>,
+        mapFn: AsyncMap<TInput, IAsyncCollection<TInput>, Iterable<TOutput>>,
     ): IAsyncCollection<TOutput> {
         return new AsyncIterableCollection(
             new AsyncFlatMapIterable(this, mapFn),
@@ -450,8 +450,12 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     change<TFilterOutput extends TInput, TMapOutput>(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>, TFilterOutput>,
-        mapFn: Map<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
+        predicateFn: AsyncPredicate<
+            TInput,
+            IAsyncCollection<TInput>,
+            TFilterOutput
+        >,
+        mapFn: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
     ): IAsyncCollection<TInput | TFilterOutput | TMapOutput> {
         return new AsyncIterableCollection(
             new AsyncChangeIterable(this, predicateFn, mapFn),
@@ -460,14 +464,14 @@ export class AsyncIterableCollection<TInput = unknown>
 
     set(
         index: number,
-        value: TInput | Map<TInput, IAsyncCollection<TInput>, TInput>,
+        value: TInput | AsyncMap<TInput, IAsyncCollection<TInput>, TInput>,
     ): IAsyncCollection<TInput> {
         if (index < 0) {
             return this;
         }
-        let fn: Map<TInput, IAsyncCollection<TInput>, TInput>;
+        let fn: AsyncMap<TInput, IAsyncCollection<TInput>, TInput>;
         if (typeof value === "function") {
-            fn = value as Map<TInput, IAsyncCollection<TInput>, TInput>;
+            fn = value as AsyncMap<TInput, IAsyncCollection<TInput>, TInput>;
         } else {
             fn = () => value;
         }
@@ -628,7 +632,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     percentage(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<number> {
         return this.createLazyPromise(async () => {
             if (await this.isEmpty()) {
@@ -649,7 +653,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     some<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
@@ -662,7 +666,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     every<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             let isTrue = true;
@@ -681,7 +685,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     takeUntil(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
             new AsyncTakeUntilIterable(this, predicateFn),
@@ -689,7 +693,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     takeWhile(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): IAsyncCollection<TInput> {
         return this.takeUntil(
             async (...arguments_) => !(await predicateFn(...arguments_)),
@@ -701,7 +705,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     skipUntil(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
             new AsyncSkipUntilIterable(this, predicateFn),
@@ -709,7 +713,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     skipWhile(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): IAsyncCollection<TInput> {
         return this.skipUntil(
             async (...arguments_) => !(await predicateFn(...arguments_)),
@@ -718,7 +722,7 @@ export class AsyncIterableCollection<TInput = unknown>
 
     when<TExtended = TInput>(
         condition: boolean,
-        callback: Modifier<
+        callback: AsyncModifier<
             IAsyncCollection<TInput>,
             IAsyncCollection<TExtended>
         >,
@@ -729,7 +733,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     whenEmpty<TExtended = TInput>(
-        callback: Modifier<
+        callback: AsyncModifier<
             IAsyncCollection<TInput>,
             IAsyncCollection<TExtended>
         >,
@@ -741,7 +745,7 @@ export class AsyncIterableCollection<TInput = unknown>
 
     whenNot<TExtended = TInput>(
         condition: boolean,
-        callback: Modifier<
+        callback: AsyncModifier<
             IAsyncCollection<TInput>,
             IAsyncCollection<TExtended>
         >,
@@ -752,7 +756,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     whenNotEmpty<TExtended = TInput>(
-        callback: Modifier<
+        callback: AsyncModifier<
             IAsyncCollection<TInput>,
             IAsyncCollection<TExtended>
         >,
@@ -763,14 +767,16 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     pipe<TOutput = TInput>(
-        callback: Transform<IAsyncCollection<TInput>, TOutput>,
+        callback: AsyncTransform<IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
         return this.createLazyPromise(async () => {
-            return await callback(this);
+            return callback(this);
         });
     }
 
-    tap(callback: Tap<IAsyncCollection<TInput>>): IAsyncCollection<TInput> {
+    tap(
+        callback: AsyncTap<IAsyncCollection<TInput>>,
+    ): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
             new AsyncTapIterable(this, callback),
         );
@@ -787,7 +793,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     chunkWhile(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): IAsyncCollection<IAsyncCollection<TInput>> {
         return new AsyncIterableCollection(
             new AsyncChunkWhileIterable(
@@ -809,7 +815,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     partition(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): IAsyncCollection<IAsyncCollection<TInput>> {
         return new AsyncIterableCollection(
             new AsyncPartionIterable(
@@ -830,7 +836,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     groupBy<TOutput = TInput>(
-        selectFn?: Map<TInput, IAsyncCollection<TInput>, TOutput>,
+        selectFn?: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
     ): IAsyncCollection<[TOutput, IAsyncCollection<TInput>]> {
         return new AsyncIterableCollection(
             new AsyncGroupByIterable(
@@ -842,7 +848,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     countBy<TOutput = TInput>(
-        selectFn?: Map<TInput, IAsyncCollection<TInput>, TOutput>,
+        selectFn?: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
     ): IAsyncCollection<[TOutput, number]> {
         return new AsyncIterableCollection(
             new AsyncCountByIterable(this, selectFn),
@@ -850,7 +856,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     unique<TOutput = TInput>(
-        selectFn?: Map<TInput, IAsyncCollection<TInput>, TOutput>,
+        selectFn?: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput>,
     ): IAsyncCollection<TInput> {
         return new AsyncIterableCollection(
             new AsyncUniqueIterable(this, selectFn),
@@ -859,8 +865,9 @@ export class AsyncIterableCollection<TInput = unknown>
 
     difference<TOutput = TInput>(
         iterable: AsyncIterableValue<TInput>,
-        selectFn: Map<TInput, IAsyncCollection<TInput>, TOutput> = (item) =>
-            item as unknown as TOutput,
+        selectFn: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput> = (
+            item,
+        ) => item as unknown as TOutput,
     ): IAsyncCollection<TInput> {
         const differenceCollection = new AsyncIterableCollection(iterable);
         return this.filter(async (item, index, collection) => {
@@ -936,7 +943,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     insertBefore<TExtended = TInput>(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
         iterable: AsyncIterableValue<TInput | TExtended>,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
@@ -945,7 +952,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     insertAfter<TExtended = TInput>(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
         iterable: AsyncIterableValue<TInput | TExtended>,
     ): IAsyncCollection<TInput | TExtended> {
         return new AsyncIterableCollection(
@@ -996,14 +1003,14 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     first<TOutput extends TInput>(
-        predicateFn?: Predicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput | null> {
         return this.firstOr(null, predicateFn);
     }
 
     firstOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
-        predicateFn: Predicate<
+        defaultValue: NEW_AsyncLazyable<TExtended>,
+        predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
             TOutput
@@ -1020,7 +1027,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     firstOrFail<TOutput extends TInput>(
-        predicateFn?: Predicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
         return this.createLazyPromise<TOutput>(async () => {
             const item = await this.first(predicateFn);
@@ -1032,14 +1039,14 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     last<TOutput extends TInput>(
-        predicateFn?: Predicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput | null> {
         return this.lastOr(null, predicateFn);
     }
 
     lastOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
-        predicateFn: Predicate<
+        defaultValue: NEW_AsyncLazyable<TExtended>,
+        predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
             TOutput
@@ -1060,7 +1067,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     lastOrFail<TOutput extends TInput>(
-        predicateFn?: Predicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
         return this.createLazyPromise<TOutput>(async () => {
             const item = await this.last(predicateFn);
@@ -1072,14 +1079,14 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     before(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | null> {
         return this.beforeOr(null, predicateFn);
     }
 
     beforeOr<TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | TExtended> {
         return this.createLazyPromise<TInput | TExtended>(async () => {
             let beforeItem: TInput | null = null,
@@ -1096,7 +1103,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     beforeOrFail(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput> {
         return this.createLazyPromise<TInput>(async () => {
             const item = await this.before(predicateFn);
@@ -1108,14 +1115,14 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     after(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | null> {
         return this.afterOr(null, predicateFn);
     }
 
     afterOr<TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | TExtended> {
         return this.createLazyPromise(async () => {
             let hasMatched = false,
@@ -1132,7 +1139,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     afterOrFail(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput> {
         return this.createLazyPromise<TInput>(async () => {
             const item = await this.after(predicateFn);
@@ -1144,7 +1151,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     sole<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>, TOutput>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
         return this.createLazyPromise<TOutput>(async () => {
             let matchedItem: TOutput | null = null;
@@ -1186,7 +1193,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     count(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<number> {
         return this.createLazyPromise(async () => {
             let size = 0;
@@ -1219,7 +1226,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     searchFirst(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<number> {
         return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
@@ -1232,7 +1239,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     searchLast(
-        predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<number> {
         return this.createLazyPromise(async () => {
             let matchedIndex = -1;
@@ -1246,7 +1253,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     forEach(
-        callback: ForEach<TInput, IAsyncCollection<TInput>>,
+        callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {

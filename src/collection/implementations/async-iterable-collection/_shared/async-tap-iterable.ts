@@ -3,7 +3,7 @@
  */
 
 import {
-    type Tap,
+    type AsyncTap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -13,7 +13,7 @@ import {
 export class AsyncTapIterable<TInput> implements AsyncIterable<TInput> {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private callback: Tap<IAsyncCollection<TInput>>,
+        private callback: AsyncTap<IAsyncCollection<TInput>>,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {

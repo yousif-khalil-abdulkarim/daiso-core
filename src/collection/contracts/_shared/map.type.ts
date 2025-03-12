@@ -2,11 +2,13 @@
  * @module Collection
  */
 
+import type { Promisable } from "@/utilities/_module-exports.js";
+
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type SyncMap<TInput, TCollection, TOutput> = (
+export type Map<TInput, TCollection, TOutput> = (
     item: TInput,
     index: number,
     collection: TCollection,
@@ -20,12 +22,4 @@ export type AsyncMap<TInput, TCollection, TOutput> = (
     item: TInput,
     index: number,
     collection: TCollection,
-) => PromiseLike<TOutput>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
- */
-export type Map<TInput, TCollection, TOutput> =
-    | AsyncMap<TInput, TCollection, TOutput>
-    | SyncMap<TInput, TCollection, TOutput>;
+) => Promisable<TOutput>;

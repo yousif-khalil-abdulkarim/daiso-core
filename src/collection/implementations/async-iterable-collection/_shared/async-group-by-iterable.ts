@@ -3,7 +3,7 @@
  */
 
 import {
-    type Map,
+    type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
@@ -16,9 +16,11 @@ export class AsyncGroupByIterable<TInput, TOutput = TInput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private selectFn: Map<TInput, IAsyncCollection<TInput>, TOutput> = (
-            item,
-        ) => item as unknown as TOutput,
+        private selectFn: AsyncMap<
+            TInput,
+            IAsyncCollection<TInput>,
+            TOutput
+        > = (item) => item as unknown as TOutput,
 
         private makeCollection: <TInput>(
             iterable: AsyncIterableValue<TInput>,

@@ -2,11 +2,13 @@
  * @module Collection
  */
 
+import type { Promisable } from "@/utilities/_module-exports.js";
+
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type SyncPredicateFn<TInput, TCollection> = (
+export type PredicateFn<TInput, TCollection> = (
     item: TInput,
     index: number,
     collection: TCollection,
@@ -16,7 +18,7 @@ export type SyncPredicateFn<TInput, TCollection> = (
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type SyncPredicateGuardFn<
+export type PredicateGuardFn<
     TInput,
     TCollection,
     TOutput extends TInput = TInput,
@@ -26,28 +28,28 @@ export type SyncPredicateGuardFn<
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type SyncPredicate<
+export type Predicate<TInput, TCollection, TOutput extends TInput = TInput> =
+    | PredicateFn<TInput, TCollection>
+    | PredicateGuardFn<TInput, TCollection, TOutput>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ */
+export type AsyncPredicateFn<TInput, TCollection> = (
+    item: TInput,
+    index: number,
+    collection: TCollection,
+) => Promisable<boolean>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ */
+export type AsyncPredicate<
     TInput,
     TCollection,
     TOutput extends TInput = TInput,
 > =
-    | SyncPredicateFn<TInput, TCollection>
-    | SyncPredicateGuardFn<TInput, TCollection, TOutput>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
- */
-export type AsyncPredicate<TInput, TCollection> = (
-    item: TInput,
-    index: number,
-    collection: TCollection,
-) => PromiseLike<boolean>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
- */
-export type Predicate<TInput, TCollection, TOutput extends TInput = TInput> =
-    | AsyncPredicate<TInput, TCollection>
-    | SyncPredicate<TInput, TCollection, TOutput>;
+    | AsyncPredicateFn<TInput, TCollection>
+    | PredicateGuardFn<TInput, TCollection, TOutput>;

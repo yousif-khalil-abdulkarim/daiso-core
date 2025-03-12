@@ -2,11 +2,13 @@
  * @module Collection
  */
 
+import type { Promisable } from "@/utilities/_module-exports.js";
+
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type SyncTransform<TInput, TOutput> = (value: TInput) => TOutput;
+export type Transform<TInput, TOutput> = (value: TInput) => TOutput;
 
 /**
  *
@@ -14,12 +16,4 @@ export type SyncTransform<TInput, TOutput> = (value: TInput) => TOutput;
  */
 export type AsyncTransform<TInput, TOutput> = (
     value: TInput,
-) => PromiseLike<TOutput>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
- */
-export type Transform<TInput, TOutput> =
-    | SyncTransform<TInput, TOutput>
-    | AsyncTransform<TInput, TOutput>;
+) => Promisable<TOutput>;

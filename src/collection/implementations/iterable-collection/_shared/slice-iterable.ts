@@ -2,14 +2,14 @@
  * @module Collection
  */
 
-import { type ISyncCollection } from "@/collection/contracts/_module-exports.js";
+import { type ICollection } from "@/collection/contracts/_module-exports.js";
 
 /**
  * @internal
  */
 export class SliceIterable<TInput> implements Iterable<TInput> {
     constructor(
-        private collection: ISyncCollection<TInput>,
+        private collection: ICollection<TInput>,
         private start: number | undefined,
         private end: number | undefined,
     ) {}

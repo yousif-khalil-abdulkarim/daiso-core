@@ -5,7 +5,7 @@
 import type { Items, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type IKey,
-    type LazyPromiseable,
+    type NEW_AsyncLazy,
     type OneOrMore,
     type Result,
 } from "@/utilities/_module-exports.js";
@@ -295,7 +295,7 @@ export class Lock implements ILock {
      * ```
      */
     run<TValue = void>(
-        asyncFn: LazyPromiseable<TValue>,
+        asyncFn: NEW_AsyncLazy<TValue>,
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
         return this.createLazyPromise(
             async (): Promise<Result<TValue, KeyAlreadyAcquiredLockError>> => {
@@ -373,7 +373,7 @@ export class Lock implements ILock {
      * ```
      */
     runOrFail<TValue = void>(
-        asyncFn: LazyPromiseable<TValue>,
+        asyncFn: NEW_AsyncLazy<TValue>,
     ): LazyPromise<TValue> {
         return this.createLazyPromise(async () => {
             try {
@@ -444,7 +444,7 @@ export class Lock implements ILock {
      * ```
      */
     runBlocking<TValue = void>(
-        asyncFn: LazyPromiseable<TValue>,
+        asyncFn: NEW_AsyncLazy<TValue>,
         settings?: AquireBlockingSettings,
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
         return this.createLazyPromise(
@@ -523,7 +523,7 @@ export class Lock implements ILock {
      * ```
      */
     runBlockingOrFail<TValue = void>(
-        asyncFn: LazyPromiseable<TValue>,
+        asyncFn: NEW_AsyncLazy<TValue>,
         settings?: AquireBlockingSettings,
     ): LazyPromise<TValue> {
         return new LazyPromise(async () => {

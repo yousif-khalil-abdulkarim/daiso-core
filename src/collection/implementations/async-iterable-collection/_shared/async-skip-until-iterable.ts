@@ -3,7 +3,7 @@
  */
 
 import {
-    type Predicate,
+    type AsyncPredicate,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -13,7 +13,7 @@ import {
 export class AsyncSkipUntilIterable<TInput> implements AsyncIterable<TInput> {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private predicateFn: Predicate<TInput, IAsyncCollection<TInput>>,
+        private predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {

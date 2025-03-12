@@ -3,8 +3,8 @@
  */
 
 import {
-    type Predicate,
-    type Map,
+    type AsyncPredicate,
+    type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 
@@ -19,12 +19,16 @@ export class AsyncChangeIterable<
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private predicateFn: Predicate<
+        private predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
             TFilterOutput
         >,
-        private mapFn: Map<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
+        private mapFn: AsyncMap<
+            TFilterOutput,
+            IAsyncCollection<TInput>,
+            TMapOutput
+        >,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<

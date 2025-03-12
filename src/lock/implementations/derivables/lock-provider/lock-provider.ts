@@ -5,18 +5,15 @@
 import {
     resolveOneOrMore,
     TimeSpan,
-    type Factoryable,
+    type NEW_AsyncFactoryable,
     type IKeyPrefixer,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IFactoryObject,
+    type NEW_IAsyncFactoryObject,
     type Items,
     CORE,
+    resolveAsyncFactoryable,
 } from "@/utilities/_module-exports.js";
-import {
-    KeyPrefixer,
-    resolveFactoryable,
-    type OneOrMore,
-} from "@/utilities/_module-exports.js";
+import { KeyPrefixer, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
     LockEvents,
@@ -135,7 +132,7 @@ export type LockProviderSettingsBase = LazyPromiseSettingsBase & {
  * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
-export type LockAdapterFactoryable = Factoryable<
+export type LockAdapterFactoryable = NEW_AsyncFactoryable<
     string,
     ILockAdapter | IDatabaseLockAdapter
 >;
@@ -186,7 +183,7 @@ export class LockProvider implements IGroupableLockProvider {
             defaultRefreshTime,
             groupableEventBus,
         } = settings;
-        const adapter = await resolveFactoryable(
+        const adapter = await resolveAsyncFactoryable(
             factoryable,
             keyPrefixer.keyPrefix,
         );

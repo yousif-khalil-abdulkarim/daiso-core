@@ -2,15 +2,17 @@
  * @module Collection
  */
 
+import type { Promisable } from "@/utilities/_module-exports.js";
+
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type SyncForEach<TInput, TCollection> = (
+export type ForEach<TInput, TCollection> = (
     item: TInput,
     index: number,
     collection: TCollection,
-) => void;
+) => unknown;
 
 /**
  *
@@ -20,12 +22,4 @@ export type AsyncForEach<TInput, TCollection> = (
     item: TInput,
     index: number,
     collection: TCollection,
-) => PromiseLike<void>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
- */
-export type ForEach<TInput, TCollection> =
-    | SyncForEach<TInput, TCollection>
-    | AsyncForEach<TInput, TCollection>;
+) => Promisable<unknown>;
