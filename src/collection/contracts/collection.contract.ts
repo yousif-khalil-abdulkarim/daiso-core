@@ -28,7 +28,7 @@ import type {
     EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
-import type { NEW_Lazyable } from "@/utilities/_module-exports.js";
+import type { Lazyable } from "@/utilities/_module-exports.js";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -1705,7 +1705,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         firstOr<TOutput extends TInput, TExtended = TInput>(
-            defaultValue: NEW_Lazyable<TExtended>,
+            defaultValue: Lazyable<TExtended>,
             predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
         ): TOutput | TExtended;
 
@@ -1851,7 +1851,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         lastOr<TOutput extends TInput, TExtended = TInput>(
-            defaultValue: NEW_Lazyable<TExtended>,
+            defaultValue: Lazyable<TExtended>,
             predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
         ): TOutput | TExtended;
 
@@ -1973,7 +1973,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         beforeOr<TExtended = TInput>(
-            defaultValue: NEW_Lazyable<TExtended>,
+            defaultValue: Lazyable<TExtended>,
             predicateFn: Predicate<TInput, ICollection<TInput>>,
         ): TInput | TExtended;
 
@@ -2083,7 +2083,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         afterOr<TExtended = TInput>(
-            defaultValue: NEW_Lazyable<TExtended>,
+            defaultValue: Lazyable<TExtended>,
             predicateFn: Predicate<TInput, ICollection<TInput>>,
         ): TInput | TExtended;
 

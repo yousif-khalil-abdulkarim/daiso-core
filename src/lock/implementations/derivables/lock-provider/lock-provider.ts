@@ -5,10 +5,10 @@
 import {
     resolveOneOrMore,
     TimeSpan,
-    type NEW_AsyncFactoryable,
+    type AsyncFactoryable,
     type IKeyPrefixer,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type NEW_IAsyncFactoryObject,
+    type IAsyncFactoryObject,
     type Items,
     CORE,
     resolveAsyncFactoryable,
@@ -132,7 +132,7 @@ export type LockProviderSettingsBase = LazyPromiseSettingsBase & {
  * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
-export type LockAdapterFactoryable = NEW_AsyncFactoryable<
+export type LockAdapterFactoryable = AsyncFactoryable<
     string,
     ILockAdapter | IDatabaseLockAdapter
 >;

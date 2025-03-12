@@ -30,16 +30,16 @@ import {
     resolveAsyncLazyable,
 } from "@/utilities/_module-exports.js";
 import {
-    type NEW_AsyncLazyable,
+    type AsyncLazyable,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
 import {
     type NoneFunc,
     type TimeSpan,
     KeyPrefixer,
-    type NEW_AsyncFactoryable,
+    type AsyncFactoryable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type NEW_IAsyncFactoryObject,
+    type IAsyncFactoryObject,
 } from "@/utilities/_module-exports.js";
 import type {
     BackoffPolicy,
@@ -98,7 +98,7 @@ export type CacheSettingsBase = LazyPromiseSettingsBase & {
  * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
-export type CacheAdapterFactoryable<TType> = NEW_AsyncFactoryable<
+export type CacheAdapterFactoryable<TType> = AsyncFactoryable<
     string,
     ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>
 >;
@@ -594,7 +594,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     getOr(
         key: OneOrMore<string>,
-        defaultValue: NEW_AsyncLazyable<NoneFunc<TType>>,
+        defaultValue: AsyncLazyable<NoneFunc<TType>>,
     ): LazyPromise<TType> {
         return this.createLazyPromise<TType>(async () => {
             const value = await this.get(key);
@@ -681,7 +681,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     getOrAdd(
         key: OneOrMore<string>,
-        valueToAdd: NEW_AsyncLazyable<NoneFunc<TType>>,
+        valueToAdd: AsyncLazyable<NoneFunc<TType>>,
         ttl?: TimeSpan | null,
     ): LazyPromise<TType> {
         return this.createLazyPromise<TType>(async () => {
