@@ -6,7 +6,10 @@ import {
     type AsyncPredicate,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
-import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
+import {
+    resolveInvokable,
+    type AsyncIterableValue,
+} from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -26,7 +29,11 @@ export class AsyncInsertBeforeIterable<TInput, TExtended>
         for await (const item of this.collection) {
             if (
                 !hasMatched &&
-                (await this.predicateFn(item, index, this.collection))
+                (await resolveInvokable(this.predicateFn)(
+                    item,
+                    index,
+                    this.collection,
+                ))
             ) {
                 yield* this.iterable;
                 hasMatched = true;

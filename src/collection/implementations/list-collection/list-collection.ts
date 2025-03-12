@@ -10,7 +10,7 @@ import type {
 import {
     type Collapse,
     type Comparator,
-    type Predicate,
+    type PredicateInvokable,
     type ICollection,
     ItemNotFoundCollectionError,
     type Map,
@@ -25,7 +25,11 @@ import {
     EmptyCollectionError,
     type CrossJoinResult,
 } from "@/collection/contracts/_module-exports.js";
-import { type Lazyable } from "@/utilities/_module-exports.js";
+import {
+    isInvokable,
+    resolveInvokable,
+    type Lazyable,
+} from "@/utilities/_module-exports.js";
 import { resolveLazyable } from "@/utilities/_module-exports.js";
 
 /**
@@ -235,21 +239,22 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     filter<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<TOutput> {
         return new ListCollection(
             this.array.filter((item, index) =>
-                predicateFn(item, index, this),
+                resolveInvokable(predicateFn)(item, index, this),
             ) as TOutput[],
         );
     }
 
     reject<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<Exclude<TInput, TOutput>> {
         return new ListCollection(
             this.array.filter(
-                (item, index) => !predicateFn(item, index, this),
+                (item, index) =>
+                    !resolveInvokable(predicateFn)(item, index, this),
             ) as Exclude<TInput, TOutput>[],
         );
     }
@@ -258,7 +263,9 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         mapFn: Map<TInput, ICollection<TInput>, TOutput>,
     ): ICollection<TOutput> {
         return new ListCollection(
-            this.array.map((item, index) => mapFn(item, index, this)),
+            this.array.map((item, index) =>
+                resolveInvokable(mapFn)(item, index, this),
+            ),
         );
     }
 
@@ -284,7 +291,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         if (initialValue !== undefined) {
             return this.array.reduce<TOutput>(
                 (initialValue, item, index) =>
-                    reduceFn(initialValue, item, index, this),
+                    resolveInvokable(reduceFn)(initialValue, item, index, this),
                 initialValue,
             );
         }
@@ -325,18 +332,28 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         mapFn: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
     ): ICollection<TOutput> {
         return new ListCollection(
-            this.array.flatMap((item, index) => [...mapFn(item, index, this)]),
+            this.array.flatMap((item, index) => [
+                ...resolveInvokable(mapFn)(item, index, this),
+            ]),
         );
     }
 
     change<TFilterOutput extends TInput, TMapOutput>(
-        predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
+        predicateFn: PredicateInvokable<
+            TInput,
+            ICollection<TInput>,
+            TFilterOutput
+        >,
         mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
     ): ICollection<TInput | TFilterOutput | TMapOutput> {
-        return new ListCollection(
+        return new ListCollection<TInput | TFilterOutput | TMapOutput>(
             this.array.map((item, index) => {
-                if (predicateFn(item, index, this)) {
-                    return mapFn(item as TFilterOutput, index, this);
+                if (resolveInvokable(predicateFn)(item, index, this)) {
+                    return resolveInvokable(mapFn)(
+                        item as TFilterOutput,
+                        index,
+                        this,
+                    );
                 }
                 return item;
             }),
@@ -357,9 +374,8 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         if (item === undefined) {
             return this;
         }
-        if (typeof value === "function") {
-            const fn = value as Map<TInput, ICollection<TInput>, TInput>;
-            value = fn(item, index, this);
+        if (isInvokable(value)) {
+            value = resolveInvokable(value)(item, index, this);
         }
         const newArray = [...this.array];
         newArray[index] = value;
@@ -490,7 +506,9 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return max as Extract<TInput, number>;
     }
 
-    percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
+    percentage(
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+    ): number {
         if (this.isEmpty()) {
             throw new EmptyCollectionError(
                 "Collection is empty therby operation cannot be performed",
@@ -500,16 +518,18 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     some<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): boolean {
-        return this.array.some((item, index) => predicateFn(item, index, this));
+        return this.array.some((item, index) =>
+            resolveInvokable(predicateFn)(item, index, this),
+        );
     }
 
     every<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): boolean {
         return this.array.every((item, index) =>
-            predicateFn(item, index, this),
+            resolveInvokable(predicateFn)(item, index, this),
         );
     }
 
@@ -518,11 +538,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     takeUntil(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<TInput> {
         const items: TInput[] = [];
         for (const [index, item] of this.array.entries()) {
-            if (predicateFn(item, index, this)) {
+            if (resolveInvokable(predicateFn)(item, index, this)) {
                 break;
             }
             items.push(item);
@@ -531,9 +551,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     takeWhile(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<TInput> {
-        return this.takeUntil((...arguments_) => !predicateFn(...arguments_));
+        return this.takeUntil(
+            (...arguments_) => !resolveInvokable(predicateFn)(...arguments_),
+        );
     }
 
     skip(offset: number): ICollection<TInput> {
@@ -541,13 +563,13 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     skipUntil(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<TInput> {
         let hasMatched = false;
         const items: TInput[] = [];
         for (const [index, item] of this.array.entries()) {
             if (!hasMatched) {
-                hasMatched = predicateFn(item, index, this);
+                hasMatched = resolveInvokable(predicateFn)(item, index, this);
             }
             if (hasMatched) {
                 items.push(item);
@@ -557,9 +579,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     skipWhile(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<TInput> {
-        return this.skipUntil((...arguments_) => !predicateFn(...arguments_));
+        return this.skipUntil(
+            (...arguments_) => !resolveInvokable(predicateFn)(...arguments_),
+        );
     }
 
     when<TExtended = TInput>(
@@ -567,7 +591,9 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         callback: Modifier<ICollection<TInput>, ICollection<TExtended>>,
     ): ICollection<TInput | TExtended> {
         if (condition) {
-            return callback(this) as ICollection<TInput | TExtended>;
+            return resolveInvokable(callback)(this) as ICollection<
+                TInput | TExtended
+            >;
         }
         return this as ICollection<TInput | TExtended>;
     }
@@ -594,11 +620,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     pipe<TOutput = TInput>(
         callback: Transform<ICollection<TInput>, TOutput>,
     ): TOutput {
-        return callback(this);
+        return resolveInvokable(callback)(this);
     }
 
     tap(callback: Tap<ICollection<TInput>>): ICollection<TInput> {
-        callback(new ListCollection(this));
+        resolveInvokable(callback)(new ListCollection(this));
         return this;
     }
 
@@ -613,14 +639,16 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     chunkWhile(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<ICollection<TInput>> {
         let currentChunk: ICollection<TInput> = new ListCollection<TInput>([]);
         const chunks: ICollection<TInput>[] = [];
         for (const [index, item] of this.array.entries()) {
             if (index === 0) {
                 currentChunk = currentChunk.append([item]);
-            } else if (predicateFn(item, index, currentChunk)) {
+            } else if (
+                resolveInvokable(predicateFn)(item, index, currentChunk)
+            ) {
                 currentChunk = currentChunk.append([item]);
             } else {
                 chunks.push(currentChunk);
@@ -659,12 +687,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     partition(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<ICollection<TInput>> {
         const chunkA: TInput[] = [],
             chunkB: TInput[] = [];
         for (const [index, item] of this.array.entries()) {
-            if (predicateFn(item, index, this)) {
+            if (resolveInvokable(predicateFn)(item, index, this)) {
                 chunkA.push(item);
             } else {
                 chunkB.push(item);
@@ -703,7 +731,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): ICollection<[TOutput, ICollection<TInput>]> {
         const map = new Map<TOutput, ICollection<TInput>>();
         for (const [index, item] of this.array.entries()) {
-            const key = selectFn(item, index, this);
+            const key = resolveInvokable(selectFn)(item, index, this);
             let collection: ICollection<TInput> | undefined = map.get(key);
             if (collection === undefined) {
                 collection = new ListCollection<TInput>([]);
@@ -724,7 +752,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): ICollection<[TOutput, number]> {
         const map = new Map<TOutput, number>();
         for (const [index, item] of this.array.entries()) {
-            const key = selectFn(item, index, this);
+            const key = resolveInvokable(selectFn)(item, index, this);
             if (!map.has(key)) {
                 map.set(key, 0);
             }
@@ -743,7 +771,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         const set = new Set<TOutput>([]),
             items: TInput[] = [];
         for (const [index, item] of this.array.entries()) {
-            const item_ = selectFn(item, index, this);
+            const item_ = resolveInvokable(selectFn)(item, index, this);
             if (!set.has(item_)) {
                 items.push(item);
             }
@@ -762,8 +790,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
             return !differenceCollection.some(
                 (matchItem, matchIndex, matchCollection) => {
                     return (
-                        selectFn(item, index, collection) ===
-                        selectFn(matchItem, matchIndex, matchCollection)
+                        resolveInvokable(selectFn)(item, index, collection) ===
+                        resolveInvokable(selectFn)(
+                            matchItem,
+                            matchIndex,
+                            matchCollection,
+                        )
                     );
                 },
             );
@@ -839,11 +871,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     insertBefore<TExtended = TInput>(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
         const index = this.array.findIndex((item, index) =>
-            predicateFn(item, index, this),
+            resolveInvokable(predicateFn)(item, index, this),
         );
         if (index === -1) {
             return new ListCollection<TInput | TExtended>(this.array);
@@ -854,11 +886,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     insertAfter<TExtended = TInput>(
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         iterable: Iterable<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
         const index = this.array.findIndex((item, index) =>
-            predicateFn(item, index, this),
+            resolveInvokable(predicateFn)(item, index, this),
         );
         if (index === -1) {
             return new ListCollection(this.array) as ICollection<
@@ -931,7 +963,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     sort(comparator?: Comparator<TInput>): ICollection<TInput> {
-        return new ListCollection(this.array.sort(comparator));
+        if (comparator === undefined) {
+            return new ListCollection(this.array.sort());
+        }
+        return new ListCollection(
+            this.array.sort(resolveInvokable(comparator)),
+        );
     }
 
     reverse(_chunkSize?: number): ICollection<TInput> {
@@ -954,18 +991,18 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     first<TOutput extends TInput>(
-        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | null {
         return this.firstOr(null, predicateFn);
     }
 
     firstOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | TExtended {
         if (predicateFn) {
             for (const [index, item] of this.array.entries()) {
-                if (predicateFn(item, index, this)) {
+                if (resolveInvokable(predicateFn)(item, index, this)) {
                     return item as TOutput;
                 }
             }
@@ -979,7 +1016,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     firstOrFail<TOutput extends TInput>(
-        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): TOutput {
         const item = this.first(predicateFn);
         if (item === null) {
@@ -989,19 +1026,19 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     last<TOutput extends TInput>(
-        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | null {
         return this.lastOr(null, predicateFn);
     }
 
     lastOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | TExtended {
         if (predicateFn) {
             let matchedItem: TOutput | null = null;
             for (const [index, item] of this.array.entries()) {
-                if (predicateFn(item, index, this)) {
+                if (resolveInvokable(predicateFn)(item, index, this)) {
                     matchedItem = item as TOutput;
                 }
             }
@@ -1018,7 +1055,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     lastOrFail<TOutput extends TInput>(
-        predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn?: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): TOutput {
         const item = this.last(predicateFn);
         if (item === null) {
@@ -1027,24 +1064,31 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return item;
     }
 
-    before(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput | null {
+    before(
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+    ): TInput | null {
         return this.beforeOr(null, predicateFn);
     }
 
     beforeOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): TInput | TExtended {
         for (const [index, item] of this.array.entries()) {
             const beforeItem = this.array[index - 1];
-            if (predicateFn(item, index, this) && beforeItem !== undefined) {
+            if (
+                resolveInvokable(predicateFn)(item, index, this) &&
+                beforeItem !== undefined
+            ) {
                 return beforeItem;
             }
         }
         return resolveLazyable(defaultValue);
     }
 
-    beforeOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput {
+    beforeOrFail(
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+    ): TInput {
         const item = this.before(predicateFn);
         if (item === null) {
             throw new ItemNotFoundCollectionError("Item was not found");
@@ -1052,24 +1096,31 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return item;
     }
 
-    after(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput | null {
+    after(
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+    ): TInput | null {
         return this.afterOr(null, predicateFn);
     }
 
     afterOr<TExtended = TInput>(
         defaultValue: Lazyable<TExtended>,
-        predicateFn: Predicate<TInput, ICollection<TInput>>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): TInput | TExtended {
         for (const [index, item] of this.array.entries()) {
             const beforeItem = this.array[index + 1];
-            if (predicateFn(item, index, this) && beforeItem !== undefined) {
+            if (
+                resolveInvokable(predicateFn)(item, index, this) &&
+                beforeItem !== undefined
+            ) {
                 return beforeItem;
             }
         }
         return resolveLazyable(defaultValue);
     }
 
-    afterOrFail(predicateFn: Predicate<TInput, ICollection<TInput>>): TInput {
+    afterOrFail(
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+    ): TInput {
         const item = this.after(predicateFn);
         if (item === null) {
             throw new ItemNotFoundCollectionError("Item was not found");
@@ -1078,11 +1129,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     sole<TOutput extends TInput>(
-        predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): TOutput {
         const matchedItems: TInput[] = [];
         for (const [index, item] of this.array.entries()) {
-            if (predicateFn(item, index, this)) {
+            if (resolveInvokable(predicateFn)(item, index, this)) {
                 matchedItems.push(item);
             }
             if (matchedItems.length > 1) {
@@ -1102,7 +1153,9 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return this.filter((_item, index) => index % step === 0);
     }
 
-    count(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
+    count(
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+    ): number {
         return this.filter(predicateFn).size();
     }
 
@@ -1118,16 +1171,20 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return this.array.length !== 0;
     }
 
-    searchFirst(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
+    searchFirst(
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+    ): number {
         return this.array.findIndex((item, index) =>
-            predicateFn(item, index, this),
+            resolveInvokable(predicateFn)(item, index, this),
         );
     }
 
-    searchLast(predicateFn: Predicate<TInput, ICollection<TInput>>): number {
+    searchLast(
+        predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+    ): number {
         let matchedIndex = -1;
         for (const [index, item] of this.array.entries()) {
-            if (predicateFn(item, index, this)) {
+            if (resolveInvokable(predicateFn)(item, index, this)) {
                 matchedIndex = index;
             }
         }
@@ -1136,7 +1193,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     forEach(callback: ForEach<TInput, ICollection<TInput>>): void {
         for (const [index, item] of this.array.entries()) {
-            callback(item, index, this);
+            resolveInvokable(callback)(item, index, this);
         }
     }
 

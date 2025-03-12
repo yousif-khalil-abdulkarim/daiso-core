@@ -3,9 +3,10 @@
  */
 
 import {
-    type Predicate,
+    type PredicateInvokable,
     type ICollection,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/functions.js";
 
 /**
  * @internal
@@ -13,14 +14,18 @@ import {
 export class SkipUntilIterable<TInput> implements Iterable<TInput> {
     constructor(
         private collection: ICollection<TInput>,
-        private predicateFn: Predicate<TInput, ICollection<TInput>>,
+        private predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
         let hasMatched = false;
         for (const [index, item] of this.collection.entries()) {
             if (!hasMatched) {
-                hasMatched = this.predicateFn(item, index, this.collection);
+                hasMatched = resolveInvokable(this.predicateFn)(
+                    item,
+                    index,
+                    this.collection,
+                );
             }
             if (hasMatched) {
                 yield item;

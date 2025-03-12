@@ -8,6 +8,7 @@ import {
     type AsyncLazy,
     type OneOrMore,
     type Result,
+    resolveLazyable,
 } from "@/utilities/_module-exports.js";
 import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import {
@@ -299,9 +300,6 @@ export class Lock implements ILock {
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
         return this.createLazyPromise(
             async (): Promise<Result<TValue, KeyAlreadyAcquiredLockError>> => {
-                if (typeof asyncFn === "function") {
-                    asyncFn = new LazyPromise(asyncFn);
-                }
                 try {
                     const hasAquired = await this.acquire();
                     if (!hasAquired) {
@@ -313,7 +311,7 @@ export class Lock implements ILock {
                         ];
                     }
 
-                    return [await asyncFn, null];
+                    return [await resolveLazyable(asyncFn), null];
                 } finally {
                     await this.release();
                 }
@@ -375,11 +373,8 @@ export class Lock implements ILock {
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue> {
         return this.createLazyPromise(async () => {
             try {
-                if (typeof asyncFn === "function") {
-                    asyncFn = new LazyPromise(asyncFn);
-                }
                 await this.acquireOrFail();
-                return await asyncFn;
+                return await resolveLazyable(asyncFn);
             } finally {
                 await this.release();
             }
@@ -447,9 +442,6 @@ export class Lock implements ILock {
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
         return this.createLazyPromise(
             async (): Promise<Result<TValue, KeyAlreadyAcquiredLockError>> => {
-                if (typeof asyncFn === "function") {
-                    asyncFn = new LazyPromise(asyncFn);
-                }
                 try {
                     const hasAquired = await this.acquireBlocking(settings);
                     if (!hasAquired) {
@@ -461,7 +453,7 @@ export class Lock implements ILock {
                         ];
                     }
 
-                    return [await asyncFn, null];
+                    return [await resolveLazyable(asyncFn), null];
                 } finally {
                     await this.release();
                 }
@@ -525,13 +517,10 @@ export class Lock implements ILock {
         settings?: AquireBlockingSettings,
     ): LazyPromise<TValue> {
         return new LazyPromise(async () => {
-            if (typeof asyncFn === "function") {
-                asyncFn = new LazyPromise(asyncFn);
-            }
             try {
                 await this.acquireBlockingOrFail(settings);
 
-                return await asyncFn;
+                return await resolveLazyable(asyncFn);
             } finally {
                 await this.release();
             }

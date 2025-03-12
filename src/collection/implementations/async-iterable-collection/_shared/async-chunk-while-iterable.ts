@@ -6,7 +6,10 @@ import {
     type AsyncPredicate,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
-import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
+import {
+    resolveInvokable,
+    type AsyncIterableValue,
+} from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -29,7 +32,11 @@ export class AsyncChunkWhileIterable<TInput>
             if (index === 0) {
                 array.push(item);
             } else if (
-                await this.predicateFn(item, index, this.makeCollection(array))
+                await resolveInvokable(this.predicateFn)(
+                    item,
+                    index,
+                    this.makeCollection(array),
+                )
             ) {
                 array.push(item);
             } else {

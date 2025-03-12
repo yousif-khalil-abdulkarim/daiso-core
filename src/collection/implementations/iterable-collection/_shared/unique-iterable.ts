@@ -6,6 +6,7 @@ import {
     type ICollection,
     type Map,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/functions.js";
 
 /**
  * @internal
@@ -21,7 +22,11 @@ export class UniqueIterable<TInput, TOutput> implements Iterable<TInput> {
         const set = new Set<TOutput>([]);
 
         for (const [index, item] of this.collection.entries()) {
-            const item_ = this.callback(item, index, this.collection);
+            const item_ = resolveInvokable(this.callback)(
+                item,
+                index,
+                this.collection,
+            );
             if (!set.has(item_)) {
                 yield item;
             }

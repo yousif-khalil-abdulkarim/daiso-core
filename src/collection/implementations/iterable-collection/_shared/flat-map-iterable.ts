@@ -6,6 +6,7 @@ import {
     type ICollection,
     type Map,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/functions.js";
 
 /**
  * @internal
@@ -18,7 +19,7 @@ export class FlatMapIterable<TInput, TOutput> implements Iterable<TOutput> {
 
     *[Symbol.iterator](): Iterator<TOutput> {
         for (const [index, item] of this.collection.entries()) {
-            yield* this.mapFn(item, index, this.collection);
+            yield* resolveInvokable(this.mapFn)(item, index, this.collection);
         }
     }
 }

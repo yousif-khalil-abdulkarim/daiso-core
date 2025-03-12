@@ -62,6 +62,8 @@ import {
     AsyncTakeUntilTimeoutIterable,
 } from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
 import {
+    isInvokable,
+    resolveInvokable,
     type AsyncIterableValue,
     type AsyncLazyable,
 } from "@/utilities/_module-exports.js";
@@ -363,7 +365,8 @@ export class AsyncIterableCollection<TInput = unknown>
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): IAsyncCollection<Exclude<TInput, TOutput>> {
         return this.filter(
-            async (...arguments_) => !(await predicateFn(...arguments_)),
+            async (...arguments_) =>
+                !(await resolveInvokable(predicateFn)(...arguments_)),
         );
     }
 
@@ -374,19 +377,19 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     reduce(
-        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
+        reduce: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
     ): LazyPromise<TInput>;
     reduce(
-        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
+        reduce: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
         // eslint-disable-next-line @typescript-eslint/unified-signatures
         initialValue: TInput,
     ): LazyPromise<TInput>;
     reduce<TOutput>(
-        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
+        reduce: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue: TOutput,
     ): LazyPromise<TOutput>;
     reduce<TOutput = TInput>(
-        reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
+        reduce: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue?: TOutput,
     ): LazyPromise<TOutput> {
         return this.createLazyPromise(async () => {
@@ -399,7 +402,12 @@ export class AsyncIterableCollection<TInput = unknown>
                 let output = initialValue as TOutput;
 
                 for await (const [index, item] of this.entries()) {
-                    output = await reduceFn(output, item, index, this);
+                    output = await resolveInvokable(reduce)(
+                        output,
+                        item,
+                        index,
+                        this,
+                    );
                 }
                 return output;
             }
@@ -409,7 +417,12 @@ export class AsyncIterableCollection<TInput = unknown>
                 isFirstIteration = true;
             for await (const item of this) {
                 if (!isFirstIteration) {
-                    output = await reduceFn(output, item, index, this);
+                    output = await resolveInvokable(reduce)(
+                        output,
+                        item,
+                        index,
+                        this,
+                    );
                 }
                 isFirstIteration = false;
                 index++;
@@ -470,8 +483,8 @@ export class AsyncIterableCollection<TInput = unknown>
             return this;
         }
         let fn: AsyncMap<TInput, IAsyncCollection<TInput>, TInput>;
-        if (typeof value === "function") {
-            fn = value as AsyncMap<TInput, IAsyncCollection<TInput>, TInput>;
+        if (isInvokable(value)) {
+            fn = value;
         } else {
             fn = () => value;
         }
@@ -643,7 +656,7 @@ export class AsyncIterableCollection<TInput = unknown>
             let part = 0,
                 total = 0;
             for await (const item of this) {
-                if (await predicateFn(item, total, this)) {
+                if (await resolveInvokable(predicateFn)(item, total, this)) {
                     part++;
                 }
                 total++;
@@ -657,7 +670,7 @@ export class AsyncIterableCollection<TInput = unknown>
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
-                if (await predicateFn(item, index, this)) {
+                if (await resolveInvokable(predicateFn)(item, index, this)) {
                     return true;
                 }
             }
@@ -671,7 +684,11 @@ export class AsyncIterableCollection<TInput = unknown>
         return this.createLazyPromise(async () => {
             let isTrue = true;
             for await (const [index, item] of this.entries()) {
-                isTrue &&= await predicateFn(item, index, this);
+                isTrue &&= await resolveInvokable(predicateFn)(
+                    item,
+                    index,
+                    this,
+                );
                 if (!isTrue) {
                     break;
                 }
@@ -696,7 +713,8 @@ export class AsyncIterableCollection<TInput = unknown>
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): IAsyncCollection<TInput> {
         return this.takeUntil(
-            async (...arguments_) => !(await predicateFn(...arguments_)),
+            async (...arguments_) =>
+                !(await resolveInvokable(predicateFn)(...arguments_)),
         );
     }
 
@@ -716,7 +734,8 @@ export class AsyncIterableCollection<TInput = unknown>
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): IAsyncCollection<TInput> {
         return this.skipUntil(
-            async (...arguments_) => !(await predicateFn(...arguments_)),
+            async (...arguments_) =>
+                !(await resolveInvokable(predicateFn)(...arguments_)),
         );
     }
 
@@ -770,7 +789,7 @@ export class AsyncIterableCollection<TInput = unknown>
         callback: AsyncTransform<IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput> {
         return this.createLazyPromise(async () => {
-            return callback(this);
+            return resolveInvokable(callback)(this);
         });
     }
 
@@ -874,8 +893,16 @@ export class AsyncIterableCollection<TInput = unknown>
             return !(await differenceCollection.some(
                 async (matchItem, matchIndex, matchCollection) => {
                     return (
-                        (await selectFn(item, index, collection)) ===
-                        (await selectFn(matchItem, matchIndex, matchCollection))
+                        (await resolveInvokable(selectFn)(
+                            item,
+                            index,
+                            collection,
+                        )) ===
+                        (await resolveInvokable(selectFn)(
+                            matchItem,
+                            matchIndex,
+                            matchCollection,
+                        ))
                     );
                 },
             ));
@@ -1018,7 +1045,7 @@ export class AsyncIterableCollection<TInput = unknown>
     ): LazyPromise<TOutput | TExtended> {
         return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
-                if (await predicateFn(item, index, this)) {
+                if (await resolveInvokable(predicateFn)(item, index, this)) {
                     return item as TOutput;
                 }
             }
@@ -1055,7 +1082,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return this.createLazyPromise<TOutput | TExtended>(async () => {
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries()) {
-                if (await predicateFn(item, index, this)) {
+                if (await resolveInvokable(predicateFn)(item, index, this)) {
                     matchedItem = item as TOutput;
                 }
             }
@@ -1092,7 +1119,10 @@ export class AsyncIterableCollection<TInput = unknown>
             let beforeItem: TInput | null = null,
                 index = 0;
             for await (const item of this) {
-                if ((await predicateFn(item, index, this)) && beforeItem) {
+                if (
+                    (await resolveInvokable(predicateFn)(item, index, this)) &&
+                    beforeItem
+                ) {
                     return beforeItem;
                 }
                 index++;
@@ -1131,7 +1161,11 @@ export class AsyncIterableCollection<TInput = unknown>
                 if (hasMatched) {
                     return item;
                 }
-                hasMatched = await predicateFn(item, index, this);
+                hasMatched = await resolveInvokable(predicateFn)(
+                    item,
+                    index,
+                    this,
+                );
                 index++;
             }
             return await resolveAsyncLazyable(defaultValue);
@@ -1156,7 +1190,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return this.createLazyPromise<TOutput>(async () => {
             let matchedItem: TOutput | null = null;
             for await (const [index, item] of this.entries()) {
-                if (await predicateFn(item, index, this)) {
+                if (await resolveInvokable(predicateFn)(item, index, this)) {
                     if (matchedItem !== null) {
                         throw new MultipleItemsFoundCollectionError(
                             "Multiple items were found",
@@ -1198,7 +1232,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return this.createLazyPromise(async () => {
             let size = 0;
             for await (const item of this) {
-                if (await predicateFn(item, size, this)) {
+                if (await resolveInvokable(predicateFn)(item, size, this)) {
                     size++;
                 }
             }
@@ -1230,7 +1264,7 @@ export class AsyncIterableCollection<TInput = unknown>
     ): LazyPromise<number> {
         return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
-                if (await predicateFn(item, index, this)) {
+                if (await resolveInvokable(predicateFn)(item, index, this)) {
                     return index;
                 }
             }
@@ -1244,7 +1278,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return this.createLazyPromise(async () => {
             let matchedIndex = -1;
             for await (const [index, item] of this.entries()) {
-                if (await predicateFn(item, index, this)) {
+                if (await resolveInvokable(predicateFn)(item, index, this)) {
                     matchedIndex = index;
                 }
             }
@@ -1257,7 +1291,7 @@ export class AsyncIterableCollection<TInput = unknown>
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             for await (const [index, item] of this.entries()) {
-                await callback(item, index, this);
+                await resolveInvokable(callback)(item, index, this);
             }
         });
     }

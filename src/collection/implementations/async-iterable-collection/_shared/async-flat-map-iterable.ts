@@ -6,6 +6,7 @@ import {
     type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -24,7 +25,11 @@ export class AsyncFlatMapIterable<TInput, TOutput>
 
     async *[Symbol.asyncIterator](): AsyncIterator<TOutput> {
         for await (const [index, item] of this.collection.entries()) {
-            yield* await this.mapFn(item, index, this.collection);
+            yield* await resolveInvokable(this.mapFn)(
+                item,
+                index,
+                this.collection,
+            );
         }
     }
 }

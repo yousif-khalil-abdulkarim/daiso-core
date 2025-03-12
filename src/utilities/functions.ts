@@ -20,6 +20,7 @@ import type {
     OneOrMore,
     Lazy,
     AsyncLazy,
+    IInvokableObject,
 } from "@/utilities/types/_module.js";
 
 /**
@@ -183,13 +184,41 @@ export async function resolveAsyncFactoryable<TInput, TOutput>(
 /**
  * @internal
  */
+export function isInvokableObject<TValue, TArgs extends unknown[], TReturn>(
+    invokable: TValue | Invokable<TArgs, TReturn>,
+): invokable is IInvokableObject<TArgs, TReturn> {
+    const invokable_ = invokable as Record<string, unknown>;
+    return typeof invokable_["invoke"] === "function";
+}
+
+/**
+ * @internal
+ */
+export function isInvokableFn<TValue, TArgs extends unknown[], TReturn>(
+    invokable: TValue | Invokable<TArgs, TReturn>,
+): invokable is InvokableFn<TArgs, TReturn> {
+    return typeof invokable === "function";
+}
+
+/**
+ * @internal
+ */
+export function isInvokable<TValue, TArgs extends unknown[], TReturn>(
+    invokable: TValue | Invokable<TArgs, TReturn>,
+): invokable is Invokable<TArgs, TReturn> {
+    return isInvokableObject(invokable) || isInvokableFn(invokable);
+}
+
+/**
+ * @internal
+ */
 export function resolveInvokable<TArgs extends unknown[], TReturn>(
     invokable: Invokable<TArgs, TReturn>,
 ): InvokableFn<TArgs, TReturn> {
-    if (typeof invokable === "function") {
-        return invokable;
+    if (isInvokableObject(invokable)) {
+        return invokable.invoke.bind(invokable);
     }
-    return invokable.invoke.bind(invokable);
+    return invokable;
 }
 
 /**
@@ -206,7 +235,7 @@ export function isLazy<TValue>(
  */
 export function resolveLazyable<TValue>(lazyable: Lazyable<TValue>): TValue {
     if (isLazy(lazyable)) {
-        return lazyable();
+        return resolveInvokable(lazyable)();
     }
     return lazyable;
 }
@@ -230,7 +259,7 @@ export async function resolveAsyncLazyable<TValue>(
         if (lazyable instanceof LazyPromise) {
             return await lazyable;
         }
-        return await lazyable();
+        return await resolveInvokable(lazyable)();
     }
     return lazyable;
 }

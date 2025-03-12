@@ -1150,15 +1150,19 @@ describe("class: AsyncIterableCollection", () => {
         test("Should change the original collection", async () => {
             const arr = ["a", "ab", "abc"],
                 collection = new AsyncIterableCollection(arr).tap(
-                    (collection) => collection.map((item) => item.length),
+                    (collection) => {
+                        collection.map((item) => item.length);
+                    },
                 );
             expect(await collection.toArray()).toEqual(arr);
         });
         test("Should work with async tap function", async () => {
             const arr = ["a", "ab", "abc"],
                 collection = new AsyncIterableCollection(arr).tap(
-                    // eslint-disable-next-line @typescript-eslint/require-await
-                    (collection) => collection.map(async (item) => item.length),
+                    (collection) => {
+                        // eslint-disable-next-line @typescript-eslint/require-await
+                        collection.map(async (item) => item.length);
+                    },
                 );
             expect(await collection.toArray()).toEqual(arr);
         });
@@ -3516,7 +3520,9 @@ describe("class: AsyncIterableCollection", () => {
             const arr1 = [1, 2, 3],
                 collection = new AsyncIterableCollection(arr1),
                 arr2: number[] = [];
-            await collection.forEach((item) => arr2.push(item));
+            await collection.forEach((item) => {
+                arr2.push(item);
+            });
             expect(arr2).toEqual(arr1);
         });
         test("Should input correct indexes to predicate function", async () => {
@@ -3531,7 +3537,9 @@ describe("class: AsyncIterableCollection", () => {
             const arr1 = [1, 2, 3],
                 collection = new AsyncIterableCollection(arr1),
                 arr2: number[] = [];
-            await collection.forEach((item) => arr2.push(item));
+            await collection.forEach((item) => {
+                arr2.push(item);
+            });
             expect(arr2).toEqual(arr1);
             expect(arr2).toEqual(arr1);
         });
@@ -3540,7 +3548,9 @@ describe("class: AsyncIterableCollection", () => {
                 collection = new AsyncIterableCollection(arr1),
                 arr2: number[] = [];
             // eslint-disable-next-line @typescript-eslint/require-await
-            await collection.forEach(async (item) => arr2.push(item));
+            await collection.forEach(async (item) => {
+                arr2.push(item);
+            });
             expect(arr2).toEqual(arr1);
         });
     });

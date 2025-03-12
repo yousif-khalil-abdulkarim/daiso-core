@@ -6,6 +6,7 @@ import {
     type ICollection,
     type Map,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/functions.js";
 
 /**
  * @internal
@@ -26,7 +27,11 @@ export class GroupByIterable<TInput, TOutput = TInput>
     *[Symbol.iterator](): Iterator<[TOutput, ICollection<TInput>]> {
         const map = new Map<TOutput, Array<TInput>>();
         for (const [index, item] of this.collection.entries()) {
-            const key = this.selectFn(item, index, this.collection);
+            const key = resolveInvokable(this.selectFn)(
+                item,
+                index,
+                this.collection,
+            );
             let array = map.get(key);
             if (array === undefined) {
                 array = [];

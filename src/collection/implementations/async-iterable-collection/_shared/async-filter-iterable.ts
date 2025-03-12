@@ -6,6 +6,7 @@ import {
     type AsyncPredicate,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/functions.js";
 
 /**
  * @internal
@@ -24,7 +25,13 @@ export class AsyncFilterIterable<TInput, TOutput extends TInput>
 
     async *[Symbol.asyncIterator](): AsyncIterator<TOutput> {
         for await (const [index, item] of this.collection.entries()) {
-            if (await this.predicateFn(item, index, this.collection)) {
+            if (
+                await resolveInvokable(this.predicateFn)(
+                    item,
+                    index,
+                    this.collection,
+                )
+            ) {
                 yield item as TOutput;
             }
         }

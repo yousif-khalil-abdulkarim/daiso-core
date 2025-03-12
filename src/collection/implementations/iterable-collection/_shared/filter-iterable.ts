@@ -3,9 +3,10 @@
  */
 
 import {
-    type Predicate,
+    type PredicateInvokable,
     type ICollection,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/functions.js";
 
 /**
  * @internal
@@ -15,12 +16,18 @@ export class FilterIterable<TInput, TOutput extends TInput>
 {
     constructor(
         private collection: ICollection<TInput>,
-        private predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+        private predicateFn: PredicateInvokable<
+            TInput,
+            ICollection<TInput>,
+            TOutput
+        >,
     ) {}
 
     *[Symbol.iterator](): Iterator<TOutput> {
         for (const [index, item] of this.collection.entries()) {
-            if (this.predicateFn(item, index, this.collection)) {
+            if (
+                resolveInvokable(this.predicateFn)(item, index, this.collection)
+            ) {
                 yield item as TOutput;
             }
         }
