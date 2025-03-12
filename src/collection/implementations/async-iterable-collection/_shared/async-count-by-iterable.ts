@@ -15,9 +15,11 @@ export class AsyncCountByIterable<TInput, TOutput = TInput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private callback: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput> = (
-            item,
-        ) => item as unknown as TOutput,
+        private callback: AsyncMap<
+            TInput,
+            IAsyncCollection<TInput>,
+            TOutput
+        > = (item) => item as unknown as TOutput,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<[TOutput, number]> {

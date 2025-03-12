@@ -25,21 +25,21 @@ import {
 } from "@/cache/contracts/_module-exports.js";
 import { type IGroupableCache } from "@/cache/contracts/_module-exports.js";
 import {
-    isFactory,
+    isAsyncFactory,
+    resolveAsyncFactoryable,
     resolveAsyncLazyable,
-    resolveFactoryable,
 } from "@/utilities/_module-exports.js";
 import {
-    type AsyncLazyable,
+    type NEW_AsyncLazyable,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
 import {
     type NoneFunc,
     type TimeSpan,
     KeyPrefixer,
-    type Factoryable,
+    type NEW_AsyncFactoryable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IFactoryObject,
+    type NEW_IAsyncFactoryObject,
 } from "@/utilities/_module-exports.js";
 import type {
     BackoffPolicy,
@@ -98,7 +98,7 @@ export type CacheSettingsBase = LazyPromiseSettingsBase & {
  * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
-export type CacheAdapterFactoryable<TType> = Factoryable<
+export type CacheAdapterFactoryable<TType> = NEW_AsyncFactoryable<
     string,
     ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>
 >;
@@ -131,7 +131,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         factoryable: CacheAdapterFactoryable<TType>,
         rootPrefix: string,
     ): Promise<ICacheAdapter<TType>> {
-        const adapter = await resolveFactoryable(factoryable, rootPrefix);
+        const adapter = await resolveAsyncFactoryable(factoryable, rootPrefix);
         return Cache.resolveCacheAdapter(adapter);
     }
 
@@ -594,7 +594,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     getOr(
         key: OneOrMore<string>,
-        defaultValue: AsyncLazyable<NoneFunc<TType>>,
+        defaultValue: NEW_AsyncLazyable<NoneFunc<TType>>,
     ): LazyPromise<TType> {
         return this.createLazyPromise<TType>(async () => {
             const value = await this.get(key);
@@ -681,14 +681,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      */
     getOrAdd(
         key: OneOrMore<string>,
-        valueToAdd: AsyncLazyable<NoneFunc<TType>>,
+        valueToAdd: NEW_AsyncLazyable<NoneFunc<TType>>,
         ttl?: TimeSpan | null,
     ): LazyPromise<TType> {
         return this.createLazyPromise<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
                 const simplifiedValueToAdd =
-                    await resolveAsyncLazyable(valueToAdd);
+                    await resolveAsyncLazyable<NoneFunc<TType>>(valueToAdd);
                 await this.add(key, simplifiedValueToAdd, ttl);
                 return simplifiedValueToAdd;
             }
@@ -1007,7 +1007,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                         group: this.getGroup(),
                     }),
                 );
-                if (isFactory(this.adapterFactoryable)) {
+                if (isAsyncFactory(this.adapterFactoryable)) {
                     await adapter.removeAll();
                     promise.defer();
                     return;

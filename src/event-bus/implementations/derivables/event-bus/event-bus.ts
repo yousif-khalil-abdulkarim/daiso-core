@@ -26,7 +26,7 @@ import {
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type {
-    Factoryable,
+    NEW_AsyncFactoryable,
     IKeyPrefixer,
     OneOrMore,
     TimeSpan,
@@ -34,10 +34,10 @@ import type {
 } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
-    resolveFactoryable,
+    resolveAsyncFactoryable,
     resolveInvokable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IFactoryObject,
+    type NEW_IAsyncFactoryObject,
 } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 
@@ -55,7 +55,10 @@ export type EventBusSettingsBase = LazyPromiseSettingsBase & {
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
-export type EventBusAdapterFactoryable = Factoryable<string, IEventBusAdapter>;
+export type EventBusAdapterFactoryable = NEW_AsyncFactoryable<
+    string,
+    IEventBusAdapter
+>;
 
 /**
  *
@@ -174,7 +177,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         this.retryPolicy = retryPolicy;
         this.retryTimeout = retryTimeout;
         this.adapterPromise = new LazyPromise(() =>
-            resolveFactoryable(
+            resolveAsyncFactoryable(
                 this.adapterFactoryable,
                 this.keyPrefixer.keyPrefix,
             ),

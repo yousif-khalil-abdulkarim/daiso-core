@@ -29,7 +29,7 @@ import type {
 } from "@/collection/contracts/collection.errors.js";
 import type {
     TimeSpan,
-    AsyncLazyable,
+    NEW_AsyncLazyable,
     AsyncIterableValue,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
@@ -1729,7 +1729,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * ```
      */
     firstOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput | TExtended>;
 
@@ -1890,7 +1890,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * ```
      */
     lastOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
     ): LazyPromise<TOutput | TExtended>;
 
@@ -2027,7 +2027,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * ```
      */
     beforeOr<TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | TExtended>;
 
@@ -2152,7 +2152,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * ```
      */
     afterOr<TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | TExtended>;
 

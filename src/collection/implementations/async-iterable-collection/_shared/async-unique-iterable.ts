@@ -15,9 +15,11 @@ export class AsyncUniqueIterable<TInput, TOutput>
 {
     constructor(
         private collection: IAsyncCollection<TInput>,
-        private callback: AsyncMap<TInput, IAsyncCollection<TInput>, TOutput> = (
-            item,
-        ) => item as unknown as TOutput,
+        private callback: AsyncMap<
+            TInput,
+            IAsyncCollection<TInput>,
+            TOutput
+        > = (item) => item as unknown as TOutput,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {

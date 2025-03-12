@@ -24,7 +24,11 @@ export class AsyncChangeIterable<
             IAsyncCollection<TInput>,
             TFilterOutput
         >,
-        private mapFn: AsyncMap<TFilterOutput, IAsyncCollection<TInput>, TMapOutput>,
+        private mapFn: AsyncMap<
+            TFilterOutput,
+            IAsyncCollection<TInput>,
+            TMapOutput
+        >,
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<

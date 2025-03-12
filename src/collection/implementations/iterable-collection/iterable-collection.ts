@@ -58,7 +58,7 @@ import {
     SliceIterable,
     RepeatIterable,
 } from "@/collection/implementations/iterable-collection/_shared/_module.js";
-import { type Lazyable } from "@/utilities/_module-exports.js";
+import { type NEW_Lazyable } from "@/utilities/_module-exports.js";
 import { resolveLazyable } from "@/utilities/_module-exports.js";
 
 /**
@@ -858,7 +858,7 @@ export class IterableCollection<TInput = unknown>
     }
 
     firstOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: Lazyable<TExtended>,
+        defaultValue: NEW_Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput> = () =>
             true,
     ): TOutput | TExtended {
@@ -889,7 +889,7 @@ export class IterableCollection<TInput = unknown>
     }
 
     lastOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: Lazyable<TExtended>,
+        defaultValue: NEW_Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>, TOutput> = () =>
             true,
     ): TOutput | TExtended {
@@ -922,7 +922,7 @@ export class IterableCollection<TInput = unknown>
     }
 
     beforeOr<TExtended = TInput>(
-        defaultValue: Lazyable<TExtended>,
+        defaultValue: NEW_Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>>,
     ): TInput | TExtended {
         let beforeItem: TInput | null = null,
@@ -950,7 +950,7 @@ export class IterableCollection<TInput = unknown>
     }
 
     afterOr<TExtended = TInput>(
-        defaultValue: Lazyable<TExtended>,
+        defaultValue: NEW_Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>>,
     ): TInput | TExtended {
         let hasMatched = false,

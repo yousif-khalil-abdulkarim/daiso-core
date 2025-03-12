@@ -3,7 +3,7 @@
  */
 
 import type {
-    LazyPromiseable,
+    NEW_AsyncLazy,
     Result,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
@@ -51,7 +51,7 @@ export type ILock = ILockListenable & {
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
     run<TValue = void>(
-        asyncFn: LazyPromiseable<TValue>,
+        asyncFn: NEW_AsyncLazy<TValue>,
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
 
     /**
@@ -61,7 +61,7 @@ export type ILock = ILockListenable & {
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
      */
     runOrFail<TValue = void>(
-        asyncFn: LazyPromiseable<TValue>,
+        asyncFn: NEW_AsyncLazy<TValue>,
     ): LazyPromise<TValue>;
 
     /**
@@ -70,7 +70,7 @@ export type ILock = ILockListenable & {
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
     runBlocking<TValue = void>(
-        asyncFn: LazyPromiseable<TValue>,
+        asyncFn: NEW_AsyncLazy<TValue>,
         settings?: AquireBlockingSettings,
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
 
@@ -81,7 +81,7 @@ export type ILock = ILockListenable & {
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
      */
     runBlockingOrFail<TValue = void>(
-        asyncFn: LazyPromiseable<TValue>,
+        asyncFn: NEW_AsyncLazy<TValue>,
         settings?: AquireBlockingSettings,
     ): LazyPromise<TValue>;
 

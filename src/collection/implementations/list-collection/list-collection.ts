@@ -25,7 +25,7 @@ import {
     EmptyCollectionError,
     type CrossJoinResult,
 } from "@/collection/contracts/_module-exports.js";
-import { type Lazyable } from "@/utilities/_module-exports.js";
+import { type NEW_Lazyable } from "@/utilities/_module-exports.js";
 import { resolveLazyable } from "@/utilities/_module-exports.js";
 
 /**
@@ -960,7 +960,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     firstOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: Lazyable<TExtended>,
+        defaultValue: NEW_Lazyable<TExtended>,
         predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | TExtended {
         if (predicateFn) {
@@ -995,7 +995,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     lastOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: Lazyable<TExtended>,
+        defaultValue: NEW_Lazyable<TExtended>,
         predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
     ): TOutput | TExtended {
         if (predicateFn) {
@@ -1032,7 +1032,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     beforeOr<TExtended = TInput>(
-        defaultValue: Lazyable<TExtended>,
+        defaultValue: NEW_Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>>,
     ): TInput | TExtended {
         for (const [index, item] of this.array.entries()) {
@@ -1057,7 +1057,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     afterOr<TExtended = TInput>(
-        defaultValue: Lazyable<TExtended>,
+        defaultValue: NEW_Lazyable<TExtended>,
         predicateFn: Predicate<TInput, ICollection<TInput>>,
     ): TInput | TExtended {
         for (const [index, item] of this.array.entries()) {

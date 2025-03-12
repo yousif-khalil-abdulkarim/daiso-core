@@ -63,7 +63,7 @@ import {
 } from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
 import {
     type AsyncIterableValue,
-    type AsyncLazyable,
+    type NEW_AsyncLazyable,
 } from "@/utilities/_module-exports.js";
 import { resolveAsyncLazyable } from "@/utilities/_module-exports.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
@@ -1009,7 +1009,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     firstOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
@@ -1045,7 +1045,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     lastOr<TOutput extends TInput, TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<
             TInput,
             IAsyncCollection<TInput>,
@@ -1085,7 +1085,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     beforeOr<TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | TExtended> {
         return this.createLazyPromise<TInput | TExtended>(async () => {
@@ -1121,7 +1121,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     afterOr<TExtended = TInput>(
-        defaultValue: AsyncLazyable<TExtended>,
+        defaultValue: NEW_AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<TInput | TExtended> {
         return this.createLazyPromise(async () => {
