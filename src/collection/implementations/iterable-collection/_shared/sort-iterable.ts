@@ -3,7 +3,7 @@
  */
 
 import { type Comparator } from "@/collection/contracts/_module-exports.js";
-import { resolveInvokable } from "@/utilities/functions.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
