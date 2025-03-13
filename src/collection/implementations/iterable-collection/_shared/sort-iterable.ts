@@ -3,6 +3,7 @@
  */
 
 import { type Comparator } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -14,6 +15,10 @@ export class SortIterable<TInput> implements Iterable<TInput> {
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
-        yield* [...this.iterable].sort(this.comparator);
+        if (this.comparator === undefined) {
+            yield* [...this.iterable].sort();
+            return;
+        }
+        yield* [...this.iterable].sort(resolveInvokable(this.comparator));
     }
 }

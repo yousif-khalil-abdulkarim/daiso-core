@@ -6,6 +6,7 @@ import {
     type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -25,7 +26,11 @@ export class AsyncCountByIterable<TInput, TOutput = TInput>
     async *[Symbol.asyncIterator](): AsyncIterator<[TOutput, number]> {
         const map = new Map<TOutput, number>();
         for await (const [index, item] of this.collection.entries()) {
-            const key = await this.callback(item, index, this.collection);
+            const key = await resolveInvokable(this.callback)(
+                item,
+                index,
+                this.collection,
+            );
             if (!map.has(key)) {
                 map.set(key, 0);
             }

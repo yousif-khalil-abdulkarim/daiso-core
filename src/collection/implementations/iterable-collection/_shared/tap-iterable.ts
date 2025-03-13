@@ -6,6 +6,7 @@ import {
     type ICollection,
     type Tap,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -17,7 +18,7 @@ export class TapIterable<TInput> implements Iterable<TInput> {
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
-        this.callback(this.collection);
+        resolveInvokable(this.callback)(this.collection);
         yield* this.collection;
     }
 }

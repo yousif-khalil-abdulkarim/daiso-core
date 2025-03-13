@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-import { resolveOneOrMoreStr } from "@/utilities/functions.js";
+import { resolveOneOrMoreStr } from "@/utilities//_module-exports.js";
 import type { AtLeastOne, OneOrMore } from "@/utilities/types/_module.js";
 import type {
     IKey,

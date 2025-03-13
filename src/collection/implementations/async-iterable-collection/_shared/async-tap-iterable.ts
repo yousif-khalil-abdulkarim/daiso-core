@@ -6,6 +6,7 @@ import {
     type AsyncTap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -17,7 +18,7 @@ export class AsyncTapIterable<TInput> implements AsyncIterable<TInput> {
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
-        await this.callback(this.collection);
+        await resolveInvokable(this.callback)(this.collection);
         yield* this.collection;
     }
 }

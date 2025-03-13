@@ -3,10 +3,11 @@
  */
 
 import {
-    type Predicate,
+    type PredicateInvokable,
     type ICollection,
     type Map,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -16,7 +17,7 @@ export class ChangeIterable<TInput, TFilterOutput extends TInput, TMapOutput>
 {
     constructor(
         private collection: ICollection<TInput>,
-        private predicateFn: Predicate<
+        private predicateFn: PredicateInvokable<
             TInput,
             ICollection<TInput>,
             TFilterOutput
@@ -26,8 +27,14 @@ export class ChangeIterable<TInput, TFilterOutput extends TInput, TMapOutput>
 
     *[Symbol.iterator](): Iterator<TInput | TFilterOutput | TMapOutput> {
         for (const [index, item] of this.collection.entries()) {
-            if (this.predicateFn(item, index, this.collection)) {
-                yield this.mapFn(item as TFilterOutput, index, this.collection);
+            if (
+                resolveInvokable(this.predicateFn)(item, index, this.collection)
+            ) {
+                yield resolveInvokable(this.mapFn)(
+                    item as TFilterOutput,
+                    index,
+                    this.collection,
+                );
             } else {
                 yield item;
             }

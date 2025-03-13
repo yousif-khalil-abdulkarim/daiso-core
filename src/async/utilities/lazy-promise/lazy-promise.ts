@@ -4,7 +4,7 @@
 
 import type { BackoffPolicy } from "@/async/backof-policies/_module.js";
 import type {
-    NEW_AsyncLazy,
+    AsyncLazy,
     Promisable,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
@@ -196,7 +196,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * await promise;
      */
     constructor(
-        asyncFn: NEW_AsyncLazy<TValue>,
+        asyncFn: AsyncLazy<TValue>,
         settings: LazyPromiseSettings<TValue> = {},
     ) {
         this.asyncFn = () => resolveAsyncLazyable(asyncFn);

@@ -6,6 +6,7 @@ import {
     type AsyncModifier,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -24,7 +25,7 @@ export class AsyncWhenIterable<TInput, TExtended>
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput | TExtended> {
         if (await this.condition()) {
-            yield* await this.callback(this.collection);
+            yield* await resolveInvokable(this.callback)(this.collection);
             return;
         }
         yield* this.collection as IAsyncCollection<TInput | TExtended>;

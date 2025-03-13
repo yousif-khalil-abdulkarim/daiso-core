@@ -4,7 +4,7 @@
 
 import type {
     Comparator,
-    Predicate,
+    PredicateInvokable,
     ForEach,
     Map,
     Modifier,
@@ -28,7 +28,7 @@ import type {
     EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
-import type { NEW_Lazyable } from "@/utilities/_module-exports.js";
+import type { Lazyable } from "@/utilities/_module-exports.js";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -84,7 +84,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         filter<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): ICollection<TOutput>;
 
         /**
@@ -104,7 +108,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         reject<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): ICollection<Exclude<TInput, TOutput>>;
 
         /**
@@ -261,7 +269,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         change<TFilterOutput extends TInput, TMapOutput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TFilterOutput>,
+            predicateFn: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TFilterOutput
+            >,
             mapFn: Map<TFilterOutput, ICollection<TInput>, TMapOutput>,
         ): ICollection<TInput | TFilterOutput | TMapOutput>;
 
@@ -475,7 +487,9 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        percentage(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
+        percentage(
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+        ): number;
 
         /**
          * The <i>some</i> method determines whether at least one item in the collection matches <i>predicateFn</i>.
@@ -493,7 +507,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         some<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): boolean;
 
         /**
@@ -512,7 +530,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         every<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): boolean;
 
         /**
@@ -564,7 +586,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         takeUntil(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): ICollection<TInput>;
 
         /**
@@ -584,7 +606,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         takeWhile(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): ICollection<TInput>;
 
         /**
@@ -622,7 +644,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         skipUntil(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): ICollection<TInput>;
 
         /**
@@ -642,7 +664,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         skipWhile(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): ICollection<TInput>;
 
         /**
@@ -846,7 +868,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         chunkWhile(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): ICollection<ICollection<TInput>>;
 
         /**
@@ -914,7 +936,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         partition(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): ICollection<ICollection<TInput>>;
 
         /**
@@ -1417,7 +1439,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         insertBefore<TExtended = TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
             iterable: Iterable<TInput | TExtended>,
         ): ICollection<TInput | TExtended>;
 
@@ -1438,7 +1460,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         insertAfter<TExtended = TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
             iterable: Iterable<TInput | TExtended>,
         ): ICollection<TInput | TExtended>;
 
@@ -1649,7 +1671,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * // 3
          */
         first<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): TOutput | null;
 
         /**
@@ -1705,8 +1731,12 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         firstOr<TOutput extends TInput, TExtended = TInput>(
-            defaultValue: NEW_Lazyable<TExtended>,
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            defaultValue: Lazyable<TExtended>,
+            predicateFn?: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): TOutput | TExtended;
 
         /**
@@ -1751,7 +1781,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         firstOrFail<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): TOutput;
 
         /**
@@ -1795,7 +1829,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         last<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): TOutput | null;
 
         /**
@@ -1851,8 +1889,12 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         lastOr<TOutput extends TInput, TExtended = TInput>(
-            defaultValue: NEW_Lazyable<TExtended>,
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            defaultValue: Lazyable<TExtended>,
+            predicateFn?: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): TOutput | TExtended;
 
         /**
@@ -1897,7 +1939,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         lastOrFail<TOutput extends TInput>(
-            predicateFn?: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn?: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): TOutput;
 
         /**
@@ -1929,7 +1975,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         before(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): TInput | null;
 
         /**
@@ -1973,8 +2019,8 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         beforeOr<TExtended = TInput>(
-            defaultValue: NEW_Lazyable<TExtended>,
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            defaultValue: Lazyable<TExtended>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): TInput | TExtended;
 
         /**
@@ -2007,7 +2053,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         beforeOrFail(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): TInput;
 
         /**
@@ -2039,7 +2085,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         after(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): TInput | null;
 
         /**
@@ -2083,8 +2129,8 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         afterOr<TExtended = TInput>(
-            defaultValue: NEW_Lazyable<TExtended>,
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            defaultValue: Lazyable<TExtended>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): TInput | TExtended;
 
         /**
@@ -2117,7 +2163,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         afterOrFail(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): TInput;
 
         /**
@@ -2163,7 +2209,11 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         sole<TOutput extends TInput>(
-            predicateFn: Predicate<TInput, ICollection<TInput>, TOutput>,
+            predicateFn: PredicateInvokable<
+                TInput,
+                ICollection<TInput>,
+                TOutput
+            >,
         ): TOutput;
 
         /**
@@ -2199,7 +2249,9 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        count(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
+        count(
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+        ): number;
 
         /**
          * The <i>size</i> returns the size of the collection.
@@ -2232,7 +2284,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         searchFirst(
-            predicateFn: Predicate<TInput, ICollection<TInput>>,
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
         ): number;
 
         /**
@@ -2250,7 +2302,9 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * }
          * ```
          */
-        searchLast(predicateFn: Predicate<TInput, ICollection<TInput>>): number;
+        searchLast(
+            predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
+        ): number;
 
         /**
          * The <i>forEach</i> method iterates through all items in the collection.

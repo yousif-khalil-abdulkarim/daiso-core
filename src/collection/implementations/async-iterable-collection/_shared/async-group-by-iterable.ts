@@ -6,7 +6,10 @@ import {
     type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
-import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
+import {
+    resolveInvokable,
+    type AsyncIterableValue,
+} from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -32,7 +35,11 @@ export class AsyncGroupByIterable<TInput, TOutput = TInput>
     > {
         const map = new Map<TOutput, Array<TInput>>();
         for await (const [index, item] of this.collection.entries()) {
-            const key = await this.selectFn(item, index, this.collection);
+            const key = await resolveInvokable(this.selectFn)(
+                item,
+                index,
+                this.collection,
+            );
             let array = map.get(key);
             if (array === undefined) {
                 array = [];

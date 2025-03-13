@@ -2,17 +2,16 @@
  * @module Collection
  */
 
-import type { Promisable } from "@/utilities/_module-exports.js";
+import type { Invokable, Promisable } from "@/utilities/_module-exports.js";
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type PredicateFn<TInput, TCollection> = (
-    item: TInput,
-    index: number,
-    collection: TCollection,
-) => boolean;
+export type PredicateFn<TInput, TCollection> = Invokable<
+    [item: TInput, index: number, collection: TCollection],
+    boolean
+>;
 
 /**
  *
@@ -28,19 +27,50 @@ export type PredicateGuardFn<
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type Predicate<TInput, TCollection, TOutput extends TInput = TInput> =
-    | PredicateFn<TInput, TCollection>
-    | PredicateGuardFn<TInput, TCollection, TOutput>;
+export type PredicateGuardInvokableObject<
+    TInput,
+    TCollection,
+    TOutput extends TInput = TInput,
+> = {
+    invoke(
+        item: TInput,
+        index: number,
+        collection: TCollection,
+    ): item is TOutput;
+};
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  */
-export type AsyncPredicateFn<TInput, TCollection> = (
-    item: TInput,
-    index: number,
-    collection: TCollection,
-) => Promisable<boolean>;
+export type PredicateGuardInvokable<
+    TInput,
+    TCollection,
+    TOutput extends TInput = TInput,
+> =
+    | PredicateGuardFn<TInput, TCollection, TOutput>
+    | PredicateGuardInvokableObject<TInput, TCollection, TOutput>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ */
+export type PredicateInvokable<
+    TInput,
+    TCollection,
+    TOutput extends TInput = TInput,
+> =
+    | PredicateFn<TInput, TCollection>
+    | PredicateGuardInvokable<TInput, TCollection, TOutput>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ */
+export type AsyncPredicateInvokable<TInput, TCollection> = Invokable<
+    [item: TInput, index: number, collection: TCollection],
+    Promisable<boolean>
+>;
 
 /**
  *
@@ -51,5 +81,5 @@ export type AsyncPredicate<
     TCollection,
     TOutput extends TInput = TInput,
 > =
-    | AsyncPredicateFn<TInput, TCollection>
-    | PredicateGuardFn<TInput, TCollection, TOutput>;
+    | AsyncPredicateInvokable<TInput, TCollection>
+    | PredicateGuardInvokable<TInput, TCollection, TOutput>;

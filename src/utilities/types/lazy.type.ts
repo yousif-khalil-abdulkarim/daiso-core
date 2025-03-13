@@ -4,35 +4,34 @@
 
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { Promisable } from "@/utilities/types/promiseable.type.js";
+import type { Invokable } from "@/utilities/types/invokable.type.js";
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type NEW_Lazy<TValue> = () => TValue;
+export type Lazy<TValue> = Invokable<[], TValue>;
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type NEW_Lazyable<TValue> = TValue | NEW_Lazy<TValue>;
+export type Lazyable<TValue> = TValue | Lazy<TValue>;
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type NEW_AsyncLazy_<TValue> = () => Promisable<TValue>;
+export type AsyncLazy_<TValue> = Invokable<[], Promisable<TValue>>;
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type NEW_AsyncLazy<TValue> =
-    | NEW_AsyncLazy_<TValue>
-    | LazyPromise<TValue>;
+export type AsyncLazy<TValue> = AsyncLazy_<TValue> | LazyPromise<TValue>;
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  */
-export type NEW_AsyncLazyable<TValue> = TValue | NEW_AsyncLazy<TValue>;
+export type AsyncLazyable<TValue> = TValue | AsyncLazy<TValue>;

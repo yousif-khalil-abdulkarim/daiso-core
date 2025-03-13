@@ -3,9 +3,10 @@
  */
 
 import {
-    type Predicate,
+    type PredicateInvokable,
     type ICollection,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -13,12 +14,14 @@ import {
 export class TakeUntilIterable<TInput> implements Iterable<TInput> {
     constructor(
         private collection: ICollection<TInput>,
-        private predicateFn: Predicate<TInput, ICollection<TInput>>,
+        private predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ) {}
 
     *[Symbol.iterator](): Iterator<TInput> {
         for (const [index, item] of this.collection.entries()) {
-            if (this.predicateFn(item, index, this.collection)) {
+            if (
+                resolveInvokable(this.predicateFn)(item, index, this.collection)
+            ) {
                 break;
             }
             yield item;

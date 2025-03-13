@@ -7,6 +7,7 @@ import {
     type AsyncMap,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -35,8 +36,18 @@ export class AsyncChangeIterable<
         TInput | TFilterOutput | TMapOutput
     > {
         for await (const [index, item] of this.collection.entries()) {
-            if (await this.predicateFn(item, index, this.collection)) {
-                yield this.mapFn(item as TFilterOutput, index, this.collection);
+            if (
+                await resolveInvokable(this.predicateFn)(
+                    item,
+                    index,
+                    this.collection,
+                )
+            ) {
+                yield resolveInvokable(this.mapFn)(
+                    item as TFilterOutput,
+                    index,
+                    this.collection,
+                );
             } else {
                 yield item;
             }

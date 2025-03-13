@@ -6,7 +6,10 @@ import {
     type AsyncPredicate,
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
-import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
+import {
+    resolveInvokable,
+    type AsyncIterableValue,
+} from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -26,7 +29,13 @@ export class AsyncPartionIterable<TInput>
         const arrayA: TInput[] = [];
         const arrayB: TInput[] = [];
         for await (const [index, item] of this.collection.entries()) {
-            if (await this.predicateFn(item, index, this.collection)) {
+            if (
+                await resolveInvokable(this.predicateFn)(
+                    item,
+                    index,
+                    this.collection,
+                )
+            ) {
                 arrayA.push(item);
             } else {
                 arrayB.push(item);
