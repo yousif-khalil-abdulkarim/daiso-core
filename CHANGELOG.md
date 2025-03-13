@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.30.0
+
+### Minor Changes
+
+-   45bc897: Updated <i>ICollection</i> and <i>IAsyncCollection</i> to support <i>Invokable</i> types, for example allowing <i>IInvokableObject</i> instances as predicates.
+
 ## 0.29.0
 
 ### Minor Changes
