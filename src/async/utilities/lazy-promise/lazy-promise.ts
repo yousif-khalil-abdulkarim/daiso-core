@@ -5,6 +5,8 @@
 import type { BackoffPolicy } from "@/async/backof-policies/_module.js";
 import type {
     AsyncLazy,
+    Invokable,
+    InvokableFn,
     Promisable,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
@@ -23,6 +25,7 @@ import {
 import {
     removeUndefinedProperties,
     resolveAsyncLazyable,
+    resolveInvokable,
 } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/utilities/_module.js";
 
@@ -105,7 +108,7 @@ export type LazyPromiseSettings<TValue = unknown> =
  */
 export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
-     * The <i>wrapFn</i> is convience method used for wrapping a async method with a <i>LazyPromise</i>.
+     * The <i>wrapFn</i> is convience method used for wrapping a sync or async function with a <i>LazyPromise</i>.
      * @example
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
@@ -120,11 +123,14 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * ```
      */
     static wrapFn<TArgs extends unknown[], TReturn>(
-        fn: (...args: TArgs) => PromiseLike<TReturn>,
+        fn: Invokable<TArgs, Promisable<TReturn>>,
         settings?: LazyPromiseSettings<TReturn>,
-    ) {
-        return (...parameters: TArgs): PromiseLike<TReturn> =>
-            new LazyPromise<TReturn>(() => fn(...parameters), settings);
+    ): InvokableFn<TArgs, LazyPromise<TReturn>> {
+        return (...parameters) =>
+            new LazyPromise<TReturn>(
+                () => resolveInvokable(fn)(...parameters),
+                settings,
+            );
     }
 
     /**
