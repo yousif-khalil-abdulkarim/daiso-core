@@ -1,5 +1,15 @@
 # @daiso-tech/core
 
+## 0.31.0
+
+### Minor Changes
+
+-   a897a71: Updated the <i>LazyPromise</i> <i>wrapFn</i> method to support <i>Invokable</i> tyeps as an argument
+
+### Patch Changes
+
+-   a897a71: Fixed a typing bug in the static <i>LazyPromise</i> wrap method.
+
 ## 0.30.0
 
 ### Minor Changes
