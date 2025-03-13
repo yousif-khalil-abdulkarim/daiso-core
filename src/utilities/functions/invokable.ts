@@ -7,6 +7,7 @@ import type {
     InvokableFn,
     IInvokableObject,
 } from "@/utilities/types/_module.js";
+import { isNullable } from "@/utilities/functions/is-nullable.js";
 
 /**
  * @internal
@@ -15,7 +16,7 @@ export function isInvokableObject<TValue, TArgs extends unknown[], TReturn>(
     invokable: TValue | Invokable<TArgs, TReturn>,
 ): invokable is IInvokableObject<TArgs, TReturn> {
     const invokable_ = invokable as Record<string, unknown>;
-    return typeof invokable_["invoke"] === "function";
+    return !isNullable(invokable) && typeof invokable_["invoke"] === "function";
 }
 
 /**
