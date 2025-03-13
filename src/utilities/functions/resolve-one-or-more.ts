@@ -14,3 +14,18 @@ export function resolveOneOrMore<TType>(value: OneOrMore<TType>): TType[] {
     }
     return [value];
 }
+
+/**
+ * @internal
+ */
+export function resolveOneOrMoreStr(
+    name: OneOrMore<string>,
+    joinStr = "/",
+): string {
+    if (typeof name === "string") {
+        return name;
+    }
+    return resolveOneOrMore(name)
+        .filter((str) => str.length > 0)
+        .join(joinStr);
+}

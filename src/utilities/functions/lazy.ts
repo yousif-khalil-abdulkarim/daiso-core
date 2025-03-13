@@ -9,7 +9,10 @@ import type {
     Lazy,
     AsyncLazy,
 } from "@/utilities/types/_module.js";
-import { resolveInvokable } from "@/utilities/functions/invokable.js";
+import {
+    isInvokable,
+    resolveInvokable,
+} from "@/utilities/functions/invokable.js";
 
 /**
  * @internal
@@ -17,7 +20,16 @@ import { resolveInvokable } from "@/utilities/functions/invokable.js";
 export function isLazy<TValue>(
     lazyable: Lazyable<TValue>,
 ): lazyable is Lazy<TValue> {
-    return typeof lazyable === "function";
+    return isInvokable(lazyable);
+}
+
+/**
+ * @internal
+ */
+export function isAsyncLazy<TValue>(
+    lazyable: AsyncLazyable<TValue>,
+): lazyable is AsyncLazy<TValue> {
+    return isInvokable(lazyable) || lazyable instanceof LazyPromise;
 }
 
 /**
@@ -28,15 +40,6 @@ export function resolveLazyable<TValue>(lazyable: Lazyable<TValue>): TValue {
         return resolveInvokable(lazyable)();
     }
     return lazyable;
-}
-
-/**
- * @internal
- */
-export function isAsyncLazy<TValue>(
-    lazyable: AsyncLazyable<TValue>,
-): lazyable is AsyncLazy<TValue> {
-    return typeof lazyable === "function" || lazyable instanceof LazyPromise;
 }
 
 /**

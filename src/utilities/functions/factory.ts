@@ -38,35 +38,10 @@ export function isFactoryObject<TInput, TOutput>(
 /**
  * @internal
  */
-export function resolveFactory<TInput, TOutput>(
-    factory: Factory<TInput, TOutput>,
-): FactoryFn<TInput, TOutput> {
-    if (isFactoryObject(factory)) {
-        return factory.use.bind(factory);
-    }
-    return factory;
-}
-
-/**
- * @internal
- */
 export function isFactory<TInput, TOutput>(
     factoryable: Factoryable<TInput, TOutput>,
 ): factoryable is Factory<TInput, TOutput> {
     return isFactoryFn(factoryable) || isFactoryObject(factoryable);
-}
-
-/**
- * @internal
- */
-export function resolveFactoryable<TInput, TOutput>(
-    factoryable: Factoryable<TInput, TOutput>,
-    input: TInput,
-): TOutput {
-    if (isFactory(factoryable)) {
-        return resolveFactory(factoryable)(input);
-    }
-    return factoryable;
 }
 
 /**
@@ -94,6 +69,27 @@ export function isAsyncFactoryObject<TInput, TOutput>(
 /**
  * @internal
  */
+export function isAsyncFactory<TInput, TOutput>(
+    factoryable: AsyncFactoryable<TInput, TOutput>,
+): factoryable is AsyncFactory<TInput, TOutput> {
+    return isAsyncFactoryFn(factoryable) || isAsyncFactoryObject(factoryable);
+}
+
+/**
+ * @internal
+ */
+export function resolveFactory<TInput, TOutput>(
+    factory: Factory<TInput, TOutput>,
+): FactoryFn<TInput, TOutput> {
+    if (isFactoryObject(factory)) {
+        return factory.use.bind(factory);
+    }
+    return factory;
+}
+
+/**
+ * @internal
+ */
 export function resolveAsyncFactory<TInput, TOutput>(
     factory: AsyncFactory<TInput, TOutput>,
 ): AsyncFactoryFn<TInput, TOutput> {
@@ -106,10 +102,14 @@ export function resolveAsyncFactory<TInput, TOutput>(
 /**
  * @internal
  */
-export function isAsyncFactory<TInput, TOutput>(
-    factoryable: AsyncFactoryable<TInput, TOutput>,
-): factoryable is AsyncFactory<TInput, TOutput> {
-    return isAsyncFactoryFn(factoryable) || isAsyncFactoryObject(factoryable);
+export function resolveFactoryable<TInput, TOutput>(
+    factoryable: Factoryable<TInput, TOutput>,
+    input: TInput,
+): TOutput {
+    if (isFactory(factoryable)) {
+        return resolveFactory(factoryable)(input);
+    }
+    return factoryable;
 }
 
 /**
