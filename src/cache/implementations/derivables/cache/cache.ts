@@ -39,7 +39,7 @@ import {
     KeyPrefixer,
     type AsyncFactoryable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IAsyncFactoryObject,
+    type IFactoryObject,
 } from "@/utilities/_module-exports.js";
 import type {
     BackoffPolicy,
@@ -184,15 +184,15 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * @example
      * ```ts
      * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
+     * import type { IDatabaseCacheAdapter } from "@daiso-tech/core/cache/contracts";
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache";
-     * import { KeyPrefixer, type ISqliteDatabase, type FactoryFn } from "@daiso-tech/core/utilities";
+     * import { KeyPrefixer, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
      *
-     * function cahceAdapterFactory(database: ISqliteDatabase, serde: ISerde<string>): FactoryFn<string, ICacheAdapter> {
+     * function cahceAdapterFactory(database: ISqliteDatabase, serde: ISerde<string>): AsyncFactoryFn<string, IDatabaseCacheAdapter> {
      *   return async (prefix) => {
      *     const cacheAdapter = new SqliteCacheAdapter({
      *       database,
@@ -216,18 +216,18 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * @example
      * ```ts
      * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import type { ICacheAdapter } from "@daiso-tech/core/cache/contracts";
+     * import type { IDatabaseCacheAdapter } from "@daiso-tech/core/cache/contracts";
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache";
-     * import { KeyPrefixer, type ISqliteDatabase, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
+     * import { KeyPrefixer, type ISqliteDatabase, type IAsyncFactoryObject } from "@daiso-tech/core/utilities";
      *
-     * class CahceAdapterFactory implements IFactoryObject<string, ICacheAdapter> {
+     * class CahceAdapterFactory implements IAsyncFactoryObject<string, IDatabaseCacheAdapter> {
      *   constructor(private readonly database: ISqliteDatabase, private readonly serde: ISerde<string>) {}
      *
-     *   async use(prefix: string): Promiseable<ICacheAdapter> {
+     *   async use(prefix: string): Promise<IDatabaseCacheAdapter> {
      *     const cacheAdapter = new SqliteCacheAdapter({
      *       database: this.database,
      *       serde: this.serde,
@@ -520,78 +520,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOr("a", 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a function
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOr("a", () => 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a async function. This is useful because it allows for retrieval of external data if the key doesnt't.
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOr("a", async () => 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer, LazyPromise } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOr("a", new LazyPromise(async () => 1));
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     */
     getOr(
         key: OneOrMore<string>,
         defaultValue: AsyncLazyable<NoneFunc<TType>>,
@@ -607,78 +535,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOrAdd("a", 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a function
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOrAdd("a", () => 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a async function. This is useful because it allows for retrieval of external data if the key doesnt't.
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOrAdd("a", async () => 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer, LazyPromise } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOrAdd("a", new LazyPromise(async () => 1));
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     */
     getOrAdd(
         key: OneOrMore<string>,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,

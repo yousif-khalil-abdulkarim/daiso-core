@@ -244,57 +244,6 @@ export class Lock implements ILock {
         return this.lockEventBus.subscribeMany(events, listener);
     }
 
-    /**
-     * You can pass in a sync function or async function.
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
-     *
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
-     * });
-     *
-     * const lock = lockProvider.create("a");
-     *
-     * await lock.run(async () => {
-     *   console.log("START");
-     *   await LazyPromise.delay(TimeSpan.fromSeconds(10));
-     *   console.log("END");
-     * });
-     * ```
-     *
-     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
-     *
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
-     * });
-     *
-     * const lock = lockProvider.create("a");
-     *
-     * await lock.run(
-     *   new LazyPromise(async () => {
-     *     console.log("START");
-     *     await LazyPromise.delay(TimeSpan.fromSeconds(10));
-     *     console.log("END");
-     *   })
-     * );
-     * ```
-     */
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
@@ -319,57 +268,6 @@ export class Lock implements ILock {
         ).setRetryPolicy((error) => error instanceof UnableToAquireLockError);
     }
 
-    /**
-     * You can pass in a sync function or async function.
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
-     *
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
-     * });
-     *
-     * const lock = lockProvider.create("a");
-     *
-     * await lock.runOrFail(async () => {
-     *   console.log("START");
-     *   await LazyPromise.delay(TimeSpan.fromSeconds(10));
-     *   console.log("END");
-     * });
-     * ```
-     *
-     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
-     *
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
-     * });
-     *
-     * const lock = lockProvider.create("a");
-     *
-     * await lock.runOrFail(
-     *   new LazyPromise(async () => {
-     *     console.log("START");
-     *     await LazyPromise.delay(TimeSpan.fromSeconds(10));
-     *     console.log("END");
-     *   })
-     * );
-     * ```
-     */
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue> {
         return this.createLazyPromise(async () => {
             try {
@@ -385,57 +283,6 @@ export class Lock implements ILock {
         );
     }
 
-    /**
-     * You can pass in a sync function or async function.
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
-     *
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
-     * });
-     *
-     * const lock = lockProvider.create("a");
-     *
-     * await lock.runBlocking(async () => {
-     *   console.log("START");
-     *   await LazyPromise.delay(TimeSpan.fromSeconds(10));
-     *   console.log("END");
-     * });
-     * ```
-     *
-     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
-     *
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
-     * });
-     *
-     * const lock = lockProvider.create("a");
-     *
-     * await lock.runBlocking(
-     *   new LazyPromise(async () => {
-     *     console.log("START");
-     *     await LazyPromise.delay(TimeSpan.fromSeconds(10));
-     *     console.log("END");
-     *   })
-     * );
-     * ```
-     */
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: AquireBlockingSettings,
@@ -461,57 +308,6 @@ export class Lock implements ILock {
         ).setRetryPolicy((error) => error instanceof UnableToAquireLockError);
     }
 
-    /**
-     * You can pass in a sync function or async function.
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
-     *
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
-     * });
-     *
-     * const lock = lockProvider.create("a");
-     *
-     * await lock.runBlockingOrFail(async () => {
-     *   console.log("START");
-     *   await LazyPromise.delay(TimeSpan.fromSeconds(10));
-     *   console.log("END");
-     * });
-     * ```
-     *
-     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
-     *
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
-     * });
-     *
-     * const lock = lockProvider.create("a");
-     *
-     * await lock.runBlockingOrFail(
-     *   new LazyPromise(async () => {
-     *     console.log("START");
-     *     await LazyPromise.delay(TimeSpan.fromSeconds(10));
-     *     console.log("END");
-     *   })
-     * );
-     * ```
-     */
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: AquireBlockingSettings,

@@ -38,7 +38,6 @@ export type FlexibleSerdeSuiteSettings = {
  *         expect,
  *     });
  * });
- *
  * ```
  */
 export function flexibleSerdeTestSuite(

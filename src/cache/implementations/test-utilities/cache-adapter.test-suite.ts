@@ -42,11 +42,11 @@ export type CacheAdapterTestSuiteSettings = {
  *   RedisContainer,
  *   type StartedRedisContainer,
  * } from "@testcontainers/redis";
- * import { cacheAdapterTestSuite } from "@daiso-tech/cache/implementations/test-utilities";
- * import { RedisCacheAdapter } from "@daiso-tech/cache/implementations/adapters";
- * import { TimeSpan } from "@daiso-tech/cache/utilities";
- * import { SuperJsonSerdeAdapter } from "@daiso-tech/cache/serde/implementations/adapters";
- * import { Serde } from "@daiso-tech/cache/serde/implementations/derivables";
+ * import { cacheAdapterTestSuite } from "@daiso-tech/core/cache/test-utilities";
+ * import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+ * import { TimeSpan } from "@daiso-tech/core/utilities";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+ * import { Serde } from "@daiso-tech/core/serde";
  *
  * const timeout = TimeSpan.fromMinutes(2);
  * describe("class: RedisCacheAdapter", () => {

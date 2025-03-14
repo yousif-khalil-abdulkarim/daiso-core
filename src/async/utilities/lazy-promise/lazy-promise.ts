@@ -89,16 +89,18 @@ export type LazyPromiseSettings<TValue = unknown> =
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.
  * The class includes helpful methods
  * - <i>defer</i>
- * - <i>retryAttempts</i>
- * - <i>retryPolicy</i>
+ * - <i>setRetryAttempts</i>
+ * - <i>setRetryTimeout</i>
+ * - <i>setRetryPolicy</i>
  * - <i>backoffPolicy</i>
- * - <i>abort</i>
- * - <i>timeout</i>
+ * - <i>setTotalTimeout</i>
+ * - <i>setAbortSignal</i>
  *
  * The order in which these methods are called does not affect their methodality. Internally, the following execution order is applied:
- * 1. <i>timeout</i>
- * 2. <i>retryAttempts</i>
- * 3. <i>abort</i>
+ * 1. <i>setRetryTimeout</i>
+ * 2. <i>setRetryAttempts</i>
+ * 3. <i>setTotalTimeout</i>
+ * 4. <i>setAbortSignal</i>
  *
  * This means that combining all methods ensures the <i>retryAttempts</i> method will continue retrying even if the timeout is triggered,
  * while the <i>abort</i> method takes priority to cancel all operations if activated.
@@ -108,7 +110,7 @@ export type LazyPromiseSettings<TValue = unknown> =
  */
 export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
-     * The <i>wrapFn</i> is convience method used for wrapping a sync or async function with a <i>LazyPromise</i>.
+     * The <i>wrapFn</i> is convience method used for wrapping async <i>{@link Invokable}</i> with a <i>LazyPromise</i>.
      * @example
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
@@ -119,7 +121,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *
      * const file = await readFile("none_existing_file.txt")
      *   .setRetryAttempts(4)
-     *   .timeout(TimeSpan.fromMinutes(1));
+     *   .setRetryTimeout(TimeSpan.fromMinutes(1));
      * ```
      */
     static wrapFn<TArgs extends unknown[], TReturn>(
@@ -146,6 +148,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * console.log("a");
      * await LazyPromise.delay(TimeSpan.fromSeconds(2));
      * console.log("b");
+     * ```
      */
     static delay(time: TimeSpan): LazyPromise<void> {
         return new LazyPromise(async () => {
@@ -200,6 +203,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *
      * // "I am lazy" will only logged when awaited or then method i called.
      * await promise;
+     * ```
      */
     constructor(
         asyncFn: AsyncLazy<TValue>,
@@ -489,7 +493,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * The <i>defer</i> method executes the <i>LazyPromise</i> without awaiting it.
      * @example
      * ```ts
-     * import { LazyPromise } from "@daiso-tech/core";
+     * import { LazyPromise } from "@daiso-tech/core/async";
      * import { TimeSpan } from "@daiso-tech/core/utilities";
      *
      * const promise =

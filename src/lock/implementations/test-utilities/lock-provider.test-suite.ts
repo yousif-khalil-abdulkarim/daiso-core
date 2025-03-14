@@ -52,7 +52,7 @@ export type LockProviderTestSuiteSettings = {
  * @group Utilities
  * @example
  * ```ts
- * import { describe, expect, test } from "vitest";
+ * import { describe, expect, test, beforeEach } from "vitest";
  * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
  * import { LockProvider } from "@daiso-tech/core/lock";
  * import { EventBus } from "@daiso-tech/core/event-bus";

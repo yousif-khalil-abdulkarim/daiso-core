@@ -33,7 +33,7 @@ export type DatabaseLockAdapterTestSuiteSettings = {
  * @example
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
- * import { databaseLockAdapterTestSuite } from "@@daiso-tech/core/lock/test-utilities";
+ * import { databaseLockAdapterTestSuite } from "@daiso-tech/core/lock/test-utilities";
  * import { LibsqlLockAdapter } from "@daiso-tech/core/lock/adapters";
  * import { type Client, createClient } from "@libsql/client";
  *
@@ -63,7 +63,6 @@ export type DatabaseLockAdapterTestSuiteSettings = {
  *         describe,
  *     });
  * });
- *
  * ```
  */
 export function databaseLockAdapterTestSuite(

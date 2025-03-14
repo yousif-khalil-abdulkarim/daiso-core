@@ -31,13 +31,13 @@ import type {
     OneOrMore,
     TimeSpan,
     Items,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    IFactoryObject,
 } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
     resolveAsyncFactoryable,
     resolveInvokable,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IAsyncFactoryObject,
 } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 
@@ -93,7 +93,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * ```ts
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { KeyPrefixer } from "@daiso-tech/utilities";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
      *
      * const eventBus = new EventBus({
      *   keyPrefixer: new KeyPrefixer("event-bus"),
@@ -107,11 +107,11 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import type { IEventBusAdapter } from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { KeyPrefixer, type FactoryFn } from "@daiso-tech/utilities";
+     * import { KeyPrefixer, type FactoryFn } from "@daiso-tech/core/utilities";
      *
-     * type Store = Partial<Record<string, IEventBusAdapter>> = {};
+     * type Store = Partial<Record<string, IEventBusAdapter>>;
      *
-     * async function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
+     * function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
      *   return (prefix) => {
      *     let adapter = store[prefix];
      *     if (adapter === undefined) {
@@ -135,7 +135,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      * import type { IEventBusAdapter } from "@daiso-tech/core/event-bus/contracts";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/utilities";
+     * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
      *
      * type Store = Partial<Record<string, IEventBusAdapter>>;
      *

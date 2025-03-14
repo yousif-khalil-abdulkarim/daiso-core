@@ -63,7 +63,6 @@ export type LockAdapterTestSuiteSettings = {
  *         describe,
  *     });
  * });
- *
  * ```
  */
 export function lockAdapterTestSuite(

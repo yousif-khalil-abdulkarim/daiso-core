@@ -8,7 +8,7 @@ import {
     type AsyncFactoryable,
     type IKeyPrefixer,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IAsyncFactoryObject,
+    type IFactoryObject,
     type Items,
     CORE,
     resolveAsyncFactoryable,
@@ -229,6 +229,9 @@ export class LockProvider implements IGroupableLockProvider {
      * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import Sqlite from "better-sqlite3";
      *
      * const database = new Sqlite("local.db");
      * const lockAdapter = new SqliteLockAdapter({
@@ -237,8 +240,10 @@ export class LockProvider implements IGroupableLockProvider {
      * // You need initialize the adapter once before using it.
      * await lockAdapter.init();
      *
+     * const serde = new Serde(new SuperJsonSerdeAdapter())
      * const lockProvider = new LockProvider({
      *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde,
      *   adapter: lockAdapter,
      * });
      * ```
@@ -247,11 +252,14 @@ export class LockProvider implements IGroupableLockProvider {
      * @example
      * ```ts
      * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import type { ILockAdapter } from "@daiso-tech/core/lock/contracts";
+     * import type { IDatabaseLockAdapter } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { KeyPrefixer, type ISqliteDatabase, type FactoryFn } from "@daiso-tech/core/utilities";
+     * import { KeyPrefixer, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import Sqlite from "better-sqlite3";
      *
-     * async function lockAdapterFactory(database: ISqliteDatabase): FactoryFn<string, ILockAdapter> {
+     * function lockAdapterFactory(database: ISqliteDatabase): AsyncFactoryFn<string, IDatabaseLockAdapter> {
      *   return async (prefix) => {
      *     const lockAdapter = new SqliteLockAdapter({
      *       database,
@@ -264,8 +272,10 @@ export class LockProvider implements IGroupableLockProvider {
      * }
      *
      * const database = new Sqlite("local.db");
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProvider = new LockProvider({
      *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde,
      *   adapter: lockAdapterFactory(database),
      * });
      * ```
@@ -274,14 +284,17 @@ export class LockProvider implements IGroupableLockProvider {
      * @example
      * ```ts
      * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import type { ILockAdapter } from "@daiso-tech/core/lock/contracts";
+     * import type { IDatabaseLockAdapter } from "@daiso-tech/core/lock/contracts";
      * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { KeyPrefixer, type ISqliteDatabase, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
+     * import { KeyPrefixer, type ISqliteDatabase, type IAsyncFactoryObject, type Promisable } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import Sqlite from "better-sqlite3";
      *
-     * class LockAdapterFactory implements IFactoryObject<string, ILockAdapter> {
+     * class LockAdapterFactory implements IAsyncFactoryObject<string, IDatabaseLockAdapter> {
      *   constructor(private readonly database: ISqliteDatabase) {}
      *
-     *   async use(prefix: string): Promiseable<ILockAdapter> {
+     *   async use(prefix: string): Promise<IDatabaseLockAdapter> {
      *     const lockAdapter = new SqliteLockAdapter({
      *       database,
      *       tableName: `lock_${prefix}`,
@@ -293,8 +306,10 @@ export class LockProvider implements IGroupableLockProvider {
      * }
      *
      * const database = new Sqlite("local.db");
+     * const serde = new Serde(new SuperJsonSerdeAdapter())
      * const lockProvider = new LockProvider({
      *   keyPrefixer: new KeyPrefixer("lock"),
+     *   serde,
      *   adapter: new LockAdapterFactory(database),
      * });
      * ```
@@ -479,9 +494,9 @@ export class LockProvider implements IGroupableLockProvider {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
@@ -535,13 +550,14 @@ export class LockProvider implements IGroupableLockProvider {
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
      *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     *   serde,
      * });
      *
      * // Will log null because the lockProvider is not in a group
@@ -563,13 +579,14 @@ export class LockProvider implements IGroupableLockProvider {
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
      *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde: new Serde(new SuperJsonSerdeAdapter())
+     *   serde,
      * });
      *
      * const groupedLockProvider = lockProvider.withGroup("group-a");
