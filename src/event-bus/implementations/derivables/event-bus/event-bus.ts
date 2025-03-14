@@ -31,13 +31,13 @@ import type {
     OneOrMore,
     TimeSpan,
     Items,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    IFactoryObject,
 } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
     resolveAsyncFactoryable,
     resolveInvokable,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IAsyncFactoryObject,
 } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 

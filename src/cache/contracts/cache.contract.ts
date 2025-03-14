@@ -3,7 +3,11 @@
  */
 
 import type { LazyPromise } from "@/async/_module-exports.js";
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Invokable,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
 import type {
     AsyncLazyable,
     NoneFunc,
@@ -86,7 +90,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an <i>Iterable</i>, it will be joined into a single string.
      * Think of an <i>Iterable</i> as representing a path.
      *
-     * @param defaultValue - can be sync function, async function or <i>{@link LazyPromise}</i>.
+     * @param defaultValue - can be regular value, sync or async <i>{@link Invokable}</i> value and <i>{@link LazyPromise}</i> value.
      */
     getOr(
         key: OneOrMore<string>,
@@ -100,7 +104,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an <i>Iterable</i>, it will be joined into a single string.
      * Think of an <i>Iterable</i> as representing a path.
      *
-     * @param valueToAdd - can be sync function, async function or <i>{@link LazyPromise}</i>.
+     * @param valueToAdd - can be regular value, sync or async <i>{@link Invokable}</i> value and <i>{@link LazyPromise}</i> value.
      */
     getOrAdd(
         key: OneOrMore<string>,

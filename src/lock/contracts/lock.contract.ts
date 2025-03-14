@@ -4,6 +4,8 @@
 
 import type {
     AsyncLazy,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Invokable,
     Result,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
@@ -46,7 +48,7 @@ export type AquireBlockingSettings = {
  */
 export type ILock = ILockListenable & {
     /**
-     * The <i>run</i> method wraps an function, async function or <i>{@link LazyPromise}</i> with the <i>acquire</i> and <i>release</i> method.
+     * The <i>run</i> method wraps an <i>{@link Invokable}</i> or <i>{@link LazyPromise}</i> with the <i>acquire</i> and <i>release</i> method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
@@ -55,7 +57,7 @@ export type ILock = ILockListenable & {
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
 
     /**
-     * The <i>runOrFail</i> method wraps an function, async function or <i>{@link LazyPromise}</i> with the <i>acquireOrFail</i> and <i>release</i> method.
+     * The <i>runOrFail</i> method wraps an <i>{@link Invokable}</i> or <i>{@link LazyPromise}</i> with the <i>acquireOrFail</i> and <i>release</i> method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
@@ -63,7 +65,7 @@ export type ILock = ILockListenable & {
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue>;
 
     /**
-     * The <i>runBlocking</i> method wraps an function, async function or <i>{@link LazyPromise}</i> with the <i>acquireBlocking</i> and <i>release</i> method.
+     * The <i>runBlocking</i> method wraps an <i>{@link Invokable}</i> or <i>{@link LazyPromise}</i> with the <i>acquireBlocking</i> and <i>release</i> method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
@@ -73,7 +75,7 @@ export type ILock = ILockListenable & {
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
 
     /**
-     * The <i>runBlockingOrFail</i> method wraps an function, async function or <i>{@link LazyPromise}</i> with the <i>acquireBlockingOrFail</i> and <i>release</i> method.
+     * The <i>runBlockingOrFail</i> method wraps an <i>{@link Invokable}</i> or <i>{@link LazyPromise}</i> with the <i>acquireBlockingOrFail</i> and <i>release</i> method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}

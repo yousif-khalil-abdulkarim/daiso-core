@@ -39,7 +39,7 @@ import {
     KeyPrefixer,
     type AsyncFactoryable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IAsyncFactoryObject,
+    type IFactoryObject,
 } from "@/utilities/_module-exports.js";
 import type {
     BackoffPolicy,
@@ -520,79 +520,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOr("a", 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a function
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOr("a", () => 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a async function. This is useful because it allows for retrieval of external data if the key doesnt't.
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOr("a", async () => 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { LazyPromise } from "@daiso-tech/core/async";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOr("a", new LazyPromise(async () => 1));
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     */
     getOr(
         key: OneOrMore<string>,
         defaultValue: AsyncLazyable<NoneFunc<TType>>,
@@ -608,78 +535,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         });
     }
 
-    /**
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOrAdd("a", 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a function
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOrAdd("a", () => 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a async function. This is useful because it allows for retrieval of external data if the key doesnt't.
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOrAdd("a", async () => 1);
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     *
-     * You can also pass in a <i>{@link LazyPromise}</i>. This is useful because all other components in this library returns <i>{@link LazyPromise}</i>.
-     * @example
-     * ```ts
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import { KeyPrefixer, LazyPromise } from "@daiso-tech/core/utilities";
-     *
-     * const cache = new Cache({
-     *   adapter: new MemoryCacheAdapter(),
-     *   keyPrefixer: new KeyPrefixer("cache")
-     * });
-     *
-     * const value = await cache.getOrAdd("a", new LazyPromise(async () => 1));
-     *
-     * // Will be 1
-     * console.log(value);
-     * ```
-     */
     getOrAdd(
         key: OneOrMore<string>,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,

@@ -8,7 +8,7 @@ import {
     type AsyncFactoryable,
     type IKeyPrefixer,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IAsyncFactoryObject,
+    type IFactoryObject,
     type Items,
     CORE,
     resolveAsyncFactoryable,
