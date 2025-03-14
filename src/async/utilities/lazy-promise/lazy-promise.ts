@@ -119,7 +119,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *
      * const file = await readFile("none_existing_file.txt")
      *   .setRetryAttempts(4)
-     *   .timeout(TimeSpan.fromMinutes(1));
+     *   .setRetryTimeout(TimeSpan.fromMinutes(1));
      * ```
      */
     static wrapFn<TArgs extends unknown[], TReturn>(
@@ -146,6 +146,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * console.log("a");
      * await LazyPromise.delay(TimeSpan.fromSeconds(2));
      * console.log("b");
+     * ```
      */
     static delay(time: TimeSpan): LazyPromise<void> {
         return new LazyPromise(async () => {
@@ -200,6 +201,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *
      * // "I am lazy" will only logged when awaited or then method i called.
      * await promise;
+     * ```
      */
     constructor(
         asyncFn: AsyncLazy<TValue>,
@@ -489,7 +491,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * The <i>defer</i> method executes the <i>LazyPromise</i> without awaiting it.
      * @example
      * ```ts
-     * import { LazyPromise } from "@daiso-tech/core";
+     * import { LazyPromise } from "@daiso-tech/core/async";
      * import { TimeSpan } from "@daiso-tech/core/utilities";
      *
      * const promise =

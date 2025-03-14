@@ -306,10 +306,10 @@ export class Serde<TSerializedValue>
      * const deserializedValue = serde.deserialize(serde.serialize(value));
      *
      * // Will print out { a: 1, b: 2}
-     * console.log(serializedValue);
+     * console.log(deserializedValue);
      *
      * // Will print false
-     * console.log(value === serializedValue);
+     * console.log(value === deserializedValue);
      * ```
      */
     deserialize<TValue>(serializedValue: TSerializedValue): TValue {
@@ -331,7 +331,7 @@ export class Serde<TSerializedValue>
      * serde.registerEvent(AddEvent);
      *
      * const event = new AddEvent({ a: 1, b: 2 });
-     * const deserializedEvent = serde.deserialize(serde.serialize(event));
+     * const deserializedEvent = serde.deserialize<AddEvent>(serde.serialize(event));
      *
      * // Will print 1
      * console.log(deserializedEvent.fields.a);
@@ -400,7 +400,7 @@ export class Serde<TSerializedValue>
      * serde.registerClass(AddEvent);
      *
      * const user = new User("Carl", 30);
-     * const deserializedUser = serde.deserialize(serde.serialize(user));
+     * const deserializedUser = serde.deserialize<User>(serde.serialize(user));
      *
      * // Will print "Carl"
      * console.log(deserializedUser.name);
@@ -449,7 +449,7 @@ export class Serde<TSerializedValue>
     /**
      * @example
      * ```ts
-     * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
+     * import type { IFlexibleSerde, ISerializable } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
      *
@@ -475,7 +475,7 @@ export class Serde<TSerializedValue>
      *   }
      * }
      *
-     * serde.registerCustom<ISerializedUser, User>({
+     * serde.registerCustom<User, ISerializedUser>({
      *   name: User.name,
      *   isApplicable: (value): value is User => {
      *     return value instanceof User;
@@ -492,7 +492,7 @@ export class Serde<TSerializedValue>
      * });
      *
      * const user = new User("Carl", 30);
-     * const deserializedUser = serde.deserialize(serde.serialize(user));
+     * const deserializedUser = serde.deserialize<User>(serde.serialize(user));
      *
      * // Will print "Carl"
      * console.log(deserializedUser.name);

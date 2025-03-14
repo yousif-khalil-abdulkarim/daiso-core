@@ -71,8 +71,8 @@ export interface IFlexibleSerde<TSerializedValue = unknown>
     /**
      * The <i>registerCustom</i> method is used for registering custom values for serialization and deserialization.
      */
-    registerCustom<TCustomSerialized, TCustomDeserialized>(
-        transformer: ISerdeTransformer<TCustomSerialized, TCustomDeserialized>,
+    registerCustom<TCustomDeserialized, TCustomSerialized>(
+        transformer: ISerdeTransformer<TCustomDeserialized, TCustomSerialized>,
         prefix?: OneOrMore<string>,
     ): this;
 }

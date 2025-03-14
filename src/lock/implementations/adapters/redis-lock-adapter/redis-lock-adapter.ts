@@ -35,11 +35,10 @@ export class RedisLockAdapter implements ILockAdapter {
     /**
      * @example
      * ```ts
-     * import { RedisLockAdapter, SuperJsonSerde } from "@daiso-tech/core/lock/adapters";
+     * import { RedisLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import Redis from "ioredis";
      *
      * const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
-     * const serde = new SuperJsonSerde();
      * const lockAdapter = new RedisLockAdapter(database);
      * ```
      */

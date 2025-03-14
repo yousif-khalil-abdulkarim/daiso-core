@@ -250,9 +250,10 @@ export class Lock implements ILock {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
@@ -274,9 +275,10 @@ export class Lock implements ILock {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
@@ -325,9 +327,10 @@ export class Lock implements ILock {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { LazyPromise } from "@daiso-tech/core/async"
+     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
@@ -349,9 +352,10 @@ export class Lock implements ILock {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
@@ -391,9 +395,10 @@ export class Lock implements ILock {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
@@ -415,9 +420,10 @@ export class Lock implements ILock {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
@@ -467,9 +473,10 @@ export class Lock implements ILock {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
@@ -491,9 +498,10 @@ export class Lock implements ILock {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer, TimeSpan, LazyPromise } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/adapter";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/adapter/adapters";
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { KeyPrefixer, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),

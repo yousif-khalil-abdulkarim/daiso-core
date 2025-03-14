@@ -32,6 +32,8 @@ class RangeIterable implements Iterable<number> {
  * The <i>range</i> function return a <i>{@link Iterable}</i> of numbers, starting from <i>from</i>,increments by 1 and stops at <i>to</i>.
  * @example
  * ```ts
+ * import { ListCollection, range } from "@daiso-tech/core/collection";
+ *
  * const collection = new ListCollection(range(1, 10))
  * collection.toArray();
  * // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]

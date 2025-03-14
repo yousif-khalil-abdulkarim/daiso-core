@@ -54,14 +54,14 @@ export class EventBusFactory<TAdapters extends string = string>
      * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBusFactory } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { KeyPrefixer, type IFactoryObject, type Promiseable, type FactoryFn } from "@daiso-tech/utilities";
+     * import { KeyPrefixer, type FactoryFn } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
      *
-     * type Store = Partial<Record<string, IEventBusAdapter>> = {};
+     * type Store = Partial<Record<string, IEventBusAdapter>>;
      *
-     * async function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
+     * function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
      *   return (prefix) => {
      *     let adapter = store[prefix];
      *     if (adapter === undefined) {
@@ -141,14 +141,14 @@ export class EventBusFactory<TAdapters extends string = string>
      * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBusFactory } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { KeyPrefixer, type IFactoryObject, type Promiseable, type FactoryFn } from "@daiso-tech/utilities";
+     * import { KeyPrefixer, type FactoryFn } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
      *
-     * type Store = Partial<Record<string, IEventBusAdapter>> = {};
+     * type Store = Partial<Record<string, IEventBusAdapter>>;
      *
-     * async function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
+     * function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
      *   return (prefix) => {
      *     let adapter = store[prefix];
      *     if (adapter === undefined) {
