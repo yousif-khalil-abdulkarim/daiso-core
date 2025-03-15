@@ -2,11 +2,6 @@
  * @module EventBus
  */
 
-import type {
-    BackoffPolicy,
-    LazyPromiseSettingsBase,
-    RetryPolicy,
-} from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     EventClass,
@@ -29,14 +24,17 @@ import type {
     AsyncFactoryable,
     IKeyPrefixer,
     OneOrMore,
-    TimeSpan,
     Items,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IFactoryObject,
+    Factory,
+    AsyncLazy,
+    FactoryFn,
 } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
     resolveAsyncFactoryable,
+    resolveFactory,
     resolveInvokable,
 } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
@@ -46,8 +44,9 @@ import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
-export type EventBusSettingsBase = LazyPromiseSettingsBase & {
+export type EventBusSettingsBase = {
     keyPrefixer: IKeyPrefixer;
+    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
 };
 
 /**
@@ -79,13 +78,12 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     implements IGroupableEventBus<TEvents>
 {
     private readonly adapterFactoryable: EventBusAdapterFactoryable;
-    private readonly retryAttempts: number | null;
-    private readonly backoffPolicy: BackoffPolicy | null;
-    private readonly retryPolicy: RetryPolicy | null;
-    private readonly retryTimeout: TimeSpan | null;
-    private readonly totalTimeout: TimeSpan | null;
     private readonly store = new ListenerStore();
     private readonly adapterPromise: PromiseLike<IEventBusAdapter>;
+    private readonly lazyPromiseFactory: FactoryFn<
+        AsyncLazy<any>,
+        LazyPromise<any>
+    >;
     private keyPrefixer: IKeyPrefixer;
 
     /**
@@ -163,19 +161,11 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         const {
             keyPrefixer,
             adapter,
-            retryAttempts = null,
-            backoffPolicy = null,
-            retryPolicy = null,
-            retryTimeout = null,
-            totalTimeout = null,
+            lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
-        this.totalTimeout = totalTimeout;
+        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
         this.adapterFactoryable = adapter;
         this.keyPrefixer = keyPrefixer;
-        this.retryAttempts = retryAttempts;
-        this.backoffPolicy = backoffPolicy;
-        this.retryPolicy = retryPolicy;
-        this.retryTimeout = retryTimeout;
         this.adapterPromise = new LazyPromise(() =>
             resolveAsyncFactoryable(
                 this.adapterFactoryable,
@@ -187,23 +177,14 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(asyncFn, {
-            retryAttempts: this.retryAttempts,
-            backoffPolicy: this.backoffPolicy,
-            retryPolicy: this.retryPolicy,
-            retryTimeout: this.retryTimeout,
-            totalTimeout: this.totalTimeout,
-        });
+        return this.lazyPromiseFactory(asyncFn);
     }
 
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
             keyPrefixer: this.keyPrefixer.withGroup(group),
             adapter: this.adapterFactoryable,
-            retryAttempts: this.retryAttempts,
-            backoffPolicy: this.backoffPolicy,
-            retryPolicy: this.retryPolicy,
-            retryTimeout: this.retryTimeout,
+            lazyPromiseFactory: this.lazyPromiseFactory,
         });
     }
 
@@ -337,16 +318,9 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     asPromise<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
     ): LazyPromise<EventInstance<TEventClass>> {
-        return new LazyPromise(
-            () =>
-                new Promise<EventInstance<TEventClass>>((resolve, reject) => {
-                    this.listenOnce(event, resolve).then(
-                        (event) => event,
-                        // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
-                        reject,
-                    );
-                }),
-        );
+        return LazyPromise.fromCallback((resolve, reject) => {
+            this.listenOnce(event, resolve).then(() => {}, reject);
+        });
     }
 
     subscribeOnce<TEventClass extends EventClass<TEvents>>(

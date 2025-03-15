@@ -34,7 +34,7 @@ export type RetrySettings = {
  * @internal
  */
 export async function retryOrFail<TValue = void>(
-    asyncFn: () => PromiseLike<TValue>,
+    asyncFn: (attempt: number) => PromiseLike<TValue>,
     settings: RetrySettings = {},
 ): Promise<TValue> {
     const {
@@ -45,7 +45,7 @@ export async function retryOrFail<TValue = void>(
     let error_: unknown;
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-            return await asyncFn();
+            return await asyncFn(attempt);
         } catch (error: unknown) {
             error_ = error;
             if (error instanceof AbortAsyncError) {

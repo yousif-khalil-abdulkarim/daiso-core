@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 /**
  * @module Cache
  */
@@ -28,6 +29,7 @@ import {
     isAsyncFactory,
     resolveAsyncFactoryable,
     resolveAsyncLazyable,
+    resolveFactory,
 } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazyable,
@@ -41,11 +43,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type IFactoryObject,
 } from "@/utilities/_module-exports.js";
-import type {
-    BackoffPolicy,
-    LazyPromiseSettingsBase,
-    RetryPolicy,
-} from "@/async/_module-exports.js";
+import type { RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     IGroupableEventBus,
@@ -61,15 +59,23 @@ import { EventBus } from "@/event-bus/implementations/derivables/_module-exports
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
 import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/database-cache-adapter.js";
-import type { IKeyPrefixer, Items } from "@/utilities/_module-exports.js";
+import type {
+    AsyncLazy,
+    Factory,
+    FactoryFn,
+    IKeyPrefixer,
+    Items,
+} from "@/utilities/_module-exports.js";
 
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
-export type CacheSettingsBase = LazyPromiseSettingsBase & {
+export type CacheSettingsBase = {
     keyPrefixer: IKeyPrefixer;
+
+    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
 
     /**
      * @default
@@ -147,12 +153,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private readonly adapterFactoryable: CacheAdapterFactoryable<TType>;
     private readonly adapterPromise: PromiseLike<ICacheAdapter<TType>>;
     private readonly defaultTtl: TimeSpan | null;
-    private readonly retryAttempts: number | null;
-    private readonly backoffPolicy: BackoffPolicy | null;
-    private readonly retryPolicy: RetryPolicy | null;
-    private readonly retryTimeout: TimeSpan | null;
-    private readonly totalTimeout: TimeSpan | null;
     private readonly keyPrefixer: IKeyPrefixer;
+    private readonly lazyPromiseFactory: FactoryFn<
+        AsyncLazy<any>,
+        LazyPromise<any>
+    >;
 
     /**
      *
@@ -255,22 +260,14 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                 adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,
-            retryAttempts = null,
-            backoffPolicy = null,
-            retryPolicy = Cache.defaultRetryPolicy,
-            retryTimeout = null,
-            totalTimeout = null,
+            lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
 
         this.keyPrefixer = keyPrefixer;
         this.groupdEventBus = groupdEventBus;
         this.adapterFactoryable = adapter;
         this.defaultTtl = defaultTtl;
-        this.retryAttempts = retryAttempts;
-        this.backoffPolicy = backoffPolicy;
-        this.retryPolicy = retryPolicy;
-        this.retryTimeout = retryTimeout;
-        this.totalTimeout = totalTimeout;
+        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
 
         this.eventBus = this.groupdEventBus.withGroup(
             this.keyPrefixer.resolvedRootPrefix,
@@ -391,13 +388,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(asyncFn, {
-            retryAttempts: this.retryAttempts,
-            backoffPolicy: this.backoffPolicy,
-            retryPolicy: this.retryPolicy,
-            retryTimeout: this.retryTimeout,
-            totalTimeout: this.totalTimeout,
-        });
+        return this.lazyPromiseFactory(asyncFn).setRetryPolicy(
+            Cache.defaultRetryPolicy,
+        );
     }
 
     exists(key: OneOrMore<string>): LazyPromise<boolean> {
@@ -941,10 +934,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             adapter: this.adapterFactoryable,
             eventBus: this.groupdEventBus,
             defaultTtl: this.defaultTtl,
-            retryAttempts: this.retryAttempts,
-            backoffPolicy: this.backoffPolicy,
-            retryPolicy: this.retryPolicy,
-            retryTimeout: this.retryTimeout,
+            lazyPromiseFactory: this.lazyPromiseFactory,
         });
         return cache;
     }

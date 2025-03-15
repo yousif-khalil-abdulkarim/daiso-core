@@ -48,3 +48,16 @@ export function resolveInvokable<TArgs extends unknown[], TReturn>(
     }
     return invokable;
 }
+
+/**
+ * @internal
+ */
+export function callInvokable<TArgs extends unknown[], TReturn>(
+    invokable: Invokable<TArgs, TReturn>,
+    ...args: TArgs
+): TReturn {
+    if (isInvokableObject(invokable)) {
+        return invokable.invoke(...args);
+    }
+    return invokable(...args);
+}

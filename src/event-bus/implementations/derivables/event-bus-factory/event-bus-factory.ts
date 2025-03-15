@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
+import type { LazyPromise } from "@/async/_module-exports.js";
 import {
     type IGroupableEventBus,
     type IEventBusFactory,
@@ -13,7 +13,11 @@ import {
     type EventBusAdapterFactoryable,
     type EventBusSettingsBase,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
-import type { KeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
+import type {
+    AsyncLazy,
+    Factory,
+    KeyPrefixer,
+} from "@/utilities/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
@@ -100,38 +104,12 @@ export class EventBusFactory<TAdapters extends string = string>
         });
     }
 
-    setRetryAttempts(attempts: number): EventBusFactory<TAdapters> {
+    setLazyPromiseFactory(
+        factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
+    ): EventBusFactory<TAdapters> {
         return new EventBusFactory({
             ...this.settings,
-            retryAttempts: attempts,
-        });
-    }
-
-    setBackoffPolicy(policy: BackoffPolicy): EventBusFactory<TAdapters> {
-        return new EventBusFactory({
-            ...this.settings,
-            backoffPolicy: policy,
-        });
-    }
-
-    setRetryPolicy(policy: RetryPolicy): EventBusFactory<TAdapters> {
-        return new EventBusFactory({
-            ...this.settings,
-            retryPolicy: policy,
-        });
-    }
-
-    setRetryTimeout(timeout: TimeSpan): EventBusFactory<TAdapters> {
-        return new EventBusFactory({
-            ...this.settings,
-            retryTimeout: timeout,
-        });
-    }
-
-    setTotalTimeout(timeout: TimeSpan): EventBusFactory<TAdapters> {
-        return new EventBusFactory({
-            ...this.settings,
-            totalTimeout: timeout,
+            lazyPromiseFactory: factory,
         });
     }
 
