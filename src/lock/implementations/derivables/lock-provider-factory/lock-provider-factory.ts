@@ -217,24 +217,6 @@ export class LockProviderFactory<TAdapters extends string>
      *   .use("sqlite")
      *   .create("a")
      *   .acquire();
-     *
-     * // You can reuse the settings
-     * const longLivedLockProviderFactory = lockProviderFactory
-     *   .setDefaultTtl(TimeSpan.fromMinutes(2));
-     *
-     * await longLivedLockProviderFactory
-     *   .use()
-     *   .create("a")
-     *   .acquire();
-     *
-     * // You can extend the settings
-     * const extendedLockProviderFactory = longLivedLockProviderFactory
-     *   .setRetryTimeout(TimeSpan.fromSeconds(1));
-     *
-     * await extendedLockProviderFactory
-     *   .use()
-     *   .create("a")
-     *   .acquire();
      * ```
      */
     use(

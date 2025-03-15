@@ -178,22 +178,6 @@ export class CacheFactory<TAdapters extends string = string>
      *   .setDefaultTtl(TimeSpan.fromMinutes(2))
      *   .use("sqlite")
      *   .add("a", 1);
-     *
-     * // You can reuse the settings
-     * const longLivedCacheFactory = cacheFactory
-     *   .setDefaultTtl(TimeSpan.fromMinutes(2));
-     *
-     * await longLivedCacheFactory
-     *   .use()
-     *   .add("a", 1);
-     *
-     * // You can extend the settings
-     * const extendedCacheFactory = longLivedCacheFactory
-     *   .setRetryTimeout(TimeSpan.fromSeconds(1));
-     *
-     * await extendedCacheFactory
-     *   .use()
-     *   .add("a", 1);
      * ```
      */
     use<TType = unknown>(
