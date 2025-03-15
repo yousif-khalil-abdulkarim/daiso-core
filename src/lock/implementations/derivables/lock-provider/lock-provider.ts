@@ -63,6 +63,15 @@ import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-pro
 export type LockProviderSettingsBase = {
     keyPrefixer: IKeyPrefixer;
 
+    /**
+     * You can pass a <i>{@link Factory}</i> of <i>{@link LazyPromise}</i> to configure default settings for all <i>{@link LazyPromise}</i> instances used in the <i>LockProvider</i> class.
+     * @default
+     * ```ts
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     *
+     * (invokable) => new LazyPromise(invokable)
+     * ```
+     */
     lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
 
     serde: OneOrMore<IFlexibleSerde>;

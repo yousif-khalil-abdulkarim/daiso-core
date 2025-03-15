@@ -34,16 +34,16 @@ import {
 } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/utilities/_module.js";
 import {
-    AbortLazyPromiseEvent,
-    FailureLazyPromiseEvent,
-    FinallyLazyPromiseEvent,
-    RetryAttemptLazyPromiseEvent,
-    RetryFailureLazyPromiseEvent,
-    RetryTimeoutLazyPromiseEvent,
-    SuccessLazyPromiseEvent,
-    TotalTimeoutFailureLazyPromiseEvent,
-    type LazyPromiseEvents,
-} from "@/async/utilities/lazy-promise/lazy-promise-events.js";
+    AbortAsyncEvent,
+    FailureAsyncEvent,
+    FinallyAsyncEvent,
+    RetryAttemptAsyncEvent,
+    RetryFailureAsyncEvent,
+    RetryTimeoutAsyncEvent,
+    SuccessAsyncEvent,
+    TotalTimeoutFailureAsyncEvent,
+    type AsyncEvents,
+} from "@/async/async.events.js";
 import type {
     EventClass,
     EventListener,
@@ -55,7 +55,7 @@ import type {
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export type LazyPromiseEventMap<TValue = unknown> = {
+export type AsyncEventMap<TValue = unknown> = {
     failure: {
         error: unknown;
     };
@@ -150,9 +150,7 @@ export type LazyPromiseCallback<TValue> = InvokableFn<
  * @group Utilities
  */
 export class LazyPromise<TValue>
-    implements
-        PromiseLike<TValue>,
-        ISyncEventListenable<LazyPromiseEvents<TValue>>
+    implements PromiseLike<TValue>, ISyncEventListenable<AsyncEvents<TValue>>
 {
     /**
      * The <i>wrapFn</i> is convience method used for wrapping async <i>{@link Invokable}</i> with a <i>LazyPromise</i>.
@@ -283,7 +281,7 @@ export class LazyPromise<TValue>
     private promise: PromiseLike<TValue> | null = null;
     private asyncFn: () => PromiseLike<TValue>;
     private readonly settings: Required<LazyPromiseSettings>;
-    private readonly eventBus = new SyncEventBus<LazyPromiseEvents<TValue>>();
+    private readonly eventBus = new SyncEventBus<AsyncEvents<TValue>>();
 
     /**
      * @example
@@ -318,14 +316,14 @@ export class LazyPromise<TValue>
             ...settings,
         });
     }
-    addListener<TEventClass extends EventClass<LazyPromiseEvents<TValue>>>(
+    addListener<TEventClass extends EventClass<AsyncEvents<TValue>>>(
         event: TEventClass,
         listener: EventListener<EventInstance<TEventClass>>,
     ): void {
         this.eventBus.addListener(event, listener);
     }
 
-    removeListener<TEventClass extends EventClass<LazyPromiseEvents<TValue>>>(
+    removeListener<TEventClass extends EventClass<AsyncEvents<TValue>>>(
         event: TEventClass,
         listener: EventListener<EventInstance<TEventClass>>,
     ): void {
@@ -349,7 +347,7 @@ export class LazyPromise<TValue>
             } catch (error: unknown) {
                 if (error instanceof TimeoutAsyncError) {
                     this.eventBus.dispatch(
-                        new RetryTimeoutLazyPromiseEvent({ error }),
+                        new RetryTimeoutAsyncEvent({ error }),
                     );
                 }
                 throw error;
@@ -377,7 +375,7 @@ export class LazyPromise<TValue>
                             return await oldAsyncFn();
                         } catch (error: unknown) {
                             this.eventBus.dispatch(
-                                new RetryAttemptLazyPromiseEvent({
+                                new RetryAttemptAsyncEvent({
                                     attempt,
                                     error,
                                 }),
@@ -394,7 +392,7 @@ export class LazyPromise<TValue>
             } catch (error: unknown) {
                 if (error instanceof RetryAsyncError) {
                     this.eventBus.dispatch(
-                        new RetryFailureLazyPromiseEvent({ error }),
+                        new RetryFailureAsyncEvent({ error }),
                     );
                 }
                 throw error;
@@ -417,7 +415,7 @@ export class LazyPromise<TValue>
             } catch (error: unknown) {
                 if (error instanceof TimeoutAsyncError) {
                     this.eventBus.dispatch(
-                        new TotalTimeoutFailureLazyPromiseEvent({ error }),
+                        new TotalTimeoutFailureAsyncEvent({ error }),
                     );
                 }
                 throw error;
@@ -442,9 +440,7 @@ export class LazyPromise<TValue>
                 );
             } catch (error: unknown) {
                 if (error instanceof AbortAsyncError) {
-                    this.eventBus.dispatch(
-                        new AbortLazyPromiseEvent({ error }),
-                    );
+                    this.eventBus.dispatch(new AbortAsyncEvent({ error }));
                 }
                 throw error;
             }
@@ -656,16 +652,16 @@ export class LazyPromise<TValue>
      */
     defer(): void {
         const onFinally = () => {
-            this.eventBus.dispatch(new FinallyLazyPromiseEvent({}));
+            this.eventBus.dispatch(new FinallyAsyncEvent({}));
             this.eventBus.clear();
         };
         const onSuccess = (value: TValue): TValue => {
-            this.eventBus.dispatch(new SuccessLazyPromiseEvent({ value }));
+            this.eventBus.dispatch(new SuccessAsyncEvent({ value }));
             onFinally();
             return value;
         };
         const onFailure = (error: unknown): unknown => {
-            this.eventBus.dispatch(new FailureLazyPromiseEvent({ error }));
+            this.eventBus.dispatch(new FailureAsyncEvent({ error }));
             onFinally();
             return error;
         };

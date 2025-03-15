@@ -46,6 +46,16 @@ import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/
  */
 export type EventBusSettingsBase = {
     keyPrefixer: IKeyPrefixer;
+
+    /**
+     * You can pass a <i>{@link Factory}</i> of <i>{@link LazyPromise}</i> to configure default settings for all <i>{@link LazyPromise}</i> instances used in the <i>EventBus</i> class.
+     * @default
+     * ```ts
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     *
+     * (invokable) => new LazyPromise(invokable)
+     * ```
+     */
     lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
 };
 

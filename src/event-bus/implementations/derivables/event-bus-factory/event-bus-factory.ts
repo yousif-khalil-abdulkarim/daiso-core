@@ -166,28 +166,6 @@ export class EventBusFactory<TAdapters extends string = string>
      * await eventBusFactory
      *   .use("redis")
      *   .dispatch(new AddEvent({ a: 1, b: 2 }));
-     *
-     * // You can change the default settings of the returned EventBus instance.
-     * await eventBusFactory
-     *   .setRetryAttempts(4)
-     *   .use("memoryFactory")
-     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
-     *
-     * // You can reuse the settings
-     * const retryableEventBusFactory = eventBusFactory
-     *   .setRetryAttempts(4);
-     *
-     * await retryableEventBusFactory
-     *   .use()
-     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
-     *
-     * // You can extend the settings
-     * const extendedEventBusFactory = retryableEventBusFactory
-     *   .setRetryTimeout(TimeSpan.fromSeconds(1));
-     *
-     * await extendedEventBusFactory
-     *   .use()
-     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
      * ```
      */
     use<TEvents extends BaseEvent = BaseEvent>(
