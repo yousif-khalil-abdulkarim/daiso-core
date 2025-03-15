@@ -15,11 +15,15 @@ import { timeoutAndFail } from "@/async/utilities/timeout/_module.js";
 import { abortAndFail } from "@/async/utilities/abort/_module.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    AbortAsyncError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     TimeoutAsyncError,
+} from "@/async/async.errors.js";
+import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     RetryAsyncError,
+} from "@/async/async.errors.js";
+import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    AbortAsyncError,
 } from "@/async/async.errors.js";
 import {
     removeUndefinedProperties,
@@ -27,38 +31,10 @@ import {
     resolveInvokable,
 } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/utilities/_module.js";
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
- * @group Utilities
- */
-export type LazyPromiseOnFinally = () => Promisable<void>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
- * @group Utilities
- */
-export type LazyPromiseOnSuccess<TValue> = (value: TValue) => Promisable<void>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
- * @group Utilities
- */
-export type LazyPromiseOnError = (error: unknown) => Promisable<void>;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
- * @group Utilities
- */
-export type LazyPromiseCallbacks<TValue = unknown> = {
-    onFinally?: LazyPromiseOnFinally;
-    onSuccess?: LazyPromiseOnSuccess<TValue>;
-    onError?: LazyPromiseOnError;
-};
+import {
+    LazyPromiseEventBus,
+    type ILazyPromiseListener,
+} from "@/async/utilities/lazy-promise/lazy-promise-listener.contract.js";
 
 /**
  *
@@ -78,11 +54,40 @@ export type LazyPromiseSettingsBase = {
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export type LazyPromiseSettings<TValue = unknown> =
-    LazyPromiseCallbacks<TValue> &
-        LazyPromiseSettingsBase & {
-            abortSignal?: AbortSignal | null;
-        };
+export type LazyPromiseEventMap<TValue = unknown> = {
+    failure: {
+        error: unknown;
+    };
+    success: {
+        value: TValue;
+    };
+    finally: undefined;
+    retryAttempt: {
+        attempt: number;
+        error: unknown;
+    };
+    retryTimeoutFailure: {
+        error: TimeoutAsyncError;
+    };
+    retryFailure: {
+        error: RetryAsyncError;
+    };
+    totalTimeoutFailure: {
+        error: TimeoutAsyncError;
+    };
+    abortFailure: {
+        error: AbortAsyncError;
+    };
+};
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type LazyPromiseSettings = LazyPromiseSettingsBase & {
+    abortSignal?: AbortSignal | null;
+};
 
 /**
  *
@@ -138,7 +143,11 @@ export type LazyPromiseCallback<TValue> = InvokableFn<
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export class LazyPromise<TValue> implements PromiseLike<TValue> {
+export class LazyPromise<TValue>
+    implements
+        PromiseLike<TValue>,
+        ILazyPromiseListener<LazyPromiseEventMap<TValue>>
+{
     /**
      * The <i>wrapFn</i> is convience method used for wrapping async <i>{@link Invokable}</i> with a <i>LazyPromise</i>.
      * @example
@@ -156,7 +165,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static wrapFn<TArgs extends unknown[], TReturn>(
         fn: Invokable<TArgs, Promisable<TReturn>>,
-        settings?: LazyPromiseSettings<TReturn>,
+        settings?: LazyPromiseSettings,
     ): InvokableFn<TArgs, LazyPromise<TReturn>> {
         return (...parameters) =>
             new LazyPromise<TReturn>(
@@ -189,8 +198,14 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
      * The <i>all<i> method works similarly to <i>{@link Promise.all}</i> with the key distinction that it operates lazily.
      */
-    static all<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue[]> {
-        return new LazyPromise<TValue[]>(async () => Promise.all(promises));
+    static all<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings?: LazyPromiseSettings,
+    ): LazyPromise<TValue[]> {
+        return new LazyPromise<TValue[]>(
+            async () => Promise.all(promises),
+            settings,
+        );
     }
 
     /**
@@ -198,24 +213,32 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static allSettled<TValue>(
         promises: LazyPromise<TValue>[],
+        settings?: LazyPromiseSettings,
     ): LazyPromise<PromiseSettledResult<TValue>[]> {
-        return new LazyPromise<PromiseSettledResult<TValue>[]>(async () =>
-            Promise.allSettled(promises),
+        return new LazyPromise<PromiseSettledResult<TValue>[]>(
+            async () => Promise.allSettled(promises),
+            settings,
         );
     }
 
     /**
      * The <i>race<i> method works similarly to <i>{@link Promise.race}</i> with the key distinction that it operates lazily.
      */
-    static race<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
-        return new LazyPromise(async () => Promise.race(promises));
+    static race<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings?: LazyPromiseSettings,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(async () => Promise.race(promises), settings);
     }
 
     /**
      * The <i>any<i> method works similarly to <i>{@link Promise.any}</i> with the key distinction that it operates lazily.
      */
-    static any<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
-        return new LazyPromise(async () => Promise.any(promises));
+    static any<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings?: LazyPromiseSettings,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(async () => Promise.any(promises), settings);
     }
 
     /**
@@ -240,18 +263,23 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static fromCallback<TValue>(
         callback: LazyPromiseCallback<TValue>,
+        settings?: LazyPromiseSettings,
     ): LazyPromise<TValue> {
         return new LazyPromise(
             () =>
                 new Promise((resolve, reject) => {
                     callback(resolve, reject);
                 }),
+            settings,
         );
     }
 
     private promise: PromiseLike<TValue> | null = null;
     private asyncFn: () => PromiseLike<TValue>;
-    private readonly settings: Required<LazyPromiseSettings<TValue>>;
+    private readonly settings: Required<LazyPromiseSettings>;
+    private readonly eventBus = new LazyPromiseEventBus<
+        LazyPromiseEventMap<TValue>
+    >();
 
     /**
      * @example
@@ -270,7 +298,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     constructor(
         invokable: AsyncLazy<TValue>,
-        settings: LazyPromiseSettings<TValue> = {},
+        settings: LazyPromiseSettings = {},
     ) {
         this.asyncFn = () => resolveAsyncLazyable(invokable);
         this.settings = removeUndefinedProperties({
@@ -287,16 +315,40 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         });
     }
 
+    addListener<TEventName extends keyof LazyPromiseEventMap>(
+        eventName: Extract<TEventName, string>,
+        listener: Invokable<[event: LazyPromiseEventMap[TEventName]]>,
+    ): void {
+        this.eventBus.addListener(eventName, listener);
+    }
+
+    removeListener<TEventName extends keyof LazyPromiseEventMap>(
+        eventName: Extract<TEventName, string>,
+        listener: Invokable<[event: LazyPromiseEventMap[TEventName]]>,
+    ): void {
+        this.eventBus.removeListener(eventName, listener);
+    }
+
     private applyRetryTimeout(): void {
         if (this.settings.retryTimeout === null) {
             return;
         }
         const oldAsyncFn = this.asyncFn;
-        const newAsyncFn = () => {
-            if (this.settings.retryTimeout === null) {
-                throw new Error(`LazyPromise["time"] field is null`);
+        const newAsyncFn = async () => {
+            try {
+                if (this.settings.retryTimeout === null) {
+                    throw new Error(`LazyPromise["time"] field is null`);
+                }
+                return await timeoutAndFail(
+                    oldAsyncFn,
+                    this.settings.retryTimeout,
+                );
+            } catch (error: unknown) {
+                if (error instanceof TimeoutAsyncError) {
+                    this.eventBus.dispatch("retryTimeoutFailure", { error });
+                }
+                throw error;
             }
-            return timeoutAndFail(oldAsyncFn, this.settings.retryTimeout);
         };
         this.asyncFn = newAsyncFn;
     }
@@ -309,15 +361,35 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         this.applyRetryTimeout();
 
         const oldAsyncFn = this.asyncFn;
-        const newAsyncFn = () => {
-            if (this.settings.retryAttempts === null) {
-                throw new Error(`LazyPromise["attempts"] field is null`);
+        const newAsyncFn = async () => {
+            try {
+                if (this.settings.retryAttempts === null) {
+                    throw new Error(`LazyPromise["attempts"] field is null`);
+                }
+                return await retryOrFail(
+                    async (attempt) => {
+                        try {
+                            return await oldAsyncFn();
+                        } catch (error: unknown) {
+                            this.eventBus.dispatch("retryAttempt", {
+                                attempt,
+                                error,
+                            });
+                            throw error;
+                        }
+                    },
+                    {
+                        backoffPolicy: this.settings.backoffPolicy ?? undefined,
+                        retryPolicy: this.settings.retryPolicy ?? undefined,
+                        maxAttempts: this.settings.retryAttempts,
+                    },
+                );
+            } catch (error: unknown) {
+                if (error instanceof RetryAsyncError) {
+                    this.eventBus.dispatch("retryFailure", { error });
+                }
+                throw error;
             }
-            return retryOrFail(oldAsyncFn, {
-                backoffPolicy: this.settings.backoffPolicy ?? undefined,
-                retryPolicy: this.settings.retryPolicy ?? undefined,
-                maxAttempts: this.settings.retryAttempts,
-            });
         };
         this.asyncFn = newAsyncFn;
     }
@@ -328,10 +400,17 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         }
         const oldAsyncFn = this.asyncFn;
         const newAsyncFn = () => {
-            if (this.settings.totalTimeout === null) {
-                throw new Error(`LazyPromise["time"] field is null`);
+            try {
+                if (this.settings.totalTimeout === null) {
+                    throw new Error(`LazyPromise["time"] field is null`);
+                }
+                return timeoutAndFail(oldAsyncFn, this.settings.totalTimeout);
+            } catch (error: unknown) {
+                if (error instanceof TimeoutAsyncError) {
+                    this.eventBus.dispatch("totalTimeoutFailure", { error });
+                }
+                throw error;
             }
-            return timeoutAndFail(oldAsyncFn, this.settings.totalTimeout);
         };
         this.asyncFn = newAsyncFn;
     }
@@ -341,11 +420,21 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
             return;
         }
         const oldAsyncFn = this.asyncFn;
-        const newAsyncFn = () => {
-            if (this.settings.abortSignal === null) {
-                throw new Error(`LazyPromise["abortSignal"] field is null`);
+        const newAsyncFn = async () => {
+            try {
+                if (this.settings.abortSignal === null) {
+                    throw new Error(`LazyPromise["abortSignal"] field is null`);
+                }
+                return await abortAndFail(
+                    oldAsyncFn,
+                    this.settings.abortSignal,
+                );
+            } catch (error: unknown) {
+                if (error instanceof AbortAsyncError) {
+                    this.eventBus.dispatch("abortFailure", { error });
+                }
+                throw error;
             }
-            return abortAndFail(oldAsyncFn, this.settings.abortSignal);
         };
         this.asyncFn = newAsyncFn;
     }
@@ -354,27 +443,6 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         this.applyRetry();
         this.applyTotalTimeout();
         this.applyAbort();
-    }
-
-    /**
-     * @throws {AbortAsyncError} {@link AbortAsyncError}
-     * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}
-     * @throws {RetryAsyncError} {@link RetryAsyncError}
-     */
-    then<TResult1 = TValue, TResult2 = never>(
-        onfulfilled?:
-            | ((value: TValue) => TResult1 | PromiseLike<TResult1>)
-            | null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
-    ): PromiseLike<TResult1 | TResult2> {
-        this.applySettings();
-
-        if (this.promise === null) {
-            this.promise = this.asyncFn();
-        }
-        // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
-        return this.promise.then(onfulfilled, onrejected);
     }
 
     /**
@@ -531,25 +599,25 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         });
     }
 
-    onFinally(cb: LazyPromiseOnFinally): LazyPromise<TValue> {
-        return new LazyPromise(this.asyncFn, {
-            ...this.settings,
-            onFinally: cb,
-        });
-    }
+    /**
+     * @throws {AbortAsyncError} {@link AbortAsyncError}
+     * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}
+     * @throws {RetryAsyncError} {@link RetryAsyncError}
+     */
+    then<TResult1 = TValue, TResult2 = never>(
+        onfulfilled?:
+            | ((value: TValue) => TResult1 | PromiseLike<TResult1>)
+            | null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
+    ): PromiseLike<TResult1 | TResult2> {
+        this.applySettings();
 
-    onSuccess(cb: LazyPromiseOnSuccess<TValue>): LazyPromise<TValue> {
-        return new LazyPromise(this.asyncFn, {
-            ...this.settings,
-            onSuccess: cb,
-        });
-    }
-
-    onError(cb: LazyPromiseOnError): LazyPromise<TValue> {
-        return new LazyPromise(this.asyncFn, {
-            ...this.settings,
-            onError: cb,
-        });
+        if (this.promise === null) {
+            this.promise = this.asyncFn();
+        }
+        // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
+        return this.promise.then(onfulfilled, onrejected);
     }
 
     /**
@@ -574,24 +642,20 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * ```
      */
     defer(): void {
-        const onSuccesHandler = async (value: TValue): Promise<TValue> => {
-            try {
-                await this.settings.onSuccess(value);
-                return value;
-            } finally {
-                await this.settings.onFinally();
-            }
+        const onFinally = () => {
+            this.eventBus.dispatch("finally", undefined);
+            this.eventBus.clear();
         };
-
-        const onErrorHandler = async (error: unknown): Promise<unknown> => {
-            try {
-                await this.settings.onError(error);
-                return error;
-            } finally {
-                await this.settings.onFinally();
-            }
+        const onSuccess = (value: TValue): TValue => {
+            this.eventBus.dispatch("success", { value });
+            onFinally();
+            return value;
         };
-
-        this.then(onSuccesHandler, onErrorHandler);
+        const onFailure = (error: unknown): unknown => {
+            this.eventBus.dispatch("failure", { error });
+            onFinally();
+            return error;
+        };
+        this.then(onSuccess, onFailure);
     }
 }

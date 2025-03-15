@@ -11,7 +11,7 @@ import { retryOrFail } from "@/async/utilities/retry/retry-or-fail.js";
  * @internal
  */
 export async function retry<TValue = void>(
-    asyncFn: () => PromiseLike<TValue>,
+    asyncFn: (attempt: number) => PromiseLike<TValue>,
     settings: RetrySettings = {},
 ): Promise<Result<TValue, RetryAsyncError>> {
     try {
