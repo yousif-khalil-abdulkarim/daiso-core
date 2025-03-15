@@ -332,6 +332,20 @@ export class LazyPromise<TValue>
         this.eventBus.removeListener(event, listener);
     }
 
+    addListener<TEventName extends keyof LazyPromiseEventMap>(
+        eventName: Extract<TEventName, string>,
+        listener: Invokable<[event: LazyPromiseEventMap[TEventName]]>,
+    ): void {
+        this.eventBus.addListener(eventName, listener);
+    }
+
+    removeListener<TEventName extends keyof LazyPromiseEventMap>(
+        eventName: Extract<TEventName, string>,
+        listener: Invokable<[event: LazyPromiseEventMap[TEventName]]>,
+    ): void {
+        this.eventBus.removeListener(eventName, listener);
+    }
+
     private applyRetryTimeout(): void {
         if (this.settings.retryTimeout === null) {
             return;
