@@ -1,8 +1,6 @@
 /**
  * @module Lock
  */
-
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
     ILockProviderFactory,
@@ -14,12 +12,18 @@ import {
     resolveOneOrMore,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
-import type { IKeyPrefixer, TimeSpan } from "@/utilities/_module-exports.js";
+import type {
+    AsyncLazy,
+    Factory,
+    IKeyPrefixer,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
 import {
     LockProvider,
     type LockAdapterFactoryable,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
+import type { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
@@ -147,38 +151,12 @@ export class LockProviderFactory<TAdapters extends string>
         });
     }
 
-    setRetryAttempts(attempts: number): LockProviderFactory<TAdapters> {
+    setLazyPromiseFactory(
+        factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
+    ): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
-            retryAttempts: attempts,
-        });
-    }
-
-    setBackoffPolicy(policy: BackoffPolicy): LockProviderFactory<TAdapters> {
-        return new LockProviderFactory({
-            ...this.settings,
-            backoffPolicy: policy,
-        });
-    }
-
-    setRetryPolicy(policy: RetryPolicy): LockProviderFactory<TAdapters> {
-        return new LockProviderFactory({
-            ...this.settings,
-            retryPolicy: policy,
-        });
-    }
-
-    setRetryTimeout(timeout: TimeSpan): LockProviderFactory<TAdapters> {
-        return new LockProviderFactory({
-            ...this.settings,
-            retryTimeout: timeout,
-        });
-    }
-
-    setTotalTimeout(timeout: TimeSpan): LockProviderFactory<TAdapters> {
-        return new LockProviderFactory({
-            ...this.settings,
-            totalTimeout: timeout,
+            lazyPromiseFactory: factory,
         });
     }
 

@@ -41,19 +41,6 @@ import {
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export type LazyPromiseSettingsBase = {
-    backoffPolicy?: BackoffPolicy | null;
-    retryAttempts?: number | null;
-    retryPolicy?: RetryPolicy | null;
-    retryTimeout?: TimeSpan | null;
-    totalTimeout?: TimeSpan | null;
-};
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
- * @group Utilities
- */
 export type LazyPromiseEventMap<TValue = unknown> = {
     failure: {
         error: unknown;
@@ -85,7 +72,12 @@ export type LazyPromiseEventMap<TValue = unknown> = {
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export type LazyPromiseSettings = LazyPromiseSettingsBase & {
+export type LazyPromiseSettings = {
+    backoffPolicy?: BackoffPolicy | null;
+    retryAttempts?: number | null;
+    retryPolicy?: RetryPolicy | null;
+    retryTimeout?: TimeSpan | null;
+    totalTimeout?: TimeSpan | null;
     abortSignal?: AbortSignal | null;
 };
 

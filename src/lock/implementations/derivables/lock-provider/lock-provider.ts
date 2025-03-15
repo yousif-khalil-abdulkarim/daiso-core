@@ -12,6 +12,10 @@ import {
     type Items,
     CORE,
     resolveAsyncFactoryable,
+    type Factory,
+    type AsyncLazy,
+    type FactoryFn,
+    resolveFactory,
 } from "@/utilities/_module-exports.js";
 import { KeyPrefixer, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
@@ -25,12 +29,7 @@ import {
     type ILockProvider,
     type ILockAdapter,
 } from "@/lock/contracts/_module-exports.js";
-import {
-    LazyPromise,
-    type BackoffPolicy,
-    type LazyPromiseSettingsBase,
-    type RetryPolicy,
-} from "@/async/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     EventClass,
     EventInstance,
@@ -61,8 +60,10 @@ import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-pro
  * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
-export type LockProviderSettingsBase = LazyPromiseSettingsBase & {
+export type LockProviderSettingsBase = {
     keyPrefixer: IKeyPrefixer;
+
+    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
 
     serde: OneOrMore<IFlexibleSerde>;
 
@@ -210,11 +211,6 @@ export class LockProvider implements IGroupableLockProvider {
     private readonly eventBus: IEventBus<LockEvents>;
     private readonly adapterFactoryable: LockAdapterFactoryable;
     private readonly adapterPromise: PromiseLike<ILockAdapter>;
-    private readonly retryAttempts: number | null;
-    private readonly backoffPolicy: BackoffPolicy | null;
-    private readonly retryPolicy: RetryPolicy | null;
-    private readonly retryTimeout: TimeSpan | null;
-    private readonly totalTimeout: TimeSpan | null;
     private readonly keyPrefixer: IKeyPrefixer;
     private readonly createOwnerId: () => string;
     private readonly defaultTtl: TimeSpan | null;
@@ -222,6 +218,10 @@ export class LockProvider implements IGroupableLockProvider {
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<IFlexibleSerde>;
+    private readonly lazyPromiseFactory: FactoryFn<
+        AsyncLazy<any>,
+        LazyPromise<any>
+    >;
 
     /**
      * @example
@@ -328,12 +328,8 @@ export class LockProvider implements IGroupableLockProvider {
                 keyPrefixer: new KeyPrefixer("events"),
                 adapter: new MemoryEventBusAdapter(),
             }),
-            retryAttempts = null,
-            backoffPolicy = null,
-            retryPolicy = null,
-            retryTimeout = null,
-            totalTimeout = null,
             serdeTransformerName = "",
+            lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
 
         this.serde = serde;
@@ -345,14 +341,10 @@ export class LockProvider implements IGroupableLockProvider {
         this.groupableEventBus = groupableEventBus;
         this.adapterFactoryable = adapter;
         this.defaultTtl = defaultTtl;
-        this.retryAttempts = retryAttempts;
-        this.backoffPolicy = backoffPolicy;
-        this.retryPolicy = retryPolicy;
-        this.retryTimeout = retryTimeout;
-        this.totalTimeout = totalTimeout;
         this.eventBus = this.eventBus = this.groupableEventBus.withGroup(
             this.keyPrefixer.resolvedRootPrefix,
         );
+        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
 
         if (this.keyPrefixer.resolvedGroup) {
             this.eventBus = this.groupableEventBus.withGroup([
@@ -480,13 +472,7 @@ export class LockProvider implements IGroupableLockProvider {
     private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(asyncFn, {
-            retryAttempts: this.retryAttempts,
-            backoffPolicy: this.backoffPolicy,
-            retryPolicy: this.retryPolicy,
-            retryTimeout: this.retryTimeout,
-            totalTimeout: this.totalTimeout,
-        });
+        return new LazyPromise(asyncFn);
     }
 
     /**
@@ -617,10 +603,7 @@ export class LockProvider implements IGroupableLockProvider {
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
-            retryAttempts: this.retryAttempts,
-            backoffPolicy: this.backoffPolicy,
-            retryPolicy: this.retryPolicy,
-            retryTimeout: this.retryTimeout,
+            lazyPromiseFactory: this.lazyPromiseFactory,
         });
     }
 }

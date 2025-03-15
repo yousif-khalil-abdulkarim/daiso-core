@@ -6,6 +6,8 @@ import {
     DefaultAdapterNotDefinedError,
     resolveOneOrMore,
     UnregisteredAdapterError,
+    type AsyncLazy,
+    type Factory,
 } from "@/utilities/_module-exports.js";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
@@ -18,7 +20,7 @@ import {
     type CacheAdapterFactoryable,
 } from "@/cache/implementations/derivables/cache/_module.js";
 import { KeyPrefixer, type TimeSpan } from "@/utilities/_module-exports.js";
-import type { BackoffPolicy, RetryPolicy } from "@/async/_module-exports.js";
+import type { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
@@ -112,38 +114,12 @@ export class CacheFactory<TAdapters extends string = string>
         });
     }
 
-    setRetryAttempts(attempts: number): CacheFactory<TAdapters> {
+    setlazyPromiseFactory(
+        factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
+    ): CacheFactory<TAdapters> {
         return new CacheFactory({
             ...this.settings,
-            retryAttempts: attempts,
-        });
-    }
-
-    setBackoffPolicy(policy: BackoffPolicy): CacheFactory<TAdapters> {
-        return new CacheFactory({
-            ...this.settings,
-            backoffPolicy: policy,
-        });
-    }
-
-    setRetryPolicy(policy: RetryPolicy): CacheFactory<TAdapters> {
-        return new CacheFactory({
-            ...this.settings,
-            retryPolicy: policy,
-        });
-    }
-
-    setRetryTimeout(timeout: TimeSpan): CacheFactory<TAdapters> {
-        return new CacheFactory({
-            ...this.settings,
-            retryTimeout: timeout,
-        });
-    }
-
-    setTotalTimeout(timeout: TimeSpan): CacheFactory<TAdapters> {
-        return new CacheFactory({
-            ...this.settings,
-            totalTimeout: timeout,
+            lazyPromiseFactory: factory,
         });
     }
 
