@@ -34,9 +34,21 @@ import {
 } from "@/utilities/_module-exports.js";
 import { delay } from "@/async/utilities/_module.js";
 import {
-    LazyPromiseEventBus,
-    type ILazyPromiseListener,
-} from "@/async/utilities/lazy-promise/lazy-promise-listener.contract.js";
+    AbortLazyPromiseEvent,
+    FailureLazyPromiseEvent,
+    FinallyLazyPromiseEvent,
+    RetryAttemptLazyPromiseEvent,
+    RetryFailureLazyPromiseEvent,
+    RetryTimeoutLazyPromiseEvent,
+    SuccessLazyPromiseEvent,
+    TotalTimeoutFailureLazyPromiseEvent,
+    type LazyPromiseEvents,
+} from "@/async/utilities/lazy-promise/lazy-promise-events.js";
+import type {
+    EventClass,
+    EventListener,
+    EventInstance,
+} from "@/event-bus/contracts/event-bus.contract.js";
 
 /**
  *
@@ -306,19 +318,18 @@ export class LazyPromise<TValue>
             ...settings,
         });
     }
-
-    addListener<TEventName extends keyof LazyPromiseEventMap>(
-        eventName: Extract<TEventName, string>,
-        listener: Invokable<[event: LazyPromiseEventMap[TEventName]]>,
+    addListener<TEventClass extends EventClass<LazyPromiseEvents<TValue>>>(
+        event: TEventClass,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): void {
-        this.eventBus.addListener(eventName, listener);
+        this.eventBus.addListener(event, listener);
     }
 
-    removeListener<TEventName extends keyof LazyPromiseEventMap>(
-        eventName: Extract<TEventName, string>,
-        listener: Invokable<[event: LazyPromiseEventMap[TEventName]]>,
+    removeListener<TEventClass extends EventClass<LazyPromiseEvents<TValue>>>(
+        event: TEventClass,
+        listener: EventListener<EventInstance<TEventClass>>,
     ): void {
-        this.eventBus.removeListener(eventName, listener);
+        this.eventBus.removeListener(event, listener);
     }
 
     private applyRetryTimeout(): void {
@@ -337,7 +348,9 @@ export class LazyPromise<TValue>
                 );
             } catch (error: unknown) {
                 if (error instanceof TimeoutAsyncError) {
-                    this.eventBus.dispatch("retryTimeoutFailure", { error });
+                    this.eventBus.dispatch(
+                        new RetryTimeoutLazyPromiseEvent({ error }),
+                    );
                 }
                 throw error;
             }
@@ -363,10 +376,12 @@ export class LazyPromise<TValue>
                         try {
                             return await oldAsyncFn();
                         } catch (error: unknown) {
-                            this.eventBus.dispatch("retryAttempt", {
-                                attempt,
-                                error,
-                            });
+                            this.eventBus.dispatch(
+                                new RetryAttemptLazyPromiseEvent({
+                                    attempt,
+                                    error,
+                                }),
+                            );
                             throw error;
                         }
                     },
@@ -378,7 +393,9 @@ export class LazyPromise<TValue>
                 );
             } catch (error: unknown) {
                 if (error instanceof RetryAsyncError) {
-                    this.eventBus.dispatch("retryFailure", { error });
+                    this.eventBus.dispatch(
+                        new RetryFailureLazyPromiseEvent({ error }),
+                    );
                 }
                 throw error;
             }
@@ -399,7 +416,9 @@ export class LazyPromise<TValue>
                 return timeoutAndFail(oldAsyncFn, this.settings.totalTimeout);
             } catch (error: unknown) {
                 if (error instanceof TimeoutAsyncError) {
-                    this.eventBus.dispatch("totalTimeoutFailure", { error });
+                    this.eventBus.dispatch(
+                        new TotalTimeoutFailureLazyPromiseEvent({ error }),
+                    );
                 }
                 throw error;
             }
@@ -423,7 +442,9 @@ export class LazyPromise<TValue>
                 );
             } catch (error: unknown) {
                 if (error instanceof AbortAsyncError) {
-                    this.eventBus.dispatch("abortFailure", { error });
+                    this.eventBus.dispatch(
+                        new AbortLazyPromiseEvent({ error }),
+                    );
                 }
                 throw error;
             }
@@ -635,16 +656,16 @@ export class LazyPromise<TValue>
      */
     defer(): void {
         const onFinally = () => {
-            this.eventBus.dispatch("finally", undefined);
+            this.eventBus.dispatch(new FinallyLazyPromiseEvent({}));
             this.eventBus.clear();
         };
         const onSuccess = (value: TValue): TValue => {
-            this.eventBus.dispatch("success", { value });
+            this.eventBus.dispatch(new SuccessLazyPromiseEvent({ value }));
             onFinally();
             return value;
         };
         const onFailure = (error: unknown): unknown => {
-            this.eventBus.dispatch("failure", { error });
+            this.eventBus.dispatch(new FailureLazyPromiseEvent({ error }));
             onFinally();
             return error;
         };
