@@ -1,5 +1,24 @@
 # @daiso-tech/core
 
+## 0.32.0
+
+### Minor Changes
+
+-   d66438f: Addded new static method to <i>LazyPromise</i> class:
+    -   The <i>fromCallback</i> method is a convenient utility for wrapping Node.js-style callback functions into a <i>LazyPromise</i>.
+-   d66438f: Removed <i>onError</i>, <i>onSuccess</i>, and <i>onFinally</i> from <i>LazyPromise</i>. Added <i>addListener</i> and <i>removeListener</i> instead, making it easier to track and handle all states of a <i>LazyPromise</i> which is useful for observability.
+-   d66438f: Removed <i>LazyPromiseSettings</i> from the follwing classes:
+
+    -   Cache
+    -   CacheFactory
+    -   LockProvider
+    -   LockProviderFactory
+    -   EventBus
+    -   EventBusFactory
+    -   AsyncIterableCollection
+
+    Instead, you now pass a <i>lazyPromiseFactory</i> settings field to configure <i>LazyPromise</i> defaults for these classes.
+
 ## 0.31.1
 
 ### Patch Changes
