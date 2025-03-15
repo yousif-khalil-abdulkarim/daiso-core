@@ -1,7 +1,6 @@
 /**
  * @module Async
  */
-
 import type { BackoffPolicy } from "@/async/backof-policies/_module.js";
 import type {
     AsyncLazy,
@@ -86,13 +85,44 @@ export type LazyPromiseSettings<TValue = unknown> =
         };
 
 /**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type LazyPromiseResolve<TValue> = InvokableFn<
+    [value: Promisable<TValue>],
+    void
+>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type LazyPromiseReject = InvokableFn<[error: unknown], void>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Utilities
+ */
+export type LazyPromiseCallback<TValue> = InvokableFn<
+    [
+        resolve: LazyPromiseResolve<TValue>,
+        // (value: TValue) => void,
+        reject: LazyPromiseReject,
+    ],
+    Promisable<void>
+>;
+
+/**
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.
  * The class includes helpful methods
  * - <i>defer</i>
  * - <i>setRetryAttempts</i>
  * - <i>setRetryTimeout</i>
  * - <i>setRetryPolicy</i>
- * - <i>backoffPolicy</i>
+ * - <i>setBackoffPolicy</i>
  * - <i>setTotalTimeout</i>
  * - <i>setAbortSignal</i>
  *
@@ -188,6 +218,37 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         return new LazyPromise(async () => Promise.any(promises));
     }
 
+    /**
+     * The <i>fromCallback</i> is convience method used for wrapping Node js callback functions with a <i>LazyPromise</i>.
+     * @example
+     * ```ts
+     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { readFile } from "node:fs";
+     *
+     * const lazyPromise = LazyPromise.fromCallback<Buffer>((resolve, reject) => {
+     *   readFile("FILE_PATH", (err, data) => {
+     *     if (err !== null) {
+     *       reject(err);
+     *       return;
+     *     }
+     *     resolve(data);
+     *   });
+     * });
+     * const file = await lazyPromise;
+     * console.log(file);
+     * ```
+     */
+    static fromCallback<TValue>(
+        callback: LazyPromiseCallback<TValue>,
+    ): LazyPromise<TValue> {
+        return new LazyPromise(
+            () =>
+                new Promise((resolve, reject) => {
+                    callback(resolve, reject);
+                }),
+        );
+    }
+
     private promise: PromiseLike<TValue> | null = null;
     private asyncFn: () => PromiseLike<TValue>;
     private readonly settings: Required<LazyPromiseSettings<TValue>>;
@@ -204,12 +265,14 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * // "I am lazy" will only logged when awaited or then method i called.
      * await promise;
      * ```
+     *
+     * You can pass sync or async <i>{@link Invokable}</i>.
      */
     constructor(
-        asyncFn: AsyncLazy<TValue>,
+        invokable: AsyncLazy<TValue>,
         settings: LazyPromiseSettings<TValue> = {},
     ) {
-        this.asyncFn = () => resolveAsyncLazyable(asyncFn);
+        this.asyncFn = () => resolveAsyncLazyable(invokable);
         this.settings = removeUndefinedProperties({
             retryAttempts: null,
             backoffPolicy: null,

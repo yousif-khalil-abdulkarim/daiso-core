@@ -337,16 +337,9 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     asPromise<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
     ): LazyPromise<EventInstance<TEventClass>> {
-        return new LazyPromise(
-            () =>
-                new Promise<EventInstance<TEventClass>>((resolve, reject) => {
-                    this.listenOnce(event, resolve).then(
-                        (event) => event,
-                        // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
-                        reject,
-                    );
-                }),
-        );
+        return LazyPromise.fromCallback((resolve, reject) => {
+            this.listenOnce(event, resolve).then(() => {}, reject);
+        });
     }
 
     subscribeOnce<TEventClass extends EventClass<TEvents>>(
