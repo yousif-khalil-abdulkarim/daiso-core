@@ -65,6 +65,7 @@ export class UnexpectedCollectionError extends CollectionError {
 }
 
 /**
+ * The error is thrown when the item is not found.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
@@ -86,6 +87,7 @@ export class ItemNotFoundCollectionError extends CollectionError {
 }
 
 /**
+ * The error is thrown when multiple items are found.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
@@ -107,6 +109,7 @@ export class MultipleItemsFoundCollectionError extends CollectionError {
 }
 
 /**
+ * The error is thrown when calling a method that needs all items to be of a specific type. For example, the <i>sum</i> method requires all items to be numbers.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
@@ -128,6 +131,7 @@ export class TypeCollectionError extends CollectionError {
 }
 
 /**
+ * The error is thrown when calling a method that needs the collection not to be empty. For example, the <i>average</i> method requires the collection not to be empty.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
  * @group Errors
@@ -147,6 +151,20 @@ export class EmptyCollectionError extends CollectionError {
         this.name = EmptyCollectionError.name;
     }
 }
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * @group Errors
+ */
+export const COLLECTION_ERRORS = {
+    Base: CollectionError,
+    Unexpected: UnexpectedCollectionError,
+    ItemNotFound: ItemNotFoundCollectionError,
+    MultipleItemsFound: MultipleItemsFoundCollectionError,
+    Type: TypeCollectionError,
+    Empty: EmptyCollectionError,
+} as const;
 
 /**
  * The <i>registerCollectionErrorsToSerde</i> function registers all <i>ICollection</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.

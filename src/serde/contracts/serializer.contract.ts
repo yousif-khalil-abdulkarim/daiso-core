@@ -3,7 +3,7 @@
  */
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    SerializationError,
+    SerializationSerdeError,
 } from "@/serde/contracts/serde.errors.js";
 
 /**
@@ -14,7 +14,7 @@ import {
  */
 export type ISerializer<TSerializedValue = unknown> = {
     /**
-     * @throws {SerializationError} {@link SerializationError}
+     * @throws {SerializationSerdeError} {@link SerializationSerdeError}
      */
     serialize<TValue>(value: TValue): TSerializedValue;
 };

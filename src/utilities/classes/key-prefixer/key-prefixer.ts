@@ -21,8 +21,7 @@ type KeySettings = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
- * @group KeyPrefixer
+ * @internal
  */
 class Key implements IKey {
     private readonly prefixArr: AtLeastOne<string>;
@@ -109,21 +108,32 @@ export class KeyPrefixer implements IKeyPrefixer {
         }
     }
 
+    /**
+     * @internal
+     */
     get originalGroup(): OneOrMore<string> | null {
         return this._group;
     }
 
+    /**
+     * @internal
+     */
     get resolvedGroup(): string | null {
         if (this._group === null) {
             return null;
         }
         return resolveOneOrMoreStr(this._group);
     }
-
+    /**
+     * @internal
+     */
     get originalRootPrefix(): OneOrMore<string> {
         return this._rootPrefix;
     }
 
+    /**
+     * @internal
+     */
     get resolvedRootPrefix(): string {
         return resolveOneOrMoreStr(this._rootPrefix);
     }
@@ -156,6 +166,9 @@ export class KeyPrefixer implements IKeyPrefixer {
         return [...array, this.keyIdentifier];
     }
 
+    /**
+     * @internal
+     */
     get keyPrefix(): string {
         return resolveOneOrMoreStr(
             this.getKeyPrefixArray(),
@@ -165,6 +178,7 @@ export class KeyPrefixer implements IKeyPrefixer {
 
     /**
      * Chaining this method multiple times will have no effect.
+     * @internal
      */
     withGroup(group: OneOrMore<string>): KeyPrefixer {
         const keyProvider = new KeyPrefixer(this._rootPrefix, {
@@ -180,6 +194,9 @@ export class KeyPrefixer implements IKeyPrefixer {
         return keyProvider;
     }
 
+    /**
+     * @internal
+     */
     create(key: OneOrMore<string>): Key {
         this.validate(key);
         return new Key({

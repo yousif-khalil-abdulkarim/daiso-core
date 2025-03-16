@@ -15,14 +15,28 @@ export class SerdeError extends Error {
 }
 
 /**
+ * The error occurs when a value is unable to be serialized.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Errors
  */
-export class SerializationError extends SerdeError {
+export class SerializationSerdeError extends SerdeError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
-        this.name = SerializationError.name;
+        this.name = SerializationSerdeError.name;
+    }
+}
+
+/**
+ * The error occurs when a value is unable to be deserialized.
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
+ * @group Errors
+ */
+export class DeserializationSerdeError extends SerdeError {
+    constructor(message: string, cause?: unknown) {
+        super(message, { cause });
+        this.name = DeserializationSerdeError.name;
     }
 }
 
@@ -31,9 +45,8 @@ export class SerializationError extends SerdeError {
  * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
  * @group Errors
  */
-export class DeserializationError extends SerdeError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = DeserializationError.name;
-    }
-}
+export const SERDE_ERRORS = {
+    Base: SerdeError,
+    Serialization: SerializationSerdeError,
+    Deserialization: DeserializationSerdeError,
+} as const;

@@ -73,6 +73,7 @@ export class UnexpectedLockError
 }
 
 /**
+ * The error is thrown when an unexpected error occurs while acquiring a lock.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
@@ -104,6 +105,7 @@ export class UnableToAquireLockError
 }
 
 /**
+ * The error is thrown when an unexpected error occurs while releasing a lock.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
@@ -135,6 +137,7 @@ export class UnableToReleaseLockError
 }
 
 /**
+ * The error is thrown when trying to acquire a lock that is owned by a different owner.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
@@ -166,6 +169,7 @@ export class KeyAlreadyAcquiredLockError
 }
 
 /**
+ * The error is thrown when trying to release a lock that is owned by a different owner.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
@@ -197,6 +201,7 @@ export class UnownedReleaseLockError
 }
 
 /**
+ * The error is thrown when trying to referesh a lock that is owned by a different owner.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Errors
@@ -226,6 +231,20 @@ export class UnownedRefreshLockError
         };
     }
 }
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * @group Errors
+ */
+export const LOCK_ERRORS = {
+    Base: LockError,
+    Unexpected: UnexpectedLockError,
+    UnableToAquire: UnableToAquireLockError,
+    UnableToRelease: UnableToReleaseLockError,
+    KeyAlreadyAcquired: KeyAlreadyAcquiredLockError,
+    UnownedRelease: UnownedReleaseLockError,
+} as const;
 
 /**
  * The <i>registerLockErrorsToSerde</i> function registers all <i>{@link ILock}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.

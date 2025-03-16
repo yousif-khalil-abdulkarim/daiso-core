@@ -14,6 +14,7 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
+ * The event is dispatched when key is found.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
@@ -25,6 +26,7 @@ export class KeyFoundCacheEvent<TType = unknown> extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when key is not found.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
@@ -35,6 +37,7 @@ export class KeyNotFoundCacheEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when key is added.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
@@ -47,6 +50,7 @@ export class KeyAddedCacheEvent<TType = unknown> extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when key is updated.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
@@ -58,6 +62,7 @@ export class KeyUpdatedCacheEvent<TType = unknown> extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when key is removed.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
@@ -68,6 +73,7 @@ export class KeyRemovedCacheEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when key is incremented.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
@@ -79,6 +85,7 @@ export class KeyIncrementedCacheEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when key is decremented.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
@@ -90,6 +97,7 @@ export class KeyDecrementedCacheEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when all keys all cleared.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
@@ -103,13 +111,30 @@ export class KeysClearedCacheEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class UnexpectedCacheErrorEvent extends BaseEvent<{
+export class UnexpectedErrorCacheEvent extends BaseEvent<{
     group: string | null;
     keys?: string[];
     value?: unknown;
     method: string;
     error: unknown;
 }> {}
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
+ * @group Events
+ */
+export const CACHE_EVENTS = {
+    KeyFound: KeyFoundCacheEvent,
+    KeyNotFound: KeyNotFoundCacheEvent,
+    KeyAdded: KeyAddedCacheEvent,
+    KeyUpdated: KeyUpdatedCacheEvent,
+    KeyRemoved: KeyRemovedCacheEvent,
+    KeyIncremented: KeyIncrementedCacheEvent,
+    KeyDecremented: KeyDecrementedCacheEvent,
+    KeysCleared: KeysClearedCacheEvent,
+    UnexpectedError: UnexpectedErrorCacheEvent,
+};
 
 /**
  *
@@ -125,7 +150,7 @@ export type CacheEvents<TType = unknown> =
     | KeyIncrementedCacheEvent
     | KeyDecrementedCacheEvent
     | KeysClearedCacheEvent
-    | UnexpectedCacheErrorEvent;
+    | UnexpectedErrorCacheEvent;
 
 /**
  * The <i>registerCacheEventsToSerde</i> function registers all <i>{@link IGroupableCache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
@@ -146,6 +171,6 @@ export function registerCacheEventsToSerde(
             .registerEvent(KeyIncrementedCacheEvent, CORE)
             .registerEvent(KeyDecrementedCacheEvent, CORE)
             .registerEvent(KeysClearedCacheEvent, CORE)
-            .registerEvent(UnexpectedCacheErrorEvent, CORE);
+            .registerEvent(UnexpectedErrorCacheEvent, CORE);
     }
 }
