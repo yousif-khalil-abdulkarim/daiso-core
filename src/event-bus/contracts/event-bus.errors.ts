@@ -67,6 +67,7 @@ export class UnexpectedEventBusError extends EventBusError {
 }
 
 /**
+ * The error is thrown when an unexpected error occurs while removing a listener.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
@@ -88,6 +89,7 @@ export class UnableToRemoveListenerEventBusError extends UnexpectedEventBusError
 }
 
 /**
+ * The error is thrown when an unexpected error occurs while adding a listener.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
@@ -109,6 +111,7 @@ export class UnableToAddListenerEventBusError extends UnexpectedEventBusError {
 }
 
 /**
+ * The error is thrown when an unexpected error occurs while dispatching an event.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors
@@ -119,6 +122,19 @@ export class UnableToDispatchEventBusError extends UnexpectedEventBusError {
         this.name = UnableToDispatchEventBusError.name;
     }
 }
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * @group Errors
+ */
+export const EVENT_BUS_ERRORS = {
+    Base: EventBusError,
+    Unexpected: UnexpectedEventBusError,
+    UnableToRemoveListener: UnableToRemoveListenerEventBusError,
+    UnableToAddListener: UnableToAddListenerEventBusError,
+    UnableToDispatch: UnableToDispatchEventBusError,
+};
 
 /**
  * The <i>registerEventBusErrorsToSerde</i> function registers all <i>{@link IGroupableEventBus}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.

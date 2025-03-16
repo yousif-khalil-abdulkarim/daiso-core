@@ -3,8 +3,8 @@
  */
 import {
     type ISerde,
-    DeserializationError,
-    SerializationError,
+    DeserializationSerdeError,
+    SerializationSerdeError,
 } from "@/serde/contracts/_module-exports.js";
 
 /**
@@ -24,7 +24,7 @@ export class RedisCacheAdapterSerde implements ISerde<string> {
             }
             return this.serde.serialize(value);
         } catch (error: unknown) {
-            throw new SerializationError(
+            throw new SerializationSerdeError(
                 `Serialization error "${String(error)}" occured`,
                 error,
             );
@@ -39,7 +39,7 @@ export class RedisCacheAdapterSerde implements ISerde<string> {
             }
             return this.serde.deserialize(value);
         } catch (error: unknown) {
-            throw new DeserializationError(
+            throw new DeserializationSerdeError(
                 `Deserialization error "${String(error)}" occured`,
                 error,
             );

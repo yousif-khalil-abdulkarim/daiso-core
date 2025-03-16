@@ -4,8 +4,8 @@
 
 import {
     type ISerde,
-    DeserializationError,
-    SerializationError,
+    DeserializationSerdeError,
+    SerializationSerdeError,
 } from "@/serde/contracts/_module-exports.js";
 
 /**
@@ -25,7 +25,7 @@ export class MongodbCacheAdapterSerde implements ISerde<string | number> {
             }
             return this.serde.serialize(value);
         } catch (error: unknown) {
-            throw new SerializationError(
+            throw new SerializationSerdeError(
                 `Serialization error "${String(error)}" occured`,
                 error,
             );
@@ -39,7 +39,7 @@ export class MongodbCacheAdapterSerde implements ISerde<string | number> {
             }
             return this.serde.deserialize(value);
         } catch (error: unknown) {
-            throw new DeserializationError(
+            throw new DeserializationSerdeError(
                 `Serialization error "${String(error)}" occured`,
                 error,
             );

@@ -4,7 +4,7 @@
 
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    DeserializationError,
+    DeserializationSerdeError,
 } from "@/serde/contracts/serde.errors.js";
 
 /**
@@ -15,7 +15,7 @@ import {
  */
 export type IDeserializer<TSerializedValue = unknown> = {
     /**
-     * @throws {DeserializationError} {@link DeserializationError}
+     * @throws {DeserializationSerdeError} {@link DeserializationSerdeError}
      */
     deserialize<TValue>(serializedValue: TSerializedValue): TValue;
 };

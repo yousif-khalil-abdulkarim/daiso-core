@@ -55,37 +55,6 @@ import type {
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export type AsyncEventMap<TValue = unknown> = {
-    failure: {
-        error: unknown;
-    };
-    success: {
-        value: TValue;
-    };
-    finally: undefined;
-    retryAttempt: {
-        attempt: number;
-        error: unknown;
-    };
-    retryTimeoutFailure: {
-        error: TimeoutAsyncError;
-    };
-    retryFailure: {
-        error: RetryAsyncError;
-    };
-    totalTimeoutFailure: {
-        error: TimeoutAsyncError;
-    };
-    abortFailure: {
-        error: AbortAsyncError;
-    };
-};
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
- * @group Utilities
- */
 export type LazyPromiseSettings = {
     backoffPolicy?: BackoffPolicy | null;
     retryAttempts?: number | null;
@@ -130,21 +99,20 @@ export type LazyPromiseCallback<TValue> = InvokableFn<
  * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when then method is called.
  * The class includes helpful methods
  * - <i>defer</i>
- * - <i>setRetryAttempts</i>
  * - <i>setRetryTimeout</i>
  * - <i>setRetryPolicy</i>
  * - <i>setBackoffPolicy</i>
+ * - <i>setRetryAttempts</i>
  * - <i>setTotalTimeout</i>
  * - <i>setAbortSignal</i>
  *
- * The order in which these methods are called does not affect their methodality. Internally, the following execution order is applied:
+ * The order in which these methods are called does not have any affect. Internally, the following execution order is applied:
  * 1. <i>setRetryTimeout</i>
- * 2. <i>setRetryAttempts</i>
- * 3. <i>setTotalTimeout</i>
- * 4. <i>setAbortSignal</i>
- *
- * This means that combining all methods ensures the <i>retryAttempts</i> method will continue retrying even if the timeout is triggered,
- * while the <i>abort</i> method takes priority to cancel all operations if activated.
+ * 2. <i>setRetryPolicy</i>
+ * 3. <i>setBackoffPolicy</i>
+ * 4. <i>setRetryAttempts</i>
+ * 5. <i>setTotalTimeout</i>
+ * 6. <i>setAbortSignal</i>
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities

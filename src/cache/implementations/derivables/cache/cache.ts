@@ -16,7 +16,7 @@ import {
     KeyIncrementedCacheEvent,
     KeyDecrementedCacheEvent,
     KeysClearedCacheEvent,
-    UnexpectedCacheErrorEvent,
+    UnexpectedErrorCacheEvent,
     type ICache,
     type ICacheAdapter,
 } from "@/cache/contracts/_module-exports.js";
@@ -446,7 +446,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
-                        new UnexpectedCacheErrorEvent({
+                        new UnexpectedErrorCacheEvent({
                             group: this.getGroup(),
                             keys: [keyObj.resolved],
                             method: this.get.name,
@@ -509,7 +509,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
-                        new UnexpectedCacheErrorEvent({
+                        new UnexpectedErrorCacheEvent({
                             group: this.getGroup(),
                             keys: [keyObj.resolved],
                             method: this.get.name,
@@ -580,7 +580,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
-                        new UnexpectedCacheErrorEvent({
+                        new UnexpectedErrorCacheEvent({
                             group: this.getGroup(),
                             keys: [keyObj.resolved],
                             value,
@@ -634,7 +634,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
-                        new UnexpectedCacheErrorEvent({
+                        new UnexpectedErrorCacheEvent({
                             group: this.getGroup(),
                             keys: [keyObj.resolved],
                             value,
@@ -678,7 +678,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
-                        new UnexpectedCacheErrorEvent({
+                        new UnexpectedErrorCacheEvent({
                             group: this.getGroup(),
                             keys: [keyObj.resolved],
                             value,
@@ -740,7 +740,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
-                        new UnexpectedCacheErrorEvent({
+                        new UnexpectedErrorCacheEvent({
                             group: this.getGroup(),
                             keys: [keyObj.resolved],
                             value,
@@ -792,7 +792,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
-                        new UnexpectedCacheErrorEvent({
+                        new UnexpectedErrorCacheEvent({
                             group: this.getGroup(),
                             keys: [keyObj.resolved],
                             method: this.remove.name,
@@ -842,7 +842,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
-                        new UnexpectedCacheErrorEvent({
+                        new UnexpectedErrorCacheEvent({
                             group: this.getGroup(),
                             keys: keyObjArr.map((keyObj) => keyObj.resolved),
                             method: this.remove.name,
@@ -875,7 +875,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(
-                        new UnexpectedCacheErrorEvent({
+                        new UnexpectedErrorCacheEvent({
                             group: this.getGroup(),
                             method: this.clear.name,
                             error,

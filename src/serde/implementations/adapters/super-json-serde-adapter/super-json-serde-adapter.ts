@@ -5,8 +5,8 @@
 import {
     type ISerdeTransformerAdapter,
     type IFlexibleSerdeAdapter,
-    DeserializationError,
-    SerializationError,
+    DeserializationSerdeError,
+    SerializationSerdeError,
 } from "@/serde/contracts/_module-exports.js";
 import { SuperJSON } from "superjson-cjs";
 
@@ -45,7 +45,7 @@ export class SuperJsonSerdeAdapter implements IFlexibleSerdeAdapter<string> {
         try {
             return this.superJson.stringify(value);
         } catch (error: unknown) {
-            throw new SerializationError(
+            throw new SerializationSerdeError(
                 `Serialization error "${String(error)}" occured`,
                 error,
             );
@@ -56,7 +56,7 @@ export class SuperJsonSerdeAdapter implements IFlexibleSerdeAdapter<string> {
         try {
             return this.superJson.parse(value);
         } catch (error: unknown) {
-            throw new DeserializationError(
+            throw new DeserializationSerdeError(
                 `Deserialization error "${String(error)}" occured`,
                 error,
             );

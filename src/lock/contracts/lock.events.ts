@@ -14,6 +14,7 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
+ * The event is dispatched when a lock is aquired.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
@@ -25,6 +26,7 @@ export class KeyAcquiredLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when a lock is released.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
@@ -35,6 +37,7 @@ export class KeyReleasedLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when a lock is forcefully released.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
@@ -44,6 +47,7 @@ export class KeyForceReleasedLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when trying to release a lock that is owned by a different owner.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
@@ -54,6 +58,7 @@ export class UnownedReleaseLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when trying to refefresh a lock that is owned by a different owner.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
@@ -64,6 +69,7 @@ export class UnownedRefreshLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when trying to acquire a lock that is owned by a different owner.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
@@ -74,6 +80,7 @@ export class KeyAlreadyAcquiredLockEvent extends BaseEvent<{
 }> {}
 
 /**
+ * The event is dispatched when a lock is refreshed.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Events
@@ -95,6 +102,22 @@ export class UnexpectedErrorLockEvent extends BaseEvent<{
     ttl: TimeSpan | null;
     error: unknown;
 }> {}
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * @group Events
+ */
+export const LOCK_EVENTS = {
+    KeyAcquired: KeyAcquiredLockEvent,
+    KeyReleased: KeyReleasedLockEvent,
+    UnownedRelease: UnownedReleaseLockEvent,
+    UnownedRefresh: UnownedRefreshLockEvent,
+    KeyAlreadyAcquired: KeyAlreadyAcquiredLockEvent,
+    KeyForceReleased: KeyForceReleasedLockEvent,
+    KeyRefreshed: KeyRefreshedLockEvent,
+    UnexpectedError: UnexpectedErrorLockEvent,
+} as const;
 
 /**
  *

@@ -15,6 +15,7 @@ export class AsyncError extends Error {
 }
 
 /**
+ * This error is thrown when the <i>LazyPromise</i> is aborted.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
@@ -27,6 +28,7 @@ export class AbortAsyncError extends AsyncError {
 }
 
 /**
+ * This error is thrown when the <i>LazyPromise</i> has exceeded the given time limit.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
@@ -49,6 +51,7 @@ export type RetryAsyncErrorData = {
 };
 
 /**
+ * This error is thrown when the <i>LazyPromise</i> has failed all retry attempts.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
@@ -62,3 +65,15 @@ export class RetryAsyncError extends AsyncError {
         this.maxAttempts = maxAttempts;
     }
 }
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * @group Errors
+ */
+export const ASYNC_ERRORS = {
+    Base: AsyncError,
+    Abort: AbortAsyncError,
+    Timeout: TimeoutAsyncError,
+    Retry: RetryAsyncError,
+} as const;

@@ -70,6 +70,7 @@ export class UnexpectedCacheError
 }
 
 /**
+ * The error is thrown when attempting to increment or decrement a key that is not of number type.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors
@@ -94,6 +95,7 @@ export class TypeCacheError
 }
 
 /**
+ * The error is thrown when a key is not found
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors
@@ -116,6 +118,18 @@ export class KeyNotFoundCacheError
         this.name = KeyNotFoundCacheError.name;
     }
 }
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
+ * @group Errors
+ */
+export const CACHE_ERRORS = {
+    Base: CacheError,
+    Unexpected: UnexpectedCacheError,
+    Type: TypeCacheError,
+    KeyNotFound: KeyNotFoundCacheError,
+} as const;
 
 /**
  * The <i>registerCacheErrorsToSerde</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
