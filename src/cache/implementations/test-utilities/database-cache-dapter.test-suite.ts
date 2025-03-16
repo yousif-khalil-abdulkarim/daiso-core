@@ -20,7 +20,7 @@ import { TimeSpan, type Promisable } from "@/utilities/_module-exports.js";
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
- * @group Test utilities
+ * @group TestUtilities
  */
 export type DatabaseCacheAdapterTestSuiteSettings = {
     expect: ExpectStatic;
@@ -34,7 +34,7 @@ export type DatabaseCacheAdapterTestSuiteSettings = {
  * The <i>databaseCacheAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IDatabaseCacheAdapter}</i> with <i>vitest</i>.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
- * @group Test utilities
+ * @group TestUtilities
  * @example
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";

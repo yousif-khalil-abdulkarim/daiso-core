@@ -6,7 +6,7 @@
  * @returns Amount milliseconds to wait
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
- * @group Backoff policies
+ * @group BackoffPolicies
  */
 export type BackoffPolicy = (attempt: number, error: unknown) => number;
 

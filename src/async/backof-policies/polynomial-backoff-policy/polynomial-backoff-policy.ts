@@ -9,7 +9,7 @@ import { withJitter } from "@/async/backof-policies/_shared.js";
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
- * @group Backoff policies
+ * @group BackoffPolicies
  */
 export type PolynomialBackoffPolicySettings = {
     /**
@@ -39,7 +39,7 @@ export type PolynomialBackoffPolicySettings = {
  * Polynomial backoff policy with jitter
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
- * @group Backoff policies
+ * @group BackoffPolicies
  */
 export function polynomialBackoffPolicy(
     settings:
