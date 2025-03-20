@@ -4,13 +4,13 @@
     "exclude": [
         "./src/**/*.test.ts",
         "./src/**/_module.ts",
-        "./src/**/_module-exports.ts",
+        "./src/**/_module-exports.ts"
     ],
     "navigation": {
         "includeGroups": true,
         "includeFolders": true
     },
-    "projectDocuments": ["src/**/*.doc.md"],
+    "projectDocuments": ["src/**/*.md"],
     "categorizeByGroup": true,
     "includeVersion": true,
     "excludeInternal": true,
@@ -18,10 +18,6 @@
     "excludeProtected": true,
     "cleanOutputDir": true,
     "githubPages": true,
-    "plugin": [
-        "typedoc-material-theme",
-        "typedoc-plugin-merge-modules"
-    ],
-    "themeColor": "#2089cb",
-    "mergeModulesMergeMode": "module",
+    "plugin": ["typedoc-plugin-merge-modules"],
+    "mergeModulesMergeMode": "module"
 }

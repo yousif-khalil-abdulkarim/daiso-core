@@ -19,7 +19,7 @@ import { LazyPromise } from "@/async/_module-exports.js";
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
- * @group Test utilities
+ * @group TestUtilities
  */
 export type CacheAdapterTestSuiteSettings = {
     expect: ExpectStatic;
@@ -33,7 +33,7 @@ export type CacheAdapterTestSuiteSettings = {
  * The <i>cacheAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICacheAdapter}</i> with <i>vitest</i>.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
- * @group Test utilities
+ * @group TestUtilities
  * @example
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";

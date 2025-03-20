@@ -12,7 +12,7 @@ import type {
 /**
  *
  * IMPORT_PATH: ```"@daiso-tech/core/serde/test-utilities"```
- * @group Test utilities
+ * @group TestUtilities
  */
 export type FlexibleSerdeSuiteSettings = {
     expect: ExpectStatic;
@@ -23,7 +23,7 @@ export type FlexibleSerdeSuiteSettings = {
  * The <i>flexibleSerdeTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IFlexibleSerde}</i> with <i>vitest</i>.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/serde/test-utilities"```
- * @group Test utilities
+ * @group TestUtilities
  * @example
  * ```ts
  * import { describe, test, expect } from "vitest";
