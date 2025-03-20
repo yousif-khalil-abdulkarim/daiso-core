@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.32.1
+
+### Patch Changes
+
+-   7b77989: Updated documentation.
+
 ## 0.32.0
 
 ### Minor Changes
