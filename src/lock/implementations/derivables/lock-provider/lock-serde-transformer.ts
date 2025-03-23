@@ -103,32 +103,18 @@ export class LockSerdeTransformer
         }
 
         const keyObj = keyPrefixer.create(key);
-        let lockEventBus = this.groupableEventBus.withGroup(
-            keyPrefixer.resolvedRootPrefix,
-        );
-        let lockProviderEventDispatcher = this.groupableEventBus.withGroup([
+
+        const eventBus = this.groupableEventBus.withGroup([
             keyPrefixer.resolvedRootPrefix,
             keyObj.resolved,
         ]);
 
-        if (keyPrefixer.resolvedGroup) {
-            lockEventBus = this.groupableEventBus.withGroup([
-                keyPrefixer.resolvedRootPrefix,
-                keyPrefixer.resolvedGroup,
-            ]);
-            lockProviderEventDispatcher = this.groupableEventBus.withGroup([
-                keyPrefixer.resolvedRootPrefix,
-                keyPrefixer.resolvedGroup,
-                keyObj.resolved,
-            ]);
-        }
         return new Lock({
             group,
             createLazyPromise: this.createLazyPromise,
             adapterPromise: Promise.resolve(this.adapter),
             lockState: new LockState(this.lockStore, keyObj.prefixed),
-            lockEventBus,
-            lockProviderEventDispatcher,
+            eventDispatcher: eventBus,
             key: keyObj,
             owner,
             ttl: ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null,
