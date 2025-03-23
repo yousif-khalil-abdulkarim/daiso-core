@@ -24,7 +24,6 @@ import type {
     AsyncFactoryable,
     IKeyPrefixer,
     OneOrMore,
-    Items,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IFactoryObject,
     Factory,
@@ -256,38 +255,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         });
     }
 
-    addListenerMany<TEventClassArr extends EventClass<TEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
-            if (events.length === 0) {
-                return;
-            }
-            const promises: PromiseLike<void>[] = [];
-            for (const event of events) {
-                promises.push(this.addListener(event, listener));
-            }
-            await Promise.all(promises);
-        });
-    }
-
-    removeListenerMany<TEventClassArr extends EventClass<TEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
-            if (events.length === 0) {
-                return;
-            }
-            const promises: PromiseLike<void>[] = [];
-            for (const event of events) {
-                promises.push(this.removeListener(event, listener));
-            }
-            await Promise.all(promises);
-        });
-    }
-
     listenOnce<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: EventListener<EventInstance<TEventClass>>,
@@ -352,57 +319,31 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         event: TEventClass,
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
-        return this.subscribeMany([event], listener);
-    }
-
-    subscribeMany<TEventClassArr extends EventClass<TEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<Unsubscribe> {
         return this.createLazyPromise(async () => {
-            await this.addListenerMany(events, listener);
+            await this.addListener(event, listener);
             const unsubscribe = () => {
                 return this.createLazyPromise(async () => {
-                    await this.removeListenerMany(events, listener);
+                    await this.removeListener(event, listener);
                 });
             };
             return unsubscribe;
         });
     }
 
-    dispatchMany(events: TEvents[]): LazyPromise<void> {
+    dispatch(event: TEvents): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             try {
                 const adapter = await this.adapterPromise;
-                const promises = events
-                    .map((event) => ({
-                        eventName: getConstructorName(event),
-                        event,
-                    }))
-                    .map(({ event, eventName }) => ({
-                        eventName: this.keyPrefixer.create(eventName),
-                        event,
-                    }))
-                    .map(({ event, eventName }) => ({
-                        eventName: eventName.prefixed,
-                        event,
-                    }))
-                    .map(({ eventName, event }) =>
-                        adapter.dispatch(eventName, event),
-                    );
-                await Promise.all(promises);
+                await adapter.dispatch(
+                    this.keyPrefixer.create(getConstructorName(event)).prefixed,
+                    event,
+                );
             } catch (error: unknown) {
                 throw new UnableToDispatchEventBusError(
-                    `Events of type${events.length === 0 ? "" : "s"} "${events.map((event) => getConstructorName(event)).join(", ")}" could not be dispatched`,
+                    `Events of type "${getConstructorName(event)}" could not be dispatched`,
                     error,
                 );
             }
-        });
-    }
-
-    dispatch(event: TEvents): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
-            await this.dispatchMany([event]);
         });
     }
 }

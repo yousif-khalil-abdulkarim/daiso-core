@@ -2764,26 +2764,6 @@ export function lockProviderTestSuite(
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
             });
-            test("method: addListenerMany / dispatch", async () => {
-                let result_a: KeyAcquiredLockEvent | null = null;
-                const key = "a";
-                const lockA = lockProviderA.create(key);
-                await lockA.addListenerMany([KeyAcquiredLockEvent], (event) => {
-                    result_a = event;
-                });
-
-                let result_b: KeyAcquiredLockEvent | null = null;
-                const lockB = lockProviderB.create(key);
-                await lockB.addListenerMany([KeyAcquiredLockEvent], (event) => {
-                    result_b = event;
-                });
-
-                await lockA.acquire();
-                await LazyPromise.delay(DELAY_TIME);
-
-                expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
-                expect(result_b).toBeNull();
-            });
             test("method: removeListener / addListener / dispatch", async () => {
                 let result_a: KeyAcquiredLockEvent | null = null;
                 const key = "a";
@@ -2799,32 +2779,6 @@ export function lockProviderTestSuite(
                 const lockB = lockProviderB.create(key);
                 await lockB.addListener(KeyAcquiredLockEvent, listenerB);
                 await lockB.removeListener(KeyAcquiredLockEvent, listenerB);
-
-                await lockA.acquire();
-                await lockB.acquire();
-                await LazyPromise.delay(DELAY_TIME);
-
-                expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
-                expect(result_b).toBeNull();
-            });
-            test("method: removeListenerMany / addListener / dispatch", async () => {
-                let result_a: KeyAcquiredLockEvent | null = null;
-                const key = "a";
-                const lockA = lockProviderA.create(key);
-                await lockA.addListener(KeyAcquiredLockEvent, (event) => {
-                    result_a = event;
-                });
-
-                let result_b: KeyAcquiredLockEvent | null = null;
-                const listenerB = (event: KeyAcquiredLockEvent) => {
-                    result_b = event;
-                };
-                const lockB = lockProviderB.create(key);
-                await lockB.addListener(KeyAcquiredLockEvent, listenerB);
-                await lockB.removeListenerMany(
-                    [KeyAcquiredLockEvent],
-                    listenerB,
-                );
 
                 await lockA.acquire();
                 await lockB.acquire();
@@ -2859,32 +2813,6 @@ export function lockProviderTestSuite(
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
             });
-            test("method: subscribeMany / dispatch", async () => {
-                let result_a: KeyAcquiredLockEvent | null = null;
-                const key = "a";
-                const lockA = lockProviderA.create(key);
-                await lockA.subscribeMany([KeyAcquiredLockEvent], (event) => {
-                    result_a = event;
-                });
-
-                let result_b: KeyAcquiredLockEvent | null = null;
-                const listenerB = (event: KeyAcquiredLockEvent) => {
-                    result_b = event;
-                };
-                const lockB = lockProviderB.create(key);
-                const unsubscribe = await lockB.subscribeMany(
-                    [KeyAcquiredLockEvent],
-                    listenerB,
-                );
-                await unsubscribe();
-
-                await lockA.acquire();
-                await lockB.acquire();
-                await LazyPromise.delay(DELAY_TIME);
-
-                expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
-                expect(result_b).toBeNull();
-            });
         });
         describe("class: LockProvider", () => {
             test("method: addListener / dispatch", async () => {
@@ -2901,31 +2829,6 @@ export function lockProviderTestSuite(
                 let result_b: KeyAcquiredLockEvent | null = null;
                 await lockProviderB.addListener(
                     KeyAcquiredLockEvent,
-                    (event) => {
-                        result_b = event;
-                    },
-                );
-
-                await lockA.acquire();
-                await LazyPromise.delay(DELAY_TIME);
-
-                expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
-                expect(result_b).toBeNull();
-            });
-            test("method: addListenerMany / dispatch", async () => {
-                let result_a: KeyAcquiredLockEvent | null = null;
-                const key = "a";
-                const lockA = lockProviderA.create(key);
-                await lockProviderA.addListenerMany(
-                    [KeyAcquiredLockEvent],
-                    (event) => {
-                        result_a = event;
-                    },
-                );
-
-                let result_b: KeyAcquiredLockEvent | null = null;
-                await lockProviderB.addListenerMany(
-                    [KeyAcquiredLockEvent],
                     (event) => {
                         result_b = event;
                     },
@@ -2969,38 +2872,6 @@ export function lockProviderTestSuite(
                 expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
                 expect(result_b).toBeNull();
             });
-            test("method: removeListenerMany / addListener / dispatch", async () => {
-                let result_a: KeyAcquiredLockEvent | null = null;
-                const key = "a";
-                const lockA = lockProviderA.create(key);
-                await lockProviderA.addListener(
-                    KeyAcquiredLockEvent,
-                    (event) => {
-                        result_a = event;
-                    },
-                );
-
-                let result_b: KeyAcquiredLockEvent | null = null;
-                const listenerB = (event: KeyAcquiredLockEvent) => {
-                    result_b = event;
-                };
-                const lockB = lockProviderB.create(key);
-                await lockProviderB.addListener(
-                    KeyAcquiredLockEvent,
-                    listenerB,
-                );
-                await lockProviderB.removeListenerMany(
-                    [KeyAcquiredLockEvent],
-                    listenerB,
-                );
-
-                await lockA.acquire();
-                await lockB.acquire();
-                await LazyPromise.delay(DELAY_TIME);
-
-                expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
-                expect(result_b).toBeNull();
-            });
             test("method: subscribe / dispatch", async () => {
                 let result_a: KeyAcquiredLockEvent | null = null;
                 const key = "a";
@@ -3016,35 +2887,6 @@ export function lockProviderTestSuite(
                 const lockB = lockProviderB.create(key);
                 const unsubscribe = await lockProviderB.subscribe(
                     KeyAcquiredLockEvent,
-                    listenerB,
-                );
-                await unsubscribe();
-
-                await lockA.acquire();
-                await lockB.acquire();
-                await LazyPromise.delay(DELAY_TIME);
-
-                expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
-                expect(result_b).toBeNull();
-            });
-            test("method: subscribeMany / dispatch", async () => {
-                let result_a: KeyAcquiredLockEvent | null = null;
-                const key = "a";
-                const lockA = lockProviderA.create(key);
-                await lockProviderA.subscribeMany(
-                    [KeyAcquiredLockEvent],
-                    (event) => {
-                        result_a = event;
-                    },
-                );
-
-                let result_b: KeyAcquiredLockEvent | null = null;
-                const listenerB = (event: KeyAcquiredLockEvent) => {
-                    result_b = event;
-                };
-                const lockB = lockProviderB.create(key);
-                const unsubscribe = await lockProviderB.subscribeMany(
-                    [KeyAcquiredLockEvent],
                     listenerB,
                 );
                 await unsubscribe();

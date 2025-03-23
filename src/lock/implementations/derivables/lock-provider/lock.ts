@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import type { Items, TimeSpan } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type IKey,
     type AsyncLazy,
@@ -161,33 +161,11 @@ export class Lock implements ILock {
      * You can listen to the following <i>{@link LockEvents}</i> of the <i>{@link Lock}</i> instance.
      * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
      */
-    addListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<void> {
-        return this.lockEventBus.addListenerMany(events, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of the <i>{@link Lock}</i> instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.lockEventBus.removeListener(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of the <i>{@link Lock}</i> instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    removeListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<void> {
-        return this.lockEventBus.removeListenerMany(events, listener);
     }
 
     /**
@@ -231,17 +209,6 @@ export class Lock implements ILock {
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.lockEventBus.subscribe(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of lock instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    subscribeMany<TEventClassArr extends EventClass<LockEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<Unsubscribe> {
-        return this.lockEventBus.subscribeMany(events, listener);
     }
 
     run<TValue = void>(
