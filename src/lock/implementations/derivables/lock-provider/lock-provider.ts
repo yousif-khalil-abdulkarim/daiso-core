@@ -476,25 +476,13 @@ export class LockProvider implements IGroupableLockProvider {
             settings;
 
         const keyObj = this.keyPrefixer.create(key);
-        let lockEventBus = this.groupableEventBus.withGroup([
-            this.keyPrefixer.resolvedRootPrefix,
-            keyObj.resolved,
-        ]);
-        if (this.keyPrefixer.resolvedGroup) {
-            lockEventBus = this.groupableEventBus.withGroup([
-                this.keyPrefixer.resolvedRootPrefix,
-                this.keyPrefixer.resolvedGroup,
-                keyObj.resolved,
-            ]);
-        }
 
         return new Lock({
             adapterPromise: this.adapterPromise,
             group: this.keyPrefixer.resolvedGroup,
             createLazyPromise: this.createLazyPromise.bind(this),
             lockState: new LockState(this.lockStore, keyObj.prefixed),
-            lockEventBus: lockEventBus,
-            lockProviderEventDispatcher: this.eventBus,
+            eventDispatcher: this.eventBus,
             key: keyObj,
             owner,
             ttl,

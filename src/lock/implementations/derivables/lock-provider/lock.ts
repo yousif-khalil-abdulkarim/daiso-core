@@ -32,16 +32,7 @@ import {
     type ILockAdapter,
 } from "@/lock/contracts/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
-import type {
-    EventClass,
-    EventInstance,
-    IEventBus,
-    IEventDispatcher,
-    Unsubscribe,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IEventListenable,
-    EventListener,
-} from "@/event-bus/contracts/_module-exports.js";
+import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
 
 import type { LockState } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
 
@@ -66,8 +57,7 @@ export type LockSettings = {
     ) => LazyPromise<TValue>;
     adapterPromise: PromiseLike<ILockAdapter>;
     lockState: LockState;
-    lockEventBus: IEventBus<LockEvents>;
-    lockProviderEventDispatcher: IEventDispatcher<LockEvents>;
+    eventDispatcher: IEventDispatcher<LockEvents>;
     key: IKey;
     owner: OneOrMore<string>;
     ttl: TimeSpan | null;
@@ -101,8 +91,7 @@ export class Lock implements ILock {
     ) => LazyPromise<TValue>;
     private readonly adapterPromise: PromiseLike<ILockAdapter>;
     private readonly lockState: LockState;
-    private readonly lockEventBus: IEventBus<LockEvents>;
-    private readonly lockProviderEventDispatcher: IEventDispatcher<LockEvents>;
+    private readonly eventDispatcher: IEventDispatcher<LockEvents>;
     private readonly key: IKey;
     private readonly owner: string;
     private readonly ttl: TimeSpan | null;
@@ -120,8 +109,7 @@ export class Lock implements ILock {
             createLazyPromise,
             adapterPromise,
             lockState,
-            lockEventBus,
-            lockProviderEventDispatcher,
+            eventDispatcher,
             key,
             owner,
             ttl,
@@ -136,79 +124,13 @@ export class Lock implements ILock {
         this.adapterPromise = adapterPromise;
         this.lockState = lockState;
         this.lockState.set(expirationInMs);
-        this.lockEventBus = lockEventBus;
-        this.lockProviderEventDispatcher = lockProviderEventDispatcher;
+        this.eventDispatcher = eventDispatcher;
         this.key = key;
         this.owner = resolveOneOrMoreStr(owner);
         this.ttl = ttl;
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of the <i>{@link Lock}</i> instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    addListener<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
-    ): LazyPromise<void> {
-        return this.lockEventBus.addListener(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of the <i>{@link Lock}</i> instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    removeListener<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
-    ): LazyPromise<void> {
-        return this.lockEventBus.removeListener(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of lock instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    listenOnce<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
-    ): LazyPromise<void> {
-        return this.lockEventBus.listenOnce(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of lock instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    asPromise<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-    ): LazyPromise<EventInstance<TEventClass>> {
-        return this.lockEventBus.asPromise(event);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of lock instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    subscribeOnce<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
-    ): LazyPromise<Unsubscribe> {
-        return this.lockEventBus.subscribeOnce(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of lock instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    subscribe<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
-    ): LazyPromise<Unsubscribe> {
-        return this.lockEventBus.subscribe(event, listener);
     }
 
     run<TValue = void>(
@@ -307,15 +229,15 @@ export class Lock implements ILock {
                         owner: this.owner,
                         ttl: this.ttl,
                     });
-                    this.lockEventBus.dispatch(event).defer();
-                    this.lockProviderEventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
                 } else {
                     const event = new KeyAlreadyAcquiredLockEvent({
                         key: this.key.resolved,
                         owner: this.owner,
                     });
-                    this.lockEventBus.dispatch(event).defer();
-                    this.lockProviderEventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
                 }
                 return hasAquired;
             } catch (error: unknown) {
@@ -325,8 +247,8 @@ export class Lock implements ILock {
                     ttl: this.ttl,
                     error,
                 });
-                this.lockEventBus.dispatch(event).defer();
-                this.lockProviderEventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
                 throw error;
             }
         });
@@ -390,15 +312,15 @@ export class Lock implements ILock {
                         key: this.key.resolved,
                         owner: this.owner,
                     });
-                    this.lockEventBus.dispatch(event).defer();
-                    this.lockProviderEventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
                 } else {
                     const event = new UnownedReleaseLockEvent({
                         key: this.key.resolved,
                         owner: this.owner,
                     });
-                    this.lockEventBus.dispatch(event).defer();
-                    this.lockProviderEventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
                 }
                 return hasReleased;
             } catch (error: unknown) {
@@ -408,8 +330,8 @@ export class Lock implements ILock {
                     ttl: this.ttl,
                     error,
                 });
-                this.lockEventBus.dispatch(event).defer();
-                this.lockProviderEventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
                 throw error;
             }
         });
@@ -435,8 +357,8 @@ export class Lock implements ILock {
                 const event = new KeyForceReleasedLockEvent({
                     key: this.key.resolved,
                 });
-                this.lockEventBus.dispatch(event).defer();
-                this.lockProviderEventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
             } catch (error: unknown) {
                 const event = new UnexpectedErrorLockEvent({
                     key: this.key.resolved,
@@ -444,8 +366,8 @@ export class Lock implements ILock {
                     ttl: this.ttl,
                     error,
                 });
-                this.lockEventBus.dispatch(event).defer();
-                this.lockProviderEventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
                 throw error;
             }
         });
@@ -463,8 +385,8 @@ export class Lock implements ILock {
                     ttl: this.ttl,
                     error,
                 });
-                this.lockEventBus.dispatch(event).defer();
-                this.lockProviderEventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
                 throw error;
             }
         });
@@ -493,15 +415,15 @@ export class Lock implements ILock {
                         ttl,
                     });
                     this.lockState.set(ttl);
-                    this.lockEventBus.dispatch(event).defer();
-                    this.lockProviderEventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
                 } else {
                     const event = new UnownedRefreshLockEvent({
                         key: this.key.resolved,
                         owner: this.owner,
                     });
-                    this.lockEventBus.dispatch(event).defer();
-                    this.lockProviderEventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher.dispatch(event).defer();
                 }
                 return hasRefreshed;
             } catch (error: unknown) {
@@ -511,8 +433,8 @@ export class Lock implements ILock {
                     ttl: this.ttl,
                     error,
                 });
-                this.lockEventBus.dispatch(event).defer();
-                this.lockProviderEventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
+                this.eventDispatcher.dispatch(event).defer();
                 throw error;
             }
         });

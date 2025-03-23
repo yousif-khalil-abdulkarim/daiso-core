@@ -20,16 +20,6 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnownedReleaseLockError,
 } from "@/lock/contracts/lock.errors.js";
-import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
-import type { LockEvents } from "@/lock/contracts/lock.events.js";
-
-/**
- * The <i>ILockListenable</i> contract defines a way for listening <i>{@link ILock}</i> operations.
- *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
- * @group Contracts
- */
-export type ILockListenable = IEventListenable<LockEvents>;
 
 /**
  *
@@ -46,7 +36,7 @@ export type AquireBlockingSettings = {
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
  */
-export type ILock = ILockListenable & {
+export type ILock = {
     /**
      * The <i>run</i> method wraps an <i>{@link Invokable}</i> or <i>{@link LazyPromise}</i> with the <i>acquire</i> and <i>release</i> method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
