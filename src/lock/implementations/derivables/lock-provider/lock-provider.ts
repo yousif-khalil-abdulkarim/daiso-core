@@ -9,7 +9,6 @@ import {
     type IKeyPrefixer,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type IFactoryObject,
-    type Items,
     CORE,
     resolveAsyncFactoryable,
     type Factory,
@@ -395,33 +394,11 @@ export class LockProvider implements IGroupableLockProvider {
      * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
      * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
      */
-    addListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<void> {
-        return this.eventBus.addListenerMany(events, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListener(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    removeListenerMany<TEventClassArr extends EventClass<LockEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<void> {
-        return this.eventBus.removeListenerMany(events, listener);
     }
 
     /**
@@ -465,17 +442,6 @@ export class LockProvider implements IGroupableLockProvider {
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribe(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link LockEvents}</i> of all <i>{@link ILock}</i> instances created by the <i>{@link ILockProvider}</i>.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    subscribeMany<TEventClassArr extends EventClass<LockEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<Unsubscribe> {
-        return this.eventBus.subscribeMany(events, listener);
     }
 
     private createLazyPromise<TValue = void>(

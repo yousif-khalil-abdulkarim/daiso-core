@@ -4,7 +4,6 @@
 
 import type {
     IInvokableObject,
-    Items,
     OneOrMore,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
@@ -80,16 +79,6 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>addListenerMany</i> method is used for listening to multiple <i>{@link BaseEvent}</i>.
-     * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
-     * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
-     */
-    addListenerMany<TEventClassArr extends EventClass<TEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<void>;
-
-    /**
      * The <i>removeListener</i> method is used for stop listening to a <i>{@link BaseEvent}</i>.
      * Removing unadded listener will have no effect and nothing will occur.
      * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
@@ -97,16 +86,6 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     removeListener<TEventClass extends EventClass<TEvents>>(
         event: TEventClass,
         listener: EventListener<EventInstance<TEventClass>>,
-    ): LazyPromise<void>;
-
-    /**
-     * The <i>removeListener</i> method is used for stop listening to multiple <i>{@link BaseEvent}</i>.
-     * Removing unadded listener will have no effect and nothing will occur.
-     * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
-     */
-    removeListenerMany<TEventClassArr extends EventClass<TEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
     ): LazyPromise<void>;
 
     /**
@@ -143,15 +122,6 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
         event: TEventClass,
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe>;
-
-    /**
-     * The <i>subscribeMany</i> method is used for listening to multiple <i>{@link BaseEvent}</i> and it returns a cleanup function that removes listener when called.
-     * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
-     */
-    subscribeMany<TEventClassArr extends EventClass<TEvents>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<Unsubscribe>;
 };
 
 /**
@@ -167,13 +137,6 @@ export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
      * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
      */
     dispatch(event: TEvents): LazyPromise<void>;
-
-    /**
-     * The <i>dispatchMany</i> method is used for dispatching multiple <i>{@link BaseEvent}</i>.
-
-     * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
-     */
-    dispatchMany(events: TEvents[]): LazyPromise<void>;
 };
 
 /**

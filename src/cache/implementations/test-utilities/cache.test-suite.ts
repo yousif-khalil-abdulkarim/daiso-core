@@ -1142,23 +1142,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
         });
-        test("method: addListenerMany / dispatch", async () => {
-            let result_a: KeyAddedCacheEvent | null = null;
-            await cacheA.addListenerMany([KeyAddedCacheEvent], (event) => {
-                result_a = event;
-            });
-
-            let result_b: KeyAddedCacheEvent | null = null;
-            await cacheB.addListenerMany([KeyAddedCacheEvent], (event) => {
-                result_b = event;
-            });
-
-            await cacheA.add("a", 1);
-            await LazyPromise.delay(DELAY_TIME);
-
-            expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
-            expect(result_b).toBeNull();
-        });
         test("method: removeListener / addListener / dispatch", async () => {
             let result_a: KeyAddedCacheEvent | null = null;
             await cacheA.addListener(KeyAddedCacheEvent, (event) => {
@@ -1179,26 +1162,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
             expect(result_b).toBeNull();
         });
-        test("method: removeListenerMany / addListener / dispatch", async () => {
-            let result_a: KeyAddedCacheEvent | null = null;
-            await cacheA.addListener(KeyAddedCacheEvent, (event) => {
-                result_a = event;
-            });
-
-            let result_b: KeyAddedCacheEvent | null = null;
-            const listenerB = (event: KeyAddedCacheEvent) => {
-                result_b = event;
-            };
-            await cacheB.addListener(KeyAddedCacheEvent, listenerB);
-            await cacheB.removeListenerMany([KeyAddedCacheEvent], listenerB);
-
-            await cacheA.add("a", 1);
-            await cacheB.add("a", 1);
-            await LazyPromise.delay(DELAY_TIME);
-
-            expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
-            expect(result_b).toBeNull();
-        });
         test("method: subscribe / dispatch", async () => {
             let result_a: KeyAddedCacheEvent | null = null;
             await cacheA.subscribe(KeyAddedCacheEvent, (event) => {
@@ -1211,29 +1174,6 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             };
             const unsubscribe = await cacheB.subscribe(
                 KeyAddedCacheEvent,
-                listenerB,
-            );
-            await unsubscribe();
-
-            await cacheA.add("a", 1);
-            await cacheB.add("a", 1);
-            await LazyPromise.delay(DELAY_TIME);
-
-            expect(result_a).toBeInstanceOf(KeyAddedCacheEvent);
-            expect(result_b).toBeNull();
-        });
-        test("method: subscribeMany / dispatch", async () => {
-            let result_a: KeyAddedCacheEvent | null = null;
-            await cacheA.subscribeMany([KeyAddedCacheEvent], (event) => {
-                result_a = event;
-            });
-
-            let result_b: KeyAddedCacheEvent | null = null;
-            const listenerB = (event: KeyAddedCacheEvent) => {
-                result_b = event;
-            };
-            const unsubscribe = await cacheB.subscribeMany(
-                [KeyAddedCacheEvent],
                 listenerB,
             );
             await unsubscribe();

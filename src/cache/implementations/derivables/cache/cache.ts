@@ -64,7 +64,6 @@ import type {
     Factory,
     FactoryFn,
     IKeyPrefixer,
-    Items,
 } from "@/utilities/_module-exports.js";
 
 /**
@@ -311,33 +310,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
      * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
      */
-    addListenerMany<TEventClassArr extends EventClass<CacheEvents<TType>>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<void> {
-        return this.eventBus.addListenerMany(events, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
     removeListener<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<void> {
         return this.eventBus.removeListener(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    removeListenerMany<TEventClassArr extends EventClass<CacheEvents<TType>>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<void> {
-        return this.eventBus.removeListenerMany(events, listener);
     }
 
     /**
@@ -381,17 +358,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         listener: EventListener<EventInstance<TEventClass>>,
     ): LazyPromise<Unsubscribe> {
         return this.eventBus.subscribe(event, listener);
-    }
-
-    /**
-     * You can listen to the following <i>{@link CacheEvents}</i> of the <i>{@link ICache}</i> instance.
-     * To understand how this method works, refer to <i>{@link IEventListenable}</i>.
-     */
-    subscribeMany<TEventClassArr extends EventClass<CacheEvents<TType>>[]>(
-        events: [...TEventClassArr],
-        listener: EventListener<EventInstance<Items<TEventClassArr>>>,
-    ): LazyPromise<Unsubscribe> {
-        return this.eventBus.subscribeMany(events, listener);
     }
 
     private createLazyPromise<TValue = void>(
@@ -827,7 +793,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                                 key: keyObj.resolved,
                             }),
                     );
-                    this.eventBus.dispatchMany(events).defer();
+                    for (const event of events) {
+                        this.eventBus.dispatch(event).defer();
+                    }
                 } else {
                     const events = keyObjArr.map(
                         (keyObj) =>
@@ -836,7 +804,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                                 key: keyObj.resolved,
                             }),
                     );
-                    this.eventBus.dispatchMany(events).defer();
+                    for (const event of events) {
+                        this.eventBus.dispatch(event).defer();
+                    }
                 }
                 return hasRemovedAtLeastOne;
             } catch (error: unknown) {
