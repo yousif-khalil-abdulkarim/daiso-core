@@ -95,17 +95,10 @@ export class LockSerdeTransformer
     }
 
     deserialize(serializedValue: ISerializedLock): Lock {
-        const { group, key, owner, ttlInMs, expirationInMs } = serializedValue;
-        const isRoot = group === null;
-        let keyPrefixer = this.keyPrefixer;
-        if (!isRoot) {
-            keyPrefixer = this.keyPrefixer.withGroup(group);
-        }
-
-        const keyObj = keyPrefixer.create(key);
+        const { key, owner, ttlInMs, expirationInMs } = serializedValue;
+        const keyObj = this.keyPrefixer.create(key);
 
         return new Lock({
-            group,
             createLazyPromise: this.createLazyPromise,
             adapter: this.adapter,
             lockState: new LockState(this.lockStore, keyObj.prefixed),

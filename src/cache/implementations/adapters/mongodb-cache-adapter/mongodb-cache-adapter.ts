@@ -151,7 +151,6 @@ export class MongodbCacheAdapter<TType>
             await this.collection.createIndex(
                 {
                     key: 1,
-                    group: 1,
                 },
                 {
                     unique: true,
