@@ -289,7 +289,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyNotFoundCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                             }),
                         )
@@ -298,7 +297,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyFoundCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                                 value,
                             }),
@@ -310,7 +308,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 this.eventBus
                     .dispatch(
                         new UnexpectedErrorCacheEvent({
-                            group: this.keyPrefixer.resolvedGroup,
                             keys: [keyObj.resolved],
                             method: this.get.name,
                             error,
@@ -343,7 +340,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyNotFoundCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                             }),
                         )
@@ -352,7 +348,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyFoundCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                                 value,
                             }),
@@ -361,7 +356,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyRemovedCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                             }),
                         )
@@ -372,7 +366,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 this.eventBus
                     .dispatch(
                         new UnexpectedErrorCacheEvent({
-                            group: this.keyPrefixer.resolvedGroup,
                             keys: [keyObj.resolved],
                             method: this.get.name,
                             error,
@@ -433,7 +426,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyAddedCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                                 value,
                                 ttl,
@@ -446,7 +438,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 this.eventBus
                     .dispatch(
                         new UnexpectedErrorCacheEvent({
-                            group: this.keyPrefixer.resolvedGroup,
                             keys: [keyObj.resolved],
                             value,
                             method: this.add.name,
@@ -476,7 +467,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyUpdatedCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                                 value,
                             }),
@@ -486,7 +476,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyAddedCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                                 value,
                                 ttl,
@@ -499,7 +488,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 this.eventBus
                     .dispatch(
                         new UnexpectedErrorCacheEvent({
-                            group: this.keyPrefixer.resolvedGroup,
                             keys: [keyObj.resolved],
                             value,
                             method: this.put.name,
@@ -524,7 +512,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyUpdatedCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                                 value,
                             }),
@@ -534,7 +521,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyNotFoundCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                             }),
                         )
@@ -545,7 +531,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 this.eventBus
                     .dispatch(
                         new UnexpectedErrorCacheEvent({
-                            group: this.keyPrefixer.resolvedGroup,
                             keys: [keyObj.resolved],
                             value,
                             method: this.update.name,
@@ -573,7 +558,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyIncrementedCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                                 value,
                             }),
@@ -584,7 +568,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyDecrementedCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                                 value: -value,
                             }),
@@ -595,7 +578,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyNotFoundCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                             }),
                         )
@@ -606,7 +588,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 this.eventBus
                     .dispatch(
                         new UnexpectedErrorCacheEvent({
-                            group: this.keyPrefixer.resolvedGroup,
                             keys: [keyObj.resolved],
                             value,
                             method: this.increment.name,
@@ -639,7 +620,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyRemovedCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                             }),
                         )
@@ -648,7 +628,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(
                             new KeyNotFoundCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                             }),
                         )
@@ -659,7 +638,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 this.eventBus
                     .dispatch(
                         new UnexpectedErrorCacheEvent({
-                            group: this.keyPrefixer.resolvedGroup,
                             keys: [keyObj.resolved],
                             method: this.remove.name,
                             error,
@@ -688,7 +666,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     const events = keyObjArr.map(
                         (keyObj) =>
                             new KeyRemovedCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                             }),
                     );
@@ -699,7 +676,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     const events = keyObjArr.map(
                         (keyObj) =>
                             new KeyNotFoundCacheEvent({
-                                group: this.keyPrefixer.resolvedGroup,
                                 key: keyObj.resolved,
                             }),
                     );
@@ -712,7 +688,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 this.eventBus
                     .dispatch(
                         new UnexpectedErrorCacheEvent({
-                            group: this.keyPrefixer.resolvedGroup,
                             keys: keyObjArr.map((keyObj) => keyObj.resolved),
                             method: this.remove.name,
                             error,
@@ -728,9 +703,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return this.createLazyPromise(async () => {
             try {
                 const promise = this.eventBus.dispatch(
-                    new KeysClearedCacheEvent({
-                        group: this.keyPrefixer.resolvedGroup,
-                    }),
+                    new KeysClearedCacheEvent({}),
                 );
                 if (isAsyncFactory(this.adapterFactoryable)) {
                     await this.adapter.removeAll();
@@ -745,7 +718,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 this.eventBus
                     .dispatch(
                         new UnexpectedErrorCacheEvent({
-                            group: this.keyPrefixer.resolvedGroup,
                             method: this.clear.name,
                             error,
                         }),
