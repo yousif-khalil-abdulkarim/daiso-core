@@ -17,7 +17,7 @@ import type {
 import {
     Cache,
     type CacheSettingsBase,
-    type CacheAdapterFactoryable,
+    type CacheAdapter,
 } from "@/cache/implementations/derivables/cache/_module.js";
 import { KeyPrefixer, type TimeSpan } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
@@ -28,7 +28,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
  * @group Derivables
  */
 export type CacheAdapters<TAdapters extends string = string> = Partial<
-    Record<TAdapters, CacheAdapterFactoryable<any>>
+    Record<TAdapters, CacheAdapter<any>>
 >;
 
 /**
