@@ -7,10 +7,10 @@ import {
     type IGroupableEventBus,
     type IEventBusFactory,
     type BaseEvent,
+    type IEventBusAdapter,
 } from "@/event-bus/contracts/_module-exports.js";
 import {
     EventBus,
-    type EventBusAdapterFactoryable,
     type EventBusSettingsBase,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
 import type {
@@ -29,7 +29,7 @@ import {
  * @group Derivables
  */
 export type EventBusAdapters<TAdapters extends string = string> = Partial<
-    Record<TAdapters, EventBusAdapterFactoryable>
+    Record<TAdapters, IEventBusAdapter>
 >;
 
 /**
