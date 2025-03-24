@@ -2,10 +2,7 @@
  * @module EventBus
  */
 
-import type {
-    IInvokableObject,
-    OneOrMore,
-} from "@/utilities/_module-exports.js";
+import type { IInvokableObject } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -147,26 +144,4 @@ export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
  * @group Contracts
  */
 export type IEventBus<TEvents extends BaseEvent = BaseEvent> =
-    IEventListenable<TEvents> &
-        IEventDispatcher<TEvents> & {
-            /**
-             * The <i>getGroup</i> method returns the group name.
-             */
-            getGroup(): string | null;
-        };
-
-/**
- * The <i>IGroupableEventBus</i> contract defines a way for dispatching and listening to events independent of underlying technology.
- * It commes with one extra method which is useful for multitennat applications compared to <i>IEventBus</i>.
- *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
- * @group Contracts
- */
-export type IGroupableEventBus<TEvents extends BaseEvent = BaseEvent> =
-    IEventBus<TEvents> & {
-        /**
-         * The <i>withGroup</i> method returns a new <i>{@link IEventBus}</i> instance that groups events together.
-         * Only events in the same group will be listened to. This useful for multitennat applications.
-         */
-        withGroup(group: OneOrMore<string>): IEventBus<TEvents>;
-    };
+    IEventListenable<TEvents> & IEventDispatcher<TEvents>;

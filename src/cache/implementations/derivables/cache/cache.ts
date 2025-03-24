@@ -41,7 +41,6 @@ import {
 import type { RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
-    IGroupableEventBus,
     IEventBus,
     Unsubscribe,
     EventClass,
@@ -93,7 +92,7 @@ export type CacheSettingsBase = {
      * })
      * ```
      */
-    eventBus?: IGroupableEventBus<any>;
+    eventBus?: IEventBus<any>;
 
     /**
      * You can decide the default ttl value. If null is passed then no ttl will be used by default.
@@ -133,7 +132,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
         );
     };
 
-    private readonly groupdEventBus: IGroupableEventBus<CacheEvents<TType>>;
     private readonly eventBus: IEventBus<CacheEvents<TType>>;
     private readonly adapterFactoryable: CacheAdapter<TType>;
     private readonly adapter: ICacheAdapter<TType>;
@@ -174,7 +172,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         const {
             keyPrefixer,
             adapter,
-            eventBus: groupdEventBus = new EventBus({
+            eventBus = new EventBus({
                 keyPrefixer: new KeyPrefixer("event-bus"),
                 adapter: new MemoryEventBusAdapter(),
             }),
@@ -183,20 +181,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
         } = settings;
 
         this.keyPrefixer = keyPrefixer;
-        this.groupdEventBus = groupdEventBus;
         this.adapterFactoryable = adapter;
         this.defaultTtl = defaultTtl;
         this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
-
-        this.eventBus = this.groupdEventBus.withGroup(
-            this.keyPrefixer.resolvedRootPrefix,
-        );
-        if (this.keyPrefixer.resolvedGroup) {
-            this.eventBus = this.groupdEventBus.withGroup([
-                this.keyPrefixer.resolvedRootPrefix,
-                this.keyPrefixer.resolvedGroup,
-            ]);
-        }
+        this.eventBus = eventBus;
 
         if (isDatabaseCacheAdapter(adapter)) {
             this.adapter = new DatabaseCacheAdapter(adapter);

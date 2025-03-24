@@ -31,7 +31,6 @@ import type {
     IEventBus,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
-    IGroupableEventBus,
     Unsubscribe,
 } from "@/event-bus/contracts/_module-exports.js";
 
@@ -92,7 +91,7 @@ export type LockProviderSettingsBase = {
      * })
      * ```
      */
-    eventBus?: IGroupableEventBus<any>;
+    eventBus?: IEventBus<any>;
 
     /**
      * You can decide the default ttl value for <i>{@link ILock}</i> expiration. If null is passed then no ttl will be used by default.
@@ -158,7 +157,6 @@ export type LockProviderSettings = LockProviderSettingsBase & {
  */
 export class LockProvider implements ILockProvider {
     private lockStore: ILockStore = {};
-    private readonly groupableEventBus: IGroupableEventBus<LockEvents>;
     private readonly eventBus: IEventBus<LockEvents>;
     private readonly adapter: ILockAdapter;
     private readonly keyPrefixer: IKeyPrefixer;
@@ -209,7 +207,7 @@ export class LockProvider implements ILockProvider {
             serde,
             keyPrefixer,
             adapter,
-            eventBus: groupableEventBus = new EventBus({
+            eventBus = new EventBus({
                 keyPrefixer: new KeyPrefixer("events"),
                 adapter: new MemoryEventBusAdapter(),
             }),
@@ -223,20 +221,10 @@ export class LockProvider implements ILockProvider {
         this.defaultRefreshTime = defaultRefreshTime;
         this.createOwnerId = createOwnerId;
         this.keyPrefixer = keyPrefixer;
-        this.groupableEventBus = groupableEventBus;
         this.defaultTtl = defaultTtl;
-        this.eventBus = this.eventBus = this.groupableEventBus.withGroup(
-            this.keyPrefixer.resolvedRootPrefix,
-        );
+        this.eventBus = eventBus;
         this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
         this.serdeTransformerName = serdeTransformerName;
-
-        if (this.keyPrefixer.resolvedGroup) {
-            this.eventBus = this.groupableEventBus.withGroup([
-                this.keyPrefixer.resolvedRootPrefix,
-                this.keyPrefixer.resolvedGroup,
-            ]);
-        }
 
         if (isDatabaseLockAdapter(adapter)) {
             this.adapter = new DatabaseLockAdapter(adapter);
