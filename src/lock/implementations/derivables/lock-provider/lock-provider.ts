@@ -3,18 +3,14 @@
  */
 
 import {
-    resolveOneOrMore,
     TimeSpan,
-    type AsyncFactoryable,
     type IKeyPrefixer,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IFactoryObject,
     CORE,
-    resolveAsyncFactoryable,
     type Factory,
     type AsyncLazy,
     type FactoryFn,
     resolveFactory,
+    resolveOneOrMore,
 } from "@/utilities/_module-exports.js";
 import { KeyPrefixer, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
@@ -41,8 +37,6 @@ import type {
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
-import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
-import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { v4 } from "uuid";
@@ -51,7 +45,8 @@ import {
     LockState,
     type ILockStore,
 } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
-import type { LockSerdeTransformerSettings } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
+import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
+import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter.js";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
 
 /**
@@ -141,10 +136,7 @@ export type LockProviderSettingsBase = {
  * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
-export type LockAdapterFactoryable = AsyncFactoryable<
-    string,
-    ILockAdapter | IDatabaseLockAdapter
->;
+export type LockAdapter = ILockAdapter | IDatabaseLockAdapter;
 
 /**
  *
@@ -152,7 +144,7 @@ export type LockAdapterFactoryable = AsyncFactoryable<
  * @group Derivables
  */
 export type LockProviderSettings = LockProviderSettingsBase & {
-    adapter: LockAdapterFactoryable;
+    adapter: LockAdapter;
 };
 
 /**
@@ -166,59 +158,10 @@ export type LockProviderSettings = LockProviderSettingsBase & {
  * @group Derivables
  */
 export class LockProvider implements IGroupableLockProvider {
-    private static resolveLockAdapter(
-        adapter: ILockAdapter | IDatabaseLockAdapter,
-    ): ILockAdapter {
-        if (isDatabaseLockAdapter(adapter)) {
-            return new DatabaseLockAdapter(adapter);
-        }
-        return adapter;
-    }
-
-    private static async resolveLockAdapterFactoryable(
-        factoryable: LockAdapterFactoryable,
-        settings: Omit<LockSerdeTransformerSettings, "adapter"> & {
-            serde: OneOrMore<IFlexibleSerde>;
-        },
-    ): Promise<ILockAdapter> {
-        const {
-            serdeTransformerName,
-            serde,
-            lockStore,
-            keyPrefixer,
-            createLazyPromise,
-            defaultBlockingInterval,
-            defaultBlockingTime,
-            defaultRefreshTime,
-            groupableEventBus,
-        } = settings;
-        const adapter = await resolveAsyncFactoryable(
-            factoryable,
-            keyPrefixer.keyPrefix,
-        );
-        const resolvedAdapter = LockProvider.resolveLockAdapter(adapter);
-        const transformer = new LockSerdeTransformer({
-            keyPrefixer,
-            adapter: resolvedAdapter,
-            createLazyPromise,
-            lockStore,
-            defaultBlockingInterval,
-            defaultBlockingTime,
-            defaultRefreshTime,
-            groupableEventBus,
-            serdeTransformerName,
-        });
-        for (const serde_ of resolveOneOrMore(serde)) {
-            serde_.registerCustom(transformer, CORE);
-        }
-        return resolvedAdapter;
-    }
-
     private lockStore: ILockStore = {};
     private readonly groupableEventBus: IGroupableEventBus<LockEvents>;
     private readonly eventBus: IEventBus<LockEvents>;
-    private readonly adapterFactoryable: LockAdapterFactoryable;
-    private readonly adapterPromise: PromiseLike<ILockAdapter>;
+    private readonly adapter: ILockAdapter;
     private readonly keyPrefixer: IKeyPrefixer;
     private readonly createOwnerId: () => string;
     private readonly defaultTtl: TimeSpan | null;
@@ -230,6 +173,7 @@ export class LockProvider implements IGroupableLockProvider {
         AsyncLazy<any>,
         LazyPromise<any>
     >;
+    private readonly serdeTransformerName: string;
 
     /**
      * @example
@@ -253,72 +197,6 @@ export class LockProvider implements IGroupableLockProvider {
      *   keyPrefixer: new KeyPrefixer("lock"),
      *   serde,
      *   adapter: lockAdapter,
-     * });
-     * ```
-     *
-     * You can pass factory function that will create an adapter for every group.
-     * @example
-     * ```ts
-     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import type { IDatabaseLockAdapter } from "@daiso-tech/core/lock/contracts";
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { KeyPrefixer, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import Sqlite from "better-sqlite3";
-     *
-     * function lockAdapterFactory(database: ISqliteDatabase): AsyncFactoryFn<string, IDatabaseLockAdapter> {
-     *   return async (prefix) => {
-     *     const lockAdapter = new SqliteLockAdapter({
-     *       database,
-     *       tableName: `lock_${prefix}`,
-     *     });
-     *     // You need initialize the adapter once before using it.
-     *     await lockAdapter.init();
-     *     return lockAdapter;
-     *   }
-     * }
-     *
-     * const database = new Sqlite("local.db");
-     * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const lockProvider = new LockProvider({
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde,
-     *   adapter: lockAdapterFactory(database),
-     * });
-     * ```
-     *
-     * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
-     * @example
-     * ```ts
-     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import type { IDatabaseLockAdapter } from "@daiso-tech/core/lock/contracts";
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { KeyPrefixer, type ISqliteDatabase, type IAsyncFactoryObject, type Promisable } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import Sqlite from "better-sqlite3";
-     *
-     * class LockAdapterFactory implements IAsyncFactoryObject<string, IDatabaseLockAdapter> {
-     *   constructor(private readonly database: ISqliteDatabase) {}
-     *
-     *   async use(prefix: string): Promise<IDatabaseLockAdapter> {
-     *     const lockAdapter = new SqliteLockAdapter({
-     *       database,
-     *       tableName: `lock_${prefix}`,
-     *     });
-     *     // You need initialize the adapter once before using it.
-     *     await lockAdapter.init();
-     *     return lockAdapter;
-     *   }
-     * }
-     *
-     * const database = new Sqlite("local.db");
-     * const serde = new Serde(new SuperJsonSerdeAdapter())
-     * const lockProvider = new LockProvider({
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde,
-     *   adapter: new LockAdapterFactory(database),
      * });
      * ```
      */
@@ -347,12 +225,12 @@ export class LockProvider implements IGroupableLockProvider {
         this.createOwnerId = createOwnerId;
         this.keyPrefixer = keyPrefixer;
         this.groupableEventBus = groupableEventBus;
-        this.adapterFactoryable = adapter;
         this.defaultTtl = defaultTtl;
         this.eventBus = this.eventBus = this.groupableEventBus.withGroup(
             this.keyPrefixer.resolvedRootPrefix,
         );
         this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
+        this.serdeTransformerName = serdeTransformerName;
 
         if (this.keyPrefixer.resolvedGroup) {
             this.eventBus = this.groupableEventBus.withGroup([
@@ -361,22 +239,30 @@ export class LockProvider implements IGroupableLockProvider {
             ]);
         }
 
-        this.adapterPromise = new LazyPromise(async () =>
-            LockProvider.resolveLockAdapterFactoryable(
-                this.adapterFactoryable,
-                {
-                    serde,
-                    lockStore: this.lockStore,
-                    keyPrefixer,
-                    createLazyPromise: this.createLazyPromise.bind(this),
-                    defaultBlockingInterval,
-                    defaultBlockingTime,
-                    defaultRefreshTime,
-                    groupableEventBus,
-                    serdeTransformerName,
-                },
-            ),
-        );
+        if (isDatabaseLockAdapter(adapter)) {
+            this.adapter = new DatabaseLockAdapter(adapter);
+        } else {
+            this.adapter = adapter;
+        }
+
+        this.registerToSerde();
+    }
+
+    private registerToSerde() {
+        const transformer = new LockSerdeTransformer({
+            adapter: this.adapter,
+            createLazyPromise: this.createLazyPromise.bind(this),
+            defaultBlockingInterval: this.defaultBlockingInterval,
+            defaultBlockingTime: this.defaultBlockingTime,
+            defaultRefreshTime: this.defaultRefreshTime,
+            eventBus: this.eventBus,
+            keyPrefixer: this.keyPrefixer,
+            lockStore: this.lockStore,
+            serdeTransformerName: this.serdeTransformerName,
+        });
+        for (const serde of resolveOneOrMore(this.serde)) {
+            serde.registerCustom(transformer, CORE);
+        }
     }
 
     /**
@@ -478,7 +364,7 @@ export class LockProvider implements IGroupableLockProvider {
         const keyObj = this.keyPrefixer.create(key);
 
         return new Lock({
-            adapterPromise: this.adapterPromise,
+            adapter: this.adapter,
             group: this.keyPrefixer.resolvedGroup,
             createLazyPromise: this.createLazyPromise.bind(this),
             lockState: new LockState(this.lockStore, keyObj.prefixed),
@@ -557,7 +443,7 @@ export class LockProvider implements IGroupableLockProvider {
      */
     withGroup(group: OneOrMore<string>): ILockProvider {
         return new LockProvider({
-            adapter: this.adapterFactoryable,
+            adapter: this.adapter,
             keyPrefixer: this.keyPrefixer.withGroup(group),
             serde: this.serde,
             createOwnerId: this.createOwnerId,

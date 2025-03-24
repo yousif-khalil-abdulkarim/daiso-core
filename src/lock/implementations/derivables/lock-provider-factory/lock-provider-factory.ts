@@ -20,7 +20,7 @@ import type {
 } from "@/utilities/_module-exports.js";
 import {
     LockProvider,
-    type LockAdapterFactoryable,
+    type LockAdapter,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
@@ -31,7 +31,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
  * @group Derivables
  */
 export type LockAdapters<TAdapters extends string> = Partial<
-    Record<TAdapters, LockAdapterFactoryable>
+    Record<TAdapters, LockAdapter>
 >;
 
 /**
