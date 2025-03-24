@@ -20,7 +20,6 @@ import {
  * @group Events
  */
 export class KeyFoundCacheEvent<TType = unknown> extends BaseEvent<{
-    group: string | null;
     key: string;
     value: TType;
 }> {}
@@ -32,7 +31,6 @@ export class KeyFoundCacheEvent<TType = unknown> extends BaseEvent<{
  * @group Events
  */
 export class KeyNotFoundCacheEvent extends BaseEvent<{
-    group: string | null;
     key: string;
 }> {}
 
@@ -43,7 +41,6 @@ export class KeyNotFoundCacheEvent extends BaseEvent<{
  * @group Events
  */
 export class KeyAddedCacheEvent<TType = unknown> extends BaseEvent<{
-    group: string | null;
     key: string;
     value: TType;
     ttl: TimeSpan | null;
@@ -56,7 +53,6 @@ export class KeyAddedCacheEvent<TType = unknown> extends BaseEvent<{
  * @group Events
  */
 export class KeyUpdatedCacheEvent<TType = unknown> extends BaseEvent<{
-    group: string | null;
     key: string;
     value: TType;
 }> {}
@@ -68,7 +64,6 @@ export class KeyUpdatedCacheEvent<TType = unknown> extends BaseEvent<{
  * @group Events
  */
 export class KeyRemovedCacheEvent extends BaseEvent<{
-    group: string | null;
     key: string;
 }> {}
 
@@ -79,7 +74,6 @@ export class KeyRemovedCacheEvent extends BaseEvent<{
  * @group Events
  */
 export class KeyIncrementedCacheEvent extends BaseEvent<{
-    group: string | null;
     key: string;
     value: number;
 }> {}
@@ -91,7 +85,6 @@ export class KeyIncrementedCacheEvent extends BaseEvent<{
  * @group Events
  */
 export class KeyDecrementedCacheEvent extends BaseEvent<{
-    group: string | null;
     key: string;
     value: number;
 }> {}
@@ -102,9 +95,8 @@ export class KeyDecrementedCacheEvent extends BaseEvent<{
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events
  */
-export class KeysClearedCacheEvent extends BaseEvent<{
-    group: string | null;
-}> {}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export class KeysClearedCacheEvent extends BaseEvent<{}> {}
 
 /**
  *
@@ -112,7 +104,6 @@ export class KeysClearedCacheEvent extends BaseEvent<{
  * @group Events
  */
 export class UnexpectedErrorCacheEvent extends BaseEvent<{
-    group: string | null;
     keys?: string[];
     value?: unknown;
     method: string;
