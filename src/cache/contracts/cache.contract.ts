@@ -222,11 +222,6 @@ export type ICacheBase<TType = unknown> = {
      * The <i>clear</i> method removes all the keys in the cache. If a cache is in a group then only the keys part of the group will be removed.
      */
     clear(): LazyPromise<void>;
-
-    /**
-     * The <i>getGroup</i> method returns the group name of the cache. If the cache is not part of a group then null is returned.
-     */
-    getGroup(): string | null;
 };
 
 /**
@@ -237,22 +232,3 @@ export type ICacheBase<TType = unknown> = {
  */
 export type ICache<TType = unknown> = ICacheListenable<TType> &
     ICacheBase<TType>;
-
-/**
- * The <i>IGroupableCache</i> contract defines a way for storing and grouping data as key-value pairs independent of data storage.
- *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
- * @group Contracts
- */
-export type IGroupableCache<TType = unknown> = ICache<TType> & {
-    /**
-     * The <i>withGroup</i> method returns a new <i>{@link ICache}</i> instance that groups keys together.
-     * Only keys in the same group will be updated, removed, or retrieved, leaving keys outside the group unaffected.
-     * This useful for multitennat applications.
-     *
-     * @param group - can be a string or an <i>Iterable</i> of strings.
-     * If it's an <i>Iterable</i>, it will be joined into a single string.
-     * Think of an <i>Iterable</i> as representing a path.
-     */
-    withGroup(group: OneOrMore<string>): ICache<TType>;
-};
