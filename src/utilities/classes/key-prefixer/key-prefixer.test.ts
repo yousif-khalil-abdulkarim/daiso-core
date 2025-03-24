@@ -9,22 +9,26 @@ describe("class: KeyPrefixer", () => {
         rootIdentifier: "_rt",
         groupIdentifier: "_gp",
     };
-    describe("method: create().prefixed", () => {
-        test(`Should match when keyPrefixerA and KeyPrefixerB root is ["a", "b"] and key is "c"`, () => {
-            const keyA = new KeyPrefixer(["a", "b"], BASE_SETTINGS).create("c");
-            const keyB = new KeyPrefixer(["a", "b"], BASE_SETTINGS).create("c");
-            expect(keyA.prefixed).toBe(keyB.prefixed);
-        });
-        test(`Should not match when keyPrefixerA and KeyPrefixerB root is ["a", "b"] and keys are different`, () => {
-            const keyA = new KeyPrefixer(["a", "b"], BASE_SETTINGS).create("c");
-            const keyB = new KeyPrefixer(["a", "b"], BASE_SETTINGS).create("d");
-            expect(keyA.prefixed).not.toBe(keyB.prefixed);
-        });
-        test(`Key should not start with getKeyPrefix when keyPrefixer when given different root`, () => {
-            const keyPrefixerA = new KeyPrefixer(["a", "b"], BASE_SETTINGS);
-            const keyPrefixerB = new KeyPrefixer("a", BASE_SETTINGS);
-            const key = keyPrefixerA.create("c");
-            expect(key.prefixed.startsWith(keyPrefixerB.keyPrefix)).toBe(false);
-        });
+    test("Should match when keyPrefixerA and KeyPrefixerB has same root and same key", () => {
+        const keyA = new KeyPrefixer(["a", "b"], BASE_SETTINGS).create("c");
+        const keyB = new KeyPrefixer(["a", "b"], BASE_SETTINGS).create("c");
+        expect(keyA.prefixed).toBe(keyB.prefixed);
+    });
+    test("Should not match when keyPrefixerA and KeyPrefixerB has same root and keys are different", () => {
+        const keyA = new KeyPrefixer(["a", "b"], BASE_SETTINGS).create("c");
+        const keyB = new KeyPrefixer(["a", "b"], BASE_SETTINGS).create("d");
+        expect(keyA.prefixed).not.toBe(keyB.prefixed);
+    });
+    test("Should match when keyPrefixerA and KeyPrefixerB has not same root and same key", () => {
+        const keyA = new KeyPrefixer(["a", "b"], BASE_SETTINGS).create("c");
+        const keyB = new KeyPrefixer(["a"], BASE_SETTINGS).create("c");
+        expect(keyA.prefixed).not.toBe(keyB.prefixed);
+    });
+    // KeyPrefixerA a key should not start getKeyPrefix when given different root
+    test("KeyPrefixerA a key should not start getKeyPrefix when given different root", () => {
+        const keyPrefixerA = new KeyPrefixer(["a", "b"], BASE_SETTINGS);
+        const keyPrefixerB = new KeyPrefixer("a", BASE_SETTINGS);
+        const key = keyPrefixerA.create("c");
+        expect(key.prefixed.startsWith(keyPrefixerB.keyPrefix)).toBe(false);
     });
 });

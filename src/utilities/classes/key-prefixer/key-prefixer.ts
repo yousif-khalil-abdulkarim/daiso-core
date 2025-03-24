@@ -17,7 +17,8 @@ type KeySettings = {
 
 /**
  *
- * @internal
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group KeyPrefixer
  */
 export class Key {
     private readonly prefixArr: AtLeastOne<string>;
@@ -78,7 +79,6 @@ export class KeyPrefixer {
     private readonly identifierDelimeter: string;
     private readonly keyDelimeter: string;
     private readonly rootIdentifier: string;
-    private readonly groupIdentifier: string;
     private readonly keyIdentifier: string;
 
     constructor(
@@ -90,26 +90,18 @@ export class KeyPrefixer {
             keyDelimeter = "/",
             keyIdentifier = "_ky",
             rootIdentifier = "_rt",
-            groupIdentifier = "_gp",
         } = settings;
         this.rootIdentifier = rootIdentifier;
-        this.groupIdentifier = groupIdentifier;
         this.keyIdentifier = keyIdentifier;
         this.identifierDelimeter = identifierDelimeter;
         this.keyDelimeter = keyDelimeter;
         this.validate(this._rootPrefix);
     }
 
-    /**
-     * @internal
-     */
     get originalRootPrefix(): OneOrMore<string> {
         return this._rootPrefix;
     }
 
-    /**
-     * @internal
-     */
     get resolvedRootPrefix(): string {
         return resolveOneOrMoreStr(this._rootPrefix);
     }
@@ -119,9 +111,6 @@ export class KeyPrefixer {
         if (resolvedKey.includes(this.rootIdentifier)) {
             throw new Error("!!__MESSAGE__!!");
         }
-        if (resolvedKey.includes(this.groupIdentifier)) {
-            throw new Error("!!__MESSAGE__!!");
-        }
         if (resolvedKey.includes(this.keyIdentifier)) {
             throw new Error("!!__MESSAGE__!!");
         }
@@ -129,14 +118,11 @@ export class KeyPrefixer {
 
     private getKeyPrefixArray(): AtLeastOne<string> {
         return [
-            this.rootIdentifier,
             resolveOneOrMoreStr(this._rootPrefix, this.keyDelimeter),
+            this.rootIdentifier,
         ];
     }
 
-    /**
-     * @internal
-     */
     get keyPrefix(): string {
         return resolveOneOrMoreStr(
             this.getKeyPrefixArray(),
@@ -144,9 +130,6 @@ export class KeyPrefixer {
         );
     }
 
-    /**
-     * @internal
-     */
     create(key: OneOrMore<string>): Key {
         this.validate(key);
         return new Key({
