@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import type { IGroupableLockProvider } from "@/lock/contracts/lock-provider.contract.js";
+import type { ILockProvider } from "@/lock/contracts/lock-provider.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,
@@ -11,7 +11,7 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
- * The <i>ILockProviderFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableLockProvider}</i> dynamically.
+ * The <i>ILockProviderFactory</i> contract makes it easy to configure and switch between different <i>{@link ILockProvider}</i> dynamically.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
  * @group Contracts
@@ -23,5 +23,5 @@ export type ILockProviderFactory<TAdapters extends string = string> = {
      * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      */
-    use(adapterName?: TAdapters): IGroupableLockProvider;
+    use(adapterName?: TAdapters): ILockProvider;
 };

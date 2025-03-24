@@ -4,7 +4,7 @@
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
     ILockProviderFactory,
-    IGroupableLockProvider,
+    ILockProvider,
 } from "@/lock/contracts/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
@@ -221,7 +221,7 @@ export class LockProviderFactory<TAdapters extends string>
      */
     use(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
-    ): IGroupableLockProvider {
+    ): ILockProvider {
         if (adapterName === undefined) {
             throw new DefaultAdapterNotDefinedError(LockProviderFactory.name);
         }

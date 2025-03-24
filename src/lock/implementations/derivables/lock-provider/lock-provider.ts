@@ -19,7 +19,6 @@ import type {
 } from "@/lock/contracts/_module-exports.js";
 import {
     type ILock,
-    type IGroupableLockProvider,
     type LockProviderCreateSettings,
     type ILockProvider,
     type ILockAdapter,
@@ -157,7 +156,7 @@ export type LockProviderSettings = LockProviderSettingsBase & {
  * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
  */
-export class LockProvider implements IGroupableLockProvider {
+export class LockProvider implements ILockProvider {
     private lockStore: ILockStore = {};
     private readonly groupableEventBus: IGroupableEventBus<LockEvents>;
     private readonly eventBus: IEventBus<LockEvents>;
@@ -376,83 +375,6 @@ export class LockProvider implements IGroupableLockProvider {
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
-        });
-    }
-
-    /**
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     *
-     * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde,
-     * });
-     *
-     * // Will log null because the lockProvider is not in a group
-     * console.log(lockProvider.getGroup());
-     *
-     * const groupedLockProvider = lockProvider.withGroup("group-a");
-     *
-     * // Will log "group-a" because the groupedLockProvider is in a group
-     * console.log(groupedLockProvider.getGroup());
-     * ```
-     */
-    getGroup(): string | null {
-        return this.keyPrefixer.resolvedGroup;
-    }
-
-    /**
-     * @example
-     * ```ts
-     * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
-     * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     *
-     * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const lockProvider = new LockProvider({
-     *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
-     *   serde,
-     * });
-     *
-     * const groupedLockProvider = lockProvider.withGroup("group-a");
-     *
-     * // Will log true because they are in different groups.
-     * console.log(
-     *   await lockProvider
-     *     .create("a")
-     *     .acquire()
-     * );
-     *
-     * // Will log true because the lockProviders are in different groups.
-     * console.log(
-     *   await groupedLockProvider
-     *     .create("a")
-     *     .acquire()
-     * );
-     * ```
-     */
-    withGroup(group: OneOrMore<string>): ILockProvider {
-        return new LockProvider({
-            adapter: this.adapter,
-            keyPrefixer: this.keyPrefixer.withGroup(group),
-            serde: this.serde,
-            createOwnerId: this.createOwnerId,
-            eventBus: this.groupableEventBus,
-            defaultTtl: this.defaultTtl,
-            defaultBlockingInterval: this.defaultBlockingInterval,
-            defaultBlockingTime: this.defaultBlockingTime,
-            defaultRefreshTime: this.defaultRefreshTime,
-            lazyPromiseFactory: this.lazyPromiseFactory,
         });
     }
 }

@@ -7,11 +7,7 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import type {
-    ILockProvider,
-    IGroupableLockProvider,
-    ILock,
-} from "@/lock/contracts/_module-exports.js";
+import type { ILockProvider, ILock } from "@/lock/contracts/_module-exports.js";
 import {
     UnownedRefreshLockEvent,
     KeyForceReleasedLockEvent,
@@ -41,7 +37,7 @@ export type LockProviderTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createLockProvider: () => Promisable<IGroupableLockProvider>;
+    createLockProvider: () => Promisable<ILockProvider>;
     serde?: ISerde;
 };
 
@@ -100,12 +96,9 @@ export function lockProviderTestSuite(
         beforeEach,
         serde = new Serde(new NoOpSerdeAdapter()),
     } = settings;
-    let lockProviderA: ILockProvider;
-    let lockProviderB: ILockProvider;
+    let lockProvider: ILockProvider;
     beforeEach(async () => {
-        const lockProvider = await createLockProvider();
-        lockProviderA = lockProvider;
-        lockProviderB = lockProvider.withGroup("b");
+        lockProvider = await createLockProvider();
     });
     const TTL = TimeSpan.fromMilliseconds(50);
     const DELAY_TIME = TimeSpan.fromMilliseconds(50);
@@ -114,7 +107,7 @@ export function lockProviderTestSuite(
             test("Should return string when lock is available", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -129,7 +122,7 @@ export function lockProviderTestSuite(
             test("Should return null when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -145,7 +138,7 @@ export function lockProviderTestSuite(
             test("Should work with LazyPromise", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -164,7 +157,7 @@ export function lockProviderTestSuite(
             test("Should return string when lock is available", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -178,7 +171,7 @@ export function lockProviderTestSuite(
             test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -195,7 +188,7 @@ export function lockProviderTestSuite(
             test("Should work with LazyPromise", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -213,7 +206,7 @@ export function lockProviderTestSuite(
             test("Should return string when lock is available", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -234,7 +227,7 @@ export function lockProviderTestSuite(
             test("Should return null when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -256,7 +249,7 @@ export function lockProviderTestSuite(
             test("Should work with LazyPromise", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -277,13 +270,13 @@ export function lockProviderTestSuite(
             test("Should retry acquire the lock", async () => {
                 const key = "a";
                 const ttl = TimeSpan.fromMilliseconds(50);
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
                 await lock.acquire();
                 let index = 0;
-                await lockProviderA.addListener(
+                await lockProvider.addListener(
                     KeyAlreadyAcquiredLockEvent,
                     (_event) => {
                         index++;
@@ -306,7 +299,7 @@ export function lockProviderTestSuite(
             test("Should return string when lock is available", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -326,7 +319,7 @@ export function lockProviderTestSuite(
             test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -349,7 +342,7 @@ export function lockProviderTestSuite(
             test("Should work with LazyPromise", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -369,13 +362,13 @@ export function lockProviderTestSuite(
             test("Should retry acquire the lock", async () => {
                 const key = "a";
                 const ttl = TimeSpan.fromMilliseconds(50);
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
                 await lock.acquire();
                 let index = 0;
-                await lockProviderA.addListener(
+                await lockProvider.addListener(
                     KeyAlreadyAcquiredLockEvent,
                     (_event) => {
                         index++;
@@ -402,7 +395,7 @@ export function lockProviderTestSuite(
             test("Should return true when lock is available", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -413,7 +406,7 @@ export function lockProviderTestSuite(
             test("Should return false when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -426,7 +419,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -440,7 +433,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -455,7 +448,7 @@ export function lockProviderTestSuite(
             test("Should not throw KeyAlreadyAcquiredLockError when lock is available", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -466,7 +459,7 @@ export function lockProviderTestSuite(
             test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -482,7 +475,7 @@ export function lockProviderTestSuite(
             test("Should return true when lock is available", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -496,7 +489,7 @@ export function lockProviderTestSuite(
             test("Should return false when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -515,7 +508,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -532,7 +525,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -548,13 +541,13 @@ export function lockProviderTestSuite(
             test("Should retry acquire the lock", async () => {
                 const key = "a";
                 const ttl = TimeSpan.fromMilliseconds(50);
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
                 await lock.acquire();
                 let index = 0;
-                await lockProviderA.addListener(
+                await lockProvider.addListener(
                     KeyAlreadyAcquiredLockEvent,
                     (_event) => {
                         index++;
@@ -572,7 +565,7 @@ export function lockProviderTestSuite(
             test("Should not throw KeyAlreadyAcquiredLockError when lock is available", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -586,7 +579,7 @@ export function lockProviderTestSuite(
             test("Should throw KeyAlreadyAcquiredLockError when lock is already acquired", async () => {
                 const key = "a";
                 const ttl = null;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
@@ -607,7 +600,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -624,7 +617,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -640,13 +633,13 @@ export function lockProviderTestSuite(
             test("Should retry acquire the lock", async () => {
                 const key = "a";
                 const ttl = TimeSpan.fromMilliseconds(50);
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                 });
 
                 await lock.acquire();
                 let index = 0;
-                await lockProviderA.addListener(
+                await lockProvider.addListener(
                     KeyAlreadyAcquiredLockEvent,
                     (_event) => {
                         index++;
@@ -669,7 +662,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -683,14 +676,14 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner1 = "b";
-                const lock1 = lockProviderA.create(key, {
+                const lock1 = lockProvider.create(key, {
                     ttl,
                     owner: owner1,
                 });
 
                 await lock1.acquire();
                 const owner2 = "c";
-                const lock2 = lockProviderA.create(key, {
+                const lock2 = lockProvider.create(key, {
                     ttl,
                     owner: owner2,
                 });
@@ -702,7 +695,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -717,7 +710,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -734,7 +727,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -748,14 +741,14 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner1 = "b";
-                const lock1 = lockProviderA.create(key, {
+                const lock1 = lockProvider.create(key, {
                     ttl,
                     owner: owner1,
                 });
 
                 await lock1.acquire();
                 const owner2 = "c";
-                const lock2 = lockProviderA.create(key, {
+                const lock2 = lockProvider.create(key, {
                     ttl,
                     owner: owner2,
                 });
@@ -769,7 +762,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -784,7 +777,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -801,14 +794,14 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner1 = "b";
-                const lock1 = lockProviderA.create(key, {
+                const lock1 = lockProvider.create(key, {
                     ttl,
                     owner: owner1,
                 });
 
                 await lock1.acquire();
                 const owner2 = "c";
-                const lock2 = lockProviderA.create(key, {
+                const lock2 = lockProvider.create(key, {
                     ttl,
                     owner: owner2,
                 });
@@ -821,7 +814,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -836,7 +829,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -853,7 +846,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -867,7 +860,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const owner = "b";
                 const ttl = TTL;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -881,7 +874,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const owner = "b";
                 const ttl = TTL;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -898,7 +891,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -912,7 +905,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const owner = "b";
                 const ttl = TTL;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -926,7 +919,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const owner = "b";
                 const ttl = TTL;
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -943,7 +936,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = TTL;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -959,14 +952,14 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = TTL;
                 const owner1 = "b";
-                const lock1 = lockProviderA.create(key, {
+                const lock1 = lockProvider.create(key, {
                     ttl,
                     owner: owner1,
                 });
 
                 await lock1.acquire();
                 const owner2 = "c";
-                const lock2 = lockProviderA.create(key, {
+                const lock2 = lockProvider.create(key, {
                     ttl,
                     owner: owner2,
                 });
@@ -978,7 +971,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = TTL;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -996,7 +989,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = TTL;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -1012,14 +1005,14 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = TTL;
                 const owner1 = "b";
-                const lock1 = lockProviderA.create(key, {
+                const lock1 = lockProvider.create(key, {
                     ttl,
                     owner: owner1,
                 });
 
                 await lock1.acquire();
                 const owner2 = "c";
-                const lock2 = lockProviderA.create(key, {
+                const lock2 = lockProvider.create(key, {
                     ttl,
                     owner: owner2,
                 });
@@ -1033,7 +1026,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = TTL;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -1051,7 +1044,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -1064,7 +1057,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -1078,7 +1071,7 @@ export function lockProviderTestSuite(
                 const key = "a";
                 const ttl = TTL;
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     ttl,
                     owner,
                 });
@@ -1093,7 +1086,7 @@ export function lockProviderTestSuite(
             test("Should return the owner", async () => {
                 const key = "a";
                 const owner = "b";
-                const lock = lockProviderA.create(key, {
+                const lock = lockProvider.create(key, {
                     owner,
                 });
 
@@ -1103,7 +1096,7 @@ export function lockProviderTestSuite(
             });
             test("Should return the auto generated owner", async () => {
                 const key = "a";
-                const lock = lockProviderA.create(key);
+                const lock = lockProvider.create(key);
 
                 const result = await lock.getOwner();
 
@@ -1118,12 +1111,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1145,12 +1138,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1169,13 +1162,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquire();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1196,12 +1189,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1229,12 +1222,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1259,13 +1252,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquire();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1292,12 +1285,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1319,12 +1312,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1343,13 +1336,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquire();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1374,12 +1367,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1399,13 +1392,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquire();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1424,12 +1417,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1452,7 +1445,7 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
@@ -1461,7 +1454,7 @@ export function lockProviderTestSuite(
                         time: TimeSpan.fromMilliseconds(5),
                         interval: TimeSpan.fromMilliseconds(5),
                     });
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1483,12 +1476,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1508,13 +1501,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquireOrFail();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1537,13 +1530,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
 
                     await lock.acquire();
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1559,17 +1552,17 @@ export function lockProviderTestSuite(
                 test("Should dispatch UnownedReleaseLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as UnownedReleaseLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         UnownedReleaseLockEvent,
                         (event) => {
                             event_ = event;
@@ -1587,13 +1580,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
 
                     await lock.acquire();
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1609,17 +1602,17 @@ export function lockProviderTestSuite(
                 test("Should dispatch UnownedReleaseLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as UnownedReleaseLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         UnownedReleaseLockEvent,
                         (event) => {
                             event_ = event;
@@ -1641,17 +1634,17 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyForceReleasedLockEvent when lock forcefully released", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as KeyForceReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyForceReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1668,14 +1661,14 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyRefreshedLockEvent when refreshed by same owner", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
 
                     await lock.acquire();
                     let event_ = null as KeyRefreshedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyRefreshedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1696,18 +1689,18 @@ export function lockProviderTestSuite(
                 test("Should dispatch UnownedRefreshLockEvent when refreshed by different owner", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                         ttl: TTL,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as UnownedRefreshLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         UnownedRefreshLockEvent,
                         (event) => {
                             event_ = event;
@@ -1727,14 +1720,14 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyRefreshedLockEvent when refreshed by same owner", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
 
                     await lock.acquire();
                     let event_ = null as KeyRefreshedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyRefreshedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1755,18 +1748,18 @@ export function lockProviderTestSuite(
                 test("Should dispatch UnownedRefreshLockEvent when refreshed by different owner", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                         ttl: TTL,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as UnownedRefreshLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         UnownedRefreshLockEvent,
                         (event) => {
                             event_ = event;
@@ -1792,12 +1785,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1819,12 +1812,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1843,13 +1836,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquire();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1870,12 +1863,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1903,12 +1896,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -1933,13 +1926,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquire();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1966,12 +1959,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -1993,12 +1986,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -2017,13 +2010,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquire();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -2048,12 +2041,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -2073,13 +2066,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquire();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -2098,12 +2091,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -2123,13 +2116,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquire();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -2148,12 +2141,12 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
                     let event_ = null as KeyAcquiredLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -2173,13 +2166,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
                     let event_ = null as KeyAlreadyAcquiredLockEvent | null;
 
                     await lock.acquireOrFail();
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyAlreadyAcquiredLockEvent,
                         (event) => {
                             event_ = event;
@@ -2202,13 +2195,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
 
                     await lock.acquire();
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -2224,17 +2217,17 @@ export function lockProviderTestSuite(
                 test("Should dispatch UnownedReleaseLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as UnownedReleaseLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         UnownedReleaseLockEvent,
                         (event) => {
                             event_ = event;
@@ -2252,13 +2245,13 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyReleasedLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                     });
 
                     await lock.acquire();
                     let event_ = null as KeyReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -2274,17 +2267,17 @@ export function lockProviderTestSuite(
                 test("Should dispatch UnownedReleaseLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as UnownedReleaseLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         UnownedReleaseLockEvent,
                         (event) => {
                             event_ = event;
@@ -2306,17 +2299,17 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyForceReleasedLockEvent when lock forcefully released", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as KeyForceReleasedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyForceReleasedLockEvent,
                         (event) => {
                             event_ = event;
@@ -2333,14 +2326,14 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyRefreshedLockEvent when refreshed by same owner", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
 
                     await lock.acquire();
                     let event_ = null as KeyRefreshedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyRefreshedLockEvent,
                         (event) => {
                             event_ = event;
@@ -2361,18 +2354,18 @@ export function lockProviderTestSuite(
                 test("Should dispatch UnownedRefreshLockEvent when refreshed by different owner", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                         ttl: TTL,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as UnownedRefreshLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         UnownedRefreshLockEvent,
                         (event) => {
                             event_ = event;
@@ -2392,14 +2385,14 @@ export function lockProviderTestSuite(
                 test("Should dispatch KeyRefreshedLockEvent when refreshed by same owner", async () => {
                     const key = "a";
                     const owner = "b";
-                    const lock = lockProviderA.create(key, {
+                    const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
 
                     await lock.acquire();
                     let event_ = null as KeyRefreshedLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         KeyRefreshedLockEvent,
                         (event) => {
                             event_ = event;
@@ -2420,18 +2413,18 @@ export function lockProviderTestSuite(
                 test("Should dispatch UnownedRefreshLockEvent when refreshed by different owner", async () => {
                     const key = "a";
                     const owner1 = "b";
-                    const lock1 = lockProviderA.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         owner: owner1,
                         ttl: TTL,
                     });
                     await lock1.acquire();
 
                     const owner2 = "c";
-                    const lock2 = lockProviderA.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
                     let event_ = null as UnownedRefreshLockEvent | null;
-                    const unsubscribe = await lockProviderA.subscribe(
+                    const unsubscribe = await lockProvider.subscribe(
                         UnownedRefreshLockEvent,
                         (event) => {
                             event_ = event;
@@ -2453,370 +2446,11 @@ export function lockProviderTestSuite(
             });
         });
     });
-    describe("Group tests:", () => {
-        test("method: run", async () => {
-            const key = "a";
-
-            const ownerA = "b";
-            const lockA = lockProviderA.create(key, {
-                owner: ownerA,
-            });
-            const promiseA = lockA.run(async () => {
-                await LazyPromise.delay(DELAY_TIME);
-                return "a";
-            });
-
-            const ownerB = "c";
-            const lockB = lockProviderB.create(key, {
-                owner: ownerB,
-            });
-            const promiseB = lockB.run(async () => {
-                await LazyPromise.delay(DELAY_TIME);
-                return "a";
-            });
-
-            const [[resultA, errorA], [resultB, errorB]] = await Promise.all([
-                promiseA,
-                promiseB,
-            ]);
-            expect(resultA).toBe("a");
-            expect(errorA).toBeNull();
-            expect(resultB).toBe("a");
-            expect(errorB).toBeNull();
-        });
-        test("method: runBlocking", async () => {
-            const key = "a";
-
-            const ownerA = "b";
-            const lockA = lockProviderA.create(key, {
-                owner: ownerA,
-            });
-            const promiseA = lockA.run(async () => {
-                await LazyPromise.delay(DELAY_TIME);
-                return "a";
-            });
-
-            const ownerB = "c";
-            const lockB = lockProviderB.create(key, {
-                owner: ownerB,
-            });
-            const promiseB = lockB.runBlocking(
-                async () => {
-                    await LazyPromise.delay(DELAY_TIME);
-                    return "a";
-                },
-                {
-                    time: TimeSpan.fromMilliseconds(5),
-                    interval: TimeSpan.fromMilliseconds(5),
-                },
-            );
-
-            const [[resultA, errorA], [resultB, errorB]] = await Promise.all([
-                promiseA,
-                promiseB,
-            ]);
-            expect(resultA).toBe("a");
-            expect(errorA).toBeNull();
-            expect(resultB).toBe("a");
-            expect(errorB).toBeNull();
-        });
-        test("method: runOrFail", async () => {
-            const key = "a";
-
-            const ownerA = "b";
-            const lockA = lockProviderA.create(key, {
-                owner: ownerA,
-            });
-            const promiseA = lockA.runOrFail(async () => {
-                await LazyPromise.delay(DELAY_TIME);
-                return "a";
-            });
-
-            const ownerB = "c";
-            const lockB = lockProviderB.create(key, {
-                owner: ownerB,
-            });
-            const promiseB = lockB.runOrFail(async () => {
-                await LazyPromise.delay(DELAY_TIME);
-                return "a";
-            });
-
-            const [resultA, resultB] = await Promise.all([promiseA, promiseB]);
-            expect(resultA).toBe("a");
-            expect(resultB).toBe("a");
-        });
-        test("method: acquire", async () => {
-            const key = "a";
-
-            const ownerA = "b";
-            const lockA = lockProviderA.create(key, {
-                owner: ownerA,
-            });
-            const resultA = await lockA.acquire();
-
-            const ownerB = "c";
-            const lockB = lockProviderB.create(key, {
-                owner: ownerB,
-            });
-            const resultB = await lockB.acquire();
-
-            expect(resultA).toBe(true);
-            expect(resultB).toBe(true);
-        });
-        test("method: acquireBlocking", async () => {
-            const key = "a";
-
-            const ownerA = "b";
-            const lockA = lockProviderA.create(key, {
-                owner: ownerA,
-            });
-            const resultA = await lockA.acquireBlocking({
-                time: TimeSpan.fromMilliseconds(5),
-                interval: TimeSpan.fromMilliseconds(5),
-            });
-
-            const ownerB = "c";
-            const lockB = lockProviderB.create(key, {
-                owner: ownerB,
-            });
-            const resultB = await lockB.acquire();
-
-            expect(resultA).toBe(true);
-            expect(resultB).toBe(true);
-        });
-        test("method: acquireOrFail", async () => {
-            const key = "a";
-
-            const ownerA = "b";
-            const lockA = lockProviderA.create(key, {
-                owner: ownerA,
-            });
-            const promiseA = lockA.acquireOrFail();
-
-            const ownerB = "c";
-            const lockB = lockProviderB.create(key, {
-                owner: ownerB,
-            });
-            const promiseB = lockB.acquireOrFail();
-
-            await expect(promiseA).resolves.toBeUndefined();
-            await expect(promiseB).resolves.toBeUndefined();
-        });
-        test("method: release", async () => {
-            const key = "a";
-            const owner = "b";
-
-            const lockA = lockProviderA.create(key, {
-                owner,
-            });
-            await lockA.acquire();
-
-            const lockB = lockProviderB.create(key, {
-                owner,
-            });
-            await lockB.acquire();
-
-            await lockA.release();
-            const resultA = await lockA.isLocked();
-            const resultB = await lockB.isLocked();
-
-            expect(resultA).toBe(false);
-            expect(resultB).toBe(true);
-        });
-        test("method: releaseOrFail", async () => {
-            const key = "a";
-            const owner = "b";
-
-            const lockA = lockProviderA.create(key, {
-                owner,
-            });
-            await lockA.acquire();
-
-            const lockB = lockProviderB.create(key, {
-                owner,
-            });
-            await lockB.acquire();
-
-            await lockA.releaseOrFail();
-            const resultA = await lockA.isLocked();
-            const resultB = await lockB.isLocked();
-
-            expect(resultA).toBe(false);
-            expect(resultB).toBe(true);
-        });
-        test("method: forceRelease", async () => {
-            const key = "a";
-            const owner = "b";
-
-            const lockA = lockProviderA.create(key, {
-                owner,
-            });
-            await lockA.acquire();
-
-            const lockB = lockProviderB.create(key, {
-                owner,
-            });
-            await lockB.acquire();
-
-            await lockA.forceRelease();
-            const resultA = await lockA.isLocked();
-            const resultB = await lockB.isLocked();
-
-            expect(resultA).toBe(false);
-            expect(resultB).toBe(true);
-        });
-        test("method: isExpired", async () => {
-            const key = "a";
-            const owner = "b";
-            const lockA = lockProviderA.create(key, { owner });
-            const lockB = lockProviderB.create(key, { owner });
-            await lockA.acquire();
-            await lockB.acquire();
-
-            await lockA.release();
-            const resultA = await lockA.isExpired();
-            const resultB = await lockB.isExpired();
-
-            expect(resultA).toBe(true);
-            expect(resultB).toBe(false);
-        });
-        test("method: isLocked", async () => {
-            const key = "a";
-            const owner = "b";
-            const lockA = lockProviderA.create(key, { owner });
-            const lockB = lockProviderB.create(key, { owner });
-            await lockA.acquire();
-            await lockB.acquire();
-
-            await lockA.release();
-            const resultA = await lockA.isLocked();
-            const resultB = await lockB.isLocked();
-
-            expect(resultA).toBe(false);
-            expect(resultB).toBe(true);
-        });
-        test("method: refresh", async () => {
-            const key = "a";
-            const owner = "b";
-            const ttl = TTL;
-            const lockA = lockProviderA.create(key, {
-                owner,
-                ttl,
-            });
-            const lockB = lockProviderB.create(key, {
-                owner,
-                ttl,
-            });
-            await Promise.all([lockA.acquire(), lockB.acquire()]);
-
-            await LazyPromise.delay(ttl.divide(2));
-            await lockA.refresh();
-            await LazyPromise.delay(ttl.divide(2));
-
-            const resultA = await lockA.isExpired();
-            const resultB = await lockB.isExpired();
-
-            expect(resultA).toBe(false);
-            expect(resultB).toBe(true);
-        });
-        test("method: refreshOrFail", async () => {
-            const key = "a";
-            const owner = "b";
-            const ttl = TTL;
-            const lockA = lockProviderA.create(key, {
-                owner,
-                ttl,
-            });
-            const lockB = lockProviderB.create(key, {
-                owner,
-                ttl,
-            });
-            await Promise.all([lockA.acquire(), lockB.acquire()]);
-
-            await LazyPromise.delay(ttl.divide(2));
-            await lockA.refreshOrFail();
-            await LazyPromise.delay(ttl.divide(2));
-
-            const resultA = await lockA.isExpired();
-            const resultB = await lockB.isExpired();
-
-            expect(resultA).toBe(false);
-            expect(resultB).toBe(true);
-        });
-        test("method: addListener / dispatch", async () => {
-            let result_a: KeyAcquiredLockEvent | null = null;
-            const key = "a";
-            const lockA = lockProviderA.create(key);
-            await lockProviderA.addListener(KeyAcquiredLockEvent, (event) => {
-                result_a = event;
-            });
-
-            let result_b: KeyAcquiredLockEvent | null = null;
-            await lockProviderB.addListener(KeyAcquiredLockEvent, (event) => {
-                result_b = event;
-            });
-
-            await lockA.acquire();
-            await LazyPromise.delay(DELAY_TIME);
-
-            expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
-            expect(result_b).toBeNull();
-        });
-        test("method: removeListener / addListener / dispatch", async () => {
-            let result_a: KeyAcquiredLockEvent | null = null;
-            const key = "a";
-            const lockA = lockProviderA.create(key);
-            await lockProviderA.addListener(KeyAcquiredLockEvent, (event) => {
-                result_a = event;
-            });
-
-            let result_b: KeyAcquiredLockEvent | null = null;
-            const listenerB = (event: KeyAcquiredLockEvent) => {
-                result_b = event;
-            };
-            const lockB = lockProviderB.create(key);
-            await lockProviderB.addListener(KeyAcquiredLockEvent, listenerB);
-            await lockProviderB.removeListener(KeyAcquiredLockEvent, listenerB);
-
-            await lockA.acquire();
-            await lockB.acquire();
-            await LazyPromise.delay(DELAY_TIME);
-
-            expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
-            expect(result_b).toBeNull();
-        });
-        test("method: subscribe / dispatch", async () => {
-            let result_a: KeyAcquiredLockEvent | null = null;
-            const key = "a";
-            const lockA = lockProviderA.create(key);
-            await lockProviderA.subscribe(KeyAcquiredLockEvent, (event) => {
-                result_a = event;
-            });
-
-            let result_b: KeyAcquiredLockEvent | null = null;
-            const listenerB = (event: KeyAcquiredLockEvent) => {
-                result_b = event;
-            };
-            const lockB = lockProviderB.create(key);
-            const unsubscribe = await lockProviderB.subscribe(
-                KeyAcquiredLockEvent,
-                listenerB,
-            );
-            await unsubscribe();
-
-            await lockA.acquire();
-            await lockB.acquire();
-            await LazyPromise.delay(DELAY_TIME);
-
-            expect(result_a).toBeInstanceOf(KeyAcquiredLockEvent);
-            expect(result_b).toBeNull();
-        });
-    });
     describe("Serde tests:", () => {
         test("Should preserve state", async () => {
             const key = "a";
             const owner = "b";
-            const lock = lockProviderA.create(key, {
+            const lock = lockProvider.create(key, {
                 owner,
             });
 
@@ -2831,7 +2465,7 @@ export function lockProviderTestSuite(
         test("Should preserve owner", async () => {
             const key = "a";
             const owner = "b";
-            const lock = lockProviderA.create(key, {
+            const lock = lockProvider.create(key, {
                 owner,
             });
 
@@ -2845,7 +2479,7 @@ export function lockProviderTestSuite(
             const key = "a";
             const owner = "b";
             const ttl = TTL.multiply(2);
-            const lock = lockProviderA.create(key, {
+            const lock = lockProvider.create(key, {
                 owner,
                 ttl,
             });
