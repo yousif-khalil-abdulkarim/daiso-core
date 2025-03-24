@@ -20,7 +20,7 @@ import {
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type {
-    IKeyPrefixer,
+    KeyPrefixer,
     Factory,
     AsyncLazy,
     FactoryFn,
@@ -38,7 +38,7 @@ import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/
  * @group Derivables
  */
 export type EventBusSettingsBase = {
-    keyPrefixer: IKeyPrefixer;
+    keyPrefixer: KeyPrefixer;
 
     /**
      * You can pass a <i>{@link Factory}</i> of <i>{@link LazyPromise}</i> to configure default settings for all <i>{@link LazyPromise}</i> instances used in the <i>EventBus</i> class.
@@ -76,7 +76,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         AsyncLazy<any>,
         LazyPromise<any>
     >;
-    private keyPrefixer: IKeyPrefixer;
+    private keyPrefixer: KeyPrefixer;
 
     /**
      * @example

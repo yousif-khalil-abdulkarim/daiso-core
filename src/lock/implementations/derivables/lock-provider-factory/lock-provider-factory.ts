@@ -15,7 +15,6 @@ import {
 import type {
     AsyncLazy,
     Factory,
-    IKeyPrefixer,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
 import {
@@ -98,7 +97,7 @@ export class LockProviderFactory<TAdapters extends string>
         private readonly settings: LockProviderFactorySettings<TAdapters>,
     ) {}
 
-    setKeyPrefixer(keyPrefixer: IKeyPrefixer): LockProviderFactory<TAdapters> {
+    setKeyPrefixer(keyPrefixer: KeyPrefixer): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
             keyPrefixer,

@@ -4,7 +4,7 @@
 
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
-    type IKey,
+    type Key,
     type AsyncLazy,
     type OneOrMore,
     type Result,
@@ -56,7 +56,7 @@ export type LockSettings = {
     adapter: ILockAdapter;
     lockState: LockState;
     eventDispatcher: IEventDispatcher<LockEvents>;
-    key: IKey;
+    key: Key;
     owner: OneOrMore<string>;
     ttl: TimeSpan | null;
     expirationInMs: number | null;
@@ -89,7 +89,7 @@ export class Lock implements ILock {
     private readonly adapter: ILockAdapter;
     private readonly lockState: LockState;
     private readonly eventDispatcher: IEventDispatcher<LockEvents>;
-    private readonly key: IKey;
+    private readonly key: Key;
     private readonly owner: string;
     private readonly ttl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;

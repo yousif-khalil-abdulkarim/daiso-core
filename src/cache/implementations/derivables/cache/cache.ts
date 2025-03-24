@@ -57,7 +57,6 @@ import type {
     AsyncLazy,
     Factory,
     FactoryFn,
-    IKeyPrefixer,
 } from "@/utilities/_module-exports.js";
 
 /**
@@ -66,7 +65,7 @@ import type {
  * @group Derivables
  */
 export type CacheSettingsBase = {
-    keyPrefixer: IKeyPrefixer;
+    keyPrefixer: KeyPrefixer;
 
     /**
      * You can pass a <i>{@link Factory}</i> of <i>{@link LazyPromise}</i> to configure default settings for all <i>{@link LazyPromise}</i> instances used in the <i>Cache</i> class.
@@ -136,7 +135,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     private readonly adapterFactoryable: CacheAdapter<TType>;
     private readonly adapter: ICacheAdapter<TType>;
     private readonly defaultTtl: TimeSpan | null;
-    private readonly keyPrefixer: IKeyPrefixer;
+    private readonly keyPrefixer: KeyPrefixer;
     private readonly lazyPromiseFactory: FactoryFn<
         AsyncLazy<any>,
         LazyPromise<any>
