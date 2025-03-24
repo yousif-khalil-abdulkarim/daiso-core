@@ -21,18 +21,14 @@ import {
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type {
-    AsyncFactoryable,
     IKeyPrefixer,
     OneOrMore,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IFactoryObject,
     Factory,
     AsyncLazy,
     FactoryFn,
 } from "@/utilities/_module-exports.js";
 import {
     getConstructorName,
-    resolveAsyncFactoryable,
     resolveFactory,
     resolveInvokable,
 } from "@/utilities/_module-exports.js";
@@ -63,18 +59,8 @@ export type EventBusSettingsBase = {
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables
  */
-export type EventBusAdapterFactoryable = AsyncFactoryable<
-    string,
-    IEventBusAdapter
->;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
- * @group Derivables
- */
 export type EventBusSettings = EventBusSettingsBase & {
-    adapter: EventBusAdapterFactoryable;
+    adapter: IEventBusAdapter;
 };
 
 /**
@@ -86,9 +72,8 @@ export type EventBusSettings = EventBusSettingsBase & {
 export class EventBus<TEvents extends BaseEvent = BaseEvent>
     implements IGroupableEventBus<TEvents>
 {
-    private readonly adapterFactoryable: EventBusAdapterFactoryable;
     private readonly store = new ListenerStore();
-    private readonly adapterPromise: PromiseLike<IEventBusAdapter>;
+    private readonly adapter: IEventBusAdapter;
     private readonly lazyPromiseFactory: FactoryFn<
         AsyncLazy<any>,
         LazyPromise<any>
@@ -107,64 +92,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
      *   adapter: new MemoryEventBusAdapter()
      * });
      * ```
-     *
-     * You can pass factory function that will create an adapter for every group.
-     * @example
-     * ```ts
-     * import type { IEventBusAdapter } from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { KeyPrefixer, type FactoryFn } from "@daiso-tech/core/utilities";
-     *
-     * type Store = Partial<Record<string, IEventBusAdapter>>;
-     *
-     * function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
-     *   return (prefix) => {
-     *     let adapter = store[prefix];
-     *     if (adapter === undefined) {
-     *       adapter = new MemoryEventBusAdapter();
-     *       store[prefix] = adapter;
-     *     }
-     *     return adapter;
-     *   }
-     * }
-     *
-     * const store: Store = {}
-     * const eventBus = new EventBus({
-     *   keyPrefixer: new KeyPrefixer("event-bus"),
-     *   adapter: cahceAdapterFactory(store)
-     * });
-     * ```
-     *
-     * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
-     * @example
-     * ```ts
-     * import type { IEventBusAdapter } from "@daiso-tech/core/event-bus/contracts";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { KeyPrefixer, type IFactoryObject, type Promiseable } from "@daiso-tech/core/utilities";
-     *
-     * type Store = Partial<Record<string, IEventBusAdapter>>;
-     *
-     * class EventBusAdapterFactory implements IFactoryObject<string, IEventBusAdapter> {
-     *   constructor(private readonly store: Store) {}
-     *
-     *   async use(prefix: string): Promiseable<IEventBusAdapter> {
-     *     let adapter = this.store[prefix];
-     *     if (adapter === undefined) {
-     *       adapter = new MemoryEventBusAdapter();
-     *       store[prefix] = adapter;
-     *     }
-     *     return adapter;
-     *   }
-     * }
-     *
-     * const store: Store = {}
-     * const eventBus = new EventBus({
-     *   keyPrefixer: new KeyPrefixer("event-bus"),
-     *   adapter: new EventBusAdapterFactory(store)
-     * });
-     * ```
      */
     constructor(settings: EventBusSettings) {
         const {
@@ -173,14 +100,8 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
         this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
-        this.adapterFactoryable = adapter;
+        this.adapter = adapter;
         this.keyPrefixer = keyPrefixer;
-        this.adapterPromise = new LazyPromise(() =>
-            resolveAsyncFactoryable(
-                this.adapterFactoryable,
-                this.keyPrefixer.keyPrefix,
-            ),
-        );
     }
 
     private createLazyPromise<TValue = void>(
@@ -192,7 +113,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
         return new EventBus({
             keyPrefixer: this.keyPrefixer.withGroup(group),
-            adapter: this.adapterFactoryable,
+            adapter: this.adapter,
             lazyPromiseFactory: this.lazyPromiseFactory,
         });
     }
@@ -212,8 +133,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 resolveInvokable(listener),
             );
             try {
-                const adapter = await this.adapterPromise;
-                await adapter.addListener(
+                await this.adapter.addListener(
                     eventName.prefixed,
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
@@ -241,8 +161,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 return;
             }
             try {
-                const adapter = await this.adapterPromise;
-                await adapter.removeListener(
+                await this.adapter.removeListener(
                     eventName.prefixed,
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
@@ -277,8 +196,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 wrappedListener,
             );
             try {
-                const adapter = await this.adapterPromise;
-                await adapter.addListener(
+                await this.adapter.addListener(
                     eventName.prefixed,
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
@@ -333,8 +251,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
     dispatch(event: TEvents): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             try {
-                const adapter = await this.adapterPromise;
-                await adapter.dispatch(
+                await this.adapter.dispatch(
                     this.keyPrefixer.create(getConstructorName(event)).prefixed,
                     event,
                 );
