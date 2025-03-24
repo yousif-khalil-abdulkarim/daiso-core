@@ -352,7 +352,6 @@ export class LockProvider implements ILockProvider {
 
         return new Lock({
             adapter: this.adapter,
-            group: this.keyPrefixer.resolvedGroup,
             createLazyPromise: this.createLazyPromise.bind(this),
             lockState: new LockState(this.lockStore, keyObj.prefixed),
             eventDispatcher: this.eventBus,

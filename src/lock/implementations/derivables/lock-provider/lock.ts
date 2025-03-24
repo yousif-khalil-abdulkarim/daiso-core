@@ -40,7 +40,6 @@ import type { LockState } from "@/lock/implementations/derivables/lock-provider/
  * @internal
  */
 export type ISerializedLock = {
-    group: OneOrMore<string> | null;
     key: OneOrMore<string>;
     owner: string;
     ttlInMs: number | null;
@@ -51,7 +50,6 @@ export type ISerializedLock = {
  * @internal
  */
 export type LockSettings = {
-    group: OneOrMore<string> | null;
     createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
@@ -77,7 +75,6 @@ export class Lock implements ILock {
      */
     static serialize(deserializedValue: Lock): ISerializedLock {
         return {
-            group: deserializedValue.group,
             key: deserializedValue.key.resolved,
             owner: deserializedValue.owner,
             ttlInMs: deserializedValue.ttl?.toMilliseconds() ?? null,
@@ -98,14 +95,12 @@ export class Lock implements ILock {
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
-    private readonly group: OneOrMore<string> | null;
 
     /**
      * @internal
      */
     constructor(settings: LockSettings) {
         const {
-            group,
             createLazyPromise,
             adapter,
             lockState,
@@ -118,8 +113,6 @@ export class Lock implements ILock {
             defaultBlockingTime,
             defaultRefreshTime,
         } = settings;
-
-        this.group = group;
         this.createLazyPromise = createLazyPromise;
         this.adapter = adapter;
         this.lockState = lockState;
