@@ -12,7 +12,6 @@ import type {
 } from "@/event-bus/contracts/_module-exports.js";
 import {
     type IEventBus,
-    type IGroupableEventBus,
     type IEventBusAdapter,
     type BaseEvent,
     UnableToDispatchEventBusError,
@@ -22,7 +21,6 @@ import {
 
 import type {
     IKeyPrefixer,
-    OneOrMore,
     Factory,
     AsyncLazy,
     FactoryFn,
@@ -70,7 +68,7 @@ export type EventBusSettings = EventBusSettingsBase & {
  * @group Derivables
  */
 export class EventBus<TEvents extends BaseEvent = BaseEvent>
-    implements IGroupableEventBus<TEvents>
+    implements IEventBus<TEvents>
 {
     private readonly store = new ListenerStore();
     private readonly adapter: IEventBusAdapter;
@@ -108,18 +106,6 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
         return this.lazyPromiseFactory(asyncFn);
-    }
-
-    withGroup(group: OneOrMore<string>): IEventBus<TEvents> {
-        return new EventBus({
-            keyPrefixer: this.keyPrefixer.withGroup(group),
-            adapter: this.adapter,
-            lazyPromiseFactory: this.lazyPromiseFactory,
-        });
-    }
-
-    getGroup(): string | null {
-        return this.keyPrefixer.resolvedGroup;
     }
 
     addListener<TEventClass extends EventClass<TEvents>>(

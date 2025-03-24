@@ -3,7 +3,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { IGroupableEventBus } from "@/event-bus/contracts/event-bus.contract.js";
+import type { IEventBus } from "@/event-bus/contracts/event-bus.contract.js";
 import type {
     IFlexibleSerde,
     ISerializable,
@@ -137,7 +137,7 @@ export const EVENT_BUS_ERRORS = {
 };
 
 /**
- * The <i>registerEventBusErrorsToSerde</i> function registers all <i>{@link IGroupableEventBus}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The <i>registerEventBusErrorsToSerde</i> function registers all <i>{@link IEventBus}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Errors

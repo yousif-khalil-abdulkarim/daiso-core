@@ -4,7 +4,7 @@
 
 import type { LazyPromise } from "@/async/_module-exports.js";
 import {
-    type IGroupableEventBus,
+    type IEventBus,
     type IEventBusFactory,
     type BaseEvent,
     type IEventBusAdapter,
@@ -170,7 +170,7 @@ export class EventBusFactory<TAdapters extends string = string>
      */
     use<TEvents extends BaseEvent = BaseEvent>(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
-    ): IGroupableEventBus<TEvents> {
+    ): IEventBus<TEvents> {
         if (adapterName === undefined) {
             throw new DefaultAdapterNotDefinedError(EventBusFactory.name);
         }

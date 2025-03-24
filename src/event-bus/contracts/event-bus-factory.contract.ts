@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { IGroupableEventBus } from "@/event-bus/contracts/event-bus.contract.js";
+import type { IEventBus } from "@/event-bus/contracts/event-bus.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,
@@ -12,7 +12,7 @@ import {
 import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
 
 /**
- * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableEventBus}</i> dynamically.
+ * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IEventBus}</i> dynamically.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
  * @group Contracts
@@ -26,5 +26,5 @@ export type IEventBusFactory<TAdapters extends string = string> = {
      */
     use<TEvents extends BaseEvent = BaseEvent>(
         adapterName?: TAdapters,
-    ): IGroupableEventBus<TEvents>;
+    ): IEventBus<TEvents>;
 };
