@@ -4,10 +4,6 @@
 
 import { resolveOneOrMoreStr } from "@/utilities//_module-exports.js";
 import type { AtLeastOne, OneOrMore } from "@/utilities/types/_module.js";
-import type {
-    IKey,
-    IKeyPrefixer,
-} from "@/utilities/classes/key-prefixer/key-prefixer.contract.js";
 
 /**
  * @internal
@@ -23,7 +19,7 @@ type KeySettings = {
  *
  * @internal
  */
-class Key implements IKey {
+export class Key {
     private readonly prefixArr: AtLeastOne<string>;
     private readonly key: OneOrMore<string>;
     private readonly identifierDelimeter: string;
@@ -78,8 +74,7 @@ export type KeyPrefixerSettings = {
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group KeyPrefixer
  */
-export class KeyPrefixer implements IKeyPrefixer {
-    private _group: OneOrMore<string> | null = null;
+export class KeyPrefixer {
     private readonly identifierDelimeter: string;
     private readonly keyDelimeter: string;
     private readonly rootIdentifier: string;
@@ -103,27 +98,8 @@ export class KeyPrefixer implements IKeyPrefixer {
         this.identifierDelimeter = identifierDelimeter;
         this.keyDelimeter = keyDelimeter;
         this.validate(this._rootPrefix);
-        if (this._group !== null) {
-            this.validate(this._group);
-        }
     }
 
-    /**
-     * @internal
-     */
-    get originalGroup(): OneOrMore<string> | null {
-        return this._group;
-    }
-
-    /**
-     * @internal
-     */
-    get resolvedGroup(): string | null {
-        if (this._group === null) {
-            return null;
-        }
-        return resolveOneOrMoreStr(this._group);
-    }
     /**
      * @internal
      */
@@ -152,18 +128,10 @@ export class KeyPrefixer implements IKeyPrefixer {
     }
 
     private getKeyPrefixArray(): AtLeastOne<string> {
-        let array: AtLeastOne<string> = [
+        return [
             this.rootIdentifier,
             resolveOneOrMoreStr(this._rootPrefix, this.keyDelimeter),
         ];
-        if (this._group !== null) {
-            array = [
-                ...array,
-                this.groupIdentifier,
-                resolveOneOrMoreStr(this._group, this.keyDelimeter),
-            ];
-        }
-        return [...array, this.keyIdentifier];
     }
 
     /**
@@ -174,24 +142,6 @@ export class KeyPrefixer implements IKeyPrefixer {
             this.getKeyPrefixArray(),
             this.identifierDelimeter,
         );
-    }
-
-    /**
-     * Chaining this method multiple times will have no effect.
-     * @internal
-     */
-    withGroup(group: OneOrMore<string>): KeyPrefixer {
-        const keyProvider = new KeyPrefixer(this._rootPrefix, {
-            identifierDelimeter: this.identifierDelimeter,
-            keyDelimeter: this.keyDelimeter,
-            rootIdentifier: this.rootIdentifier,
-            groupIdentifier: this.groupIdentifier,
-            keyIdentifier: this.keyIdentifier,
-        });
-        if (keyProvider._group === null) {
-            keyProvider._group = group;
-        }
-        return keyProvider;
     }
 
     /**

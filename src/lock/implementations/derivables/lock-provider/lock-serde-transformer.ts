@@ -19,7 +19,7 @@ import {
 import {
     getConstructorName,
     TimeSpan,
-    type IKeyPrefixer,
+    type KeyPrefixer,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
@@ -30,7 +30,7 @@ import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 export type LockSerdeTransformerSettings = {
     adapter: ILockAdapter;
     lockStore: ILockStore;
-    keyPrefixer: IKeyPrefixer;
+    keyPrefixer: KeyPrefixer;
     createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
@@ -49,7 +49,7 @@ export class LockSerdeTransformer
 {
     private readonly adapter: ILockAdapter;
     private readonly lockStore: ILockStore;
-    private readonly keyPrefixer: IKeyPrefixer;
+    private readonly keyPrefixer: KeyPrefixer;
     private readonly createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;

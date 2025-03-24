@@ -4,7 +4,6 @@
 
 import {
     TimeSpan,
-    type IKeyPrefixer,
     CORE,
     type Factory,
     type AsyncLazy,
@@ -53,7 +52,7 @@ import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-pro
  * @group Derivables
  */
 export type LockProviderSettingsBase = {
-    keyPrefixer: IKeyPrefixer;
+    keyPrefixer: KeyPrefixer;
 
     /**
      * You can pass a <i>{@link Factory}</i> of <i>{@link LazyPromise}</i> to configure default settings for all <i>{@link LazyPromise}</i> instances used in the <i>LockProvider</i> class.
@@ -159,7 +158,7 @@ export class LockProvider implements ILockProvider {
     private lockStore: ILockStore = {};
     private readonly eventBus: IEventBus<LockEvents>;
     private readonly adapter: ILockAdapter;
-    private readonly keyPrefixer: IKeyPrefixer;
+    private readonly keyPrefixer: KeyPrefixer;
     private readonly createOwnerId: () => string;
     private readonly defaultTtl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
