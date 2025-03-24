@@ -55,7 +55,7 @@ export type LockSettings = {
     createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
-    adapterPromise: PromiseLike<ILockAdapter>;
+    adapter: ILockAdapter;
     lockState: LockState;
     eventDispatcher: IEventDispatcher<LockEvents>;
     key: IKey;
@@ -89,7 +89,7 @@ export class Lock implements ILock {
     private readonly createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
-    private readonly adapterPromise: PromiseLike<ILockAdapter>;
+    private readonly adapter: ILockAdapter;
     private readonly lockState: LockState;
     private readonly eventDispatcher: IEventDispatcher<LockEvents>;
     private readonly key: IKey;
@@ -107,7 +107,7 @@ export class Lock implements ILock {
         const {
             group,
             createLazyPromise,
-            adapterPromise,
+            adapter,
             lockState,
             eventDispatcher,
             key,
@@ -121,7 +121,7 @@ export class Lock implements ILock {
 
         this.group = group;
         this.createLazyPromise = createLazyPromise;
-        this.adapterPromise = adapterPromise;
+        this.adapter = adapter;
         this.lockState = lockState;
         this.lockState.set(expirationInMs);
         this.eventDispatcher = eventDispatcher;
@@ -215,9 +215,8 @@ export class Lock implements ILock {
     acquire(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             try {
-                const adapter = await this.adapterPromise;
                 this.lockState.remove();
-                const hasAquired = await adapter.acquire(
+                const hasAquired = await this.adapter.acquire(
                     this.key.prefixed,
                     this.owner,
                     this.ttl,
@@ -301,8 +300,7 @@ export class Lock implements ILock {
     release(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             try {
-                const adapter = await this.adapterPromise;
-                const hasReleased = await adapter.release(
+                const hasReleased = await this.adapter.release(
                     this.key.prefixed,
                     this.owner,
                 );
@@ -351,8 +349,7 @@ export class Lock implements ILock {
     forceRelease(): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             try {
-                const adapter = await this.adapterPromise;
-                await adapter.forceRelease(this.key.prefixed);
+                await this.adapter.forceRelease(this.key.prefixed);
                 this.lockState.remove();
                 const event = new KeyForceReleasedLockEvent({
                     key: this.key.resolved,
@@ -402,8 +399,7 @@ export class Lock implements ILock {
     refresh(ttl: TimeSpan = this.defaultRefreshTime): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             try {
-                const adapter = await this.adapterPromise;
-                const hasRefreshed = await adapter.refresh(
+                const hasRefreshed = await this.adapter.refresh(
                     this.key.prefixed,
                     this.owner,
                     ttl,

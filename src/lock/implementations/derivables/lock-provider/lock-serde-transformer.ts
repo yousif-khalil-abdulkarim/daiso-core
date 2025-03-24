@@ -22,7 +22,7 @@ import {
     type IKeyPrefixer,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
-import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 
 /**
  * @internal
@@ -37,7 +37,7 @@ export type LockSerdeTransformerSettings = {
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
-    groupableEventBus: IGroupableEventBus<LockEvents>;
+    eventBus: IEventBus<LockEvents>;
     serdeTransformerName: string;
 };
 
@@ -56,7 +56,7 @@ export class LockSerdeTransformer
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
-    private readonly groupableEventBus: IGroupableEventBus<LockEvents>;
+    private readonly eventBus: IEventBus<LockEvents>;
     private readonly serdeTransformerName: string;
 
     constructor(settings: LockSerdeTransformerSettings) {
@@ -68,7 +68,7 @@ export class LockSerdeTransformer
             defaultBlockingInterval,
             defaultBlockingTime,
             defaultRefreshTime,
-            groupableEventBus,
+            eventBus,
             serdeTransformerName,
         } = settings;
         this.serdeTransformerName = serdeTransformerName;
@@ -79,7 +79,7 @@ export class LockSerdeTransformer
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
-        this.groupableEventBus = groupableEventBus;
+        this.eventBus = eventBus;
     }
 
     get name(): OneOrMore<string> {
@@ -104,17 +104,12 @@ export class LockSerdeTransformer
 
         const keyObj = keyPrefixer.create(key);
 
-        const eventBus = this.groupableEventBus.withGroup([
-            keyPrefixer.resolvedRootPrefix,
-            keyObj.resolved,
-        ]);
-
         return new Lock({
             group,
             createLazyPromise: this.createLazyPromise,
-            adapterPromise: Promise.resolve(this.adapter),
+            adapter: this.adapter,
             lockState: new LockState(this.lockStore, keyObj.prefixed),
-            eventDispatcher: eventBus,
+            eventDispatcher: this.eventBus,
             key: keyObj,
             owner,
             ttl: ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null,
