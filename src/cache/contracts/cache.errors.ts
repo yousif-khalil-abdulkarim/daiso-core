@@ -3,7 +3,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { IGroupableCache } from "@/cache/contracts/cache.contract.js";
+import type { ICache } from "@/cache/contracts/cache.contract.js";
 import type {
     IFlexibleSerde,
     ISerializable,
@@ -132,7 +132,7 @@ export const CACHE_ERRORS = {
 } as const;
 
 /**
- * The <i>registerCacheErrorsToSerde</i> function registers all <i>{@link IGroupableCache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The <i>registerCacheErrorsToSerde</i> function registers all <i>{@link ICache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Errors

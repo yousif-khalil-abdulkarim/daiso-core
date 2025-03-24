@@ -3,7 +3,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { IGroupableCache } from "@/cache/contracts/cache.contract.js";
+import type { ICache } from "@/cache/contracts/cache.contract.js";
 import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
 import {
@@ -153,7 +153,7 @@ export type CacheEvents<TType = unknown> =
     | UnexpectedErrorCacheEvent;
 
 /**
- * The <i>registerCacheEventsToSerde</i> function registers all <i>{@link IGroupableCache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The <i>registerCacheEventsToSerde</i> function registers all <i>{@link ICache}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Events

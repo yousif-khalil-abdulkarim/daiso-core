@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import type { IGroupableCache } from "@/cache/contracts/cache.contract.js";
+import type { ICache } from "@/cache/contracts/cache.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,
@@ -11,7 +11,7 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
- * The <i>ICacheFactory</i> contract makes it easy to configure and switch between different <i>{@link IGroupableCache}</i> dynamically.
+ * The <i>ICacheFactory</i> contract makes it easy to configure and switch between different <i>{@link ICache}</i> dynamically.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
  * @group Contracts
@@ -23,5 +23,5 @@ export type ICacheFactory<TAdapters extends string = string> = {
      * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      */
-    use<TType = unknown>(adapterName?: TAdapters): IGroupableCache<TType>;
+    use<TType = unknown>(adapterName?: TAdapters): ICache<TType>;
 };

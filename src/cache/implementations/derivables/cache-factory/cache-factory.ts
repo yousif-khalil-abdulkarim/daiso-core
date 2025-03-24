@@ -11,7 +11,7 @@ import {
 } from "@/utilities/_module-exports.js";
 import type { IGroupableEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
-    IGroupableCache,
+    ICache,
     ICacheFactory,
 } from "@/cache/contracts/_module-exports.js";
 import {
@@ -182,7 +182,7 @@ export class CacheFactory<TAdapters extends string = string>
      */
     use<TType = unknown>(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
-    ): IGroupableCache<TType> {
+    ): ICache<TType> {
         if (adapterName === undefined) {
             throw new DefaultAdapterNotDefinedError(CacheFactory.name);
         }

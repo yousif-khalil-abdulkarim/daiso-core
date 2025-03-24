@@ -24,7 +24,6 @@ import {
     KeyNotFoundCacheError,
     TypeCacheError,
 } from "@/cache/contracts/_module-exports.js";
-import { type IGroupableCache } from "@/cache/contracts/_module-exports.js";
 import {
     isAsyncFactory,
     resolveAsyncLazyable,
@@ -126,7 +125,7 @@ export type CacheSettings = CacheSettingsBase & {
  * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
-export class Cache<TType = unknown> implements IGroupableCache<TType> {
+export class Cache<TType = unknown> implements ICache<TType> {
     private static defaultRetryPolicy: RetryPolicy = (error: unknown) => {
         return !(
             error instanceof TypeCacheError ||
