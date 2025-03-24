@@ -27,7 +27,6 @@ import {
 import { type IGroupableCache } from "@/cache/contracts/_module-exports.js";
 import {
     isAsyncFactory,
-    resolveAsyncFactoryable,
     resolveAsyncLazyable,
     resolveFactory,
 } from "@/utilities/_module-exports.js";
@@ -39,9 +38,6 @@ import {
     type NoneFunc,
     type TimeSpan,
     KeyPrefixer,
-    type AsyncFactoryable,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IFactoryObject,
 } from "@/utilities/_module-exports.js";
 import type { RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
@@ -112,10 +108,9 @@ export type CacheSettingsBase = {
  * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
  */
-export type CacheAdapterFactoryable<TType> = AsyncFactoryable<
-    string,
-    ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>
->;
+export type CacheAdapter<TType> =
+    | ICacheAdapter<TType>
+    | IDatabaseCacheAdapter<TType>;
 
 /**
  *
@@ -123,7 +118,7 @@ export type CacheAdapterFactoryable<TType> = AsyncFactoryable<
  * @group Derivables
  */
 export type CacheSettings = CacheSettingsBase & {
-    adapter: CacheAdapterFactoryable<any>;
+    adapter: CacheAdapter<any>;
 };
 
 /**
@@ -132,23 +127,6 @@ export type CacheSettings = CacheSettingsBase & {
  * @group Derivables
  */
 export class Cache<TType = unknown> implements IGroupableCache<TType> {
-    private static resolveCacheAdapter<TType>(
-        adapter: ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>,
-    ): ICacheAdapter<TType> {
-        if (isDatabaseCacheAdapter<TType>(adapter)) {
-            return new DatabaseCacheAdapter(adapter);
-        }
-        return adapter;
-    }
-
-    private static async resolveCacheAdapterFactoryable<TType>(
-        factoryable: CacheAdapterFactoryable<TType>,
-        rootPrefix: string,
-    ): Promise<ICacheAdapter<TType>> {
-        const adapter = await resolveAsyncFactoryable(factoryable, rootPrefix);
-        return Cache.resolveCacheAdapter(adapter);
-    }
-
     private static defaultRetryPolicy: RetryPolicy = (error: unknown) => {
         return !(
             error instanceof TypeCacheError ||
@@ -158,8 +136,8 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
 
     private readonly groupdEventBus: IGroupableEventBus<CacheEvents<TType>>;
     private readonly eventBus: IEventBus<CacheEvents<TType>>;
-    private readonly adapterFactoryable: CacheAdapterFactoryable<TType>;
-    private readonly adapterPromise: PromiseLike<ICacheAdapter<TType>>;
+    private readonly adapterFactoryable: CacheAdapter<TType>;
+    private readonly adapter: ICacheAdapter<TType>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly keyPrefixer: IKeyPrefixer;
     private readonly lazyPromiseFactory: FactoryFn<
@@ -192,72 +170,6 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
      *   adapter: cacheAdapter,
      * });
      * ```
-     *
-     * You can pass factory function that will create an adapter for every group.
-     * @example
-     * ```ts
-     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import type { IDatabaseCacheAdapter } from "@daiso-tech/core/cache/contracts";
-     * import { Serde } from "@daiso-tech/core/serde";
-     * import type { ISerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
-     * import Sqlite from "better-sqlite3";
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { KeyPrefixer, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
-     *
-     * function cahceAdapterFactory(database: ISqliteDatabase, serde: ISerde<string>): AsyncFactoryFn<string, IDatabaseCacheAdapter> {
-     *   return async (prefix) => {
-     *     const cacheAdapter = new SqliteCacheAdapter({
-     *       database,
-     *       serde,
-     *       tableName: `cache_${prefix}`
-     *     });
-     *     await cacheAdapter.init();
-     *     return cacheAdapter;
-     *   }
-     * }
-     *
-     * const database = new Sqlite("local.db");
-     * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const cache = new Cache({
-     *   keyPrefixer: new KeyPrefixer("cache"),
-     *   adapter: cahceAdapterFactory(database, serde),
-     * });
-     * ```
-     *
-     * You can also pass factory object that implements <i>{@link IFactoryObject}</i> contract. This useful for depedency injection libraries.
-     * @example
-     * ```ts
-     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     * import type { IDatabaseCacheAdapter } from "@daiso-tech/core/cache/contracts";
-     * import { Serde } from "@daiso-tech/core/serde";
-     * import type { ISerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
-     * import Sqlite from "better-sqlite3";
-     * import { Cache } from "@daiso-tech/core/cache";
-     * import { KeyPrefixer, type ISqliteDatabase, type IAsyncFactoryObject } from "@daiso-tech/core/utilities";
-     *
-     * class CahceAdapterFactory implements IAsyncFactoryObject<string, IDatabaseCacheAdapter> {
-     *   constructor(private readonly database: ISqliteDatabase, private readonly serde: ISerde<string>) {}
-     *
-     *   async use(prefix: string): Promise<IDatabaseCacheAdapter> {
-     *     const cacheAdapter = new SqliteCacheAdapter({
-     *       database: this.database,
-     *       serde: this.serde,
-     *       tableName: `cache_${prefix}`
-     *     });
-     *     await cacheAdapter.init();
-     *     return cacheAdapter;
-     *   }
-     * }
-     *
-     * const database = new Sqlite("local.db");
-     * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const cache = new Cache({
-     *   keyPrefixer: new KeyPrefixer("cache"),
-     *   adapter: new CahceAdapterFactory(database, serde),
-     * });
-     * ```
      */
     constructor(settings: CacheSettings) {
         const {
@@ -287,12 +199,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
             ]);
         }
 
-        this.adapterPromise = new LazyPromise(() =>
-            Cache.resolveCacheAdapterFactoryable(
-                this.adapterFactoryable,
-                this.keyPrefixer.keyPrefix,
-            ),
-        );
+        if (isDatabaseCacheAdapter(adapter)) {
+            this.adapter = new DatabaseCacheAdapter(adapter);
+        } else {
+            this.adapter = adapter;
+        }
     }
 
     /**
@@ -386,8 +297,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.keyPrefixer.create(key);
             try {
-                const adapter = await this.adapterPromise;
-                const value = await adapter.get(keyObj.prefixed);
+                const value = await this.adapter.get(keyObj.prefixed);
                 if (value === null) {
                     this.eventBus
                         .dispatch(
@@ -441,8 +351,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.keyPrefixer.create(key);
             try {
-                const adapter = await this.adapterPromise;
-                const value = await adapter.getAndRemove(keyObj.prefixed);
+                const value = await this.adapter.getAndRemove(keyObj.prefixed);
                 if (value === null) {
                     this.eventBus
                         .dispatch(
@@ -528,8 +437,11 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.keyPrefixer.create(key);
             try {
-                const adapter = await this.adapterPromise;
-                const hasAdded = await adapter.add(keyObj.prefixed, value, ttl);
+                const hasAdded = await this.adapter.add(
+                    keyObj.prefixed,
+                    value,
+                    ttl,
+                );
                 if (hasAdded) {
                     this.eventBus
                         .dispatch(
@@ -568,8 +480,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.keyPrefixer.create(key);
             try {
-                const adapter = await this.adapterPromise;
-                const hasUpdated = await adapter.put(
+                const hasUpdated = await this.adapter.put(
                     keyObj.prefixed,
                     value,
                     ttl,
@@ -618,8 +529,10 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.keyPrefixer.create(key);
             try {
-                const adapter = await this.adapterPromise;
-                const hasUpdated = await adapter.update(keyObj.prefixed, value);
+                const hasUpdated = await this.adapter.update(
+                    keyObj.prefixed,
+                    value,
+                );
                 if (hasUpdated) {
                     this.eventBus
                         .dispatch(
@@ -665,8 +578,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.keyPrefixer.create(key);
             try {
-                const adapter = await this.adapterPromise;
-                const hasUpdated = await adapter.increment(
+                const hasUpdated = await this.adapter.increment(
                     keyObj.prefixed,
                     value,
                 );
@@ -733,8 +645,9 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.keyPrefixer.create(key);
             try {
-                const adapter = await this.adapterPromise;
-                const hasRemoved = await adapter.removeMany([keyObj.prefixed]);
+                const hasRemoved = await this.adapter.removeMany([
+                    keyObj.prefixed,
+                ]);
                 if (hasRemoved) {
                     this.eventBus
                         .dispatch(
@@ -781,8 +694,7 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
                 this.keyPrefixer.create(key),
             );
             try {
-                const adapter = await this.adapterPromise;
-                const hasRemovedAtLeastOne = await adapter.removeMany(
+                const hasRemovedAtLeastOne = await this.adapter.removeMany(
                     keyObjArr.map((keyObj) => keyObj.prefixed),
                 );
                 if (hasRemovedAtLeastOne) {
@@ -828,19 +740,19 @@ export class Cache<TType = unknown> implements IGroupableCache<TType> {
     clear(): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             try {
-                const adapter = await this.adapterPromise;
-
                 const promise = this.eventBus.dispatch(
                     new KeysClearedCacheEvent({
                         group: this.getGroup(),
                     }),
                 );
                 if (isAsyncFactory(this.adapterFactoryable)) {
-                    await adapter.removeAll();
+                    await this.adapter.removeAll();
                     promise.defer();
                     return;
                 }
-                await adapter.removeByKeyPrefix(this.keyPrefixer.keyPrefix);
+                await this.adapter.removeByKeyPrefix(
+                    this.keyPrefixer.keyPrefix,
+                );
                 promise.defer();
             } catch (error: unknown) {
                 this.eventBus
