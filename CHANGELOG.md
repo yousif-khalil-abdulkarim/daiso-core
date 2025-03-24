@@ -1,5 +1,19 @@
 # @daiso-tech/core
 
+## 0.33.0
+
+### Minor Changes
+
+-   afba80e: Changed `ILock` contract to not extend `IEventListenable` contract. Meaning you can't add listeners to a specific `ILock`. This feature was unnecessary.
+-   73973ef: Removed `addListenerMany`, `removeListenerMany`, `subscribeMany`, and `dispatchMany` from `IEventBus` contract because they where unnecessary.
+-   d223f07: Removed `IGroupableEventBus` contract and remove `getGroup` method from `IEventBus` meaning you cant longer use `withGroup` and `getGroup` methods of the `EventBus`class. This feature was not flexible.
+-   2ae41e0: Changed `Cache` class so it cannot take adapter factory. This feature was not flexible and unnecessary.
+-   653a224: Removed `IGroupableLockProvider` contract and remove `getGroup` method from `ILockProvider` meaning you cant longer use `withGroup` and `getGroup` methods of the `LockProvider`class. This feature was not flexible.
+-   de018b1: Changed `EventBus` class so it cannot take adapter factory. This feature was not flexible and unnecessary.
+-   f54390c: Removed the `group` field from all `ICache` events.
+-   ab20280: Removed `IGroupableCache` contract and remove `getGroup` method from `ICache` meaning you cant longer use `withGroup` and `getGroup` methods of the `Cache`class. This feature was not flexible.
+-   75a0999: Changed `LockProvider` class so it cannot take adapter factory. This feature was not flexible and unnecessary.
+
 ## 0.32.1
 
 ### Patch Changes
