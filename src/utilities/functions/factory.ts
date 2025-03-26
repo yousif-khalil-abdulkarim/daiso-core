@@ -82,7 +82,7 @@ export function resolveFactory<TInput, TOutput>(
     factory: Factory<TInput, TOutput>,
 ): FactoryFn<TInput, TOutput> {
     if (isFactoryObject(factory)) {
-        return factory.use.bind(factory);
+        return (value) => factory.use(value);
     }
     return factory;
 }
@@ -94,9 +94,9 @@ export function resolveAsyncFactory<TInput, TOutput>(
     factory: AsyncFactory<TInput, TOutput>,
 ): AsyncFactoryFn<TInput, TOutput> {
     if (isAsyncFactoryObject(factory)) {
-        return factory.use.bind(factory);
+        return (value) => factory.use(value);
     }
-    return factory;
+    return (value) => factory(value);
 }
 
 /**
