@@ -177,7 +177,7 @@ describe("file: factory.ts", () => {
                 throw new Error("Function not implemented.");
             };
 
-            expect(resolveAsyncFactory(factory)).toBe(factory);
+            expect(resolveAsyncFactory(factory)).toBeTypeOf("function");
         });
         test("Should return AsyncFactoryFn when given IAsyncFactoryObject", () => {
             const factory: IAsyncFactoryObject<unknown, unknown> = {

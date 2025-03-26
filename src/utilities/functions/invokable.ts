@@ -44,9 +44,9 @@ export function resolveInvokable<TArgs extends unknown[], TReturn>(
     invokable: Invokable<TArgs, TReturn>,
 ): InvokableFn<TArgs, TReturn> {
     if (isInvokableObject(invokable)) {
-        return invokable.invoke.bind(invokable);
+        return (...args) => invokable.invoke(...args);
     }
-    return invokable;
+    return (...args) => invokable(...args);
 }
 
 /**

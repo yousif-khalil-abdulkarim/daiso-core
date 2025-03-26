@@ -63,7 +63,7 @@ describe("file: invokable.ts", () => {
     describe("function: resolveInvokable", () => {
         test("Should return InvokableFn when given InvokableFn", () => {
             const invokable: InvokableFn<[], string> = () => "";
-            expect(resolveInvokable(invokable)).toBe(invokable);
+            expect(resolveInvokable(invokable)).toBeTypeOf("function");
         });
         test("Should return InvokableFn when given IInvokableObject", () => {
             const invokable: IInvokableObject<[], string> = {
