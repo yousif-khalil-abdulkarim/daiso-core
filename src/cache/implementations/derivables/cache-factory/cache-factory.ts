@@ -44,6 +44,7 @@ export type CacheFactorySettings<TAdapters extends string = string> =
     };
 
 /**
+ * The <i>CacheFactory</i> class is immutable.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/cache"```
  * @group Derivables
