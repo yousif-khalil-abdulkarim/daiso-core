@@ -45,6 +45,7 @@ export type EventBusFactorySettings<TAdapters extends string = string> =
     };
 
 /**
+ * The <i>EventBusFactory</i> class is immutable.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
  * @group Derivables

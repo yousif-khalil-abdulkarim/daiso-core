@@ -46,6 +46,7 @@ export type LockProviderFactorySettings<TAdapters extends string> =
     };
 
 /**
+ * The <i>LockProviderFactory</i> class is immutable.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/lock"```
  * @group Derivables
