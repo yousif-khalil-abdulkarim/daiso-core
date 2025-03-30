@@ -46,7 +46,7 @@ export class TimeoutAsyncError extends AsyncError {
  * @group Errors
  */
 export type RetryAsyncErrorData = {
-    cause?: unknown;
+    errors: unknown[];
     maxAttempts: number;
 };
 
@@ -59,10 +59,13 @@ export type RetryAsyncErrorData = {
 export class RetryAsyncError extends AsyncError {
     public readonly maxAttempts: number;
 
-    constructor(message: string, { cause, maxAttempts }: RetryAsyncErrorData) {
-        super(message, cause);
-        this.name = RetryAsyncError.name;
+    public readonly errors: unknown[] = [];
+
+    constructor(message: string, { errors, maxAttempts }: RetryAsyncErrorData) {
+        super(message, errors[errors.length - 1]);
+        this.errors = errors;
         this.maxAttempts = maxAttempts;
+        this.name = RetryAsyncError.name;
     }
 }
 
