@@ -56,7 +56,7 @@ function abortSignalToPromise<TValue = void>(
  * @internal
  */
 export async function abortAndFail<TValue>(
-    asyncFn: () => PromiseLike<TValue>,
+    promise: PromiseLike<TValue>,
     abortSignal: AbortSignal,
 ): Promise<TValue> {
     if (abortSignal.aborted) {
@@ -69,7 +69,7 @@ export async function abortAndFail<TValue>(
     const { promise: abortSignalPromise, abort } =
         abortSignalToPromise<TValue>(abortSignal);
     try {
-        return await Promise.race([asyncFn(), abortSignalPromise]);
+        return await Promise.race([promise, abortSignalPromise]);
     } finally {
         abortSignal.removeEventListener("abort", abort);
     }
