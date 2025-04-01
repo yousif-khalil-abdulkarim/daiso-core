@@ -11,6 +11,17 @@ import {
     type OneOrMore,
     type Promisable,
 } from "@/utilities/_module-exports.js";
+import type { HookContext } from "@/utilities/classes/hooks/types.js";
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Hooks
+ */
+export type AsyncNextFunc<
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+> = InvokableFn<TParameters, PromiseLike<TReturn>>;
 
 /**
  *
@@ -24,10 +35,10 @@ export type AsyncMiddleware<
 > = Invokable<
     [
         arguments_: TParameters,
-        next: InvokableFn<TParameters, Promise<TReturn>>,
+        next: AsyncNextFunc<TParameters, TReturn>,
         context: TContext,
     ],
-    Promise<TReturn>
+    PromiseLike<TReturn>
 >;
 
 /**
@@ -63,9 +74,7 @@ export interface IAsyncHooksAware<
 export class AsyncHooks<
         TParameters extends unknown[] = unknown[],
         TReturn = unknown,
-        TContext extends Partial<Record<string, unknown>> = Partial<
-            Record<string, unknown>
-        >,
+        TContext extends HookContext = HookContext,
     >
     implements
         IInvokableObject<TParameters, Promise<TReturn>>,
@@ -82,9 +91,9 @@ export class AsyncHooks<
         context: TContext,
     ): InvokableFn<TParameters, Promisable<TReturn>> {
         let func = resolveInvokable(invokable);
-        for (const hook of [...resolveOneOrMore(middlewares)]
-            .reverse()
-            .map(resolveInvokable)) {
+        for (const hook of resolveOneOrMore(middlewares)
+            .map(resolveInvokable)
+            .reverse()) {
             const prevFunc = func;
             const next = async (...arguments_: TParameters) =>
                 await prevFunc(...arguments_);
