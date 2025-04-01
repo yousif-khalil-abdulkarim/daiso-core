@@ -126,7 +126,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             } catch (error: unknown) {
                 this.store.getAndRemove([eventName.prefixed, listener]);
                 throw new UnableToAddListenerEventBusError(
-                    `A listener with name of "${resolvedListener.name}" could not added for "${String(event)}" event`,
+                    `A listener with name of "${event.name}" could not added for "${String(event)}" event`,
                     error,
                 );
             }
@@ -153,7 +153,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
                 );
             } catch (error: unknown) {
                 throw new UnableToRemoveListenerEventBusError(
-                    `A listener with name of "${resolvedListener.name}" could not removed of "${String(event)}" event`,
+                    `A listener with name of "${event.name}" could not removed of "${String(event)}" event`,
                     error,
                 );
             }
@@ -189,7 +189,7 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             } catch (error: unknown) {
                 this.store.getAndRemove([eventName.prefixed, listener]);
                 throw new UnableToAddListenerEventBusError(
-                    `A listener with name of "${resolvedListener.name}" could not added for "${String(event)}" event`,
+                    `A listener with name of "${event.name}" could not added for "${String(event)}" event`,
                     error,
                 );
             }

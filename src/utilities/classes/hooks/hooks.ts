@@ -10,6 +10,17 @@ import {
     type InvokableFn,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
+import type { HookContext } from "@/utilities/classes/hooks/types.js";
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Hooks
+ */
+export type NextFunc<
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+> = InvokableFn<TParameters, TReturn>;
 
 /**
  *
@@ -17,17 +28,38 @@ import {
  * @group Hooks
  */
 export type Middleware<
-    TParamters extends unknown[] = unknown[],
+    TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext = object,
 > = Invokable<
     [
-        arguments_: TParamters,
-        next: InvokableFn<TParamters, TReturn>,
+        arguments_: TParameters,
+        next: NextFunc<TParameters, TReturn>,
         context: TContext,
     ],
     TReturn
 >;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Hooks
+ */
+export interface IHooksAware<
+    TInstance,
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+    TContext extends HookContext = HookContext,
+> {
+    pipe(
+        middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
+    ): TInstance;
+
+    pipeWhen(
+        condition: boolean,
+        middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
+    ): TInstance;
+}
 
 /**
  * The <i>Hooks</i> provides a convenient way to change and inspect arguments and return value of both only sync functions.
@@ -37,37 +69,45 @@ export type Middleware<
  * @group Hooks
  */
 export class Hooks<
-    TParamters extends unknown[] = unknown[],
-    TReturn = unknown,
-    TContext extends Partial<Record<string, unknown>> = Partial<
-        Record<string, unknown>
-    >,
-> implements IInvokableObject<TParamters, TReturn>
+        TParameters extends unknown[] = unknown[],
+        TReturn = unknown,
+        TContext extends Partial<Record<string, unknown>> = Partial<
+            Record<string, unknown>
+        >,
+    >
+    implements
+        IInvokableObject<TParameters, TReturn>,
+        IHooksAware<
+            Hooks<TParameters, TReturn, TContext>,
+            TParameters,
+            TReturn,
+            TContext
+        >
 {
-    private static init<TParamters extends unknown[], TReturn, TContext>(
-        invokable: Invokable<TParamters, TReturn>,
-        middlewares: OneOrMore<Middleware<TParamters, TReturn, TContext>>,
+    private static init<TParameters extends unknown[], TReturn, TContext>(
+        invokable: Invokable<TParameters, TReturn>,
+        middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
         context: TContext,
-    ): InvokableFn<TParamters, TReturn> {
+    ): InvokableFn<TParameters, TReturn> {
         let func = resolveInvokable(invokable);
-        for (const hook of [...resolveOneOrMore(middlewares)]
-            .reverse()
-            .map(resolveInvokable)) {
+        for (const hook of resolveOneOrMore(middlewares)
+            .map(resolveInvokable)
+            .reverse()) {
             const prevFunc = func;
-            func = (...arguments_: TParamters) =>
+            func = (...arguments_: TParameters) =>
                 hook(arguments_, prevFunc, context);
         }
         return func;
     }
 
-    private readonly func: InvokableFn<TParamters, TReturn>;
+    private readonly func: InvokableFn<TParameters, TReturn>;
 
     /**
      * @example
      * ```ts
      * import { Hooks, type Middleware } from "@daiso-tech/core/utilities";
      *
-     * function logMiddleware<TParamters extends unknown[], TReturn>(): Middleware<TParamters, TReturn, { funcName: string; }> {
+     * function logMiddleware<TParameters extends unknown[], TReturn>(): Middleware<TParameters, TReturn, { funcName: string; }> {
      *   return async (args, next, { funcName }) => {
      *     console.log("FUNCTION_NAME:", funcName);
      *     console.log("ARGUMENTS:", args);
@@ -77,7 +117,7 @@ export class Hooks<
      *   }
      * }
      *
-     * function timeMiddleware<TParamters extends unknown[], TReturn>(): Middleware<TParamters, TReturn> {
+     * function timeMiddleware<TParameters extends unknown[], TReturn>(): Middleware<TParameters, TReturn> {
      *   return async (args, next) => {
      *     const start = performance.now();
      *     const value = await next(...args);
@@ -110,9 +150,9 @@ export class Hooks<
      * ```
      */
     constructor(
-        private readonly invokable: Invokable<TParamters, TReturn>,
+        private readonly invokable: Invokable<TParameters, TReturn>,
         private readonly middlewares: OneOrMore<
-            Middleware<TParamters, TReturn, TContext>
+            Middleware<TParameters, TReturn, TContext>
         >,
         private readonly context = {} as TContext,
     ) {
@@ -120,11 +160,11 @@ export class Hooks<
     }
 
     /**
-     * The <i>add</i> method returns a new <i>Hooks</i> instance with the additional <i>middlewares</i> applied.
+     * The <i>pipe</i> method returns a new <i>Hooks</i> instance with the additional <i>middlewares</i> applied.
      */
-    add(
-        middlewares: OneOrMore<Middleware<TParamters, TReturn, TContext>>,
-    ): Hooks<TParamters, TReturn, TContext> {
+    pipe(
+        middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
+    ): Hooks<TParameters, TReturn, TContext> {
         return new Hooks(
             this.invokable,
             [
@@ -136,14 +176,14 @@ export class Hooks<
     }
 
     /**
-     * The <i>addWhen</i> method conditionally applies additional <i>middlewares</i>, returning a new <i>Hooks</i> instance only if the specified condition is met.
+     * The <i>pipeWhen</i> method conditionally applies additional <i>middlewares</i>, returning a new <i>Hooks</i> instance only if the specified condition is met.
      */
-    addWhen(
+    pipeWhen(
         condition: boolean,
-        middlewares: OneOrMore<Middleware<TParamters, TReturn, TContext>>,
-    ): Hooks<TParamters, TReturn, TContext> {
+        middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
+    ): Hooks<TParameters, TReturn, TContext> {
         if (condition) {
-            return this.add(middlewares);
+            return this.pipe(middlewares);
         }
         return this;
     }
@@ -151,7 +191,7 @@ export class Hooks<
     /**
      * The <i>invoke</i> method executes the constructor's input function, applying all middlewares.
      */
-    invoke(...arguments_: TParamters): TReturn {
+    invoke(...arguments_: TParameters): TReturn {
         return this.func(...arguments_);
     }
 }

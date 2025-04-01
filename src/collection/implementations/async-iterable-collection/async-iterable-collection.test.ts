@@ -3685,13 +3685,4 @@ describe("class: AsyncIterableCollection", () => {
             );
         });
     });
-    describe("method: delay", () => {
-        test.todo("Write tests!!!");
-    });
-    describe("method: takeUntilAbort", () => {
-        test.todo("Write tests!!!");
-    });
-    describe("method: takeUntilTimeout", () => {
-        test.todo("Write tests!!!");
-    });
 });

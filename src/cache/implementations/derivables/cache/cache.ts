@@ -38,7 +38,6 @@ import {
     type TimeSpan,
     KeyPrefixer,
 } from "@/utilities/_module-exports.js";
-import type { RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     IEventBus,
@@ -124,13 +123,6 @@ export type CacheSettings = CacheSettingsBase & {
  * @group Derivables
  */
 export class Cache<TType = unknown> implements ICache<TType> {
-    private static defaultRetryPolicy: RetryPolicy = (error: unknown) => {
-        return !(
-            error instanceof TypeCacheError ||
-            error instanceof KeyNotFoundCacheError
-        );
-    };
-
     private readonly eventBus: IEventBus<CacheEvents<TType>>;
     private readonly adapterFactoryable: CacheAdapter<TType>;
     private readonly adapter: ICacheAdapter<TType>;
@@ -260,9 +252,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
-        return this.lazyPromiseFactory(asyncFn).setRetryPolicy(
-            Cache.defaultRetryPolicy,
-        );
+        return this.lazyPromiseFactory(asyncFn);
     }
 
     exists(key: OneOrMore<string>): LazyPromise<boolean> {
@@ -594,7 +584,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                         }),
                     )
                     .defer();
-                throw error;
+                throw new TypeCacheError("!!__message__!!", error);
             }
         });
     }

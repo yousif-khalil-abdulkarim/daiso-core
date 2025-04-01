@@ -28,7 +28,6 @@ import type {
     EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
 import type {
-    TimeSpan,
     AsyncLazyable,
     AsyncIterableValue,
 } from "@/utilities/_module-exports.js";
@@ -2330,104 +2329,6 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     forEach(
         callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
     ): LazyPromise<void>;
-
-    /**
-     * The <i>delay</i> method will add delay between each iteration.
-     * This method is especially useful for situations where you may be interacting with external APIs that rate limit incoming requests:
-     * @example
-     * ```ts
-     * import type { IAsyncCollection } from "@daiso-tech/core";
-     *
-     * // Asume the inputed collection is empty.
-     * class MyIterable implements Iterable<number> {
-     *   async *[Symbol.asyncIterator]() {
-     *     for (let i = 0; i < 10; i++) {
-     *       yield i;
-     *     }
-     *   }
-     * }
-     *
-     * // Asume the inputed collection is empty.
-     * async function main(collection: IAsyncCollection<number>): Promise<void> {
-     *   const myIterable = new MyIterable();
-     *   await collection
-     *     .append(myIterable)
-     *     .delay(1000)
-     *     .forEach(user => console.log(user))
-     * }
-     * ```
-     */
-    delay(time: TimeSpan): IAsyncCollection<TInput>;
-
-    /**
-     * @experimental
-     * The <I>takeUntilAbort</i> method returns a new collection that will iterate values until aborted by passing in <i>{@link abortSignal | AbortSignal}</i>.
-     * After when aborted, the collection will stop iterating:
-     * @example
-     * ```ts
-     * import type { IAsyncCollection } from "@daiso-tech/core";
-     *
-     * class InfiniteIterable implements Iterable<number> {
-     *   async *[Symbol.asyncIterator]() {
-     *     let index = 0;
-     *     while(true) {
-     *       index++;
-     *       yield index;
-     *     }
-     *   }
-     * }
-     *
-     * // Asume the inputed collection is empty.
-     * async function main(collection: IAsyncCollection<number>): Promise<void> {
-     *   const abortController = new AbortController();
-     *   setTimeout(() => {
-     *     abortController.abort("My abort error");
-     *   }, 1000)
-     *   const infiniteIterable = new InfiniteIterable();
-     *   await collection
-     *     .append(infiniteIterable);
-     *     .takeUntilAbort(abortController)
-     *     .forEach(nbr => console.log(nbr))
-     * }
-     * ```
-     */
-    takeUntilAbort(
-        abortSignal: AbortSignal,
-        shouldThrow?: boolean,
-    ): IAsyncCollection<TInput>;
-
-    /**
-     * @experimental
-     * The <I>takeUntilTimeout</i> method returns a new collection that will iterate values until the specified time.
-     * After that time, the collection will stop iterating:
-     * @example
-     * ```ts
-     * import type { IAsyncCollection } from "@daiso-tech/core";
-     *
-     * class InfiniteIterable implements AsyncIterable<number> {
-     *   async *[Symbol.asyncIterator]() {
-     *     let index = 0;
-     *     while(true) {
-     *       index++;
-     *       yield index;
-     *     }
-     *   }
-     * }
-     *
-     * // Asume the inputed collection is empty.
-     * async function main(collection: IAsyncCollection<number>): Promise<void> {
-     *   const infiniteIterable = new InfiniteIterable();
-     *   await collection
-     *     .append(infiniteIterable)
-     *     .takeUntilTimeout(1000)
-     *     .forEach(nbr => console.log(nbr))
-     * }
-     * ```
-     */
-    takeUntilTimeout(
-        time: TimeSpan,
-        shouldThrow?: boolean,
-    ): IAsyncCollection<TInput>;
 
     /**
      * The <i>toArray</i> method converts the collection to a new <i>{@link Array}</i>.

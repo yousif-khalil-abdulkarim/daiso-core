@@ -57,9 +57,6 @@ import {
     AsyncReverseIterable,
     AsyncSliceIterable,
     AsyncRepeatIterable,
-    AsyncTakeUntilAbortIterable,
-    AsyncDelayIterable,
-    AsyncTakeUntilTimeoutIterable,
 } from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
 import {
     isInvokable,
@@ -73,9 +70,7 @@ import type {
     AsyncLazy,
     Factory,
     FactoryFn,
-    TimeSpan,
 } from "@/utilities/_module-exports.js";
-import type { RetryPolicy } from "@/async/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
@@ -221,15 +216,6 @@ export class AsyncIterableCollection<TInput = unknown>
 
     private static DEFAULT_CHUNK_SIZE = 1024;
 
-    private static defaultRetryPolicy: RetryPolicy = (error) => {
-        return !(
-            error instanceof ItemNotFoundCollectionError ||
-            error instanceof MultipleItemsFoundCollectionError ||
-            error instanceof TypeCollectionError ||
-            error instanceof EmptyCollectionError
-        );
-    };
-
     private static makeCollection = <TInput>(
         iterable: AsyncIterableValue<TInput>,
     ): IAsyncCollection<TInput> => {
@@ -319,9 +305,7 @@ export class AsyncIterableCollection<TInput = unknown>
     private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) {
-        return this.lazyPromiseFactory(asyncFn).setRetryPolicy(
-            AsyncIterableCollection.defaultRetryPolicy,
-        );
+        return this.lazyPromiseFactory(asyncFn);
     }
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
@@ -1199,22 +1183,6 @@ export class AsyncIterableCollection<TInput = unknown>
 
     nth(step: number): IAsyncCollection<TInput> {
         return this.filter((_item, index) => index % step === 0);
-    }
-
-    delay(time: TimeSpan): IAsyncCollection<TInput> {
-        return new AsyncIterableCollection(new AsyncDelayIterable(this, time));
-    }
-
-    takeUntilAbort(abortSignal: AbortSignal): IAsyncCollection<TInput> {
-        return new AsyncIterableCollection(
-            new AsyncTakeUntilAbortIterable(this, abortSignal),
-        );
-    }
-
-    takeUntilTimeout(time: TimeSpan): IAsyncCollection<TInput> {
-        return new AsyncIterableCollection(
-            new AsyncTakeUntilTimeoutIterable(this, time),
-        );
     }
 
     count(

@@ -19,6 +19,7 @@ import {
     KeyRefreshedLockEvent,
     KeyReleasedLockEvent,
     UnableToAquireLockError,
+    UnableToReleaseLockError,
     UnexpectedErrorLockEvent,
     UnownedRefreshLockError,
     UnownedRefreshLockEvent,
@@ -147,7 +148,7 @@ export class Lock implements ILock {
                     await this.release();
                 }
             },
-        ).setRetryPolicy((error) => error instanceof UnableToAquireLockError);
+        );
     }
 
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue> {
@@ -158,11 +159,7 @@ export class Lock implements ILock {
             } finally {
                 await this.release();
             }
-        }).setRetryPolicy(
-            (error) =>
-                error instanceof UnableToAquireLockError ||
-                error instanceof KeyAlreadyAcquiredLockError,
-        );
+        });
     }
 
     runBlocking<TValue = void>(
@@ -187,7 +184,7 @@ export class Lock implements ILock {
                     await this.release();
                 }
             },
-        ).setRetryPolicy((error) => error instanceof UnableToAquireLockError);
+        );
     }
 
     runBlockingOrFail<TValue = void>(
@@ -202,7 +199,7 @@ export class Lock implements ILock {
             } finally {
                 await this.release();
             }
-        }).setRetryPolicy((error) => error instanceof UnableToAquireLockError);
+        });
     }
 
     acquire(): LazyPromise<boolean> {
@@ -241,7 +238,11 @@ export class Lock implements ILock {
                 });
                 this.eventDispatcher.dispatch(event).defer();
                 this.eventDispatcher.dispatch(event).defer();
-                throw error;
+                // `A listener with name of "${resolvedListener.name}" could not added for "${String(event)}" event`,
+                throw new UnableToAquireLockError(
+                    `A Lock with name of "${this.key.resolved}" could not be acquired.`,
+                    error,
+                );
             }
         });
     }
@@ -323,7 +324,10 @@ export class Lock implements ILock {
                 });
                 this.eventDispatcher.dispatch(event).defer();
                 this.eventDispatcher.dispatch(event).defer();
-                throw error;
+                throw new UnableToReleaseLockError(
+                    `A Lock with name of "${this.key.resolved}" could not be released.`,
+                    error,
+                );
             }
         });
     }
@@ -358,7 +362,10 @@ export class Lock implements ILock {
                 });
                 this.eventDispatcher.dispatch(event).defer();
                 this.eventDispatcher.dispatch(event).defer();
-                throw error;
+                throw new UnableToReleaseLockError(
+                    `A Lock with name of "${this.key.resolved}" could not be released.`,
+                    error,
+                );
             }
         });
     }

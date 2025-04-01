@@ -15,7 +15,7 @@ export class AsyncError extends Error {
 }
 
 /**
- * This error is thrown when the <i>LazyPromise</i> is aborted.
+ * This error is thrown when the is aborted.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
@@ -28,7 +28,7 @@ export class AbortAsyncError extends AsyncError {
 }
 
 /**
- * This error is thrown when the <i>LazyPromise</i> has exceeded the given time limit.
+ * This error is thrown when the has exceeded the given time limit.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
@@ -46,12 +46,12 @@ export class TimeoutAsyncError extends AsyncError {
  * @group Errors
  */
 export type RetryAsyncErrorData = {
-    cause?: unknown;
+    errors: unknown[];
     maxAttempts: number;
 };
 
 /**
- * This error is thrown when the <i>LazyPromise</i> has failed all retry attempts.
+ * This error is thrown when the has failed all retry attempts.
  *
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Errors
@@ -59,10 +59,13 @@ export type RetryAsyncErrorData = {
 export class RetryAsyncError extends AsyncError {
     public readonly maxAttempts: number;
 
-    constructor(message: string, { cause, maxAttempts }: RetryAsyncErrorData) {
-        super(message, cause);
-        this.name = RetryAsyncError.name;
+    public readonly errors: unknown[] = [];
+
+    constructor(message: string, { errors, maxAttempts }: RetryAsyncErrorData) {
+        super(message, errors[errors.length - 1]);
+        this.errors = errors;
         this.maxAttempts = maxAttempts;
+        this.name = RetryAsyncError.name;
     }
 }
 
