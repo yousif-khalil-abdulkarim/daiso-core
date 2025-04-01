@@ -5,9 +5,9 @@
 import {
     callInvokable,
     TimeSpan,
-    type AsyncMiddleware,
     type Invokable,
     type HookContext,
+    type AsyncMiddlewareFn,
 } from "@/utilities/_module-exports.js";
 import {
     exponentialBackoffPolicy,
@@ -169,7 +169,7 @@ export function retryMiddleware<
     TContext extends HookContext,
 >(
     settings: RetryMiddlewareSettings<TParameters, TContext> = {},
-): AsyncMiddleware<TParameters, TReturn, TContext> {
+): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         maxAttempts = 4,
         backoffPolicy = exponentialBackoffPolicy(),

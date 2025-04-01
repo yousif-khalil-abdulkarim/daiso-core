@@ -5,7 +5,7 @@
 import type { HookContext } from "@/utilities/_module-exports.js";
 import {
     callInvokable,
-    type AsyncMiddleware,
+    type AsyncMiddlewareFn,
     type Invokable,
 } from "@/utilities/_module-exports.js";
 
@@ -107,7 +107,7 @@ export function observationMiddleware<
     TContext extends HookContext,
 >(
     settings: ObservationMiddlewareSettings<TParameters, TReturn, TContext>,
-): AsyncMiddleware<TParameters, TReturn, TContext> {
+): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         onSuccess = () => {},
         onError = () => {},

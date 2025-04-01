@@ -26,20 +26,49 @@ export type NextFunc<
  * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
  * @group Hooks
  */
-export type Middleware<
+export type MiddlewareFn<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext = object,
-    TNextParameters extends unknown[] = TParameters,
-    TNextReturn = TReturn,
-> = Invokable<
+> = InvokableFn<
     [
         arguments_: TParameters,
-        next: NextFunc<TNextParameters, TNextReturn>,
+        next: NextFunc<TParameters, TReturn>,
         context: TContext,
     ],
     TReturn
 >;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Hooks
+ */
+export type IMiddlewareObject<
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+    TContext = object,
+> = IInvokableObject<
+    [
+        arguments_: TParameters,
+        next: NextFunc<TParameters, TReturn>,
+        context: TContext,
+    ],
+    TReturn
+>;
+
+/**
+ *
+ * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * @group Hooks
+ */
+export type Middleware<
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+    TContext = object,
+> =
+    | IMiddlewareObject<TParameters, TReturn, TContext>
+    | MiddlewareFn<TParameters, TReturn, TContext>;
 
 /**
  * The <i>Hooks</i> provides a convenient way to change and inspect arguments and return value of both only sync functions.

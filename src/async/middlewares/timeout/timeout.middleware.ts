@@ -2,12 +2,12 @@
  * @module Async
  */
 
-import type { TimeSpan, HookContext } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
-    callInvokable,
-    type AsyncMiddleware,
-    type Invokable,
+    type AsyncMiddlewareFn,
+    type HookContext,
 } from "@/utilities/_module-exports.js";
+import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
 import { AbortAsyncError, TimeoutAsyncError } from "@/async/async.errors.js";
 import { abortAndFail } from "@/async/utilities/_module.js";
 
@@ -132,7 +132,7 @@ export function timeoutMiddleware<
     TContext extends HookContext,
 >(
     settings: TimeoutMiddlewareSettings<TParameters, TContext>,
-): AsyncMiddleware<TParameters, TReturn, TContext> {
+): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         time,
         signalBinder = (args) => args,

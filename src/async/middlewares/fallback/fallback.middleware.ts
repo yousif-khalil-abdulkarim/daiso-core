@@ -9,7 +9,7 @@ import type {
 import {
     callInvokable,
     resolveAsyncLazyable,
-    type AsyncMiddleware,
+    type AsyncMiddlewareFn,
     type Invokable,
 } from "@/utilities/_module-exports.js";
 
@@ -126,7 +126,7 @@ export function fallbackMiddleware<
     TContext extends HookContext,
 >(
     settings: FallbackMiddlewareSettings<TParameters, TReturn, TContext>,
-): AsyncMiddleware<TParameters, TReturn, TContext> {
+): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         fallbackValue,
         fallbackPolicy = () => true,
