@@ -8,6 +8,7 @@ import { AbortAsyncError } from "@/async/async.errors.js";
  */
 function abortSignalToPromise<TValue = void>(
     abortSignal: AbortSignal,
+    createError: (reason: unknown) => AbortAsyncError,
 ): {
     promise: Promise<TValue>;
     abort: () => void;
@@ -17,22 +18,12 @@ function abortSignalToPromise<TValue = void>(
         if (reject_ === null) {
             return;
         }
-        reject_(
-            new AbortAsyncError(
-                `Promise was aborted with reason of "${String(abortSignal.reason)}"`,
-                abortSignal.reason,
-            ),
-        );
+        reject_(createError(abortSignal.reason));
     }
 
     if (abortSignal.aborted) {
         return {
-            promise: Promise.reject(
-                new AbortAsyncError(
-                    `Promise was aborted with reason of "${String(abortSignal.aborted)}"`,
-                    abortSignal.reason,
-                ),
-            ),
+            promise: Promise.reject(createError(abortSignal.reason)),
             abort,
         };
     }
@@ -59,15 +50,19 @@ export async function abortAndFail<TValue>(
     promise: PromiseLike<TValue>,
     abortSignal: AbortSignal,
 ): Promise<TValue> {
-    if (abortSignal.aborted) {
-        throw new AbortAsyncError(
-            `Promise was aborted with reason of "${String(abortSignal.reason)}"`,
-            abortSignal.reason,
+    const createError = (reason: unknown) =>
+        new AbortAsyncError(
+            `Promise was aborted with reason of "${String(reason)}"`,
+            reason,
         );
+    if (abortSignal.aborted) {
+        throw createError(abortSignal.reason);
     }
 
-    const { promise: abortSignalPromise, abort } =
-        abortSignalToPromise<TValue>(abortSignal);
+    const { promise: abortSignalPromise, abort } = abortSignalToPromise<TValue>(
+        abortSignal,
+        createError,
+    );
     try {
         return await Promise.race([promise, abortSignalPromise]);
     } finally {
