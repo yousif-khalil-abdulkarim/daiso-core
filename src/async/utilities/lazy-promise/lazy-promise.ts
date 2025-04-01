@@ -5,7 +5,6 @@ import {
     AsyncHooks,
     type AsyncLazy,
     type AsyncMiddleware,
-    type IAsyncHooksAware,
     type Invokable,
     type InvokableFn,
     type OneOrMore,
@@ -54,11 +53,7 @@ export type LazyPromiseCallback<TValue> = InvokableFn<
  * IMPORT_PATH: ```"@daiso-tech/core/async"```
  * @group Utilities
  */
-export class LazyPromise<TValue>
-    implements
-        PromiseLike<TValue>,
-        IAsyncHooksAware<LazyPromise<TValue>, [], TValue>
-{
+export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
      * The <i>wrapFn</i> is convience method used for wrapping async <i>{@link Invokable}</i> with a <i>LazyPromise</i>.
      * @example

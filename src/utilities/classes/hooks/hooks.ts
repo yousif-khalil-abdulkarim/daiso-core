@@ -10,7 +10,6 @@ import {
     type InvokableFn,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
-import type { HookContext } from "@/utilities/classes/hooks/types.js";
 
 /**
  *
@@ -31,35 +30,16 @@ export type Middleware<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext = object,
+    TNextParameters extends unknown[] = TParameters,
+    TNextReturn = TReturn,
 > = Invokable<
     [
         arguments_: TParameters,
-        next: NextFunc<TParameters, TReturn>,
+        next: NextFunc<TNextParameters, TNextReturn>,
         context: TContext,
     ],
     TReturn
 >;
-
-/**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
- * @group Hooks
- */
-export interface IHooksAware<
-    TInstance,
-    TParameters extends unknown[] = unknown[],
-    TReturn = unknown,
-    TContext extends HookContext = HookContext,
-> {
-    pipe(
-        middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
-    ): TInstance;
-
-    pipeWhen(
-        condition: boolean,
-        middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
-    ): TInstance;
-}
 
 /**
  * The <i>Hooks</i> provides a convenient way to change and inspect arguments and return value of both only sync functions.
@@ -69,20 +49,12 @@ export interface IHooksAware<
  * @group Hooks
  */
 export class Hooks<
-        TParameters extends unknown[] = unknown[],
-        TReturn = unknown,
-        TContext extends Partial<Record<string, unknown>> = Partial<
-            Record<string, unknown>
-        >,
-    >
-    implements
-        IInvokableObject<TParameters, TReturn>,
-        IHooksAware<
-            Hooks<TParameters, TReturn, TContext>,
-            TParameters,
-            TReturn,
-            TContext
-        >
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+    TContext extends Partial<Record<string, unknown>> = Partial<
+        Record<string, unknown>
+    >,
+> implements IInvokableObject<TParameters, TReturn>
 {
     private static init<TParameters extends unknown[], TReturn, TContext>(
         invokable: Invokable<TParameters, TReturn>,
@@ -151,8 +123,8 @@ export class Hooks<
      */
     constructor(
         private readonly invokable: Invokable<TParameters, TReturn>,
-        private readonly middlewares: OneOrMore<
-            Middleware<TParameters, TReturn, TContext>
+        private readonly middlewares: NoInfer<
+            OneOrMore<Middleware<TParameters, TReturn, TContext>>
         >,
         private readonly context = {} as TContext,
     ) {

@@ -42,29 +42,6 @@ export type AsyncMiddleware<
 >;
 
 /**
- *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
- * @group Hooks
- */
-export interface IAsyncHooksAware<
-    TInstance,
-    TParameters extends unknown[] = unknown[],
-    TReturn = unknown,
-    TContext extends Partial<Record<string, unknown>> = Partial<
-        Record<string, unknown>
-    >,
-> {
-    pipe(
-        middlewares: OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>,
-    ): TInstance;
-
-    pipeWhen(
-        condition: boolean,
-        middlewares: OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>,
-    ): TInstance;
-}
-
-/**
  * The <i>AsyncHooks</i> provides a convenient way to change and inspect arguments and return value of both async and sync functions.
  * For example <i>AsyncHooks</i> class can be used to log function arguments and return values. Note this class will always return promise and is immutable.
  *
@@ -72,18 +49,10 @@ export interface IAsyncHooksAware<
  * @group Hooks
  */
 export class AsyncHooks<
-        TParameters extends unknown[] = unknown[],
-        TReturn = unknown,
-        TContext extends HookContext = HookContext,
-    >
-    implements
-        IInvokableObject<TParameters, Promise<TReturn>>,
-        IAsyncHooksAware<
-            AsyncHooks<TParameters, TReturn, TContext>,
-            TParameters,
-            TReturn,
-            TContext
-        >
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+    TContext extends HookContext = HookContext,
+> implements IInvokableObject<TParameters, Promise<TReturn>>
 {
     private static init<TParameters extends unknown[], TReturn, TContext>(
         invokable: Invokable<TParameters, Promisable<TReturn>>,
@@ -154,8 +123,8 @@ export class AsyncHooks<
      */
     constructor(
         private readonly invokable: Invokable<TParameters, Promisable<TReturn>>,
-        private readonly middlewares: OneOrMore<
-            AsyncMiddleware<TParameters, TReturn, TContext>
+        private readonly middlewares: NoInfer<
+            OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>
         >,
         private readonly context = {} as TContext,
     ) {
