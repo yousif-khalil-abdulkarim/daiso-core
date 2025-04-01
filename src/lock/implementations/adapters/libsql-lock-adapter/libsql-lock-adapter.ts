@@ -20,7 +20,7 @@ import type { Client } from "@libsql/client";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
 export type LibsqlLockAdapterSettings = {
@@ -31,12 +31,12 @@ export type LibsqlLockAdapterSettings = {
 };
 
 /**
- * To utilize the <i>LibsqlLockAdapter</i>, you must install the <i>"@libsql/client"</i> package.
+ * To utilize the `LibsqlLockAdapter`, you must install the `"@libsql/client"` package.
  *
- * Note in order to use <i>LibsqlLockAdapter</i> correctly, ensure you use a single, consistent database across all server instances.
+ * Note in order to use `LibsqlLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  * This means you can't use libsql embedded replicas.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
 export class LibsqlLockAdapter
@@ -96,7 +96,7 @@ export class LibsqlLockAdapter
 
     /**
      * Creates the table where the lock keys are stored and it's related indexes.
-     * Note the <i>init</i> method needs to be called before using the adapter.
+     * Note the `init` method needs to be called before using the adapter.
      */
     async init(): Promise<void> {
         await this.databaseLockAdapter.init();

@@ -17,7 +17,7 @@ import type { EventListenerFn } from "@/event-bus/contracts/event-bus-adapter.co
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type EventClass<TEvents extends BaseEvent> = {
@@ -26,7 +26,7 @@ export type EventClass<TEvents extends BaseEvent> = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type EventInstance<TEventClass extends EventClass<BaseEvent>> =
@@ -37,21 +37,21 @@ export type EventInstance<TEventClass extends EventClass<BaseEvent>> =
         : never;
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type Unsubscribe = () => LazyPromise<void>;
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type IEventListenerObject<TEvent> = IInvokableObject<[event: TEvent]>;
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type EventListener<TEvent> =
@@ -59,14 +59,14 @@ export type EventListener<TEvent> =
     | EventListenerFn<TEvent>;
 
 /**
- * The <i>IEventListenable</i> contract defines a way listening to events independent of underlying technology
+ * The `IEventListenable` contract defines a way listening to events independent of underlying technology
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     /**
-     * The <i>addListener</i> method is used for listening to a <i>{@link BaseEvent}</i>.
+     * The `addListener` method is used for listening to a `{@link BaseEvent}`.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
@@ -76,7 +76,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>removeListener</i> method is used for stop listening to a <i>{@link BaseEvent}</i>.
+     * The `removeListener` method is used for stop listening to a `{@link BaseEvent}`.
      * Removing unadded listener will have no effect and nothing will occur.
      * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
@@ -86,7 +86,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>listenOnce</i> method is used for listening to a <i>{@link BaseEvent}</i> once.
+     * The `listenOnce` method is used for listening to a `{@link BaseEvent}` once.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     listenOnce<TEventClass extends EventClass<TEvents>>(
@@ -95,7 +95,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The <i>asPromise</i> method returns <i>{@link LazyPromise}</i> objecet that resolves once the <i>{@link BaseEvent}</i> is dispatched.
+     * The `asPromise` method returns `{@link LazyPromise}` objecet that resolves once the `{@link BaseEvent}` is dispatched.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     asPromise<TEventClass extends EventClass<TEvents>>(
@@ -103,7 +103,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<EventInstance<TEventClass>>;
 
     /**
-     * The <i>subscribeOnce</i> method is used for listening to a <i>{@link BaseEvent}</i> once and it returns a cleanup function that removes listener when called.
+     * The `subscribeOnce` method is used for listening to a `{@link BaseEvent}` once and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
     subscribeOnce<TEventClass extends EventClass<TEvents>>(
@@ -112,7 +112,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<Unsubscribe>;
 
     /**
-     * The <i>subscribe</i> method is used for listening to a <i>{@link BaseEvent}</i> and it returns a cleanup function that removes listener when called.
+     * The `subscribe` method is used for listening to a `{@link BaseEvent}` and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
     subscribe<TEventClass extends EventClass<TEvents>>(
@@ -122,14 +122,14 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
 };
 
 /**
- * The <i>IEventDispatcher</i> contract defines a way for dispatching to events independent of underlying technology.
+ * The `IEventDispatcher` contract defines a way for dispatching to events independent of underlying technology.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
     /**
-     * The <i>dispatch</i> method is used for dispatching a <i>{@link BaseEvent}</i>.
+     * The `dispatch` method is used for dispatching a `{@link BaseEvent}`.
 
      * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
      */
@@ -137,10 +137,10 @@ export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
 };
 
 /**
- * The <i>IEventBus</i> contract defines a way for dispatching and listening to events independent of underlying technology.
- * It commes with more convient methods compared to <i>IEventBusAdapter</i>.
+ * The `IEventBus` contract defines a way for dispatching and listening to events independent of underlying technology.
+ * It commes with more convient methods compared to `IEventBusAdapter`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type IEventBus<TEvents extends BaseEvent = BaseEvent> =

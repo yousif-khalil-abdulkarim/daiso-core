@@ -67,7 +67,7 @@ export type LockSettings = {
 };
 
 /**
- * IMPORTANT: This class is not intended to be instantiated directly, instead it should be created by the <i>LockProvider</i> class instance.
+ * IMPORTANT: This class is not intended to be instantiated directly, instead it should be created by the `LockProvider` class instance.
  * @group Derivables
  */
 export class Lock implements ILock {

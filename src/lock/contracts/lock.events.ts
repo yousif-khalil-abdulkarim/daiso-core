@@ -16,7 +16,7 @@ import {
 /**
  * The event is dispatched when a lock is aquired.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export class KeyAcquiredLockEvent extends BaseEvent<{
@@ -28,7 +28,7 @@ export class KeyAcquiredLockEvent extends BaseEvent<{
 /**
  * The event is dispatched when a lock is released.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export class KeyReleasedLockEvent extends BaseEvent<{
@@ -39,7 +39,7 @@ export class KeyReleasedLockEvent extends BaseEvent<{
 /**
  * The event is dispatched when a lock is forcefully released.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export class KeyForceReleasedLockEvent extends BaseEvent<{
@@ -49,7 +49,7 @@ export class KeyForceReleasedLockEvent extends BaseEvent<{
 /**
  * The event is dispatched when trying to release a lock that is owned by a different owner.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export class UnownedReleaseLockEvent extends BaseEvent<{
@@ -60,7 +60,7 @@ export class UnownedReleaseLockEvent extends BaseEvent<{
 /**
  * The event is dispatched when trying to refefresh a lock that is owned by a different owner.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export class UnownedRefreshLockEvent extends BaseEvent<{
@@ -71,7 +71,7 @@ export class UnownedRefreshLockEvent extends BaseEvent<{
 /**
  * The event is dispatched when trying to acquire a lock that is owned by a different owner.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export class KeyAlreadyAcquiredLockEvent extends BaseEvent<{
@@ -82,7 +82,7 @@ export class KeyAlreadyAcquiredLockEvent extends BaseEvent<{
 /**
  * The event is dispatched when a lock is refreshed.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export class KeyRefreshedLockEvent extends BaseEvent<{
@@ -93,7 +93,7 @@ export class KeyRefreshedLockEvent extends BaseEvent<{
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export class UnexpectedErrorLockEvent extends BaseEvent<{
@@ -105,7 +105,7 @@ export class UnexpectedErrorLockEvent extends BaseEvent<{
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export const LOCK_EVENTS = {
@@ -121,7 +121,7 @@ export const LOCK_EVENTS = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export type LockEvents =
@@ -135,9 +135,9 @@ export type LockEvents =
     | UnexpectedErrorLockEvent;
 
 /**
- * The <i>registerLockEventsToSerde</i> function registers all <i>{@link ILock}</i> related events with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The `registerLockEventsToSerde` function registers all `{@link ILock}` related events with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
 export function registerLockEventsToSerde(

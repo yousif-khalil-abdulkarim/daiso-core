@@ -5,10 +5,10 @@
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 
 /**
- * The <i>TimeSpan</i> class is used for representing time interval that is the difference between two times measured in a number of days, hours, minutes, and seconds.
- * <i>TimeSpan</i> cannot be negative.
+ * The `TimeSpan` class is used for representing time interval that is the difference between two times measured in a number of days, hours, minutes, and seconds.
+ * `TimeSpan` cannot be negative.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group TimeSpan
  */
 export class TimeSpan implements ISerializable<number> {
@@ -142,7 +142,7 @@ export class TimeSpan implements ISerializable<number> {
     }
 
     /**
-     * Will return endDate relative to a given <i>startDate</i> argument.
+     * Will return endDate relative to a given `startDate` argument.
      * @default {new Date()} - current date
      */
     toEndDate(startDate = new Date()): Date {
@@ -150,7 +150,7 @@ export class TimeSpan implements ISerializable<number> {
     }
 
     /**
-     * Will return startDate relative to a given <i>endDate</i> argument.
+     * Will return startDate relative to a given `endDate` argument.
      * @default {new Date()} - current date
      */
     toStartDate(endDate = new Date()): Date {

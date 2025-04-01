@@ -66,17 +66,17 @@ import {
 import { resolveLazyable } from "@/utilities/_module-exports.js";
 
 /**
- * All methods that return <i>{@link ICollection}</i> are executed lazly which means they will be executed when the <i>IterableCollection</i> is iterated with <i>forEach</i> method or "for of" loop.
+ * All methods that return `{@link ICollection}` are executed lazly which means they will be executed when the `IterableCollection` is iterated with `forEach` method or "for of" loop.
  * The rest of the methods are executed eagerly.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Adapters
  */
 export class IterableCollection<TInput = unknown>
     implements ICollection<TInput>
 {
     /**
-     * The <i>concat<i> static method is a convenient utility for easily concatenating multiple <i>{@link Iterable}</i>.
+     * The `concat` static method is a convenient utility for easily concatenating multiple `{@link Iterable}`.
      * @example
      * ```ts
      * import { IterableCollection } from "@daiso-tech/core";
@@ -106,7 +106,7 @@ export class IterableCollection<TInput = unknown>
     }
 
     /**
-     * The <i>difference</i> static method is used to compute the difference between two <i>{@link Iterable}</i> instances. By default, the equality check is performed on each item.
+     * The `difference` static method is used to compute the difference between two `{@link Iterable}` instances. By default, the equality check is performed on each item.
      * @example
      * ```ts
      * import { IterableCollection } from "@daiso-tech/core";
@@ -155,7 +155,7 @@ export class IterableCollection<TInput = unknown>
     }
 
     /**
-     * The <i>zip</i> static method merges together the values of <i>iterableA</i> with the values of the <i>iterableB</i> at their corresponding index.
+     * The `zip` static method merges together the values of `iterableA` with the values of the `iterableB` at their corresponding index.
      * The returned collection has size of the shortest collection.
      * @example
      * ```ts
@@ -202,9 +202,9 @@ export class IterableCollection<TInput = unknown>
     };
 
     /**
-     * The <i>constructor</i> takes an <i>{@link Iterable}</i>.
+     * The `constructor` takes an `{@link Iterable}`.
      *
-     * Works with <i>Array</i>.
+     * Works with `Array`.
      * @example
      * ```ts
      * import { IterableCollection } from "@daiso-tech/core";
@@ -212,7 +212,7 @@ export class IterableCollection<TInput = unknown>
      * const collection = new IterableCollection([1, 2, 3, 4]);
      * ```
      *
-     * Works with <i>String</i>.
+     * Works with `String`.
      * @example
      * ```ts
      * import { IterableCollection } from "@daiso-tech/core";
@@ -220,7 +220,7 @@ export class IterableCollection<TInput = unknown>
      * const collection = new IterableCollection("ABCDE");
      * ```
      *
-     * Works with <i>Set</i>.
+     * Works with `Set`.
      * @example
      * ```ts
      * import { IterableCollection } from "@daiso-tech/core";
@@ -228,7 +228,7 @@ export class IterableCollection<TInput = unknown>
      * const collection = new IterableCollection(new Set([1, 2, 2 4]));
      * ```
      *
-     * Works with <i>Map</i>.
+     * Works with `Map`.
      * @example
      * ```ts
      * import { IterableCollection } from "@daiso-tech/core";
@@ -236,7 +236,7 @@ export class IterableCollection<TInput = unknown>
      * const collection = new IterableCollection(new Map([["a", 1], ["b", 2]]));
      * ```
      *
-     * Works with any <i>Iterable</i>.
+     * Works with any `Iterable`.
      * @example
      * ```ts
      * import { IterableCollection } from "@daiso-tech/core";

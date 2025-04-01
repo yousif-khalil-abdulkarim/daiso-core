@@ -14,7 +14,7 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/test-utilities"`
  * @group Utilities
  */
 export type DatabaseLockAdapterTestSuiteSettings = {
@@ -26,9 +26,9 @@ export type DatabaseLockAdapterTestSuiteSettings = {
 };
 
 /**
- * The <i>databaseLockAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IDatabaseLockAdapter}</i> with <i>vitest</i>.
+ * The `databaseLockAdapterTestSuite` function simplifies the process of testing your custom implementation of `{@link IDatabaseLockAdapter}` with `vitest`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/test-utilities"`
  * @group Utilities
  * @example
  * ```ts

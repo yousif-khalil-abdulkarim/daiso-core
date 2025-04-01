@@ -11,7 +11,7 @@ import type {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/serde/test-utilities"`
  * @group TestUtilities
  */
 export type FlexibleSerdeAdapterSuiteSettings = {
@@ -21,9 +21,9 @@ export type FlexibleSerdeAdapterSuiteSettings = {
 };
 
 /**
- * The <i>flexibleSerdeAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IFlexibleSerdeAdapter}</i> with <i>vitest</i>.
+ * The `flexibleSerdeAdapterTestSuite` function simplifies the process of testing your custom implementation of `{@link IFlexibleSerdeAdapter}` with `vitest`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/serde/test-utilities"`
  * @group TestUtilities
  * @example
  * ```ts

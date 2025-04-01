@@ -15,7 +15,7 @@ import type { HookContext } from "@/utilities/classes/hooks/types.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
 export type AsyncNextFunc<
@@ -25,14 +25,14 @@ export type AsyncNextFunc<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
-export type AsyncMiddleware<
+export type AsyncMiddlewareFn<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext = object,
-> = Invokable<
+> = InvokableFn<
     [
         arguments_: TParameters,
         next: AsyncNextFunc<TParameters, TReturn>,
@@ -43,47 +43,47 @@ export type AsyncMiddleware<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
-export interface IAsyncHooksAware<
-    TInstance,
+export type IAsyncMiddlewareObject<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
-    TContext extends Partial<Record<string, unknown>> = Partial<
-        Record<string, unknown>
-    >,
-> {
-    pipe(
-        middlewares: OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>,
-    ): TInstance;
-
-    pipeWhen(
-        condition: boolean,
-        middlewares: OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>,
-    ): TInstance;
-}
+    TContext = object,
+> = IInvokableObject<
+    [
+        arguments_: TParameters,
+        next: AsyncNextFunc<TParameters, TReturn>,
+        context: TContext,
+    ],
+    PromiseLike<TReturn>
+>;
 
 /**
- * The <i>AsyncHooks</i> provides a convenient way to change and inspect arguments and return value of both async and sync functions.
- * For example <i>AsyncHooks</i> class can be used to log function arguments and return values. Note this class will always return promise and is immutable.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Hooks
+ */
+export type AsyncMiddleware<
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+    TContext = object,
+> =
+    | IAsyncMiddlewareObject<TParameters, TReturn, TContext>
+    | AsyncMiddlewareFn<TParameters, TReturn, TContext>;
+
+/**
+ * The `AsyncHooks` class provides a convenient way to change and inspect arguments and return value of both async and sync functions.
+ * For example `AsyncHooks` class can be used to log function arguments and return values. Note this class will always return promise and is immutable.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
 export class AsyncHooks<
-        TParameters extends unknown[] = unknown[],
-        TReturn = unknown,
-        TContext extends HookContext = HookContext,
-    >
-    implements
-        IInvokableObject<TParameters, Promise<TReturn>>,
-        IAsyncHooksAware<
-            AsyncHooks<TParameters, TReturn, TContext>,
-            TParameters,
-            TReturn,
-            TContext
-        >
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+    TContext extends HookContext = HookContext,
+> implements IInvokableObject<TParameters, Promise<TReturn>>
 {
     private static init<TParameters extends unknown[], TReturn, TContext>(
         invokable: Invokable<TParameters, Promisable<TReturn>>,
@@ -108,9 +108,9 @@ export class AsyncHooks<
     /**
      * @example
      * ```ts
-     * import { AsyncHooks, type AsyncMiddleware } from "@daiso-tech/core/utilities";
+     * import { AsyncHooks, type AsyncMiddlewareFn } from "@daiso-tech/core/utilities";
      *
-     * function logMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddleware<TParameters, TReturn, { funcName: string; }> {
+     * function logMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn, { funcName: string; }> {
      *   return async (args, next, { funcName }) => {
      *     console.log("FUNCTION_NAME:", funcName);
      *     console.log("ARGUMENTS:", args);
@@ -120,7 +120,7 @@ export class AsyncHooks<
      *   }
      * }
      *
-     * function timeMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddleware<TParameters, TReturn> {
+     * function timeMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn> {
      *   return async (args, next) => {
      *     const start = performance.now();
      *     const value = await next(...args);
@@ -139,7 +139,7 @@ export class AsyncHooks<
      *   logMiddleware(),
      *   timeMiddleware()
      * ],
-     * // You can provide additional information to <i>AsyncMiddleware</i> invokables.
+     * // You can provide additional information to `AsyncMiddleware` invokables.
      * {
      *    funcName: add.name
      * });
@@ -154,16 +154,19 @@ export class AsyncHooks<
      */
     constructor(
         private readonly invokable: Invokable<TParameters, Promisable<TReturn>>,
-        private readonly middlewares: OneOrMore<
-            AsyncMiddleware<TParameters, TReturn, TContext>
+        private readonly middlewares: NoInfer<
+            OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>
         >,
+        /**
+         * You can pass in additional information that can be used by the middleware.
+         */
         private readonly context = {} as TContext,
     ) {
         this.func = AsyncHooks.init(invokable, middlewares, context);
     }
 
     /**
-     * The <i>pipe</i> method returns a new <i>AsyncHooks</i> instance with the additional <i>middlewares</i> applied.
+     * The `pipe` method returns a new `AsyncHooks` instance with the additional `middlewares` applied.
      */
     pipe(
         middlewares: OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>,
@@ -179,7 +182,7 @@ export class AsyncHooks<
     }
 
     /**
-     * The <i>pipeWhen</i> method conditionally applies additional <i>middlewares</i>, returning a new <i>AsyncHooks</i> instance only if the specified condition is met.
+     * The `pipeWhen` method conditionally applies additional `middlewares`, returning a new `AsyncHooks` instance only if the specified condition is met.
      */
     pipeWhen(
         condition: boolean,
@@ -192,7 +195,14 @@ export class AsyncHooks<
     }
 
     /**
-     * The <i>invoke</i> method executes the constructor's input function, applying all middlewares.
+     * The `toFunc` will return the function with all middlewares applied.
+     */
+    toFunc(): InvokableFn<TParameters, PromiseLike<TReturn>> {
+        return (...args) => this.invoke(...args);
+    }
+
+    /**
+     * The `invoke` method executes the constructor's input function, applying all middlewares.
      */
     async invoke(...arguments_: TParameters): Promise<TReturn> {
         return await this.func(...arguments_);

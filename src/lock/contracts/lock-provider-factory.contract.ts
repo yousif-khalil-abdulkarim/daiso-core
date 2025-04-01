@@ -11,15 +11,15 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
- * The <i>ILockProviderFactory</i> contract makes it easy to configure and switch between different <i>{@link ILockProvider}</i> dynamically.
+ * The `ILockProviderFactory` contract makes it easy to configure and switch between different `{@link ILockProvider}` dynamically.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
 export type ILockProviderFactory<TAdapters extends string = string> = {
     /**
-     * The <i>use</i> method will throw an error if you provide it unregisted adapter.
-     * If no default adapter is defined an error will be thrown by <i>use</i> method.
+     * The `use` method will throw an error if you provide it unregisted adapter.
+     * If no default adapter is defined an error will be thrown by `use` method.
      * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      */

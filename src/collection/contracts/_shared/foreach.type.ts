@@ -6,7 +6,7 @@ import type { Invokable, Promisable } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  */
 export type ForEach<TInput, TCollection> = Invokable<
     [item: TInput, index: number, collection: TCollection],
@@ -15,7 +15,7 @@ export type ForEach<TInput, TCollection> = Invokable<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  */
 export type AsyncForEach<TInput, TCollection> = Invokable<
     [item: TInput, index: number, collection: TCollection],

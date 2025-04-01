@@ -11,7 +11,7 @@ import type {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Contracts
  */
 export type ISyncEventListenable<TEvents extends BaseEvent> = {

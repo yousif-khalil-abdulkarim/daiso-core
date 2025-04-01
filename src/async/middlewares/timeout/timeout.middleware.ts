@@ -2,12 +2,12 @@
  * @module Async
  */
 
-import type { TimeSpan, HookContext } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
-    callInvokable,
-    type AsyncMiddleware,
-    type Invokable,
+    type AsyncMiddlewareFn,
+    type HookContext,
 } from "@/utilities/_module-exports.js";
+import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
 import { AbortAsyncError, TimeoutAsyncError } from "@/async/async.errors.js";
 import { abortAndFail } from "@/async/utilities/_module.js";
 
@@ -63,8 +63,8 @@ export type TimeoutMiddlewareSettings<
 };
 
 /**
- * The <i>timeoutMiddleware</i> automatically cancels async functions after a specified time period, throwing an error when aborted.
- * Note the original function continues executing (even if the promise fails), you'll need to provide a settings.signalBinder to forward the <i>settings.signal</i>.
+ * The `timeoutMiddleware` automatically cancels functions after a specified time period, throwing an error when aborted.
+ * Note the original function continues executing (even if the promise fails), you'll need to provide a settings.signalBinder to forward the `AbortSignal`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
@@ -89,7 +89,7 @@ export type TimeoutMiddlewareSettings<
  *   return json;
  * }, timeoutMiddleware({
  *   time: TimeSpan.fromSeconds(2),
- *   // With the defined signalBinder the HTTP request will be arboted when timed out or when the inputed <i>AbortSignal</i> is called.
+ *   // With the defined signalBinder the HTTP request will be arboted when timed out or when the inputed `AbortSignal` is called.
  *   signalBinder: ([url, fetchSignal], timeoutSignal) => {
  *     return [
  *       url,
@@ -97,7 +97,7 @@ export type TimeoutMiddlewareSettings<
  *         fetchSignal,
  *         timeoutSignal
  *       ].filter(signal => signal !== undefined))
- *     ];
+ *     ] as const;
  *   }
  * }))
  * .invoke("ENDPOINT", abortController.signal);
@@ -113,10 +113,8 @@ export type TimeoutMiddlewareSettings<
  * import { LazyPromise, timeoutMiddleware } from "@daiso-tech/core/async";
  * import { TimeSpan } from "@daiso-tech/core/utilities";
  *
- * await new LazyPromise(() => {
- *   const response = await fetch(url, {
- *     signal
- *   });
+ * await new LazyPromise(async () => {
+ *   const response = await fetch("ENDPOINT");
  *   const json = await response.json();
  *   if (!response.ok) {
  *     throw json
@@ -131,8 +129,8 @@ export function timeoutMiddleware<
     TReturn,
     TContext extends HookContext,
 >(
-    settings: TimeoutMiddlewareSettings<TParameters, TContext>,
-): AsyncMiddleware<TParameters, TReturn, TContext> {
+    settings: NoInfer<TimeoutMiddlewareSettings<TParameters, TContext>>,
+): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         time,
         signalBinder = (args) => args,

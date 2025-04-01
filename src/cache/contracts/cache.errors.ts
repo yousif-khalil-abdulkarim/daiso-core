@@ -17,7 +17,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Errors
  */
 export class CacheError
@@ -47,7 +47,7 @@ export class CacheError
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Errors
  */
 export class UnexpectedCacheError
@@ -72,7 +72,7 @@ export class UnexpectedCacheError
 /**
  * The error is thrown when attempting to increment or decrement a key that is not of number type.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Errors
  */
 export class TypeCacheError
@@ -97,7 +97,7 @@ export class TypeCacheError
 /**
  * The error is thrown when a key is not found
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Errors
  */
 export class KeyNotFoundCacheError
@@ -121,7 +121,7 @@ export class KeyNotFoundCacheError
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Errors
  */
 export const CACHE_ERRORS = {
@@ -132,9 +132,9 @@ export const CACHE_ERRORS = {
 } as const;
 
 /**
- * The <i>registerCacheErrorsToSerde</i> function registers all <i>{@link ICache}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The `registerCacheErrorsToSerde` function registers all `{@link ICache}` related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Errors
  */
 export function registerCacheErrorsToSerde(

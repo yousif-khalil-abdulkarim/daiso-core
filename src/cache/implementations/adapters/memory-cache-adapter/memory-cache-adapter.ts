@@ -10,9 +10,9 @@ import {
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
- * To utilize the <i>MemoryCacheAdapter</i>, you must create instance of it.
+ * To utilize the `MemoryCacheAdapter`, you must create instance of it.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
 export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
@@ -28,7 +28,7 @@ export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
      *
      * const cacheAdapter = new MemoryCacheAdapter();
      * ```
-     * You can also provide an <i>{@link Map}</i> that will be used for storing the data.
+     * You can also provide an `{@link Map}` that will be used for storing the data.
      * @example
      * ```ts
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";

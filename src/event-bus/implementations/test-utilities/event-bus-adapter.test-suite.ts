@@ -20,7 +20,7 @@ import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-expor
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/test-utilities"`
  * @group TestUtilities
  */
 export type EventBusAdapterTestSuiteSettings = {
@@ -33,9 +33,9 @@ export type EventBusAdapterTestSuiteSettings = {
 };
 
 /**
- * The <i>eventBusAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IEventBusAdapter}</i> with vitest.
+ * The `eventBusAdapterTestSuite` function simplifies the process of testing your custom implementation of `{@link IEventBusAdapter}` with vitest.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/test-utilities"`
  * @group TestUtilities
  */
 export function eventBusAdapterTestSuite(

@@ -4,7 +4,7 @@
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities/contracts"`
  * @group Contracts
  */
 export type IPrunable = {

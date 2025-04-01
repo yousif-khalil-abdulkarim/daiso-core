@@ -10,7 +10,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group BackoffPolicies
  */
 export type ConstantBackoffPolicySettings = {
@@ -32,7 +32,7 @@ export type ConstantBackoffPolicySettings = {
 /**
  * Constant backoff policy with jitter
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group BackoffPolicies
  */
 export function constantBackoffPolicy(

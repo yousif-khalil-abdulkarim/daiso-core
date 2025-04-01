@@ -9,9 +9,9 @@ import type {
 } from "@/serde/contracts/_module-exports.js";
 
 /**
- * This <i>NoOpSerdeAdapter</i> will do nothing and is used for easily mocking <i>{@link IFlexibleSerde}</i> for testing.
+ * This `NoOpSerdeAdapter` will do nothing and is used for easily mocking `{@link IFlexibleSerde}` for testing.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/serde/adapters"`
  * @group Adapters
  */
 export class NoOpSerdeAdapter<TSerializedValue>

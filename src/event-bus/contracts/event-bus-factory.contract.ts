@@ -12,15 +12,15 @@ import {
 import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
 
 /**
- * The <i>IEventBusFactory</i> contract makes it easy to configure and switch between different <i>{@link IEventBus}</i> dynamically.
+ * The `IEventBusFactory` contract makes it easy to configure and switch between different `{@link IEventBus}` dynamically.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type IEventBusFactory<TAdapters extends string = string> = {
     /**
-     * The <i>use</i> method will throw an error if you provide it unregisted adapter.
-     * If no default adapter is defined an error will be thrown by <i>use</i> method.
+     * The `use` method will throw an error if you provide it unregisted adapter.
+     * If no default adapter is defined an error will be thrown by `use` method.
      * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      */

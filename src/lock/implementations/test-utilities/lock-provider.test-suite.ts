@@ -29,7 +29,7 @@ import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/test-utilities"`
  * @group Utilities
  */
 export type LockProviderTestSuiteSettings = {
@@ -42,9 +42,9 @@ export type LockProviderTestSuiteSettings = {
 };
 
 /**
- * The <i>lockProviderTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ILock}</i> with <i>vitest</i>.
+ * The `lockProviderTestSuite` function simplifies the process of testing your custom implementation of `{@link ILock}` with `vitest`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/test-utilities"`
  * @group Utilities
  * @example
  * ```ts

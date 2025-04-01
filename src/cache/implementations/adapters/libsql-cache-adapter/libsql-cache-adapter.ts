@@ -27,7 +27,7 @@ import type { Client } from "@libsql/client";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
 export type LibsqlCacheAdapterSettings = {
@@ -40,9 +40,9 @@ export type LibsqlCacheAdapterSettings = {
 };
 
 /**
- * To utilize the <i>LibsqlCacheAdapter</i>, you must install the <i>"@libsql/client"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with an adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
+ * To utilize the `LibsqlCacheAdapter`, you must install the `"@libsql/client"` package and supply a `{@link ISerde | ISerde<string> }`, with an adapter like `{@link SuperJsonSerdeAdapter}`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
 export class LibsqlCacheAdapter<TType = unknown>

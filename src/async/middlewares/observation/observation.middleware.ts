@@ -5,7 +5,7 @@
 import type { HookContext } from "@/utilities/_module-exports.js";
 import {
     callInvokable,
-    type AsyncMiddleware,
+    type AsyncMiddlewareFn,
     type Invokable,
 } from "@/utilities/_module-exports.js";
 
@@ -95,7 +95,7 @@ export type ObservationMiddlewareSettings<
 };
 
 /**
- * The <i>observationMiddleware</i> tracks an async function's state and runs callbacks when it fails with an error or succeeds.
+ * The `observationMiddleware` tracks an async function's state and runs callbacks when it fails with an error or succeeds.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
@@ -106,8 +106,10 @@ export function observationMiddleware<
     TReturn,
     TContext extends HookContext,
 >(
-    settings: ObservationMiddlewareSettings<TParameters, TReturn, TContext>,
-): AsyncMiddleware<TParameters, TReturn, TContext> {
+    settings: NoInfer<
+        ObservationMiddlewareSettings<TParameters, TReturn, TContext>
+    >,
+): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         onSuccess = () => {},
         onError = () => {},

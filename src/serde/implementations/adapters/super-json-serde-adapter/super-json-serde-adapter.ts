@@ -12,7 +12,7 @@ import { SuperJSON } from "superjson-cjs";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/serde/adapters"`
  * @group Adapters
  */
 export class SuperJsonSerdeAdapter implements IFlexibleSerdeAdapter<string> {

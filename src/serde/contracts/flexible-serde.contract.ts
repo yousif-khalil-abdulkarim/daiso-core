@@ -8,9 +8,9 @@ import type { OneOrMore } from "@/utilities/_module-exports.js";
 import type { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 
 /**
- * The <i>SerializableClass</i> contract defines standard way to make a class instance serializable and deserializable.
+ * The `SerializableClass` contract defines standard way to make a class instance serializable and deserializable.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
  * @group Contracts
  */
 export type SerializableClass<TSerializedValue> = {
@@ -22,7 +22,7 @@ export type SerializableClass<TSerializedValue> = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
  * @group Contracts
  */
 export type SerializableEventClass<TFields extends Record<string, unknown>> =
@@ -30,7 +30,7 @@ export type SerializableEventClass<TFields extends Record<string, unknown>> =
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
  * @group Contracts
  */
 export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
@@ -44,15 +44,15 @@ export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
 };
 
 /**
- * The <i>IFlexibleSerde</i> contract defines a standard way to serialize and deserialize both plain data and custom classes.
+ * The `IFlexibleSerde` contract defines a standard way to serialize and deserialize both plain data and custom classes.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
  * @group Contracts
  */
 export interface IFlexibleSerde<TSerializedValue = unknown>
     extends ISerde<TSerializedValue> {
     /**
-     * The <i>registerEvent</i> method is used for registering custom <i>{@link BaseEvent}</i> for serialization and deserialization.
+     * The `registerEvent` method is used for registering custom `{@link BaseEvent}` for serialization and deserialization.
      */
     registerEvent<TFields extends Record<string, unknown>>(
         eventClass: SerializableEventClass<TFields>,
@@ -60,8 +60,8 @@ export interface IFlexibleSerde<TSerializedValue = unknown>
     ): this;
 
     /**
-     * The <i>registerClass</i> method is used for registering custom class for serialization and deserialization.
-     * The <i>class_</i> parameter must be of type <i>{@link SerializableClass}</i>.
+     * The `registerClass` method is used for registering custom class for serialization and deserialization.
+     * The `class_` parameter must be of type `{@link SerializableClass}`.
      */
     registerClass<TSerializedClassInstance>(
         class_: SerializableClass<TSerializedClassInstance>,
@@ -69,7 +69,7 @@ export interface IFlexibleSerde<TSerializedValue = unknown>
     ): this;
 
     /**
-     * The <i>registerCustom</i> method is used for registering custom values for serialization and deserialization.
+     * The `registerCustom` method is used for registering custom values for serialization and deserialization.
      */
     registerCustom<TCustomDeserialized, TCustomSerialized>(
         transformer: ISerdeTransformer<TCustomDeserialized, TCustomSerialized>,

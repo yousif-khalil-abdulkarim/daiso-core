@@ -8,9 +8,9 @@ import {
 } from "@/serde/contracts/serde.errors.js";
 
 /**
- * The <i>IDeserializer</i> contract defines a standard way to deserialize plain data, excluding support for custom classes.
+ * The `IDeserializer` contract defines a standard way to deserialize plain data, excluding support for custom classes.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/serde/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
  * @group Contracts
  */
 export type IDeserializer<TSerializedValue = unknown> = {

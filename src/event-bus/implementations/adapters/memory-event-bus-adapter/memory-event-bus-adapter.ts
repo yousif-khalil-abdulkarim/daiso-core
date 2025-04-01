@@ -10,9 +10,9 @@ import type {
 import { EventEmitter } from "node:events";
 
 /**
- * To utilize the <i>MemoryEventBusAdapter</i>, you must create instance of it.
+ * To utilize the `MemoryEventBusAdapter`, you must create instance of it.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/adapters"`
  * @group Adapters
  */
 export class MemoryEventBusAdapter implements IEventBusAdapter {
@@ -23,7 +23,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
      *
      * const eventBusAdapter = new MemoryEventBusAdapter();
      * ```
-     * You can also provide an <i>{@link EventEmitter}</i> that will be used for storing the data.
+     * You can also provide an `{@link EventEmitter}` that will be used for storing the data.
      * @example
      * ```ts
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";

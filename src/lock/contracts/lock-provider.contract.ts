@@ -8,21 +8,21 @@ import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js"
 import type { LockEvents } from "@/lock/contracts/lock.events.js";
 
 /**
- * The <i>ILockListenable</i> contract defines a way for listening <i>{@link ILock}</i> operations.
+ * The `ILockListenable` contract defines a way for listening `{@link ILock}` operations.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
 export type ILockListenable = IEventListenable<LockEvents>;
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
 export type LockProviderCreateSettings = {
     /**
-     * You can also provide a <i>settings.ttl</i> value using. If not specified it defaults to null, meaning no TTL is applied.
+     * You can also provide a `settings.ttl` value using. If not specified it defaults to null, meaning no TTL is applied.
      */
     ttl?: TimeSpan | null;
 
@@ -34,16 +34,16 @@ export type LockProviderCreateSettings = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
 export type ILockProviderBase = {
     /**
-     * The <i>create</i> method is used to create an instance of <i>{@link ILock}</i>.
+     * The `create` method is used to create an instance of `{@link ILock}`.
      *
-     * @param key - can be a string or an <i>Iterable</i> of strings.
-     * If it's an <i>Iterable</i>, it will be joined into a single string.
-     * Think of an <i>Iterable</i> as representing a path.
+     * @param key - can be a string or an `Iterable` of strings.
+     * If it's an `Iterable`, it will be joined into a single string.
+     * Think of an `Iterable` as representing a path.
      */
     create(
         key: OneOrMore<string>,
@@ -52,10 +52,10 @@ export type ILockProviderBase = {
 };
 
 /**
- * The <i>ILockProvider</i> contract defines a way for managing locks independent of the underlying technology.
- * It commes with more convient methods compared to <i>ILockAdapter</i>.
+ * The `ILockProvider` contract defines a way for managing locks independent of the underlying technology.
+ * It commes with more convient methods compared to `ILockAdapter`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
 export type ILockProvider = ILockListenable & ILockProviderBase;

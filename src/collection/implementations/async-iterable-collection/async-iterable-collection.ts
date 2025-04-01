@@ -75,7 +75,7 @@ import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Adapters
  */
 export type AsyncIterableCollectionSettings = {
@@ -83,16 +83,16 @@ export type AsyncIterableCollectionSettings = {
 };
 
 /**
- * All methods that return <i>{@link IAsyncCollection}</i> are executed lazly.
- * The methods that return <i>{@link IAsyncCollection}</i> will only be executed when <i>forEach</i> method is called or <i>for await</i> loop.
- * The methods that return <i>{@link PromiseLike}</i> object will execute only when awaited or <i>then</i> method is called.
+ * All methods that return `{@link IAsyncCollection}` are executed lazly.
+ * The methods that return `{@link IAsyncCollection}` will only be executed when `forEach` method is called or `for await` loop.
+ * The methods that return `{@link PromiseLike}` object will execute only when awaited or `then` method is called.
  * @group Adapters
  */
 export class AsyncIterableCollection<TInput = unknown>
     implements IAsyncCollection<TInput>
 {
     /**
-     * The <i>concat<i> static method is a convenient utility for easily concatenating multiple <i>{@link Iterable}</i> or <i>{@link AsyncIterable}</i>.
+     * The `concat` static method is a convenient utility for easily concatenating multiple `{@link Iterable}` or `{@link AsyncIterable}`.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";
@@ -131,7 +131,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     /**
-     * The <i>difference</i> static method is used to compute the difference between two <i>{@link Iterable}</i> instances. By default, the equality check is performed on each item.
+     * The `difference` static method is used to compute the difference between two `{@link Iterable}` instances. By default, the equality check is performed on each item.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";
@@ -180,7 +180,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     /**
-     * The <i>zip</i> static method merges together the values of <i>iterableA</i> with the values of the <i>iterableB</i> at their corresponding index.
+     * The `zip` static method merges together the values of `iterableA` with the values of the `iterableB` at their corresponding index.
      * The returned collection has size of the shortest collection.
      * @example
      * ```ts
@@ -228,9 +228,9 @@ export class AsyncIterableCollection<TInput = unknown>
     >;
 
     /**
-     * The <i>constructor</i> takes an <i>{@link Iterable}</i> or <i>{@link AsyncIterable}</i>.
+     * The `constructor` takes an `{@link Iterable}` or `{@link AsyncIterable}`.
      *
-     * Works with <i>Array</i>.
+     * Works with `Array`.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";
@@ -238,7 +238,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
      * ```
      *
-     * Works with <i>String</i>.
+     * Works with `String`.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";
@@ -246,7 +246,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * const collection = new AsyncIterableCollection("ABCDE");
      * ```
      *
-     * Works with <i>Set</i>.
+     * Works with `Set`.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";
@@ -254,7 +254,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * const collection = new AsyncIterableCollection(new Set([1, 2, 2 4]));
      * ```
      *
-     * Works with <i>Map</i>.
+     * Works with `Map`.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";
@@ -262,7 +262,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * const collection = new AsyncIterableCollection(new Map([["a", 1], ["b", 2]]));
      * ```
      *
-     * Works with any <i>Iterable</i>.
+     * Works with any `Iterable`.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";
@@ -277,7 +277,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * const collection = new AsyncIterableCollection(new MyIterable());
      * ```
      *
-     * Works with any <i>AsyncIterable</i>.
+     * Works with any `AsyncIterable`.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";

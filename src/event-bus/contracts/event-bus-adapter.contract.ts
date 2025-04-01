@@ -7,21 +7,21 @@ import type { InvokableFn } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type EventListenerFn<TEvent> = InvokableFn<[event: TEvent]>;
 
 /**
- * The <i>IEventBusAdapter</i> contract defines a way for dispatching and listening to events independent of underlying technology.
- * This contract is not meant to be used directly, instead you should use <i>IEventBus</i>
+ * The `IEventBusAdapter` contract defines a way for dispatching and listening to events independent of underlying technology.
+ * This contract is not meant to be used directly, instead you should use `IEventBus`
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export type IEventBusAdapter = {
     /**
-     * The <i>addListener</i> method is used for adding <i>{@link EventListenerFn | listener}</i> for certain <i>eventName</i>.
+     * The `addListener` method is used for adding `{@link EventListenerFn | listener}` for certain `eventName`.
      */
     addListener(
         eventName: string,
@@ -29,7 +29,7 @@ export type IEventBusAdapter = {
     ): PromiseLike<void>;
 
     /**
-     * The <i>removeListener</i> method is used for removing <i>{@link EventListenerFn | listener}</i> for certain <i>eventName</i>.
+     * The `removeListener` method is used for removing `{@link EventListenerFn | listener}` for certain `eventName`.
      */
     removeListener(
         eventName: string,
@@ -37,7 +37,7 @@ export type IEventBusAdapter = {
     ): PromiseLike<void>;
 
     /**
-     * The <i>dispatch</i> method is used for dispatching one or multiple <i>events</i>.
+     * The `dispatch` method is used for dispatching one or multiple `events`.
      */
     dispatch(eventName: string, eventData: BaseEvent): PromiseLike<void>;
 };

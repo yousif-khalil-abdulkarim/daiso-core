@@ -19,7 +19,7 @@ import { TimeSpan, type Promisable } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/test-utilities"`
  * @group TestUtilities
  */
 export type DatabaseCacheAdapterTestSuiteSettings = {
@@ -31,9 +31,9 @@ export type DatabaseCacheAdapterTestSuiteSettings = {
 };
 
 /**
- * The <i>databaseCacheAdapterTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link IDatabaseCacheAdapter}</i> with <i>vitest</i>.
+ * The `databaseCacheAdapterTestSuite` function simplifies the process of testing your custom implementation of `{@link IDatabaseCacheAdapter}` with `vitest`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/test-utilities"`
  * @group TestUtilities
  * @example
  * ```ts

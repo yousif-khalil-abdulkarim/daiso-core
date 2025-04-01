@@ -24,7 +24,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
 export type CacheAdapters<TAdapters extends string = string> = Partial<
@@ -33,7 +33,7 @@ export type CacheAdapters<TAdapters extends string = string> = Partial<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
 export type CacheFactorySettings<TAdapters extends string = string> =
@@ -44,9 +44,9 @@ export type CacheFactorySettings<TAdapters extends string = string> =
     };
 
 /**
- * The <i>CacheFactory</i> class is immutable.
+ * The `CacheFactory` class is immutable.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
 export class CacheFactory<TAdapters extends string = string>
