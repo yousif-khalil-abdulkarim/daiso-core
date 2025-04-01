@@ -18,7 +18,7 @@ import { EventEmitter } from "node:events";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/adapters"`
  * @group Adapters
  */
 export type RedisPubSubEventBusAdapterSettings = {
@@ -28,9 +28,9 @@ export type RedisPubSubEventBusAdapterSettings = {
 };
 
 /**
- * To utilize the <i>RedisPubSubEventBusAdapter</i>, you must install the <i>"ioredis"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with a <i>{@link SuperJsonSerdeAdapter}</i>.
+ * To utilize the `RedisPubSubEventBusAdapter`, you must install the `"ioredis"` package and supply a `{@link ISerde | ISerde<string> }`, with a `{@link SuperJsonSerdeAdapter}`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/adapters"`
  * @group Adapters
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {

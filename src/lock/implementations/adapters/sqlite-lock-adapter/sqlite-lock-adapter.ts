@@ -18,7 +18,7 @@ import { KyselyTableNameTransformerPlugin } from "@/utilities/_module-exports.js
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
 export type SqliteLockAdapterSettings = {
@@ -29,12 +29,12 @@ export type SqliteLockAdapterSettings = {
 };
 
 /**
- * To utilize the <i>SqliteLockAdapter</i>, you must install the <i>"better-sqlite3"</i> and <i>"@types/better-sqlite3"</i> packages.
+ * To utilize the `SqliteLockAdapter`, you must install the `"better-sqlite3"` and `"@types/better-sqlite3"` packages.
  *
- * Note the <i>SqliteLockAdapter</i> is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes.
+ * Note the `SqliteLockAdapter` is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes.
  * To use it correctly, ensure all process instances access the same consistent, persisted database.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
 export class SqliteLockAdapter
@@ -94,7 +94,7 @@ export class SqliteLockAdapter
 
     /**
      * Creates the table where the lock keys are stored and it's related indexes.
-     * Note the <i>init</i> method needs to be called before using the adapter.
+     * Note the `init` method needs to be called before using the adapter.
      */
     async init(): Promise<void> {
         await this.databaseLockAdapter.init();

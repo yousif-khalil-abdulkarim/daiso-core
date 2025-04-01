@@ -25,7 +25,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
 export type EventBusAdapters<TAdapters extends string = string> = Partial<
@@ -34,7 +34,7 @@ export type EventBusAdapters<TAdapters extends string = string> = Partial<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
 export type EventBusFactorySettings<TAdapters extends string = string> =
@@ -45,9 +45,9 @@ export type EventBusFactorySettings<TAdapters extends string = string> =
     };
 
 /**
- * The <i>EventBusFactory</i> class is immutable.
+ * The `EventBusFactory` class is immutable.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
 export class EventBusFactory<TAdapters extends string = string>

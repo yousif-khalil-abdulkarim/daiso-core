@@ -6,7 +6,7 @@ import type { Invokable, Promisable } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  */
 export type Modifier<TInput, TOutput> = Invokable<
     [collection: TInput],
@@ -15,7 +15,7 @@ export type Modifier<TInput, TOutput> = Invokable<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  */
 export type AsyncModifier<TInput, TOutput> = Invokable<
     [collection: TInput],

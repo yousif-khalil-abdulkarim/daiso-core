@@ -13,9 +13,9 @@ import type {
 } from "@/event-bus/contracts/_module-exports.js";
 
 /**
- * This <i>NoOpEventBusAdapter</i> will do nothing and is used for easily mocking <i>{@link IEventBus}</i> for testing.
+ * This `NoOpEventBusAdapter` will do nothing and is used for easily mocking `{@link IEventBus}` for testing.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/adapters"`
  * @group Adapters
  */
 export class NoOpEventBusAdapter implements IEventBusAdapter {

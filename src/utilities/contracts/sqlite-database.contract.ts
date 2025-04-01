@@ -4,7 +4,7 @@
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Contracts
  */
 export type ISqliteStatement = {
@@ -19,7 +19,7 @@ export type ISqliteStatement = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Contracts
  */
 export type ISqliteDatabase = {

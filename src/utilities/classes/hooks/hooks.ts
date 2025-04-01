@@ -13,7 +13,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
 export type NextFunc<
@@ -23,7 +23,7 @@ export type NextFunc<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
 export type MiddlewareFn<
@@ -41,7 +41,7 @@ export type MiddlewareFn<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
 export type IMiddlewareObject<
@@ -59,7 +59,7 @@ export type IMiddlewareObject<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
 export type Middleware<
@@ -71,10 +71,10 @@ export type Middleware<
     | MiddlewareFn<TParameters, TReturn, TContext>;
 
 /**
- * The <i>Hooks</i> provides a convenient way to change and inspect arguments and return value of both only sync functions.
- * For example <i>Hooks</i> class can be used to log function arguments and return values. Note this class will always return sync value and is immutable.
+ * The `Hooks` class provides a convenient way to change and inspect arguments and return value of both only sync functions.
+ * For example `Hooks` class can be used to log function arguments and return values. Note this class will always return sync value and is immutable.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
 export class Hooks<
@@ -137,7 +137,7 @@ export class Hooks<
      *   logMiddleware(),
      *   timeMiddleware()
      * ],
-     * // You can provide additional information to <i>Middleware</i> invokables.
+     * // You can provide additional information to `Middleware` invokables.
      * {
      *    funcName: add.name
      * });
@@ -161,7 +161,7 @@ export class Hooks<
     }
 
     /**
-     * The <i>pipe</i> method returns a new <i>Hooks</i> instance with the additional <i>middlewares</i> applied.
+     * The `pipe` method returns a new `Hooks` instance with the additional `middlewares` applied.
      */
     pipe(
         middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
@@ -177,7 +177,7 @@ export class Hooks<
     }
 
     /**
-     * The <i>pipeWhen</i> method conditionally applies additional <i>middlewares</i>, returning a new <i>Hooks</i> instance only if the specified condition is met.
+     * The `pipeWhen` method conditionally applies additional `middlewares`, returning a new `Hooks` instance only if the specified condition is met.
      */
     pipeWhen(
         condition: boolean,
@@ -190,14 +190,14 @@ export class Hooks<
     }
 
     /**
-     * The <i>toFunc</i> will return the function with all middlewares applied.
+     * The `toFunc` will return the function with all middlewares applied.
      */
     toFunc(): InvokableFn<TParameters, TReturn> {
         return (...args) => this.invoke(...args);
     }
 
     /**
-     * The <i>invoke</i> method executes the constructor's input function, applying all middlewares.
+     * The `invoke` method executes the constructor's input function, applying all middlewares.
      */
     invoke(...arguments_: TParameters): TReturn {
         return this.func(...arguments_);

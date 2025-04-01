@@ -33,14 +33,14 @@ import {
 import { resolveLazyable } from "@/utilities/_module-exports.js";
 
 /**
- * All methods in <i>ListCollection</i> are executed eagerly.
+ * All methods in `ListCollection` are executed eagerly.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Adapters
  */
 export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     /**
-     * The <i>concat<i> static method is a convenient utility for easily concatenating multiple <i>{@link Iterable}</i>.
+     * The `concat` static method is a convenient utility for easily concatenating multiple `{@link Iterable}`.
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";
@@ -74,7 +74,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     /**
-     * The <i>difference</i> static method is used to compute the difference between two <i>{@link Iterable}</i> instances. By default, the equality check is performed on each item.
+     * The `difference` static method is used to compute the difference between two `{@link Iterable}` instances. By default, the equality check is performed on each item.
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";
@@ -120,7 +120,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     /**
-     * The <i>zip</i> static method merges together the values of <i>iterableA</i> with the values of the <i>iterableB</i> at their corresponding index.
+     * The `zip` static method merges together the values of `iterableA` with the values of the `iterableB` at their corresponding index.
      * The returned collection has size of the shortest collection.
      * @example
      * ```ts
@@ -161,9 +161,9 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     private array: TInput[];
 
     /**
-     * The <i>constructor</i> takes an <i>{@link Iterable}</i>.
+     * The `constructor` takes an `{@link Iterable}`.
      *
-     * Works with <i>Array</i>.
+     * Works with `Array`.
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";
@@ -171,7 +171,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
      * const collection = new ListCollection([1, 2, 3, 4]);
      * ```
      *
-     * Works with <i>String</i>.
+     * Works with `String`.
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";
@@ -179,7 +179,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
      * const collection = new ListCollection("ABCDE");
      * ```
      *
-     * Works with <i>Set</i>.
+     * Works with `Set`.
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";
@@ -187,7 +187,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
      * const collection = new ListCollection(new Set([1, 2, 2 4]));
      * ```
      *
-     * Works with <i>Map</i>.
+     * Works with `Map`.
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";
@@ -195,7 +195,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
      * const collection = new ListCollection(new Map([["a", 1], ["b", 2]]));
      * ```
      *
-     * Works with any <i>Iterable</i>.
+     * Works with any `Iterable`.
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";

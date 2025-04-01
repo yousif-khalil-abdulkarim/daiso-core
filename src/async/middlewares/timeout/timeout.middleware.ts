@@ -63,8 +63,8 @@ export type TimeoutMiddlewareSettings<
 };
 
 /**
- * The <i>timeoutMiddleware</i> automatically cancels async functions after a specified time period, throwing an error when aborted.
- * Note the original function continues executing (even if the promise fails), you'll need to provide a settings.signalBinder to forward the <i>settings.signal</i>.
+ * The `timeoutMiddleware` automatically cancels functions after a specified time period, throwing an error when aborted.
+ * Note the original function continues executing (even if the promise fails), you'll need to provide a settings.signalBinder to forward the `settings.signal`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
@@ -89,7 +89,7 @@ export type TimeoutMiddlewareSettings<
  *   return json;
  * }, timeoutMiddleware({
  *   time: TimeSpan.fromSeconds(2),
- *   // With the defined signalBinder the HTTP request will be arboted when timed out or when the inputed <i>AbortSignal</i> is called.
+ *   // With the defined signalBinder the HTTP request will be arboted when timed out or when the inputed `AbortSignal` is called.
  *   signalBinder: ([url, fetchSignal], timeoutSignal) => {
  *     return [
  *       url,

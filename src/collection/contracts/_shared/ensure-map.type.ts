@@ -4,7 +4,7 @@
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  */
 export type EnsureMap<TInput> = TInput extends
     | [infer TKey, infer TValue]

@@ -17,7 +17,7 @@ import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export type LazyPromiseResolve<TValue> = InvokableFn<
@@ -27,14 +27,14 @@ export type LazyPromiseResolve<TValue> = InvokableFn<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export type LazyPromiseReject = InvokableFn<[error: unknown], void>;
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export type LazyPromiseCallback<TValue> = InvokableFn<
@@ -47,15 +47,15 @@ export type LazyPromiseCallback<TValue> = InvokableFn<
 >;
 
 /**
- * The <i>LazyPromise</i> class is used for creating lazy <i>{@link PromiseLike}<i> object that will only execute when awaited or when <i>then</i> method is called.
+ * The `LazyPromise` class is used for creating lazy `{@link PromiseLike}` object that will only execute when awaited or when `then` method is called.
  * Note the class is immutable.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
-     * The <i>wrapFn</i> is convience method used for wrapping async <i>{@link Invokable}</i> with a <i>LazyPromise</i>.
+     * The `wrapFn` is convience method used for wrapping async `{@link Invokable}` with a `LazyPromise`.
      * @example
      * ```ts
      * import { LazyPromise, retryMiddleware } from "@daiso-tech/core/async";
@@ -85,7 +85,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>delay</i> method creates a <i>{@link LazyPromise}</i> that will be fulfilled after given <i>time</i>.
+     * The `delay` method creates a `{@link LazyPromise}` that will be fulfilled after given `time`.
      *
      * @example
      * ```ts
@@ -122,7 +122,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>all<i> method works similarly to <i>{@link Promise.all}</i> with the key distinction that it operates lazily.
+     * The `all` method works similarly to `{@link Promise.all}` with the key distinction that it operates lazily.
      */
     static all<TValue>(
         promises: LazyPromise<TValue>[],
@@ -135,7 +135,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>allSettled<i> method works similarly to <i>{@link Promise.allSettled}</i> with the key distinction that it operates lazily.
+     * The `allSettled` method works similarly to `{@link Promise.allSettled}` with the key distinction that it operates lazily.
      */
     static allSettled<TValue>(
         promises: LazyPromise<TValue>[],
@@ -150,7 +150,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>race<i> method works similarly to <i>{@link Promise.race}</i> with the key distinction that it operates lazily.
+     * The `race` method works similarly to `{@link Promise.race}` with the key distinction that it operates lazily.
      */
     static race<TValue>(
         promises: LazyPromise<TValue>[],
@@ -160,7 +160,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>any<i> method works similarly to <i>{@link Promise.any}</i> with the key distinction that it operates lazily.
+     * The `any` method works similarly to `{@link Promise.any}` with the key distinction that it operates lazily.
      */
     static any<TValue>(
         promises: LazyPromise<TValue>[],
@@ -170,7 +170,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>fromCallback</i> is convience method used for wrapping Node js callback functions with a <i>LazyPromise</i>.
+     * The `fromCallback` is convience method used for wrapping Node js callback functions with a `LazyPromise`.
      * @example
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
@@ -221,7 +221,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * await promise;
      * ```
      *
-     * You can pass sync or async <i>{@link Invokable}</i>.
+     * You can pass sync or async `{@link Invokable}`.
      */
     constructor(
         invokable: AsyncLazy<TValue>,
@@ -234,7 +234,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>pipe</i> method returns a new <i>LazyPromise</i> instance with the additional <i>middlewares</i> applied.
+     * The `pipe` method returns a new `LazyPromise` instance with the additional `middlewares` applied.
      */
     pipe(
         middlewares: OneOrMore<AsyncMiddleware<[], TValue>>,
@@ -243,7 +243,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>pipeWhen</i> method conditionally applies additional <i>middlewares</i>, returning a new <i>LazyPromise</i> instance only if the specified condition is met.
+     * The `pipeWhen` method conditionally applies additional `middlewares`, returning a new `LazyPromise` instance only if the specified condition is met.
      */
     pipeWhen(
         condition: boolean,
@@ -266,7 +266,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The <i>defer</i> method executes the <i>LazyPromise</i> without awaiting it.
+     * The `defer` method executes the `LazyPromise` without awaiting it.
      * @example
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";

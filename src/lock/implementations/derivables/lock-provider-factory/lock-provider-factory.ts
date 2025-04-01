@@ -26,7 +26,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock"`
  * @group Derivables
  */
 export type LockAdapters<TAdapters extends string> = Partial<
@@ -35,7 +35,7 @@ export type LockAdapters<TAdapters extends string> = Partial<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock"`
  * @group Derivables
  */
 export type LockProviderFactorySettings<TAdapters extends string> =
@@ -46,9 +46,9 @@ export type LockProviderFactorySettings<TAdapters extends string> =
     };
 
 /**
- * The <i>LockProviderFactory</i> class is immutable.
+ * The `LockProviderFactory` class is immutable.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock"`
  * @group Derivables
  */
 export class LockProviderFactory<TAdapters extends string>

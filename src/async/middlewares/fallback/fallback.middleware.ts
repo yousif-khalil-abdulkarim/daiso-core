@@ -76,7 +76,7 @@ export type FallbackMiddlewareSettings<
 };
 
 /**
- * The <i>fallbackMiddleware</i> adds fallback value when an error occurs.
+ * The `fallbackMiddleware` adds fallback value when an error occurs.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware

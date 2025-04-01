@@ -34,14 +34,14 @@ import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
 export type EventBusSettingsBase = {
     keyPrefixer: KeyPrefixer;
 
     /**
-     * You can pass a <i>{@link Factory}</i> of <i>{@link LazyPromise}</i> to configure default settings for all <i>{@link LazyPromise}</i> instances used in the <i>EventBus</i> class.
+     * You can pass a `{@link Factory}` of `{@link LazyPromise}` to configure default settings for all `{@link LazyPromise}` instances used in the `EventBus` class.
      * @default
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
@@ -54,7 +54,7 @@ export type EventBusSettingsBase = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
 export type EventBusSettings = EventBusSettingsBase & {
@@ -62,9 +62,9 @@ export type EventBusSettings = EventBusSettingsBase & {
 };
 
 /**
- * <i>EventBus</i> class can be derived from any <i>{@link IEventBusAdapter}</i>.
+ * `EventBus` class can be derived from any `{@link IEventBusAdapter}`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
 export class EventBus<TEvents extends BaseEvent = BaseEvent>

@@ -95,7 +95,7 @@ export type ObservationMiddlewareSettings<
 };
 
 /**
- * The <i>observationMiddleware</i> tracks an async function's state and runs callbacks when it fails with an error or succeeds.
+ * The `observationMiddleware` tracks an async function's state and runs callbacks when it fails with an error or succeeds.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware

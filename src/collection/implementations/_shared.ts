@@ -29,7 +29,7 @@ class RangeIterable implements Iterable<number> {
     }
 }
 /**
- * The <i>range</i> function return a <i>{@link Iterable}</i> of numbers, starting from <i>from</i>,increments by 1 and stops at <i>to</i>.
+ * The `range` function return a `{@link Iterable}` of numbers, starting from `from`,increments by 1 and stops at `to`.
  * @example
  * ```ts
  * import { ListCollection, range } from "@daiso-tech/core/collection";
@@ -39,7 +39,7 @@ class RangeIterable implements Iterable<number> {
  * // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
  * ```
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Utilities
  */
 export function range(from: number, to: number): Iterable<number> {
@@ -47,9 +47,9 @@ export function range(from: number, to: number): Iterable<number> {
 }
 
 /**
- * The <i>isIterable</i> returns true if the value is <i>{@link Iterable}</i>.
+ * The `isIterable` returns true if the value is `{@link Iterable}`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Utilities
  */
 export function isIterable<TItem>(
@@ -64,9 +64,9 @@ export function isIterable<TItem>(
 }
 
 /**
- * The <i>isAsyncIterable</i> returns true if the value is <i>{@link AsyncIterable}</i>.
+ * The `isAsyncIterable` returns true if the value is `{@link AsyncIterable}`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Utilities
  */
 export function isAsyncIterable<TItem>(
@@ -81,9 +81,9 @@ export function isAsyncIterable<TItem>(
 }
 
 /**
- * The <i>registerCollectionsToSerde</i> function registers the <i>ListCollection</i> and <i>IterableCollection</i> classes with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The `registerCollectionsToSerde` function registers the `ListCollection` and `IterableCollection` classes with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Errors
  */
 export function registerCollectionsToSerde(

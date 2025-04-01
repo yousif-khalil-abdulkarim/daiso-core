@@ -4,7 +4,7 @@
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
 export abstract class BaseEvent<

@@ -17,7 +17,7 @@ type KeySettings = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group KeyPrefixer
  */
 export class Key {
@@ -59,7 +59,7 @@ export class Key {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group KeyPrefixer
  */
 export type KeyPrefixerSettings = {
@@ -72,7 +72,7 @@ export type KeyPrefixerSettings = {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group KeyPrefixer
  */
 export class KeyPrefixer {

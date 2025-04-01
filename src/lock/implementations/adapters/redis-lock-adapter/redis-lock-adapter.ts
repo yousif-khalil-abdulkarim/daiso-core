@@ -24,11 +24,11 @@ declare module "ioredis" {
 }
 
 /**
- * To utilize the <i>RedisLockAdapter</i>, you must install the <i>"ioredis"</i> package.
+ * To utilize the `RedisLockAdapter`, you must install the `"ioredis"` package.
  *
- * Note in order to use <i>RedisLockAdapter</i> correctly, ensure you use a single, consistent database across all server instances.
+ * Note in order to use `RedisLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
 export class RedisLockAdapter implements ILockAdapter {

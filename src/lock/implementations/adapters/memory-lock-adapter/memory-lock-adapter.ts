@@ -9,10 +9,10 @@ import type {
 } from "@/lock/contracts/_module-exports.js";
 
 /**
- * Note the <i>MemoryLockAdapter</i> is limited to single process usage and cannot be shared across multiple servers or different processes.
+ * Note the `MemoryLockAdapter` is limited to single process usage and cannot be shared across multiple servers or different processes.
  * This adapter is meant to be used for testing.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/lock/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
 export class MemoryLockAdapter implements ILockAdapter {
@@ -28,7 +28,7 @@ export class MemoryLockAdapter implements ILockAdapter {
      *
      * const lockAdapter = new MemoryLockAdapter();
      * ```
-     * You can also provide an <i>Map</i>.
+     * You can also provide an `Map`.
      * @example
      * ```ts
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";

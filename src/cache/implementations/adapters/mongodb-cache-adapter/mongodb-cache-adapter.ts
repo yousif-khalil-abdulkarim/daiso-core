@@ -27,7 +27,7 @@ import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_mo
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
 export type MongodbCacheAdapterSettings = {
@@ -48,9 +48,9 @@ type MongodbCacheDocument = {
 };
 
 /**
- * To utilize the <i>MongodbCacheAdapter</i>, you must install the <i>"mongodb"</i> package and supply a <i>{@link ISerde | ISerde<string> }</i>, with an adapter like <i>{@link SuperJsonSerdeAdapter}</i>.
+ * To utilize the `MongodbCacheAdapter`, you must install the `"mongodb"` package and supply a `{@link ISerde | ISerde<string> }`, with an adapter like `{@link SuperJsonSerdeAdapter}`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/adapters"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
 export class MongodbCacheAdapter<TType>
@@ -144,7 +144,7 @@ export class MongodbCacheAdapter<TType>
 
     /**
      * Creates all related indexes.
-     * Note the <i>init</i> method needs to be called before using the adapter.
+     * Note the `init` method needs to be called before using the adapter.
      */
     async init(): Promise<void> {
         try {

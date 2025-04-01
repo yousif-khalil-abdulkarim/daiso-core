@@ -27,7 +27,7 @@ import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/test-utilities"`
  * @group TestUtilities
  */
 export type CacheTestSuiteSettings = {
@@ -39,9 +39,9 @@ export type CacheTestSuiteSettings = {
 };
 
 /**
- * The <i>cacheTestSuite</i> function simplifies the process of testing your custom implementation of <i>{@link ICache}</i> with <i>vitest</i>.
+ * The `cacheTestSuite` function simplifies the process of testing your custom implementation of `{@link ICache}` with `vitest`.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/cache/test-utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/cache/test-utilities"`
  * @group TestUtilities
  * @example
  * ```ts

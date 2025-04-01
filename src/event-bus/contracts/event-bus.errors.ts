@@ -17,7 +17,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors
  */
 export class EventBusError
@@ -47,7 +47,7 @@ export class EventBusError
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors
  */
 export class UnexpectedEventBusError extends EventBusError {
@@ -69,7 +69,7 @@ export class UnexpectedEventBusError extends EventBusError {
 /**
  * The error is thrown when an unexpected error occurs while removing a listener.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors
  */
 export class UnableToRemoveListenerEventBusError extends UnexpectedEventBusError {
@@ -91,7 +91,7 @@ export class UnableToRemoveListenerEventBusError extends UnexpectedEventBusError
 /**
  * The error is thrown when an unexpected error occurs while adding a listener.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors
  */
 export class UnableToAddListenerEventBusError extends UnexpectedEventBusError {
@@ -113,7 +113,7 @@ export class UnableToAddListenerEventBusError extends UnexpectedEventBusError {
 /**
  * The error is thrown when an unexpected error occurs while dispatching an event.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors
  */
 export class UnableToDispatchEventBusError extends UnexpectedEventBusError {
@@ -125,7 +125,7 @@ export class UnableToDispatchEventBusError extends UnexpectedEventBusError {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors
  */
 export const EVENT_BUS_ERRORS = {
@@ -137,9 +137,9 @@ export const EVENT_BUS_ERRORS = {
 };
 
 /**
- * The <i>registerEventBusErrorsToSerde</i> function registers all <i>{@link IEventBus}</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The `registerEventBusErrorsToSerde` function registers all `{@link IEventBus}` related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/event-bus/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors
  */
 export function registerEventBusErrorsToSerde(

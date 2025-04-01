@@ -18,7 +18,7 @@ import { LazyPromise } from "@/async/utilities/_module.js";
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export type OnExecutionAttemptData<
@@ -32,7 +32,7 @@ export type OnExecutionAttemptData<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export type OnExecutionAttempt<
@@ -42,7 +42,7 @@ export type OnExecutionAttempt<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export type OnRetryData<
@@ -58,7 +58,7 @@ export type OnRetryData<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export type OnRetry<
@@ -68,14 +68,14 @@ export type OnRetry<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export type RetryPolicy = Invokable<[error: unknown, attempt: number], boolean>;
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
 export type RetryMiddlewareSettings<
@@ -125,7 +125,7 @@ export type RetryMiddlewareSettings<
 };
 
 /**
- * The <i>retryMiddleware</i> enables automatic retries for all errors or specific errors, with configurable backoff policies.
+ * The `retryMiddleware` enables automatic retries for all errors or specific errors, with configurable backoff policies.
  * An error will be thrown when all retry attempts fail.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`

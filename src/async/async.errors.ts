@@ -4,7 +4,7 @@
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
  */
 export class AsyncError extends Error {
@@ -17,7 +17,7 @@ export class AsyncError extends Error {
 /**
  * This error is thrown when the is aborted.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
  */
 export class AbortAsyncError extends AsyncError {
@@ -30,7 +30,7 @@ export class AbortAsyncError extends AsyncError {
 /**
  * This error is thrown when the has exceeded the given time limit.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
  */
 export class TimeoutAsyncError extends AsyncError {
@@ -42,7 +42,7 @@ export class TimeoutAsyncError extends AsyncError {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
  */
 export type RetryAsyncErrorData = {
@@ -53,7 +53,7 @@ export type RetryAsyncErrorData = {
 /**
  * This error is thrown when the has failed all retry attempts.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
  */
 export class RetryAsyncError extends AsyncError {
@@ -71,7 +71,7 @@ export class RetryAsyncError extends AsyncError {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/async"```
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
  */
 export const ASYNC_ERRORS = {

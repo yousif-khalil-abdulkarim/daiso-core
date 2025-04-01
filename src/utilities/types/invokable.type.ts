@@ -4,7 +4,7 @@
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  */
 export type InvokableFn<
     TArgs extends unknown[] = unknown[],
@@ -13,7 +13,7 @@ export type InvokableFn<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  */
 export type IInvokableObject<
     TArgs extends unknown[] = unknown[],
@@ -24,7 +24,7 @@ export type IInvokableObject<
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/utilities"```
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  */
 export type Invokable<TArgs extends unknown[] = unknown[], TReturn = unknown> =
     | InvokableFn<TArgs, TReturn>

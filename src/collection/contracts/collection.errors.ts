@@ -15,7 +15,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
 export class CollectionError
@@ -45,7 +45,7 @@ export class CollectionError
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
 export class UnexpectedCollectionError extends CollectionError {
@@ -67,7 +67,7 @@ export class UnexpectedCollectionError extends CollectionError {
 /**
  * The error is thrown when the item is not found.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
 export class ItemNotFoundCollectionError extends CollectionError {
@@ -89,7 +89,7 @@ export class ItemNotFoundCollectionError extends CollectionError {
 /**
  * The error is thrown when multiple items are found.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
 export class MultipleItemsFoundCollectionError extends CollectionError {
@@ -109,9 +109,9 @@ export class MultipleItemsFoundCollectionError extends CollectionError {
 }
 
 /**
- * The error is thrown when calling a method that needs all items to be of a specific type. For example, the <i>sum</i> method requires all items to be numbers.
+ * The error is thrown when calling a method that needs all items to be of a specific type. For example, the `sum` method requires all items to be numbers.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
 export class TypeCollectionError extends CollectionError {
@@ -131,9 +131,9 @@ export class TypeCollectionError extends CollectionError {
 }
 
 /**
- * The error is thrown when calling a method that needs the collection not to be empty. For example, the <i>average</i> method requires the collection not to be empty.
+ * The error is thrown when calling a method that needs the collection not to be empty. For example, the `average` method requires the collection not to be empty.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
 export class EmptyCollectionError extends CollectionError {
@@ -154,7 +154,7 @@ export class EmptyCollectionError extends CollectionError {
 
 /**
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
 export const COLLECTION_ERRORS = {
@@ -167,9 +167,9 @@ export const COLLECTION_ERRORS = {
 } as const;
 
 /**
- * The <i>registerCollectionErrorsToSerde</i> function registers all <i>ICollection</i> related errors with <i>IFlexibleSerde</i>, ensuring they will properly be serialized and deserialized.
+ * The `registerCollectionErrorsToSerde` function registers all `ICollection` related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
- * IMPORT_PATH: ```"@daiso-tech/core/collection/contracts"```
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
 export function registerCollectionErrorsToSerde(
