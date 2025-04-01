@@ -909,33 +909,19 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     crossJoin<TExtended>(
         iterable: Iterable<TExtended>,
     ): ICollection<CrossJoinResult<TInput, TExtended>> {
-        const array: Array<Array<TInput | TExtended>> = [
-            [...this],
-            [...iterable],
-        ]
-            .reduce<Array<Array<TInput | TExtended>>>(
-                (a, b) => {
-                    return a
-                        .map((x) => {
-                            return b.map((y) => {
-                                return [...x, y];
-                            });
-                        })
-                        .reduce<Array<Array<TInput | TExtended>>>(
-                            (c, b) => [...c, ...b],
-                            [],
-                        );
-                },
-                [[] as Array<TInput | TExtended>],
-            )
-            .map((combination) => {
-                // Flatting the array
-                return combination.reduce<Array<TInput | TExtended>>((a, b) => {
-                    return [...a, ...(isIterable(b) ? b : [b])] as Array<
-                        TInput | TExtended
-                    >;
-                }, []);
-            });
+        const array: Array<Array<TInput | TExtended>> = [];
+        for (const itemA of this) {
+            for (const itemB of iterable) {
+                array.push([
+                    ...(isIterable<TInput | TExtended>(itemA)
+                        ? itemA
+                        : [itemA]),
+                    ...(isIterable<TInput | TExtended>(itemB)
+                        ? itemB
+                        : [itemB]),
+                ]);
+            }
+        }
 
         return new ListCollection(
             array as Array<CrossJoinResult<TInput, TExtended>>,

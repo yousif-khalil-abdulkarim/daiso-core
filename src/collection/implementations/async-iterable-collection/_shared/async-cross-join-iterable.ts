@@ -24,38 +24,24 @@ export class AsyncCrossJoinIterable<TInput, TExtended>
     async *[Symbol.asyncIterator](): AsyncIterator<
         CrossJoinResult<TInput, TExtended>
     > {
-        const combinations = (
-            await this.makeCollection([
-                this.collection,
-                this.makeCollection(this.iterable),
-            ] as IAsyncCollection<TInput | TExtended>[]).reduce<
-                IAsyncCollection<Array<TInput | TExtended>>
-            >(
-                async (a, b) => {
-                    return await a
-                        .map((x) => {
-                            return b.map((y) => {
-                                return [...x, y];
-                            });
-                        })
-                        .reduce<IAsyncCollection<Array<TInput | TExtended>>>(
-                            (c, b) => c.append(b),
-                            this.makeCollection<Array<TInput | TExtended>>([]),
-                        );
-                },
-                this.makeCollection([[] as Array<TInput | TExtended>]),
-            )
-        ).map((combination) => {
-            // Flatting the array
-            return combination.reduce<Array<TInput | TExtended>>((a, b) => {
-                return [...a, ...(isIterable(b) ? b : [b])] as Array<
-                    TInput | TExtended
+        for await (const itemA of this.collection) {
+            for await (const itemB of this.iterable) {
+                let collection = this.makeCollection<TInput | TExtended>([]);
+                if (isIterable<TInput | TExtended>(itemA)) {
+                    collection = collection.append(itemA);
+                } else {
+                    collection = collection.append([itemA]);
+                }
+                if (isIterable<TInput | TExtended>(itemB)) {
+                    collection = collection.append(itemB);
+                } else {
+                    collection = collection.append([itemB]);
+                }
+                yield (await collection.toArray()) as CrossJoinResult<
+                    TInput,
+                    TExtended
                 >;
-            }, []);
-        });
-
-        yield* combinations as AsyncIterable<
-            CrossJoinResult<TInput, TExtended>
-        >;
+            }
+        }
     }
 }

@@ -15,41 +15,32 @@ export class CrossJoinIterable<TInput, TExtended = TInput>
     implements Iterable<CrossJoinResult<TInput, TExtended>>
 {
     constructor(
-        private collection: ICollection<TInput>,
-        private iterable: Iterable<TExtended>,
-        private makeCollection: <TInput>(
+        private readonly collection: ICollection<TInput>,
+        private readonly iterable: Iterable<TExtended>,
+        private readonly makeCollection: <TInput>(
             iterable: Iterable<TInput>,
         ) => ICollection<TInput>,
     ) {}
 
     *[Symbol.iterator](): Iterator<CrossJoinResult<TInput, TExtended>> {
-        const combinations = this.makeCollection([
-            this.collection,
-            this.makeCollection(this.iterable),
-        ] as ICollection<TInput | TExtended>[])
-            .reduce<ICollection<Array<TInput | TExtended>>>(
-                (a, b) => {
-                    return a
-                        .map((x) => {
-                            return b.map((y) => {
-                                return [...x, y];
-                            });
-                        })
-                        .reduce<ICollection<Array<TInput | TExtended>>>(
-                            (c, b) => c.append(b),
-                            this.makeCollection<Array<TInput | TExtended>>([]),
-                        );
-                },
-                this.makeCollection([[] as Array<TInput | TExtended>]),
-            )
-            .map((combination) => {
-                // Flatting the array
-                return combination.reduce<Array<TInput | TExtended>>((a, b) => {
-                    return [...a, ...(isIterable(b) ? b : [b])] as Array<
-                        TInput | TExtended
-                    >;
-                }, []);
-            });
-        yield* combinations as Iterable<CrossJoinResult<TInput, TExtended>>;
+        for (const itemA of this.collection) {
+            for (const itemB of this.iterable) {
+                let collection = this.makeCollection<TInput | TExtended>([]);
+                if (isIterable<TInput | TExtended>(itemA)) {
+                    collection = collection.append(itemA);
+                } else {
+                    collection = collection.append([itemA]);
+                }
+                if (isIterable<TInput | TExtended>(itemB)) {
+                    collection = collection.append(itemB);
+                } else {
+                    collection = collection.append([itemB]);
+                }
+                yield collection.toArray() as CrossJoinResult<
+                    TInput,
+                    TExtended
+                >;
+            }
+        }
     }
 }
