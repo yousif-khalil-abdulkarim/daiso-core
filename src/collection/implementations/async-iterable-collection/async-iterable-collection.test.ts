@@ -2102,6 +2102,23 @@ describe("class: AsyncIterableCollection", () => {
                 [2, "b", "II"],
             ]);
         });
+
+        test(`Should return 8 combinations when input async iterable is [1, 2], ["a", "b"] and ["I", "II"]`, async () => {
+            const collection = new AsyncIterableCollection([1, 2]);
+            const matrix = collection
+                .crossJoin(new AsyncIterableCollection(["a", "b"]))
+                .crossJoin(new AsyncIterableCollection(["I", "II"]));
+            expect(await matrix.toArray()).toEqual([
+                [1, "a", "I"],
+                [1, "a", "II"],
+                [1, "b", "I"],
+                [1, "b", "II"],
+                [2, "a", "I"],
+                [2, "a", "II"],
+                [2, "b", "I"],
+                [2, "b", "II"],
+            ]);
+        });
     });
     describe("method: zip", () => {
         test("Should zip Iterable", async () => {
