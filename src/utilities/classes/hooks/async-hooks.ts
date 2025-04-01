@@ -192,6 +192,13 @@ export class AsyncHooks<
     }
 
     /**
+     * The <i>toFunc</i> will return the function with all middlewares applied.
+     */
+    toFunc(): InvokableFn<TParameters, PromiseLike<TReturn>> {
+        return (...args) => this.invoke(...args);
+    }
+
+    /**
      * The <i>invoke</i> method executes the constructor's input function, applying all middlewares.
      */
     async invoke(...arguments_: TParameters): Promise<TReturn> {
