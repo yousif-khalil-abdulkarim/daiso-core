@@ -5,6 +5,7 @@
 import type {
     HookContext,
     AsyncLazyable,
+    AsyncNextFunc,
 } from "@/utilities/_module-exports.js";
 import {
     callInvokable,
@@ -97,7 +98,7 @@ export type FallbackMiddlewareSettings<
  *   fallbackMiddleware({ fallbackValue: null })
  * ]);
  *
- * // Will return null the fetch method throws an error.
+ * // Will return null when the fetch method throws an error.
  * console.log(await fetchData.invoke("URL_ENDPOINT"));
  * ```
  *
@@ -112,11 +113,10 @@ export type FallbackMiddlewareSettings<
  *     throw json
  *   }
  *   return json;
- * }, [
- *   fallbackMiddleware({ fallbackValue: null })
- * ]);
+ * })
+ * .pipe(fallbackMiddleware({ fallbackValue: null }));
  *
- * // Will return null the fetch method throws an error.
+ * // Will return null when the fetch method throws an error.
  * console.log(await promise);
  * ```
  */
@@ -125,14 +125,20 @@ export function fallbackMiddleware<
     TReturn,
     TContext extends HookContext,
 >(
-    settings: FallbackMiddlewareSettings<TParameters, TReturn, TContext>,
+    settings: NoInfer<
+        FallbackMiddlewareSettings<TParameters, TReturn, TContext>
+    >,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         fallbackValue,
         fallbackPolicy = () => true,
         onFallback = () => {},
     } = settings;
-    return async (args, next, context) => {
+    return async (
+        args: TParameters,
+        next: AsyncNextFunc<TParameters, TReturn>,
+        context: TContext,
+    ): Promise<TReturn> => {
         try {
             return await next(...args);
         } catch (error: unknown) {

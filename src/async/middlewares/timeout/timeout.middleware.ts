@@ -64,7 +64,7 @@ export type TimeoutMiddlewareSettings<
 
 /**
  * The `timeoutMiddleware` automatically cancels functions after a specified time period, throwing an error when aborted.
- * Note the original function continues executing (even if the promise fails), you'll need to provide a settings.signalBinder to forward the `settings.signal`.
+ * Note the original function continues executing (even if the promise fails), you'll need to provide a settings.signalBinder to forward the `AbortSignal`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
@@ -97,7 +97,7 @@ export type TimeoutMiddlewareSettings<
  *         fetchSignal,
  *         timeoutSignal
  *       ].filter(signal => signal !== undefined))
- *     ];
+ *     ] as const;
  *   }
  * }))
  * .invoke("ENDPOINT", abortController.signal);
@@ -113,10 +113,8 @@ export type TimeoutMiddlewareSettings<
  * import { LazyPromise, timeoutMiddleware } from "@daiso-tech/core/async";
  * import { TimeSpan } from "@daiso-tech/core/utilities";
  *
- * await new LazyPromise(() => {
- *   const response = await fetch(url, {
- *     signal
- *   });
+ * await new LazyPromise(async () => {
+ *   const response = await fetch("ENDPOINT");
  *   const json = await response.json();
  *   if (!response.ok) {
  *     throw json
@@ -131,7 +129,7 @@ export function timeoutMiddleware<
     TReturn,
     TContext extends HookContext,
 >(
-    settings: TimeoutMiddlewareSettings<TParameters, TContext>,
+    settings: NoInfer<TimeoutMiddlewareSettings<TParameters, TContext>>,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         time,

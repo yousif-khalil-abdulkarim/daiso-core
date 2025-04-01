@@ -108,9 +108,9 @@ export class AsyncHooks<
     /**
      * @example
      * ```ts
-     * import { AsyncHooks, type AsyncMiddleware } from "@daiso-tech/core/utilities";
+     * import { AsyncHooks, type AsyncMiddlewareFn } from "@daiso-tech/core/utilities";
      *
-     * function logMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddleware<TParameters, TReturn, { funcName: string; }> {
+     * function logMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn, { funcName: string; }> {
      *   return async (args, next, { funcName }) => {
      *     console.log("FUNCTION_NAME:", funcName);
      *     console.log("ARGUMENTS:", args);
@@ -120,7 +120,7 @@ export class AsyncHooks<
      *   }
      * }
      *
-     * function timeMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddleware<TParameters, TReturn> {
+     * function timeMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn> {
      *   return async (args, next) => {
      *     const start = performance.now();
      *     const value = await next(...args);
@@ -157,6 +157,9 @@ export class AsyncHooks<
         private readonly middlewares: NoInfer<
             OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>
         >,
+        /**
+         * You can pass in additional information that can be used by the middleware.
+         */
         private readonly context = {} as TContext,
     ) {
         this.func = AsyncHooks.init(invokable, middlewares, context);

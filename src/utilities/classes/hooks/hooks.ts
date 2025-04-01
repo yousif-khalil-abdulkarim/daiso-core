@@ -106,22 +106,22 @@ export class Hooks<
     /**
      * @example
      * ```ts
-     * import { Hooks, type Middleware } from "@daiso-tech/core/utilities";
+     * import { Hooks, type MiddlewareFn } from "@daiso-tech/core/utilities";
      *
-     * function logMiddleware<TParameters extends unknown[], TReturn>(): Middleware<TParameters, TReturn, { funcName: string; }> {
-     *   return async (args, next, { funcName }) => {
+     * function logMiddleware<TParameters extends unknown[], TReturn>(): MiddlewareFn<TParameters, TReturn, { funcName: string; }> {
+     *   return (args, next, { funcName }) => {
      *     console.log("FUNCTION_NAME:", funcName);
      *     console.log("ARGUMENTS:", args);
-     *     const value = await next(...args);
+     *     const value = next(...args);
      *     console.log("RETURN:", value);
      *     return value;
      *   }
      * }
      *
-     * function timeMiddleware<TParameters extends unknown[], TReturn>(): Middleware<TParameters, TReturn> {
-     *   return async (args, next) => {
+     * function timeMiddleware<TParameters extends unknown[], TReturn>(): MiddlewareFn<TParameters, TReturn> {
+     *   return (args, next) => {
      *     const start = performance.now();
-     *     const value = await next(...args);
+     *     const value = next(...args);
      *     const end = performance.now();
      *     const time = end - start;
      *     console.log("TIME:", `${String(time)}ms`);
@@ -144,7 +144,7 @@ export class Hooks<
      *
      * // Will log the function name, arguments and return value.
      * // Will also log the execution time.
-     * const result = await enhancedAdd.invoke(1, 2);
+     * const result = enhancedAdd.invoke(1, 2);
      *
      * // Will be 3.
      * console.log(result);
@@ -155,6 +155,9 @@ export class Hooks<
         private readonly middlewares: NoInfer<
             OneOrMore<Middleware<TParameters, TReturn, TContext>>
         >,
+        /**
+         * You can pass in additional information that can be used by the middleware.
+         */
         private readonly context = {} as TContext,
     ) {
         this.func = Hooks.init(invokable, middlewares, context);

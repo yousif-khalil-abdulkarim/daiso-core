@@ -152,7 +152,7 @@ export type RetryMiddlewareSettings<
  * ```ts
  * import { LazyPromise, retryMiddleware } from "@daiso-tech/core/async";
  *
- * await new LazyPromise(() => {
+ * await new LazyPromise(async (): Promise<unknown> => {
  *   const response = await fetch("URL_ENDPOINT");
  *   const json = await response.json();
  *   if (!response.ok) {
@@ -168,7 +168,7 @@ export function retryMiddleware<
     TReturn,
     TContext extends HookContext,
 >(
-    settings: RetryMiddlewareSettings<TParameters, TContext> = {},
+    settings: NoInfer<RetryMiddlewareSettings<TParameters, TContext>> = {},
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         maxAttempts = 4,

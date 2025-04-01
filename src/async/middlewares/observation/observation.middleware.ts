@@ -106,7 +106,9 @@ export function observationMiddleware<
     TReturn,
     TContext extends HookContext,
 >(
-    settings: ObservationMiddlewareSettings<TParameters, TReturn, TContext>,
+    settings: NoInfer<
+        ObservationMiddlewareSettings<TParameters, TReturn, TContext>
+    >,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         onSuccess = () => {},
