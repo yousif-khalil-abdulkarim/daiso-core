@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-import { LazyPromise } from "@/async/_module-exports.js";
+import type { LazyPromise } from "@/async/utilities/_module.js";
 import type {
     AsyncLazyable,
     Lazyable,
@@ -26,10 +26,25 @@ export function isLazy<TValue>(
 /**
  * @internal
  */
+export function isLazyPromise<TValue>(
+    lazyable: AsyncLazyable<TValue>,
+): lazyable is LazyPromise<TValue> {
+    return (
+        typeof lazyable === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        typeof (lazyable as any)?.then === "function" &&
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        typeof (lazyable as any)?.defer === "function"
+    );
+}
+
+/**
+ * @internal
+ */
 export function isAsyncLazy<TValue>(
     lazyable: AsyncLazyable<TValue>,
 ): lazyable is AsyncLazy<TValue> {
-    return isInvokable(lazyable) || lazyable instanceof LazyPromise;
+    return isInvokable(lazyable) || isLazyPromise(lazyable);
 }
 
 /**
@@ -49,7 +64,7 @@ export async function resolveAsyncLazyable<TValue>(
     lazyable: AsyncLazyable<TValue>,
 ): Promise<TValue> {
     if (isAsyncLazy(lazyable)) {
-        if (lazyable instanceof LazyPromise) {
+        if (isLazyPromise(lazyable)) {
             return await lazyable;
         }
         return await resolveInvokable(lazyable)();
