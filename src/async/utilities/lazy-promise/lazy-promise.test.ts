@@ -20,11 +20,17 @@ describe("class: LazyPromise", () => {
             expect(wrappedTestFn(1, 1)).toBeInstanceOf(LazyPromise);
         });
     });
-    describe("static method: delay", () => {
-        test.todo("Write tests!!!");
-    });
     describe("method: defer", () => {
-        test.todo("Write tests!!!");
+        test("Should execute the given async function when defer method is called", () => {
+            let hasExecuted = false;
+            // eslint-disable-next-line @typescript-eslint/require-await
+            const promise = new LazyPromise(async () => {
+                hasExecuted = true;
+            });
+            expect(hasExecuted).toBe(false);
+            promise.defer();
+            expect(hasExecuted).toBe(true);
+        });
     });
     describe("method: then", () => {
         test("Should execute the given async function when awaited", async () => {

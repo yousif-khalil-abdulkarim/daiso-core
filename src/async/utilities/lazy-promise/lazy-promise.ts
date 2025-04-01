@@ -1,22 +1,20 @@
 /**
  * @module Async
  */
-import type {
-    AsyncLazy,
-    AsyncMiddleware,
-    IAsyncHooksAware,
-    Invokable,
-    InvokableFn,
-    Promisable,
-    TimeSpan,
-} from "@/utilities/_module-exports.js";
 import {
     AsyncHooks,
+    type AsyncLazy,
+    type AsyncMiddleware,
+    type IAsyncHooksAware,
+    type Invokable,
+    type InvokableFn,
+    type OneOrMore,
+    type Promisable,
+    type TimeSpan,
+    callInvokable,
     resolveAsyncLazyable,
-    resolveInvokable,
 } from "@/utilities/_module-exports.js";
 import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
-import type { OneOrMore } from "mongodb";
 
 /**
  *
@@ -86,7 +84,7 @@ export class LazyPromise<TValue>
     ): InvokableFn<TArgs, LazyPromise<TReturn>> {
         return (...parameters) =>
             new LazyPromise<TReturn>(
-                () => resolveInvokable(fn)(...parameters),
+                () => callInvokable(fn, ...parameters),
                 middlewares,
             );
     }
@@ -109,7 +107,7 @@ export class LazyPromise<TValue>
         abortSignal: AbortSignal = new AbortController().signal,
     ): LazyPromise<void> {
         return new LazyPromise(async () => {
-            let timeoutId: NodeJS.Timeout | string | number | null = null;
+            let timeoutId = null as NodeJS.Timeout | string | number | null;
             try {
                 await abortAndFail(
                     new Promise<void>((resolve) => {
