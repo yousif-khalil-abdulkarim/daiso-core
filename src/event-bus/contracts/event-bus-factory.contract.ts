@@ -12,7 +12,7 @@ import {
 import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
 
 /**
- * The `IEventBusFactory` contract makes it easy to configure and switch between different `{@link IEventBus}` dynamically.
+ * The `IEventBusFactory` contract makes it easy to configure and switch between different {@link IEventBus | `IEventBus`} dynamically.
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts

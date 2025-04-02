@@ -38,7 +38,7 @@ export type AquireBlockingSettings = {
  */
 export type ILock = {
     /**
-     * The `run` method wraps an `{@link Invokable}` or `{@link LazyPromise}` with the `acquire` and `release` method.
+     * The `run` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquire` and `release` method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
@@ -47,7 +47,7 @@ export type ILock = {
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
 
     /**
-     * The `runOrFail` method wraps an `{@link Invokable}` or `{@link LazyPromise}` with the `acquireOrFail` and `release` method.
+     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireOrFail` and `release` method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
@@ -55,7 +55,7 @@ export type ILock = {
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue>;
 
     /**
-     * The `runBlocking` method wraps an `{@link Invokable}` or `{@link LazyPromise}` with the `acquireBlocking` and `release` method.
+     * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlocking` and `release` method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
@@ -65,7 +65,7 @@ export type ILock = {
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
 
     /**
-     * The `runBlockingOrFail` method wraps an `{@link Invokable}` or `{@link LazyPromise}` with the `acquireBlockingOrFail` and `release` method.
+     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
@@ -161,7 +161,7 @@ export type ILock = {
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
 
     /**
-     * The `getRemainingTime` return the reaming time as `{@link TimeSpan}`.
+     * The `getRemainingTime` return the reaming time as {@link TimeSpan | `TimeSpan`}.
      *
      * @returns null if the key doesnt exist, key has no expiration and key has expired.
      */

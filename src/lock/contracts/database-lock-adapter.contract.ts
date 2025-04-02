@@ -17,7 +17,7 @@ export type ILockData = {
 
 /**
  * The `ILockAdapter` contract defines a way for managing locks independent of data storage.
- * This contract is not meant to be used directly, instead you should use `{@link ILockProvider}` contract.
+ * This contract is not meant to be used directly, instead you should use {@link ILockProvider | `ILockProvider`} contract.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts

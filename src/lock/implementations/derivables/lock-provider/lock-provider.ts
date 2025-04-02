@@ -55,7 +55,7 @@ export type LockProviderSettingsBase = {
     keyPrefixer: KeyPrefixer;
 
     /**
-     * You can pass a `{@link Factory}` of `{@link LazyPromise}` to configure default settings for all `{@link LazyPromise}` instances used in the `LockProvider` class.
+     * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `LockProvider` class.
      * @default
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
@@ -93,7 +93,7 @@ export type LockProviderSettingsBase = {
     eventBus?: IEventBus<any>;
 
     /**
-     * You can decide the default ttl value for `{@link ILock}` expiration. If null is passed then no ttl will be used by default.
+     * You can decide the default ttl value for {@link ILock | `ILock`} expiration. If null is passed then no ttl will be used by default.
      * @default
      * ```ts
      * TimeSpan.fromMinutes(5);
@@ -102,7 +102,7 @@ export type LockProviderSettingsBase = {
     defaultTtl?: TimeSpan | null;
 
     /**
-     * The default refresh time used in the `{@link ILock}` `acquireBlocking` and `runBlocking` methods.
+     * The default refresh time used in the {@link ILock | `ILock`} `acquireBlocking` and `runBlocking` methods.
      * @default
      * ```ts
      * TimeSpan.fromSeconds(1);
@@ -111,7 +111,7 @@ export type LockProviderSettingsBase = {
     defaultBlockingInterval?: TimeSpan;
 
     /**
-     * The default refresh time used in the `{@link ILock}` `acquireBlocking` and `runBlocking` methods.
+     * The default refresh time used in the {@link ILock | `ILock`} `acquireBlocking` and `runBlocking` methods.
      * @default
      * ```ts
      * TimeSpan.fromMinutes(1);
@@ -120,7 +120,7 @@ export type LockProviderSettingsBase = {
     defaultBlockingTime?: TimeSpan;
 
     /**
-     * The default refresh time used in the `{@link ILock}` `referesh` method.
+     * The default refresh time used in the {@link ILock | `ILock`} `referesh` method.
      * ```ts
      * TimeSpan.fromMinutes(5);
      * ```
@@ -145,11 +145,11 @@ export type LockProviderSettings = LockProviderSettingsBase & {
 };
 
 /**
- * `LockProvider` class can be derived from any `{@link ILockAdapter}` or `{@link IDatabaseLockAdapter}`.
+ * `LockProvider` class can be derived from any {@link ILockAdapter | `ILockAdapter`} or {@link IDatabaseLockAdapter | `IDatabaseLockAdapter`}.
  *
- * Note the `{@link ILock}` instances created by the `LockProvider` class are serializable and deserializable,
+ * Note the {@link ILock | `ILock`} instances created by the `LockProvider` class are serializable and deserializable,
  * allowing them to be seamlessly transferred across different servers, processes, and databases.
- * This can be done directly using `{@link IFlexibleSerde}` or indirectly through components that rely on `{@link IFlexibleSerde}` internally.
+ * This can be done directly using {@link IFlexibleSerde | `IFlexibleSerde`} or indirectly through components that rely on {@link IFlexibleSerde | `IFlexibleSerde`} internally.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock"`
  * @group Derivables
@@ -252,8 +252,8 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following `{@link LockEvents}` of all `{@link ILock}` instances created by the `{@link ILockProvider}`.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     addListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
@@ -263,8 +263,8 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following `{@link LockEvents}` of all `{@link ILock}` instances created by the `{@link ILockProvider}`.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     removeListener<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
@@ -274,8 +274,8 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following `{@link LockEvents}` of all `{@link ILock}` instances created by the `{@link ILockProvider}`.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     listenOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
@@ -285,8 +285,8 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following `{@link LockEvents}` of all `{@link ILock}` instances created by the `{@link ILockProvider}`.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     asPromise<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
@@ -295,8 +295,8 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following `{@link LockEvents}` of all `{@link ILock}` instances created by the `{@link ILockProvider}`.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     subscribeOnce<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,
@@ -306,8 +306,8 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following `{@link LockEvents}` of all `{@link ILock}` instances created by the `{@link ILockProvider}`.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     subscribe<TEventClass extends EventClass<LockEvents>>(
         event: TEventClass,

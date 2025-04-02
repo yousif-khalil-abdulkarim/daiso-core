@@ -132,7 +132,7 @@ export const CACHE_ERRORS = {
 } as const;
 
 /**
- * The `registerCacheErrorsToSerde` function registers all `{@link ICache}` related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
+ * The `registerCacheErrorsToSerde` function registers all {@link ICache | `ICache`} related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Errors

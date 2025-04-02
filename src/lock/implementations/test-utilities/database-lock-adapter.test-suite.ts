@@ -26,7 +26,7 @@ export type DatabaseLockAdapterTestSuiteSettings = {
 };
 
 /**
- * The `databaseLockAdapterTestSuite` function simplifies the process of testing your custom implementation of `{@link IDatabaseLockAdapter}` with `vitest`.
+ * The `databaseLockAdapterTestSuite` function simplifies the process of testing your custom implementation of {@link IDatabaseLockAdapter | `IDatabaseLockAdapter`} with `vitest`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/test-utilities"`
  * @group Utilities

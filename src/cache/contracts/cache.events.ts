@@ -144,7 +144,7 @@ export type CacheEvents<TType = unknown> =
     | UnexpectedErrorCacheEvent;
 
 /**
- * The `registerCacheEventsToSerde` function registers all `{@link ICache}` related events with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
+ * The `registerCacheEventsToSerde` function registers all {@link ICache | `ICache`} related events with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Events

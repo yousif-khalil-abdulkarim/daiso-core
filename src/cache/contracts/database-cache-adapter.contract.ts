@@ -51,7 +51,7 @@ export type ICacheUpdate<TType = unknown> = {
  */
 export type IDatabaseCacheAdapter<TType = unknown> = {
     /**
-     * The `find` method returns the the `key` data which includs `{@link ICacheData}.value` and `{@link ICacheData}.expiration`.
+     * The `find` method returns the the `key` data which includs {@link ICacheData | `ICacheData.value`}  and {@link ICacheData | `ICacheData.expiration`}.
      */
     find(key: string): PromiseLike<ICacheData<TType> | null>;
 

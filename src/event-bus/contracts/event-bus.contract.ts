@@ -66,7 +66,7 @@ export type EventListener<TEvent> =
  */
 export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     /**
-     * The `addListener` method is used for listening to a `{@link BaseEvent}`.
+     * The `addListener` method is used for listening to a {@link BaseEvent | `BaseEvent`}.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
@@ -76,7 +76,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The `removeListener` method is used for stop listening to a `{@link BaseEvent}`.
+     * The `removeListener` method is used for stop listening to a {@link BaseEvent | `BaseEvent`}.
      * Removing unadded listener will have no effect and nothing will occur.
      * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
@@ -86,7 +86,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The `listenOnce` method is used for listening to a `{@link BaseEvent}` once.
+     * The `listenOnce` method is used for listening to a {@link BaseEvent | `BaseEvent`} once.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     listenOnce<TEventClass extends EventClass<TEvents>>(
@@ -95,7 +95,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<void>;
 
     /**
-     * The `asPromise` method returns `{@link LazyPromise}` objecet that resolves once the `{@link BaseEvent}` is dispatched.
+     * The `asPromise` method returns {@link LazyPromise| `LazyPromise`} objecet that resolves once the {@link BaseEvent | `BaseEvent`} is dispatched.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     asPromise<TEventClass extends EventClass<TEvents>>(
@@ -103,7 +103,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<EventInstance<TEventClass>>;
 
     /**
-     * The `subscribeOnce` method is used for listening to a `{@link BaseEvent}` once and it returns a cleanup function that removes listener when called.
+     * The `subscribeOnce` method is used for listening to a {@link BaseEvent | `BaseEvent`} once and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
     subscribeOnce<TEventClass extends EventClass<TEvents>>(
@@ -112,7 +112,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
     ): LazyPromise<Unsubscribe>;
 
     /**
-     * The `subscribe` method is used for listening to a `{@link BaseEvent}` and it returns a cleanup function that removes listener when called.
+     * The `subscribe` method is used for listening to a {@link BaseEvent | `BaseEvent`} and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
     subscribe<TEventClass extends EventClass<TEvents>>(
@@ -129,7 +129,7 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
  */
 export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
     /**
-     * The `dispatch` method is used for dispatching a `{@link BaseEvent}`.
+     * The `dispatch` method is used for dispatching a {@link BaseEvent | `BaseEvent`}.
 
      * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
      */

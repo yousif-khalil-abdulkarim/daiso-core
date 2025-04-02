@@ -47,7 +47,7 @@ export type LazyPromiseCallback<TValue> = InvokableFn<
 >;
 
 /**
- * The `LazyPromise` class is used for creating lazy `{@link PromiseLike}` object that will only execute when awaited or when `then` method is called.
+ * The `LazyPromise` class is used for creating lazy {@link PromiseLike | `PromiseLike`} object that will only execute when awaited or when `then` method is called.
  * Note the class is immutable.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
@@ -55,7 +55,7 @@ export type LazyPromiseCallback<TValue> = InvokableFn<
  */
 export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
-     * The `wrapFn` is convience method used for wrapping async `{@link Invokable}` with a `LazyPromise`.
+     * The `wrapFn` is convience method used for wrapping async {@link Invokable | `Invokable`} with a `LazyPromise`.
      * @example
      * ```ts
      * import { LazyPromise, retry } from "@daiso-tech/core/async";
@@ -75,7 +75,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The `delay` method creates a `{@link LazyPromise}` that will be fulfilled after given `time`.
+     * The `delay` method creates a {@link LazyPromise | `LazyPromise`} that will be fulfilled after given `time`.
      *
      * @example
      * ```ts
@@ -112,14 +112,14 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The `all` method works similarly to `{@link Promise.all}` with the key distinction that it operates lazily.
+     * The `all` method works similarly to {@link Promise.all | `Promise.all`} with the key distinction that it operates lazily.
      */
     static all<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue[]> {
         return new LazyPromise<TValue[]>(async () => Promise.all(promises));
     }
 
     /**
-     * The `allSettled` method works similarly to `{@link Promise.allSettled}` with the key distinction that it operates lazily.
+     * The `allSettled` method works similarly to {@link Promise.allSettled | `Promise.allSettled`} with the key distinction that it operates lazily.
      */
     static allSettled<TValue>(
         promises: LazyPromise<TValue>[],
@@ -130,14 +130,14 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     }
 
     /**
-     * The `race` method works similarly to `{@link Promise.race}` with the key distinction that it operates lazily.
+     * The `race` method works similarly to {@link Promise.race | `Promise.race`} with the key distinction that it operates lazily.
      */
     static race<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
         return new LazyPromise(async () => Promise.race(promises));
     }
 
     /**
-     * The `any` method works similarly to `{@link Promise.any}` with the key distinction that it operates lazily.
+     * The `any` method works similarly to {@link Promise.any | `Promise.any`} with the key distinction that it operates lazily.
      */
     static any<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
         return new LazyPromise(async () => Promise.any(promises));
@@ -193,7 +193,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * await promise;
      * ```
      *
-     * You can pass sync or async `{@link Invokable}`.
+     * You can pass sync or async {@link Invokable | `Invokable`}.
      */
     constructor(
         invokable: AsyncLazy<TValue>,

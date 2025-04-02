@@ -48,7 +48,7 @@ type MongodbCacheDocument = {
 };
 
 /**
- * To utilize the `MongodbCacheAdapter`, you must install the `"mongodb"` package and supply a `{@link ISerde | ISerde<string> }`, with an adapter like `{@link SuperJsonSerdeAdapter}`.
+ * To utilize the `MongodbCacheAdapter`, you must install the `"mongodb"` package and supply a {@link ISerde | `ISerde<string>`}, with an adapter like {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters

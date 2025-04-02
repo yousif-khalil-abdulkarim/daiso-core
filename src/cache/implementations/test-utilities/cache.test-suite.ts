@@ -39,7 +39,7 @@ export type CacheTestSuiteSettings = {
 };
 
 /**
- * The `cacheTestSuite` function simplifies the process of testing your custom implementation of `{@link ICache}` with `vitest`.
+ * The `cacheTestSuite` function simplifies the process of testing your custom implementation of {@link ICache | `ICache`} with `vitest`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/test-utilities"`
  * @group TestUtilities

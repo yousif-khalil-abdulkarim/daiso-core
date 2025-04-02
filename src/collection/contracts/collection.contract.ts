@@ -38,7 +38,7 @@ export type Collapse<TValue> = TValue extends
     : TValue;
 
 /**
- * The `ICollection` contract offers a fluent and efficient approach to working with {@link Iterable} objects.
+ * The `ICollection` contract offers a fluent and efficient approach to working with {@link Iterable | `Iterable`} objects.
  * `ICollection` is immutable.
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
@@ -2312,19 +2312,19 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         forEach(callback: ForEach<TInput, ICollection<TInput>>): void;
 
         /**
-         * The `toArray` method converts the collection to a new `{@link Array}`.
+         * The `toArray` method converts the collection to a new {@link Array | `Array`}.
          */
         toArray(): TInput[];
 
         /**
-         * The `toRecord` method converts the collection to a new `{@link Record}`.
+         * The `toRecord` method converts the collection to a new {@link Record | `Record`}.
          * An error will be thrown if item is not a tuple of size 2 where the first element is a string or a number.
          * @throws {TypeCollectionError} {@link TypeCollectionError}
          */
         toRecord(): EnsureRecord<TInput>;
 
         /**
-         * The `toMap` method converts the collection to a new `{@link Map}`.
+         * The `toMap` method converts the collection to a new {@link Map | `Map`}.
          * An error will be thrown if item is not a tuple of size 2.
          * @throws {TypeCollectionError} {@link TypeCollectionError}
          */

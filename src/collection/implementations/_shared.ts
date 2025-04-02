@@ -29,7 +29,7 @@ class RangeIterable implements Iterable<number> {
     }
 }
 /**
- * The `range` function return a `{@link Iterable}` of numbers, starting from `from`,increments by 1 and stops at `to`.
+ * The `range` function return a {@link Iterable | `Iterable`} of numbers, starting from `from`,increments by 1 and stops at `to`.
  * @example
  * ```ts
  * import { ListCollection, range } from "@daiso-tech/core/collection";
@@ -47,7 +47,7 @@ export function range(from: number, to: number): Iterable<number> {
 }
 
 /**
- * The `isIterable` returns true if the value is `{@link Iterable}`.
+ * The `isIterable` returns true if the value is {@link Iterable | `Iterable`}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Utilities
@@ -64,7 +64,7 @@ export function isIterable<TItem>(
 }
 
 /**
- * The `isAsyncIterable` returns true if the value is `{@link AsyncIterable}`.
+ * The `isAsyncIterable` returns true if the value is {@link AsyncIterable | `AsyncIterable`}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Utilities
