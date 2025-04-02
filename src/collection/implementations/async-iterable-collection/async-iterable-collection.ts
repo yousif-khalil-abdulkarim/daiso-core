@@ -83,16 +83,16 @@ export type AsyncIterableCollectionSettings = {
 };
 
 /**
- * All methods that return `{@link IAsyncCollection}` are executed lazly.
- * The methods that return `{@link IAsyncCollection}` will only be executed when `forEach` method is called or `for await` loop.
- * The methods that return `{@link PromiseLike}` object will execute only when awaited or `then` method is called.
+ * All methods that return {@link IAsyncCollection | `IAsyncCollection`} are executed lazly, meaning the execution will occur iterating the items withthe `forEach` method or `for await` loop.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Adapters
  */
 export class AsyncIterableCollection<TInput = unknown>
     implements IAsyncCollection<TInput>
 {
     /**
-     * The `concat` static method is a convenient utility for easily concatenating multiple `{@link Iterable}` or `{@link AsyncIterable}`.
+     * The `concat` static method is a convenient utility for easily concatenating multiple {@link Iterable | `Iterable`} or {@link AsyncIterable | `AsyncIterable`}.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";
@@ -131,7 +131,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     /**
-     * The `difference` static method is used to compute the difference between two `{@link Iterable}` instances. By default, the equality check is performed on each item.
+     * The `difference` static method is used to compute the difference between two {@link Iterable | `Iterable`} instances. By default, the equality check is performed on each item.
      * @example
      * ```ts
      * import { AsyncIterableCollection } from "@daiso-tech/core";
@@ -228,7 +228,7 @@ export class AsyncIterableCollection<TInput = unknown>
     >;
 
     /**
-     * The `constructor` takes an `{@link Iterable}` or `{@link AsyncIterable}`.
+     * The `constructor` takes an {@link Iterable | `Iterable`} or {@link AsyncIterable | `AsyncIterable`}.
      *
      * Works with `Array`.
      * @example

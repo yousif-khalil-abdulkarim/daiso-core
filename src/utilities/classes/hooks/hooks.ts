@@ -108,7 +108,7 @@ export class Hooks<
      * ```ts
      * import { Hooks, type MiddlewareFn } from "@daiso-tech/core/utilities";
      *
-     * function logMiddleware<TParameters extends unknown[], TReturn>(): MiddlewareFn<TParameters, TReturn, { funcName: string; }> {
+     * function log<TParameters extends unknown[], TReturn>(): MiddlewareFn<TParameters, TReturn, { funcName: string; }> {
      *   return (args, next, { funcName }) => {
      *     console.log("FUNCTION_NAME:", funcName);
      *     console.log("ARGUMENTS:", args);
@@ -118,7 +118,7 @@ export class Hooks<
      *   }
      * }
      *
-     * function timeMiddleware<TParameters extends unknown[], TReturn>(): MiddlewareFn<TParameters, TReturn> {
+     * function time<TParameters extends unknown[], TReturn>(): MiddlewareFn<TParameters, TReturn> {
      *   return (args, next) => {
      *     const start = performance.now();
      *     const value = next(...args);
@@ -134,8 +134,8 @@ export class Hooks<
      * }
      *
      * const enhancedAdd = new Hooks(add, [
-     *   logMiddleware(),
-     *   timeMiddleware()
+     *   log(),
+     *   time()
      * ],
      * // You can provide additional information to `Middleware` invokables.
      * {

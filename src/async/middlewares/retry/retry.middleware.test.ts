@@ -1,19 +1,19 @@
 import { describe, expect, test } from "vitest";
 import {
-    retryMiddleware,
+    retry,
     type OnExecutionAttemptData,
     type OnRetryData,
 } from "@/async/middlewares/retry/retry.middleware.js";
 import { RetryAsyncError } from "@/async/async.errors.js";
 import { AsyncHooks } from "@/utilities/_module-exports.js";
 
-describe("function: retryMiddleware", () => {
+describe("function: retry", () => {
     test("Should throw RetryAsyncError when all atempts fail", async () => {
         const promise = new AsyncHooks(
             () => {
                 throw new Error("My own error");
             },
-            retryMiddleware({
+            retry({
                 maxAttempts: 4,
                 backoffPolicy: () => 0,
             }),
@@ -31,7 +31,7 @@ describe("function: retryMiddleware", () => {
                     repetition++;
                     throw new Error("My own error");
                 },
-                retryMiddleware({
+                retry({
                     maxAttempts,
                     backoffPolicy: () => 0,
                 }),
@@ -50,7 +50,7 @@ describe("function: retryMiddleware", () => {
             () => {
                 throw new ErrorB("My own error");
             },
-            retryMiddleware({
+            retry({
                 maxAttempts: 4,
                 backoffPolicy: () => 0,
                 retryPolicy: (error) => error instanceof ErrorA,
@@ -66,7 +66,7 @@ describe("function: retryMiddleware", () => {
             () => {
                 throw new ErrorA("My own error");
             },
-            retryMiddleware({
+            retry({
                 maxAttempts: 4,
                 backoffPolicy: () => 0,
                 retryPolicy: (error) => error instanceof ErrorA,
@@ -87,7 +87,7 @@ describe("function: retryMiddleware", () => {
                 }
                 return "text";
             },
-            retryMiddleware({
+            retry({
                 maxAttempts,
                 backoffPolicy: () => 0,
             }),
@@ -104,7 +104,7 @@ describe("function: retryMiddleware", () => {
                 (_url: string): string => {
                     throw new Error("My own error");
                 },
-                retryMiddleware({
+                retry({
                     maxAttempts,
                     backoffPolicy: () => 0,
                     onExecutionAttempt(data_) {
@@ -135,7 +135,7 @@ describe("function: retryMiddleware", () => {
                 (_url: string): string => {
                     return "data";
                 },
-                retryMiddleware({
+                retry({
                     maxAttempts,
                     backoffPolicy: () => 0,
                     onExecutionAttempt(data_) {
@@ -166,7 +166,7 @@ describe("function: retryMiddleware", () => {
                 (_url: string): string => {
                     throw new Error("My own error");
                 },
-                retryMiddleware({
+                retry({
                     maxAttempts,
                     backoffPolicy: () => 25,
                     onRetryStart(data_) {
@@ -199,7 +199,7 @@ describe("function: retryMiddleware", () => {
                 (_url: string): string => {
                     return "data";
                 },
-                retryMiddleware({
+                retry({
                     maxAttempts,
                     backoffPolicy: () => 25,
                     onRetryStart(data_) {
@@ -226,7 +226,7 @@ describe("function: retryMiddleware", () => {
                 (_url: string): string => {
                     throw new Error("My own error");
                 },
-                retryMiddleware({
+                retry({
                     maxAttempts,
                     backoffPolicy: () => 25,
                     onRetryEnd(data_) {
@@ -259,7 +259,7 @@ describe("function: retryMiddleware", () => {
                 (_url: string): string => {
                     return "data";
                 },
-                retryMiddleware({
+                retry({
                     maxAttempts,
                     backoffPolicy: () => 25,
                     onRetryEnd(data_) {

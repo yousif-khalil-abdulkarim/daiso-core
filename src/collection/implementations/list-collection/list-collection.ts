@@ -40,7 +40,7 @@ import { resolveLazyable } from "@/utilities/_module-exports.js";
  */
 export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     /**
-     * The `concat` static method is a convenient utility for easily concatenating multiple `{@link Iterable}`.
+     * The `concat` static method is a convenient utility for easily concatenating multiple {@link Iterable | `Iterable`}.
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";
@@ -74,7 +74,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     /**
-     * The `difference` static method is used to compute the difference between two `{@link Iterable}` instances. By default, the equality check is performed on each item.
+     * The `difference` static method is used to compute the difference between two {@link Iterable | `Iterable`} instances. By default, the equality check is performed on each item.
      * @example
      * ```ts
      * import { ListCollection } from "@daiso-tech/core";
@@ -161,7 +161,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     private array: TInput[];
 
     /**
-     * The `constructor` takes an `{@link Iterable}`.
+     * The `constructor` takes an {@link Iterable | `Iterable`}.
      *
      * Works with `Array`.
      * @example

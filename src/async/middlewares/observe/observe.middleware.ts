@@ -73,7 +73,7 @@ export type OnFinally<TContext extends HookContext = HookContext> = Invokable<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type ObservationMiddlewareSettings<
+export type ObserveSettings<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext extends HookContext = HookContext,
@@ -95,20 +95,18 @@ export type ObservationMiddlewareSettings<
 };
 
 /**
- * The `observationMiddleware` tracks an async function's state and runs callbacks when it fails with an error or succeeds.
+ * The `observe` middleware tracks an async function's state and runs callbacks when it fails with an error or succeeds.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  *
  */
-export function observationMiddleware<
+export function observe<
     TParameters extends unknown[],
     TReturn,
     TContext extends HookContext,
 >(
-    settings: NoInfer<
-        ObservationMiddlewareSettings<TParameters, TReturn, TContext>
-    >,
+    settings: NoInfer<ObserveSettings<TParameters, TReturn, TContext>>,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         onSuccess = () => {},

@@ -66,8 +66,7 @@ import {
 import { resolveLazyable } from "@/utilities/_module-exports.js";
 
 /**
- * All methods that return `{@link ICollection}` are executed lazly which means they will be executed when the `IterableCollection` is iterated with `forEach` method or "for of" loop.
- * The rest of the methods are executed eagerly.
+ * All methods that return {@link ICollection | `ICollection`} are executed lazly, meaning the execution will occur iterating the items withthe `forEach` method or `for of` loop.
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Adapters
@@ -76,7 +75,7 @@ export class IterableCollection<TInput = unknown>
     implements ICollection<TInput>
 {
     /**
-     * The `concat` static method is a convenient utility for easily concatenating multiple `{@link Iterable}`.
+     * The `concat` static method is a convenient utility for easily concatenating multiple {@link Iterable | `Iterable`}.
      * @example
      * ```ts
      * import { IterableCollection } from "@daiso-tech/core";
@@ -106,7 +105,7 @@ export class IterableCollection<TInput = unknown>
     }
 
     /**
-     * The `difference` static method is used to compute the difference between two `{@link Iterable}` instances. By default, the equality check is performed on each item.
+     * The `difference` static method is used to compute the difference between two {@link Iterable | `Iterable`} instances. By default, the equality check is performed on each item.
      * @example
      * ```ts
      * import { IterableCollection } from "@daiso-tech/core";
@@ -202,7 +201,7 @@ export class IterableCollection<TInput = unknown>
     };
 
     /**
-     * The `constructor` takes an `{@link Iterable}`.
+     * The `constructor` takes an {@link Iterable | `Iterable`}.
      *
      * Works with `Array`.
      * @example

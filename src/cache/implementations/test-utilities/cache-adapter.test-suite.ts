@@ -30,7 +30,7 @@ export type CacheAdapterTestSuiteSettings = {
 };
 
 /**
- * The `cacheAdapterTestSuite` function simplifies the process of testing your custom implementation of `{@link ICacheAdapter}` with `vitest`.
+ * The `cacheAdapterTestSuite` function simplifies the process of testing your custom implementation of {@link ICacheAdapter | `ICacheAdapter`} with `vitest`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/test-utilities"`
  * @group TestUtilities

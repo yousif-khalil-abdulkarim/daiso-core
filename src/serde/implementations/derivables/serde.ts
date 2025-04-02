@@ -159,7 +159,7 @@ export type SerdeSettings = {
 };
 
 /**
- * `Serde` class can be derived from any `{@link IFlexibleSerdeAdapter}`.
+ * `Serde` class can be derived from any {@link IFlexibleSerdeAdapter | `IFlexibleSerdeAdapter`}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/serde/deriavables"`
  * @group Derivables

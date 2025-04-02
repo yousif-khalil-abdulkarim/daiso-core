@@ -1,12 +1,12 @@
 import { AsyncHooks } from "@/utilities/_module-exports.js";
 import { describe, expect, test } from "vitest";
 import {
-    observationMiddleware,
+    observe,
     type OnErrorData,
     type OnSuccessData,
-} from "@/async/middlewares/observation/observation.middleware.js";
+} from "@/async/middlewares/observe/observe.middleware.js";
 
-describe("function: observationMiddleware", () => {
+describe("function: observe", () => {
     test("Should call onSuccess callback when no error is thrown", async () => {
         let data = null as OnSuccessData | null;
         await new AsyncHooks(
@@ -14,7 +14,7 @@ describe("function: observationMiddleware", () => {
                 return "DATA";
             },
             [
-                observationMiddleware({
+                observe({
                     onSuccess(data_) {
                         data = data_;
                     },
@@ -35,7 +35,7 @@ describe("function: observationMiddleware", () => {
         const promise = new AsyncHooks((): string => {
             throw new Error("error");
         }, [
-            observationMiddleware({
+            observe({
                 onSuccess(data_) {
                     data = data_;
                 },
@@ -55,7 +55,7 @@ describe("function: observationMiddleware", () => {
                 throw new Error("UNEXPECTED");
             },
             [
-                observationMiddleware({
+                observe({
                     onError(data_) {
                         data = data_;
                     },
@@ -81,7 +81,7 @@ describe("function: observationMiddleware", () => {
         await new AsyncHooks((): string => {
             return "a";
         }, [
-            observationMiddleware({
+            observe({
                 onError(data_) {
                     data = data_;
                 },
@@ -99,7 +99,7 @@ describe("function: observationMiddleware", () => {
                 return "str";
             },
             [
-                observationMiddleware({
+                observe({
                     onFinally(data_) {
                         data = data_ as Context;
                     },
@@ -122,7 +122,7 @@ describe("function: observationMiddleware", () => {
                 throw new Error("error");
             },
             [
-                observationMiddleware({
+                observe({
                     onFinally(data_) {
                         data = data_ as Context;
                     },

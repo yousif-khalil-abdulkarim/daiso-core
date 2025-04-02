@@ -21,7 +21,7 @@ export type EventListenerFn<TEvent> = InvokableFn<[event: TEvent]>;
  */
 export type IEventBusAdapter = {
     /**
-     * The `addListener` method is used for adding `{@link EventListenerFn | listener}` for certain `eventName`.
+     * The `addListener` method is used for adding {@link EventListenerFn | `listener`} for certain `eventName`.
      */
     addListener(
         eventName: string,
@@ -29,7 +29,7 @@ export type IEventBusAdapter = {
     ): PromiseLike<void>;
 
     /**
-     * The `removeListener` method is used for removing `{@link EventListenerFn | listener}` for certain `eventName`.
+     * The `removeListener` method is used for removing {@link EventListenerFn | `listener`} for certain `eventName`.
      */
     removeListener(
         eventName: string,

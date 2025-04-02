@@ -137,7 +137,7 @@ export const EVENT_BUS_ERRORS = {
 };
 
 /**
- * The `registerEventBusErrorsToSerde` function registers all `{@link IEventBus}` related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
+ * The `registerEventBusErrorsToSerde` function registers all {@link IEventBus | `IEventBus`} related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors

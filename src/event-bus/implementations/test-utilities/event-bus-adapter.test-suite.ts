@@ -33,7 +33,7 @@ export type EventBusAdapterTestSuiteSettings = {
 };
 
 /**
- * The `eventBusAdapterTestSuite` function simplifies the process of testing your custom implementation of `{@link IEventBusAdapter}` with vitest.
+ * The `eventBusAdapterTestSuite` function simplifies the process of testing your custom implementation of {@link IEventBusAdapter | `IEventBusAdapter`} with vitest.
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/test-utilities"`
  * @group TestUtilities

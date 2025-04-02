@@ -9,7 +9,7 @@ import type {
 } from "@/serde/contracts/_module-exports.js";
 
 /**
- * This `NoOpSerdeAdapter` will do nothing and is used for easily mocking `{@link IFlexibleSerde}` for testing.
+ * This `NoOpSerdeAdapter` will do nothing and is used for easily mocking {@link IFlexibleSerde | `IFlexibleSerde`} for testing.
  *
  * IMPORT_PATH: `"@daiso-tech/core/serde/adapters"`
  * @group Adapters

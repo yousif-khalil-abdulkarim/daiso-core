@@ -40,7 +40,7 @@ export type LibsqlCacheAdapterSettings = {
 };
 
 /**
- * To utilize the `LibsqlCacheAdapter`, you must install the `"@libsql/client"` package and supply a `{@link ISerde | ISerde<string> }`, with an adapter like `{@link SuperJsonSerdeAdapter}`.
+ * To utilize the `LibsqlCacheAdapter`, you must install the `"@libsql/client"` package and supply a {@link ISerde | `ISerde<string>`}, with an adapter like {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters

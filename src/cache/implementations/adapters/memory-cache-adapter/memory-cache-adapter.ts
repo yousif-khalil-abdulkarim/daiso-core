@@ -22,13 +22,7 @@ export class MemoryCacheAdapter<TType> implements ICacheAdapter<TType> {
     >();
 
     /**
-     *  @example
-     * ```ts
-     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
-     *
-     * const cacheAdapter = new MemoryCacheAdapter();
-     * ```
-     * You can also provide an `{@link Map}` that will be used for storing the data.
+     * You can provide an optional {@link Map | `Map`}, that will be used for storing the data.
      * @example
      * ```ts
      * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";

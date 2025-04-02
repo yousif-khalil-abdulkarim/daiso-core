@@ -1,20 +1,20 @@
 import { describe, expect, test } from "vitest";
 import {
-    timeoutMiddleware,
+    timeout,
     type OnTimeoutData,
 } from "@/async/middlewares/timeout/timeout.middleware.js";
 import { AsyncError, TimeoutAsyncError } from "@/async/async.errors.js";
 import { AsyncHooks, TimeSpan } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/utilities/_module.js";
 
-describe("function: timeoutMiddleware", () => {
+describe("function: timeout", () => {
     test("should throw AsyncError when timed out", async () => {
         const outputPromise = new AsyncHooks(
             async () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
                 return "a";
             },
-            timeoutMiddleware({ time: TimeSpan.fromMilliseconds(25) }),
+            timeout({ time: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
         await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
@@ -25,7 +25,7 @@ describe("function: timeoutMiddleware", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
                 return "a";
             },
-            timeoutMiddleware({ time: TimeSpan.fromMilliseconds(25) }),
+            timeout({ time: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
         await expect(outputPromise).rejects.toBeInstanceOf(TimeoutAsyncError);
@@ -36,7 +36,7 @@ describe("function: timeoutMiddleware", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
                 return "a";
             },
-            timeoutMiddleware({ time: TimeSpan.fromMilliseconds(100) }),
+            timeout({ time: TimeSpan.fromMilliseconds(100) }),
         ).invoke();
 
         await expect(outputPromise).resolves.toBe("a");
@@ -46,7 +46,7 @@ describe("function: timeoutMiddleware", () => {
 
         const promise = new AsyncHooks(
             () => Promise.reject(new ErrorA()),
-            timeoutMiddleware({ time: TimeSpan.fromSeconds(2) }),
+            timeout({ time: TimeSpan.fromSeconds(2) }),
         ).invoke();
         await expect(promise).rejects.toBeInstanceOf(ErrorA);
     });
@@ -58,7 +58,7 @@ describe("function: timeoutMiddleware", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
                 return "a";
             },
-            timeoutMiddleware({
+            timeout({
                 time,
                 onTimeout(data_) {
                     data = data_;
@@ -88,7 +88,7 @@ describe("function: timeoutMiddleware", () => {
             (_url: string) => {
                 return "a";
             },
-            timeoutMiddleware({
+            timeout({
                 time,
                 onTimeout(data_) {
                     data = data_;
@@ -107,7 +107,7 @@ describe("function: timeoutMiddleware", () => {
 
         expect(data).toBeNull();
     });
-    test("Should forward timeoutMiddleware AbortSignal when optional", async () => {
+    test("Should forward timeout AbortSignal when optional", async () => {
         let hasAborted = false;
         const outputPromise = new AsyncHooks(
             async (signal?: AbortSignal) => {
@@ -117,7 +117,7 @@ describe("function: timeoutMiddleware", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
                 return "a";
             },
-            timeoutMiddleware({
+            timeout({
                 time: TimeSpan.fromMilliseconds(25),
                 signalBinder: ([fnSignal], timeoutSignal) => {
                     return [
@@ -139,7 +139,7 @@ describe("function: timeoutMiddleware", () => {
 
         expect(hasAborted).toBe(true);
     });
-    test("Should forward timeoutMiddleware AbortSignal when required", async () => {
+    test("Should forward timeout AbortSignal when required", async () => {
         let hasAborted = false;
         const abortController = new AbortController();
         const outputPromise = new AsyncHooks(
@@ -150,7 +150,7 @@ describe("function: timeoutMiddleware", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
                 return "a";
             },
-            timeoutMiddleware({
+            timeout({
                 time: TimeSpan.fromMilliseconds(25),
                 signalBinder: ([fnSignal], timeoutSignal) => {
                     return [

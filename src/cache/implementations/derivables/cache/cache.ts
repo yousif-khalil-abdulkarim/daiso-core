@@ -67,7 +67,7 @@ export type CacheSettingsBase = {
     keyPrefixer: KeyPrefixer;
 
     /**
-     * You can pass a `{@link Factory}` of `{@link LazyPromise}` to configure default settings for all `{@link LazyPromise}` instances used in the `Cache` class.
+     * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `Cache` class.
      * @default
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
@@ -185,8 +185,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     /**
-     * You can listen to the following `{@link CacheEvents}` of the `{@link ICache}` instance.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     addListener<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
@@ -196,8 +196,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     /**
-     * You can listen to the following `{@link CacheEvents}` of the `{@link ICache}` instance.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     removeListener<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
@@ -207,8 +207,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     /**
-     * You can listen to the following `{@link CacheEvents}` of the `{@link ICache}` instance.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     listenOnce<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
@@ -218,8 +218,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     /**
-     * You can listen to the following `{@link CacheEvents}` of the `{@link ICache}` instance.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     asPromise<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
@@ -228,8 +228,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     /**
-     * You can listen to the following `{@link CacheEvents}` of the `{@link ICache}` instance.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     subscribeOnce<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,
@@ -239,8 +239,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     /**
-     * You can listen to the following `{@link CacheEvents}` of the `{@link ICache}` instance.
-     * To understand how this method works, refer to `{@link IEventListenable}`.
+     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     subscribe<TEventClass extends EventClass<CacheEvents<TType>>>(
         event: TEventClass,

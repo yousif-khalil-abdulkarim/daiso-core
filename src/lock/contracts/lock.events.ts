@@ -135,7 +135,7 @@ export type LockEvents =
     | UnexpectedErrorLockEvent;
 
 /**
- * The `registerLockEventsToSerde` function registers all `{@link ILock}` related events with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
+ * The `registerLockEventsToSerde` function registers all {@link ILock | `ILock`} related events with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events

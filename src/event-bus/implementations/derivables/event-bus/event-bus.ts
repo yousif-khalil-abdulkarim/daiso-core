@@ -41,7 +41,7 @@ export type EventBusSettingsBase = {
     keyPrefixer: KeyPrefixer;
 
     /**
-     * You can pass a `{@link Factory}` of `{@link LazyPromise}` to configure default settings for all `{@link LazyPromise}` instances used in the `EventBus` class.
+     * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `EventBus` class.
      * @default
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
@@ -62,7 +62,7 @@ export type EventBusSettings = EventBusSettingsBase & {
 };
 
 /**
- * `EventBus` class can be derived from any `{@link IEventBusAdapter}`.
+ * `EventBus` class can be derived from any {@link IEventBusAdapter | `IEventBusAdapter`}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables

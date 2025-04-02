@@ -31,7 +31,7 @@ export type DatabaseCacheAdapterTestSuiteSettings = {
 };
 
 /**
- * The `databaseCacheAdapterTestSuite` function simplifies the process of testing your custom implementation of `{@link IDatabaseCacheAdapter}` with `vitest`.
+ * The `databaseCacheAdapterTestSuite` function simplifies the process of testing your custom implementation of {@link IDatabaseCacheAdapter | `IDatabaseCacheAdapter`} with `vitest`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/test-utilities"`
  * @group TestUtilities

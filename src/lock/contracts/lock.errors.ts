@@ -247,7 +247,7 @@ export const LOCK_ERRORS = {
 } as const;
 
 /**
- * The `registerLockErrorsToSerde` function registers all `{@link ILock}` related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
+ * The `registerLockErrorsToSerde` function registers all {@link ILock | `ILock`} related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Errors

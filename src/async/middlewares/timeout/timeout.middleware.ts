@@ -48,7 +48,7 @@ export type AbortSignalBinder<TParameters extends unknown[] = unknown[]> =
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type TimeoutMiddlewareSettings<
+export type TimeoutSettings<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
 > = {
@@ -63,7 +63,7 @@ export type TimeoutMiddlewareSettings<
 };
 
 /**
- * The `timeoutMiddleware` automatically cancels functions after a specified time period, throwing an error when aborted.
+ * The `timeout` middleware automatically cancels functions after a specified time period, throwing an error when aborted.
  * Note the original function continues executing (even if the promise fails), you'll need to provide a settings.signalBinder to forward the `AbortSignal`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
@@ -73,7 +73,7 @@ export type TimeoutMiddlewareSettings<
  *
  * @example
  * ```ts
- * import { timeoutMiddleware } from "@daiso-tech/core/async";
+ * import { timeout } from "@daiso-tech/core/async";
  * import { AsyncHooks, TimeSpan } from "@daiso-tech/core/utilities";
  *
  * const abortController = new AbortController();
@@ -87,7 +87,7 @@ export type TimeoutMiddlewareSettings<
  *     throw json
  *   }
  *   return json;
- * }, timeoutMiddleware({
+ * }, timeout({
  *   time: TimeSpan.fromSeconds(2),
  *   // With the defined signalBinder the HTTP request will be arboted when timed out or when the inputed `AbortSignal` is called.
  *   signalBinder: ([url, fetchSignal], timeoutSignal) => {
@@ -110,7 +110,7 @@ export type TimeoutMiddlewareSettings<
  *
  * @example
  * ```ts
- * import { LazyPromise, timeoutMiddleware } from "@daiso-tech/core/async";
+ * import { LazyPromise, timeout } from "@daiso-tech/core/async";
  * import { TimeSpan } from "@daiso-tech/core/utilities";
  *
  * await new LazyPromise(async () => {
@@ -121,15 +121,15 @@ export type TimeoutMiddlewareSettings<
  *   }
  *   return json;
  * })
- * .pipe(timeoutMiddleware({ time: TimeSpan.fromSeconds(2) }));
+ * .pipe(timeout({ time: TimeSpan.fromSeconds(2) }));
  * ```
  */
-export function timeoutMiddleware<
+export function timeout<
     TParameters extends unknown[],
     TReturn,
     TContext extends HookContext,
 >(
-    settings: NoInfer<TimeoutMiddlewareSettings<TParameters, TContext>>,
+    settings: NoInfer<TimeoutSettings<TParameters, TContext>>,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         time,
