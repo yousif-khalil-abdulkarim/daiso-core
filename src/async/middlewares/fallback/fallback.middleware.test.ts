@@ -1,16 +1,16 @@
 import { AsyncHooks } from "@/utilities/_module-exports.js";
 import { describe, expect, test } from "vitest";
 import {
-    fallbackMiddleware,
+    fallback,
     type OnFallbackData,
 } from "@/async/middlewares/fallback/fallback.middleware.js";
 
-describe("function: fallbackMiddleware", () => {
+describe("function: fallback", () => {
     test("Should return function value when no error is thrown", async () => {
         const returnValue = await new AsyncHooks(
             () => "a",
             [
-                fallbackMiddleware({
+                fallback({
                     fallbackValue: "fallback-value",
                 }),
             ],
@@ -21,7 +21,7 @@ describe("function: fallbackMiddleware", () => {
         const returnValue = await new AsyncHooks((): string => {
             throw new Error("Unexpected error");
         }, [
-            fallbackMiddleware({
+            fallback({
                 fallbackValue: "fallback-value",
             }),
         ]).invoke();
@@ -32,7 +32,7 @@ describe("function: fallbackMiddleware", () => {
         const returnValue = new AsyncHooks((): string => {
             throw new Error("Unexpected error");
         }, [
-            fallbackMiddleware({
+            fallback({
                 fallbackValue: "fallback-value",
                 fallbackPolicy: (error) => error instanceof CustomError,
             }),
@@ -46,7 +46,7 @@ describe("function: fallbackMiddleware", () => {
                 throw new Error("Unexpected error");
             },
             [
-                fallbackMiddleware({
+                fallback({
                     fallbackValue: "fallback-value",
                     onFallback: (data_) => {
                         data = data_;
@@ -71,7 +71,7 @@ describe("function: fallbackMiddleware", () => {
                 return "a";
             },
             [
-                fallbackMiddleware({
+                fallback({
                     fallbackValue: "fallback-value",
                     onFallback: (data_) => {
                         data = data_;

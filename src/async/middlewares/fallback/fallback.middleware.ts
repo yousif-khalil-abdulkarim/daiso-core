@@ -53,7 +53,7 @@ export type FallbackPolicy = Invokable<[error: unknown], boolean>;
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type FallbackMiddlewareSettings<
+export type FallbackSettings<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext extends HookContext = HookContext,
@@ -77,14 +77,14 @@ export type FallbackMiddlewareSettings<
 };
 
 /**
- * The `fallbackMiddleware` adds fallback value when an error occurs.
+ * The `fallback` middleware adds fallback value when an error occurs.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  *
  * @example
  * ```ts
- * import { fallbackMiddleware } from "@daiso-tech/core/async";
+ * import { fallback } from "@daiso-tech/core/async";
  * import { AsyncHooks } from "@daiso-tech/core/utilities";
  *
  * const fetchData = new AsyncHooks(async (url: string): Promise<unknown> => {
@@ -95,7 +95,7 @@ export type FallbackMiddlewareSettings<
  *   }
  *   return json;
  * }, [
- *   fallbackMiddleware({ fallbackValue: null })
+ *   fallback({ fallbackValue: null })
  * ]);
  *
  * // Will return null when the fetch method throws an error.
@@ -104,7 +104,7 @@ export type FallbackMiddlewareSettings<
  *
  * @example
  * ```ts
- * import { fallbackMiddleware, LazyPromise } from "@daiso-tech/core/async";
+ * import { fallback, LazyPromise } from "@daiso-tech/core/async";
  *
  * const promise = await new LazyPromise(async (): Promise<unknown> => {
  *   const response = await fetch("URL_ENDPOINT");
@@ -114,20 +114,18 @@ export type FallbackMiddlewareSettings<
  *   }
  *   return json;
  * })
- * .pipe(fallbackMiddleware({ fallbackValue: null }));
+ * .pipe(fallback({ fallbackValue: null }));
  *
  * // Will return null when the fetch method throws an error.
  * console.log(await promise);
  * ```
  */
-export function fallbackMiddleware<
+export function fallback<
     TParameters extends unknown[],
     TReturn,
     TContext extends HookContext,
 >(
-    settings: NoInfer<
-        FallbackMiddlewareSettings<TParameters, TReturn, TContext>
-    >,
+    settings: NoInfer<FallbackSettings<TParameters, TReturn, TContext>>,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         fallbackValue,
