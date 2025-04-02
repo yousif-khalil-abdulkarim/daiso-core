@@ -21,7 +21,7 @@ export type FlexibleSerdeAdapterSuiteSettings = {
 };
 
 /**
- * The `flexibleSerdeAdapterTestSuite` function simplifies the process of testing your custom implementation of `{@link IFlexibleSerdeAdapter}` with `vitest`.
+ * The `flexibleSerdeAdapterTestSuite` function simplifies the process of testing your custom implementation of {@link IFlexibleSerdeAdapter | `IFlexibleSerdeAdapter`} with `vitest`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/serde/test-utilities"`
  * @group TestUtilities

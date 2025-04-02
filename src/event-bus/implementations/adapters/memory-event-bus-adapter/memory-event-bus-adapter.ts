@@ -23,7 +23,7 @@ export class MemoryEventBusAdapter implements IEventBusAdapter {
      *
      * const eventBusAdapter = new MemoryEventBusAdapter();
      * ```
-     * You can also provide an `{@link EventEmitter}` that will be used for storing the data.
+     * You can also provide an {@link EventEmitter | `EventEmitter`} that will be used for storing the data.
      * @example
      * ```ts
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";

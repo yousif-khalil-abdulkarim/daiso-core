@@ -20,7 +20,7 @@ export type FlexibleSerdeSuiteSettings = {
     createSerde: () => IFlexibleSerde;
 };
 /**
- * The `flexibleSerdeTestSuite` function simplifies the process of testing your custom implementation of `{@link IFlexibleSerde}` with `vitest`.
+ * The `flexibleSerdeTestSuite` function simplifies the process of testing your custom implementation of {@link IFlexibleSerde | `IFlexibleSerde`} with `vitest`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/serde/test-utilities"`
  * @group TestUtilities

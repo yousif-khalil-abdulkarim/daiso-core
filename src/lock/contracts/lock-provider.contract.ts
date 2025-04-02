@@ -8,7 +8,7 @@ import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js"
 import type { LockEvents } from "@/lock/contracts/lock.events.js";
 
 /**
- * The `ILockListenable` contract defines a way for listening `{@link ILock}` operations.
+ * The `ILockListenable` contract defines a way for listening {@link ILock | `ILock`} operations.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
@@ -39,7 +39,7 @@ export type LockProviderCreateSettings = {
  */
 export type ILockProviderBase = {
     /**
-     * The `create` method is used to create an instance of `{@link ILock}`.
+     * The `create` method is used to create an instance of {@link ILock | `ILock`}.
      *
      * @param key - can be a string or an `Iterable` of strings.
      * If it's an `Iterable`, it will be joined into a single string.

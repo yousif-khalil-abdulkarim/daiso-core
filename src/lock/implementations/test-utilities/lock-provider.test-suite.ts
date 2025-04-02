@@ -42,7 +42,7 @@ export type LockProviderTestSuiteSettings = {
 };
 
 /**
- * The `lockProviderTestSuite` function simplifies the process of testing your custom implementation of `{@link ILock}` with `vitest`.
+ * The `lockProviderTestSuite` function simplifies the process of testing your custom implementation of {@link ILock | `ILock`} with `vitest`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/test-utilities"`
  * @group Utilities

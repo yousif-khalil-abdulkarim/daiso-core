@@ -37,7 +37,7 @@ export type SqliteCacheAdapterSettings = {
 };
 
 /**
- * To utilize the `SqliteCacheAdapter`, you must install the `"better-sqlite3"` package and supply a `{@link ISerde | ISerde<string> }`, with adapter like `{@link SuperJsonSerdeAdapter}`.
+ * To utilize the `SqliteCacheAdapter`, you must install the `"better-sqlite3"` package and supply a {@link ISerde | `ISerde<string>`}, with adapter like {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters

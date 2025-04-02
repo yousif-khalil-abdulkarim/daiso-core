@@ -1713,7 +1713,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a `{@link LazyPromise}` as default value.
+     * You can pass a {@link LazyPromise| `LazyPromise`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core";
@@ -1874,7 +1874,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a `{@link LazyPromise}` as default value.
+     * You can pass a {@link LazyPromise| `LazyPromise`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core";
@@ -2011,7 +2011,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a `{@link LazyPromise}` as default value.
+     * You can pass a {@link LazyPromise| `LazyPromise`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core";
@@ -2136,7 +2136,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a `{@link LazyPromise}` as default value.
+     * You can pass a {@link LazyPromise| `LazyPromise`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core";
@@ -2331,19 +2331,19 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     ): LazyPromise<void>;
 
     /**
-     * The `toArray` method converts the collection to a new `{@link Array}`.
+     * The `toArray` method converts the collection to a new {@link Array | `Array`}.
      */
     toArray(): LazyPromise<TInput[]>;
 
     /**
-     * The `toRecord` method converts the collection to a new `{@link Record}`.
+     * The `toRecord` method converts the collection to a new {@link Record | `Record`}.
      * An error will be thrown if item is not a tuple of size 2 where the first element is a string or a number.
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
     toRecord(): LazyPromise<EnsureRecord<TInput>>;
 
     /**
-     * The `toMap` method converts the collection to a new `{@link AsyncMap}`.
+     * The `toMap` method converts the collection to a new {@link Map | `Map`}.
      * An error will be thrown if item is not a tuple of size 2.
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      */

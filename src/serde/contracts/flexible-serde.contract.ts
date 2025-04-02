@@ -52,7 +52,7 @@ export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
 export interface IFlexibleSerde<TSerializedValue = unknown>
     extends ISerde<TSerializedValue> {
     /**
-     * The `registerEvent` method is used for registering custom `{@link BaseEvent}` for serialization and deserialization.
+     * The `registerEvent` method is used for registering custom {@link BaseEvent | `BaseEvent`} for serialization and deserialization.
      */
     registerEvent<TFields extends Record<string, unknown>>(
         eventClass: SerializableEventClass<TFields>,
@@ -61,7 +61,7 @@ export interface IFlexibleSerde<TSerializedValue = unknown>
 
     /**
      * The `registerClass` method is used for registering custom class for serialization and deserialization.
-     * The `class_` parameter must be of type `{@link SerializableClass}`.
+     * The `class_` parameter must be of type {@link SerializableClass | `SerializableClass`}.
      */
     registerClass<TSerializedClassInstance>(
         class_: SerializableClass<TSerializedClassInstance>,

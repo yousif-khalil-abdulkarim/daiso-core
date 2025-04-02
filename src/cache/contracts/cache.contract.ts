@@ -19,7 +19,7 @@ import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js"
 import type { TypeCacheError } from "@/cache/contracts/cache.errors.js";
 
 /**
- * The `ICacheListenable` contract defines a way for listening `{@link ICache}` operation events.
+ * The `ICacheListenable` contract defines a way for listening {@link ICache | `ICache`} operation events.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Contracts
@@ -90,7 +90,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      *
-     * @param defaultValue - can be regular value, sync or async `{@link Invokable}` value and `{@link LazyPromise}` value.
+     * @param defaultValue - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link LazyPromise| `LazyPromise`} value.
      */
     getOr(
         key: OneOrMore<string>,
@@ -104,7 +104,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      *
-     * @param valueToAdd - can be regular value, sync or async `{@link Invokable}` value and `{@link LazyPromise}` value.
+     * @param valueToAdd - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link LazyPromise| `LazyPromise`} value.
      */
     getOrAdd(
         key: OneOrMore<string>,

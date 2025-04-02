@@ -11,7 +11,7 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
- * The `ILockProviderFactory` contract makes it easy to configure and switch between different `{@link ILockProvider}` dynamically.
+ * The `ILockProviderFactory` contract makes it easy to configure and switch between different {@link ILockProvider | `ILockProvider`} dynamically.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
