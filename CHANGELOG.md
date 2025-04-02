@@ -1,5 +1,37 @@
 # @daiso-tech/core
 
+## 0.34.0
+
+### Minor Changes
+
+-   7e5a059: Added new utility `Hooks` class which allows for adding middlewares to any sync functions.
+-   96e2f95: Removed `delay`, `takeUntilAbort` `takeUntilTimeout` from `IAsyncCollection` contract.
+-   96e2f95: Following methods where removed from `LazyPromise`:
+
+    -   `setAbortSignal`
+    -   `setTotalTimeout`
+    -   `setRetryTimeout`
+    -   `setRetryPolicy`
+    -   `setRetryAttempts`
+    -   `setBackofPolicy`
+
+    The new approach allows you to apply `AsyncMiddleware` to `LazyPromise` by the `pipe` and `pipeWhen` methods. This change promotes a more composable and extendable design while reducing API surface area.
+
+-   f8a6439: Added following middlewares:
+    -   `dynamic`: Enables runtime configuration of other middlewares for flexible behavior adjustments.
+    -   `fallback`: Provides a default value or fallback mechanism when an error occurs.
+    -   `retry`: Automatically retries failed operations with customizable retry policies.
+    -   `timeout`: Ensures functions terminate after a specified duration to prevent hanging.
+    -   `observe`: Monitors async functions, tracking success/failure states for logging or analytics.
+-   7e5a059: Added new utility `AsyncHooks` class which allows for adding middlewares to any sync and async functions.
+
+### Patch Changes
+
+-   ea8aff2: Enhanced performance of `crossJoin` method in the following collection classes:
+    -   `ListCollection`
+    -   `IterableCollection`
+    -   `AsyncIterableCollection`
+
 ## 0.33.0
 
 ### Minor Changes
