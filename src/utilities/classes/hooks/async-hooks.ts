@@ -110,7 +110,7 @@ export class AsyncHooks<
      * ```ts
      * import { AsyncHooks, type AsyncMiddlewareFn } from "@daiso-tech/core/utilities";
      *
-     * function logMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn, { funcName: string; }> {
+     * function log<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn, { funcName: string; }> {
      *   return async (args, next, { funcName }) => {
      *     console.log("FUNCTION_NAME:", funcName);
      *     console.log("ARGUMENTS:", args);
@@ -120,7 +120,7 @@ export class AsyncHooks<
      *   }
      * }
      *
-     * function timeMiddleware<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn> {
+     * function time<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn> {
      *   return async (args, next) => {
      *     const start = performance.now();
      *     const value = await next(...args);
@@ -136,8 +136,8 @@ export class AsyncHooks<
      * }
      *
      * const enhancedAdd = new AsyncHooks(add, [
-     *   logMiddleware(),
-     *   timeMiddleware()
+     *   log(),
+     *   time()
      * ],
      * // You can provide additional information to `AsyncMiddleware` invokables.
      * {

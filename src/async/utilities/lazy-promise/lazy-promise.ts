@@ -58,30 +58,20 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * The `wrapFn` is convience method used for wrapping async `{@link Invokable}` with a `LazyPromise`.
      * @example
      * ```ts
-     * import { LazyPromise, retryMiddleware } from "@daiso-tech/core/async";
+     * import { LazyPromise, retry } from "@daiso-tech/core/async";
      * import { TimeSpan } from "@daiso-tech/core/utilities";
      * import { readFile as readFileNodeJs } from "node:fs/promises";
      *
      * const readFile = LazyPromise.wrapFn(readFileNodeJs);
      *
-     * const file = await readFile("none_existing_file.txt")
-     *   .pipe(
-     *     // You can also pass in one AsyncMiddleware or multiple (as an Array).
-     *     retryMiddleware({
-     *       maxAttempts: 8
-     *     })
-     *   );
+     * const file = await readFile("none_existing_file.txt");
      * ```
      */
     static wrapFn<TArgs extends unknown[], TReturn>(
         fn: Invokable<TArgs, Promisable<TReturn>>,
-        middlewares?: OneOrMore<AsyncMiddleware<[], TReturn>>,
     ): InvokableFn<TArgs, LazyPromise<TReturn>> {
         return (...parameters) =>
-            new LazyPromise<TReturn>(
-                () => callInvokable(fn, ...parameters),
-                middlewares,
-            );
+            new LazyPromise<TReturn>(() => callInvokable(fn, ...parameters));
     }
 
     /**
@@ -124,14 +114,8 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
      * The `all` method works similarly to `{@link Promise.all}` with the key distinction that it operates lazily.
      */
-    static all<TValue>(
-        promises: LazyPromise<TValue>[],
-        middlewares?: OneOrMore<AsyncMiddleware<[], TValue[]>>,
-    ): LazyPromise<TValue[]> {
-        return new LazyPromise<TValue[]>(
-            async () => Promise.all(promises),
-            middlewares,
-        );
+    static all<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue[]> {
+        return new LazyPromise<TValue[]>(async () => Promise.all(promises));
     }
 
     /**
@@ -139,34 +123,24 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static allSettled<TValue>(
         promises: LazyPromise<TValue>[],
-        middlewares?: OneOrMore<
-            AsyncMiddleware<[], PromiseSettledResult<TValue>[]>
-        >,
     ): LazyPromise<PromiseSettledResult<TValue>[]> {
-        return new LazyPromise<PromiseSettledResult<TValue>[]>(
-            async () => Promise.allSettled(promises),
-            middlewares,
+        return new LazyPromise<PromiseSettledResult<TValue>[]>(async () =>
+            Promise.allSettled(promises),
         );
     }
 
     /**
      * The `race` method works similarly to `{@link Promise.race}` with the key distinction that it operates lazily.
      */
-    static race<TValue>(
-        promises: LazyPromise<TValue>[],
-        middlewares?: OneOrMore<AsyncMiddleware<[], TValue>>,
-    ): LazyPromise<TValue> {
-        return new LazyPromise(async () => Promise.race(promises), middlewares);
+    static race<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
+        return new LazyPromise(async () => Promise.race(promises));
     }
 
     /**
      * The `any` method works similarly to `{@link Promise.any}` with the key distinction that it operates lazily.
      */
-    static any<TValue>(
-        promises: LazyPromise<TValue>[],
-        middlewares?: OneOrMore<AsyncMiddleware<[], TValue>>,
-    ): LazyPromise<TValue> {
-        return new LazyPromise(async () => Promise.any(promises), middlewares);
+    static any<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
+        return new LazyPromise(async () => Promise.any(promises));
     }
 
     /**
@@ -191,14 +165,12 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static fromCallback<TValue>(
         callback: LazyPromiseCallback<TValue>,
-        middlewares?: OneOrMore<AsyncMiddleware<[], TValue>>,
     ): LazyPromise<TValue> {
         return new LazyPromise(
             () =>
                 new Promise((resolve, reject) => {
                     callback(resolve, reject);
                 }),
-            middlewares,
         );
     }
 
@@ -214,7 +186,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      *   console.log("I am lazy");
      * },
      *   // You can also pass in one AsyncMiddleware or multiple (as an Array).
-     *   retryMiddleware()
+     *   retry()
      * );
      *
      * // "I am lazy" will only logged when awaited or then method i called.

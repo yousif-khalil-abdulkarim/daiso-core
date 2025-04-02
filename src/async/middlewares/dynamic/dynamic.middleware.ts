@@ -21,7 +21,7 @@ import {
  * @example
  * ```ts
  * import { AsyncHooks } from "@daiso-tech/core/async";
- * import { dynamic, fallbackMiddleware } from "@daiso-tech/core/utilities";
+ * import { dynamic, fallback } from "@daiso-tech/core/utilities";
  *
  * await new AsyncHooks(
  *   (a: number, b: number) => a / b,
@@ -29,7 +29,7 @@ import {
  *     // You pass callback function where you get access to the function arguments and context.
  *     // The callback function must return a middleware.
  *     dynamic((_args, _context) =>
- *       fallbackMiddleware({
+ *       fallback({
  *         fallbackValue: 1,
  *       }),
  *     ),
