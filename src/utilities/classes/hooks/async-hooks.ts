@@ -38,7 +38,7 @@ export type AsyncMiddlewareFn<
         next: AsyncNextFunc<TParameters, TReturn>,
         context: TContext,
     ],
-    PromiseLike<TReturn>
+    Promisable<TReturn>
 >;
 
 /**
@@ -56,7 +56,7 @@ export type IAsyncMiddlewareObject<
         next: AsyncNextFunc<TParameters, TReturn>,
         context: TContext,
     ],
-    PromiseLike<TReturn>
+    Promisable<TReturn>
 >;
 
 /**
