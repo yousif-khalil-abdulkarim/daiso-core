@@ -78,7 +78,7 @@ export type RetryPolicy = Invokable<[error: unknown, attempt: number], boolean>;
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
-export type RetryMiddlewareSettings<
+export type RetrySettings<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
 > = {
@@ -125,7 +125,7 @@ export type RetryMiddlewareSettings<
 };
 
 /**
- * The `retryMiddleware` enables automatic retries for all errors or specific errors, with configurable backoff policies.
+ * The `retry` middleware enables automatic retries for all errors or specific errors, with configurable backoff policies.
  * An error will be thrown when all retry attempts fail.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
@@ -135,7 +135,7 @@ export type RetryMiddlewareSettings<
  *
  * @example
  * ```ts
- * import { retryMiddleware } from "@daiso-tech/core/async";
+ * import { retry } from "@daiso-tech/core/async";
  * import { AsyncHooks } from "@daiso-tech/core/utilities";
  *
  * await new AsyncHooks(async (url: string) => {
@@ -145,12 +145,12 @@ export type RetryMiddlewareSettings<
  *     throw json
  *   }
  *   return json;
- * }, retryMiddleware({ maxAttempts: 8 })).invoke("URL_ENDPOINT");
+ * }, retry({ maxAttempts: 8 })).invoke("URL_ENDPOINT");
  * ```
  *
  * @example
  * ```ts
- * import { LazyPromise, retryMiddleware } from "@daiso-tech/core/async";
+ * import { LazyPromise, retry } from "@daiso-tech/core/async";
  *
  * await new LazyPromise(async (): Promise<unknown> => {
  *   const response = await fetch("URL_ENDPOINT");
@@ -160,15 +160,15 @@ export type RetryMiddlewareSettings<
  *   }
  *   return json;
  * })
- * .pipe(retryMiddleware({ maxAttempts: 8 }));
+ * .pipe(retry({ maxAttempts: 8 }));
  * ```
  */
-export function retryMiddleware<
+export function retry<
     TParameters extends unknown[],
     TReturn,
     TContext extends HookContext,
 >(
-    settings: NoInfer<RetryMiddlewareSettings<TParameters, TContext>> = {},
+    settings: NoInfer<RetrySettings<TParameters, TContext>> = {},
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         maxAttempts = 4,
