@@ -75,7 +75,7 @@ describe("function: timeout", () => {
             /* Empty */
         }
 
-        expect(data?.time).toBeInstanceOf(TimeSpan);
+        expect(data?.maxTime).toBeInstanceOf(TimeSpan);
         expect(data?.args).toStrictEqual(["ENDPOINT"]);
         expect(data?.context).toStrictEqual({
             name: "fetchData",

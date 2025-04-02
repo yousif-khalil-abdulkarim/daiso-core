@@ -187,7 +187,7 @@ describe("function: retry", () => {
             name: "fetchData",
         });
         expect(data?.error).toBeInstanceOf(Error);
-        expect(data?.time.toMilliseconds()).toBe(25);
+        expect(data?.waitTime.toMilliseconds()).toBe(25);
         expect(repetition).toBe(maxAttempts);
     });
     test("Should not call onRetryStart callback when no error is thrown", async () => {
@@ -247,7 +247,7 @@ describe("function: retry", () => {
             name: "fetchData",
         });
         expect(data?.error).toBeInstanceOf(Error);
-        expect(data?.time.toMilliseconds()).toBe(25);
+        expect(data?.waitTime.toMilliseconds()).toBe(25);
         expect(repetition).toBe(maxAttempts);
     });
     test("Should not call onRetryEnd callback when no error is thrown", async () => {

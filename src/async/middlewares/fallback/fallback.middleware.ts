@@ -101,24 +101,6 @@ export type FallbackSettings<
  * // Will return null when the fetch method throws an error.
  * console.log(await fetchData.invoke("URL_ENDPOINT"));
  * ```
- *
- * @example
- * ```ts
- * import { fallback, LazyPromise } from "@daiso-tech/core/async";
- *
- * const promise = await new LazyPromise(async (): Promise<unknown> => {
- *   const response = await fetch("URL_ENDPOINT");
- *   const json = await response.json();
- *   if (!response.ok) {
- *     throw json
- *   }
- *   return json;
- * })
- * .pipe(fallback({ fallbackValue: null }));
- *
- * // Will return null when the fetch method throws an error.
- * console.log(await promise);
- * ```
  */
 export function fallback<
     TParameters extends unknown[],
