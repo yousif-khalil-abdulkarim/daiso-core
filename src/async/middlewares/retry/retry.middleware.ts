@@ -51,7 +51,7 @@ export type OnRetryData<
 > = {
     error: unknown;
     attempt: number;
-    time: TimeSpan;
+    waitTime: TimeSpan;
     args: TParameters;
     context: TContext;
 };
@@ -147,21 +147,6 @@ export type RetrySettings<
  *   return json;
  * }, retry({ maxAttempts: 8 })).invoke("URL_ENDPOINT");
  * ```
- *
- * @example
- * ```ts
- * import { LazyPromise, retry } from "@daiso-tech/core/async";
- *
- * await new LazyPromise(async (): Promise<unknown> => {
- *   const response = await fetch("URL_ENDPOINT");
- *   const json = await response.json();
- *   if (!response.ok) {
- *     throw json
- *   }
- *   return json;
- * })
- * .pipe(retry({ maxAttempts: 8 }));
- * ```
  */
 export function retry<
     TParameters extends unknown[],
@@ -190,7 +175,7 @@ export function retry<
                 );
                 callInvokable(onRetryStart, {
                     error,
-                    time,
+                    waitTime: time,
                     attempt,
                     args,
                     context,
@@ -207,7 +192,7 @@ export function retry<
 
                 callInvokable(onRetryEnd, {
                     error,
-                    time,
+                    waitTime: time,
                     attempt,
                     args,
                     context,

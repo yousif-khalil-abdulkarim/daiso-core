@@ -1,12 +1,63 @@
-import { AsyncHooks } from "@/utilities/_module-exports.js";
+import { AsyncHooks, TimeSpan } from "@/utilities/_module-exports.js";
 import { describe, expect, test } from "vitest";
 import {
     observe,
     type OnErrorData,
+    type OnFinallyData,
+    type OnStartData,
     type OnSuccessData,
 } from "@/async/middlewares/observe/observe.middleware.js";
 
 describe("function: observe", () => {
+    test("Should call onStart callback when no error is thrown", async () => {
+        let data = null as OnStartData | null;
+        await new AsyncHooks(
+            (_url: string): string => {
+                return "DATA";
+            },
+            [
+                observe({
+                    onStart(data_) {
+                        data = data_;
+                    },
+                }),
+            ],
+            {
+                name: "fetchData",
+            },
+        ).invoke("ENDPOINT");
+        expect(data?.args).toStrictEqual(["ENDPOINT"]);
+        expect(data?.context).toStrictEqual({
+            name: "fetchData",
+        });
+    });
+    test("Should call onStart callback when error is thrown", async () => {
+        let data = null as OnStartData | null;
+        const promise = new AsyncHooks(
+            (_url: string): string => {
+                throw new Error("Unexpected error");
+            },
+            [
+                observe({
+                    onStart(data_) {
+                        data = data_;
+                    },
+                }),
+            ],
+            {
+                name: "fetchData",
+            },
+        ).invoke("ENDPOINT");
+        try {
+            await promise;
+        } catch {
+            /* Empty */
+        }
+        expect(data?.args).toStrictEqual(["ENDPOINT"]);
+        expect(data?.context).toStrictEqual({
+            name: "fetchData",
+        });
+    });
     test("Should call onSuccess callback when no error is thrown", async () => {
         let data = null as OnSuccessData | null;
         await new AsyncHooks(
@@ -90,10 +141,7 @@ describe("function: observe", () => {
         expect(data).toBeNull();
     });
     test("Should call onFinally callback when no error is thrown", async () => {
-        type Context = {
-            name: string;
-        };
-        let data = null as Context | null;
+        let data = null as OnFinallyData | null;
         await new AsyncHooks(
             (): string => {
                 return "str";
@@ -101,22 +149,20 @@ describe("function: observe", () => {
             [
                 observe({
                     onFinally(data_) {
-                        data = data_ as Context;
+                        data = data_;
                     },
                 }),
             ],
-            { name: "fetchData" } satisfies Context,
+            { name: "fetchData" },
         ).invoke();
 
-        expect(data).toStrictEqual({
+        expect(data?.executionTime).toBeInstanceOf(TimeSpan);
+        expect(data?.context).toStrictEqual({
             name: "fetchData",
         });
     });
     test("Should call onFinally callback when error is thrown", async () => {
-        type Context = {
-            name: string;
-        };
-        let data = null as Context | null;
+        let data = null as OnFinallyData | null;
         const promise = new AsyncHooks(
             (): string => {
                 throw new Error("error");
@@ -124,18 +170,20 @@ describe("function: observe", () => {
             [
                 observe({
                     onFinally(data_) {
-                        data = data_ as Context;
+                        data = data_;
                     },
                 }),
             ],
-            { name: "fetchData" } satisfies Context,
+            { name: "fetchData" },
         ).invoke();
         try {
             await promise;
         } catch {
             /* Empty */
         }
-        expect(data).toStrictEqual({
+
+        expect(data?.executionTime).toBeInstanceOf(TimeSpan);
+        expect(data?.context).toStrictEqual({
             name: "fetchData",
         });
     });

@@ -20,7 +20,7 @@ export type OnTimeoutData<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
 > = {
-    time: TimeSpan;
+    maxTime: TimeSpan;
     args: TParameters;
     context: TContext;
 };
@@ -107,22 +107,6 @@ export type TimeoutSettings<
  * // An error will be thrown.
  * await promise;
  * ```
- *
- * @example
- * ```ts
- * import { LazyPromise, timeout } from "@daiso-tech/core/async";
- * import { TimeSpan } from "@daiso-tech/core/utilities";
- *
- * await new LazyPromise(async () => {
- *   const response = await fetch("ENDPOINT");
- *   const json = await response.json();
- *   if (!response.ok) {
- *     throw json
- *   }
- *   return json;
- * })
- * .pipe(timeout({ time: TimeSpan.fromSeconds(2) }));
- * ```
  */
 export function timeout<
     TParameters extends unknown[],
@@ -159,7 +143,7 @@ export function timeout<
                 error instanceof AbortAsyncError &&
                 error.cause instanceof TimeoutAsyncError
             ) {
-                callInvokable(onTimeout, { time, args, context });
+                callInvokable(onTimeout, { maxTime: time, args, context });
                 throw error.cause;
             }
             throw error;
