@@ -584,7 +584,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                         }),
                     )
                     .defer();
-                throw new TypeCacheError("!!__message__!!", error);
+                throw new TypeCacheError("!!__MESSAGE__!!", error);
             }
         });
     }

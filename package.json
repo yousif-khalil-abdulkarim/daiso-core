@@ -37,7 +37,27 @@
         "TypeScript",
         "JavaScript",
         "Multitenant",
-        "Multitenancy"
+        "Multitenancy",
+        "LazyPromise",
+        "AsyncMiddleware",
+        "AsyncHooks",
+        "Async middlewares",
+        "Async hooks",
+        "Middleware",
+        "Middlewares",
+        "Hooks",
+        "Fallback",
+        "Retry",
+        "Timeout",
+        "Deadline",
+        "resilience",
+        "Resilience",
+        "Hedging",
+        "Fallback hedging",
+        "Sequential hedging",
+        "Parallel hedging",
+        "Concurrent hedging",
+        "Latency hedging"
     ],
     "files": [
         "./dist"

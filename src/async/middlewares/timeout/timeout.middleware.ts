@@ -8,8 +8,9 @@ import {
     type HookContext,
 } from "@/utilities/_module-exports.js";
 import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
-import { AbortAsyncError, TimeoutAsyncError } from "@/async/async.errors.js";
+import { TimeoutAsyncError } from "@/async/async.errors.js";
 import { abortAndFail } from "@/async/utilities/_module.js";
+import type { AbortSignalBinder } from "@/async/middlewares/_shared.js";
 
 /**
  *
@@ -20,7 +21,7 @@ export type OnTimeoutData<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
 > = {
-    maxTime: TimeSpan;
+    waitTime: TimeSpan;
     args: TParameters;
     context: TContext;
 };
@@ -40,8 +41,15 @@ export type OnTimeout<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type AbortSignalBinder<TParameters extends unknown[] = unknown[]> =
-    Invokable<[arguments_: TParameters, signal: AbortSignal], TParameters>;
+export type TimeoutCallbacks<
+    TParameters extends unknown[] = unknown[],
+    TContext extends HookContext = HookContext,
+> = {
+    /**
+     * Callback function that will be called when the timeout occurs.
+     */
+    onTimeout?: OnTimeout<TParameters, TContext>;
+};
 
 /**
  *
@@ -51,15 +59,10 @@ export type AbortSignalBinder<TParameters extends unknown[] = unknown[]> =
 export type TimeoutSettings<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
-> = {
-    time: TimeSpan;
+> = TimeoutCallbacks<TParameters, TContext> & {
+    waitTime: TimeSpan;
 
     signalBinder?: AbortSignalBinder<TParameters>;
-
-    /**
-     * Callback function that will be called when the timeout occurs.
-     */
-    onTimeout?: OnTimeout<TParameters, TContext>;
 };
 
 /**
@@ -68,7 +71,6 @@ export type TimeoutSettings<
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
- *
  * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}
  *
  * @example
@@ -116,7 +118,7 @@ export function timeout<
     settings: NoInfer<TimeoutSettings<TParameters, TContext>>,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
-        time,
+        waitTime: time,
         signalBinder = (args) => args,
         onTimeout = () => {},
     } = settings;
@@ -139,12 +141,8 @@ export function timeout<
                 timeoutController.signal,
             );
         } catch (error: unknown) {
-            if (
-                error instanceof AbortAsyncError &&
-                error.cause instanceof TimeoutAsyncError
-            ) {
-                callInvokable(onTimeout, { maxTime: time, args, context });
-                throw error.cause;
+            if (error instanceof TimeoutAsyncError) {
+                callInvokable(onTimeout, { waitTime: time, args, context });
             }
             throw error;
         } finally {

@@ -102,11 +102,11 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
                     }),
                     abortSignal,
                 );
-            } finally {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            } catch {
                 if (timeoutId !== null) {
                     clearTimeout(timeoutId);
                 }
+                return;
             }
         });
     }

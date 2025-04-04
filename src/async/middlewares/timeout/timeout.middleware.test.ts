@@ -14,7 +14,7 @@ describe("function: timeout", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
                 return "a";
             },
-            timeout({ time: TimeSpan.fromMilliseconds(25) }),
+            timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
         await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
@@ -25,7 +25,7 @@ describe("function: timeout", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
                 return "a";
             },
-            timeout({ time: TimeSpan.fromMilliseconds(25) }),
+            timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
         await expect(outputPromise).rejects.toBeInstanceOf(TimeoutAsyncError);
@@ -36,7 +36,7 @@ describe("function: timeout", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
                 return "a";
             },
-            timeout({ time: TimeSpan.fromMilliseconds(100) }),
+            timeout({ waitTime: TimeSpan.fromMilliseconds(100) }),
         ).invoke();
 
         await expect(outputPromise).resolves.toBe("a");
@@ -46,7 +46,7 @@ describe("function: timeout", () => {
 
         const promise = new AsyncHooks(
             () => Promise.reject(new ErrorA()),
-            timeout({ time: TimeSpan.fromSeconds(2) }),
+            timeout({ waitTime: TimeSpan.fromSeconds(2) }),
         ).invoke();
         await expect(promise).rejects.toBeInstanceOf(ErrorA);
     });
@@ -59,7 +59,7 @@ describe("function: timeout", () => {
                 return "a";
             },
             timeout({
-                time,
+                waitTime: time,
                 onTimeout(data_) {
                     data = data_;
                 },
@@ -75,7 +75,7 @@ describe("function: timeout", () => {
             /* Empty */
         }
 
-        expect(data?.maxTime).toBeInstanceOf(TimeSpan);
+        expect(data?.waitTime).toBeInstanceOf(TimeSpan);
         expect(data?.args).toStrictEqual(["ENDPOINT"]);
         expect(data?.context).toStrictEqual({
             name: "fetchData",
@@ -89,7 +89,7 @@ describe("function: timeout", () => {
                 return "a";
             },
             timeout({
-                time,
+                waitTime: time,
                 onTimeout(data_) {
                     data = data_;
                 },
@@ -118,7 +118,7 @@ describe("function: timeout", () => {
                 return "a";
             },
             timeout({
-                time: TimeSpan.fromMilliseconds(25),
+                waitTime: TimeSpan.fromMilliseconds(25),
                 signalBinder: ([fnSignal], timeoutSignal) => {
                     return [
                         AbortSignal.any(
@@ -151,7 +151,7 @@ describe("function: timeout", () => {
                 return "a";
             },
             timeout({
-                time: TimeSpan.fromMilliseconds(25),
+                waitTime: TimeSpan.fromMilliseconds(25),
                 signalBinder: ([fnSignal], timeoutSignal) => {
                     return [
                         AbortSignal.any([fnSignal, timeoutSignal]),

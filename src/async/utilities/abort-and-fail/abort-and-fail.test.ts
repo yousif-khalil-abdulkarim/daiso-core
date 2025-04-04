@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { abortAndFail } from "@/async/utilities/abort-and-fail/abort-and-fail.js";
-import { AbortAsyncError, AsyncError } from "@/async/async.errors.js";
+import { AsyncError } from "@/async/async.errors.js";
 
 describe("function: abortAndFail", () => {
     test("should throw AsyncError when aborted", async () => {
@@ -11,29 +11,13 @@ describe("function: abortAndFail", () => {
         });
         const abortController = new AbortController();
         setTimeout(() => {
-            abortController.abort();
+            abortController.abort(new AsyncError("Promise was aborted"));
         }, 25);
         const outputPromise = abortAndFail(
             inputPromise,
             abortController.signal,
         );
         await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
-    });
-    test("should throw AbortAsyncError when aborted", async () => {
-        const inputPromise = new Promise((resolve) => {
-            setTimeout(() => {
-                resolve("a");
-            }, 50);
-        });
-        const abortController = new AbortController();
-        setTimeout(() => {
-            abortController.abort();
-        }, 25);
-        const outputPromise = abortAndFail(
-            inputPromise,
-            abortController.signal,
-        );
-        await expect(outputPromise).rejects.toBeInstanceOf(AbortAsyncError);
     });
     test("should return value when not aborted", async () => {
         const inputPromise = new Promise((resolve) => {
