@@ -16,7 +16,7 @@ import type {
     NamedFallback,
 } from "@/async/middlewares/hedging/_shared.js";
 import { HedgingAsyncError } from "@/async/async.errors.js";
-import { timeoutAndFail } from "@/async/utilities/_module.js";
+import { timeoutAndFail, abortAndFail } from "@/async/utilities/_module.js";
 
 /**
  * @internal
@@ -123,7 +123,10 @@ export function concurrentHedging<
             return {
                 name,
                 promise: timeoutAndFail(
-                    (async () => callInvokable(func, ...args))(),
+                    abortAndFail(
+                        (async () => callInvokable(func, ...args))(),
+                        signal,
+                    ),
                     waitTime,
                     (error: unknown) => {
                         abort(error);
