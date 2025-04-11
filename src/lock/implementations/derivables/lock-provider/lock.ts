@@ -204,6 +204,7 @@ export class Lock implements ILock {
 
     acquire(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
+            const prevState = this.lockState.get()?.getTime() ?? null;
             try {
                 this.lockState.remove();
                 const hasAquired = await this.adapter.acquire(
@@ -230,6 +231,7 @@ export class Lock implements ILock {
                 }
                 return hasAquired;
             } catch (error: unknown) {
+                this.lockState.set(prevState);
                 const event = new UnexpectedErrorLockEvent({
                     key: this.key.resolved,
                     owner: this.owner,
@@ -293,6 +295,7 @@ export class Lock implements ILock {
 
     release(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
+            const prevState = this.lockState.get()?.getTime() ?? null;
             try {
                 const hasReleased = await this.adapter.release(
                     this.key.prefixed,
@@ -316,6 +319,7 @@ export class Lock implements ILock {
                 }
                 return hasReleased;
             } catch (error: unknown) {
+                this.lockState.set(prevState);
                 const event = new UnexpectedErrorLockEvent({
                     key: this.key.resolved,
                     owner: this.owner,
@@ -345,6 +349,7 @@ export class Lock implements ILock {
 
     forceRelease(): LazyPromise<void> {
         return this.createLazyPromise(async () => {
+            const prevState = this.lockState.get()?.getTime() ?? null;
             try {
                 await this.adapter.forceRelease(this.key.prefixed);
                 this.lockState.remove();
@@ -354,6 +359,7 @@ export class Lock implements ILock {
                 this.eventDispatcher.dispatch(event).defer();
                 this.eventDispatcher.dispatch(event).defer();
             } catch (error: unknown) {
+                this.lockState.set(prevState);
                 const event = new UnexpectedErrorLockEvent({
                     key: this.key.resolved,
                     owner: this.owner,
@@ -398,6 +404,7 @@ export class Lock implements ILock {
 
     refresh(ttl: TimeSpan = this.defaultRefreshTime): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
+            const prevState = this.lockState.get()?.getTime() ?? null;
             try {
                 const hasRefreshed = await this.adapter.refresh(
                     this.key.prefixed,
@@ -423,6 +430,7 @@ export class Lock implements ILock {
                 }
                 return hasRefreshed;
             } catch (error: unknown) {
+                this.lockState.set(prevState);
                 const event = new UnexpectedErrorLockEvent({
                     key: this.key.resolved,
                     owner: this.owner,
