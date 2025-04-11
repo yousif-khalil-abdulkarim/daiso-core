@@ -28,6 +28,8 @@ A modular, framework-agnostic library providing essential components for modern 
             -   `exponentialBackoffPolicy`
             -   `linearBackoffPolicy`
             -   `polynomialBackoffPolicy`
+        -   `sequentialHedging`: Runs fallbacks sequentially if the primary function fails, ensuring graceful failure handling.
+        -   `concurrentHedging`: Executes the primary function alongside fallbacks concurrently, returning the first successful result and aborting all remaining operations.
         -   `timeout`: Guaranteed execution time limits
 -   **LazyPromise**:
     -   Executes only when awaited
@@ -46,10 +48,6 @@ A modular, framework-agnostic library providing essential components for modern 
 -   SharedLock (ReaderWriterLock)
 -   RateLimiter
 -   CircuitBreaker
--   Heding middleware with multiple strategies:
-    -   fallback strategy
-    -   parallel strategy
-    -   latency strategy
 -   MessageQueue
 -   TaskScheduler
 -   Notification system
