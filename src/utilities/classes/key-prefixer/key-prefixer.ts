@@ -109,10 +109,14 @@ export class KeyPrefixer {
     private validate(key: OneOrMore<string>): void {
         const resolvedKey = resolveOneOrMoreStr(key);
         if (resolvedKey.includes(this.rootIdentifier)) {
-            throw new Error("!!__MESSAGE__!!");
+            throw new Error(
+                `Resolved key "${resolvedKey}" cannot not include "${this.rootIdentifier}"`,
+            );
         }
         if (resolvedKey.includes(this.keyIdentifier)) {
-            throw new Error("!!__MESSAGE__!!");
+            throw new Error(
+                `Resolved key "${resolvedKey}" cannot not include "${this.keyIdentifier}"`,
+            );
         }
     }
 
