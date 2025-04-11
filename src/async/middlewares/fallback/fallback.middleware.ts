@@ -5,7 +5,6 @@
 import type {
     HookContext,
     AsyncLazyable,
-    AsyncNextFunc,
 } from "@/utilities/_module-exports.js";
 import {
     callInvokable,
@@ -13,6 +12,7 @@ import {
     type AsyncMiddlewareFn,
     type Invokable,
 } from "@/utilities/_module-exports.js";
+import type { ErrorPolicy } from "@/async/middlewares/_shared.js";
 
 /**
  *
@@ -46,7 +46,16 @@ export type OnFallback<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type FallbackPolicy = Invokable<[error: unknown], boolean>;
+export type FallbackCallbacks<
+    TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
+    TContext extends HookContext = HookContext,
+> = {
+    /**
+     * Callback function that will be called before fallback values is returned.
+     */
+    onFallback?: OnFallback<TParameters, TReturn, TContext>;
+};
 
 /**
  *
@@ -57,7 +66,7 @@ export type FallbackSettings<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext extends HookContext = HookContext,
-> = {
+> = FallbackCallbacks<TParameters, TReturn, TContext> & {
     fallbackValue: AsyncLazyable<TReturn>;
 
     /**
@@ -65,15 +74,10 @@ export type FallbackSettings<
      *
      * @default
      * ```ts
-     * () => true
+     * (_error: unknown) => true
      * ```
      */
-    fallbackPolicy?: FallbackPolicy;
-
-    /**
-     * Callback function that will be called before fallback values is returned.
-     */
-    onFallback?: OnFallback<TParameters, TReturn, TContext>;
+    fallbackPolicy?: ErrorPolicy;
 };
 
 /**
@@ -114,11 +118,7 @@ export function fallback<
         fallbackPolicy = () => true,
         onFallback = () => {},
     } = settings;
-    return async (
-        args: TParameters,
-        next: AsyncNextFunc<TParameters, TReturn>,
-        context: TContext,
-    ): Promise<TReturn> => {
+    return async (args, next, { context }): Promise<TReturn> => {
         try {
             return await next(...args);
         } catch (error: unknown) {
