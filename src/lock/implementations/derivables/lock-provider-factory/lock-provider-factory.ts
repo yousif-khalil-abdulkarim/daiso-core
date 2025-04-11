@@ -1,7 +1,7 @@
 /**
  * @module Lock
  */
-import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventBus } from "@/new-event-bus/contracts/_module-exports.js";
 import type {
     ILockProviderFactory,
     ILockProvider,
@@ -112,7 +112,7 @@ export class LockProviderFactory<TAdapters extends string>
         });
     }
 
-    setEventBus(eventBus: IEventBus<any>): LockProviderFactory<TAdapters> {
+    setEventBus(eventBus: IEventBus): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
             eventBus,

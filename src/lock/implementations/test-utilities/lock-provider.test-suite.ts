@@ -9,16 +9,17 @@ import {
 } from "vitest";
 import type { ILockProvider, ILock } from "@/lock/contracts/_module-exports.js";
 import {
-    UnownedRefreshLockEvent,
-    KeyForceReleasedLockEvent,
-    KeyAlreadyAcquiredLockEvent,
-    UnownedReleaseLockEvent,
-    KeyReleasedLockEvent,
-    KeyAcquiredLockEvent,
+    type UnownedRefreshTryLockEvent,
+    type ForceReleasedLockEvent,
+    type NotAvailableLockEvent,
+    type UnownedReleaseTryLockEvent,
+    type ReleasedLockEvent,
+    type RefreshedLockEvent,
+    type AcquiredLockEvent,
     KeyAlreadyAcquiredLockError,
     UnownedRefreshLockError,
     UnownedReleaseLockError,
-    KeyRefreshedLockEvent,
+    LOCK_EVENTS,
 } from "@/lock/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
@@ -277,7 +278,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 let index = 0;
                 await lockProvider.addListener(
-                    KeyAlreadyAcquiredLockEvent,
+                    LOCK_EVENTS.NOT_AVAILABLE,
                     (_event) => {
                         index++;
                     },
@@ -369,7 +370,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 let index = 0;
                 await lockProvider.addListener(
-                    KeyAlreadyAcquiredLockEvent,
+                    LOCK_EVENTS.NOT_AVAILABLE,
                     (_event) => {
                         index++;
                     },
@@ -548,7 +549,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 let index = 0;
                 await lockProvider.addListener(
-                    KeyAlreadyAcquiredLockEvent,
+                    LOCK_EVENTS.NOT_AVAILABLE,
                     (_event) => {
                         index++;
                     },
@@ -640,7 +641,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 let index = 0;
                 await lockProvider.addListener(
-                    KeyAlreadyAcquiredLockEvent,
+                    LOCK_EVENTS.NOT_AVAILABLE,
                     (_event) => {
                         index++;
                     },
@@ -1106,18 +1107,18 @@ export function lockProviderTestSuite(
         });
     });
     describe("Event tests:", () => {
-        describe("calss: Lock", () => {
+        describe("class: Lock", () => {
             describe("method: run", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -1128,23 +1129,23 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
+                test("Should dispatch ReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -1155,21 +1156,21 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1180,22 +1181,22 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: runBlocking", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -1212,23 +1213,23 @@ export function lockProviderTestSuite(
                     );
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
+                test("Should dispatch ReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -1245,21 +1246,21 @@ export function lockProviderTestSuite(
                     );
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1276,22 +1277,22 @@ export function lockProviderTestSuite(
                     );
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: runOrFail", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -1302,23 +1303,23 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
+                test("Should dispatch ReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -1329,21 +1330,21 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1358,22 +1359,22 @@ export function lockProviderTestSuite(
                         /* Empty */
                     }
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: acquire", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -1382,24 +1383,24 @@ export function lockProviderTestSuite(
                     await lock.acquire();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1408,22 +1409,22 @@ export function lockProviderTestSuite(
                     await lock.acquire();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: acquireBlocking", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -1435,27 +1436,27 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquireBlocking({
                         time: TimeSpan.fromMilliseconds(5),
                         interval: TimeSpan.fromMilliseconds(5),
                     });
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1467,22 +1468,22 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: acquireOrFail", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -1491,24 +1492,24 @@ export function lockProviderTestSuite(
                     await lock.acquireOrFail();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquireOrFail();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1521,13 +1522,13 @@ export function lockProviderTestSuite(
                         /* Empty */
                     }
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: release", () => {
-                test("Should dispatch KeyReleasedLockEvent when released by same owner", async () => {
+                test("Should dispatch ReleasedLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
@@ -1535,9 +1536,9 @@ export function lockProviderTestSuite(
                     });
 
                     await lock.acquire();
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -1545,11 +1546,11 @@ export function lockProviderTestSuite(
                     await lock.release();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch UnownedReleaseLockEvent when released by same owner", async () => {
+                test("Should dispatch UnownedReleaseTryLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -1561,9 +1562,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as UnownedReleaseLockEvent | null;
+                    let event_ = null as UnownedReleaseTryLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        UnownedReleaseLockEvent,
+                        LOCK_EVENTS.UNOWNED_RELEASE_TRY,
                         (event) => {
                             event_ = event;
                         },
@@ -1571,13 +1572,13 @@ export function lockProviderTestSuite(
                     await lock2.release();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner2);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner2);
                     await unsubscribe();
                 });
             });
             describe("method: releaseOrFail", () => {
-                test("Should dispatch KeyReleasedLockEvent when released by same owner", async () => {
+                test("Should dispatch ReleasedLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
@@ -1585,9 +1586,9 @@ export function lockProviderTestSuite(
                     });
 
                     await lock.acquire();
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -1595,11 +1596,11 @@ export function lockProviderTestSuite(
                     await lock.releaseOrFail();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch UnownedReleaseLockEvent when released by same owner", async () => {
+                test("Should dispatch UnownedReleaseTryLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -1611,9 +1612,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as UnownedReleaseLockEvent | null;
+                    let event_ = null as UnownedReleaseTryLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        UnownedReleaseLockEvent,
+                        LOCK_EVENTS.UNOWNED_RELEASE_TRY,
                         (event) => {
                             event_ = event;
                         },
@@ -1625,13 +1626,13 @@ export function lockProviderTestSuite(
                         /* Empty */
                     }
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner2);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner2);
                     await unsubscribe();
                 });
             });
             describe("method: forceRelease", () => {
-                test("Should dispatch KeyForceReleasedLockEvent when lock forcefully released", async () => {
+                test("Should dispatch ForceReleasedLockEvent when lock forcefully released", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -1643,9 +1644,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as KeyForceReleasedLockEvent | null;
+                    let event_ = null as ForceReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyForceReleasedLockEvent,
+                        LOCK_EVENTS.FORCE_RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -1653,12 +1654,12 @@ export function lockProviderTestSuite(
                     await lock2.forceRelease();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
+                    expect(event_?.key).toBe(key);
                     await unsubscribe();
                 });
             });
             describe("method: refresh", () => {
-                test("Should dispatch KeyRefreshedLockEvent when refreshed by same owner", async () => {
+                test("Should dispatch RefreshedLockEvent when refreshed by same owner", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
@@ -1667,9 +1668,9 @@ export function lockProviderTestSuite(
                     });
 
                     await lock.acquire();
-                    let event_ = null as KeyRefreshedLockEvent | null;
+                    let event_ = null as RefreshedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyRefreshedLockEvent,
+                        LOCK_EVENTS.REFRESHED,
                         (event) => {
                             event_ = event;
                         },
@@ -1679,14 +1680,14 @@ export function lockProviderTestSuite(
                     await lock.refresh(newTTL);
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl.toMilliseconds()).toBe(
                         newTTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch UnownedRefreshLockEvent when refreshed by different owner", async () => {
+                test("Should dispatch UnownedRefreshTryLockEvent when refreshed by different owner", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -1699,9 +1700,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as UnownedRefreshLockEvent | null;
+                    let event_ = null as UnownedRefreshTryLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        UnownedRefreshLockEvent,
+                        LOCK_EVENTS.UNOWNED_REFRESH_TRY,
                         (event) => {
                             event_ = event;
                         },
@@ -1711,13 +1712,13 @@ export function lockProviderTestSuite(
                     await lock2.refresh(newTTL);
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner2);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner2);
                     await unsubscribe();
                 });
             });
             describe("method: refreshOrFail", () => {
-                test("Should dispatch KeyRefreshedLockEvent when refreshed by same owner", async () => {
+                test("Should dispatch RefreshedLockEvent when refreshed by same owner", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
@@ -1726,9 +1727,9 @@ export function lockProviderTestSuite(
                     });
 
                     await lock.acquire();
-                    let event_ = null as KeyRefreshedLockEvent | null;
+                    let event_ = null as RefreshedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyRefreshedLockEvent,
+                        LOCK_EVENTS.REFRESHED,
                         (event) => {
                             event_ = event;
                         },
@@ -1738,14 +1739,14 @@ export function lockProviderTestSuite(
                     await lock.refreshOrFail(newTTL);
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl.toMilliseconds()).toBe(
                         newTTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch UnownedRefreshLockEvent when refreshed by different owner", async () => {
+                test("Should dispatch UnownedRefreshTryLockEvent when refreshed by different owner", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -1758,9 +1759,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as UnownedRefreshLockEvent | null;
+                    let event_ = null as UnownedRefreshTryLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        UnownedRefreshLockEvent,
+                        LOCK_EVENTS.UNOWNED_REFRESH_TRY,
                         (event) => {
                             event_ = event;
                         },
@@ -1774,24 +1775,24 @@ export function lockProviderTestSuite(
                         /* Empty */
                     }
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner2);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner2);
                     await unsubscribe();
                 });
             });
         });
         describe("LockProvider:", () => {
             describe("method: run", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -1802,23 +1803,23 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
+                test("Should dispatch ReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -1829,21 +1830,21 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1854,22 +1855,22 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: runBlocking", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -1886,23 +1887,23 @@ export function lockProviderTestSuite(
                     );
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
+                test("Should dispatch ReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -1919,21 +1920,21 @@ export function lockProviderTestSuite(
                     );
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1950,22 +1951,22 @@ export function lockProviderTestSuite(
                     );
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: runOrFail", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -1976,23 +1977,23 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyReleasedLockEvent when lock is not acquired", async () => {
+                test("Should dispatch ReleasedLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -2003,21 +2004,21 @@ export function lockProviderTestSuite(
                     });
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -2032,22 +2033,22 @@ export function lockProviderTestSuite(
                         /* Empty */
                     }
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: acquire", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -2056,24 +2057,24 @@ export function lockProviderTestSuite(
                     await lock.acquire();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -2082,22 +2083,22 @@ export function lockProviderTestSuite(
                     await lock.acquire();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: acquireBlocking", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -2106,24 +2107,24 @@ export function lockProviderTestSuite(
                     await lock.acquire();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -2132,22 +2133,22 @@ export function lockProviderTestSuite(
                     await lock.acquire();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: acquireOrFail", () => {
-                test("Should dispatch KeyAcquiredLockEvent when lock is not acquired", async () => {
+                test("Should dispatch AcquiredLockEvent when lock is not acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                         ttl: TTL,
                     });
-                    let event_ = null as KeyAcquiredLockEvent | null;
+                    let event_ = null as AcquiredLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAcquiredLockEvent,
+                        LOCK_EVENTS.ACQUIRED,
                         (event) => {
                             event_ = event;
                         },
@@ -2156,24 +2157,24 @@ export function lockProviderTestSuite(
                     await lock.acquireOrFail();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl?.toMilliseconds()).toBe(
                         TTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch KeyAlreadyAcquiredLockEvent when lock is acquired", async () => {
+                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as KeyAlreadyAcquiredLockEvent | null;
+                    let event_ = null as NotAvailableLockEvent | null;
 
                     await lock.acquireOrFail();
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyAlreadyAcquiredLockEvent,
+                        LOCK_EVENTS.NOT_AVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -2186,13 +2187,13 @@ export function lockProviderTestSuite(
                         /* Empty */
                     }
 
-                    expect(event_?.fields.key).toBe("a");
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe("a");
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
             });
             describe("method: release", () => {
-                test("Should dispatch KeyReleasedLockEvent when released by same owner", async () => {
+                test("Should dispatch ReleasedLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
@@ -2200,9 +2201,9 @@ export function lockProviderTestSuite(
                     });
 
                     await lock.acquire();
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -2210,11 +2211,11 @@ export function lockProviderTestSuite(
                     await lock.release();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch UnownedReleaseLockEvent when released by same owner", async () => {
+                test("Should dispatch UnownedReleaseTryLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -2226,9 +2227,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as UnownedReleaseLockEvent | null;
+                    let event_ = null as UnownedReleaseTryLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        UnownedReleaseLockEvent,
+                        LOCK_EVENTS.UNOWNED_RELEASE_TRY,
                         (event) => {
                             event_ = event;
                         },
@@ -2236,13 +2237,13 @@ export function lockProviderTestSuite(
                     await lock2.release();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner2);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner2);
                     await unsubscribe();
                 });
             });
             describe("method: releaseOrFail", () => {
-                test("Should dispatch KeyReleasedLockEvent when released by same owner", async () => {
+                test("Should dispatch ReleasedLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
@@ -2250,9 +2251,9 @@ export function lockProviderTestSuite(
                     });
 
                     await lock.acquire();
-                    let event_ = null as KeyReleasedLockEvent | null;
+                    let event_ = null as ReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyReleasedLockEvent,
+                        LOCK_EVENTS.RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -2260,11 +2261,11 @@ export function lockProviderTestSuite(
                     await lock.releaseOrFail();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch UnownedReleaseLockEvent when released by same owner", async () => {
+                test("Should dispatch UnownedReleaseTryLockEvent when released by same owner", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -2276,9 +2277,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as UnownedReleaseLockEvent | null;
+                    let event_ = null as UnownedReleaseTryLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        UnownedReleaseLockEvent,
+                        LOCK_EVENTS.UNOWNED_RELEASE_TRY,
                         (event) => {
                             event_ = event;
                         },
@@ -2290,13 +2291,13 @@ export function lockProviderTestSuite(
                         /* Empty */
                     }
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner2);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner2);
                     await unsubscribe();
                 });
             });
             describe("method: forceRelease", () => {
-                test("Should dispatch KeyForceReleasedLockEvent when lock forcefully released", async () => {
+                test("Should dispatch ForceReleasedLockEvent when lock forcefully released", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -2308,9 +2309,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as KeyForceReleasedLockEvent | null;
+                    let event_ = null as ForceReleasedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyForceReleasedLockEvent,
+                        LOCK_EVENTS.FORCE_RELEASED,
                         (event) => {
                             event_ = event;
                         },
@@ -2318,12 +2319,12 @@ export function lockProviderTestSuite(
                     await lock2.forceRelease();
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
+                    expect(event_?.key).toBe(key);
                     await unsubscribe();
                 });
             });
             describe("method: refresh", () => {
-                test("Should dispatch KeyRefreshedLockEvent when refreshed by same owner", async () => {
+                test("Should dispatch RefreshedLockEvent when refreshed by same owner", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
@@ -2332,9 +2333,9 @@ export function lockProviderTestSuite(
                     });
 
                     await lock.acquire();
-                    let event_ = null as KeyRefreshedLockEvent | null;
+                    let event_ = null as RefreshedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyRefreshedLockEvent,
+                        LOCK_EVENTS.REFRESHED,
                         (event) => {
                             event_ = event;
                         },
@@ -2344,14 +2345,14 @@ export function lockProviderTestSuite(
                     await lock.refresh(newTTL);
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl.toMilliseconds()).toBe(
                         newTTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch UnownedRefreshLockEvent when refreshed by different owner", async () => {
+                test("Should dispatch UnownedRefreshTryLockEvent when refreshed by different owner", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -2364,9 +2365,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as UnownedRefreshLockEvent | null;
+                    let event_ = null as UnownedRefreshTryLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        UnownedRefreshLockEvent,
+                        LOCK_EVENTS.UNOWNED_REFRESH_TRY,
                         (event) => {
                             event_ = event;
                         },
@@ -2376,13 +2377,13 @@ export function lockProviderTestSuite(
                     await lock2.refresh(newTTL);
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner2);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner2);
                     await unsubscribe();
                 });
             });
             describe("method: refreshOrFail", () => {
-                test("Should dispatch KeyRefreshedLockEvent when refreshed by same owner", async () => {
+                test("Should dispatch RefreshedLockEvent when refreshed by same owner", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
@@ -2391,9 +2392,9 @@ export function lockProviderTestSuite(
                     });
 
                     await lock.acquire();
-                    let event_ = null as KeyRefreshedLockEvent | null;
+                    let event_ = null as RefreshedLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        KeyRefreshedLockEvent,
+                        LOCK_EVENTS.REFRESHED,
                         (event) => {
                             event_ = event;
                         },
@@ -2403,14 +2404,14 @@ export function lockProviderTestSuite(
                     await lock.refreshOrFail(newTTL);
                     await LazyPromise.delay(DELAY_TIME);
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner);
-                    expect(event_?.fields.ttl.toMilliseconds()).toBe(
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner);
+                    expect(event_?.ttl.toMilliseconds()).toBe(
                         newTTL.toMilliseconds(),
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch UnownedRefreshLockEvent when refreshed by different owner", async () => {
+                test("Should dispatch UnownedRefreshTryLockEvent when refreshed by different owner", async () => {
                     const key = "a";
                     const owner1 = "b";
                     const lock1 = lockProvider.create(key, {
@@ -2423,9 +2424,9 @@ export function lockProviderTestSuite(
                     const lock2 = lockProvider.create(key, {
                         owner: owner2,
                     });
-                    let event_ = null as UnownedRefreshLockEvent | null;
+                    let event_ = null as UnownedRefreshTryLockEvent | null;
                     const unsubscribe = await lockProvider.subscribe(
-                        UnownedRefreshLockEvent,
+                        LOCK_EVENTS.UNOWNED_REFRESH_TRY,
                         (event) => {
                             event_ = event;
                         },
@@ -2439,8 +2440,8 @@ export function lockProviderTestSuite(
                         /* Empty */
                     }
 
-                    expect(event_?.fields.key).toBe(key);
-                    expect(event_?.fields.owner).toBe(owner2);
+                    expect(event_?.key).toBe(key);
+                    expect(event_?.owner).toBe(owner2);
                     await unsubscribe();
                 });
             });

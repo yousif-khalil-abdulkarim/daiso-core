@@ -11,29 +11,32 @@ import {
     resolveLazyable,
 } from "@/utilities/_module-exports.js";
 import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
+import type {
+    AcquiredLockEvent,
+    NotAvailableLockEvent,
+    ReleasedLockEvent,
+    UnownedReleaseTryLockEvent,
+    ForceReleasedLockEvent,
+    RefreshedLockEvent,
+    UnownedRefreshTryLockEvent,
+    UnexpectedErrorLockEvent,
+} from "@/lock/contracts/_module-exports.js";
 import {
-    KeyAcquiredLockEvent,
     KeyAlreadyAcquiredLockError,
-    KeyAlreadyAcquiredLockEvent,
-    KeyForceReleasedLockEvent,
-    KeyRefreshedLockEvent,
-    KeyReleasedLockEvent,
+    LOCK_EVENTS,
     UnableToAquireLockError,
     UnableToReleaseLockError,
-    UnexpectedErrorLockEvent,
     UnownedRefreshLockError,
-    UnownedRefreshLockEvent,
     UnownedReleaseLockError,
-    UnownedReleaseLockEvent,
     type AquireBlockingSettings,
-    type LockEvents,
+    type LockEventMap,
 } from "@/lock/contracts/_module-exports.js";
 import {
     type ILock,
     type ILockAdapter,
 } from "@/lock/contracts/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
-import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventDispatcher } from "@/new-event-bus/contracts/_module-exports.js";
 
 import type { LockState } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
 
@@ -56,7 +59,7 @@ export type LockSettings = {
     ) => LazyPromise<TValue>;
     adapter: ILockAdapter;
     lockState: LockState;
-    eventDispatcher: IEventDispatcher<LockEvents>;
+    eventDispatcher: IEventDispatcher<LockEventMap>;
     key: Key;
     owner: OneOrMore<string>;
     ttl: TimeSpan | null;
@@ -89,7 +92,7 @@ export class Lock implements ILock {
     ) => LazyPromise<TValue>;
     private readonly adapter: ILockAdapter;
     private readonly lockState: LockState;
-    private readonly eventDispatcher: IEventDispatcher<LockEvents>;
+    private readonly eventDispatcher: IEventDispatcher<LockEventMap>;
     private readonly key: Key;
     private readonly owner: string;
     private readonly ttl: TimeSpan | null;
@@ -214,33 +217,36 @@ export class Lock implements ILock {
                 );
                 if (hasAquired) {
                     this.lockState.set(this.ttl);
-                    const event = new KeyAcquiredLockEvent({
+                    const event: AcquiredLockEvent = {
                         key: this.key.resolved,
                         owner: this.owner,
                         ttl: this.ttl,
-                    });
-                    this.eventDispatcher.dispatch(event).defer();
-                    this.eventDispatcher.dispatch(event).defer();
+                    };
+                    this.eventDispatcher
+                        .dispatch(LOCK_EVENTS.ACQUIRED, event)
+                        .defer();
                 } else {
-                    const event = new KeyAlreadyAcquiredLockEvent({
+                    const event: NotAvailableLockEvent = {
                         key: this.key.resolved,
                         owner: this.owner,
-                    });
-                    this.eventDispatcher.dispatch(event).defer();
-                    this.eventDispatcher.dispatch(event).defer();
+                    };
+                    this.eventDispatcher
+                        .dispatch(LOCK_EVENTS.NOT_AVAILABLE, event)
+                        .defer();
                 }
                 return hasAquired;
             } catch (error: unknown) {
                 this.lockState.set(prevState);
-                const event = new UnexpectedErrorLockEvent({
+                const event: UnexpectedErrorLockEvent = {
                     key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
-                });
-                this.eventDispatcher.dispatch(event).defer();
-                this.eventDispatcher.dispatch(event).defer();
-                // `A listener with name of "${resolvedListener.name}" could not added for "${String(event)}" event`,
+                };
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
+                    .defer();
+
                 throw new UnableToAquireLockError(
                     `A Lock with name of "${this.key.resolved}" could not be acquired.`,
                     error,
@@ -303,31 +309,34 @@ export class Lock implements ILock {
                 );
                 if (hasReleased) {
                     this.lockState.remove();
-                    const event = new KeyReleasedLockEvent({
+                    const event: ReleasedLockEvent = {
                         key: this.key.resolved,
                         owner: this.owner,
-                    });
-                    this.eventDispatcher.dispatch(event).defer();
-                    this.eventDispatcher.dispatch(event).defer();
+                    };
+                    this.eventDispatcher
+                        .dispatch(LOCK_EVENTS.RELEASED, event)
+                        .defer();
                 } else {
-                    const event = new UnownedReleaseLockEvent({
+                    const event: UnownedReleaseTryLockEvent = {
                         key: this.key.resolved,
                         owner: this.owner,
-                    });
-                    this.eventDispatcher.dispatch(event).defer();
-                    this.eventDispatcher.dispatch(event).defer();
+                    };
+                    this.eventDispatcher
+                        .dispatch(LOCK_EVENTS.UNOWNED_RELEASE_TRY, event)
+                        .defer();
                 }
                 return hasReleased;
             } catch (error: unknown) {
                 this.lockState.set(prevState);
-                const event = new UnexpectedErrorLockEvent({
+                const event: UnexpectedErrorLockEvent = {
                     key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
-                });
-                this.eventDispatcher.dispatch(event).defer();
-                this.eventDispatcher.dispatch(event).defer();
+                };
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
+                    .defer();
                 throw new UnableToReleaseLockError(
                     `A Lock with name of "${this.key.resolved}" could not be released.`,
                     error,
@@ -353,21 +362,23 @@ export class Lock implements ILock {
             try {
                 await this.adapter.forceRelease(this.key.prefixed);
                 this.lockState.remove();
-                const event = new KeyForceReleasedLockEvent({
+                const event: ForceReleasedLockEvent = {
                     key: this.key.resolved,
-                });
-                this.eventDispatcher.dispatch(event).defer();
-                this.eventDispatcher.dispatch(event).defer();
+                };
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.FORCE_RELEASED, event)
+                    .defer();
             } catch (error: unknown) {
                 this.lockState.set(prevState);
-                const event = new UnexpectedErrorLockEvent({
+                const event: UnexpectedErrorLockEvent = {
                     key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
-                });
-                this.eventDispatcher.dispatch(event).defer();
-                this.eventDispatcher.dispatch(event).defer();
+                };
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
+                    .defer();
                 throw new UnableToReleaseLockError(
                     `A Lock with name of "${this.key.resolved}" could not be released.`,
                     error,
@@ -382,14 +393,15 @@ export class Lock implements ILock {
             try {
                 return this.lockState.isExpired();
             } catch (error: unknown) {
-                const event = new UnexpectedErrorLockEvent({
+                const event: UnexpectedErrorLockEvent = {
                     key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
-                });
-                this.eventDispatcher.dispatch(event).defer();
-                this.eventDispatcher.dispatch(event).defer();
+                };
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
+                    .defer();
                 throw error;
             }
         });
@@ -412,33 +424,36 @@ export class Lock implements ILock {
                     ttl,
                 );
                 if (hasRefreshed) {
-                    const event = new KeyRefreshedLockEvent({
+                    const event: RefreshedLockEvent = {
                         key: this.key.resolved,
                         owner: this.owner,
                         ttl,
-                    });
+                    };
                     this.lockState.set(ttl);
-                    this.eventDispatcher.dispatch(event).defer();
-                    this.eventDispatcher.dispatch(event).defer();
+                    this.eventDispatcher
+                        .dispatch(LOCK_EVENTS.REFRESHED, event)
+                        .defer();
                 } else {
-                    const event = new UnownedRefreshLockEvent({
+                    const event: UnownedRefreshTryLockEvent = {
                         key: this.key.resolved,
                         owner: this.owner,
-                    });
-                    this.eventDispatcher.dispatch(event).defer();
-                    this.eventDispatcher.dispatch(event).defer();
+                    };
+                    this.eventDispatcher
+                        .dispatch(LOCK_EVENTS.UNOWNED_REFRESH_TRY, event)
+                        .defer();
                 }
                 return hasRefreshed;
             } catch (error: unknown) {
                 this.lockState.set(prevState);
-                const event = new UnexpectedErrorLockEvent({
+                const event: UnexpectedErrorLockEvent = {
                     key: this.key.resolved,
                     owner: this.owner,
                     ttl: this.ttl,
                     error,
-                });
-                this.eventDispatcher.dispatch(event).defer();
-                this.eventDispatcher.dispatch(event).defer();
+                };
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
+                    .defer();
                 throw error;
             }
         });

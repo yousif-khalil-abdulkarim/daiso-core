@@ -4,8 +4,8 @@
 
 import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
 import type { ILock } from "@/lock/contracts/lock.contract.js";
-import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
-import type { LockEvents } from "@/lock/contracts/lock.events.js";
+import type { IEventListenable } from "@/new-event-bus/contracts/_module-exports.js";
+import type { LockEventMap } from "@/lock/contracts/lock.events.js";
 
 /**
  * The `ILockListenable` contract defines a way for listening {@link ILock | `ILock`} operations.
@@ -13,7 +13,7 @@ import type { LockEvents } from "@/lock/contracts/lock.events.js";
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
-export type ILockListenable = IEventListenable<LockEvents>;
+export type ILockListenable = IEventListenable<LockEventMap>;
 
 /**
  *

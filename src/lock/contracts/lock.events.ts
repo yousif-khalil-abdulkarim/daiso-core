@@ -3,15 +3,8 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ILock } from "@/lock/contracts/lock.contract.js";
-import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
-import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
-import type { OneOrMore } from "@/utilities/_module-exports.js";
-import {
-    CORE,
-    resolveOneOrMore,
-    type TimeSpan,
-} from "@/utilities/_module-exports.js";
+
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  * The event is dispatched when a lock is aquired.
@@ -19,11 +12,11 @@ import {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export class KeyAcquiredLockEvent extends BaseEvent<{
+export type AcquiredLockEvent = {
     key: string;
     owner: string;
     ttl: TimeSpan | null;
-}> {}
+};
 
 /**
  * The event is dispatched when a lock is released.
@@ -31,10 +24,10 @@ export class KeyAcquiredLockEvent extends BaseEvent<{
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export class KeyReleasedLockEvent extends BaseEvent<{
+export type ReleasedLockEvent = {
     key: string;
     owner: string;
-}> {}
+};
 
 /**
  * The event is dispatched when a lock is forcefully released.
@@ -42,9 +35,9 @@ export class KeyReleasedLockEvent extends BaseEvent<{
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export class KeyForceReleasedLockEvent extends BaseEvent<{
+export type ForceReleasedLockEvent = {
     key: string;
-}> {}
+};
 
 /**
  * The event is dispatched when trying to release a lock that is owned by a different owner.
@@ -52,10 +45,10 @@ export class KeyForceReleasedLockEvent extends BaseEvent<{
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export class UnownedReleaseLockEvent extends BaseEvent<{
+export type UnownedReleaseTryLockEvent = {
     key: string;
     owner: string;
-}> {}
+};
 
 /**
  * The event is dispatched when trying to refefresh a lock that is owned by a different owner.
@@ -63,10 +56,10 @@ export class UnownedReleaseLockEvent extends BaseEvent<{
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export class UnownedRefreshLockEvent extends BaseEvent<{
+export type UnownedRefreshTryLockEvent = {
     key: string;
     owner: string;
-}> {}
+};
 
 /**
  * The event is dispatched when trying to acquire a lock that is owned by a different owner.
@@ -74,10 +67,10 @@ export class UnownedRefreshLockEvent extends BaseEvent<{
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export class KeyAlreadyAcquiredLockEvent extends BaseEvent<{
+export type NotAvailableLockEvent = {
     key: string;
     owner: string;
-}> {}
+};
 
 /**
  * The event is dispatched when a lock is refreshed.
@@ -85,23 +78,23 @@ export class KeyAlreadyAcquiredLockEvent extends BaseEvent<{
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export class KeyRefreshedLockEvent extends BaseEvent<{
+export type RefreshedLockEvent = {
     key: string;
     owner: string;
     ttl: TimeSpan;
-}> {}
+};
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export class UnexpectedErrorLockEvent extends BaseEvent<{
+export type UnexpectedErrorLockEvent = {
     key: string;
     owner: string;
     ttl: TimeSpan | null;
     error: unknown;
-}> {}
+};
 
 /**
  *
@@ -109,14 +102,14 @@ export class UnexpectedErrorLockEvent extends BaseEvent<{
  * @group Events
  */
 export const LOCK_EVENTS = {
-    KeyAcquired: KeyAcquiredLockEvent,
-    KeyReleased: KeyReleasedLockEvent,
-    UnownedRelease: UnownedReleaseLockEvent,
-    UnownedRefresh: UnownedRefreshLockEvent,
-    KeyAlreadyAcquired: KeyAlreadyAcquiredLockEvent,
-    KeyForceReleased: KeyForceReleasedLockEvent,
-    KeyRefreshed: KeyRefreshedLockEvent,
-    UnexpectedError: UnexpectedErrorLockEvent,
+    ACQUIRED: "ACQUIRED",
+    RELEASED: "RELEASED",
+    UNOWNED_RELEASE_TRY: "UNOWNED_RELEASE_TRY",
+    UNOWNED_REFRESH_TRY: "UNOWNED_REFRESH_TRY",
+    NOT_AVAILABLE: "NOT_AVAILABLE",
+    FORCE_RELEASED: "FORCE_RELEASED",
+    REFRESHED: "REFRESHED",
+    UNEXPECTED_ERROR: "UNEXPECTED_ERROR",
 } as const;
 
 /**
@@ -124,32 +117,13 @@ export const LOCK_EVENTS = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type LockEvents =
-    | KeyAcquiredLockEvent
-    | KeyReleasedLockEvent
-    | UnownedReleaseLockEvent
-    | UnownedRefreshLockEvent
-    | KeyAlreadyAcquiredLockEvent
-    | KeyForceReleasedLockEvent
-    | KeyRefreshedLockEvent
-    | UnexpectedErrorLockEvent;
-
-/**
- * The `registerLockEventsToSerde` function registers all {@link ILock | `ILock`} related events with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
- * @group Events
- */
-export function registerLockEventsToSerde(
-    serde: OneOrMore<IFlexibleSerde>,
-): void {
-    for (const serde_ of resolveOneOrMore(serde)) {
-        serde_
-            .registerEvent(KeyAcquiredLockEvent, CORE)
-            .registerEvent(KeyReleasedLockEvent, CORE)
-            .registerEvent(UnownedReleaseLockEvent, CORE)
-            .registerEvent(KeyAlreadyAcquiredLockEvent, CORE)
-            .registerEvent(UnownedRefreshLockEvent, CORE)
-            .registerEvent(UnexpectedErrorLockEvent, CORE);
-    }
-}
+export type LockEventMap = {
+    [LOCK_EVENTS.ACQUIRED]: AcquiredLockEvent;
+    [LOCK_EVENTS.RELEASED]: ReleasedLockEvent;
+    [LOCK_EVENTS.UNOWNED_RELEASE_TRY]: UnownedReleaseTryLockEvent;
+    [LOCK_EVENTS.UNOWNED_REFRESH_TRY]: UnownedRefreshTryLockEvent;
+    [LOCK_EVENTS.NOT_AVAILABLE]: NotAvailableLockEvent;
+    [LOCK_EVENTS.FORCE_RELEASED]: ForceReleasedLockEvent;
+    [LOCK_EVENTS.REFRESHED]: RefreshedLockEvent;
+    [LOCK_EVENTS.UNEXPECTED_ERROR]: UnexpectedErrorLockEvent;
+};

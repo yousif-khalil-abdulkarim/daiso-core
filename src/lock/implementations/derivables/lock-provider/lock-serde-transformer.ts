@@ -10,7 +10,7 @@ import {
 import type { OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     ILockAdapter,
-    LockEvents,
+    LockEventMap,
 } from "@/lock/contracts/_module-exports.js";
 import {
     LockState,
@@ -22,7 +22,7 @@ import {
     type KeyPrefixer,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
-import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventBus } from "@/new-event-bus/contracts/_module-exports.js";
 
 /**
  * @internal
@@ -37,7 +37,7 @@ export type LockSerdeTransformerSettings = {
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
-    eventBus: IEventBus<LockEvents>;
+    eventBus: IEventBus<LockEventMap>;
     serdeTransformerName: string;
 };
 
@@ -56,7 +56,7 @@ export class LockSerdeTransformer
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
-    private readonly eventBus: IEventBus<LockEvents>;
+    private readonly eventBus: IEventBus<LockEventMap>;
     private readonly serdeTransformerName: string;
 
     constructor(settings: LockSerdeTransformerSettings) {
