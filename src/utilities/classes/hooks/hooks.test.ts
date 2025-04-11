@@ -118,14 +118,16 @@ describe("class: Hooks", () => {
         new Hooks(
             fn,
             [
-                (args, next, context_) => {
+                (args, next, { context: context_ }) => {
                     context = context_;
                     return next(...args);
                 },
             ],
             {
-                name: "Kalle",
-                age: 20,
+                context: {
+                    name: "Kalle",
+                    age: 20,
+                },
             },
         ).invoke(1);
         expect(context).toStrictEqual({
@@ -144,14 +146,16 @@ describe("class: Hooks", () => {
                 (args, next) => {
                     return next(...args);
                 },
-                (args, next, context_) => {
+                (args, next, { context: context_ }) => {
                     context = context_;
                     return next(...args);
                 },
             ],
             {
-                name: "Kalle",
-                age: 20,
+                context: {
+                    name: "Kalle",
+                    age: 20,
+                },
             },
         ).invoke(1);
         expect(context).toStrictEqual({

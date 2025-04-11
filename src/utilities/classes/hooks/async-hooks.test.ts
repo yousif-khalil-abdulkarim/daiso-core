@@ -118,14 +118,16 @@ describe("class: AsyncHooks", () => {
         await new AsyncHooks(
             fn,
             [
-                async (args, next, context_) => {
+                async (args, next, { context: context_ }) => {
                     context = context_;
                     return await next(...args);
                 },
             ],
             {
-                name: "Kalle",
-                age: 20,
+                context: {
+                    name: "Kalle",
+                    age: 20,
+                },
             },
         ).invoke(1);
         expect(context).toStrictEqual({
@@ -144,19 +146,73 @@ describe("class: AsyncHooks", () => {
                 async (args, next) => {
                     return await next(...args);
                 },
-                async (args, next, context_) => {
+                async (args, next, { context: context_ }) => {
                     context = context_;
                     return await next(...args);
                 },
             ],
             {
-                name: "Kalle",
-                age: 20,
+                context: {
+                    name: "Kalle",
+                    age: 20,
+                },
             },
         ).invoke(1);
         expect(context).toStrictEqual({
             name: "Kalle",
             age: 20,
         });
+    });
+    test("Should abort middleware from function", async () => {
+        const abortController = new AbortController();
+        abortController.abort("aborted");
+        let hasAborted = false;
+        await new AsyncHooks(
+            (_url: string, _signal?: AbortSignal): Promise<unknown> => {
+                return Promise.resolve("data");
+            },
+            [
+                (args, next, { signal }) => {
+                    hasAborted = signal.aborted;
+                    return next(...args);
+                },
+            ],
+            {
+                signalBinder: {
+                    getSignal: (args) => args[1],
+                    forwardSignal: (args, signal) => {
+                        args[1] = signal;
+                    },
+                },
+            },
+        ).invoke("url", abortController.signal);
+        expect(hasAborted).toBe(true);
+    });
+    test("Should abort function from middleware", async () => {
+        const abortController = new AbortController();
+        let hasAborted = false;
+        await new AsyncHooks(
+            (_url: string, signal?: AbortSignal): Promise<unknown> => {
+                if (signal?.aborted) {
+                    hasAborted = signal.aborted;
+                }
+                return Promise.resolve("data");
+            },
+            [
+                (args, next, { abort }) => {
+                    abort("Aborted");
+                    return next(...args);
+                },
+            ],
+            {
+                signalBinder: {
+                    getSignal: (args) => args[1],
+                    forwardSignal: (args, signal) => {
+                        args[1] = signal;
+                    },
+                },
+            },
+        ).invoke("url", abortController.signal);
+        expect(hasAborted).toBe(true);
     });
 });

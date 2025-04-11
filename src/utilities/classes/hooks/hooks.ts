@@ -3,6 +3,7 @@
  */
 
 import {
+    getInvokableName,
     resolveInvokable,
     resolveOneOrMore,
     type IInvokableObject,
@@ -10,6 +11,7 @@ import {
     type InvokableFn,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
+import type { HookContext } from "@/utilities/classes/hooks/types.js";
 
 /**
  *
@@ -26,15 +28,25 @@ export type NextFunc<
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
+export type Context<TContext extends HookContext = HookContext> = {
+    name: string;
+    context: TContext;
+};
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Hooks
+ */
 export type MiddlewareFn<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
-    TContext = object,
+    TContext extends HookContext = HookContext,
 > = InvokableFn<
     [
         arguments_: TParameters,
         next: NextFunc<TParameters, TReturn>,
-        context: TContext,
+        settings: Context<TContext>,
     ],
     TReturn
 >;
@@ -47,12 +59,12 @@ export type MiddlewareFn<
 export type IMiddlewareObject<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
-    TContext = object,
+    TContext extends HookContext = HookContext,
 > = IInvokableObject<
     [
         arguments_: TParameters,
         next: NextFunc<TParameters, TReturn>,
-        context: TContext,
+        settings: Context<TContext>,
     ],
     TReturn
 >;
@@ -65,14 +77,32 @@ export type IMiddlewareObject<
 export type Middleware<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
-    TContext = object,
+    TContext extends HookContext = HookContext,
 > =
     | IMiddlewareObject<TParameters, TReturn, TContext>
     | MiddlewareFn<TParameters, TReturn, TContext>;
 
 /**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Hooks
+ */
+export type HooksSettings<TContext extends HookContext = HookContext> = {
+    /**
+     * The name of the function which can be used for logging inside the middleware.
+     * By default, it takes the function or method name. If an anonymous function is provided, the name defaults to "func".
+     */
+    name?: string;
+
+    /**
+     * You can provide addtional context that can be used in the middleware.
+     */
+    context?: TContext;
+};
+
+/**
  * The `Hooks` class provides a convenient way to change and inspect arguments and return value of both only sync functions.
- * For example `Hooks` class can be used to log function arguments and return values. Note this class will always return sync value and is immutable.
+ * For example `Hooks` class can be used to log function arguments and return values. Note this class will always return promise and is immutable.
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
@@ -80,23 +110,34 @@ export type Middleware<
 export class Hooks<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
-    TContext extends Partial<Record<string, unknown>> = Partial<
-        Record<string, unknown>
-    >,
+    TContext extends HookContext = HookContext,
 > implements IInvokableObject<TParameters, TReturn>
 {
-    private static init<TParameters extends unknown[], TReturn, TContext>(
+    private static init<
+        TParameters extends unknown[],
+        TReturn,
+        TContext extends HookContext,
+    >(
         invokable: Invokable<TParameters, TReturn>,
         middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
-        context: TContext,
+        {
+            name = getInvokableName(invokable),
+            context = {} as TContext,
+        }: HooksSettings<TContext>,
     ): InvokableFn<TParameters, TReturn> {
         let func = resolveInvokable(invokable);
         for (const hook of resolveOneOrMore(middlewares)
             .map(resolveInvokable)
             .reverse()) {
             const prevFunc = func;
-            func = (...arguments_: TParameters) =>
-                hook(arguments_, prevFunc, context);
+            const next = (...arguments_: TParameters) =>
+                prevFunc(...arguments_);
+            func = (...arguments_: TParameters) => {
+                return hook(arguments_, next, {
+                    name,
+                    context,
+                });
+            };
         }
         return func;
     }
@@ -109,7 +150,7 @@ export class Hooks<
      * import { Hooks, type MiddlewareFn } from "@daiso-tech/core/utilities";
      *
      * function log<TParameters extends unknown[], TReturn>(): MiddlewareFn<TParameters, TReturn, { funcName: string; }> {
-     *   return (args, next, { funcName }) => {
+     *   return (args, next, { name: funcName }) => {
      *     console.log("FUNCTION_NAME:", funcName);
      *     console.log("ARGUMENTS:", args);
      *     const value = next(...args);
@@ -136,10 +177,9 @@ export class Hooks<
      * const enhancedAdd = new Hooks(add, [
      *   log(),
      *   time()
-     * ],
-     * // You can provide additional information to `Middleware` invokables.
-     * {
-     *    funcName: add.name
+     * ], {
+     *   // You can provide addtional data to be used the middleware.
+     *   context: {},
      * });
      *
      * // Will log the function name, arguments and return value.
@@ -155,12 +195,9 @@ export class Hooks<
         private readonly middlewares: NoInfer<
             OneOrMore<Middleware<TParameters, TReturn, TContext>>
         >,
-        /**
-         * You can pass in additional information that can be used by the middleware.
-         */
-        private readonly context = {} as TContext,
+        private readonly settings: HooksSettings<TContext> = {},
     ) {
-        this.func = Hooks.init(invokable, middlewares, context);
+        this.func = Hooks.init(invokable, middlewares, this.settings);
     }
 
     /**
@@ -175,7 +212,7 @@ export class Hooks<
                 ...resolveOneOrMore(this.middlewares),
                 ...resolveOneOrMore(middlewares),
             ],
-            this.context,
+            this.settings,
         );
     }
 
