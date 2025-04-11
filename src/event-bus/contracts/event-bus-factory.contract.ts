@@ -2,14 +2,16 @@
  * @module EventBus
  */
 
-import type { IEventBus } from "@/event-bus/contracts/event-bus.contract.js";
+import type {
+    BaseEventMap,
+    IEventBus,
+} from "@/event-bus/contracts/event-bus.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultAdapterNotDefinedError,
 } from "@/utilities/_module-exports.js";
-import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
 
 /**
  * The `IEventBusFactory` contract makes it easy to configure and switch between different {@link IEventBus | `IEventBus`} dynamically.
@@ -24,7 +26,7 @@ export type IEventBusFactory<TAdapters extends string = string> = {
      * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      */
-    use<TEvents extends BaseEvent = BaseEvent>(
+    use<TEventMap extends BaseEventMap>(
         adapterName?: TAdapters,
-    ): IEventBus<TEvents>;
+    ): IEventBus<TEventMap>;
 };

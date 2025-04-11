@@ -4,8 +4,8 @@
 
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
-    EventClass,
-    EventInstance,
+    BaseEvent,
+    BaseEventMap,
     EventListener,
     EventListenerFn,
     Unsubscribe,
@@ -13,7 +13,6 @@ import type {
 import {
     type IEventBus,
     type IEventBusAdapter,
-    type BaseEvent,
     UnableToDispatchEventBusError,
     UnableToRemoveListenerEventBusError,
     UnableToAddListenerEventBusError,
@@ -26,7 +25,6 @@ import type {
     FactoryFn,
 } from "@/utilities/_module-exports.js";
 import {
-    getConstructorName,
     resolveFactory,
     resolveInvokable,
 } from "@/utilities/_module-exports.js";
@@ -67,8 +65,8 @@ export type EventBusSettings = EventBusSettingsBase & {
  * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
-export class EventBus<TEvents extends BaseEvent = BaseEvent>
-    implements IEventBus<TEvents>
+export class EventBus<TEventMap extends BaseEventMap>
+    implements IEventBus<TEventMap>
 {
     private readonly store = new ListenerStore();
     private readonly adapter: IEventBusAdapter;
@@ -108,39 +106,39 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
         return this.lazyPromiseFactory(asyncFn);
     }
 
-    addListener<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    addListener<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const eventName = this.keyPrefixer.create(event.name);
+            const key = this.keyPrefixer.create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
-                [eventName.prefixed, listener],
+                [key.prefixed, listener],
                 resolveInvokable(listener),
             );
             try {
                 await this.adapter.addListener(
-                    eventName.prefixed,
+                    key.prefixed,
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getAndRemove([eventName.prefixed, listener]);
+                this.store.getAndRemove([key.prefixed, listener]);
                 throw new UnableToAddListenerEventBusError(
-                    `A listener with name of "${event.name}" could not added for "${String(event)}" event`,
+                    `A listener with name of "${String(eventName)}" could not added for "${String(eventName)}" event`,
                     error,
                 );
             }
         });
     }
 
-    removeListener<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    removeListener<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const eventName = this.keyPrefixer.create(event.name);
+            const key = this.keyPrefixer.create(String(eventName));
             const resolvedListener = this.store.getAndRemove([
-                eventName.prefixed,
+                key.prefixed,
                 listener,
             ]);
             if (resolvedListener === null) {
@@ -148,102 +146,103 @@ export class EventBus<TEvents extends BaseEvent = BaseEvent>
             }
             try {
                 await this.adapter.removeListener(
-                    eventName.prefixed,
+                    key.prefixed,
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
                 throw new UnableToRemoveListenerEventBusError(
-                    `A listener with name of "${event.name}" could not removed of "${String(event)}" event`,
+                    `A listener with name of "${String(eventName)}" could not removed of "${String(eventName)}" event`,
                     error,
                 );
             }
         });
     }
 
-    listenOnce<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    listenOnce<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const wrappedListener = async (
-                event_: EventInstance<TEventClass>,
-            ) => {
+            const wrappedListener = async (event_: TEventMap[TEventName]) => {
                 try {
                     const resolvedListener = resolveInvokable(listener);
                     await resolvedListener(event_);
                 } finally {
-                    await this.removeListener(event, listener);
+                    await this.removeListener(eventName, listener);
                 }
             };
 
-            const eventName = this.keyPrefixer.create(event.name);
+            const key = this.keyPrefixer.create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
-                [eventName.prefixed, listener],
+                [key.prefixed, listener],
                 wrappedListener,
             );
             try {
                 await this.adapter.addListener(
-                    eventName.prefixed,
+                    key.prefixed,
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getAndRemove([eventName.prefixed, listener]);
+                this.store.getAndRemove([key.prefixed, listener]);
                 throw new UnableToAddListenerEventBusError(
-                    `A listener with name of "${event.name}" could not added for "${String(event)}" event`,
+                    `A listener with name of "${String(eventName)}" could not added for "${String(eventName)}" event`,
                     error,
                 );
             }
         });
     }
 
-    asPromise<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-    ): LazyPromise<EventInstance<TEventClass>> {
+    asPromise<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+    ): LazyPromise<TEventMap[TEventName]> {
         return LazyPromise.fromCallback((resolve, reject) => {
-            this.listenOnce(event, resolve).then(() => {}, reject);
+            this.listenOnce(eventName, resolve).then(() => {}, reject);
         });
     }
 
-    subscribeOnce<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    subscribeOnce<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<Unsubscribe> {
         return this.createLazyPromise(async () => {
-            await this.listenOnce(event, listener);
+            await this.listenOnce(eventName, listener);
             const unsubscribe = () => {
                 return this.createLazyPromise(async () => {
-                    await this.removeListener(event, listener);
+                    await this.removeListener(eventName, listener);
                 });
             };
             return unsubscribe;
         });
     }
 
-    subscribe<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    subscribe<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<Unsubscribe> {
         return this.createLazyPromise(async () => {
-            await this.addListener(event, listener);
+            await this.addListener(eventName, listener);
             const unsubscribe = () => {
                 return this.createLazyPromise(async () => {
-                    await this.removeListener(event, listener);
+                    await this.removeListener(eventName, listener);
                 });
             };
             return unsubscribe;
         });
     }
 
-    dispatch(event: TEvents): LazyPromise<void> {
+    dispatch<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        event: TEventMap[TEventName],
+    ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             try {
                 await this.adapter.dispatch(
-                    this.keyPrefixer.create(getConstructorName(event)).prefixed,
+                    this.keyPrefixer.create(String(eventName)).prefixed,
                     event,
                 );
             } catch (error: unknown) {
                 throw new UnableToDispatchEventBusError(
-                    `Events of type "${getConstructorName(event)}" could not be dispatched`,
+                    `Events of type "${String(eventName)}" could not be dispatched`,
                     error,
                 );
             }

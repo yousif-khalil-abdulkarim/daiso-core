@@ -14,7 +14,7 @@ import {
 import { KeyPrefixer, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
-    LockEvents,
+    LockEventMap,
 } from "@/lock/contracts/_module-exports.js";
 import {
     type ILock,
@@ -24,8 +24,6 @@ import {
 } from "@/lock/contracts/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
-    EventClass,
-    EventInstance,
     EventListener,
     IEventBus,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -90,7 +88,7 @@ export type LockProviderSettingsBase = {
      * })
      * ```
      */
-    eventBus?: IEventBus<any>;
+    eventBus?: IEventBus;
 
     /**
      * You can decide the default ttl value for {@link ILock | `ILock`} expiration. If null is passed then no ttl will be used by default.
@@ -156,7 +154,7 @@ export type LockProviderSettings = LockProviderSettingsBase & {
  */
 export class LockProvider implements ILockProvider {
     private lockStore: ILockStore = {};
-    private readonly eventBus: IEventBus<LockEvents>;
+    private readonly eventBus: IEventBus<LockEventMap>;
     private readonly adapter: ILockAdapter;
     private readonly keyPrefixer: KeyPrefixer;
     private readonly createOwnerId: () => string;
@@ -206,7 +204,7 @@ export class LockProvider implements ILockProvider {
             serde,
             keyPrefixer,
             adapter,
-            eventBus = new EventBus({
+            eventBus = new EventBus<any>({
                 keyPrefixer: new KeyPrefixer("events"),
                 adapter: new MemoryEventBusAdapter(),
             }),
@@ -255,65 +253,65 @@ export class LockProvider implements ILockProvider {
      * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    addListener<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    addListener<TEventName extends keyof LockEventMap>(
+        eventName: TEventName,
+        listener: EventListener<LockEventMap[TEventName]>,
     ): LazyPromise<void> {
-        return this.eventBus.addListener(event, listener);
+        return this.eventBus.addListener(eventName, listener);
     }
 
     /**
      * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    removeListener<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    removeListener<TEventName extends keyof LockEventMap>(
+        eventName: TEventName,
+        listener: EventListener<LockEventMap[TEventName]>,
     ): LazyPromise<void> {
-        return this.eventBus.removeListener(event, listener);
+        return this.eventBus.removeListener(eventName, listener);
     }
 
     /**
      * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    listenOnce<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    listenOnce<TEventName extends keyof LockEventMap>(
+        eventName: TEventName,
+        listener: EventListener<LockEventMap[TEventName]>,
     ): LazyPromise<void> {
-        return this.eventBus.listenOnce(event, listener);
+        return this.eventBus.listenOnce(eventName, listener);
     }
 
     /**
      * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    asPromise<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-    ): LazyPromise<EventInstance<TEventClass>> {
-        return this.eventBus.asPromise(event);
+    asPromise<TEventName extends keyof LockEventMap>(
+        eventName: TEventName,
+    ): LazyPromise<LockEventMap[TEventName]> {
+        return this.eventBus.asPromise(eventName);
     }
 
     /**
      * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    subscribeOnce<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    subscribeOnce<TEventName extends keyof LockEventMap>(
+        eventName: TEventName,
+        listener: EventListener<LockEventMap[TEventName]>,
     ): LazyPromise<Unsubscribe> {
-        return this.eventBus.subscribeOnce(event, listener);
+        return this.eventBus.subscribeOnce(eventName, listener);
     }
 
     /**
      * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    subscribe<TEventClass extends EventClass<LockEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    subscribe<TEventName extends keyof LockEventMap>(
+        eventName: TEventName,
+        listener: EventListener<LockEventMap[TEventName]>,
     ): LazyPromise<Unsubscribe> {
-        return this.eventBus.subscribe(event, listener);
+        return this.eventBus.subscribe(eventName, listener);
     }
 
     private createLazyPromise<TValue = void>(

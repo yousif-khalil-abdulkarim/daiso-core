@@ -9,7 +9,6 @@ import {
     type beforeEach,
 } from "vitest";
 import {
-    BaseEvent,
     type EventListenerFn,
     type IEventBus,
     type IEventListenerObject,
@@ -17,9 +16,6 @@ import {
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
-import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
-import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 
 /**
  *
@@ -28,7 +24,6 @@ import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-expor
  */
 export type EventBusTestSuiteSettings = {
     expect: ExpectStatic;
-    serde?: IFlexibleSerde;
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
@@ -42,27 +37,17 @@ export type EventBusTestSuiteSettings = {
  * @group TestUtilities
  */
 export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
-    const {
-        expect,
-        serde = new Serde(new NoOpSerdeAdapter()),
-        test,
-        describe,
-        createEventBus,
-        beforeEach,
-    } = settings;
+    const { expect, test, describe, createEventBus, beforeEach } = settings;
 
     const TTL = TimeSpan.fromMilliseconds(50);
-    class AddEvent extends BaseEvent<{
+    type AddEvent = {
         a: number;
         b: number;
-    }> {}
-    class SubEvent extends BaseEvent<{
-        c: number;
-        d: number;
-    }> {}
-    serde.registerEvent(AddEvent).registerEvent(SubEvent);
+    };
 
-    let eventBus: IEventBus<AddEvent | SubEvent>;
+    let eventBus: IEventBus<{
+        add: AddEvent;
+    }>;
     beforeEach(async () => {
         eventBus = await createEventBus();
     });
@@ -78,9 +63,9 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.addListener(AddEvent, listener);
+                await eventBus.addListener("add", listener);
                 expect(listener.result).toBeNull();
-                await eventBus.removeListener(AddEvent, listener);
+                await eventBus.removeListener("add", listener);
             });
             test("Class instance listener", async () => {
                 class Listener implements IEventListenerObject<AddEvent> {
@@ -90,18 +75,18 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.addListener(AddEvent, listener);
+                await eventBus.addListener("add", listener);
                 expect(listener.result).toBeNull();
-                await eventBus.removeListener(AddEvent, listener);
+                await eventBus.removeListener("add", listener);
             });
             test("Function listener", async () => {
                 let result = null as AddEvent | null;
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.addListener(AddEvent, listener);
+                await eventBus.addListener("add", listener);
                 expect(result).toBeNull();
-                await eventBus.removeListener(AddEvent, listener);
+                await eventBus.removeListener("add", listener);
             });
         });
         describe("Should be AddEvent when listener is added and event is triggered", () => {
@@ -114,16 +99,15 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.addListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.addListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toEqual(event);
-                expect(listener.result).toBeInstanceOf(AddEvent);
-                await eventBus.removeListener(AddEvent, listener);
+                await eventBus.removeListener("add", listener);
             });
             test("Class instance listener", async () => {
                 class Listener implements IEventListenerObject<AddEvent> {
@@ -133,32 +117,30 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.addListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.addListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toEqual(event);
-                expect(listener.result).toBeInstanceOf(AddEvent);
-                await eventBus.removeListener(AddEvent, listener);
+                await eventBus.removeListener("add", listener);
             });
             test("Function listener", async () => {
                 let result = null as AddEvent | null;
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.addListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.addListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toEqual(event);
-                expect(result).toBeInstanceOf(AddEvent);
-                await eventBus.removeListener(AddEvent, listener);
+                await eventBus.removeListener("add", listener);
             });
         });
         describe("Should be null when listener is removed and event is triggered", () => {
@@ -171,13 +153,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.addListener(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.addListener("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -189,13 +171,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.addListener(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.addListener("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -204,13 +186,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.addListener(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.addListener("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toBeNull();
             });
@@ -227,10 +209,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                const unsubscribe = await eventBus.subscribe(
-                    AddEvent,
-                    listener,
-                );
+                const unsubscribe = await eventBus.subscribe("add", listener);
                 expect(listener.result).toBeNull();
                 await unsubscribe();
             });
@@ -242,10 +221,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                const unsubscribe = await eventBus.subscribe(
-                    AddEvent,
-                    listener,
-                );
+                const unsubscribe = await eventBus.subscribe("add", listener);
                 expect(listener.result).toBeNull();
                 await unsubscribe();
             });
@@ -254,10 +230,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                const unsubscribe = await eventBus.subscribe(
-                    AddEvent,
-                    listener,
-                );
+                const unsubscribe = await eventBus.subscribe("add", listener);
                 expect(result).toBeNull();
                 await unsubscribe();
             });
@@ -272,18 +245,14 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                const unsubscribe = await eventBus.subscribe(
-                    AddEvent,
-                    listener,
-                );
-                const event = new AddEvent({
+                const unsubscribe = await eventBus.subscribe("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toEqual(event);
-                expect(listener.result).toBeInstanceOf(AddEvent);
                 await unsubscribe();
             });
             test("Class instance listener", async () => {
@@ -294,18 +263,14 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                const unsubscribe = await eventBus.subscribe(
-                    AddEvent,
-                    listener,
-                );
-                const event = new AddEvent({
+                const unsubscribe = await eventBus.subscribe("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toEqual(event);
-                expect(listener.result).toBeInstanceOf(AddEvent);
                 await unsubscribe();
             });
             test("Function listener", async () => {
@@ -313,18 +278,14 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                const unsubscribe = await eventBus.subscribe(
-                    AddEvent,
-                    listener,
-                );
-                const event = new AddEvent({
+                const unsubscribe = await eventBus.subscribe("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toEqual(event);
-                expect(result).toBeInstanceOf(AddEvent);
                 await unsubscribe();
             });
         });
@@ -338,16 +299,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                const unsubscribe = await eventBus.subscribe(
-                    AddEvent,
-                    listener,
-                );
+                const unsubscribe = await eventBus.subscribe("add", listener);
                 await unsubscribe();
-                const event = new AddEvent({
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -359,16 +317,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                const unsubscribe = await eventBus.subscribe(
-                    AddEvent,
-                    listener,
-                );
+                const unsubscribe = await eventBus.subscribe("add", listener);
                 await unsubscribe();
-                const event = new AddEvent({
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -377,16 +332,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                const unsubscribe = await eventBus.subscribe(
-                    AddEvent,
-                    listener,
-                );
+                const unsubscribe = await eventBus.subscribe("add", listener);
                 await unsubscribe();
-                const event = new AddEvent({
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toBeNull();
             });
@@ -401,13 +353,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.subscribe(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.subscribe("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -419,13 +371,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.subscribe(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.subscribe("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -434,13 +386,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.subscribe(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.subscribe("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toBeNull();
             });
@@ -457,7 +409,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.subscribeOnce(AddEvent, listener);
+                await eventBus.subscribeOnce("add", listener);
                 expect(listener.result).toBeNull();
             });
             test("Class instance listener", async () => {
@@ -468,7 +420,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.subscribeOnce(AddEvent, listener);
+                await eventBus.subscribeOnce("add", listener);
                 expect(listener.result).toBeNull();
             });
             test("Function listener", async () => {
@@ -476,7 +428,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.subscribeOnce(AddEvent, listener);
+                await eventBus.subscribeOnce("add", listener);
                 expect(result).toBeNull();
             });
         });
@@ -490,15 +442,14 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.subscribeOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.subscribeOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toEqual(event);
-                expect(listener.result).toBeInstanceOf(AddEvent);
             });
             test("Class instance listener", async () => {
                 class Listener implements IEventListenerObject<AddEvent> {
@@ -508,30 +459,28 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.subscribeOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.subscribeOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toEqual(event);
-                expect(listener.result).toBeInstanceOf(AddEvent);
             });
             test("Function listener", async () => {
                 let result: AddEvent | null = null;
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.subscribeOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.subscribeOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toEqual(event);
-                expect(result).toBeInstanceOf(AddEvent);
             });
         });
         describe("Should only listen for event once", () => {
@@ -544,13 +493,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.i++;
                     },
                 };
-                await eventBus.subscribeOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.subscribeOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.i).toBe(1);
             });
@@ -562,13 +511,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.subscribeOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.subscribeOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.i).toBe(1);
             });
@@ -577,13 +526,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = () => {
                     i++;
                 };
-                await eventBus.subscribeOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.subscribeOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(i).toBe(1);
             });
@@ -599,15 +548,15 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     },
                 };
                 const unsubscribe = await eventBus.subscribeOnce(
-                    AddEvent,
+                    "add",
                     listener,
                 );
                 await unsubscribe();
-                const event = new AddEvent({
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -620,15 +569,15 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 }
                 const listener = new Listener();
                 const unsubscribe = await eventBus.subscribeOnce(
-                    AddEvent,
+                    "add",
                     listener,
                 );
                 await unsubscribe();
-                const event = new AddEvent({
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -638,15 +587,15 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     result = event;
                 };
                 const unsubscribe = await eventBus.subscribeOnce(
-                    AddEvent,
+                    "add",
                     listener,
                 );
                 await unsubscribe();
-                const event = new AddEvent({
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toBeNull();
             });
@@ -661,13 +610,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.subscribeOnce(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.subscribeOnce("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -679,13 +628,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.subscribeOnce(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.subscribeOnce("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -694,13 +643,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.subscribeOnce(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.subscribeOnce("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toBeNull();
             });
@@ -717,7 +666,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.listenOnce(AddEvent, listener);
+                await eventBus.listenOnce("add", listener);
                 expect(listener.result).toBeNull();
             });
             test("Class instance listener", async () => {
@@ -728,7 +677,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.listenOnce(AddEvent, listener);
+                await eventBus.listenOnce("add", listener);
                 expect(listener.result).toBeNull();
             });
             test("Function listener", async () => {
@@ -736,7 +685,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.listenOnce(AddEvent, listener);
+                await eventBus.listenOnce("add", listener);
                 expect(result).toBeNull();
             });
         });
@@ -750,15 +699,14 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.listenOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.listenOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toEqual(event);
-                expect(listener.result).toBeInstanceOf(AddEvent);
             });
             test("Class instance listener", async () => {
                 class Listener implements IEventListenerObject<AddEvent> {
@@ -768,30 +716,28 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.listenOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.listenOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toEqual(event);
-                expect(listener.result).toBeInstanceOf(AddEvent);
             });
             test("Function listener", async () => {
                 let result: AddEvent | null = null;
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.listenOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.listenOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toEqual(event);
-                expect(result).toBeInstanceOf(AddEvent);
             });
         });
         describe("Should only listen for event once", () => {
@@ -804,13 +750,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.i++;
                     },
                 };
-                await eventBus.listenOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.listenOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.i).toBe(1);
             });
@@ -822,13 +768,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.listenOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.listenOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.i).toBe(1);
             });
@@ -837,13 +783,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = () => {
                     i++;
                 };
-                await eventBus.listenOnce(AddEvent, listener);
-                const event: AddEvent = new AddEvent({
+                await eventBus.listenOnce("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(i).toBe(1);
             });
@@ -858,13 +804,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                         this.result = event;
                     },
                 };
-                await eventBus.listenOnce(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.listenOnce("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -876,13 +822,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                     }
                 }
                 const listener = new Listener();
-                await eventBus.listenOnce(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.listenOnce("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(listener.result).toBeNull();
             });
@@ -891,13 +837,13 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
                 const listener: EventListenerFn<AddEvent> = (event) => {
                     result = event;
                 };
-                await eventBus.listenOnce(AddEvent, listener);
-                await eventBus.removeListener(AddEvent, listener);
-                const event = new AddEvent({
+                await eventBus.listenOnce("add", listener);
+                await eventBus.removeListener("add", listener);
+                const event: AddEvent = {
                     a: 1,
                     b: 2,
-                });
-                await eventBus.dispatch(event);
+                };
+                await eventBus.dispatch("add", event);
                 await LazyPromise.delay(TTL);
                 expect(result).toBeNull();
             });
@@ -909,7 +855,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             const listener: EventListenerFn<AddEvent> = (event) => {
                 result = event;
             };
-            eventBus.asPromise(AddEvent).then(listener);
+            eventBus.asPromise("add").then(listener);
             expect(result).toBeNull();
         });
         test("Should be AddEvent when listener added and event is triggered", async () => {
@@ -917,15 +863,14 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             const listener: EventListenerFn<AddEvent> = (event) => {
                 result = event;
             };
-            eventBus.asPromise(AddEvent).then(listener);
-            const event: AddEvent = new AddEvent({
+            eventBus.asPromise("add").then(listener);
+            const event: AddEvent = {
                 a: 1,
                 b: 2,
-            });
-            await eventBus.dispatch(event);
+            };
+            await eventBus.dispatch("add", event);
             await LazyPromise.delay(TTL);
             expect(result).toEqual(event);
-            expect(result).toBeInstanceOf(AddEvent);
         });
     });
 }

@@ -13,7 +13,7 @@ import type {
     NoneFunc,
     OneOrMore,
 } from "@/utilities/_module-exports.js";
-import type { CacheEvents } from "@/cache/contracts/cache.events.js";
+import type { CacheEventMap } from "@/cache/contracts/cache.events.js";
 import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { TypeCacheError } from "@/cache/contracts/cache.errors.js";
@@ -25,7 +25,7 @@ import type { TypeCacheError } from "@/cache/contracts/cache.errors.js";
  * @group Contracts
  */
 export type ICacheListenable<TType = unknown> = IEventListenable<
-    CacheEvents<TType>
+    CacheEventMap<TType>
 >;
 
 /**

@@ -2,8 +2,14 @@
  * @module EventBus
  */
 
-import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
 import type { InvokableFn } from "@/utilities/_module-exports.js";
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
+ * @group Contracts
+ */
+export type BaseEvent = Record<string, unknown>;
 
 /**
  *

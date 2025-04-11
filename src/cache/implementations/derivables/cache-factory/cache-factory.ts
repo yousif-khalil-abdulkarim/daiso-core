@@ -108,7 +108,7 @@ export class CacheFactory<TAdapters extends string = string>
         });
     }
 
-    setEventBus(eventBus: IEventBus<any>): CacheFactory<TAdapters> {
+    setEventBus(eventBus: IEventBus): CacheFactory<TAdapters> {
         return new CacheFactory({
             ...this.settings,
             eventBus,

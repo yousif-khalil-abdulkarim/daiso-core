@@ -9,16 +9,15 @@ import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-
 import { KeyPrefixer } from "@/utilities/_module-exports.js";
 
 describe("class: LockProvider", () => {
-    const eventBus = new EventBus({
-        keyPrefixer: new KeyPrefixer("event-bus"),
-        adapter: new MemoryEventBusAdapter(),
-    });
     const serde = new Serde(new SuperJsonSerdeAdapter());
     lockProviderTestSuite({
         createLockProvider: () => {
             const lockProvider = new LockProvider({
                 serde,
-                eventBus,
+                eventBus: new EventBus({
+                    keyPrefixer: new KeyPrefixer("event-bus"),
+                    adapter: new MemoryEventBusAdapter(),
+                }),
                 adapter: new MemoryLockAdapter(),
                 keyPrefixer: new KeyPrefixer("lock"),
             });

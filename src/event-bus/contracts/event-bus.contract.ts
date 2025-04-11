@@ -12,29 +12,18 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnableToRemoveListenerEventBusError,
 } from "@/event-bus/contracts/event-bus.errors.js";
-import type { BaseEvent } from "@/event-bus/contracts/_shared.js";
-import type { EventListenerFn } from "@/event-bus/contracts/event-bus-adapter.contract.js";
+import type {
+    BaseEvent,
+    EventListenerFn,
+} from "@/event-bus/contracts/event-bus-adapter.contract.js";
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
-export type EventClass<TEvents extends BaseEvent> = {
-    new (...arguments_: any[]): TEvents;
-};
+export type BaseEventMap = Record<string, BaseEvent>;
 
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
- * @group Contracts
- */
-export type EventInstance<TEventClass extends EventClass<BaseEvent>> =
-    TEventClass extends {
-        new (...arguments_: any[]): infer TInstance;
-    }
-        ? TInstance
-        : never;
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
@@ -64,15 +53,15 @@ export type EventListener<TEvent> =
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
-export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
+export type IEventListenable<TEventMap extends BaseEventMap> = {
     /**
      * The `addListener` method is used for listening to a {@link BaseEvent | `BaseEvent`}.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
-    addListener<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    addListener<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void>;
 
     /**
@@ -80,44 +69,44 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
      * Removing unadded listener will have no effect and nothing will occur.
      * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
-    removeListener<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    removeListener<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void>;
 
     /**
      * The `listenOnce` method is used for listening to a {@link BaseEvent | `BaseEvent`} once.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
-    listenOnce<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    listenOnce<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void>;
 
     /**
      * The `asPromise` method returns {@link LazyPromise| `LazyPromise`} objecet that resolves once the {@link BaseEvent | `BaseEvent`} is dispatched.
      * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
-    asPromise<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-    ): LazyPromise<EventInstance<TEventClass>>;
+    asPromise<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+    ): LazyPromise<TEventMap[TEventName]>;
 
     /**
      * The `subscribeOnce` method is used for listening to a {@link BaseEvent | `BaseEvent`} once and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
-    subscribeOnce<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    subscribeOnce<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<Unsubscribe>;
 
     /**
      * The `subscribe` method is used for listening to a {@link BaseEvent | `BaseEvent`} and it returns a cleanup function that removes listener when called.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
      */
-    subscribe<TEventClass extends EventClass<TEvents>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    subscribe<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<Unsubscribe>;
 };
 
@@ -127,13 +116,16 @@ export type IEventListenable<TEvents extends BaseEvent = BaseEvent> = {
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
-export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
+export type IEventDispatcher<TEventMap extends BaseEventMap> = {
     /**
      * The `dispatch` method is used for dispatching a {@link BaseEvent | `BaseEvent`}.
 
      * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
      */
-    dispatch(event: TEvents): LazyPromise<void>;
+    dispatch<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        event: TEventMap[TEventName],
+    ): LazyPromise<void>;
 };
 
 /**
@@ -143,5 +135,5 @@ export type IEventDispatcher<TEvents extends BaseEvent = BaseEvent> = {
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
-export type IEventBus<TEvents extends BaseEvent = BaseEvent> =
-    IEventListenable<TEvents> & IEventDispatcher<TEvents>;
+export type IEventBus<TEventMap extends BaseEventMap = BaseEventMap> =
+    IEventListenable<TEventMap> & IEventDispatcher<TEventMap>;

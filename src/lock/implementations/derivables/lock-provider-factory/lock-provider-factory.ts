@@ -112,7 +112,7 @@ export class LockProviderFactory<TAdapters extends string>
         });
     }
 
-    setEventBus(eventBus: IEventBus<any>): LockProviderFactory<TAdapters> {
+    setEventBus(eventBus: IEventBus): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
             eventBus,

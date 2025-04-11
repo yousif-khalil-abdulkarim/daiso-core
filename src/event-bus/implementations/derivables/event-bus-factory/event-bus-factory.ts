@@ -6,7 +6,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
 import {
     type IEventBus,
     type IEventBusFactory,
-    type BaseEvent,
+    type BaseEventMap,
     type IEventBusAdapter,
 } from "@/event-bus/contracts/_module-exports.js";
 import {
@@ -156,22 +156,28 @@ export class EventBusFactory<TAdapters extends string = string>
      *   defaultAdapter: "memory"
      * });
      *
-     * class AddEvent extends BaseEvent<{ a: number, b: number }> {}
+     * type AddEvent = {
+     *   a: number;
+     *   b: number;
+     * };
+     * type EventMap = {
+     *   add: AddEvent;
+     * };
      *
      * // Will dispatch AddEvent using the default adapter which is MemoryEventBusAdapter
      * await eventBusFactory
-     *   .use()
-     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
+     *   .use<EventMap>()
+     *   .dispatch("add", { a: 1, b: 2 });
      *
      * // Will dispatch AddEvent using the redis adapter which is RedisPubSubEventBusAdapter
      * await eventBusFactory
-     *   .use("redis")
-     *   .dispatch(new AddEvent({ a: 1, b: 2 }));
+     *   .use<EventMap>("redis")
+     *   .dispatch("add", { a: 1, b: 2 });
      * ```
      */
-    use<TEvents extends BaseEvent = BaseEvent>(
+    use<TEventMap extends BaseEventMap>(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
-    ): IEventBus<TEvents> {
+    ): IEventBus<TEventMap> {
         if (adapterName === undefined) {
             throw new DefaultAdapterNotDefinedError(EventBusFactory.name);
         }

@@ -9,17 +9,18 @@ import {
     type beforeEach,
 } from "vitest";
 import {
+    KeyNotFoundCacheError,
     TypeCacheError,
     type ICache,
-    KeyNotFoundCacheError,
-    KeyNotFoundCacheEvent,
-    KeyAddedCacheEvent,
-    KeyDecrementedCacheEvent,
-    KeyFoundCacheEvent,
-    KeyIncrementedCacheEvent,
-    KeyRemovedCacheEvent,
-    KeysClearedCacheEvent,
-    KeyUpdatedCacheEvent,
+    type NotFoundCacheEvent,
+    type AddedCacheEvent,
+    type DecrementedCacheEvent,
+    type FoundCacheEventt,
+    type IncrementedCacheEvent,
+    type RemovedCacheEvent,
+    type ClearedCacheEvent,
+    type UpdatedCacheEvent,
+    CACHE_EVENTS,
 } from "@/cache/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
@@ -529,24 +530,23 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
     });
     describe("Event tests:", () => {
         describe("method: exists", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.exists("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
+            test("Should dispatch FoundCacheEventt when key exists", async () => {
+                let event_ = null as FoundCacheEventt | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyFoundCacheEvent,
+                    CACHE_EVENTS.FOUND,
                     (event) => {
                         event_ = event;
                     },
@@ -554,31 +554,29 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.add("a", 1);
                 await cache.exists("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
                 await unsubscribe();
             });
         });
         describe("method: missing", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.missing("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
+            test("Should dispatch FoundCacheEventt when key exists", async () => {
+                let event_ = null as FoundCacheEventt | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyFoundCacheEvent,
+                    CACHE_EVENTS.FOUND,
                     (event) => {
                         event_ = event;
                     },
@@ -586,31 +584,29 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.add("a", 1);
                 await cache.missing("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
                 await unsubscribe();
             });
         });
         describe("method: get", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.get("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
+            test("Should dispatch FoundCacheEventt when key exists", async () => {
+                let event_ = null as FoundCacheEventt | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyFoundCacheEvent,
+                    CACHE_EVENTS.FOUND,
                     (event) => {
                         event_ = event;
                     },
@@ -618,31 +614,29 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.add("a", 1);
                 await cache.get("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
                 await unsubscribe();
             });
         });
         describe("method: getOr", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.getOr("a", 1);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
+            test("Should dispatch FoundCacheEventt when key exists", async () => {
+                let event_ = null as FoundCacheEventt | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyFoundCacheEvent,
+                    CACHE_EVENTS.FOUND,
                     (event) => {
                         event_ = event;
                     },
@@ -650,17 +644,16 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.add("a", 1);
                 await cache.getOr("a", 1);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
                 await unsubscribe();
             });
         });
         describe("method: getOrFail", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
@@ -671,14 +664,13 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     /* Empty */
                 }
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
+            test("Should dispatch FoundCacheEventt when key exists", async () => {
+                let event_ = null as FoundCacheEventt | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyFoundCacheEvent,
+                    CACHE_EVENTS.FOUND,
                     (event) => {
                         event_ = event;
                     },
@@ -686,183 +678,184 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.add("a", 1);
                 await cache.getOrFail("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
                 await unsubscribe();
             });
         });
         describe("method: add", () => {
-            test("Should dispatch KeyAddedCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyAddedCacheEvent | null;
+            test("Should dispatch AddedCacheEvent when key doesnt exists", async () => {
+                let event_ = null as AddedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyAddedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "added") {
+                            event_ = event;
+                        }
                     },
                 );
                 const ttl = TimeSpan.fromMilliseconds(20);
                 await cache.add("a", 1, ttl);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
-                expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                expect(event_?.ttl?.toMilliseconds()).toBe(
                     ttl.toMilliseconds(),
                 );
                 await unsubscribe();
             });
         });
         describe("method: update", () => {
-            test("Should dispatch KeyUpdatedCacheEvent when key exists", async () => {
-                let event_ = null as KeyUpdatedCacheEvent | null;
+            test("Should dispatch UpdatedCacheEvent when key exists", async () => {
+                let event_ = null as UpdatedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyUpdatedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "updated") {
+                            event_ = event;
+                        }
                     },
                 );
                 await cache.add("a", 1);
                 await cache.update("a", 2);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(2);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(2);
                 await unsubscribe();
             });
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.update("a", 2);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
         });
         describe("method: put", () => {
-            test("Should dispatch KeyAddedCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyAddedCacheEvent | null;
+            test("Should dispatch AddedCacheEvent when key doesnt exists", async () => {
+                let event_ = null as AddedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyAddedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "added") {
+                            event_ = event;
+                        }
                     },
                 );
                 const ttl = TimeSpan.fromMilliseconds(20);
                 await cache.put("a", 1, ttl);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
-                expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                expect(event_?.ttl?.toMilliseconds()).toBe(
                     ttl.toMilliseconds(),
                 );
                 await unsubscribe();
             });
-            test("Should dispatch KeyUpdatedCacheEvent when key exists", async () => {
-                let event_ = null as KeyUpdatedCacheEvent | null;
+            test("Should dispatch UpdatedCacheEvent when key exists", async () => {
+                let event_ = null as UpdatedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyUpdatedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "updated") {
+                            event_ = event;
+                        }
                     },
                 );
                 await cache.put("a", 1);
                 await cache.put("a", 2);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyUpdatedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(2);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(2);
                 await unsubscribe();
             });
         });
         describe("method: remove", () => {
-            test("Should dispatch KeyRemovedCacheEvent when key exists", async () => {
-                let event_ = null as KeyRemovedCacheEvent | null;
+            test("Should dispatch RemovedCacheEvent when key exists", async () => {
+                let event_ = null as RemovedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyRemovedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "removed") {
+                            event_ = event;
+                        }
                     },
                 );
                 await cache.add("a", 1);
                 await cache.remove("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.remove("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
         });
         describe("method: removeMany", () => {
-            test("Should dispatch KeyRemovedCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyRemovedCacheEvent | null;
+            test("Should dispatch RemovedCacheEvent when key doesnt exists", async () => {
+                let event_ = null as RemovedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyRemovedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "removed") {
+                            event_ = event;
+                        }
                     },
                 );
                 await cache.add("a", 1);
                 await cache.removeMany(["a"]);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.removeMany(["a"]);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
         });
         describe("method: getAndRemove", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.getAndRemove("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
+            test("Should dispatch FoundCacheEventt when key exists", async () => {
+                let event_ = null as FoundCacheEventt | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyFoundCacheEvent,
+                    CACHE_EVENTS.FOUND,
                     (event) => {
                         event_ = event;
                     },
@@ -870,46 +863,45 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.add("a", 1);
                 await cache.getAndRemove("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
                 await unsubscribe();
             });
-            test("Should dispatch KeyRemovedCacheEvent when key exists", async () => {
-                let event_ = null as KeyRemovedCacheEvent | null;
+            test("Should dispatch RemovedCacheEvent when key exists", async () => {
+                let event_ = null as RemovedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyRemovedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "removed") {
+                            event_ = event;
+                        }
                     },
                 );
                 await cache.add("a", 1);
                 await cache.getAndRemove("a");
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyRemovedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
         });
         describe("method: getOrAdd", () => {
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.getOrAdd("a", 1);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch KeyFoundCacheEvent when key exists", async () => {
-                let event_ = null as KeyFoundCacheEvent | null;
+            test("Should dispatch FoundCacheEventt when key exists", async () => {
+                let event_ = null as FoundCacheEventt | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyFoundCacheEvent,
+                    CACHE_EVENTS.FOUND,
                     (event) => {
                         event_ = event;
                     },
@@ -917,100 +909,100 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.add("a", 1);
                 await cache.getOrAdd("a", 1);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
                 await unsubscribe();
             });
-            test("Should dispatch KeyAddedCacheEvent when key exists", async () => {
-                let event_ = null as KeyAddedCacheEvent | null;
+            test("Should dispatch AddedCacheEvent when key exists", async () => {
+                let event_ = null as AddedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyAddedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "added") {
+                            event_ = event;
+                        }
                     },
                 );
                 const ttl = TimeSpan.fromMilliseconds(50);
                 await cache.getOrAdd("a", 1, ttl);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyAddedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
-                expect(event_?.fields.ttl?.toMilliseconds()).toBe(
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
+                expect(event_?.ttl?.toMilliseconds()).toBe(
                     ttl.toMilliseconds(),
                 );
                 await unsubscribe();
             });
         });
         describe("method: increment", () => {
-            test("Should dispatch KeyIncrementedCacheEvent when key exists", async () => {
-                let event_ = null as KeyIncrementedCacheEvent | null;
+            test("Should dispatch IncrementedCacheEvent when key exists", async () => {
+                let event_ = null as IncrementedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyIncrementedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "incremented") {
+                            event_ = event;
+                        }
                     },
                 );
                 await cache.add("a", 1);
                 await cache.increment("a", 1);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyIncrementedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
                 await unsubscribe();
             });
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.increment("a", 1);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
         });
         describe("method: decrement", () => {
-            test("Should dispatch KeyDecrementedCacheEvent when key exists", async () => {
-                let event_ = null as KeyDecrementedCacheEvent | null;
+            test("Should dispatch DecrementedCacheEvent when key exists", async () => {
+                let event_ = null as DecrementedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyDecrementedCacheEvent,
+                    CACHE_EVENTS.WRITTEN,
                     (event) => {
-                        event_ = event;
+                        if (event.type === "decremented") {
+                            event_ = event;
+                        }
                     },
                 );
                 await cache.add("a", 1);
                 await cache.decrement("a", 1);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyDecrementedCacheEvent);
-                expect(event_?.fields.key).toBe("a");
-                expect(event_?.fields.value).toBe(1);
+                expect(event_?.key).toBe("a");
+                expect(event_?.value).toBe(1);
                 await unsubscribe();
             });
-            test("Should dispatch KeyNotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeyNotFoundCacheEvent | null;
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                let event_ = null as NotFoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeyNotFoundCacheEvent,
+                    CACHE_EVENTS.NOT_FOUND,
                     (event) => {
                         event_ = event;
                     },
                 );
                 await cache.decrement("a", 1);
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeyNotFoundCacheEvent);
-                expect(event_?.fields.key).toBe("a");
+                expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
         });
         describe("method: clear", () => {
-            test("Should dispatch KeysClearedCacheEvent when key doesnt exists", async () => {
-                let event_ = null as KeysClearedCacheEvent | null;
+            test("Should dispatch ClearedCacheEvent when key doesnt exists", async () => {
+                let event_ = null as ClearedCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
-                    KeysClearedCacheEvent,
+                    CACHE_EVENTS.CLEARED,
                     (event) => {
                         event_ = event;
                     },
@@ -1020,8 +1012,8 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.add("c", 3);
                 await cache.clear();
                 await LazyPromise.delay(DELAY_TIME);
-                expect(event_).toBeInstanceOf(KeysClearedCacheEvent);
                 await unsubscribe();
+                expect(event_).toStrictEqual({});
             });
         });
     });

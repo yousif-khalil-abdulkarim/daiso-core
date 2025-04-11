@@ -31,7 +31,6 @@ describe("class: RedisPubSubEventBusAdapter", () => {
                 listenerClient,
                 serde,
             }),
-        serde,
         test,
         beforeEach,
         expect,
