@@ -9,7 +9,7 @@ import {
     type AsyncLazy,
     type Factory,
 } from "@/utilities/_module-exports.js";
-import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventBus } from "@/new-event-bus/contracts/_module-exports.js";
 import type {
     ICache,
     ICacheFactory,
@@ -108,7 +108,7 @@ export class CacheFactory<TAdapters extends string = string>
         });
     }
 
-    setEventBus(eventBus: IEventBus<any>): CacheFactory<TAdapters> {
+    setEventBus(eventBus: IEventBus): CacheFactory<TAdapters> {
         return new CacheFactory({
             ...this.settings,
             eventBus,

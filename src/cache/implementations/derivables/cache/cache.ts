@@ -4,19 +4,13 @@
  */
 
 import type {
-    CacheEvents,
+    CacheEventMap,
     IDatabaseCacheAdapter,
+    NotFoundCacheEvent,
+    RemovedCacheEvent,
 } from "@/cache/contracts/_module-exports.js";
 import {
-    KeyFoundCacheEvent,
-    KeyNotFoundCacheEvent,
-    KeyAddedCacheEvent,
-    KeyUpdatedCacheEvent,
-    KeyRemovedCacheEvent,
-    KeyIncrementedCacheEvent,
-    KeyDecrementedCacheEvent,
-    KeysClearedCacheEvent,
-    UnexpectedErrorCacheEvent,
+    CACHE_EVENTS,
     type ICache,
     type ICacheAdapter,
 } from "@/cache/contracts/_module-exports.js";
@@ -42,14 +36,12 @@ import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     IEventBus,
     Unsubscribe,
-    EventClass,
-    EventInstance,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
     EventListener,
-} from "@/event-bus/contracts/_module-exports.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
+} from "@/new-event-bus/contracts/_module-exports.js";
+import { EventBus } from "@/new-event-bus/implementations/derivables/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/new-event-bus/implementations/adapters/_module-exports.js";
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
 import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/database-cache-adapter.js";
 import type {
@@ -90,7 +82,7 @@ export type CacheSettingsBase = {
      * })
      * ```
      */
-    eventBus?: IEventBus<any>;
+    eventBus?: IEventBus;
 
     /**
      * You can decide the default ttl value. If null is passed then no ttl will be used by default.
@@ -123,7 +115,7 @@ export type CacheSettings = CacheSettingsBase & {
  * @group Derivables
  */
 export class Cache<TType = unknown> implements ICache<TType> {
-    private readonly eventBus: IEventBus<CacheEvents<TType>>;
+    private readonly eventBus: IEventBus<CacheEventMap<TType>>;
     private readonly adapterFactoryable: CacheAdapter<TType>;
     private readonly adapter: ICacheAdapter<TType>;
     private readonly defaultTtl: TimeSpan | null;
@@ -163,7 +155,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         const {
             keyPrefixer,
             adapter,
-            eventBus = new EventBus({
+            eventBus = new EventBus<any>({
                 keyPrefixer: new KeyPrefixer("event-bus"),
                 adapter: new MemoryEventBusAdapter(),
             }),
@@ -185,68 +177,68 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     /**
-     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    addListener<TEventClass extends EventClass<CacheEvents<TType>>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    addListener<TEventName extends keyof CacheEventMap<TType>>(
+        eventName: TEventName,
+        listener: EventListener<CacheEventMap<TType>[TEventName]>,
     ): LazyPromise<void> {
-        return this.eventBus.addListener(event, listener);
+        return this.eventBus.addListener(eventName, listener);
     }
 
     /**
-     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    removeListener<TEventClass extends EventClass<CacheEvents<TType>>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    removeListener<TEventName extends keyof CacheEventMap<TType>>(
+        eventName: TEventName,
+        listener: EventListener<CacheEventMap<TType>[TEventName]>,
     ): LazyPromise<void> {
-        return this.eventBus.removeListener(event, listener);
+        return this.eventBus.removeListener(eventName, listener);
     }
 
     /**
-     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    listenOnce<TEventClass extends EventClass<CacheEvents<TType>>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    listenOnce<TEventName extends keyof CacheEventMap<TType>>(
+        eventName: TEventName,
+        listener: EventListener<CacheEventMap<TType>[TEventName]>,
     ): LazyPromise<void> {
-        return this.eventBus.listenOnce(event, listener);
+        return this.eventBus.listenOnce(eventName, listener);
     }
 
     /**
-     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    asPromise<TEventClass extends EventClass<CacheEvents<TType>>>(
-        event: TEventClass,
-    ): LazyPromise<EventInstance<TEventClass>> {
-        return this.eventBus.asPromise(event);
+    asPromise<TEventName extends keyof CacheEventMap<TType>>(
+        eventName: TEventName,
+    ): LazyPromise<CacheEventMap<TType>[TEventName]> {
+        return this.eventBus.asPromise(eventName);
     }
 
     /**
-     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    subscribeOnce<TEventClass extends EventClass<CacheEvents<TType>>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    subscribeOnce<TEventName extends keyof CacheEventMap<TType>>(
+        eventName: TEventName,
+        listener: EventListener<CacheEventMap<TType>[TEventName]>,
     ): LazyPromise<Unsubscribe> {
-        return this.eventBus.subscribeOnce(event, listener);
+        return this.eventBus.subscribeOnce(eventName, listener);
     }
 
     /**
-     * You can listen to the following {@link CacheEvents | `CacheEvents`} of the {@link ICache | `ICache`} instance.
+     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    subscribe<TEventClass extends EventClass<CacheEvents<TType>>>(
-        event: TEventClass,
-        listener: EventListener<EventInstance<TEventClass>>,
+    subscribe<TEventName extends keyof CacheEventMap<TType>>(
+        eventName: TEventName,
+        listener: EventListener<CacheEventMap<TType>[TEventName]>,
     ): LazyPromise<Unsubscribe> {
-        return this.eventBus.subscribe(event, listener);
+        return this.eventBus.subscribe(eventName, listener);
     }
 
     private createLazyPromise<TValue = void>(
@@ -276,32 +268,26 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 const value = await this.adapter.get(keyObj.prefixed);
                 if (value === null) {
                     this.eventBus
-                        .dispatch(
-                            new KeyNotFoundCacheEvent({
-                                key: keyObj.resolved,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.NOT_FOUND, {
+                            key: keyObj.resolved,
+                        })
                         .defer();
                 } else {
                     this.eventBus
-                        .dispatch(
-                            new KeyFoundCacheEvent({
-                                key: keyObj.resolved,
-                                value,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.FOUND, {
+                            key: keyObj.resolved,
+                            value,
+                        })
                         .defer();
                 }
                 return value;
             } catch (error: unknown) {
                 this.eventBus
-                    .dispatch(
-                        new UnexpectedErrorCacheEvent({
-                            keys: [keyObj.resolved],
-                            method: this.get.name,
-                            error,
-                        }),
-                    )
+                    .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
+                        keys: [keyObj.resolved],
+                        method: this.get.name,
+                        error,
+                    })
                     .defer();
                 throw error;
             }
@@ -327,39 +313,32 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 const value = await this.adapter.getAndRemove(keyObj.prefixed);
                 if (value === null) {
                     this.eventBus
-                        .dispatch(
-                            new KeyNotFoundCacheEvent({
-                                key: keyObj.resolved,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.NOT_FOUND, {
+                            key: keyObj.resolved,
+                        })
                         .defer();
                 } else {
                     this.eventBus
-                        .dispatch(
-                            new KeyFoundCacheEvent({
-                                key: keyObj.resolved,
-                                value,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.FOUND, {
+                            key: keyObj.resolved,
+                            value,
+                        })
                         .defer();
                     this.eventBus
-                        .dispatch(
-                            new KeyRemovedCacheEvent({
-                                key: keyObj.resolved,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.WRITTEN, {
+                            type: "removed",
+                            key: keyObj.resolved,
+                        })
                         .defer();
                 }
                 return value;
             } catch (error: unknown) {
                 this.eventBus
-                    .dispatch(
-                        new UnexpectedErrorCacheEvent({
-                            keys: [keyObj.resolved],
-                            method: this.get.name,
-                            error,
-                        }),
-                    )
+                    .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
+                        keys: [keyObj.resolved],
+                        method: this.get.name,
+                        error,
+                    })
                     .defer();
                 throw error;
             }
@@ -413,26 +392,23 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 );
                 if (hasAdded) {
                     this.eventBus
-                        .dispatch(
-                            new KeyAddedCacheEvent({
-                                key: keyObj.resolved,
-                                value,
-                                ttl,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.WRITTEN, {
+                            type: "added",
+                            key: keyObj.resolved,
+                            value,
+                            ttl,
+                        })
                         .defer();
                 }
                 return hasAdded;
             } catch (error: unknown) {
                 this.eventBus
-                    .dispatch(
-                        new UnexpectedErrorCacheEvent({
-                            keys: [keyObj.resolved],
-                            value,
-                            method: this.add.name,
-                            error,
-                        }),
-                    )
+                    .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
+                        keys: [keyObj.resolved],
+                        value,
+                        method: this.add.name,
+                        error,
+                    })
                     .defer();
                 throw error;
             }
@@ -454,35 +430,31 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 );
                 if (hasUpdated) {
                     this.eventBus
-                        .dispatch(
-                            new KeyUpdatedCacheEvent({
-                                key: keyObj.resolved,
-                                value,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.WRITTEN, {
+                            type: "updated",
+                            key: keyObj.resolved,
+                            value,
+                        })
                         .defer();
                 } else {
                     this.eventBus
-                        .dispatch(
-                            new KeyAddedCacheEvent({
-                                key: keyObj.resolved,
-                                value,
-                                ttl,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.WRITTEN, {
+                            type: "added",
+                            key: keyObj.resolved,
+                            value,
+                            ttl,
+                        })
                         .defer();
                 }
                 return hasUpdated;
             } catch (error: unknown) {
                 this.eventBus
-                    .dispatch(
-                        new UnexpectedErrorCacheEvent({
-                            keys: [keyObj.resolved],
-                            value,
-                            method: this.put.name,
-                            error,
-                        }),
-                    )
+                    .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
+                        keys: [keyObj.resolved],
+                        value,
+                        method: this.put.name,
+                        error,
+                    })
                     .defer();
                 throw error;
             }
@@ -499,33 +471,28 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 );
                 if (hasUpdated) {
                     this.eventBus
-                        .dispatch(
-                            new KeyUpdatedCacheEvent({
-                                key: keyObj.resolved,
-                                value,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.WRITTEN, {
+                            type: "updated",
+                            key: keyObj.resolved,
+                            value,
+                        })
                         .defer();
                 } else {
                     this.eventBus
-                        .dispatch(
-                            new KeyNotFoundCacheEvent({
-                                key: keyObj.resolved,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.NOT_FOUND, {
+                            key: keyObj.resolved,
+                        })
                         .defer();
                 }
                 return hasUpdated;
             } catch (error: unknown) {
                 this.eventBus
-                    .dispatch(
-                        new UnexpectedErrorCacheEvent({
-                            keys: [keyObj.resolved],
-                            value,
-                            method: this.update.name,
-                            error,
-                        }),
-                    )
+                    .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
+                        keys: [keyObj.resolved],
+                        value,
+                        method: this.update.name,
+                        error,
+                    })
                     .defer();
                 throw error;
             }
@@ -545,44 +512,38 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 );
                 if (hasUpdated && value > 0) {
                     this.eventBus
-                        .dispatch(
-                            new KeyIncrementedCacheEvent({
-                                key: keyObj.resolved,
-                                value,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.WRITTEN, {
+                            type: "incremented",
+                            key: keyObj.resolved,
+                            value,
+                        })
                         .defer();
                 }
                 if (hasUpdated && value < 0) {
                     this.eventBus
-                        .dispatch(
-                            new KeyDecrementedCacheEvent({
-                                key: keyObj.resolved,
-                                value: -value,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.WRITTEN, {
+                            type: "decremented",
+                            key: keyObj.resolved,
+                            value: -value,
+                        })
                         .defer();
                 }
                 if (!hasUpdated) {
                     this.eventBus
-                        .dispatch(
-                            new KeyNotFoundCacheEvent({
-                                key: keyObj.resolved,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.NOT_FOUND, {
+                            key: keyObj.resolved,
+                        })
                         .defer();
                 }
                 return hasUpdated;
             } catch (error: unknown) {
                 this.eventBus
-                    .dispatch(
-                        new UnexpectedErrorCacheEvent({
-                            keys: [keyObj.resolved],
-                            value,
-                            method: this.increment.name,
-                            error,
-                        }),
-                    )
+                    .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
+                        keys: [keyObj.resolved],
+                        value,
+                        method: this.increment.name,
+                        error,
+                    })
                     .defer();
                 throw new TypeCacheError(
                     `Unable to increment or decrement none number type key "${keyObj.resolved}"`,
@@ -610,31 +571,26 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 ]);
                 if (hasRemoved) {
                     this.eventBus
-                        .dispatch(
-                            new KeyRemovedCacheEvent({
-                                key: keyObj.resolved,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.WRITTEN, {
+                            type: "removed",
+                            key: keyObj.resolved,
+                        })
                         .defer();
                 } else {
                     this.eventBus
-                        .dispatch(
-                            new KeyNotFoundCacheEvent({
-                                key: keyObj.resolved,
-                            }),
-                        )
+                        .dispatch(CACHE_EVENTS.NOT_FOUND, {
+                            key: keyObj.resolved,
+                        })
                         .defer();
                 }
                 return hasRemoved;
             } catch (error: unknown) {
                 this.eventBus
-                    .dispatch(
-                        new UnexpectedErrorCacheEvent({
-                            keys: [keyObj.resolved],
-                            method: this.remove.name,
-                            error,
-                        }),
-                    )
+                    .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
+                        keys: [keyObj.resolved],
+                        method: this.remove.name,
+                        error,
+                    })
                     .defer();
                 throw error;
             }
@@ -656,35 +612,47 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 );
                 if (hasRemovedAtLeastOne) {
                     const events = keyObjArr.map(
-                        (keyObj) =>
-                            new KeyRemovedCacheEvent({
-                                key: keyObj.resolved,
-                            }),
+                        (
+                            keyObj,
+                        ): [typeof CACHE_EVENTS.WRITTEN, RemovedCacheEvent] =>
+                            [
+                                CACHE_EVENTS.WRITTEN,
+                                {
+                                    type: "removed",
+                                    key: keyObj.resolved,
+                                },
+                            ] as const,
                     );
-                    for (const event of events) {
-                        this.eventBus.dispatch(event).defer();
+                    for (const [eventName, event] of events) {
+                        this.eventBus.dispatch(eventName, event).defer();
                     }
                 } else {
                     const events = keyObjArr.map(
-                        (keyObj) =>
-                            new KeyNotFoundCacheEvent({
-                                key: keyObj.resolved,
-                            }),
+                        (
+                            keyObj,
+                        ): [
+                            typeof CACHE_EVENTS.NOT_FOUND,
+                            NotFoundCacheEvent,
+                        ] =>
+                            [
+                                CACHE_EVENTS.NOT_FOUND,
+                                {
+                                    key: keyObj.resolved,
+                                },
+                            ] as const,
                     );
-                    for (const event of events) {
-                        this.eventBus.dispatch(event).defer();
+                    for (const [eventName, event] of events) {
+                        this.eventBus.dispatch(eventName, event).defer();
                     }
                 }
                 return hasRemovedAtLeastOne;
             } catch (error: unknown) {
                 this.eventBus
-                    .dispatch(
-                        new UnexpectedErrorCacheEvent({
-                            keys: keyObjArr.map((keyObj) => keyObj.resolved),
-                            method: this.remove.name,
-                            error,
-                        }),
-                    )
+                    .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
+                        keys: keyObjArr.map((keyObj) => keyObj.resolved),
+                        method: this.remove.name,
+                        error,
+                    })
                     .defer();
                 throw error;
             }
@@ -695,7 +663,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return this.createLazyPromise(async () => {
             try {
                 const promise = this.eventBus.dispatch(
-                    new KeysClearedCacheEvent({}),
+                    CACHE_EVENTS.CLEARED,
+                    {},
                 );
                 if (isAsyncFactory(this.adapterFactoryable)) {
                     await this.adapter.removeAll();
@@ -708,12 +677,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 promise.defer();
             } catch (error: unknown) {
                 this.eventBus
-                    .dispatch(
-                        new UnexpectedErrorCacheEvent({
-                            method: this.clear.name,
-                            error,
-                        }),
-                    )
+                    .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
+                        method: this.clear.name,
+                        error,
+                    })
                     .defer();
                 throw error;
             }
