@@ -22,7 +22,7 @@ import {
     type KeyPrefixer,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
-import type { IEventBus } from "@/new-event-bus/contracts/_module-exports.js";
+import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 
 /**
  * @internal

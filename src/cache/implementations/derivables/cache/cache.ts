@@ -39,9 +39,9 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
     EventListener,
-} from "@/new-event-bus/contracts/_module-exports.js";
-import { EventBus } from "@/new-event-bus/implementations/derivables/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/new-event-bus/implementations/adapters/_module-exports.js";
+} from "@/event-bus/contracts/_module-exports.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
 import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/database-cache-adapter.js";
 import type {

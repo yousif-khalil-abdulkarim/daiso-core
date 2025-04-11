@@ -3,8 +3,8 @@ import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module-e
 import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
 import { Cache } from "@/cache/implementations/derivables/_module-exports.js";
 import { KeyPrefixer } from "@/utilities/_module-exports.js";
-import { EventBus } from "@/new-event-bus/implementations/derivables/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/new-event-bus/implementations/adapters/_module-exports.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 
 describe("class: Cache", () => {
     cacheTestSuite({

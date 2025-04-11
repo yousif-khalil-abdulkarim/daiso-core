@@ -1,7 +1,7 @@
 /**
  * @module Lock
  */
-import type { IEventBus } from "@/new-event-bus/contracts/_module-exports.js";
+import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
     ILockProviderFactory,
     ILockProvider,

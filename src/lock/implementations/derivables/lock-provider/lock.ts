@@ -36,7 +36,7 @@ import {
     type ILockAdapter,
 } from "@/lock/contracts/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
-import type { IEventDispatcher } from "@/new-event-bus/contracts/_module-exports.js";
+import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
 
 import type { LockState } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
 

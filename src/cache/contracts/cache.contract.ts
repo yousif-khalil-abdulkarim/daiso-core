@@ -14,7 +14,7 @@ import type {
     OneOrMore,
 } from "@/utilities/_module-exports.js";
 import type { CacheEventMap } from "@/cache/contracts/cache.events.js";
-import type { IEventListenable } from "@/new-event-bus/contracts/_module-exports.js";
+import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { TypeCacheError } from "@/cache/contracts/cache.errors.js";
 
