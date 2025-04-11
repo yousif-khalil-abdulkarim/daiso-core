@@ -15,20 +15,6 @@ export class AsyncError extends Error {
 }
 
 /**
- * This error is thrown when the is aborted.
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Errors
- */
-export class AbortAsyncError extends AsyncError {
-    constructor(message: string, cause?: unknown) {
-        super(message, cause);
-        this.name = AbortAsyncError.name;
-    }
-}
-
-/**
- * This error is thrown when the has exceeded the given time limit.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
@@ -51,7 +37,6 @@ export type RetryAsyncErrorData = {
 };
 
 /**
- * This error is thrown when the has failed all retry attempts.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
@@ -62,7 +47,7 @@ export class RetryAsyncError extends AsyncError {
     public readonly errors: unknown[] = [];
 
     constructor(message: string, { errors, maxAttempts }: RetryAsyncErrorData) {
-        super(message, errors[errors.length - 1]);
+        super(message, errors);
         this.errors = errors;
         this.maxAttempts = maxAttempts;
         this.name = RetryAsyncError.name;
@@ -74,9 +59,36 @@ export class RetryAsyncError extends AsyncError {
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
  */
+export class HedgingAsyncError extends AsyncError {
+    constructor(
+        message: string,
+        public readonly errors: unknown[],
+    ) {
+        super(message, errors);
+        this.name = HedgingAsyncError.name;
+    }
+}
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * @group Errors
+ */
+export class CapacityFullAsyncError extends AsyncError {
+    constructor(message: string, cause?: unknown) {
+        super(message, cause);
+        this.name = CapacityFullAsyncError.name;
+    }
+}
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * @group Errors
+ */
 export const ASYNC_ERRORS = {
     Base: AsyncError,
-    Abort: AbortAsyncError,
     Timeout: TimeoutAsyncError,
     Retry: RetryAsyncError,
+    Hedging: HedgingAsyncError,
+    CapacityFull: CapacityFullAsyncError,
 } as const;
