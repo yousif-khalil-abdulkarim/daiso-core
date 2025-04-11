@@ -13,9 +13,7 @@ import type {
     ISerdeTransformer,
     ISerializable,
     SerializableClass,
-    SerializableEventClass,
 } from "@/serde/contracts/_module-exports.js";
-import { BaseEvent } from "@/event-bus/contracts/_module-exports.js";
 import {
     ArrayBufferSerdeTransformer,
     BufferSerdeTransformer,
@@ -314,57 +312,6 @@ export class Serde<TSerializedValue>
      */
     deserialize<TValue>(serializedValue: TSerializedValue): TValue {
         return this.serdeAdapter.deserialize(serializedValue);
-    }
-
-    /**
-     * @example
-     * ```ts
-     * import type { IFlexibleSerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { Serde } from "@daiso-tech/core/serde";
-     * import { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
-     *
-     * const serde: IFlexibleSerde = new Serde(new SuperJsonSerdeAdapter());
-     *
-     * class AddEvent extends BaseEvent<{ a: number; b: number }> {}
-     *
-     * serde.registerEvent(AddEvent);
-     *
-     * const event = new AddEvent({ a: 1, b: 2 });
-     * const deserializedEvent = serde.deserialize<AddEvent>(serde.serialize(event));
-     *
-     * // Will print 1
-     * console.log(deserializedEvent.fields.a);
-     *
-     * // Will print 2
-     * console.log(deserializedEvent.fields.b);
-     *
-     * // Will print true
-     * console.log(deserializedEvent instanceof AddEvent);
-     *
-     * // Will print false
-     * console.log(event === deserializedEvent);
-     * ```
-     */
-    registerEvent<TFields extends Record<string, unknown>>(
-        eventClass: SerializableEventClass<TFields>,
-        prefix?: OneOrMore<string>,
-    ): this {
-        return this.registerCustom<BaseEvent<TFields>, TFields>(
-            {
-                name: eventClass.name,
-                isApplicable(value: unknown): value is BaseEvent<TFields> {
-                    return value instanceof BaseEvent;
-                },
-                serialize(deserializedValue: BaseEvent<TFields>): TFields {
-                    return deserializedValue.fields;
-                },
-                deserialize(serializedValue: TFields): BaseEvent<TFields> {
-                    return new eventClass(serializedValue);
-                },
-            },
-            prefix,
-        );
     }
 
     /**
