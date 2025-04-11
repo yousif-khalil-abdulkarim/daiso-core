@@ -1,14 +1,12 @@
 /**
  * @module Async
  */
-import { AbortAsyncError } from "@/async/async.errors.js";
 
 /**
  * @internal
  */
 function abortSignalToPromise<TValue = void>(
     abortSignal: AbortSignal,
-    createError: (reason: unknown) => AbortAsyncError,
 ): {
     promise: Promise<TValue>;
     abort: () => void;
@@ -18,12 +16,13 @@ function abortSignalToPromise<TValue = void>(
         if (reject_ === null) {
             return;
         }
-        reject_(createError(abortSignal.reason));
+        reject_(abortSignal.reason);
     }
 
     if (abortSignal.aborted) {
         return {
-            promise: Promise.reject(createError(abortSignal.reason)),
+            // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+            promise: Promise.reject<TValue>(abortSignal.reason),
             abort,
         };
     }
@@ -50,19 +49,12 @@ export async function abortAndFail<TValue>(
     promise: PromiseLike<TValue>,
     abortSignal: AbortSignal,
 ): Promise<TValue> {
-    const createError = (reason: unknown) =>
-        new AbortAsyncError(
-            `Promise was aborted with reason of "${String(reason)}"`,
-            reason,
-        );
     if (abortSignal.aborted) {
-        throw createError(abortSignal.reason);
+        throw abortSignal.reason;
     }
 
-    const { promise: abortSignalPromise, abort } = abortSignalToPromise<TValue>(
-        abortSignal,
-        createError,
-    );
+    const { promise: abortSignalPromise, abort } =
+        abortSignalToPromise<TValue>(abortSignal);
     try {
         return await Promise.race([promise, abortSignalPromise]);
     } finally {

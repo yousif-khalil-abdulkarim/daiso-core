@@ -2,15 +2,15 @@ import { AsyncHooks, TimeSpan } from "@/utilities/_module-exports.js";
 import { describe, expect, test } from "vitest";
 import {
     observe,
-    type OnErrorData,
-    type OnFinallyData,
-    type OnStartData,
-    type OnSuccessData,
+    type OnObserveErrorData,
+    type OnObserveFinallyData,
+    type OnObserveStartData,
+    type OnObserveSuccessData,
 } from "@/async/middlewares/observe/observe.middleware.js";
 
 describe("function: observe", () => {
     test("Should call onStart callback when no error is thrown", async () => {
-        let data = null as OnStartData | null;
+        let data = null as OnObserveStartData | null;
         await new AsyncHooks(
             (_url: string): string => {
                 return "DATA";
@@ -23,7 +23,9 @@ describe("function: observe", () => {
                 }),
             ],
             {
-                name: "fetchData",
+                context: {
+                    name: "fetchData",
+                },
             },
         ).invoke("ENDPOINT");
         expect(data?.args).toStrictEqual(["ENDPOINT"]);
@@ -32,7 +34,7 @@ describe("function: observe", () => {
         });
     });
     test("Should call onStart callback when error is thrown", async () => {
-        let data = null as OnStartData | null;
+        let data = null as OnObserveStartData | null;
         const promise = new AsyncHooks(
             (_url: string): string => {
                 throw new Error("Unexpected error");
@@ -45,7 +47,9 @@ describe("function: observe", () => {
                 }),
             ],
             {
-                name: "fetchData",
+                context: {
+                    name: "fetchData",
+                },
             },
         ).invoke("ENDPOINT");
         try {
@@ -59,7 +63,7 @@ describe("function: observe", () => {
         });
     });
     test("Should call onSuccess callback when no error is thrown", async () => {
-        let data = null as OnSuccessData | null;
+        let data = null as OnObserveSuccessData | null;
         await new AsyncHooks(
             (_url: string): string => {
                 return "DATA";
@@ -72,7 +76,9 @@ describe("function: observe", () => {
                 }),
             ],
             {
-                name: "fetchData",
+                context: {
+                    name: "fetchData",
+                },
             },
         ).invoke("ENDPOINT");
         expect(data?.args).toStrictEqual(["ENDPOINT"]);
@@ -82,7 +88,7 @@ describe("function: observe", () => {
         expect(data?.returnValue).toBe("DATA");
     });
     test("Should not call onSuccess callback when error is thrown", async () => {
-        let data = null as OnSuccessData | null;
+        let data = null as OnObserveSuccessData | null;
         const promise = new AsyncHooks((): string => {
             throw new Error("error");
         }, [
@@ -100,7 +106,7 @@ describe("function: observe", () => {
         expect(data).toBeNull();
     });
     test("Should call onError callback when error is thrown", async () => {
-        let data = null as OnErrorData | null;
+        let data = null as OnObserveErrorData | null;
         const promise = new AsyncHooks(
             (_url: string): string => {
                 throw new Error("UNEXPECTED");
@@ -113,7 +119,9 @@ describe("function: observe", () => {
                 }),
             ],
             {
-                name: "fetchData",
+                context: {
+                    name: "fetchData",
+                },
             },
         ).invoke("ENDPOINT");
         try {
@@ -128,7 +136,7 @@ describe("function: observe", () => {
         expect(data?.error).toBeInstanceOf(Error);
     });
     test("Should not call onError callback when no error is thrown", async () => {
-        let data = null as OnErrorData | null;
+        let data = null as OnObserveErrorData | null;
         await new AsyncHooks((): string => {
             return "a";
         }, [
@@ -141,7 +149,7 @@ describe("function: observe", () => {
         expect(data).toBeNull();
     });
     test("Should call onFinally callback when no error is thrown", async () => {
-        let data = null as OnFinallyData | null;
+        let data = null as OnObserveFinallyData | null;
         await new AsyncHooks(
             (): string => {
                 return "str";
@@ -153,7 +161,11 @@ describe("function: observe", () => {
                     },
                 }),
             ],
-            { name: "fetchData" },
+            {
+                context: {
+                    name: "fetchData",
+                },
+            },
         ).invoke();
 
         expect(data?.executionTime).toBeInstanceOf(TimeSpan);
@@ -162,7 +174,7 @@ describe("function: observe", () => {
         });
     });
     test("Should call onFinally callback when error is thrown", async () => {
-        let data = null as OnFinallyData | null;
+        let data = null as OnObserveFinallyData | null;
         const promise = new AsyncHooks(
             (): string => {
                 throw new Error("error");
@@ -174,7 +186,11 @@ describe("function: observe", () => {
                     },
                 }),
             ],
-            { name: "fetchData" },
+            {
+                context: {
+                    name: "fetchData",
+                },
+            },
         ).invoke();
         try {
             await promise;

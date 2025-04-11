@@ -14,7 +14,7 @@ describe("function: timeout", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
                 return "a";
             },
-            timeout({ time: TimeSpan.fromMilliseconds(25) }),
+            timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
         await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
@@ -25,7 +25,7 @@ describe("function: timeout", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
                 return "a";
             },
-            timeout({ time: TimeSpan.fromMilliseconds(25) }),
+            timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
         await expect(outputPromise).rejects.toBeInstanceOf(TimeoutAsyncError);
@@ -36,7 +36,7 @@ describe("function: timeout", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
                 return "a";
             },
-            timeout({ time: TimeSpan.fromMilliseconds(100) }),
+            timeout({ waitTime: TimeSpan.fromMilliseconds(100) }),
         ).invoke();
 
         await expect(outputPromise).resolves.toBe("a");
@@ -46,7 +46,7 @@ describe("function: timeout", () => {
 
         const promise = new AsyncHooks(
             () => Promise.reject(new ErrorA()),
-            timeout({ time: TimeSpan.fromSeconds(2) }),
+            timeout({ waitTime: TimeSpan.fromSeconds(2) }),
         ).invoke();
         await expect(promise).rejects.toBeInstanceOf(ErrorA);
     });
@@ -59,13 +59,15 @@ describe("function: timeout", () => {
                 return "a";
             },
             timeout({
-                time,
+                waitTime: time,
                 onTimeout(data_) {
                     data = data_;
                 },
             }),
             {
-                name: "fetchData",
+                context: {
+                    name: "fetchData",
+                },
             },
         ).invoke("ENDPOINT");
 
@@ -75,7 +77,7 @@ describe("function: timeout", () => {
             /* Empty */
         }
 
-        expect(data?.maxTime).toBeInstanceOf(TimeSpan);
+        expect(data?.waitTime).toBeInstanceOf(TimeSpan);
         expect(data?.args).toStrictEqual(["ENDPOINT"]);
         expect(data?.context).toStrictEqual({
             name: "fetchData",
@@ -89,13 +91,15 @@ describe("function: timeout", () => {
                 return "a";
             },
             timeout({
-                time,
+                waitTime: time,
                 onTimeout(data_) {
                     data = data_;
                 },
             }),
             {
-                name: "fetchData",
+                context: {
+                    name: "fetchData",
+                },
             },
         ).invoke("ENDPOINT");
 
@@ -106,66 +110,5 @@ describe("function: timeout", () => {
         }
 
         expect(data).toBeNull();
-    });
-    test("Should forward timeout AbortSignal when optional", async () => {
-        let hasAborted = false;
-        const outputPromise = new AsyncHooks(
-            async (signal?: AbortSignal) => {
-                signal?.addEventListener("abort", () => {
-                    hasAborted = true;
-                });
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
-                return "a";
-            },
-            timeout({
-                time: TimeSpan.fromMilliseconds(25),
-                signalBinder: ([fnSignal], timeoutSignal) => {
-                    return [
-                        AbortSignal.any(
-                            [fnSignal, timeoutSignal].filter(
-                                (abortSignal) => abortSignal !== undefined,
-                            ),
-                        ),
-                    ] as const;
-                },
-            }),
-        ).invoke();
-
-        try {
-            await outputPromise;
-        } catch {
-            /* Empty */
-        }
-
-        expect(hasAborted).toBe(true);
-    });
-    test("Should forward timeout AbortSignal when required", async () => {
-        let hasAborted = false;
-        const abortController = new AbortController();
-        const outputPromise = new AsyncHooks(
-            async (signal: AbortSignal) => {
-                signal.addEventListener("abort", () => {
-                    hasAborted = true;
-                });
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
-                return "a";
-            },
-            timeout({
-                time: TimeSpan.fromMilliseconds(25),
-                signalBinder: ([fnSignal], timeoutSignal) => {
-                    return [
-                        AbortSignal.any([fnSignal, timeoutSignal]),
-                    ] as const;
-                },
-            }),
-        ).invoke(abortController.signal);
-
-        try {
-            await outputPromise;
-        } catch {
-            /* Empty */
-        }
-
-        expect(hasAborted).toBe(true);
     });
 });

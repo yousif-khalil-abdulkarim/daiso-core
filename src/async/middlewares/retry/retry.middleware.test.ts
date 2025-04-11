@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
 import {
     retry,
-    type OnExecutionAttemptData,
-    type OnRetryData,
+    type OnRetryAttemptData,
+    type OnRetryDelayData,
 } from "@/async/middlewares/retry/retry.middleware.js";
 import { RetryAsyncError } from "@/async/async.errors.js";
 import { AsyncHooks } from "@/utilities/_module-exports.js";
@@ -98,7 +98,7 @@ describe("function: retry", () => {
     test("Should call onExecutionAttempt callback when error is thrown", async () => {
         let repetition = 0;
         const maxAttempts = 4;
-        let data = null as OnExecutionAttemptData | null;
+        let data = null as OnRetryAttemptData | null;
         try {
             await new AsyncHooks(
                 (_url: string): string => {
@@ -113,7 +113,9 @@ describe("function: retry", () => {
                     },
                 }),
                 {
-                    name: "fetchData",
+                    context: {
+                        name: "fetchData",
+                    },
                 },
             ).invoke("ENDPOINT");
         } catch {
@@ -129,7 +131,7 @@ describe("function: retry", () => {
     test("Should call onExecutionAttempt callback when no error is thrown", async () => {
         let repetition = 0;
         const maxAttempts = 4;
-        let data = null as OnExecutionAttemptData | null;
+        let data = null as OnRetryAttemptData | null;
         try {
             await new AsyncHooks(
                 (_url: string): string => {
@@ -144,7 +146,9 @@ describe("function: retry", () => {
                     },
                 }),
                 {
-                    name: "fetchData",
+                    context: {
+                        name: "fetchData",
+                    },
                 },
             ).invoke("ENDPOINT");
         } catch {
@@ -157,10 +161,10 @@ describe("function: retry", () => {
         });
         expect(repetition).toBe(1);
     });
-    test("Should call onRetryStart callback when error is thrown", async () => {
+    test("Should call onRetryDelay callback when error is thrown", async () => {
         let repetition = 0;
         const maxAttempts = 4;
-        let data = null as OnRetryData | null;
+        let data = null as OnRetryDelayData | null;
         try {
             await new AsyncHooks(
                 (_url: string): string => {
@@ -169,13 +173,15 @@ describe("function: retry", () => {
                 retry({
                     maxAttempts,
                     backoffPolicy: () => 25,
-                    onRetryStart(data_) {
+                    onRetryDelay(data_) {
                         data = data_;
                         repetition++;
                     },
                 }),
                 {
-                    name: "fetchData",
+                    context: {
+                        name: "fetchData",
+                    },
                 },
             ).invoke("ENDPOINT");
         } catch {
@@ -190,10 +196,10 @@ describe("function: retry", () => {
         expect(data?.waitTime.toMilliseconds()).toBe(25);
         expect(repetition).toBe(maxAttempts);
     });
-    test("Should not call onRetryStart callback when no error is thrown", async () => {
+    test("Should not call onRetryDelay callback when no error is thrown", async () => {
         let repetition = 0;
         const maxAttempts = 4;
-        let data = null as OnRetryData | null;
+        let data = null as OnRetryDelayData | null;
         try {
             await new AsyncHooks(
                 (_url: string): string => {
@@ -202,73 +208,15 @@ describe("function: retry", () => {
                 retry({
                     maxAttempts,
                     backoffPolicy: () => 25,
-                    onRetryStart(data_) {
+                    onRetryDelay(data_) {
                         data = data_;
                         repetition++;
                     },
                 }),
                 {
-                    name: "fetchData",
-                },
-            ).invoke("ENDPOINT");
-        } catch {
-            /* Empty */
-        }
-        expect(data).toBeNull();
-        expect(repetition).toBe(0);
-    });
-    test("Should call onRetryEnd callback when error is thrown", async () => {
-        let repetition = 0;
-        const maxAttempts = 4;
-        let data = null as OnRetryData | null;
-        try {
-            await new AsyncHooks(
-                (_url: string): string => {
-                    throw new Error("My own error");
-                },
-                retry({
-                    maxAttempts,
-                    backoffPolicy: () => 25,
-                    onRetryEnd(data_) {
-                        data = data_;
-                        repetition++;
+                    context: {
+                        name: "fetchData",
                     },
-                }),
-                {
-                    name: "fetchData",
-                },
-            ).invoke("ENDPOINT");
-        } catch {
-            /* Empty */
-        }
-        expect(data?.args).toStrictEqual(["ENDPOINT"]);
-        expect(data?.attempt).toBe(maxAttempts);
-        expect(data?.context).toStrictEqual({
-            name: "fetchData",
-        });
-        expect(data?.error).toBeInstanceOf(Error);
-        expect(data?.waitTime.toMilliseconds()).toBe(25);
-        expect(repetition).toBe(maxAttempts);
-    });
-    test("Should not call onRetryEnd callback when no error is thrown", async () => {
-        let repetition = 0;
-        const maxAttempts = 4;
-        let data = null as OnRetryData | null;
-        try {
-            await new AsyncHooks(
-                (_url: string): string => {
-                    return "data";
-                },
-                retry({
-                    maxAttempts,
-                    backoffPolicy: () => 25,
-                    onRetryEnd(data_) {
-                        data = data_;
-                        repetition++;
-                    },
-                }),
-                {
-                    name: "fetchData",
                 },
             ).invoke("ENDPOINT");
         } catch {

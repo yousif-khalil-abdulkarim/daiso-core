@@ -14,7 +14,7 @@ import {
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type OnStartData<
+export type OnObserveStartData<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
 > = {
@@ -27,17 +27,17 @@ export type OnStartData<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type OnStart<
+export type OnObserveStart<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
-> = Invokable<[data: OnStartData<TParameters, TContext>]>;
+> = Invokable<[data: OnObserveStartData<TParameters, TContext>]>;
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type OnSuccessData<
+export type OnObserveSuccessData<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext extends HookContext = HookContext,
@@ -52,18 +52,18 @@ export type OnSuccessData<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type OnSuccess<
+export type OnObserveSuccess<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext extends HookContext = HookContext,
-> = Invokable<[data: OnSuccessData<TParameters, TReturn, TContext>]>;
+> = Invokable<[data: OnObserveSuccessData<TParameters, TReturn, TContext>]>;
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type OnErrorData<
+export type OnObserveErrorData<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
 > = {
@@ -77,7 +77,7 @@ export type OnErrorData<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type OnFinallyData<TContext extends HookContext = HookContext> = {
+export type OnObserveFinallyData<TContext extends HookContext = HookContext> = {
     executionTime: TimeSpan;
     context: TContext;
 };
@@ -87,26 +87,25 @@ export type OnFinallyData<TContext extends HookContext = HookContext> = {
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type OnError<
+export type OnObserveError<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
-> = Invokable<[data: OnErrorData<TParameters, TContext>]>;
+> = Invokable<[data: OnObserveErrorData<TParameters, TContext>]>;
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type OnFinally<TContext extends HookContext = HookContext> = Invokable<
-    [data: OnFinallyData<TContext>]
->;
+export type OnObserveFinally<TContext extends HookContext = HookContext> =
+    Invokable<[data: OnObserveFinallyData<TContext>]>;
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type ObserveSettings<
+export type ObserveCallbacks<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext extends HookContext = HookContext,
@@ -114,22 +113,22 @@ export type ObserveSettings<
     /**
      * Callback function that will be called when before the underlying {@link Invokable | `Invokable`} is called.
      */
-    onStart?: OnStart<TParameters, TContext>;
+    onStart?: OnObserveStart<TParameters, TContext>;
 
     /**
      * Callback function that will be called when the underlying {@link Invokable | `Invokable`} is successfully called.
      */
-    onSuccess?: OnSuccess<TParameters, TReturn, TContext>;
+    onSuccess?: OnObserveSuccess<TParameters, TReturn, TContext>;
 
     /**
      * Callback function that will be called when the underlying {@link Invokable | `Invokable`} throws an error.
      */
-    onError?: OnError<TParameters, TContext>;
+    onError?: OnObserveError<TParameters, TContext>;
 
     /**
      * Callback function that will be called when the underlying {@link Invokable | `Invokable`} throws an error or is successfully called.
      */
-    onFinally?: OnFinally<TContext>;
+    onFinally?: OnObserveFinally<TContext>;
 };
 
 /**
@@ -176,7 +175,7 @@ export function observe<
     TReturn,
     TContext extends HookContext,
 >(
-    settings: NoInfer<ObserveSettings<TParameters, TReturn, TContext>>,
+    settings: NoInfer<ObserveCallbacks<TParameters, TReturn, TContext>>,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         onStart = () => {},
@@ -184,7 +183,7 @@ export function observe<
         onError = () => {},
         onFinally = () => {},
     } = settings;
-    return async (args, next, context) => {
+    return async (args, next, { context }) => {
         const start = performance.now();
         try {
             callInvokable(onStart, {

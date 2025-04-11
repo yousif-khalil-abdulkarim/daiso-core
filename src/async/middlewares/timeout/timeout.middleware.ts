@@ -2,14 +2,14 @@
  * @module Async
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type AsyncMiddlewareFn,
     type HookContext,
 } from "@/utilities/_module-exports.js";
 import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
-import { AbortAsyncError, TimeoutAsyncError } from "@/async/async.errors.js";
-import { abortAndFail } from "@/async/utilities/_module.js";
+import { TimeoutAsyncError } from "@/async/async.errors.js";
+import { timeoutAndFail } from "@/async/utilities/_module.js";
 
 /**
  *
@@ -20,7 +20,7 @@ export type OnTimeoutData<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
 > = {
-    maxTime: TimeSpan;
+    waitTime: TimeSpan;
     args: TParameters;
     context: TContext;
 };
@@ -40,8 +40,15 @@ export type OnTimeout<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
  */
-export type AbortSignalBinder<TParameters extends unknown[] = unknown[]> =
-    Invokable<[arguments_: TParameters, signal: AbortSignal], TParameters>;
+export type TimeoutCallbacks<
+    TParameters extends unknown[] = unknown[],
+    TContext extends HookContext = HookContext,
+> = {
+    /**
+     * Callback function that will be called when the timeout occurs.
+     */
+    onTimeout?: OnTimeout<TParameters, TContext>;
+};
 
 /**
  *
@@ -51,15 +58,18 @@ export type AbortSignalBinder<TParameters extends unknown[] = unknown[]> =
 export type TimeoutSettings<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
-> = {
-    time: TimeSpan;
-
-    signalBinder?: AbortSignalBinder<TParameters>;
-
+> = TimeoutCallbacks<TParameters, TContext> & {
     /**
-     * Callback function that will be called when the timeout occurs.
+     * The maximum time to wait before automatically aborting the executing function.
+     *
+     * @default
+     * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     *
+     * TimeSpan.fromSeconds(2)
+     * ```
      */
-    onTimeout?: OnTimeout<TParameters, TContext>;
+    waitTime?: TimeSpan;
 };
 
 /**
@@ -68,7 +78,6 @@ export type TimeoutSettings<
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
- *
  * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}
  *
  * @example
@@ -76,36 +85,22 @@ export type TimeoutSettings<
  * import { timeout } from "@daiso-tech/core/async";
  * import { AsyncHooks, TimeSpan } from "@daiso-tech/core/utilities";
  *
- * const abortController = new AbortController();
- *
- * const promise = new AsyncHooks(async (url: string, signal?: AbortSignal): Promise<unknown> => {
- *   const response = await fetch(url, {
- *     signal
- *   });
- *   const json = await response.json();
- *   if (!response.ok) {
- *     throw json
+ * const data = await new AsyncHooks(
+ *   async (url: string, signal?: AbortSignal): Promise<unknown> => {
+ *     const response = await fetch(url, { signal });
+ *     return await response.json();
+ *   },
+ *   [timeout({ waitTime: TimeSpan.fromSeconds(2) })],
+ *   {
+ *     signalBinder: {
+ *       getSignal: (args) => args[1],
+ *       forwardSignal: (args, signal) => {
+ *         args[1] = signal;
+ *       }
+ *     }
  *   }
- *   return json;
- * }, timeout({
- *   time: TimeSpan.fromSeconds(2),
- *   // With the defined signalBinder the HTTP request will be arboted when timed out or when the inputed `AbortSignal` is called.
- *   signalBinder: ([url, fetchSignal], timeoutSignal) => {
- *     return [
- *       url,
- *       AbortSignal.any([
- *         fetchSignal,
- *         timeoutSignal
- *       ].filter(signal => signal !== undefined))
- *     ] as const;
- *   }
- * }))
- * .invoke("ENDPOINT", abortController.signal);
- *
- * abortController.abort();
- *
- * // An error will be thrown.
- * await promise;
+ * )
+ * .invoke("URL");
  * ```
  */
 export function timeout<
@@ -113,42 +108,29 @@ export function timeout<
     TReturn,
     TContext extends HookContext,
 >(
-    settings: NoInfer<TimeoutSettings<TParameters, TContext>>,
+    settings: NoInfer<TimeoutSettings<TParameters, TContext>> = {},
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
-    const {
-        time,
-        signalBinder = (args) => args,
-        onTimeout = () => {},
-    } = settings;
-    return async (args, next, context) => {
-        const timeoutController = new AbortController();
-        const timeoutId = setTimeout(() => {
-            timeoutController.abort(
-                new TimeoutAsyncError("The promise exceded time"),
-            );
-        }, time.toMilliseconds());
+    const { waitTime = TimeSpan.fromSeconds(2), onTimeout = () => {} } =
+        settings;
+    return async (args, next, { context, abort, signal }) => {
         try {
-            return await abortAndFail(
-                next(
-                    ...callInvokable(
-                        signalBinder,
-                        args,
-                        timeoutController.signal,
-                    ),
-                ),
-                timeoutController.signal,
+            return await timeoutAndFail(
+                next(...args),
+                waitTime,
+                (error: unknown) => {
+                    abort(error);
+                },
+                signal,
             );
         } catch (error: unknown) {
-            if (
-                error instanceof AbortAsyncError &&
-                error.cause instanceof TimeoutAsyncError
-            ) {
-                callInvokable(onTimeout, { maxTime: time, args, context });
-                throw error.cause;
+            if (error instanceof TimeoutAsyncError) {
+                callInvokable(onTimeout, {
+                    args,
+                    context,
+                    waitTime,
+                });
             }
             throw error;
-        } finally {
-            clearTimeout(timeoutId);
         }
     };
 }

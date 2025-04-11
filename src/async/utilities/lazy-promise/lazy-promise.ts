@@ -103,7 +103,6 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
                     abortSignal,
                 );
             } finally {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (timeoutId !== null) {
                     clearTimeout(timeoutId);
                 }

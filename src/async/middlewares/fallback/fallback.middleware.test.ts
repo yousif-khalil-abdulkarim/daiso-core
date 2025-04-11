@@ -27,7 +27,7 @@ describe("function: fallback", () => {
         ]).invoke();
         expect(returnValue).toBe("fallback-value");
     });
-    test("Should throw error when fallback value is defined and retry policy is defined", async () => {
+    test("Should throw error when fallback value is defined and fallback policy is defined", async () => {
         class CustomError extends Error {}
         const returnValue = new AsyncHooks((): string => {
             throw new Error("Unexpected error");
@@ -54,7 +54,9 @@ describe("function: fallback", () => {
                 }),
             ],
             {
-                name: "fetchData",
+                context: {
+                    name: "fetchData",
+                },
             },
         ).invoke("ENDPOINT");
         expect(data?.args).toStrictEqual(["ENDPOINT"]);
@@ -79,7 +81,9 @@ describe("function: fallback", () => {
                 }),
             ],
             {
-                name: "fetchData",
+                context: {
+                    name: "fetchData",
+                },
             },
         ).invoke();
         expect(data).toBeNull();

@@ -20,8 +20,8 @@ import {
  *
  * @example
  * ```ts
- * import { AsyncHooks } from "@daiso-tech/core/async";
- * import { dynamic, fallback } from "@daiso-tech/core/utilities";
+ * import { dynamic, fallback  } from "@daiso-tech/core/async";
+ * import { AsyncHooks } from "@daiso-tech/core/utilities";
  *
  * await new AsyncHooks(
  *   (a: number, b: number) => a / b,
@@ -49,8 +49,8 @@ export function dynamic<
         >
     >,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
-    return (args, next, context) => {
-        const middleware = callInvokable(dynamic, args, context);
-        return callInvokable(middleware, args, next, context);
+    return (args, next, settings) => {
+        const middleware = callInvokable(dynamic, args, settings.context);
+        return callInvokable(middleware, args, next, settings);
     };
 }

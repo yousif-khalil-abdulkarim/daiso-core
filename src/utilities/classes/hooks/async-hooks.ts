@@ -3,6 +3,8 @@
  */
 
 import {
+    callInvokable,
+    getInvokableName,
     resolveInvokable,
     resolveOneOrMore,
     type IInvokableObject,
@@ -12,6 +14,71 @@ import {
     type Promisable,
 } from "@/utilities/_module-exports.js";
 import type { HookContext } from "@/utilities/classes/hooks/types.js";
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Hooks
+ */
+export type GetSignal<TParameters extends unknown[] = unknown[]> = Invokable<
+    [arguments_: TParameters],
+    AbortSignal | undefined
+>;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Hooks
+ */
+export type ForwardSignal<TParameters> = Invokable<
+    [arguments_: TParameters, signal: AbortSignal],
+    void
+>;
+
+/**
+ * With {@link AbortSignalBinder | `AbortSignalBinder`}, you can bind an {@link AbortSignal | `AbortSignal`} to the middleware, enabling two-way abortion control.
+ * This means the middleware can abort the function, or the function can abort the middleware if the input function supports an {@link AbortSignal | `AbortSignal`}.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Hooks
+ *
+ * @example
+ * ```ts
+ * import { AsyncHooks } from "@daiso-tech/core/utilities";
+ *
+ * const abortController = new AbortController();
+ *
+ * // You can abort the function based on by your on criteria
+ * abortController.abort("Aborted") // Remove this code if you want the function to aborted after 2 seconds by the middleware.
+ *
+ * const data = await new AsyncHooks(async (url: string, signal?: AbortSignal): Promise<unknown> => {
+ *   const response = await fetch(url, { signal });
+ *   return await response.json();
+ * }, [
+ *   (args, next, { abort, signal }) => {
+ *     // We abort the function when it execdes 2 seconds.
+ *     const id = setTimeout(() => abort("Timed out"), 2000);
+ *     // We remove the timeout if function is aborted before it execdes 2 seconds.
+ *     signal.addEventListener("abort", () => clearTimeout(id), { once: true });
+ *     return next(...args);
+ *   }
+ * ], {
+ *   signalBinder: {
+ *     getSignal: (args) => args[1],
+ *     forwardSignal: (args, signal) => {
+ *       args[1] = signal;
+ *     }
+ *   }
+ * })
+ * .invoke("url", abortController.signal);
+ *
+ * console.log("DATA:", data)
+ * ```
+ */
+export type AbortSignalBinder<TParameters extends unknown[] = unknown[]> = {
+    getSignal: GetSignal<TParameters>;
+    forwardSignal: ForwardSignal<TParameters>;
+};
 
 /**
  *
@@ -28,15 +95,27 @@ export type AsyncNextFunc<
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
+export type AsyncContext<TContext extends HookContext = HookContext> = {
+    name: string;
+    context: TContext;
+    abort: (error: unknown) => void;
+    signal: AbortSignal;
+};
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Hooks
+ */
 export type AsyncMiddlewareFn<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
-    TContext = object,
+    TContext extends HookContext = HookContext,
 > = InvokableFn<
     [
         arguments_: TParameters,
         next: AsyncNextFunc<TParameters, TReturn>,
-        context: TContext,
+        settings: AsyncContext<TContext>,
     ],
     Promisable<TReturn>
 >;
@@ -49,12 +128,12 @@ export type AsyncMiddlewareFn<
 export type IAsyncMiddlewareObject<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
-    TContext = object,
+    TContext extends HookContext = HookContext,
 > = IInvokableObject<
     [
         arguments_: TParameters,
         next: AsyncNextFunc<TParameters, TReturn>,
-        context: TContext,
+        settings: AsyncContext<TContext>,
     ],
     Promisable<TReturn>
 >;
@@ -67,10 +146,37 @@ export type IAsyncMiddlewareObject<
 export type AsyncMiddleware<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
-    TContext = object,
+    TContext extends HookContext = HookContext,
 > =
     | IAsyncMiddlewareObject<TParameters, TReturn, TContext>
     | AsyncMiddlewareFn<TParameters, TReturn, TContext>;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Hooks
+ */
+export type AsyncHooksSettings<
+    TParameters extends unknown[] = unknown[],
+    TContext extends HookContext = HookContext,
+> = {
+    /**
+     * The name of the function which can be used for logging inside the middleware.
+     * By default, it takes the function or method name. If an anonymous function is provided, the name defaults to "func".
+     */
+    name?: string;
+
+    /**
+     * If the input function accepts an {@link AbortSignal | `AbortSignal`}, you can bind it to the middleware by providing an {@link AbortSignalBinder | `AbortSignalBinder`}.
+     * This enables two-way abortion control: you can either abort the function from within the middleware, or abort the middleware from the function itself.
+     */
+    signalBinder?: AbortSignalBinder<TParameters>;
+
+    /**
+     * You can provide addtional context that can be used in the middleware.
+     */
+    context?: TContext;
+};
 
 /**
  * The `AsyncHooks` class provides a convenient way to change and inspect arguments and return value of both async and sync functions.
@@ -85,10 +191,50 @@ export class AsyncHooks<
     TContext extends HookContext = HookContext,
 > implements IInvokableObject<TParameters, Promise<TReturn>>
 {
-    private static init<TParameters extends unknown[], TReturn, TContext>(
+    private static defaultAbortSignalBinder<
+        TParameters extends unknown[],
+    >(): AbortSignalBinder<TParameters> {
+        return {
+            forwardSignal: (args) => args,
+            getSignal: () => new AbortController().signal,
+        };
+    }
+
+    private static resolveSignalBinder<TParameters extends unknown[]>(
+        signalBinder: AbortSignalBinder<TParameters>,
+        args: TParameters,
+    ) {
+        const outerSignal =
+            callInvokable(signalBinder.getSignal, args) ??
+            new AbortController().signal;
+        const abortController = new AbortController();
+        const abort = (reason: unknown): void => {
+            abortController.abort(reason);
+        };
+        const mergedSignal = AbortSignal.any([
+            outerSignal,
+            abortController.signal,
+        ]);
+        callInvokable(signalBinder.forwardSignal, args, mergedSignal);
+        return {
+            abort,
+            changedArgs: args,
+            signal: mergedSignal,
+        };
+    }
+
+    private static init<
+        TParameters extends unknown[],
+        TReturn,
+        TContext extends HookContext,
+    >(
         invokable: Invokable<TParameters, Promisable<TReturn>>,
         middlewares: OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>,
-        context: TContext,
+        {
+            name = getInvokableName(invokable),
+            signalBinder = AsyncHooks.defaultAbortSignalBinder(),
+            context = {} as TContext,
+        }: AsyncHooksSettings<TParameters, TContext>,
     ): InvokableFn<TParameters, Promisable<TReturn>> {
         let func = resolveInvokable(invokable);
         for (const hook of resolveOneOrMore(middlewares)
@@ -97,8 +243,20 @@ export class AsyncHooks<
             const prevFunc = func;
             const next = async (...arguments_: TParameters) =>
                 await prevFunc(...arguments_);
-            func = async (...arguments_: TParameters) =>
-                await hook(arguments_, next, context);
+            func = async (...arguments_: TParameters) => {
+                const resolvedSignalBinder = AsyncHooks.resolveSignalBinder(
+                    signalBinder,
+                    arguments_,
+                );
+                return await hook(resolvedSignalBinder.changedArgs, next, {
+                    name,
+                    abort: (error: unknown) => {
+                        resolvedSignalBinder.abort(error);
+                    },
+                    signal: resolvedSignalBinder.signal,
+                    context,
+                });
+            };
         }
         return func;
     }
@@ -110,8 +268,8 @@ export class AsyncHooks<
      * ```ts
      * import { AsyncHooks, type AsyncMiddlewareFn } from "@daiso-tech/core/utilities";
      *
-     * function log<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn, { funcName: string; }> {
-     *   return async (args, next, { funcName }) => {
+     * function log<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn> {
+     *   return async (args, next, { name: funcName }) => {
      *     console.log("FUNCTION_NAME:", funcName);
      *     console.log("ARGUMENTS:", args);
      *     const value = await next(...args);
@@ -138,10 +296,9 @@ export class AsyncHooks<
      * const enhancedAdd = new AsyncHooks(add, [
      *   log(),
      *   time()
-     * ],
-     * // You can provide additional information to `AsyncMiddleware` invokables.
-     * {
-     *    funcName: add.name
+     * ], {
+     *   // You can provide addtional data to be used the middleware.
+     *   context: {},
      * });
      *
      * // Will log the function name, arguments and return value.
@@ -157,12 +314,12 @@ export class AsyncHooks<
         private readonly middlewares: NoInfer<
             OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>
         >,
-        /**
-         * You can pass in additional information that can be used by the middleware.
-         */
-        private readonly context = {} as TContext,
+        private readonly settings: AsyncHooksSettings<
+            TParameters,
+            TContext
+        > = {},
     ) {
-        this.func = AsyncHooks.init(invokable, middlewares, context);
+        this.func = AsyncHooks.init(invokable, middlewares, this.settings);
     }
 
     /**
@@ -177,7 +334,7 @@ export class AsyncHooks<
                 ...resolveOneOrMore(this.middlewares),
                 ...resolveOneOrMore(middlewares),
             ],
-            this.context,
+            this.settings,
         );
     }
 

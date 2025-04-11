@@ -13,15 +13,16 @@ import {
     exponentialBackoffPolicy,
     type BackoffPolicy,
 } from "@/async/backof-policies/_module.js";
-import { AbortAsyncError, RetryAsyncError } from "@/async/async.errors.js";
+import { RetryAsyncError } from "@/async/async.errors.js";
 import { LazyPromise } from "@/async/utilities/_module.js";
+import { type ErrorPolicy } from "@/async/middlewares/_shared.js";
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Utilities
+ * @group Middlewares
  */
-export type OnExecutionAttemptData<
+export type OnRetryAttemptData<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
 > = {
@@ -33,19 +34,19 @@ export type OnExecutionAttemptData<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Utilities
+ * @group Middlewares
  */
-export type OnExecutionAttempt<
+export type OnRetryAttempt<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
-> = Invokable<[data: OnExecutionAttemptData<TParameters, TContext>]>;
+> = Invokable<[data: OnRetryAttemptData<TParameters, TContext>]>;
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Utilities
+ * @group Middlewares
  */
-export type OnRetryData<
+export type OnRetryDelayData<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
 > = {
@@ -59,29 +60,42 @@ export type OnRetryData<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Utilities
+ * @group Middlewares
  */
-export type OnRetry<
+export type OnRetryDelay<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
-> = Invokable<[data: OnRetryData<TParameters, TContext>]>;
+> = Invokable<[data: OnRetryDelayData<TParameters, TContext>]>;
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Utilities
+ * @group Middlewares
  */
-export type RetryPolicy = Invokable<[error: unknown, attempt: number], boolean>;
+export type RetryCallbacks<
+    TParameters extends unknown[] = unknown[],
+    TContext extends HookContext = HookContext,
+> = {
+    /**
+     * Callback function that will be called before execution attempt.
+     */
+    onExecutionAttempt?: OnRetryAttempt<TParameters, TContext>;
+
+    /**
+     * Callback function that will be called when the retry delay starts.
+     */
+    onRetryDelay?: OnRetryDelay<TParameters, TContext>;
+};
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Utilities
+ * @group Middlewares
  */
 export type RetrySettings<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
-> = {
+> = RetryCallbacks<TParameters, TContext> & {
     /**
      * You can decide maximal times you can retry.
      * @default {4}
@@ -103,25 +117,10 @@ export type RetrySettings<
      *
      * @default
      * ```ts
-     * () => true
+     * (_error: unknown) => true
      * ```
      */
-    retryPolicy?: RetryPolicy;
-
-    /**
-     * Callback function that will be called before execution attempt.
-     */
-    onExecutionAttempt?: OnExecutionAttempt<TParameters, TContext>;
-
-    /**
-     * Callback function that will be called when the retry delay starts.
-     */
-    onRetryStart?: OnRetry<TParameters, TContext>;
-
-    /**
-     * Callback function that will be called when the retry delay ends and before the next execution attempt.
-     */
-    onRetryEnd?: OnRetry<TParameters, TContext>;
+    retryPolicy?: ErrorPolicy;
 };
 
 /**
@@ -130,22 +129,29 @@ export type RetrySettings<
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
- *
- * @throws {AbortAsyncError} {@link AbortAsyncError}
+ * @throws {RetryAsyncError} {@link RetryAsyncError}
  *
  * @example
  * ```ts
  * import { retry } from "@daiso-tech/core/async";
- * import { AsyncHooks } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks, TimeSpan } from "@daiso-tech/core/utilities";
  *
- * await new AsyncHooks(async (url: string) => {
- *   const response = await fetch(url);
- *   const json = await response.json();
- *   if (!response.ok) {
- *     throw json
+ * const data = await new AsyncHooks(
+ *   async (url: string, signal?: AbortSignal): Promise<unknown> => {
+ *     const response = await fetch(url, { signal });
+ *     return await response.json();
+ *   },
+ *   [retry()],
+ *   {
+ *     signalBinder: {
+ *       getSignal: (args) => args[1],
+ *       forwardSignal: (args, signal) => {
+ *         args[1] = signal;
+ *       }
+ *     }
  *   }
- *   return json;
- * }, retry({ maxAttempts: 8 })).invoke("URL_ENDPOINT");
+ * )
+ * .invoke("URL");
  * ```
  */
 export function retry<
@@ -159,44 +165,36 @@ export function retry<
         maxAttempts = 4,
         backoffPolicy = exponentialBackoffPolicy(),
         retryPolicy = () => true,
-        onRetryStart = () => {},
-        onRetryEnd = () => {},
+        onRetryDelay = () => {},
         onExecutionAttempt = () => {},
     } = settings;
-    return async (args, next, context) => {
+    return async (args, next, { context, signal }) => {
         const errors: unknown[] = [];
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
                 callInvokable(onExecutionAttempt, { attempt, args, context });
                 return await next(...args);
             } catch (error: unknown) {
-                const time = TimeSpan.fromMilliseconds(
+                if (signal.aborted) {
+                    break;
+                }
+                const waitTime = TimeSpan.fromMilliseconds(
                     callInvokable(backoffPolicy, attempt, error),
                 );
-                callInvokable(onRetryStart, {
+                callInvokable(onRetryDelay, {
                     error,
-                    waitTime: time,
+                    waitTime,
                     attempt,
                     args,
                     context,
                 });
 
-                errors.push(error);
-                if (error instanceof AbortAsyncError) {
+                if (callInvokable(retryPolicy, error)) {
+                    errors.push(error);
+                } else {
                     throw error;
                 }
-                if (!callInvokable(retryPolicy, error, attempt)) {
-                    throw error;
-                }
-                await LazyPromise.delay(time);
-
-                callInvokable(onRetryEnd, {
-                    error,
-                    waitTime: time,
-                    attempt,
-                    args,
-                    context,
-                });
+                await LazyPromise.delay(waitTime, signal);
             }
         }
 
