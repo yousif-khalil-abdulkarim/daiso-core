@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.35.1
+
+### Patch Changes
+
+-   b7438c6: Updated `concurentHedging middleware to abort promises by AbortSignal`
+
 ## 0.35.0
 
 ### Minor Changes
