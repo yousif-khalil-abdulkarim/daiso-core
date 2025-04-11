@@ -1,5 +1,28 @@
 # @daiso-tech/core
 
+## 0.35.0
+
+### Minor Changes
+
+-   a2c56f4: Added a new `sequentialHedging` middleware that executes the primary function and all fallback functions sequentially.
+    It returns the result of the first successful function and automatically cancels all remaining function.
+    If all function fail than error is thrown.
+-   a2c56f4: Updated the settings of `dynamic`, `fallback`, `hedging`, `observe`, `retry`, and `timeout` middlewares.
+-   a2c56f4: Updated the `AsyncHook` class to accept an `AbortSignalBinder` parameter. This enables binding an `AbortSignal` to the middleware for two-way abortion control.
+    The `AsyncHook` know exposes function name to the middleware function which is useful for logging.
+-   f604f53: Simplified the `IEventBus` contract to use event map instead of classes for events. The following classes / contracts are effected:
+    -   `ILockProvider` contract and `LockProvider` class.
+    -   `ICache` contract and `Cache` class.
+    -   `IFlexibleSerde` contract and `Serde` class.
+        -   The `registerEvent` method is not needed longer and thereby is removed.
+-   f604f53: Renamed the cache events.
+-   a2c56f4: Updated `Hook` class. It know exposes function name to the middleware function which can is useful for logging.
+-   a2c56f4: Added new `bulkhead` middleware to limit concurrent execution of `PromiseLike` objects to a specified maximum.
+-   f604f53: Renamed the lock events.
+-   a2c56f4: Added a new `concurrentHedging` middleware executes the primary function and all fallback functions concurrently.
+    It returns the result of the first successful function and automatically aborts all remaining functions.
+    If all function fail than error is thrown.
+
 ## 0.34.0
 
 ### Minor Changes
