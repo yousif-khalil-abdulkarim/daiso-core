@@ -1,3 +1,6 @@
+/**
+ * @module Async
+ */
 import { TimeoutAsyncError } from "@/async/async.errors.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
