@@ -8,13 +8,18 @@ import type {
     IInvokableObject,
 } from "@/utilities/types/_module.js";
 import { isNullable } from "@/utilities/functions/is-nullable.js";
+import { getConstructorName } from "@/utilities/functions/get-constructor-name.js";
 
 /**
  * @internal
  */
-export function isInvokableObject<TValue, TArgs extends unknown[], TReturn>(
-    invokable: TValue | Invokable<TArgs, TReturn>,
-): invokable is IInvokableObject<TArgs, TReturn> {
+export function isInvokableObject<
+    TValue,
+    TParameters extends unknown[],
+    TReturn,
+>(
+    invokable: TValue | Invokable<TParameters, TReturn>,
+): invokable is IInvokableObject<TParameters, TReturn> {
     const invokable_ = invokable as Record<string, unknown>;
     return !isNullable(invokable) && typeof invokable_["invoke"] === "function";
 }
@@ -22,27 +27,27 @@ export function isInvokableObject<TValue, TArgs extends unknown[], TReturn>(
 /**
  * @internal
  */
-export function isInvokableFn<TValue, TArgs extends unknown[], TReturn>(
-    invokable: TValue | Invokable<TArgs, TReturn>,
-): invokable is InvokableFn<TArgs, TReturn> {
+export function isInvokableFn<TValue, TParameters extends unknown[], TReturn>(
+    invokable: TValue | Invokable<TParameters, TReturn>,
+): invokable is InvokableFn<TParameters, TReturn> {
     return typeof invokable === "function";
 }
 
 /**
  * @internal
  */
-export function isInvokable<TValue, TArgs extends unknown[], TReturn>(
-    invokable: TValue | Invokable<TArgs, TReturn>,
-): invokable is Invokable<TArgs, TReturn> {
+export function isInvokable<TValue, TParameters extends unknown[], TReturn>(
+    invokable: TValue | Invokable<TParameters, TReturn>,
+): invokable is Invokable<TParameters, TReturn> {
     return isInvokableObject(invokable) || isInvokableFn(invokable);
 }
 
 /**
  * @internal
  */
-export function resolveInvokable<TArgs extends unknown[], TReturn>(
-    invokable: Invokable<TArgs, TReturn>,
-): InvokableFn<TArgs, TReturn> {
+export function resolveInvokable<TParameters extends unknown[], TReturn>(
+    invokable: Invokable<TParameters, TReturn>,
+): InvokableFn<TParameters, TReturn> {
     if (isInvokableObject(invokable)) {
         return (...args) => invokable.invoke(...args);
     }
@@ -52,12 +57,24 @@ export function resolveInvokable<TArgs extends unknown[], TReturn>(
 /**
  * @internal
  */
-export function callInvokable<TArgs extends unknown[], TReturn>(
-    invokable: Invokable<TArgs, TReturn>,
-    ...args: TArgs
+export function callInvokable<TParameters extends unknown[], TReturn>(
+    invokable: Invokable<TParameters, TReturn>,
+    ...args: TParameters
 ): TReturn {
     if (isInvokableObject(invokable)) {
         return invokable.invoke(...args);
     }
     return invokable(...args);
+}
+
+/**
+ * @internal
+ */
+export function getInvokableName<TParameters extends unknown[], TReturn>(
+    invokable: Invokable<TParameters, TReturn>,
+): string {
+    if (isInvokableFn(invokable)) {
+        return invokable.name;
+    }
+    return getConstructorName(invokable);
 }
