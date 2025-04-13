@@ -1,5 +1,12 @@
 # @daiso-tech/core
 
+## 0.35.2
+
+### Patch Changes
+
+-   a3223f5: docs/async-hooks
+-   a3223f5: Updated docs of `AsyncHooks` and `Hooks` classes.
+
 ## 0.35.1
 
 ### Patch Changes
