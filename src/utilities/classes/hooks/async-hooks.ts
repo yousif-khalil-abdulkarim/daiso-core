@@ -182,6 +182,8 @@ export type AsyncHooksSettings<
  * The `AsyncHooks` class provides a convenient way to change and inspect arguments and return value of both async and sync functions.
  * For example `AsyncHooks` class can be used to log function arguments and return values. Note this class will always return promise and is immutable.
  *
+ * Middlewares apply left to right: each wraps the next, with the leftmost being the outermost layer and the rightmost wrapping the original function.
+ *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */

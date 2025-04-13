@@ -9,6 +9,77 @@ describe("class: AsyncHooks", () => {
         const value = await new AsyncHooks(fn, []).invoke(1);
         expect(value).toBe(2);
     });
+    test("Should call function and middleware with correct order when passed through constructor", async () => {
+        const array: number[] = [];
+
+        await new AsyncHooks(() => {
+            array.push(4);
+        }, [
+            (_, next) => {
+                array.push(1);
+                return next();
+            },
+            (_, next) => {
+                array.push(2);
+                return next();
+            },
+            (_, next) => {
+                array.push(3);
+                return next();
+            },
+        ]).invoke();
+
+        expect(array).toStrictEqual([1, 2, 3, 4]);
+    });
+    test("Should call function and middleware with correct order when passed through pipe", async () => {
+        const array: number[] = [];
+
+        await new AsyncHooks(() => {
+            array.push(4);
+        }, [])
+            .pipe([
+                (_, next) => {
+                    array.push(1);
+                    return next();
+                },
+                (_, next) => {
+                    array.push(2);
+                    return next();
+                },
+                (_, next) => {
+                    array.push(3);
+                    return next();
+                },
+            ])
+            .invoke();
+
+        expect(array).toStrictEqual([1, 2, 3, 4]);
+    });
+    test("Should call function and middleware with correct order when passed through constructor and pipe", async () => {
+        const array: number[] = [];
+
+        await new AsyncHooks(() => {
+            array.push(4);
+        }, [
+            (_, next) => {
+                array.push(1);
+                return next();
+            },
+        ])
+            .pipe([
+                (_, next) => {
+                    array.push(2);
+                    return next();
+                },
+                (_, next) => {
+                    array.push(3);
+                    return next();
+                },
+            ])
+            .invoke();
+
+        expect(array).toStrictEqual([1, 2, 3, 4]);
+    });
     test("Should forward arguments to middleware when given one argument", async () => {
         function fn(nbr: number): number {
             return nbr + 1;

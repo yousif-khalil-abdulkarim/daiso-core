@@ -9,6 +9,77 @@ describe("class: Hooks", () => {
         const value = new Hooks(fn, []).invoke(1);
         expect(value).toBe(2);
     });
+    test("Should call function and middleware with correct order when passed through constructor", () => {
+        const array: number[] = [];
+
+        new Hooks(() => {
+            array.push(4);
+        }, [
+            (_, next) => {
+                array.push(1);
+                next();
+            },
+            (_, next) => {
+                array.push(2);
+                next();
+            },
+            (_, next) => {
+                array.push(3);
+                next();
+            },
+        ]).invoke();
+
+        expect(array).toStrictEqual([1, 2, 3, 4]);
+    });
+    test("Should call function and middleware with correct order when passed through pipe", () => {
+        const array: number[] = [];
+
+        new Hooks(() => {
+            array.push(4);
+        }, [])
+            .pipe([
+                (_, next) => {
+                    array.push(1);
+                    next();
+                },
+                (_, next) => {
+                    array.push(2);
+                    next();
+                },
+                (_, next) => {
+                    array.push(3);
+                    next();
+                },
+            ])
+            .invoke();
+
+        expect(array).toStrictEqual([1, 2, 3, 4]);
+    });
+    test("Should call function and middleware with correct order when passed through constructor and pipe", () => {
+        const array: number[] = [];
+
+        new Hooks(() => {
+            array.push(4);
+        }, [
+            (_, next) => {
+                array.push(1);
+                next();
+            },
+        ])
+            .pipe([
+                (_, next) => {
+                    array.push(2);
+                    next();
+                },
+                (_, next) => {
+                    array.push(3);
+                    next();
+                },
+            ])
+            .invoke();
+
+        expect(array).toStrictEqual([1, 2, 3, 4]);
+    });
     test("Should forward arguments to middleware when given one argument", () => {
         function fn(nbr: number): number {
             return nbr + 1;
