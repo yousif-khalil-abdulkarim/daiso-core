@@ -237,9 +237,9 @@ export class AsyncHooks<
         }: AsyncHooksSettings<TParameters, TContext>,
     ): InvokableFn<TParameters, Promisable<TReturn>> {
         let func = resolveInvokable(invokable);
-        for (const hook of resolveOneOrMore(middlewares)
-            .map(resolveInvokable)
-            .reverse()) {
+        for (const hook of resolveOneOrMore(middlewares).map(
+            resolveInvokable,
+        )) {
             const prevFunc = func;
             const next = async (...arguments_: TParameters) =>
                 await prevFunc(...arguments_);

@@ -126,9 +126,9 @@ export class Hooks<
         }: HooksSettings<TContext>,
     ): InvokableFn<TParameters, TReturn> {
         let func = resolveInvokable(invokable);
-        for (const hook of resolveOneOrMore(middlewares)
-            .map(resolveInvokable)
-            .reverse()) {
+        for (const hook of resolveOneOrMore(middlewares).map(
+            resolveInvokable,
+        )) {
             const prevFunc = func;
             const next = (...arguments_: TParameters) =>
                 prevFunc(...arguments_);
