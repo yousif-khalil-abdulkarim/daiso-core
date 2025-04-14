@@ -23,7 +23,7 @@ import { timeoutAndFail } from "@/async/utilities/_module.js";
  * If all function fail than error is thrown.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  * @throws {HedgingAsyncError} {@link HedgingAsyncError}
  *
  * @example

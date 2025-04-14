@@ -14,7 +14,7 @@ import { timeoutAndFail } from "@/async/utilities/_module.js";
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnTimeoutData<
     TParameters extends unknown[] = unknown[],
@@ -28,7 +28,7 @@ export type OnTimeoutData<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnTimeout<
     TParameters extends unknown[] = unknown[],
@@ -38,7 +38,7 @@ export type OnTimeout<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type TimeoutCallbacks<
     TParameters extends unknown[] = unknown[],
@@ -53,7 +53,7 @@ export type TimeoutCallbacks<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type TimeoutSettings<
     TParameters extends unknown[] = unknown[],
@@ -77,7 +77,7 @@ export type TimeoutSettings<
  * Note the original function continues executing (even if the promise fails), you'll need to provide a settings.signalBinder to forward the `AbortSignal`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}
  *
  * @example

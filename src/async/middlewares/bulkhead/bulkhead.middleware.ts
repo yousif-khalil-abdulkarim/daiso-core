@@ -16,7 +16,7 @@ import { PromiseQueue } from "@/async/utilities/_module.js";
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnProcessingData<
     TParameters extends unknown[] = unknown[],
@@ -29,7 +29,7 @@ export type OnProcessingData<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnProcessing<
     TParameters extends unknown[] = unknown[],
@@ -39,7 +39,7 @@ export type OnProcessing<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type BulkheadCallbacks<
     TParameters extends unknown[] = unknown[],
@@ -51,7 +51,7 @@ export type BulkheadCallbacks<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type BulkheadSettings<
     TParameters extends unknown[] = unknown[],
@@ -88,7 +88,7 @@ export type BulkheadSettings<
  * You can provide {@link BulkheadSettings | `settings.maxCapacity`}
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  * @throws {CapacityFullAsyncError} {@link CapacityFullAsyncError}
  * ```ts
  * import { bulkhead } from "@daiso-tech/core/async";
