@@ -16,7 +16,7 @@ import {
  * The `dynamic` is wrapper middleware that allows configuration of other middlewares dynamically based on the function arguments and context.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  *
  * @example
  * ```ts

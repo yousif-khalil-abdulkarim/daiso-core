@@ -12,7 +12,7 @@ import {
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnObserveStartData<
     TParameters extends unknown[] = unknown[],
@@ -25,7 +25,7 @@ export type OnObserveStartData<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnObserveStart<
     TParameters extends unknown[] = unknown[],
@@ -35,7 +35,7 @@ export type OnObserveStart<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnObserveSuccessData<
     TParameters extends unknown[] = unknown[],
@@ -50,7 +50,7 @@ export type OnObserveSuccessData<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnObserveSuccess<
     TParameters extends unknown[] = unknown[],
@@ -61,7 +61,7 @@ export type OnObserveSuccess<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnObserveErrorData<
     TParameters extends unknown[] = unknown[],
@@ -75,7 +75,7 @@ export type OnObserveErrorData<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnObserveFinallyData<TContext extends HookContext = HookContext> = {
     executionTime: TimeSpan;
@@ -85,7 +85,7 @@ export type OnObserveFinallyData<TContext extends HookContext = HookContext> = {
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnObserveError<
     TParameters extends unknown[] = unknown[],
@@ -95,7 +95,7 @@ export type OnObserveError<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnObserveFinally<TContext extends HookContext = HookContext> =
     Invokable<[data: OnObserveFinallyData<TContext>]>;
@@ -103,7 +103,7 @@ export type OnObserveFinally<TContext extends HookContext = HookContext> =
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type ObserveCallbacks<
     TParameters extends unknown[] = unknown[],
@@ -135,7 +135,7 @@ export type ObserveCallbacks<
  * The `observe` middleware tracks an async function's state and runs callbacks when it fails with an error or succeeds.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  *
  * @example
  * ```ts

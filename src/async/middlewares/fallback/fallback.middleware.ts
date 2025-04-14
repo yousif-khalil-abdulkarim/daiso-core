@@ -17,7 +17,7 @@ import type { ErrorPolicy } from "@/async/middlewares/_shared.js";
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnFallbackData<
     TParameters extends unknown[] = unknown[],
@@ -33,7 +33,7 @@ export type OnFallbackData<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type OnFallback<
     TParameters extends unknown[] = unknown[],
@@ -44,7 +44,7 @@ export type OnFallback<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type FallbackCallbacks<
     TParameters extends unknown[] = unknown[],
@@ -60,7 +60,7 @@ export type FallbackCallbacks<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  */
 export type FallbackSettings<
     TParameters extends unknown[] = unknown[],
@@ -84,7 +84,7 @@ export type FallbackSettings<
  * The `fallback` middleware adds fallback value when an error occurs.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middleware
+ * @group Middlewares
  *
  * @example
  * ```ts
