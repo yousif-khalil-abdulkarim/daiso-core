@@ -211,7 +211,7 @@ export class Lock implements ILock {
             try {
                 this.lockState.remove();
                 const hasAquired = await this.adapter.acquire(
-                    this.key.prefixed,
+                    this.key.namespaced,
                     this.owner,
                     this.ttl,
                 );
@@ -304,7 +304,7 @@ export class Lock implements ILock {
             const prevState = this.lockState.get()?.getTime() ?? null;
             try {
                 const hasReleased = await this.adapter.release(
-                    this.key.prefixed,
+                    this.key.namespaced,
                     this.owner,
                 );
                 if (hasReleased) {
@@ -360,7 +360,7 @@ export class Lock implements ILock {
         return this.createLazyPromise(async () => {
             const prevState = this.lockState.get()?.getTime() ?? null;
             try {
-                await this.adapter.forceRelease(this.key.prefixed);
+                await this.adapter.forceRelease(this.key.namespaced);
                 this.lockState.remove();
                 const event: ForceReleasedLockEvent = {
                     key: this.key.resolved,
@@ -419,7 +419,7 @@ export class Lock implements ILock {
             const prevState = this.lockState.get()?.getTime() ?? null;
             try {
                 const hasRefreshed = await this.adapter.refresh(
-                    this.key.prefixed,
+                    this.key.namespaced,
                     this.owner,
                     ttl,
                 );

@@ -19,7 +19,7 @@ import {
 import {
     getConstructorName,
     TimeSpan,
-    type KeyPrefixer,
+    type Namespace,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
@@ -30,7 +30,7 @@ import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 export type LockSerdeTransformerSettings = {
     adapter: ILockAdapter;
     lockStore: ILockStore;
-    keyPrefixer: KeyPrefixer;
+    namespace: Namespace;
     createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
@@ -49,7 +49,7 @@ export class LockSerdeTransformer
 {
     private readonly adapter: ILockAdapter;
     private readonly lockStore: ILockStore;
-    private readonly keyPrefixer: KeyPrefixer;
+    private readonly namespace: Namespace;
     private readonly createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
@@ -63,7 +63,7 @@ export class LockSerdeTransformer
         const {
             adapter,
             lockStore,
-            keyPrefixer,
+            namespace,
             createLazyPromise,
             defaultBlockingInterval,
             defaultBlockingTime,
@@ -74,7 +74,7 @@ export class LockSerdeTransformer
         this.serdeTransformerName = serdeTransformerName;
         this.adapter = adapter;
         this.lockStore = lockStore;
-        this.keyPrefixer = keyPrefixer;
+        this.namespace = namespace;
         this.createLazyPromise = createLazyPromise;
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
@@ -96,12 +96,12 @@ export class LockSerdeTransformer
 
     deserialize(serializedValue: ISerializedLock): Lock {
         const { key, owner, ttlInMs, expirationInMs } = serializedValue;
-        const keyObj = this.keyPrefixer.create(key);
+        const keyObj = this.namespace.create(key);
 
         return new Lock({
             createLazyPromise: this.createLazyPromise,
             adapter: this.adapter,
-            lockState: new LockState(this.lockStore, keyObj.prefixed),
+            lockState: new LockState(this.lockStore, keyObj.namespaced),
             eventDispatcher: this.eventBus,
             key: keyObj,
             owner,

@@ -6,7 +6,7 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_mod
 import { lockProviderTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { KeyPrefixer } from "@/utilities/_module-exports.js";
+import { Namespace } from "@/utilities/_module-exports.js";
 
 describe("class: LockProvider", () => {
     const serde = new Serde(new SuperJsonSerdeAdapter());
@@ -15,11 +15,11 @@ describe("class: LockProvider", () => {
             const lockProvider = new LockProvider({
                 serde,
                 eventBus: new EventBus({
-                    keyPrefixer: new KeyPrefixer("event-bus"),
+                    namespace: new Namespace("event-bus"),
                     adapter: new MemoryEventBusAdapter(),
                 }),
                 adapter: new MemoryLockAdapter(),
-                keyPrefixer: new KeyPrefixer("lock"),
+                namespace: new Namespace("lock"),
             });
             return lockProvider;
         },

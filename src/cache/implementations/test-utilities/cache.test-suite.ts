@@ -50,13 +50,13 @@ export type CacheTestSuiteSettings = {
  * import { cacheTestSuite } from "@daiso-tech/core/cache/test-utilities";
  * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
  * import { Cache } from "@daiso-tech/core/cache";
- * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+ * import { Namespace } from "@daiso-tech/core/utilities";
  *
  * describe("class: Cache", () => {
  *     cacheTestSuite({
  *       createCache: () =>
  *           new Cache({
- *               keyPrefixer: new KeyPrefixer("cache"),
+ *               namespace: new Namespace("cache"),
  *               adapter: new MemoryCacheAdapter(),
  *           }),
  *       test,

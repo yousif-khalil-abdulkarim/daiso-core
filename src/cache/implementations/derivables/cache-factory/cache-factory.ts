@@ -19,7 +19,7 @@ import {
     type CacheSettingsBase,
     type CacheAdapter,
 } from "@/cache/implementations/derivables/cache/_module.js";
-import { KeyPrefixer, type TimeSpan } from "@/utilities/_module-exports.js";
+import { Namespace, type TimeSpan } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 
 /**
@@ -61,7 +61,7 @@ export class CacheFactory<TAdapters extends string = string>
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { KeyPrefixer, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
+     * import { Namespace, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      * import Sqlite from "better-sqlite3";
      *
@@ -80,7 +80,7 @@ export class CacheFactory<TAdapters extends string = string>
      * const database = new Sqlite("local.db");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
-     *   keyPrefixer: new KeyPrefixer("cache"),
+     *   namespace: new Namespace("cache"),
      *   adapters: {
      *     sqlite: cahceAdapterFactory(database, serde),
      *     memory: new MemoryCacheAdapter(),
@@ -94,10 +94,10 @@ export class CacheFactory<TAdapters extends string = string>
      */
     constructor(private readonly settings: CacheFactorySettings<TAdapters>) {}
 
-    setKeyPrefixer(keyPrefixer: KeyPrefixer): CacheFactory<TAdapters> {
+    setNamespace(namespace: Namespace): CacheFactory<TAdapters> {
         return new CacheFactory({
             ...this.settings,
-            keyPrefixer,
+            namespace,
         });
     }
 
@@ -133,7 +133,7 @@ export class CacheFactory<TAdapters extends string = string>
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { KeyPrefixer, TimeSpan, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
+     * import { Namespace, TimeSpan, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      * import Sqlite from "better-sqlite3";
      *
@@ -152,7 +152,7 @@ export class CacheFactory<TAdapters extends string = string>
      * const database = new Sqlite("local.db");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
-     *   keyPrefixer: new KeyPrefixer("cache"),
+     *   namespace: new Namespace("cache"),
      *   adapters: {
      *     sqlite: cahceAdapterFactory(database, serde),
      *     memory: new MemoryCacheAdapter(),
@@ -191,12 +191,12 @@ export class CacheFactory<TAdapters extends string = string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { keyPrefixer } = this.settings;
+        const { namespace } = this.settings;
         return new Cache({
             ...this.settings,
             adapter,
-            keyPrefixer: new KeyPrefixer([
-                ...resolveOneOrMore(keyPrefixer.originalRootPrefix),
+            namespace: new Namespace([
+                ...resolveOneOrMore(namespace.original),
                 adapterName,
             ]),
         });

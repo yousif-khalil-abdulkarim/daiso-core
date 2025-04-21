@@ -30,7 +30,7 @@ import {
 import {
     type NoneFunc,
     type TimeSpan,
-    KeyPrefixer,
+    Namespace,
 } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
@@ -56,7 +56,7 @@ import type {
  * @group Derivables
  */
 export type CacheSettingsBase = {
-    keyPrefixer: KeyPrefixer;
+    namespace: Namespace;
 
     /**
      * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `Cache` class.
@@ -74,10 +74,10 @@ export type CacheSettingsBase = {
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/utilities";
      *
      * new EventBus({
-     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   namespace: new Namespace("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
@@ -119,7 +119,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     private readonly adapterFactoryable: CacheAdapter<TType>;
     private readonly adapter: ICacheAdapter<TType>;
     private readonly defaultTtl: TimeSpan | null;
-    private readonly keyPrefixer: KeyPrefixer;
+    private readonly namespace: Namespace;
     private readonly lazyPromiseFactory: FactoryFn<
         AsyncLazy<any>,
         LazyPromise<any>
@@ -134,7 +134,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/utilities";
      *
      * const database = new Sqlite("local.db");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
@@ -146,24 +146,24 @@ export class Cache<TType = unknown> implements ICache<TType> {
      * await cacheAdapter.init();
      *
      * const cache = new Cache({
-     *   keyPrefixer: new KeyPrefixer("cache"),
+     *   namespace: new Namespace("cache"),
      *   adapter: cacheAdapter,
      * });
      * ```
      */
     constructor(settings: CacheSettings) {
         const {
-            keyPrefixer,
+            namespace,
             adapter,
             eventBus = new EventBus<any>({
-                keyPrefixer: new KeyPrefixer("event-bus"),
+                namespace: new Namespace("event-bus"),
                 adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,
             lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
 
-        this.keyPrefixer = keyPrefixer;
+        this.namespace = namespace;
         this.adapterFactoryable = adapter;
         this.defaultTtl = defaultTtl;
         this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
@@ -263,9 +263,9 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     get(key: OneOrMore<string>): LazyPromise<TType | null> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.keyPrefixer.create(key);
+            const keyObj = this.namespace.create(key);
             try {
-                const value = await this.adapter.get(keyObj.prefixed);
+                const value = await this.adapter.get(keyObj.namespaced);
                 if (value === null) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
@@ -299,7 +299,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             const value = await this.get(key);
             if (value === null) {
                 throw new KeyNotFoundCacheError(
-                    `Key "${this.keyPrefixer.create(key).resolved}" is not found`,
+                    `Key "${this.namespace.create(key).resolved}" is not found`,
                 );
             }
             return value;
@@ -308,9 +308,11 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     getAndRemove(key: OneOrMore<string>): LazyPromise<TType | null> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.keyPrefixer.create(key);
+            const keyObj = this.namespace.create(key);
             try {
-                const value = await this.adapter.getAndRemove(keyObj.prefixed);
+                const value = await this.adapter.getAndRemove(
+                    keyObj.namespaced,
+                );
                 if (value === null) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
@@ -383,10 +385,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.keyPrefixer.create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 const hasAdded = await this.adapter.add(
-                    keyObj.prefixed,
+                    keyObj.namespaced,
                     value,
                     ttl,
                 );
@@ -421,10 +423,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.keyPrefixer.create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 const hasUpdated = await this.adapter.put(
-                    keyObj.prefixed,
+                    keyObj.namespaced,
                     value,
                     ttl,
                 );
@@ -463,10 +465,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     update(key: OneOrMore<string>, value: TType): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.keyPrefixer.create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 const hasUpdated = await this.adapter.update(
-                    keyObj.prefixed,
+                    keyObj.namespaced,
                     value,
                 );
                 if (hasUpdated) {
@@ -504,10 +506,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
         value = 0 as Extract<TType, number>,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.keyPrefixer.create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 const hasUpdated = await this.adapter.increment(
-                    keyObj.prefixed,
+                    keyObj.namespaced,
                     value,
                 );
                 if (hasUpdated && value > 0) {
@@ -564,10 +566,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     remove(key: OneOrMore<string>): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.keyPrefixer.create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 const hasRemoved = await this.adapter.removeMany([
-                    keyObj.prefixed,
+                    keyObj.namespaced,
                 ]);
                 if (hasRemoved) {
                     this.eventBus
@@ -603,12 +605,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
             if (keysArr.length === 0) {
                 return true;
             }
-            const keyObjArr = keysArr.map((key) =>
-                this.keyPrefixer.create(key),
-            );
+            const keyObjArr = keysArr.map((key) => this.namespace.create(key));
             try {
                 const hasRemovedAtLeastOne = await this.adapter.removeMany(
-                    keyObjArr.map((keyObj) => keyObj.prefixed),
+                    keyObjArr.map((keyObj) => keyObj.namespaced),
                 );
                 if (hasRemovedAtLeastOne) {
                     const events = keyObjArr.map(
@@ -671,9 +671,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     promise.defer();
                     return;
                 }
-                await this.adapter.removeByKeyPrefix(
-                    this.keyPrefixer.keyPrefix,
-                );
+                await this.adapter.removeByKeyPrefix(this.namespace.namespaced);
                 promise.defer();
             } catch (error: unknown) {
                 this.eventBus
