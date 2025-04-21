@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "vitest";
 import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
 import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
 import { Cache } from "@/cache/implementations/derivables/_module-exports.js";
-import { KeyPrefixer } from "@/utilities/_module-exports.js";
+import { Namespace } from "@/utilities/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 
@@ -10,10 +10,10 @@ describe("class: Cache", () => {
     cacheTestSuite({
         createCache: () =>
             new Cache({
-                keyPrefixer: new KeyPrefixer("cache"),
+                namespace: new Namespace("cache"),
                 adapter: new MemoryCacheAdapter(),
                 eventBus: new EventBus({
-                    keyPrefixer: new KeyPrefixer("event-bus"),
+                    namespace: new Namespace("event-bus"),
                     adapter: new MemoryEventBusAdapter(),
                 }),
             }),

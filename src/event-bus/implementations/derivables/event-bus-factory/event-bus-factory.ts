@@ -16,7 +16,7 @@ import {
 import type {
     AsyncLazy,
     Factory,
-    KeyPrefixer,
+    Namespace,
 } from "@/utilities/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
@@ -59,7 +59,7 @@ export class EventBusFactory<TAdapters extends string = string>
      * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBusFactory } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { KeyPrefixer, type FactoryFn } from "@daiso-tech/core/utilities";
+     * import { Namespace, type FactoryFn } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
@@ -80,7 +80,7 @@ export class EventBusFactory<TAdapters extends string = string>
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const store: Store = {};
      * const eventBusFactory = new EventBusFactory({
-     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   namespace: new Namespace("event-bus"),
      *   adapters: {
      *     memory: new MemoryEventBusAdapter(),
      *     memoryFactory: cahceAdapterFactory(store),
@@ -98,10 +98,10 @@ export class EventBusFactory<TAdapters extends string = string>
         private readonly settings: EventBusFactorySettings<TAdapters>,
     ) {}
 
-    setKeyPrefixer(keyPrefixer: KeyPrefixer): EventBusFactory<TAdapters> {
+    setNamespace(namespace: Namespace): EventBusFactory<TAdapters> {
         return new EventBusFactory({
             ...this.settings,
-            keyPrefixer,
+            namespace,
         });
     }
 
@@ -120,7 +120,7 @@ export class EventBusFactory<TAdapters extends string = string>
      * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBusFactory } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { KeyPrefixer, type FactoryFn } from "@daiso-tech/core/utilities";
+     * import { Namespace, type FactoryFn } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
@@ -143,7 +143,7 @@ export class EventBusFactory<TAdapters extends string = string>
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const store: Store = {};
      * const eventBusFactory = new EventBusFactory({
-     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   namespace: new Namespace("event-bus"),
      *   adapters: {
      *     memory: new MemoryEventBusAdapter(),
      *     memoryFactory: cahceAdapterFactory(store),

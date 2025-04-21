@@ -16,9 +16,7 @@ type KeySettings = {
 };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group KeyPrefixer
+ * @internal
  */
 export class Key {
     private readonly prefixArr: AtLeastOne<string>;
@@ -46,7 +44,7 @@ export class Key {
         return resolveOneOrMoreStr(this.key);
     }
 
-    get prefixed(): string {
+    get namespaced(): string {
         return resolveOneOrMoreStr(
             [
                 ...this.prefixArr,
@@ -60,52 +58,69 @@ export class Key {
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group KeyPrefixer
+ * @group Namespace
  */
-export type KeyPrefixerSettings = {
+export type NamespaceSettings = {
+    /**
+     * @default {":"}
+     */
     identifierDelimeter?: string;
+
+    /**
+     * @default {"/"}
+     */
     keyDelimeter?: string;
-    keyIdentifier?: string;
+
+    /**
+     * @default {"_rt"}
+     */
     rootIdentifier?: string;
-    groupIdentifier?: string;
 };
 
 /**
+ * The `Namespace` class adds prefixes/suffixes to keys to avoid conflicts and group related items.
+ * Note the `Namespace` class is not meant to be used directly, instead you should configure it once and then pass it to a public class like `Cache` and `LockProvider`.
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group KeyPrefixer
+ * @group Namespace
  */
-export class KeyPrefixer {
+export class Namespace {
     private readonly identifierDelimeter: string;
     private readonly keyDelimeter: string;
     private readonly rootIdentifier: string;
-    private readonly keyIdentifier: string;
 
     constructor(
         private readonly _rootPrefix: OneOrMore<string>,
-        settings: KeyPrefixerSettings = {},
+        settings: NamespaceSettings = {},
     ) {
         const {
             identifierDelimeter = ":",
             keyDelimeter = "/",
-            keyIdentifier = "_ky",
             rootIdentifier = "_rt",
         } = settings;
         this.rootIdentifier = rootIdentifier;
-        this.keyIdentifier = keyIdentifier;
         this.identifierDelimeter = identifierDelimeter;
         this.keyDelimeter = keyDelimeter;
         this.validate(this._rootPrefix);
     }
 
-    get originalRootPrefix(): OneOrMore<string> {
+    /**
+     * @internal
+     */
+    get original(): OneOrMore<string> {
         return this._rootPrefix;
     }
 
-    get resolvedRootPrefix(): string {
+    /**
+     * @internal
+     */
+    get resolved(): string {
         return resolveOneOrMoreStr(this._rootPrefix);
     }
 
+    /**
+     * @internal
+     */
     private validate(key: OneOrMore<string>): void {
         const resolvedKey = resolveOneOrMoreStr(key);
         if (resolvedKey.includes(this.rootIdentifier)) {
@@ -113,13 +128,11 @@ export class KeyPrefixer {
                 `Resolved key "${resolvedKey}" cannot not include "${this.rootIdentifier}"`,
             );
         }
-        if (resolvedKey.includes(this.keyIdentifier)) {
-            throw new Error(
-                `Resolved key "${resolvedKey}" cannot not include "${this.keyIdentifier}"`,
-            );
-        }
     }
 
+    /**
+     * @internal
+     */
     private getKeyPrefixArray(): AtLeastOne<string> {
         return [
             resolveOneOrMoreStr(this._rootPrefix, this.keyDelimeter),
@@ -127,13 +140,19 @@ export class KeyPrefixer {
         ];
     }
 
-    get keyPrefix(): string {
+    /**
+     * @internal
+     */
+    get namespaced(): string {
         return resolveOneOrMoreStr(
             this.getKeyPrefixArray(),
             this.identifierDelimeter,
         );
     }
 
+    /**
+     * @internal
+     */
     create(key: OneOrMore<string>): Key {
         this.validate(key);
         return new Key({

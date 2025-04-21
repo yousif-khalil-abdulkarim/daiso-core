@@ -11,7 +11,7 @@ import {
     resolveFactory,
     resolveOneOrMore,
 } from "@/utilities/_module-exports.js";
-import { KeyPrefixer, type OneOrMore } from "@/utilities/_module-exports.js";
+import { Namespace, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
     LockEventMap,
@@ -50,7 +50,7 @@ import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-pro
  * @group Derivables
  */
 export type LockProviderSettingsBase = {
-    keyPrefixer: KeyPrefixer;
+    namespace: Namespace;
 
     /**
      * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `LockProvider` class.
@@ -80,10 +80,10 @@ export type LockProviderSettingsBase = {
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/utilities";
      *
      * new EventBus({
-     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   namespace: new Namespace("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
@@ -156,7 +156,7 @@ export class LockProvider implements ILockProvider {
     private lockStore: ILockStore = {};
     private readonly eventBus: IEventBus<LockEventMap>;
     private readonly adapter: ILockAdapter;
-    private readonly keyPrefixer: KeyPrefixer;
+    private readonly namespace: Namespace;
     private readonly createOwnerId: () => string;
     private readonly defaultTtl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
@@ -174,7 +174,7 @@ export class LockProvider implements ILockProvider {
      * ```ts
      * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import Sqlite from "better-sqlite3";
@@ -188,7 +188,7 @@ export class LockProvider implements ILockProvider {
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter())
      * const lockProvider = new LockProvider({
-     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   namespace: new Namespace("lock"),
      *   serde,
      *   adapter: lockAdapter,
      * });
@@ -202,10 +202,10 @@ export class LockProvider implements ILockProvider {
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             createOwnerId = () => v4(),
             serde,
-            keyPrefixer,
+            namespace,
             adapter,
             eventBus = new EventBus<any>({
-                keyPrefixer: new KeyPrefixer("events"),
+                namespace: new Namespace("events"),
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
@@ -217,7 +217,7 @@ export class LockProvider implements ILockProvider {
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
         this.createOwnerId = createOwnerId;
-        this.keyPrefixer = keyPrefixer;
+        this.namespace = namespace;
         this.defaultTtl = defaultTtl;
         this.eventBus = eventBus;
         this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
@@ -240,7 +240,7 @@ export class LockProvider implements ILockProvider {
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
             eventBus: this.eventBus,
-            keyPrefixer: this.keyPrefixer,
+            namespace: this.namespace,
             lockStore: this.lockStore,
             serdeTransformerName: this.serdeTransformerName,
         });
@@ -325,13 +325,13 @@ export class LockProvider implements ILockProvider {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),
-     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   namespace: new Namespace("lock"),
      *   serde: new Serde(new SuperJsonSerdeAdapter())
      * });
      *
@@ -345,12 +345,12 @@ export class LockProvider implements ILockProvider {
         const { ttl = this.defaultTtl, owner = this.createOwnerId() } =
             settings;
 
-        const keyObj = this.keyPrefixer.create(key);
+        const keyObj = this.namespace.create(key);
 
         return new Lock({
             adapter: this.adapter,
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
-            lockState: new LockState(this.lockStore, keyObj.prefixed),
+            lockState: new LockState(this.lockStore, keyObj.namespaced),
             eventDispatcher: this.eventBus,
             key: keyObj,
             owner,

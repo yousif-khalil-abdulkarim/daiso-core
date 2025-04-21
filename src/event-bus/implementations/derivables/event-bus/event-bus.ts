@@ -19,7 +19,7 @@ import {
 } from "@/event-bus/contracts/_module-exports.js";
 
 import type {
-    KeyPrefixer,
+    Namespace,
     Factory,
     AsyncLazy,
     FactoryFn,
@@ -36,7 +36,7 @@ import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/
  * @group Derivables
  */
 export type EventBusSettingsBase = {
-    keyPrefixer: KeyPrefixer;
+    namespace: Namespace;
 
     /**
      * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `EventBus` class.
@@ -74,30 +74,30 @@ export class EventBus<TEventMap extends BaseEventMap>
         AsyncLazy<any>,
         LazyPromise<any>
     >;
-    private keyPrefixer: KeyPrefixer;
+    private namespace: Namespace;
 
     /**
      * @example
      * ```ts
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { KeyPrefixer } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/utilities";
      *
      * const eventBus = new EventBus({
-     *   keyPrefixer: new KeyPrefixer("event-bus"),
+     *   namespace: new Namespace("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * });
      * ```
      */
     constructor(settings: EventBusSettings) {
         const {
-            keyPrefixer,
+            namespace,
             adapter,
             lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
         this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
         this.adapter = adapter;
-        this.keyPrefixer = keyPrefixer;
+        this.namespace = namespace;
     }
 
     private createLazyPromise<TValue = void>(
@@ -111,18 +111,18 @@ export class EventBus<TEventMap extends BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.keyPrefixer.create(String(eventName));
+            const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
-                [key.prefixed, listener],
+                [key.namespaced, listener],
                 resolveInvokable(listener),
             );
             try {
                 await this.adapter.addListener(
-                    key.prefixed,
+                    key.namespaced,
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getAndRemove([key.prefixed, listener]);
+                this.store.getAndRemove([key.namespaced, listener]);
                 throw new UnableToAddListenerEventBusError(
                     `A listener with name of "${String(eventName)}" could not added for "${String(eventName)}" event`,
                     error,
@@ -136,9 +136,9 @@ export class EventBus<TEventMap extends BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.keyPrefixer.create(String(eventName));
+            const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getAndRemove([
-                key.prefixed,
+                key.namespaced,
                 listener,
             ]);
             if (resolvedListener === null) {
@@ -146,7 +146,7 @@ export class EventBus<TEventMap extends BaseEventMap>
             }
             try {
                 await this.adapter.removeListener(
-                    key.prefixed,
+                    key.namespaced,
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
@@ -172,18 +172,18 @@ export class EventBus<TEventMap extends BaseEventMap>
                 }
             };
 
-            const key = this.keyPrefixer.create(String(eventName));
+            const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
-                [key.prefixed, listener],
+                [key.namespaced, listener],
                 wrappedListener,
             );
             try {
                 await this.adapter.addListener(
-                    key.prefixed,
+                    key.namespaced,
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getAndRemove([key.prefixed, listener]);
+                this.store.getAndRemove([key.namespaced, listener]);
                 throw new UnableToAddListenerEventBusError(
                     `A listener with name of "${String(eventName)}" could not added for "${String(eventName)}" event`,
                     error,
@@ -237,7 +237,7 @@ export class EventBus<TEventMap extends BaseEventMap>
         return this.createLazyPromise(async () => {
             try {
                 await this.adapter.dispatch(
-                    this.keyPrefixer.create(String(eventName)).prefixed,
+                    this.namespace.create(String(eventName)).namespaced,
                     event,
                 );
             } catch (error: unknown) {

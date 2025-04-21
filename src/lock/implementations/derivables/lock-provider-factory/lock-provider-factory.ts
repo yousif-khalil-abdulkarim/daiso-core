@@ -8,7 +8,7 @@ import type {
 } from "@/lock/contracts/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
-    KeyPrefixer,
+    Namespace,
     resolveOneOrMore,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
@@ -62,7 +62,7 @@ export class LockProviderFactory<TAdapters extends string>
      * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { KeyPrefixer, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
+     * import { Namespace, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      * import Sqlite from "better-sqlite3";
      *
@@ -81,7 +81,7 @@ export class LockProviderFactory<TAdapters extends string>
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new LockProviderFactory({
      *   serde,
-     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   namespace: new Namespace("lock"),
      *   adapters: {
      *     sqlite: lockAdapterFactory(database),
      *     memory: new MemoryLockAdapter(),
@@ -98,10 +98,10 @@ export class LockProviderFactory<TAdapters extends string>
         private readonly settings: LockProviderFactorySettings<TAdapters>,
     ) {}
 
-    setKeyPrefixer(keyPrefixer: KeyPrefixer): LockProviderFactory<TAdapters> {
+    setNamespace(namespace: Namespace): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
-            keyPrefixer,
+            namespace,
         });
     }
 
@@ -166,7 +166,7 @@ export class LockProviderFactory<TAdapters extends string>
      * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { KeyPrefixer, TimeSpan, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
+     * import { Namespace, TimeSpan, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      * import Sqlite from "better-sqlite3";
      *
@@ -185,7 +185,7 @@ export class LockProviderFactory<TAdapters extends string>
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new LockProviderFactory({
      *   serde,
-     *   keyPrefixer: new KeyPrefixer("lock"),
+     *   namespace: new Namespace("lock"),
      *   adapters: {
      *     sqlite: lockAdapterFactory(database),
      *     memory: new MemoryLockAdapter(),
@@ -227,12 +227,12 @@ export class LockProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { keyPrefixer } = this.settings;
+        const { namespace } = this.settings;
         return new LockProvider({
             ...this.settings,
             adapter,
-            keyPrefixer: new KeyPrefixer([
-                ...resolveOneOrMore(keyPrefixer.originalRootPrefix),
+            namespace: new Namespace([
+                ...resolveOneOrMore(namespace.original),
                 adapterName,
             ]),
             serdeTransformerName: adapterName,
