@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.35.4
+
+### Patch Changes
+
+-   9747f8d: Renamed `FoundCacheEventt` type to `FoundCacheEvent`.
+
 ## 0.35.3
 
 ### Patch Changes
