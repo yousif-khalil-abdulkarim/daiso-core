@@ -15,7 +15,7 @@ import {
     type NotFoundCacheEvent,
     type AddedCacheEvent,
     type DecrementedCacheEvent,
-    type FoundCacheEventt,
+    type FoundCacheEvent,
     type IncrementedCacheEvent,
     type RemovedCacheEvent,
     type ClearedCacheEvent,
@@ -543,8 +543,8 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch FoundCacheEventt when key exists", async () => {
-                let event_ = null as FoundCacheEventt | null;
+            test("Should dispatch FoundCacheEvent when key exists", async () => {
+                let event_ = null as FoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
                     CACHE_EVENTS.FOUND,
                     (event) => {
@@ -573,8 +573,8 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch FoundCacheEventt when key exists", async () => {
-                let event_ = null as FoundCacheEventt | null;
+            test("Should dispatch FoundCacheEvent when key exists", async () => {
+                let event_ = null as FoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
                     CACHE_EVENTS.FOUND,
                     (event) => {
@@ -603,8 +603,8 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch FoundCacheEventt when key exists", async () => {
-                let event_ = null as FoundCacheEventt | null;
+            test("Should dispatch FoundCacheEvent when key exists", async () => {
+                let event_ = null as FoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
                     CACHE_EVENTS.FOUND,
                     (event) => {
@@ -633,8 +633,8 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch FoundCacheEventt when key exists", async () => {
-                let event_ = null as FoundCacheEventt | null;
+            test("Should dispatch FoundCacheEvent when key exists", async () => {
+                let event_ = null as FoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
                     CACHE_EVENTS.FOUND,
                     (event) => {
@@ -667,8 +667,8 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch FoundCacheEventt when key exists", async () => {
-                let event_ = null as FoundCacheEventt | null;
+            test("Should dispatch FoundCacheEvent when key exists", async () => {
+                let event_ = null as FoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
                     CACHE_EVENTS.FOUND,
                     (event) => {
@@ -852,8 +852,8 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch FoundCacheEventt when key exists", async () => {
-                let event_ = null as FoundCacheEventt | null;
+            test("Should dispatch FoundCacheEvent when key exists", async () => {
+                let event_ = null as FoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
                     CACHE_EVENTS.FOUND,
                     (event) => {
@@ -898,8 +898,8 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 expect(event_?.key).toBe("a");
                 await unsubscribe();
             });
-            test("Should dispatch FoundCacheEventt when key exists", async () => {
-                let event_ = null as FoundCacheEventt | null;
+            test("Should dispatch FoundCacheEvent when key exists", async () => {
+                let event_ = null as FoundCacheEvent | null;
                 const unsubscribe = await cache.subscribe(
                     CACHE_EVENTS.FOUND,
                     (event) => {

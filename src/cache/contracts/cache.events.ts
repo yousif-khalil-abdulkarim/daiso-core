@@ -11,7 +11,7 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
  * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Events
  */
-export type FoundCacheEventt<TType = unknown> = {
+export type FoundCacheEvent<TType = unknown> = {
     key: string;
     value: TType;
 };
@@ -139,7 +139,7 @@ export const CACHE_EVENTS = {
  * @group Events
  */
 export type CacheEventMap<TType = unknown> = {
-    [CACHE_EVENTS.FOUND]: FoundCacheEventt<TType>;
+    [CACHE_EVENTS.FOUND]: FoundCacheEvent<TType>;
     [CACHE_EVENTS.NOT_FOUND]: NotFoundCacheEvent;
     [CACHE_EVENTS.WRITTEN]: WrittenCacheEvent<TType>;
     [CACHE_EVENTS.CLEARED]: ClearedCacheEvent;
