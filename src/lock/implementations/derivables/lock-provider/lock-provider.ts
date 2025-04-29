@@ -355,6 +355,7 @@ export class LockProvider implements ILockProvider {
             key: keyObj,
             owner,
             ttl,
+            serdeTransformerName: this.serdeTransformerName,
             expirationInMs: null,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,

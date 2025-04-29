@@ -57,6 +57,7 @@ export type LockSettings = {
     createLazyPromise: <TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ) => LazyPromise<TValue>;
+    serdeTransformerName: string;
     adapter: ILockAdapter;
     lockState: LockState;
     eventDispatcher: IEventDispatcher<LockEventMap>;
@@ -70,8 +71,7 @@ export type LockSettings = {
 };
 
 /**
- * IMPORTANT: This class is not intended to be instantiated directly, instead it should be created by the `LockProvider` class instance.
- * @group Derivables
+ * @internal
  */
 export class Lock implements ILock {
     /**
@@ -99,6 +99,7 @@ export class Lock implements ILock {
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
+    private readonly serdeTransformerName: string;
 
     /**
      * @internal
@@ -112,11 +113,13 @@ export class Lock implements ILock {
             key,
             owner,
             ttl,
+            serdeTransformerName,
             expirationInMs,
             defaultBlockingInterval,
             defaultBlockingTime,
             defaultRefreshTime,
         } = settings;
+        this.serdeTransformerName = serdeTransformerName;
         this.createLazyPromise = createLazyPromise;
         this.adapter = adapter;
         this.lockState = lockState;
@@ -128,6 +131,10 @@ export class Lock implements ILock {
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
+    }
+
+    getSerdeTransformerName(): string {
+        return this.serdeTransformerName;
     }
 
     run<TValue = void>(
