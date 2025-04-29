@@ -2,7 +2,7 @@
  * @module Async
  */
 
-import type { Invokable } from "@/utilities/_module-exports.js";
+import type { Invokable, TimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  * @returns Amount milliseconds to wait
@@ -12,17 +12,5 @@ import type { Invokable } from "@/utilities/_module-exports.js";
  */
 export type BackoffPolicy = Invokable<
     [attempt: number, error: unknown],
-    number
+    TimeSpan
 >;
-// (attempt: number, error: unknown) => number;
-
-/**
- * @internal
- */
-export function withJitter(
-    jitter: number,
-    value: number,
-    mathRandom: () => number,
-): number {
-    return (1 - jitter * mathRandom()) * value;
-}
