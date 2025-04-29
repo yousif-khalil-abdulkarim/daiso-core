@@ -2,9 +2,9 @@
  * @module Async
  */
 
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     callInvokable,
-    TimeSpan,
     type Invokable,
     type HookContext,
     type AsyncMiddlewareFn,
@@ -178,9 +178,8 @@ export function retry<
                 if (signal.aborted) {
                     break;
                 }
-                const waitTime = TimeSpan.fromMilliseconds(
-                    callInvokable(backoffPolicy, attempt, error),
-                );
+                const waitTime = callInvokable(backoffPolicy, attempt, error);
+
                 callInvokable(onRetryDelay, {
                     error,
                     waitTime,

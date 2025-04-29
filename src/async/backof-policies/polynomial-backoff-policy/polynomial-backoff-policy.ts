@@ -4,7 +4,6 @@
 
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import type { BackoffPolicy } from "@/async/backof-policies/_shared.js";
-import { withJitter } from "@/async/backof-policies/_shared.js";
 
 /**
  *
@@ -24,15 +23,6 @@ export type PolynomialBackoffPolicySettings = {
      * @default {2}
      */
     degree?: number;
-    /**
-     * @default {0.5}
-     */
-    jitter?: number;
-    /**
-     * Used only for testing
-     * @internal
-     */
-    _mathRandom?: () => number;
 };
 
 /**
@@ -59,13 +49,13 @@ export function polynomialBackoffPolicy(
         }
         const {
             degree = 2,
-            jitter = 0.5,
-            _mathRandom = Math.random,
+            // jitter = 0.5,
+            // _mathRandom = Math.random,
         } = settings;
         const polynomial = Math.min(
             maxDelay,
             minDelay * Math.pow(attempt, degree),
         );
-        return withJitter(jitter, polynomial, _mathRandom);
+        return TimeSpan.fromMilliseconds(polynomial);
     };
 }

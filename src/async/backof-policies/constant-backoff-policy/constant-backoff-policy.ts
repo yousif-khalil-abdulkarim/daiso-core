@@ -3,10 +3,7 @@
  */
 
 import { TimeSpan } from "@/utilities/_module-exports.js";
-import {
-    withJitter,
-    type BackoffPolicy,
-} from "@/async/backof-policies/_shared.js";
+import { type BackoffPolicy } from "@/async/backof-policies/_shared.js";
 
 /**
  *
@@ -18,15 +15,6 @@ export type ConstantBackoffPolicySettings = {
      * @default 1000 milliseconds
      */
     delay?: TimeSpan;
-    /**
-     * @default {0.5}
-     */
-    jitter?: number;
-    /**
-     * Used only for testing
-     * @internal
-     */
-    _mathRandom?: () => number;
 };
 
 /**
@@ -48,7 +36,6 @@ export function constantBackoffPolicy(
         if (delay instanceof TimeSpan) {
             delay = delay.toMilliseconds();
         }
-        const { jitter = 0.5, _mathRandom = Math.random } = settings;
-        return withJitter(jitter, delay, _mathRandom);
+        return TimeSpan.fromMilliseconds(delay);
     };
 }
