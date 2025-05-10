@@ -101,8 +101,8 @@ export type HooksSettings<TContext extends HookContext = HookContext> = {
 };
 
 /**
- * The `Hooks` class provides a convenient way to change and inspect arguments and return value of both only sync functions.
- * For example `Hooks` class can be used to log function arguments and return values. Note this class will always return promise and is immutable.
+ * The `Hooks` class provides a convenient way to change and inspect arguments and return value of only sync functions.
+ * For example `Hooks` class can be used to log function arguments and return values. Note this class is immutable.
  *
  * Middlewares apply left to right: each wraps the next, with the leftmost being the outermost layer and the rightmost wrapping the original function.
  *
