@@ -5,7 +5,7 @@
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 
 /**
- * The `TimeSpan` class is used for representing time interval that is the difference between two times measured in a number of days, hours, minutes, and seconds.
+ * The `TimeSpan` class is used for representing time interval.
  * `TimeSpan` cannot be negative.
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
@@ -135,10 +135,6 @@ export class TimeSpan implements ISerializable<number> {
 
     toDays(): number {
         return Math.floor(this.milliseconds / TimeSpan.dayInMilliseconds);
-    }
-
-    toUTCTimestamp(): number {
-        return Math.round(this.toMilliseconds() / 1000);
     }
 
     /**
