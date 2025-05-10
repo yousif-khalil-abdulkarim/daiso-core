@@ -84,7 +84,7 @@ export function isAsyncIterable<TItem>(
  * The `registerCollectionsToSerde` function registers the `ListCollection` and `IterableCollection` classes with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection"`
- * @group Errors
+ * @group Utilities
  */
 export function registerCollectionsToSerde(
     serde: OneOrMore<IFlexibleSerde>,
