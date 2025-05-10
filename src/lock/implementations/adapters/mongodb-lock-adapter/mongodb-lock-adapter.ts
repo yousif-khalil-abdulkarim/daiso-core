@@ -5,6 +5,7 @@
 import {
     type IDeinitizable,
     type IInitizable,
+    type IPrunable,
 } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
@@ -44,7 +45,7 @@ type MongodbLockDocument = {
  * @group Adapters
  */
 export class MongodbLockAdapter
-    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable, IPrunable
 {
     private readonly database: Db;
     private readonly collection: Collection<MongodbLockDocument>;
@@ -78,7 +79,7 @@ export class MongodbLockAdapter
         );
     }
 
-    async removeExpiredKeys(): Promise<void> {
+    async removeAllExpired(): Promise<void> {
         await this.collection.deleteMany({
             expiresAt: {
                 $lte: new Date(),

@@ -9,6 +9,7 @@ import type {
 import {
     type IDeinitizable,
     type IInitizable,
+    type IPrunable,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
 import { Kysely } from "kysely";
@@ -40,7 +41,7 @@ export type LibsqlLockAdapterSettings = {
  * @group Adapters
  */
 export class LibsqlLockAdapter
-    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable, IPrunable
 {
     private databaseLockAdapter: KyselyLockAdapter;
 
@@ -82,8 +83,8 @@ export class LibsqlLockAdapter
         });
     }
 
-    async removeExpiredKeys(): Promise<void> {
-        await this.databaseLockAdapter.removeExpiredKeys();
+    async removeAllExpired(): Promise<void> {
+        await this.databaseLockAdapter.removeAllExpired();
     }
 
     /**

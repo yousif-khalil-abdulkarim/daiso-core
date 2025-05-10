@@ -9,6 +9,7 @@ import type {
 import {
     type IDeinitizable,
     type IInitizable,
+    type IPrunable,
     type ISqliteDatabase,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
@@ -38,7 +39,7 @@ export type SqliteLockAdapterSettings = {
  * @group Adapters
  */
 export class SqliteLockAdapter
-    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable, IPrunable
 {
     private databaseLockAdapter: KyselyLockAdapter;
 
@@ -80,8 +81,8 @@ export class SqliteLockAdapter
         });
     }
 
-    async removeExpiredKeys(): Promise<void> {
-        await this.databaseLockAdapter.removeExpiredKeys();
+    async removeAllExpired(): Promise<void> {
+        await this.databaseLockAdapter.removeAllExpired();
     }
 
     /**

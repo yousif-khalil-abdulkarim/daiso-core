@@ -10,6 +10,7 @@ import type { Kysely } from "kysely";
 import {
     type IDeinitizable,
     type IInitizable,
+    type IPrunable,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
 
@@ -43,7 +44,7 @@ type KyselySettings = {
  * @internal
  */
 export class KyselyLockAdapter
-    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable, IPrunable
 {
     private readonly database: Kysely<KyselyTables>;
     private readonly expiredKeysRemovalInterval: TimeSpan;
@@ -89,12 +90,12 @@ export class KyselyLockAdapter
             .execute();
         if (this.shouldRemoveExpiredKeys) {
             this.timeoutId = setTimeout(() => {
-                void this.removeExpiredKeys();
+                void this.removeAllExpired();
             }, this.expiredKeysRemovalInterval.toMilliseconds());
         }
     }
 
-    async removeExpiredKeys(): Promise<void> {
+    async removeAllExpired(): Promise<void> {
         await this.database
             .deleteFrom("lock")
             .where("lock.expiresAt", "<=", new Date().getTime())
