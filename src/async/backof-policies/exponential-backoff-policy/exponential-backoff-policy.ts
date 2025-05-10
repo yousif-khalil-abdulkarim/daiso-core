@@ -2,8 +2,15 @@
  * @module Async
  */
 
-import { TimeSpan } from "@/utilities/_module-exports.js";
-import type { BackoffPolicy } from "@/async/backof-policies/_shared.js";
+import {
+    callInvokable,
+    isInvokable,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
+import type {
+    BackoffPolicy,
+    DynamicBackoffPolicy,
+} from "@/async/backof-policies/_shared.js";
 import { withJitter } from "@/async/backof-policies/_shared.js";
 
 /**
@@ -42,13 +49,16 @@ export type ExponentialBackoffPolicySettings = {
  * @group BackoffPolicies
  */
 export function exponentialBackoffPolicy(
-    settings:
-        | ExponentialBackoffPolicySettings
-        | ((error: unknown) => ExponentialBackoffPolicySettings) = {},
+    settings: DynamicBackoffPolicy<ExponentialBackoffPolicySettings> = {},
 ): BackoffPolicy {
     return (attempt, error) => {
-        if (typeof settings === "function") {
-            settings = settings(error);
+        if (isInvokable(settings)) {
+            const dynamicSettings = callInvokable(settings, error);
+            if (dynamicSettings === undefined) {
+                settings = {};
+            } else {
+                settings = dynamicSettings;
+            }
         }
         let { maxDelay = 60_000, minDelay = 1_000 } = settings;
         if (maxDelay instanceof TimeSpan) {
@@ -66,6 +76,8 @@ export function exponentialBackoffPolicy(
             maxDelay,
             minDelay * Math.pow(multiplier, attempt),
         );
-        return withJitter(jitter, exponential, _mathRandom);
+        return TimeSpan.fromMilliseconds(
+            withJitter(jitter, exponential, _mathRandom),
+        );
     };
 }
