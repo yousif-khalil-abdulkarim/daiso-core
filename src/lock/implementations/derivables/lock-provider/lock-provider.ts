@@ -345,7 +345,7 @@ export class LockProvider implements ILockProvider {
         const { ttl = this.defaultTtl, owner = this.createOwnerId() } =
             settings;
 
-        const keyObj = this.namespace.create(key);
+        const keyObj = this.namespace._getInternal().create(key);
 
         return new Lock({
             adapter: this.adapter,

@@ -96,7 +96,7 @@ export class LockSerdeTransformer
 
     deserialize(serializedValue: ISerializedLock): Lock {
         const { key, owner, ttlInMs, expirationInMs } = serializedValue;
-        const keyObj = this.namespace.create(key);
+        const keyObj = this.namespace._getInternal().create(key);
 
         return new Lock({
             createLazyPromise: this.createLazyPromise,

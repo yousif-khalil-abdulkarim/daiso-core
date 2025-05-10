@@ -111,7 +111,7 @@ export class EventBus<TEventMap extends BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.namespace.create(String(eventName));
+            const key = this.namespace._getInternal().create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
                 [key.namespaced, listener],
                 resolveInvokable(listener),
@@ -136,7 +136,7 @@ export class EventBus<TEventMap extends BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.namespace.create(String(eventName));
+            const key = this.namespace._getInternal().create(String(eventName));
             const resolvedListener = this.store.getAndRemove([
                 key.namespaced,
                 listener,
@@ -172,7 +172,7 @@ export class EventBus<TEventMap extends BaseEventMap>
                 }
             };
 
-            const key = this.namespace.create(String(eventName));
+            const key = this.namespace._getInternal().create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
                 [key.namespaced, listener],
                 wrappedListener,
@@ -237,7 +237,8 @@ export class EventBus<TEventMap extends BaseEventMap>
         return this.createLazyPromise(async () => {
             try {
                 await this.adapter.dispatch(
-                    this.namespace.create(String(eventName)).namespaced,
+                    this.namespace._getInternal().create(String(eventName))
+                        .namespaced,
                     event,
                 );
             } catch (error: unknown) {

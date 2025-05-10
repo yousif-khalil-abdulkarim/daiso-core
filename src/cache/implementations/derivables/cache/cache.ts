@@ -263,7 +263,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     get(key: OneOrMore<string>): LazyPromise<TType | null> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace.create(key);
+            const keyObj = this.namespace._getInternal().create(key);
             try {
                 const value = await this.adapter.get(keyObj.namespaced);
                 if (value === null) {
@@ -299,7 +299,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             const value = await this.get(key);
             if (value === null) {
                 throw new KeyNotFoundCacheError(
-                    `Key "${this.namespace.create(key).resolved}" is not found`,
+                    `Key "${this.namespace._getInternal().create(key).resolved}" is not found`,
                 );
             }
             return value;
@@ -308,7 +308,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     getAndRemove(key: OneOrMore<string>): LazyPromise<TType | null> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace.create(key);
+            const keyObj = this.namespace._getInternal().create(key);
             try {
                 const value = await this.adapter.getAndRemove(
                     keyObj.namespaced,
@@ -385,7 +385,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace.create(key);
+            const keyObj = this.namespace._getInternal().create(key);
             try {
                 const hasAdded = await this.adapter.add(
                     keyObj.namespaced,
@@ -423,7 +423,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         ttl: TimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace.create(key);
+            const keyObj = this.namespace._getInternal().create(key);
             try {
                 const hasUpdated = await this.adapter.put(
                     keyObj.namespaced,
@@ -465,7 +465,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     update(key: OneOrMore<string>, value: TType): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace.create(key);
+            const keyObj = this.namespace._getInternal().create(key);
             try {
                 const hasUpdated = await this.adapter.update(
                     keyObj.namespaced,
@@ -506,7 +506,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         value = 0 as Extract<TType, number>,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace.create(key);
+            const keyObj = this.namespace._getInternal().create(key);
             try {
                 const hasUpdated = await this.adapter.increment(
                     keyObj.namespaced,
@@ -566,7 +566,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     remove(key: OneOrMore<string>): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace.create(key);
+            const keyObj = this.namespace._getInternal().create(key);
             try {
                 const hasRemoved = await this.adapter.removeMany([
                     keyObj.namespaced,
@@ -605,7 +605,9 @@ export class Cache<TType = unknown> implements ICache<TType> {
             if (keysArr.length === 0) {
                 return true;
             }
-            const keyObjArr = keysArr.map((key) => this.namespace.create(key));
+            const keyObjArr = keysArr.map((key) =>
+                this.namespace._getInternal().create(key),
+            );
             try {
                 const hasRemovedAtLeastOne = await this.adapter.removeMany(
                     keyObjArr.map((keyObj) => keyObj.namespaced),
@@ -671,7 +673,9 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     promise.defer();
                     return;
                 }
-                await this.adapter.removeByKeyPrefix(this.namespace.namespaced);
+                await this.adapter.removeByKeyPrefix(
+                    this.namespace._getInternal().namespaced,
+                );
                 promise.defer();
             } catch (error: unknown) {
                 this.eventBus
