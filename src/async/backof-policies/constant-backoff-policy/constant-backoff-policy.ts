@@ -13,7 +13,6 @@ import {
     type DynamicBackoffPolicy,
 } from "@/async/backof-policies/_shared.js";
 
-
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
@@ -24,6 +23,15 @@ export type ConstantBackoffPolicySettings = {
      * @default 1000 milliseconds
      */
     delay?: TimeSpan;
+    /**
+     * @default {0.5}
+     */
+    jitter?: number;
+    /**
+     * @internal
+     * Should only be used for testing
+     */
+    _mathRandom?: () => number;
 };
 
 /**
@@ -48,7 +56,7 @@ export function constantBackoffPolicy(
         if (delay instanceof TimeSpan) {
             delay = delay.toMilliseconds();
         }
-      
+
         const { jitter = 0.5, _mathRandom = Math.random } = settings;
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, delay, _mathRandom),
