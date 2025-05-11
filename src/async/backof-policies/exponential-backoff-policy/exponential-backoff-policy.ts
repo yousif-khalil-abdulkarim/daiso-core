@@ -13,6 +13,7 @@ import type {
 } from "@/async/backof-policies/_shared.js";
 import { withJitter } from "@/async/backof-policies/_shared.js";
 
+
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
@@ -31,15 +32,6 @@ export type ExponentialBackoffPolicySettings = {
      * @default {2}
      */
     multiplier?: number;
-    /**
-     * @default {0.5}
-     */
-    jitter?: number;
-    /**
-     * Used only for testing
-     * @internal
-     */
-    _mathRandom?: () => number;
 };
 
 /**
@@ -69,13 +61,14 @@ export function exponentialBackoffPolicy(
         }
         const {
             multiplier = 2,
-            jitter = 0.5,
-            _mathRandom = Math.random,
+            // jitter = 0.5,
+            // _mathRandom = Math.random,
         } = settings;
         const exponential = Math.min(
             maxDelay,
             minDelay * Math.pow(multiplier, attempt),
         );
+      
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, exponential, _mathRandom),
         );

@@ -186,6 +186,7 @@ export function retry<
                 }
 
                 const waitTime = callInvokable(backoffPolicy, attempt, error);
+
                 callInvokable(onRetryDelay, {
                     error,
                     waitTime,

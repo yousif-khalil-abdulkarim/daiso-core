@@ -21,6 +21,9 @@ import { ObjectId } from "mongodb";
  */
 export type MongodbLockAdapterSettings = {
     database: Db;
+    /**
+     * @default {"lock"}
+     */
     collectionName?: string;
     collectionSettings?: CollectionOptions;
 };
