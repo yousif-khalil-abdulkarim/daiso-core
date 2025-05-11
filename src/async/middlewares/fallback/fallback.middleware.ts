@@ -52,7 +52,7 @@ export type FallbackCallbacks<
     TContext extends HookContext = HookContext,
 > = {
     /**
-     * Callback function that will be called before fallback values is returned.
+     * Callback {@link Invokable | `Invokable`} that will be called before fallback value is returned.
      */
     onFallback?: OnFallback<TParameters, TReturn, TContext>;
 };
@@ -77,7 +77,7 @@ export type FallbackSettings<
      * (_error: unknown) => true
      * ```
      */
-    fallbackPolicy?: ErrorPolicy;
+    errorPolicy?: ErrorPolicy;
 };
 
 /**
@@ -115,14 +115,14 @@ export function fallback<
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         fallbackValue,
-        fallbackPolicy = () => true,
+        errorPolicy = () => true,
         onFallback = () => {},
     } = settings;
     return async (args, next, { context }): Promise<TReturn> => {
         try {
             return await next(...args);
         } catch (error: unknown) {
-            if (callInvokable(fallbackPolicy, error)) {
+            if (callInvokable(errorPolicy, error)) {
                 const resolvedFallbackValue =
                     await resolveAsyncLazyable(fallbackValue);
                 callInvokable(onFallback, {

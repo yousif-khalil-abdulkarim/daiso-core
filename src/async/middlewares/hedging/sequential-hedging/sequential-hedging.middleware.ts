@@ -72,8 +72,8 @@ export function sequentialHedging<
     const {
         waitTime = TimeSpan.fromSeconds(2),
         fallbacks,
-        onHedgeAttempt = () => {},
-        onHedgeError = () => {},
+        onHedgingAttempt = () => {},
+        onHedgingError = () => {},
     } = settings;
 
     const resolvedFallbacks = resolveOneOrMore(fallbacks).map<
@@ -82,7 +82,7 @@ export function sequentialHedging<
         if (isInvokable(fallback)) {
             return {
                 name: `fallback-${String(index + 1)}`,
-                func: fallback,
+                invokable: fallback,
             };
         }
         return fallback;
@@ -93,13 +93,13 @@ export function sequentialHedging<
         const funcs = [
             {
                 name: "__initial",
-                func: next,
+                invokable: next,
             },
             ...resolvedFallbacks,
         ];
-        for (const { name, func } of funcs) {
+        for (const { name, invokable: func } of funcs) {
             try {
-                callInvokable(onHedgeAttempt, {
+                callInvokable(onHedgingAttempt, {
                     args,
                     context,
                     name,
@@ -116,7 +116,7 @@ export function sequentialHedging<
                 if (signal.aborted) {
                     break;
                 }
-                callInvokable(onHedgeError, {
+                callInvokable(onHedgingError, {
                     args,
                     context,
                     error,

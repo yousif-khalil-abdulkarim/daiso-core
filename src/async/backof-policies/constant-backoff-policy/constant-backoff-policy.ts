@@ -28,8 +28,8 @@ export type ConstantBackoffPolicySettings = {
      */
     jitter?: number;
     /**
-     * Used only for testing
      * @internal
+     * Should only be used for testing
      */
     _mathRandom?: () => number;
 };
@@ -56,6 +56,7 @@ export function constantBackoffPolicy(
         if (delay instanceof TimeSpan) {
             delay = delay.toMilliseconds();
         }
+
         const { jitter = 0.5, _mathRandom = Math.random } = settings;
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, delay, _mathRandom),

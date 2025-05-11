@@ -36,8 +36,8 @@ export type ExponentialBackoffPolicySettings = {
      */
     jitter?: number;
     /**
-     * Used only for testing
      * @internal
+     * Should only be used for testing
      */
     _mathRandom?: () => number;
 };

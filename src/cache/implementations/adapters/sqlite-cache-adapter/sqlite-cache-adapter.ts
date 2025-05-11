@@ -32,7 +32,20 @@ export type SqliteCacheAdapterSettings = {
     database: ISqliteDatabase;
     tableName?: string;
     serde: ISerde<string>;
+
+    /**
+     * @default
+     * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     *
+     * TimeSpan.fromMinutes(1);
+     * ```
+     */
     expiredKeysRemovalInterval?: TimeSpan;
+
+    /**
+     * @default {true}
+     */
     shouldRemoveExpiredKeys?: boolean;
 };
 

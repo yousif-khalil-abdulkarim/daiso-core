@@ -66,24 +66,12 @@ export class EventBusFactory<TAdapters extends string = string>
      *
      * type Store = Partial<Record<string, IEventBusAdapter>>;
      *
-     * function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
-     *   return (prefix) => {
-     *     let adapter = store[prefix];
-     *     if (adapter === undefined) {
-     *       adapter = new MemoryEventBusAdapter();
-     *       store[prefix] = adapter;
-     *     }
-     *     return adapter;
-     *   }
-     * }
-     *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const store: Store = {};
      * const eventBusFactory = new EventBusFactory({
      *   namespace: new Namespace("event-bus"),
      *   adapters: {
      *     memory: new MemoryEventBusAdapter(),
-     *     memoryFactory: cahceAdapterFactory(store),
      *     redis: new RedisPubSubEventBusAdapter({
      *       serde,
      *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
@@ -125,28 +113,11 @@ export class EventBusFactory<TAdapters extends string = string>
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
      *
-     * type Store = Partial<Record<string, IEventBusAdapter>>;
-     *
-     * function cahceAdapterFactory(store: Store): FactoryFn<string, IEventBusAdapter> {
-     *   return (prefix) => {
-     *     let adapter = store[prefix];
-     *     if (adapter === undefined) {
-     *       adapter = new MemoryEventBusAdapter();
-     *       store[prefix] = adapter;
-     *     }
-     *     return adapter;
-     *   }
-     * }
-     *
-     * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
-     * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const store: Store = {};
      * const eventBusFactory = new EventBusFactory({
      *   namespace: new Namespace("event-bus"),
      *   adapters: {
      *     memory: new MemoryEventBusAdapter(),
-     *     memoryFactory: cahceAdapterFactory(store),
      *     redis: new RedisPubSubEventBusAdapter({
      *       serde,
      *       dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
@@ -175,7 +146,7 @@ export class EventBusFactory<TAdapters extends string = string>
      *   .dispatch("add", { a: 1, b: 2 });
      * ```
      */
-    use<TEventMap extends BaseEventMap>(
+    use<TEventMap extends BaseEventMap = BaseEventMap>(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
     ): IEventBus<TEventMap> {
         if (adapterName === undefined) {

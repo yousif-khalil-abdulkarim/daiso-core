@@ -53,7 +53,7 @@ export type EventListener<TEvent> =
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
-export type IEventListenable<TEventMap extends BaseEventMap> = {
+export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
     /**
      * The `addListener` method is used for listening to a {@link BaseEvent | `BaseEvent`}.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
@@ -116,7 +116,7 @@ export type IEventListenable<TEventMap extends BaseEventMap> = {
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
-export type IEventDispatcher<TEventMap extends BaseEventMap> = {
+export type IEventDispatcher<TEventMap extends BaseEventMap = BaseEventMap> = {
     /**
      * The `dispatch` method is used for dispatching a {@link BaseEvent | `BaseEvent`}.
 

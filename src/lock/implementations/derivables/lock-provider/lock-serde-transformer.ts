@@ -91,7 +91,11 @@ export class LockSerdeTransformer
     }
 
     isApplicable(value: unknown): value is Lock {
-        return value instanceof Lock && getConstructorName(value) === Lock.name;
+        return (
+            value instanceof Lock &&
+            getConstructorName(value) === Lock.name &&
+            value.getSerdeTransformerName() === this.serdeTransformerName
+        );
     }
 
     deserialize(serializedValue: ISerializedLock): Lock {
@@ -105,6 +109,7 @@ export class LockSerdeTransformer
             eventDispatcher: this.eventBus,
             key: keyObj,
             owner,
+            serdeTransformerName: this.serdeTransformerName,
             ttl: ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null,
             expirationInMs,
             defaultBlockingInterval: this.defaultBlockingInterval,
