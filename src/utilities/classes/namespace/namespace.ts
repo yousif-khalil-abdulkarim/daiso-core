@@ -18,7 +18,7 @@ type KeySettings = {
 /**
  * @internal
  */
-class Key {
+export class Key {
     private readonly prefixArr: AtLeastOne<string>;
     private readonly key: OneOrMore<string>;
     private readonly identifierDelimeter: string;
