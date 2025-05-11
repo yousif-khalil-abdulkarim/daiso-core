@@ -9,6 +9,7 @@ import type {
 import {
     type IDeinitizable,
     type IInitizable,
+    type IPrunable,
     type ISqliteDatabase,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
@@ -32,13 +33,13 @@ export type SqliteLockAdapterSettings = {
  * To utilize the `SqliteLockAdapter`, you must install the `"better-sqlite3"` and `"@types/better-sqlite3"` packages.
  *
  * Note the `SqliteLockAdapter` is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes.
- * To use it correctly, ensure all process instances access the same consistent, persisted database.
+ * To use it correctly, ensure all process instances access the same persisted database.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
 export class SqliteLockAdapter
-    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable, IPrunable
 {
     private databaseLockAdapter: KyselyLockAdapter;
 
@@ -80,8 +81,8 @@ export class SqliteLockAdapter
         });
     }
 
-    async removeExpiredKeys(): Promise<void> {
-        await this.databaseLockAdapter.removeExpiredKeys();
+    async removeAllExpired(): Promise<void> {
+        await this.databaseLockAdapter.removeAllExpired();
     }
 
     /**

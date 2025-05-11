@@ -34,7 +34,7 @@ describe("function: fallback", () => {
         }, [
             fallback({
                 fallbackValue: "fallback-value",
-                fallbackPolicy: (error) => error instanceof CustomError,
+                errorPolicy: (error) => error instanceof CustomError,
             }),
         ]).invoke();
         await expect(returnValue).rejects.toBeInstanceOf(Error);

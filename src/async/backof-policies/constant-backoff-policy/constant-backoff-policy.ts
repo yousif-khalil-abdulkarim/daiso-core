@@ -2,10 +2,15 @@
  * @module Async
  */
 
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import {
+    callInvokable,
+    isInvokable,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
 import {
     withJitter,
     type BackoffPolicy,
+    type DynamicBackoffPolicy,
 } from "@/async/backof-policies/_shared.js";
 
 /**
@@ -23,8 +28,8 @@ export type ConstantBackoffPolicySettings = {
      */
     jitter?: number;
     /**
-     * Used only for testing
      * @internal
+     * Should only be used for testing
      */
     _mathRandom?: () => number;
 };
@@ -36,19 +41,25 @@ export type ConstantBackoffPolicySettings = {
  * @group BackoffPolicies
  */
 export function constantBackoffPolicy(
-    settings:
-        | ConstantBackoffPolicySettings
-        | ((error: unknown) => ConstantBackoffPolicySettings) = {},
+    settings: DynamicBackoffPolicy<ConstantBackoffPolicySettings> = {},
 ): BackoffPolicy {
     return (_attempt, error) => {
-        if (typeof settings === "function") {
-            settings = settings(error);
+        if (isInvokable(settings)) {
+            const dynamicSettings = callInvokable(settings, error);
+            if (dynamicSettings === undefined) {
+                settings = {};
+            } else {
+                settings = dynamicSettings;
+            }
         }
         let { delay = 1000 } = settings;
         if (delay instanceof TimeSpan) {
             delay = delay.toMilliseconds();
         }
+
         const { jitter = 0.5, _mathRandom = Math.random } = settings;
-        return withJitter(jitter, delay, _mathRandom);
+        return TimeSpan.fromMilliseconds(
+            withJitter(jitter, delay, _mathRandom),
+        );
     };
 }

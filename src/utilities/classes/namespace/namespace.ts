@@ -78,13 +78,9 @@ export type NamespaceSettings = {
 };
 
 /**
- * The `Namespace` class adds prefixes/suffixes to keys to avoid conflicts and group related items.
- * Note the `Namespace` class is not meant to be used directly, instead you should configure it once and then pass it to a public class like `Cache` and `LockProvider`.
- *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Namespace
+ * @internal
  */
-export class Namespace {
+class InternalNamespace {
     private readonly identifierDelimeter: string;
     private readonly keyDelimeter: string;
     private readonly rootIdentifier: string;
@@ -104,23 +100,14 @@ export class Namespace {
         this.validate(this._rootPrefix);
     }
 
-    /**
-     * @internal
-     */
     get original(): OneOrMore<string> {
         return this._rootPrefix;
     }
 
-    /**
-     * @internal
-     */
     get resolved(): string {
         return resolveOneOrMoreStr(this._rootPrefix);
     }
 
-    /**
-     * @internal
-     */
     private validate(key: OneOrMore<string>): void {
         const resolvedKey = resolveOneOrMoreStr(key);
         if (resolvedKey.includes(this.rootIdentifier)) {
@@ -130,9 +117,6 @@ export class Namespace {
         }
     }
 
-    /**
-     * @internal
-     */
     private getKeyPrefixArray(): AtLeastOne<string> {
         return [
             resolveOneOrMoreStr(this._rootPrefix, this.keyDelimeter),
@@ -140,9 +124,6 @@ export class Namespace {
         ];
     }
 
-    /**
-     * @internal
-     */
     get namespaced(): string {
         return resolveOneOrMoreStr(
             this.getKeyPrefixArray(),
@@ -150,9 +131,6 @@ export class Namespace {
         );
     }
 
-    /**
-     * @internal
-     */
     create(key: OneOrMore<string>): Key {
         this.validate(key);
         return new Key({
@@ -161,5 +139,53 @@ export class Namespace {
             identifierDelimeter: this.identifierDelimeter,
             prefixArr: this.getKeyPrefixArray(),
         });
+    }
+}
+
+/**
+ * The `Namespace` class adds prefixes/suffixes to keys to avoid conflicts and group related items.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Namespace
+ */
+export class Namespace {
+    constructor(
+        private readonly root: OneOrMore<string>,
+        private readonly settings: NamespaceSettings = {},
+    ) {}
+
+    setIdentifierDelimeter(delimeter: string): Namespace {
+        return new Namespace(this.root, {
+            ...this.settings,
+            identifierDelimeter: delimeter,
+        });
+    }
+
+    setKeyDelimeter(delimeter: string): Namespace {
+        return new Namespace(this.root, {
+            ...this.settings,
+            keyDelimeter: delimeter,
+        });
+    }
+
+    setRootIdentifier(identifier: string): Namespace {
+        return new Namespace(this.root, {
+            ...this.settings,
+            rootIdentifier: identifier,
+        });
+    }
+
+    appendRoot(str: OneOrMore<string>): Namespace {
+        return new Namespace(
+            [...resolveOneOrMoreStr(this.root), ...resolveOneOrMoreStr(str)],
+            this.settings,
+        );
+    }
+
+    /**
+     * @internal
+     */
+    _getInternal(): InternalNamespace {
+        return new InternalNamespace(this.root, this.settings);
     }
 }
