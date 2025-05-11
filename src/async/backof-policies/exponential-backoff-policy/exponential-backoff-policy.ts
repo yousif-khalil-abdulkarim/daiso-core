@@ -76,7 +76,6 @@ export function exponentialBackoffPolicy(
             maxDelay,
             minDelay * Math.pow(multiplier, attempt),
         );
-
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, exponential, _mathRandom),
         );
