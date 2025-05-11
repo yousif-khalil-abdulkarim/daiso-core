@@ -18,11 +18,11 @@ import {
     UnableToAddListenerEventBusError,
 } from "@/event-bus/contracts/_module-exports.js";
 
-import type {
-    Namespace,
-    Factory,
-    AsyncLazy,
-    FactoryFn,
+import type { Namespace } from "@/utilities/_module-exports.js";
+import {
+    type Factory,
+    type AsyncLazy,
+    type FactoryFn,
 } from "@/utilities/_module-exports.js";
 import {
     resolveFactory,
@@ -65,7 +65,7 @@ export type EventBusSettings = EventBusSettingsBase & {
  * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
-export class EventBus<TEventMap extends BaseEventMap>
+export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     implements IEventBus<TEventMap>
 {
     private readonly store = new ListenerStore();
@@ -111,7 +111,7 @@ export class EventBus<TEventMap extends BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.namespace.create(String(eventName));
+            const key = this.namespace._getInternal().create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
                 [key.namespaced, listener],
                 resolveInvokable(listener),
@@ -136,7 +136,7 @@ export class EventBus<TEventMap extends BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.namespace.create(String(eventName));
+            const key = this.namespace._getInternal().create(String(eventName));
             const resolvedListener = this.store.getAndRemove([
                 key.namespaced,
                 listener,
@@ -172,7 +172,7 @@ export class EventBus<TEventMap extends BaseEventMap>
                 }
             };
 
-            const key = this.namespace.create(String(eventName));
+            const key = this.namespace._getInternal().create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
                 [key.namespaced, listener],
                 wrappedListener,
@@ -237,7 +237,8 @@ export class EventBus<TEventMap extends BaseEventMap>
         return this.createLazyPromise(async () => {
             try {
                 await this.adapter.dispatch(
-                    this.namespace.create(String(eventName)).namespaced,
+                    this.namespace._getInternal().create(String(eventName))
+                        .namespaced,
                     event,
                 );
             } catch (error: unknown) {

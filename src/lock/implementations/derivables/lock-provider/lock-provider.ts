@@ -250,7 +250,7 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * You can listen to the following {@link LockEventMap | `LockEventMap`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     addListener<TEventName extends keyof LockEventMap>(
@@ -261,7 +261,7 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * You can listen to the following {@link LockEventMap | `LockEventMap`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     removeListener<TEventName extends keyof LockEventMap>(
@@ -272,7 +272,7 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * You can listen to the following {@link LockEventMap | `LockEventMap`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     listenOnce<TEventName extends keyof LockEventMap>(
@@ -283,7 +283,7 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * You can listen to the following {@link LockEventMap | `LockEventMap`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     asPromise<TEventName extends keyof LockEventMap>(
@@ -293,7 +293,7 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * You can listen to the following {@link LockEventMap | `LockEventMap`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     subscribeOnce<TEventName extends keyof LockEventMap>(
@@ -304,7 +304,7 @@ export class LockProvider implements ILockProvider {
     }
 
     /**
-     * You can listen to the following {@link LockEvents | `LockEvents`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
+     * You can listen to the following {@link LockEventMap | `LockEventMap`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
     subscribe<TEventName extends keyof LockEventMap>(
@@ -345,7 +345,7 @@ export class LockProvider implements ILockProvider {
         const { ttl = this.defaultTtl, owner = this.createOwnerId() } =
             settings;
 
-        const keyObj = this.namespace.create(key);
+        const keyObj = this.namespace._getInternal().create(key);
 
         return new Lock({
             adapter: this.adapter,
@@ -355,6 +355,7 @@ export class LockProvider implements ILockProvider {
             key: keyObj,
             owner,
             ttl,
+            serdeTransformerName: this.serdeTransformerName,
             expirationInMs: null,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,

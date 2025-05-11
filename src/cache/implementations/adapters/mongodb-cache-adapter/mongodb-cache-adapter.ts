@@ -33,6 +33,9 @@ import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_mo
 export type MongodbCacheAdapterSettings = {
     database: Db;
     serde: ISerde<string>;
+    /**
+     * @default {"cache"}
+     */
     collectionName?: string;
     collectionSettings?: CollectionOptions;
 };

@@ -91,12 +91,16 @@ export class LockSerdeTransformer
     }
 
     isApplicable(value: unknown): value is Lock {
-        return value instanceof Lock && getConstructorName(value) === Lock.name;
+        return (
+            value instanceof Lock &&
+            getConstructorName(value) === Lock.name &&
+            value.getSerdeTransformerName() === this.serdeTransformerName
+        );
     }
 
     deserialize(serializedValue: ISerializedLock): Lock {
         const { key, owner, ttlInMs, expirationInMs } = serializedValue;
-        const keyObj = this.namespace.create(key);
+        const keyObj = this.namespace._getInternal().create(key);
 
         return new Lock({
             createLazyPromise: this.createLazyPromise,
@@ -105,6 +109,7 @@ export class LockSerdeTransformer
             eventDispatcher: this.eventBus,
             key: keyObj,
             owner,
+            serdeTransformerName: this.serdeTransformerName,
             ttl: ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null,
             expirationInMs,
             defaultBlockingInterval: this.defaultBlockingInterval,

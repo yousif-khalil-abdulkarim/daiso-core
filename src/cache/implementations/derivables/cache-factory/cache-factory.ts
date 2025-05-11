@@ -56,33 +56,17 @@ export class CacheFactory<TAdapters extends string = string>
      * @example
      * ```ts
      * import { CacheFactory } from "@daiso-tech/core/cache";
-     * import type { IDatabaseCacheAdapter } from "@daiso-tech/core/cache/contracts";
-     * import { MemoryCacheAdapter, RedisCacheAdapter, SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { MemoryCacheAdapter, RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { Namespace, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
-     * import Sqlite from "better-sqlite3";
      *
-     * function cahceAdapterFactory(database: ISqliteDatabase, serde: ISerde<string>): AsyncFactoryFn<string, IDatabaseCacheAdapter> {
-     *   return async (prefix) => {
-     *     const cacheAdapter = new SqliteCacheAdapter({
-     *       database,
-     *       serde,
-     *       tableName: `cache_${prefix}`
-     *     });
-     *     await cacheAdapter.init();
-     *     return cacheAdapter;
-     *   }
-     * }
-     *
-     * const database = new Sqlite("local.db");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
      *   namespace: new Namespace("cache"),
      *   adapters: {
-     *     sqlite: cahceAdapterFactory(database, serde),
      *     memory: new MemoryCacheAdapter(),
      *     redis: new RedisCacheAdapter({
      *       database: new Redis("YOUR_REDIS_CONNECTION"),
@@ -115,7 +99,7 @@ export class CacheFactory<TAdapters extends string = string>
         });
     }
 
-    setlazyPromiseFactory(
+    setLazyPromiseFactory(
         factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
     ): CacheFactory<TAdapters> {
         return new CacheFactory({
@@ -128,33 +112,17 @@ export class CacheFactory<TAdapters extends string = string>
      * @example
      * ```ts
      * import { CacheFactory } from "@daiso-tech/core/cache";
-     * import type { IDatabaseCacheAdapter } from "@daiso-tech/core/cache/contracts";
-     * import { MemoryCacheAdapter, RedisCacheAdapter, SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { MemoryCacheAdapter, RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { Namespace, TimeSpan, type ISqliteDatabase, type AsyncFactoryFn } from "@daiso-tech/core/utilities";
+     * import { Namespace, TimeSpan } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
-     * import Sqlite from "better-sqlite3";
      *
-     * function cahceAdapterFactory(database: ISqliteDatabase, serde: ISerde<string>): AsyncFactoryFn<string, IDatabaseCacheAdapter> {
-     *   return async (prefix) => {
-     *     const cacheAdapter = new SqliteCacheAdapter({
-     *       database,
-     *       serde,
-     *       tableName: `cache_${prefix}`
-     *     });
-     *     await cacheAdapter.init();
-     *     return cacheAdapter;
-     *   }
-     * }
-     *
-     * const database = new Sqlite("local.db");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
      *   namespace: new Namespace("cache"),
      *   adapters: {
-     *     sqlite: cahceAdapterFactory(database, serde),
      *     memory: new MemoryCacheAdapter(),
      *     redis: new RedisCacheAdapter({
      *       database: new Redis("YOUR_REDIS_CONNECTION"),
@@ -196,7 +164,7 @@ export class CacheFactory<TAdapters extends string = string>
             ...this.settings,
             adapter,
             namespace: new Namespace([
-                ...resolveOneOrMore(namespace.original),
+                ...resolveOneOrMore(namespace._getInternal().original),
                 adapterName,
             ]),
         });

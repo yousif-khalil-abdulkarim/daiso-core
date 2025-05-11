@@ -26,7 +26,7 @@ export type IEventBusFactory<TAdapters extends string = string> = {
      * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      */
-    use<TEventMap extends BaseEventMap>(
+    use<TEventMap extends BaseEventMap = BaseEventMap>(
         adapterName?: TAdapters,
     ): IEventBus<TEventMap>;
 };
