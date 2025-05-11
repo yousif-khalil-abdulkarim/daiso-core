@@ -18,11 +18,11 @@ import {
     UnableToAddListenerEventBusError,
 } from "@/event-bus/contracts/_module-exports.js";
 
-import type {
-    Namespace,
-    Factory,
-    AsyncLazy,
-    FactoryFn,
+import type { Namespace } from "@/utilities/_module-exports.js";
+import {
+    type Factory,
+    type AsyncLazy,
+    type FactoryFn,
 } from "@/utilities/_module-exports.js";
 import {
     resolveFactory,
@@ -65,7 +65,7 @@ export type EventBusSettings = EventBusSettingsBase & {
  * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
-export class EventBus<TEventMap extends BaseEventMap>
+export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     implements IEventBus<TEventMap>
 {
     private readonly store = new ListenerStore();

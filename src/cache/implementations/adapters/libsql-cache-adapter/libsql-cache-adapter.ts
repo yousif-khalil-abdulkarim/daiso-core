@@ -34,8 +34,25 @@ export type LibsqlCacheAdapterSettings = {
     database: Client;
     tableName?: string;
     serde: ISerde<string>;
+
+    /**
+     * @default {false}
+     */
     disableTransaction?: boolean;
+
+    /**
+     * @default
+     * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     *
+     * TimeSpan.fromMinutes(1);
+     * ```
+     */
     expiredKeysRemovalInterval?: TimeSpan;
+
+    /**
+     * @default {true}
+     */
     shouldRemoveExpiredKeys?: boolean;
 };
 

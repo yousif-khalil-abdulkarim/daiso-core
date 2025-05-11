@@ -69,14 +69,14 @@ export type HedgingCallbacks<
     TContext extends HookContext = HookContext,
 > = {
     /**
-     * Callback function that will be called before execution attempt.
+     * Callback {@link Invokable | `Invokable`} that will be called before execution attempt.
      */
-    onHedgeAttempt?: OnHedgeAttempt<TParameters, TContext>;
+    onHedgingAttempt?: OnHedgeAttempt<TParameters, TContext>;
 
     /**
-     * Callback function that will be called when the error occurs.
+     * Callback {@link Invokable | `Invokable`} that will be called when the error occurs.
      */
-    onHedgeError?: OnHedgeError<TParameters, TContext>;
+    onHedgingError?: OnHedgeError<TParameters, TContext>;
 };
 
 /**
@@ -99,10 +99,10 @@ export type NamedFallback<
     TReturn = unknown,
 > = {
     /**
-     * You can assign a custom name to the fallback function for easier identification in logs.
+     * You can assign a custom name to the fallback {@link Invokable | `Invokable`} for easier identification in logs.
      */
     name: string;
-    func: Fallback<TParameters, TReturn>;
+    invokable: Fallback<TParameters, TReturn>;
 };
 
 /**
@@ -116,7 +116,7 @@ export type HedgingSettings<
     TContext extends HookContext = HookContext,
 > = HedgingCallbacks<TParameters, TContext> & {
     /**
-     * The maximum time to wait before automatically aborting the executing primary function or fallback functions.
+     * The maximum time to wait before automatically aborting the executing primary {@link Invokable | `Invokable`} or fallback {@link Invokable | `Invokable:s`}.
      *
      * @default
      * ```ts

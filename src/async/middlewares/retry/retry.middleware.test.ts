@@ -5,7 +5,7 @@ import {
     type OnRetryDelayData,
 } from "@/async/middlewares/retry/retry.middleware.js";
 import { RetryAsyncError } from "@/async/async.errors.js";
-import { AsyncHooks } from "@/utilities/_module-exports.js";
+import { AsyncHooks, TimeSpan } from "@/utilities/_module-exports.js";
 
 describe("function: retry", () => {
     test("Should throw RetryAsyncError when all atempts fail", async () => {
@@ -15,7 +15,7 @@ describe("function: retry", () => {
             },
             retry({
                 maxAttempts: 4,
-                backoffPolicy: () => 0,
+                backoffPolicy: () => TimeSpan.fromMilliseconds(0),
             }),
         ).invoke();
 
@@ -33,7 +33,7 @@ describe("function: retry", () => {
                 },
                 retry({
                     maxAttempts,
-                    backoffPolicy: () => 0,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                 }),
             ).invoke();
         } catch {
@@ -52,8 +52,8 @@ describe("function: retry", () => {
             },
             retry({
                 maxAttempts: 4,
-                backoffPolicy: () => 0,
-                retryPolicy: (error) => error instanceof ErrorA,
+                backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                errorPolicy: (error) => error instanceof ErrorA,
             }),
         ).invoke();
 
@@ -68,8 +68,8 @@ describe("function: retry", () => {
             },
             retry({
                 maxAttempts: 4,
-                backoffPolicy: () => 0,
-                retryPolicy: (error) => error instanceof ErrorA,
+                backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                errorPolicy: (error) => error instanceof ErrorA,
             }),
         ).invoke();
 
@@ -89,7 +89,7 @@ describe("function: retry", () => {
             },
             retry({
                 maxAttempts,
-                backoffPolicy: () => 0,
+                backoffPolicy: () => TimeSpan.fromMilliseconds(0),
             }),
         ).invoke();
 
@@ -106,7 +106,7 @@ describe("function: retry", () => {
                 },
                 retry({
                     maxAttempts,
-                    backoffPolicy: () => 0,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     onExecutionAttempt(data_) {
                         data = data_;
                         repetition++;
@@ -139,7 +139,7 @@ describe("function: retry", () => {
                 },
                 retry({
                     maxAttempts,
-                    backoffPolicy: () => 0,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     onExecutionAttempt(data_) {
                         data = data_;
                         repetition++;
@@ -172,7 +172,7 @@ describe("function: retry", () => {
                 },
                 retry({
                     maxAttempts,
-                    backoffPolicy: () => 25,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(25),
                     onRetryDelay(data_) {
                         data = data_;
                         repetition++;
@@ -207,7 +207,7 @@ describe("function: retry", () => {
                 },
                 retry({
                     maxAttempts,
-                    backoffPolicy: () => 25,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(25),
                     onRetryDelay(data_) {
                         data = data_;
                         repetition++;
