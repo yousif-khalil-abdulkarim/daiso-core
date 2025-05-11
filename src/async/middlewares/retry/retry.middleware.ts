@@ -77,12 +77,12 @@ export type RetryCallbacks<
     TContext extends HookContext = HookContext,
 > = {
     /**
-     * Callback function that will be called before execution attempt.
+     * Callback {@link Invokable | `Invokable`} that will be called before execution attempt.
      */
     onExecutionAttempt?: OnRetryAttempt<TParameters, TContext>;
 
     /**
-     * Callback function that will be called when the retry delay starts.
+     * Callback {@link Invokable | `Invokable`} that will be called before the retry delay starts.
      */
     onRetryDelay?: OnRetryDelay<TParameters, TContext>;
 };
@@ -120,7 +120,7 @@ export type RetrySettings<
      * (_error: unknown) => true
      * ```
      */
-    retryPolicy?: ErrorPolicy;
+    errorPolicy?: ErrorPolicy;
 };
 
 /**
@@ -164,7 +164,7 @@ export function retry<
     const {
         maxAttempts = 4,
         backoffPolicy = exponentialBackoffPolicy(),
-        retryPolicy = () => true,
+        errorPolicy = () => true,
         onRetryDelay = () => {},
         onExecutionAttempt = () => {},
     } = settings;
@@ -178,6 +178,13 @@ export function retry<
                 if (signal.aborted) {
                     break;
                 }
+
+                if (callInvokable(errorPolicy, error)) {
+                    errors.push(error);
+                } else {
+                    throw error;
+                }
+
                 const waitTime = callInvokable(backoffPolicy, attempt, error);
 
                 callInvokable(onRetryDelay, {
@@ -187,12 +194,6 @@ export function retry<
                     args,
                     context,
                 });
-
-                if (callInvokable(retryPolicy, error)) {
-                    errors.push(error);
-                } else {
-                    throw error;
-                }
                 await LazyPromise.delay(waitTime, signal);
             }
         }

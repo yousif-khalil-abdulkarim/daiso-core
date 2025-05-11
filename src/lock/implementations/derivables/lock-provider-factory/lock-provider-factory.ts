@@ -191,7 +191,7 @@ export class LockProviderFactory<TAdapters extends string>
             ...this.settings,
             adapter,
             namespace: new Namespace([
-                ...resolveOneOrMore(namespace.original),
+                ...resolveOneOrMore(namespace._getInternal().original),
                 adapterName,
             ]),
             serdeTransformerName: adapterName,

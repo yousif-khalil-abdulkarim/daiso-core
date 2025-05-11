@@ -11,6 +11,9 @@
         "type": "git",
         "url": "git+https://github.com/yousif-khalil-abdulkarim/daiso-core.git"
     },
+    "workspaces": [
+        "website"
+    ],
     "keywords": [
         "Async collection",
         "Collection",

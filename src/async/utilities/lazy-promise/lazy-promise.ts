@@ -149,7 +149,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * import { LazyPromise } from "@daiso-tech/core/async";
      * import { readFile } from "node:fs";
      *
-     * const lazyPromise = LazyPromise.fromCallback<Buffer>((resolve, reject) => {
+     * const lazyPromise = LazyPromise.fromCallback<Buffer  | string>((resolve, reject) => {
      *   readFile("FILE_PATH", (err, data) => {
      *     if (err !== null) {
      *       reject(err);

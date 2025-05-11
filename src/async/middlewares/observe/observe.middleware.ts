@@ -111,22 +111,22 @@ export type ObserveCallbacks<
     TContext extends HookContext = HookContext,
 > = {
     /**
-     * Callback function that will be called when before the underlying {@link Invokable | `Invokable`} is called.
+     * Callback {@link Invokable | `Invokable`} that will be called when before the underlying {@link Invokable | `Invokable`} is called.
      */
     onStart?: OnObserveStart<TParameters, TContext>;
 
     /**
-     * Callback function that will be called when the underlying {@link Invokable | `Invokable`} is successfully called.
+     * Callback {@link Invokable | `Invokable`} that will be called when the underlying {@link Invokable | `Invokable`} is successfully called.
      */
     onSuccess?: OnObserveSuccess<TParameters, TReturn, TContext>;
 
     /**
-     * Callback function that will be called when the underlying {@link Invokable | `Invokable`} throws an error.
+     * Callback {@link Invokable | `Invokable`} that will be called when the underlying {@link Invokable | `Invokable`} throws an error.
      */
     onError?: OnObserveError<TParameters, TContext>;
 
     /**
-     * Callback function that will be called when the underlying {@link Invokable | `Invokable`} throws an error or is successfully called.
+     * Callback {@link Invokable | `Invokable`} that will be called when the underlying {@link Invokable | `Invokable`} throws an error or is successfully called.
      */
     onFinally?: OnObserveFinally<TContext>;
 };

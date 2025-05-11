@@ -6,6 +6,10 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type AsyncMiddlewareFn,
     type HookContext,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type AbortSignalBinder,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type AsyncHooks,
 } from "@/utilities/_module-exports.js";
 import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
 import { TimeoutAsyncError } from "@/async/async.errors.js";
@@ -45,7 +49,7 @@ export type TimeoutCallbacks<
     TContext extends HookContext = HookContext,
 > = {
     /**
-     * Callback function that will be called when the timeout occurs.
+     * Callback {@link Invokable | `Invokable`} that will be called before the timeout occurs.
      */
     onTimeout?: OnTimeout<TParameters, TContext>;
 };
@@ -74,7 +78,9 @@ export type TimeoutSettings<
 
 /**
  * The `timeout` middleware automatically cancels functions after a specified time period, throwing an error when aborted.
- * Note the original function continues executing (even if the promise fails), you'll need to provide a settings.signalBinder to forward the `AbortSignal`.
+ *
+ * Note when a timeout occurs, the function call continues executing in the background and only the `Promise` will be aborted.
+ * To ensure correct abortion behavior, provide an {@link AbortSignalBinder | `AbortSignalBinder`} to {@link AsyncHooks | `AsyncHooks`}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middlewares

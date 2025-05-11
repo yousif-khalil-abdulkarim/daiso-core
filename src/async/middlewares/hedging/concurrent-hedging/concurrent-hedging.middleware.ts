@@ -83,8 +83,8 @@ export function concurrentHedging<
     const {
         waitTime = TimeSpan.fromSeconds(2),
         fallbacks,
-        onHedgeAttempt = () => {},
-        onHedgeError = () => {},
+        onHedgingAttempt = () => {},
+        onHedgingError = () => {},
     } = settings;
 
     const resolvedFallbacks = resolveOneOrMore(fallbacks).map<
@@ -93,7 +93,7 @@ export function concurrentHedging<
         if (isInvokable(fallback)) {
             return {
                 name: `fallback-${String(index + 1)}`,
-                func: fallback,
+                invokable: fallback,
             };
         }
         return fallback;
@@ -102,7 +102,7 @@ export function concurrentHedging<
     return async (args, next, { context, abort, signal }) => {
         type Step1 = {
             name: string;
-            func: Fallback<TParameters, TReturn>;
+            invokable: Fallback<TParameters, TReturn>;
         };
         type Step2 = {
             name: string;
@@ -119,12 +119,12 @@ export function concurrentHedging<
                   error: unknown;
                   name: string;
               };
-        function step1({ name, func }: Step1): Step2 {
+        function step1({ name, invokable }: Step1): Step2 {
             return {
                 name,
                 promise: timeoutAndFail(
                     abortAndFail(
-                        (async () => callInvokable(func, ...args))(),
+                        (async () => callInvokable(invokable, ...args))(),
                         signal,
                     ),
                     waitTime,
@@ -156,7 +156,7 @@ export function concurrentHedging<
         const funcs = [
             {
                 name: "__initial",
-                func: next,
+                invokable: next,
             },
             ...resolvedFallbacks,
         ];
@@ -165,7 +165,7 @@ export function concurrentHedging<
         const errors: unknown[] = [];
         const promiseResults = await Promise.all(promises);
         for (const promiseResult of promiseResults) {
-            callInvokable(onHedgeAttempt, {
+            callInvokable(onHedgingAttempt, {
                 args,
                 context,
                 name: promiseResult.name,
@@ -175,7 +175,7 @@ export function concurrentHedging<
             if (promiseResult.type === "success") {
                 return promiseResult.value;
             } else if (!(promiseResult.error instanceof ResolvedError)) {
-                callInvokable(onHedgeError, {
+                callInvokable(onHedgingError, {
                     args,
                     context,
                     error: promiseResult.error,

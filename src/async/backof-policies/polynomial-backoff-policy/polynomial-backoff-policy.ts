@@ -2,8 +2,16 @@
  * @module Async
  */
 
-import { TimeSpan } from "@/utilities/_module-exports.js";
-import type { BackoffPolicy } from "@/async/backof-policies/_shared.js";
+import {
+    callInvokable,
+    isInvokable,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
+import type {
+    BackoffPolicy,
+    DynamicBackoffPolicy,
+} from "@/async/backof-policies/_shared.js";
+import { withJitter } from "@/async/backof-policies/_shared.js";
 
 /**
  *
@@ -23,6 +31,15 @@ export type PolynomialBackoffPolicySettings = {
      * @default {2}
      */
     degree?: number;
+    /**
+     * @default {0.5}
+     */
+    jitter?: number;
+    /**
+     * @internal
+     * Should only be used for testing
+     */
+    _mathRandom?: () => number;
 };
 
 /**
@@ -32,13 +49,16 @@ export type PolynomialBackoffPolicySettings = {
  * @group BackoffPolicies
  */
 export function polynomialBackoffPolicy(
-    settings:
-        | PolynomialBackoffPolicySettings
-        | ((error: unknown) => PolynomialBackoffPolicySettings) = {},
+    settings: DynamicBackoffPolicy<PolynomialBackoffPolicySettings> = {},
 ): BackoffPolicy {
     return (attempt, error) => {
-        if (typeof settings === "function") {
-            settings = settings(error);
+        if (isInvokable(settings)) {
+            const dynamicSettings = callInvokable(settings, error);
+            if (dynamicSettings === undefined) {
+                settings = {};
+            } else {
+                settings = dynamicSettings;
+            }
         }
         let { maxDelay = 6000, minDelay = 1_000 } = settings;
         if (maxDelay instanceof TimeSpan) {
@@ -49,13 +69,15 @@ export function polynomialBackoffPolicy(
         }
         const {
             degree = 2,
-            // jitter = 0.5,
-            // _mathRandom = Math.random,
+            jitter = 0.5,
+            _mathRandom = Math.random,
         } = settings;
         const polynomial = Math.min(
             maxDelay,
             minDelay * Math.pow(attempt, degree),
         );
-        return TimeSpan.fromMilliseconds(polynomial);
+        return TimeSpan.fromMilliseconds(
+            withJitter(jitter, polynomial, _mathRandom),
+        );
     };
 }

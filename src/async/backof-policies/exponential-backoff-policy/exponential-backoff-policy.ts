@@ -2,8 +2,16 @@
  * @module Async
  */
 
-import { TimeSpan } from "@/utilities/_module-exports.js";
-import type { BackoffPolicy } from "@/async/backof-policies/_shared.js";
+import {
+    callInvokable,
+    isInvokable,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
+import type {
+    BackoffPolicy,
+    DynamicBackoffPolicy,
+} from "@/async/backof-policies/_shared.js";
+import { withJitter } from "@/async/backof-policies/_shared.js";
 
 /**
  *
@@ -23,6 +31,15 @@ export type ExponentialBackoffPolicySettings = {
      * @default {2}
      */
     multiplier?: number;
+    /**
+     * @default {0.5}
+     */
+    jitter?: number;
+    /**
+     * @internal
+     * Should only be used for testing
+     */
+    _mathRandom?: () => number;
 };
 
 /**
@@ -32,13 +49,16 @@ export type ExponentialBackoffPolicySettings = {
  * @group BackoffPolicies
  */
 export function exponentialBackoffPolicy(
-    settings:
-        | ExponentialBackoffPolicySettings
-        | ((error: unknown) => ExponentialBackoffPolicySettings) = {},
+    settings: DynamicBackoffPolicy<ExponentialBackoffPolicySettings> = {},
 ): BackoffPolicy {
     return (attempt, error) => {
-        if (typeof settings === "function") {
-            settings = settings(error);
+        if (isInvokable(settings)) {
+            const dynamicSettings = callInvokable(settings, error);
+            if (dynamicSettings === undefined) {
+                settings = {};
+            } else {
+                settings = dynamicSettings;
+            }
         }
         let { maxDelay = 60_000, minDelay = 1_000 } = settings;
         if (maxDelay instanceof TimeSpan) {
@@ -49,13 +69,16 @@ export function exponentialBackoffPolicy(
         }
         const {
             multiplier = 2,
-            // jitter = 0.5,
-            // _mathRandom = Math.random,
+            jitter = 0.5,
+            _mathRandom = Math.random,
         } = settings;
         const exponential = Math.min(
             maxDelay,
             minDelay * Math.pow(multiplier, attempt),
         );
-        return TimeSpan.fromMilliseconds(exponential);
+
+        return TimeSpan.fromMilliseconds(
+            withJitter(jitter, exponential, _mathRandom),
+        );
     };
 }

@@ -53,7 +53,7 @@ describe("function: retry", () => {
             retry({
                 maxAttempts: 4,
                 backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                retryPolicy: (error) => error instanceof ErrorA,
+                errorPolicy: (error) => error instanceof ErrorA,
             }),
         ).invoke();
 
@@ -69,7 +69,7 @@ describe("function: retry", () => {
             retry({
                 maxAttempts: 4,
                 backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                retryPolicy: (error) => error instanceof ErrorA,
+                errorPolicy: (error) => error instanceof ErrorA,
             }),
         ).invoke();
 
