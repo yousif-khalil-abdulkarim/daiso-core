@@ -1,5 +1,18 @@
 # @daiso-tech/core
 
+## 0.36.0
+
+### Minor Changes
+
+-   47f061a: Renamed the `KeyPrefixer` class to `Namespace`.
+    Renamed the `CacheSettingsBase.keyPrefixer` setting to `CacheSettingsBase.namespace`.
+    Renamed the `EvebtBusSettingsBase.keyPrefixer` setting to `EvebtBusSettingsBase.namespace`.
+    Renamed the `LockProviderSettingsBase.keyPrefixer` setting to `LockProviderSettingsBase.namespace`.
+
+### Patch Changes
+
+-   cc0d9e9: Fixed a serialization issue in the Lock class where using multiple adapters caused improper serialization and deserialization. The Lock now correctly serializes and deserializes across all supported adapters.
+
 ## 0.35.4
 
 ### Patch Changes
