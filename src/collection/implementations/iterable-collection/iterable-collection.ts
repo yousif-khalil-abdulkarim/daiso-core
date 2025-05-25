@@ -78,7 +78,7 @@ export class IterableCollection<TInput = unknown>
      * The `concat` static method is a convenient utility for easily concatenating multiple {@link Iterable | `Iterable`}.
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * class MyIterable implements Iterable<number> {
      *   *[Symbol.iterator](): Iterator<number> {
@@ -108,7 +108,7 @@ export class IterableCollection<TInput = unknown>
      * The `difference` static method is used to compute the difference between two {@link Iterable | `Iterable`} instances. By default, the equality check is performed on each item.
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = IterableCollection.difference(
      *   [1, 2, 2, 3, 4, 5],
@@ -119,7 +119,7 @@ export class IterableCollection<TInput = unknown>
      * ```
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = IterableCollection.difference(
      *   [
@@ -158,7 +158,7 @@ export class IterableCollection<TInput = unknown>
      * The returned collection has size of the shortest collection.
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";;
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = IterableCollection.zip(["Chair", "Desk"], [100, 200]);
      * collection.toArray();
@@ -166,7 +166,7 @@ export class IterableCollection<TInput = unknown>
      * ```
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";;
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = IterableCollection.zip(["Chair", "Desk", "Couch"], [100, 200]);
      * collection.toArray();
@@ -174,7 +174,7 @@ export class IterableCollection<TInput = unknown>
      * ```
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";;
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = IterableCollection.zip(["Chair", "Desk"], [100, 200, 300]);
      * collection.toArray();
@@ -206,7 +206,7 @@ export class IterableCollection<TInput = unknown>
      * Works with `Array`.
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = new IterableCollection([1, 2, 3, 4]);
      * ```
@@ -214,7 +214,7 @@ export class IterableCollection<TInput = unknown>
      * Works with `String`.
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = new IterableCollection("ABCDE");
      * ```
@@ -222,7 +222,7 @@ export class IterableCollection<TInput = unknown>
      * Works with `Set`.
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = new IterableCollection(new Set([1, 2, 2 4]));
      * ```
@@ -230,7 +230,7 @@ export class IterableCollection<TInput = unknown>
      * Works with `Map`.
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = new IterableCollection(new Map([["a", 1], ["b", 2]]));
      * ```
@@ -238,7 +238,7 @@ export class IterableCollection<TInput = unknown>
      * Works with any `Iterable`.
      * @example
      * ```ts
-     * import { IterableCollection } from "@daiso-tech/core";
+     * import { IterableCollection } from "@daiso-tech/core/collection";
      *
      * class MyIterable implements Iterable<number> {
      *   *[Symbol.iterator](): Iterator<number> {

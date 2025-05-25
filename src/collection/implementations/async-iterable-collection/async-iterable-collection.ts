@@ -95,7 +95,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * The `concat` static method is a convenient utility for easily concatenating multiple {@link Iterable | `Iterable`} or {@link AsyncIterable | `AsyncIterable`}.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * class MyAsyncIterable implements AsyncIterable<number> {
      *   async *[Symbol.iterator](): Iterator<number> {
@@ -134,7 +134,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * The `difference` static method is used to compute the difference between two {@link Iterable | `Iterable`} instances. By default, the equality check is performed on each item.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = AsyncIterableCollection.difference(
      *   [1, 2, 2, 3, 4, 5],
@@ -145,7 +145,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = AsyncIterableCollection.difference(
      *   [
@@ -184,7 +184,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * The returned collection has size of the shortest collection.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = AsyncIterableCollection.zip(["Chair", "Desk"], [100, 200]);
      * await collection.toArray();
@@ -192,7 +192,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = AsyncIterableCollection.zip(["Chair", "Desk", "Couch"], [100, 200]);
      * await collection.toArray();
@@ -200,7 +200,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * ```
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";;
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = AsyncIterableCollection.zip(["Chair", "Desk"], [100, 200, 300]);
      * await collection.toArray();
@@ -233,7 +233,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * Works with `Array`.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = new AsyncIterableCollection([1, 2, 3, 4]);
      * ```
@@ -241,7 +241,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * Works with `String`.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = new AsyncIterableCollection("ABCDE");
      * ```
@@ -249,7 +249,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * Works with `Set`.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = new AsyncIterableCollection(new Set([1, 2, 2 4]));
      * ```
@@ -257,7 +257,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * Works with `Map`.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * const collection = new AsyncIterableCollection(new Map([["a", 1], ["b", 2]]));
      * ```
@@ -265,7 +265,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * Works with any `Iterable`.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * class MyIterable implements Iterable<number> {
      *   *[Symbol.iterator](): Iterator<number> {
@@ -280,7 +280,7 @@ export class AsyncIterableCollection<TInput = unknown>
      * Works with any `AsyncIterable`.
      * @example
      * ```ts
-     * import { AsyncIterableCollection } from "@daiso-tech/core";
+     * import { AsyncIterableCollection } from "@daiso-tech/core/collection";
      *
      * class MyIterable implements AsyncIterable<number> {
      *   async *[Symbol.iterator](): Iterator<number> {
