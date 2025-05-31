@@ -33,7 +33,7 @@ const lockProvider = new LockProvider({
 ```
 
 :::info
-Here is a complete list of configuration settings for the [LockProvider](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.LockProviderSettingsBase.html) class.
+Here is a complete list of configuration settings for the [`LockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.LockProviderSettingsBase.html) class.
 :::
 
 ## Lock basics
@@ -71,6 +71,10 @@ try {
 
 :::danger
 You need always to wrap the critical section with `try-finally` so the lock get released when error occurs.
+:::
+
+:::danger
+Note [`lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILock.html) object uses [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) instead of a regular `Promise`. This means you must either await the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) or call its `defer` method to run it. Refer to the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) documentation for further information.
 :::
 
 ### Locks with custom TTL
@@ -342,7 +346,7 @@ Note the method throws an error when the lock cannot be acquired.
 :::
 
 :::info
-You can provide [`LazyPromise`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Async.LazyPromise.html), synchronous and asynchronous [`Invokable`](../7_Utilities/3_invokable.md) as default values for `run`, `runOrFail`, `runBlocking` and `runBlockingOrFail` methods.
+You can provide [`LazyPromise`](/docs/8_Async/1_lazy_promise.md), synchronous and asynchronous [`Invokable`](../7_Utilities/3_invokable.md) as default values for `run`, `runOrFail`, `runBlocking` and `runBlockingOrFail` methods.
 :::
 
 ### Iterable as key name and owner name
@@ -379,7 +383,7 @@ const serde = new Serde(new SuperJsonSerdeAdapter());
 const redisClient = new Redis("YOUR_REDIS_CONNECTION");
 
 const lockProvider = new LockProvider({
-    // You can pass an array of Serde classes
+    // You can laso pass in an array of Serde class instances
     serde,
     namespace: new Namespace("lock"),
     adapter: new RedisLockAdapter(redisClient),
