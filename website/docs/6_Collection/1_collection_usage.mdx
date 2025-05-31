@@ -1,68 +1,72 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 # Collection usage
 
-## Creating a Collection
+The [`collection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Collection.html) module provides a fluent, convenient wrapper for working with [`Arrays`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array), [`Iterables`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) and [`AsyncIterables`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols).
 
-You can create a collection from an any object thats is an `Iterable`.
+## Creating a collection
+
+You can create a collection from an any object thats implements the [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) contract.
+
+Create a collection from an [`Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array):
 
 ```ts
-import { ListCollection } from "@daiso-tech/core/collection";
-const fromArray:ListCollection<number> = new ListCollection([1, 2, 3, 4])
+import { ICollection, ListCollection } from "@daiso-tech/core/collection";
 
-//create a collection from an array
+const fromArray = new ListCollection([1, 2, 3, 4]);
+
+// Logs [1, 2, 3, 4]
 console.log(fromArray.toArray());
-// [1, 2, 3, 4]
-
-
-//create a collection from an string
-const fromString:ListCollection<string> = new ListCollection("abc")
-console.log(fromString.toArray());
-// ["a", "b", "c"]
-
-//create a collection from a Set
-const fromSet:ListCollection<number> = new ListCollection(new Set([1, 2, 2 4]));
-console.log(fromSet.toArray());
-// [1, 2, 4]
-
-
-//create a collection from a Map
-const fromMap:ListCollection<[string,number]> = new ListCollection(new Map([["a", 1], ["b", 2]]));
-console.log(fromMap.toArray());
-// [["a", 1], ["b", 2]]
-
-
-class MyIterable implements Iterable<number> {
-        *[Symbol.iterator](): Iterator<number> {
-          yield 1;
-          yield 2;
-          yield 3;
-        }
-      }
-
-const fromIterable:ListCollection<number> = new ListCollection(new MyIterable());
-console.log(fromIterable.toArray());
-// [1, 2, 3]
 ```
 
-For convience Collection API includes some static methods that can create Collection from common operations.
+Create a collection from an `string`:
 
 ```ts
-import { ListCollection } from "@daiso-tech/core/collection";
-
-const concated = ListCollection.concat([1, 2, 3], [4, 5, 6]);
-console.log(concated.toArray());
-// [1, 2, 3, 4, 5, 6]
-
-const collection = ListCollection.zip(["Chair", "Desk"], [100, 200]);
-collection.toArray();
-// [["Chair", 100], ["Desk", 200]]
+const fromString = new ListCollection("abc");
+// Logs ["a", "b", "c"]
+console.log(fromString.toArray());
 ```
 
-You can find more static methods in the in the [available methods section](#available-methods)
-.
+Create a collection from a [`Set`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set):
+
+```ts
+const fromSet = new ListCollection(new Set([1, 2, 2 4]));
+// Logs [1, 2, 4]
+console.log(fromSet.toArray());
+```
+
+Create a collection from a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map):
+
+```ts
+const fromMap = new ListCollection(
+    new Map([
+        ["a", 1],
+        ["b", 2],
+    ]),
+);
+// Logs [["a", 1], ["b", 2]]
+console.log(fromMap.toArray());
+```
+
+Create collection from your own object that implements [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) contract:
+
+```ts
+class MyIterable implements Iterable<number> {
+    *[Symbol.iterator](): Iterator<number> {
+        yield 1;
+        yield 2;
+        yield 3;
+    }
+}
+
+const fromIterable: ListCollection<number> = new ListCollection(
+    new MyIterable(),
+);
+// Logs [1, 2, 3]
+console.log(fromIterable.toArray());
+```
 
 ## Immutability
 
@@ -74,17 +78,17 @@ import { ListCollection } from "@daiso-tech/core/collection";
 const original = new ListCollection([1, 2, 3]);
 const modified = original.map((item) => item * 2);
 
+// Logs [1, 2, 3]
 console.log(original.toArray());
-// [1, 2, 3]
 
+// Logs [2, 4, 6]
 console.log(modified.toArray());
-// [2, 4, 6]
 ```
 
-## Acessing elements from a Collection
+## Acessing elements from a collection
 
-To access elements from a Collection you can use the `get` method.
-The `get` method will return the item at the specified index.
+To access elements from a collection you can use the [`get`](#get) method.
+The [`get`](#get) method will return the item at the specified index.
 If the index is out of bounds, it will return null.
 
 ```ts
@@ -94,37 +98,37 @@ const collection = new ListCollection([1, 2, 3]);
 
 const value = collection.get(1);
 
+// Logs 2
 console.log(value);
-// 2
 ```
 
 If you want to get the item at the specified index but return a default value if the index is out of bounds,
-you can use the `getOr` method.
+you can use the [`getOr`](#getor) method.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 const collection = new ListCollection([1, 2, 3]);
 const value = collection.getOr(1, -1);
+// Logs 2
 console.log(value);
-// 2
 
 const value2 = collection.getOr(5, -1);
+// Logs -1
 console.log(value2);
-// -1
 ```
 
 If you want to get the item at the specified index and throw an error if the index is out of bounds,
-you can use the `getOrFail` method.
+you can use the [`getOrFail`](#getorfail) method.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 const collection = new ListCollection([1, 2, 3]);
 const value = collection.getOrFail(1);
+// Logs 2
 console.log(value);
-// 2
 
-const value2 = collection.getOrFail(5);
 // throws error
+const value2 = collection.getOrFail(5);
 ```
 
 :::info
@@ -133,77 +137,141 @@ All methods that ends with `Or` will return the item if it exists or a default v
 All methods that ends with `OrFail` it will return the item if it exists or throw an error.
 :::
 
-## Iterating over a Collection yousef bestäm behåll eller kasta
-Since it is iterable you can also use the `for..of` loop to iterate over a collection.
+## Iterating over a collection
+
+Since it is [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) you can also use the `for of` loop to iterate over a collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
 const collection = new ListCollection([1, 2, 3]);
 
+// Logs 1, 2, 3
 for (const item of collection) {
     console.log(item);
 }
-
-
-
-// logs 1, 2, 3
 ```
 
-Prata om filter,map,foreach,reduce etc?
+## Modifying and filtering a collection
 
-:::info
-All iteration methods takes a function with 3 arguments such`(item, index, collection)`.
-
-```ts 
-import { ListCollection } from "@daiso-tech/core/collection";
-
-const collection = new ListCollection([2,3,2,3,4,3]);
-
-const equalLastAndOddIndexCollection = collection
-    .filter((item,index,collection) => index % 2 === 1 && item === collection.lastOrFail());
-
-console.log(equalLastAndOddIndexCollection.toArray());
-// [3,3,3]
-```
-:::
-
-## ListCollection,IterableCollection,AyncIterableCollection yousef fortsätt
-
-There are three types of collections that in the Daiso Collection API. All of them implement the `ICollection`.
-
--   `ListCollection` is a collection that implements the `Iterable` interface. ListCollection is backed up by an array.
-    The benefits of using ListCollection is that it is faster than IterableCollection since it uses an array to store the items.
-
--   `IterableCollection` is a collection that implements the `Iterable` interface.
-    IterableCollection is backed up by an iterable object. The befinits of using IterableCollection is that it uses less memory than ListCollection
-    but it is slower than ListCollection since it has to iterate over the iterable object every time you call a method.
-
--   `AsyncIterableCollection` is a collection that implements the `AsyncIterable` interface.
-
-:::info
-yousef hitta på.
-
-When should I use `ListCollection`,`IterableCollection`,`AyncIterableCollection`?
-Yousef fixa
-:::
-
-Creating a IterableCollection or AsyncIterableCollection is similar to creating a ListCollection.
-
-Yousef fixa
-
-# Serlization and Deserialization
-
-The collection can be serialized using the `serialize` method and deserialize using `deserialize`.
+You can modify the collection by using for example the [`map`](#map) method:
 
 ```ts
-example yousef
+import { ListCollection } from "@daiso-tech/core/collection";
 
+const collection = new ListCollection([1, 2, 3]).map((value) => value * value);
+
+// Logs [1, 4, 9]
+console.log(collection.toArray());
+```
+
+You can filter the collection by using for example the [`filter`](#filter) method:
+
+```ts
+import { ListCollection } from "@daiso-tech/core/collection";
+
+const collection = new ListCollection([1, 2, 3, 4, 5, 6]).filter(
+    (value) => value % 2 === 0,
+);
+
+// Logs [2, 4, 5]
+console.log(collection.toArray());
+```
+
+:::info
+All methods that iterate, modify, or filter the collection expect a callback function with three arguments in the following order
+
+1.  `item`: The current element being processed.
+
+2.  `index`: The index of the current element.
+
+3.  `collection`: The original collection being traversed.
+
+```ts
+import { ListCollection } from "@daiso-tech/core/collection";
+
+const collection = new ListCollection([2, 3, 2, 3, 4, 3]).filter(
+    (item, index, collection) => {
+        // Logs each item
+        console.log("item:", item);
+
+        // Logs each index of the item
+        console.log("index:", index);
+
+        // Logs the original collection
+        console.log("collection:", collection.toArray());
+        return item === 2;
+    },
+);
+
+collection.toArray();
+```
+
+:::
+
+## Types of collections
+
+The library includes 3 types of collections:
+
+- [`ListCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.ListCollection.html) implements the [`ICollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Collection.ICollection.html) contract and uses [`Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) internally.
+
+- [`IterableCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.IterableCollection.html) implements the [`ICollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Collection.ICollection.html) contract and uses [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) internally.
+  It only filters and transforms items when you loop through or access its items.
+
+- [`AsyncIterableCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.AsyncIterableCollection.html) implements the [`IAsyncCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Collection.IAsyncCollection.html) contract and uses [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols) internally.
+  It only filters and transforms items when you loop through or access its items.
+
+    :::danger
+    Note [`AsyncIterableCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.AsyncIterableCollection.html) uses [`LazyPromise`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Async.LazyPromise.html) instead of a regular `Promise`.
+    This means you must either `await` the [`LazyPromise`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Async.LazyPromise.html) or call its `defer` method to run it. Refer to the [`LazyPromise documentation`](/docs/8_Async/1_lazy_promise.md) for further information.
+    :::
+
+## Serialization and deserialization
+
+The [`ListCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.ListCollection.html) and [`IterableCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.IterableCollection.html) classes supports serialization and deserialization, allowing you to easily convert instances to and from serialized formats. However, registration is required first:
+
+```ts
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { TimeSpan } from "@daiso-tech/core/utilities";
+import {
+    ListCollection,
+    IteralbeCollection,
+} from "@daiso-tech/core/collection";
+
+const serde = new Serde(new SuperJsonSerdeAdapter());
+
+serde.registerClass(ListCollection);
+serde.registerClass(IteralbeCollection);
+
+const listCollection = new ListCollection([1, 2, 3, 4, 5]);
+const serializedListCollection = serde.serialize(timeSpan);
+const deserializedListCollection = serde.deserialize(serializedTimeSpan);
+
+// Logs false
+console.log(serializedListCollection === deserializedListCollection);
+// Logs [1, 2, 3, 4, 5] [1, 2, 3, 4, 5]
+console.log(
+    listCollection.toArray(),
+    deserializedListCollection.toArray(),
+);
+
+const iterableCollection = new IteralbeCollection([1, 2, 3, 4, 5]);
+const serializedIteralbeCollection = serde.serialize(timeSpan);
+const deserializedIteralbeCollection = serde.deserialize(serializedTimeSpan);
+
+// Logs false
+console.log(serializedIteralbeCollection === deserializedIteralbeCollection);
+// Logs [1, 2, 3, 4, 5] [1, 2, 3, 4, 5]
+console.log(
+    iterableCollection.toArray(),
+    deserializedIteralbeCollection.toArray(),
+);
 ```
 
 ## Available Methods
 
-For the remaining of the documentation, we'll discuss each method available on the `ICollection` interface.
+For the remaining of the documentation, we'll discuss each method available on the [`ICollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Collection.ICollection.html) contract.
 
 ### Instance methods
 
@@ -374,25 +442,25 @@ For the remaining of the documentation, we'll discuss each method available on t
         <ol><a href="#concat">concat</a></ol>
         <ol><a href="#difference">difference</a></ol>
         <ol><a href="#class_zip">zip</a></ol>
-        <ol><a href="#deserialize">deserialize</a></ol>
     </li>
 
 </div>
 </div>
 
-## after
+## Instance methods
+
+### after
 
 The `after` method returns the item that comes after the first item that matches `predicateFn`.
 If the collection is empty or the `predicateFn` does not match or matches the last item then `null` is returned.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
-const a = new ListCollection([1, 2, 3, 4])
-    .after((item) => item === 2);
+new ListCollection([1, 2, 3, 4]).after((item) => item === 2);
 // 3
 ```
 
-## afterOr
+### afterOr
 
 The `afterOr` method returns the item that comes after the first item that matches `predicateFn`.
 If the collection is empty or the `predicateFn` does not match or matches the last item then `defaultValue` is returned.
@@ -400,12 +468,11 @@ If the collection is empty or the `predicateFn` does not match or matches the la
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .afterOr(-1, (item) => item === 4);
+new ListCollection([1, 2, 3, 4]).afterOr(-1, (item) => item === 4);
 // -1
 ```
 
-## afterOrFail
+### afterOrFail
 
 The `afterOrFail` method returns the item that comes after the first item that matches `predicateFn`.
 If the collection is empty or the `predicateFn` does not match or matches the last item then an error is thrown.
@@ -413,25 +480,22 @@ If the collection is empty or the `predicateFn` does not match or matches the la
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .afterOrFail((item) => item === 4);
+new ListCollection([1, 2, 3, 4]).afterOrFail((item) => item === 4);
 // throws error
 ```
 
-## append
+### append
 
-The `append` method adds `iterable` to the end of the collection.
+The `append` method adds [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) to the end of the collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5])
-    .append([-1, -2])
-    .toArray();
+new ListCollection([1, 2, 3, 4, 5]).append([-1, -2]).toArray();
 // [1, 2, 3, 4, 5, -1, -2]
 ```
 
-## average
+### average
 
 The `average` method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
 If the collection is empty an error will also be thrown.
@@ -439,12 +503,11 @@ If the collection is empty an error will also be thrown.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3])
-    .average();
+new ListCollection([1, 2, 3]).average();
 // 2
 ```
 
-## before
+### before
 
 The `before` method returns the item that comes before the first item that matches `predicateFn`.
 If the `predicateFn` does not match or matches the first item then null is returned.
@@ -452,12 +515,11 @@ If the `predicateFn` does not match or matches the first item then null is retur
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .before((item) => item === 2);
+new ListCollection([1, 2, 3, 4]).before((item) => item === 2);
 // 1
 ```
 
-## beforeOr
+### beforeOr
 
 The `beforeOr` method returns the item that comes before the first item that matches `predicateFn`.
 If the collection is empty or the `predicateFn` does not match or matches the first item then `defaultValue` is returned.
@@ -465,12 +527,11 @@ If the collection is empty or the `predicateFn` does not match or matches the fi
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .beforeOr(-1, (item) => item === 2);
+new ListCollection([1, 2, 3, 4]).beforeOr(-1, (item) => item === 2);
 // 1
 ```
 
-## beforeOrFail
+### beforeOrFail
 
 The `beforeOrFail` method returns the item that comes before the first item that matches `predicateFn`.
 If the collection is empty or the `predicateFn` does not match or matches the first item then an error is thrown.
@@ -478,25 +539,24 @@ If the collection is empty or the `predicateFn` does not match or matches the fi
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .beforeOrFail((item) => item === 1);
+new ListCollection([1, 2, 3, 4]).beforeOrFail((item) => item === 1);
 // throws error
 ```
 
-## change
+### change
 
 The `change` method changes only the items that passes `predicateFn` using `mapFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5])
+new ListCollection([1, 2, 3, 4, 5])
 .change(item => item % 2 === 0, item => item \* 2)
 .toArray();
 // [1, 4, 3, 8, 5]
 ```
 
-## chunk
+### chunk
 
 The `chunk` method breaks the collection into multiple, smaller collections of size `chunkSize`.
 If `chunkSize` is not divisible with total number of items then the last chunk will contain the remaining items.
@@ -504,14 +564,14 @@ If `chunkSize` is not divisible with total number of items then the last chunk w
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5, 6, 7])
+new ListCollection([1, 2, 3, 4, 5, 6, 7])
     .chunk(4)
     .map((chunk) => chunk.toArray())
     .toArray();
 // [[1, 2, 3, 4], [5, 6, 7]]
 ```
 
-## chunkWhile
+### chunkWhile
 
 The `chunkWhile` method breaks the collection into multiple, smaller collections based on the evaluation of `predicateFn`.
 The chunk variable passed to the `predicateFn` may be used to inspect the previous item.
@@ -519,21 +579,21 @@ The chunk variable passed to the `predicateFn` may be used to inspect the previo
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection("AABBCCCD")
-.chunkWhile((v, \_, chunk) => v === chunk.last())
-.map(chunk => chunk.toArray())
-.toArray();
+new ListCollection("AABBCCCD")
+    .chunkWhile((item, _index, chunk) => item === chunk.last())
+    .map((chunk) => chunk.toArray())
+    .toArray();
 // [["A", "A"], ["B", "B"], ["C", "C", "C"], ["D"]]
 ```
 
-## collapse
+### collapse
 
 The `collapse` method collapses a collection of iterables into a single, flat collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([
+new ListCollection([
     [1, 2],
     [3, 4],
 ])
@@ -542,32 +602,18 @@ const a = new ListCollection([
 // [1, 2, 3, 4]
 ```
 
-## concat
-
-The `concat` method concatenates multiple `iterable`'s and returns a new collection.
-
-```ts
-import { ListCollection } from "@daiso-tech/core/collection";
-const a = ListCollection.concat([1, 2, 3], [4, 5, 6])
-    .toArray();
-// [1, 2, 3, 4, 5, 6]
-```
-
-## count
+### count
 
 The `count` method returns the total number of items in the collection that passes `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5, 6])
-    .count(
-    (value) => value % 2 === 0,
-);
+new ListCollection([1, 2, 3, 4, 5, 6]).count((value) => value % 2 === 0);
 // 3
 ```
 
-## countBy
+### countBy
 
 The `countBy` method counts the occurrences of values in the collection by `selectFn`.
 By default the equality check occurs on the item.
@@ -575,100 +621,59 @@ By default the equality check occurs on the item.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection(["a", "a", "a", "b", "b", "c"])
-    .countBy()
-    .toArray();
+new ListCollection(["a", "a", "a", "b", "b", "c"]).countBy().toArray();
 // [["a", 3], ["b", 2], ["c", 1]]
 ```
 
-## crossJoin
+### crossJoin
 
 The `crossJoin` method cross joins the collection's values among `iterables`, returning a Cartesian product with all possible permutations.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2])
-    .crossJoin(["a", "b"])
-    .toArray();
+new ListCollection([1, 2]).crossJoin(["a", "b"]).toArray();
 // [[1, "a"], [1, "b"], [2, "a"], [2, "b"]]
 ```
 
-## deserialize
+### entries
 
-Yousef förklarar vad deserializtion är och hur det funkar
-
-## difference
-
-The `difference` method will return the values in the original collection that are not present in `iterable`.
-By default the equality check occurs on the item.
+The `entries` returns an ListCollection of key, value pairs for every entry in the collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const collection = ListCollection.difference(
-    [
-        { name: "iPhone 6", brand: "Apple", type: "phone" },
-        { name: "iPhone 5", brand: "Apple", type: "phone" },
-        { name: "Apple Watch", brand: "Apple", type: "watch" },
-        { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-        { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
-    ],
-    [{ name: "Apple Watch", brand: "Apple", type: "watch" }],
-    // equality check occurs on product.type
-    (product) => product.type,
-);
-collection.toArray();
-// [
-//   { name: "iPhone 6", brand: "Apple", type: "phone" },
-//   { name: "iPhone 5", brand: "Apple", type: "phone" },
-//   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
-// ]
-
-// by default equality checks occurs on the item
-const a = new ListCollection([1, 2, 2, 3, 4, 5])
-    .difference([2, 4, 6, 8])
-    .toArray();
-// [1, 3, 5]
+const collection = new ListCollection(["a", "b", "c", "d"]).entries().toArray();
+// [[0, "a"], [1, "b"], [2, "c"], [3, "d"]]
 ```
 
-The `difference` method is also available as a static method.
-
-```ts
-const b = ListCollection.difference([1, 2, 2, 3, 4, 5], [2, 4, 6, 8])
-    .toArray();
-// [1, 3, 5]
-```
-
-## entries
-
-The `entries` returns an ListCollection of key, value pairs for every entry in the collection.
-
-## every
+### every
 
 The `every` method determines whether all items in the collection matches `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([0, 1, 2, 3, 4, 5])
-    .every((item) => item < 6);
+const isAllNumberLessThan6 = new ListCollection([0, 1, 2, 3, 4, 5]).every(
+    (item) => item < 6,
+);
 // true
 ```
 
-## filter
+### filter
 
 The `filter` method filters the collection using `predicateFn`, keeping only those items that pass `predicateFn`.
 
-```ts 
+```ts
 import type { ListCollection } from "@daiso-tech/core/collection/collection";
 
-const a = new ListCollection([0, 1, 2, 3, 4, 5, 6])
-    .filter(item => 2 < item && item < 5)
+new ListCollection([0, 1, 2, 3, 4, 5, 6])
+    .filter((item) => 2 < item && item < 5)
     .toArray();
-    // [3, 4]
+// [3, 4]
 ```
-## first
+
+### first
 
 The `first` method returns the first item in the collection that passes `predicateFn`.
 By default it will get the first item. If the collection is empty or no items passes `predicateFn` than null i returned.
@@ -676,12 +681,11 @@ By default it will get the first item. If the collection is empty or no items pa
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .first();
-    // 1
+new ListCollection([1, 2, 3, 4]).first();
+// 1
 ```
 
-## firstOr
+### firstOr
 
 The `firstOr` method returns the first item in the collection that passes `predicateFn`
 By default it will get the first item. If the collection is empty or no items passes `predicateFn` than `defaultValue`.
@@ -689,12 +693,11 @@ By default it will get the first item. If the collection is empty or no items pa
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .firstOr(-1, (item) => item > 10);
-    // -1
+new ListCollection([1, 2, 3, 4]).firstOr(-1, (item) => item > 10);
+// -1
 ```
 
-## firstOrFail
+### firstOrFail
 
 The `firstOrFail` method returns the first item in the collection that passes `predicateFn`.
 By default it will get the first item. If the collection is empty or no items passes `predicateFn` than error is thrown.
@@ -702,12 +705,11 @@ By default it will get the first item. If the collection is empty or no items pa
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .firstOrFail((item) => item === 5);
-    // throws error
+new ListCollection([1, 2, 3, 4]).firstOrFail((item) => item === 5);
+// throws error
 ```
 
-## flatMap
+### flatMap
 
 The `flatMap` method returns a new array formed by applying `mapFn` to each item of the array, and then collapses the result by one level.
 It is identical to a `map` method followed by a `collapse` method.
@@ -715,52 +717,51 @@ It is identical to a `map` method followed by a `collapse` method.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([
+new ListCollection([
     ["a", "b"],
     ["c", "d"],
 ])
     .flatMap((item) => [item.length, ...item])
     .toArray();
-    // [2, "a", "b", 2, "c", "d"]
+// [2, "a", "b", 2, "c", "d"]
 ```
 
-## forEach
+### forEach
 
 The `forEach` method iterates through all items in the collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-new ListCollection([1, 2, 3])
-    .forEach((item) => console.log(item));
-    // Logs: 1, 2, 3
+new ListCollection([1, 2, 3]).forEach((item) => console.log(item));
+// Logs: 1, 2, 3
 ```
 
-## get
+### get
 
-The `get` method returns the item by index. If the item is not found null will returned.
+The `get` method returns the item by index. If the item is not found null will be returned.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 4, 2, 8, -2]);
-a.get(2); // 2
-a.get(5); // null
+const collection = new ListCollection([1, 4, 2, 8, -2]);
+collection.get(2); // 2
+collection.get(5); // null
 ```
 
-## getOrFail
+### getOrFail
 
 The `getOrFail` method returns the item by index. If the item is not found an error will be thrown.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 4, 2, 8, -2]);
-a.getOrFail(2); // 2
-a.getOrFail(5); // throws error
+const collection = new ListCollection([1, 4, 2, 8, -2]);
+collection.getOrFail(2); // 2
+collection.getOrFail(5); // throws error
 ```
 
-## groupBy
+### groupBy
 
 The `groupBy` method groups the collection's items by `selectFn`.
 By default the equality check occurs on the item.
@@ -768,90 +769,84 @@ By default the equality check occurs on the item.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection(["a", "a", "a", "b", "b", "c"])
+new ListCollection(["a", "a", "a", "b", "b", "c"])
     .groupBy()
     .map(([k, v]) => [k, v.toArray()])
     .toArray();
-    // [["a", ["a", "a", "a"]], ["b", ["b", "b"]], ["c", ["c"]]]
+// [["a", ["a", "a", "a"]], ["b", ["b", "b"]], ["c", ["c"]]]
 ```
 
-## insertAfter
+### insertAfter
 
-The `insertAfter` method adds `iterable` after the first item that matches `predicateFn`.
+The `insertAfter` method adds [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) after the first item that matches `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 2, 3, 4, 5])
+new ListCollection([1, 2, 2, 3, 4, 5])
     .insertAfter((item) => item === 2, [-1, 20])
     .toArray();
-    // [1, 2, -1, 20, 2, 3, 4, 5]
+// [1, 2, -1, 20, 2, 3, 4, 5]
 ```
 
-## insertBefore
+### insertBefore
 
-The `insertBefore` method adds `iterable` before the first item that matches `predicateFn`.
+The `insertBefore` method adds [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) before the first item that matches `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 2, 3, 4, 5])
+new ListCollection([1, 2, 2, 3, 4, 5])
     .insertAfter((item) => item === 2, [-1, 20])
     .toArray();
-    // [1, 2, -1, 20, 2, 3, 4, 5]
+// [1, 2, -1, 20, 2, 3, 4, 5]
 ```
 
-## isEmpty
+### isEmpty
 
 The `isEmpty` returns true if the collection is empty.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([])
-    .isEmpty();
-    // true
+new ListCollection([]).isEmpty();
+// true
 ```
 
-## isNotEmpty
+### isNotEmpty
 
 The `isEmpty` returns true if the collection is empty.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([])
-    .isEmpty();
-    // true
+new ListCollection([]).isEmpty();
+// true
 ```
 
-## join
+### join
 
 The `join` method joins the collection's items with `separator`. An error will be thrown when if a none string item is encounterd.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .map((item) => item.toString())
-    .join();
-    // "1,2,3,4"
+new ListCollection([1, 2, 3, 4]).map((item) => item.toString()).join();
+// "1,2,3,4"
 ```
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .map((item) => item.toString())
-    .join("_");
-    // "1_2_3_4"
+new ListCollection([1, 2, 3, 4]).map((item) => item.toString()).join("_");
+// "1_2_3_4"
 ```
 
-## keys
+### keys
 
 The `keys` method returns an ListCollection of keys in the collection.
 
-## last
+### last
 
 The `last` method returns the last item in the collection that passes `predicateFn`.
 By default it will get the last item. If the collection is empty or no items passes `predicateFn` than null i returned.
@@ -859,12 +854,11 @@ By default it will get the last item. If the collection is empty or no items pas
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .last();
-    // 4
+new ListCollection([1, 2, 3, 4]).last();
+// 4
 ```
 
-## lastOr
+### lastOr
 
 The `lastOr` method returns the last item in the collection that passes `predicateFn`.
 By default it will get the last item. If the collection is empty or no items passes `predicateFn` than `defaultValue`.
@@ -872,12 +866,11 @@ By default it will get the last item. If the collection is empty or no items pas
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .lastOr(-1, (item) => item > 10);
-    // -1
+new ListCollection([1, 2, 3, 4]).lastOr(-1, (item) => item > 10);
+// -1
 ```
 
-## lastOrFail
+### lastOrFail
 
 The `lastOrFail` method returns the last item in the collection that passes `predicateFn`.
 By default it will get the last item. If the collection is empty or no items passes `predicateFn` than error is thrown.
@@ -885,12 +878,11 @@ By default it will get the last item. If the collection is empty or no items pas
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .lastOrFail((item) => item === 5);
-    // throws error
+new ListCollection([1, 2, 3, 4]).lastOrFail((item) => item === 5);
+// throws error
 ```
 
-## map
+### map
 
 The `map` method iterates through the collection and passes each item to `mapFn`.
 The `mapFn` is free to modify the item and return it, thus forming a new collection of modified items.
@@ -898,13 +890,11 @@ The `mapFn` is free to modify the item and return it, thus forming a new collect
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5])
-    .map((item) => item * 2)
-    .toArray();
-    // [2, 4, 6, 8, 10]
+new ListCollection([1, 2, 3, 4, 5]).map((item) => item * 2).toArray();
+// [2, 4, 6, 8, 10]
 ```
 
-## max
+### max
 
 The `max` method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
 If the collection is empty an error will also be thrown.
@@ -912,12 +902,11 @@ If the collection is empty an error will also be thrown.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3])
-    .max();
-    // 3
+new ListCollection([1, 2, 3]).max();
+// 3
 ```
 
-## median
+### median
 
 The `median` method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
 If the collection is empty an error will also be thrown.
@@ -925,12 +914,11 @@ If the collection is empty an error will also be thrown.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3])
-    .median();
-    // 2
+new ListCollection([1, 2, 3]).median();
+// 2
 ```
 
-## min
+### min
 
 The `min` method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
 If the collection is empty an error will also be thrown.
@@ -938,25 +926,22 @@ If the collection is empty an error will also be thrown.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3])
-    .min();
-    // 1
+new ListCollection([1, 2, 3]).min();
+// 1
 ```
 
-## nth
+### nth
 
 The `nth` method creates a new collection consisting of every n-th item.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection(["a", "b", "c", "d", "e", "f"])
-    .nth(4)
-    .toArray();
-    // ["a", "e"]
+new ListCollection(["a", "b", "c", "d", "e", "f"]).nth(4).toArray();
+// ["a", "e"]
 ```
 
-## padEnd
+### padEnd
 
 The `padEnd` method pads this collection with `fillItems` until the resulting collection size reaches `maxLength`.
 The padding is applied from the end of this collection.
@@ -964,13 +949,11 @@ The padding is applied from the end of this collection.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection("abc")
-    .padEnd(10, "foo")
-    .join("");
-    // "abcfoofoof"
+new ListCollection("abc").padEnd(10, "foo").join("");
+// "abcfoofoof"
 ```
 
-## padStart
+### padStart
 
 The `padStart` method pads this collection with `fillItems` until the resulting collection size reaches `maxLength`.
 The padding is applied from the start of this collection.
@@ -978,40 +961,41 @@ The padding is applied from the start of this collection.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection("abc")
-    .padStart(10, "foo")
-    .join("");
-    // "foofoofabc"
+new ListCollection("abc").padStart(10, "foo").join("");
+// "foofoofabc"
 ```
 
-## page
+### page
 
 The `page` method returns a new collection containing the items that would be present on `page` with custom `pageSize`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5, 6, 7, 8, 9])
-    .page(2, 3)
+new ListCollection([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    .page(
+        2, // Page number
+        3, // Page size
+    )
     .toArray();
-    // [4, 5, 6]
+// [4, 5, 6]
 ```
+
+### partition
 
 The `partition` method is used to separate items that pass `predicateFn` from those that do not.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5, 6])
-    .partition((item) => item < 3)
+new ListCollection([1, 2, 3, 4, 5, 6])
+    .partition((nbr) => nbr % 2 === 0)
     .map((chunk) => chunk.toArray())
     .toArray();
-    // [[1, 2], [3, 4, 5, 6]]
+// [[2, 4, 6], [1, 3, 5]]
 ```
 
-## partition
-
-## percentage
+### percentage
 
 The `percentage` method may be used to quickly determine the percentage of items in the collection that pass `predicateFn`.
 If the collection is empty an error will also be thrown.
@@ -1019,40 +1003,35 @@ If the collection is empty an error will also be thrown.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 1, 2, 2, 2, 3])
-    .percentage((value) => value === 1,);
-    // 33.333
+new ListCollection([1, 1, 2, 2, 2, 3]).percentage((value) => value === 1);
+// 33.333
 ```
 
-## pipe
+### pipe
 
 The `pipe` method passes the orignal collection to `callback` and returns the result from `callback`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, "2", "a", 1, 3, {}])
-    .pipe((c) => c.map((item) => Number(item))
-    .reject(isNaN))
-    .pipe((c) => c.repeat(2)
-    .toArray());
-    // [1, 2, 1, 3]
+new ListCollection([1, "2", "a", 1, 3, {}])
+    .pipe((c) => c.map((item) => Number(item)).reject(isNaN))
+    .pipe((c) => c.repeat(2).toArray());
+// [1, 2, 1, 3]
 ```
 
-## prepend
+### prepend
 
-The `prepend` method adds `iterable` to the beginning of the collection.
+The `prepend` method adds [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) to the beginning of the collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5])
-    .prepend([-1, 20])
-    .toArray();
-    // [-1, 20, 1, 2, 3, 4, 5]
+new ListCollection([1, 2, 3, 4, 5]).prepend([-1, 20]).toArray();
+// [-1, 20, 1, 2, 3, 4, 5]
 ```
 
-## reduce
+### reduce
 
 The `reduce` method executes `reduceFn` function on each item of the array, passing in the return value from the calculation on the preceding item.
 The final result of running the reducer across all items of the array is a single value.
@@ -1060,38 +1039,35 @@ The final result of running the reducer across all items of the array is a singl
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3])
-    .reduce((sum, item) => sum + item);
-    // 6
+new ListCollection([1, 2, 3]).reduce((sum, item) => sum + item);
+// 6
 ```
 
-## reject
+### reject
 
 The `reject` method filters the collection using `predicateFn`, keeping only those items that not pass `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5, 6])
+new ListCollection([1, 2, 3, 4, 5, 6])
     .reject((item) => 2 < item && item < 5)
     .toArray();
-    // [1, 2, 5, 6]
+// [1, 2, 5, 6]
 ```
 
-## repeat
+### repeat
 
 The `repeat` method will repeat the original collection `amount` times.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3])
-    .repeat(3)
-    .toArray();
-    // [1, 2, 3, 1, 2, 3, 1, 2, 3]
+new ListCollection([1, 2, 3]).repeat(3).toArray();
+// [1, 2, 3, 1, 2, 3, 1, 2, 3]
 ```
 
-## reverse
+### reverse
 
 The `reverse` method will reverse the order of the collection.
 The reversing of the collection will be applied in chunks that are the size of `chunkSize`.
@@ -1099,118 +1075,99 @@ The reversing of the collection will be applied in chunks that are the size of `
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([-1, 2, 4, 3])
-    .reverse()
-    .toArray();
-    // [3, 4, 2, -1]
+new ListCollection([-1, 2, 4, 3]).reverse().toArray();
+// [3, 4, 2, -1]
 ```
 
-## searchFirst
+### searchFirst
 
 The `searchFirst` return the index of the first item that matches `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection(["a", "b", "b", "c"])
-    .searchFirst((item) => item === "b");
-    // 1
+new ListCollection(["a", "b", "b", "c"]).searchFirst((item) => item === "b");
+// 1
 ```
 
-## searchLast
+### searchLast
 
 The `searchLast` return the index of the last item that matches `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection(["a", "b", "b", "c"])
-    .searchLast((item) => item === "b");
-    // 2
+new ListCollection(["a", "b", "b", "c"]).searchLast((item) => item === "b");
+// 2
 ```
 
-## set
+### set
 
-The `set` method changes a item by i>index`using`value`.
+The `set` method updates the specified index with new value.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5])
-    .set(1, -1)
-    .toArray();
-    // [1, -1, 3, 4, 5]
+new ListCollection([1, 2, 3, 4, 5]).set(1, -1).toArray();
+// [1, -1, 3, 4, 5]
 ```
 
-## serialize
-
-Yousef förklara vad serialize är och hur det funkar.
-
-## shuffle
+### shuffle
 
 The `shuffle` method randomly shuffles the items in the collection. You can provide a custom Math.random function by passing in `mathRandom`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .shuffle()
-    .toArray();
-    // Random order, e.g., [3, 1, 4, 2]
+new ListCollection([1, 2, 3, 4]).shuffle().toArray();
+// Random order, e.g., [3, 1, 4, 2]
 ```
 
-## size
+### size
 
 The `size` returns the size of the collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3])
-    .size();
-    // 3
+new ListCollection([1, 2, 3]).size();
+// 3
 ```
 
-## skip
+### skip
 
 The `skip` method skips the first `offset` items.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    .skip(4)
-    .toArray();
-    // [5, 6, 7, 8, 9, 10]
+new ListCollection([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).skip(4).toArray();
+// [5, 6, 7, 8, 9, 10]
 ```
 
-## skipUntil
+### skipUntil
 
 The `skipUntil` method skips items until `predicateFn` returns true.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .skipUntil((item) => item >= 3)
-    .toArray();
-    // [3, 4]
+new ListCollection([1, 2, 3, 4]).skipUntil((item) => item >= 3).toArray();
+// [3, 4]
 ```
 
-## skipWhile
+### skipWhile
 
 The `skipWhile` method skips items until `predicateFn` returns false.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .skipWhile((item) => item <= 3)
-    .toArray();
-    // [4]
+new ListCollection([1, 2, 3, 4]).skipWhile((item) => item <= 3).toArray();
+// [4]
 ```
 
-## slice
+### slice
 
 The `slice` method creates porition of the original collection selected from `start` and `end`
 where `start` and `end` (end not included) represent the index of items in the collection.
@@ -1218,27 +1175,25 @@ where `start` and `end` (end not included) represent the index of items in the c
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection(["a", "b", "c", "d", "e", "f"])
-    .slice(3)
-    .toArray();
-    // ["d", "e", "f"]
+new ListCollection(["a", "b", "c", "d", "e", "f"]).slice(3).toArray();
+// ["d", "e", "f"]
 ```
 
-## sliding
+### sliding
 
 The `sliding` method returns a new collection of chunks representing a "sliding window" view of the items in the collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5])
+new ListCollection([1, 2, 3, 4, 5])
     .sliding(2)
     .map((chunk) => chunk.toArray())
     .toArray();
-    // [[1, 2], [2, 3], [3, 4], [4, 5]]
+// [[1, 2], [2, 3], [3, 4], [4, 5]]
 ```
 
-## sole
+### sole
 
 The `sole` method returns the first item in the collection that passes `predicateFn`, but only if `predicateFn` matches exactly one item.
 If no items matches or multiple items are found an error will be thrown.
@@ -1246,51 +1201,47 @@ If no items matches or multiple items are found an error will be thrown.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5])
-    .sole((item) => item === 4);
-    // 4
+new ListCollection([1, 2, 3, 4, 5]).sole((item) => item === 4);
+// 4
 ```
 
-## some
+### some
 
 The `some` method determines whether at least one item in the collection matches `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([0, 1, 2, 3, 4, 5])
-    .some((item) => item === 1);
-    // true
+new ListCollection([0, 1, 2, 3, 4, 5]).some((item) => item === 1);
+// true
 ```
 
-## sort
+### sort
 
 The `sort` method sorts the collection. You can provide a `comparator` function.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([-1, 2, 4, 3])
-    .sort()
-    .toArray();
-    // [-1, 2, 3, 4]
+new ListCollection([-1, 2, 4, 3]).sort().toArray();
+// [-1, 2, 3, 4]
 ```
 
-## split
+### split
 
 The `split` method breaks a collection evenly into `chunkAmount` of chunks.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5])
+new ListCollection([1, 2, 3, 4, 5])
     .split(3)
     .map((chunk) => chunk.toArray())
     .toArray();
-    // [[1, 2], [3, 4], [5]]
+// [[1, 2], [3, 4], [5]]
 ```
 
-## sum
+### sum
 
 The `sum` method returns the sum of all items in the collection. If the collection includes other than number items an error will be thrown.
 If the collection is empty an error will also be thrown.
@@ -1298,90 +1249,88 @@ If the collection is empty an error will also be thrown.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3])
-    .sum();
-    // 6
+new ListCollection([1, 2, 3]).sum();
+// 6
 ```
 
-## take
+### take
 
 The `take` method takes the first `limit` items.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([0, 1, 2, 3, 4, 5])
-    .take(3)
-    .toArray();
-    // [0, 1, 2]
+new ListCollection([0, 1, 2, 3, 4, 5]).take(3).toArray();
+// [0, 1, 2]
 ```
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([0, 1, 2, 3, 4, 5])
-    .take(-2)
-    .toArray();
-    // [0, 1, 2, 3]
+new ListCollection([0, 1, 2, 3, 4, 5]).take(-2).toArray();
+// [0, 1, 2, 3]
 ```
 
-## takeUntil
+### takeUntil
 
 The `takeUntil` method takes items until `predicateFn` returns true.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .takeUntil((item) => item >= 3)
-    .toArray();
-    // [1, 2]
+new ListCollection([1, 2, 3, 4]).takeUntil((item) => item >= 3).toArray();
+// [1, 2]
 ```
 
-## takeWhile
+### takeWhile
 
 The `takeWhile` method takes items until `predicateFn` returns false.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
-    .takeWhile((item) => item < 4)
-    .toArray();
-    // [1, 2, 3]
+new ListCollection([1, 2, 3, 4]).takeWhile((item) => item < 4).toArray();
+// [1, 2, 3]
 ```
 
-## tap
+### tap
 
 The `tap` method passes a copy of the original collection to `callback`, allowing you to do something with the items while not affecting the original collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4, 5, 6])
-    .tap((c) => c.filter((v) => v % 2 === 0)
-    .forEach(console.log))
+new ListCollection([1, 2, 3, 4, 5, 6])
+    .tap((c) => c.filter((v) => v % 2 === 0).forEach(console.log))
     .toArray();
-    // [1, 2, 3, 4, 5, 6] (logs 2, 4, 6)
+// [1, 2, 3, 4, 5, 6] (logs 2, 4, 6)
 ```
 
-## toArray
+### toArray
 
 The `toArray` method converts the collection to a new `Array`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3])
-    .toArray();
-    // [1, 2, 3]
+new ListCollection([1, 2, 3]).toArray();
+// [1, 2, 3]
 ```
 
-## toIterator
+### toIterator
 
-The `toIterator` method converts the collection to a new iterator.
+The `toIterator` method converts the collection to a [`Iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterator_protocol).
 
-## toMap
+```ts
+const iterator = new ListCollection([1, 2, 3, 4, 5]).toIterator();
+
+console.log("item 1:", iterator.next());
+console.log("item 2:", iterator.next());
+console.log("item 3:", iterator.next());
+console.log("done:", iterator.next());
+```
+
+### toMap
 
 The `toMap` method converts the collection to a new `Map`.
 An error will be thrown if item is not a tuple of size 2.
@@ -1389,15 +1338,14 @@ An error will be thrown if item is not a tuple of size 2.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([
+new ListCollection([
     [0, "a"],
     [1, "b"],
-])
-    .toMap();
+]).toMap();
 // Map { 0 => "a", 1 => "b" }
 ```
 
-## toRecord
+### toRecord
 
 The `toRecord` method converts the collection to a new `Record`.
 An error will be thrown if item is not a tuple of size 2 where the first element is a string or a number.
@@ -1405,15 +1353,14 @@ An error will be thrown if item is not a tuple of size 2 where the first element
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([
+new ListCollection([
     [0, "a"],
     [1, "b"],
-])
-    .toRecord();
+]).toRecord();
 // { 0: "a", 1: "b" }
 ```
 
-## unique
+### unique
 
 The `unique` method removes all duplicate values from the collection by `selectFn`.
 By default the equality check occurs on the item.
@@ -1421,105 +1368,175 @@ By default the equality check occurs on the item.
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 1, 2, 2, 3, 4, 2])
-    .unique()
-    .toArray();
+new ListCollection([1, 1, 2, 2, 3, 4, 2]).unique().toArray();
 // [1, 2, 3, 4]
 ```
 
-## values
+Equality check on a field in the item.
 
-The `values` method returns a copy of the collection.
+```ts
+import { ListCollection } from "@daiso-tech/core/collection";
 
-## when
+type Phone = { name: string; brand: string; type: string };
+
+new ListCollection([
+    { name: "iPhone 6", brand: "Apple", type: "phone" },
+    { name: "iPhone 5", brand: "Apple", type: "phone" },
+    { name: "Apple Watch", brand: "Apple", type: "watch" },
+    { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+    { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+])
+    .unique((item) => item.brand)
+    .toArray();
+// [
+//   { name: "iPhone 6", brand: "Apple", type: "phone" },
+//   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+// ]
+```
+
+### copy
+
+The `copy` method returns a copy of the collection.
+
+```ts
+import { ListCollection } from "@daiso-tech/core/collection";
+
+const collectionA = new ListCollection([1, 2, 3, 4]);
+const collectionB = collectionA.copy();
+
+// Logs false
+console.log(collectionA === collectionB);
+
+// Logs false
+console.log(collectionA.toArray() === collectionB.toArray());
+```
+
+### when
 
 The `when` method will execute `callback` when `condition` evaluates to true.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
+new ListCollection([1, 2, 3, 4])
     .when(true, (c) => c.append([-3]))
     .when(false, (c) => c.append([20]))
     .toArray();
 // [1, 2, 3, 4, -3]
 ```
 
-## whenEmpty
+### whenEmpty
 
 The `whenEmpty` method will execute `callback` when the collection is empty.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([])
-    .whenEmpty((c) => c.append([-3]))
-    .toArray();
-    // [-3]
+new ListCollection([]).whenEmpty((c) => c.append([-3])).toArray();
+// [-3]
 ```
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1])
-    .whenEmpty((c) => c.append([-3]))
-    .toArray();
-    // [1]
+new ListCollection([1]).whenEmpty((c) => c.append([-3])).toArray();
+// [1]
 ```
 
-## whenNot
+### whenNot
 
 The `whenNot` method will execute `callback` when `condition` evaluates to false.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1, 2, 3, 4])
+new ListCollection([1, 2, 3, 4])
     .whenNot(true, (c) => c.append([-3]))
     .whenNot(false, (c) => c.append([20]))
     .toArray();
 // [1, 2, 3, 4, 20]
 ```
 
-## whenNotEmpty
+### whenNotEmpty
 
 The `whenNotEmpty` method will execute `callback` when the collection is not empty.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([])
-    .whenNotEmpty((c) => c.append([-3]))
-        .toArray();
-    // []
+new ListCollection([]).whenNotEmpty((c) => c.append([-3])).toArray();
+// []
 ```
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection([1])
-    .whenNotEmpty((c) => c.append([-3]))
-    .toArray();
-    // [1, -3]
+new ListCollection([1]).whenNotEmpty((c) => c.append([-3])).toArray();
+// [1, -3]
 ```
 
-## zip
+## Static methods
 
-The `zip` method merges together the values of `iterable` with the values of the collection at their corresponding index.
+### concat
+
+The `concat` method concatenates multiple [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol)'s and returns a new collection.
+
+```ts
+import { ListCollection } from "@daiso-tech/core/collection";
+ListCollection.concat([1, 2, 3], [4, 5, 6]).toArray();
+// [1, 2, 3, 4, 5, 6]
+```
+
+### difference
+
+The `difference` method will return the values in the original collection that are not present in [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol).
+By default the equality check occurs on the item.
+
+```ts
+new ListCollection([1, 2, 2, 3, 4, 5]).difference([2, 4, 6, 8]).toArray();
+// [1, 3, 5]
+```
+
+Equality check on a field in the item.
+
+```ts
+import { ListCollection } from "@daiso-tech/core/collection";
+
+new ListCollection([
+    { name: "iPhone 6", brand: "Apple", type: "phone" },
+    { name: "iPhone 5", brand: "Apple", type: "phone" },
+    { name: "Apple Watch", brand: "Apple", type: "watch" },
+    { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+    { name: "Galaxy Gear", brand: "Samsung", type: "watch" },
+])
+    .difference(
+        [{ name: "Apple Watch", brand: "Apple", type: "watch" }],
+        // equality check occurs on product.type
+        (product) => product.type,
+    )
+    .toArray();
+// [
+//   { name: "iPhone 6", brand: "Apple", type: "phone" },
+//   { name: "iPhone 5", brand: "Apple", type: "phone" },
+//   { name: "Galaxy S6", brand: "Samsung", type: "phone" },
+// ]
+```
+
+The `difference` method is also available as a static method.
+
+```ts
+ListCollection.difference([1, 2, 2, 3, 4, 5], [2, 4, 6, 8]).toArray();
+// [1, 3, 5]
+```
+
+### zip
+
+The `zip` method merges together the values of [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) with the values of the collection at their corresponding index.
 The returned collection has size of the shortest collection. The `zip` method is also available as a static method.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
 
-const a = new ListCollection(["Chair", "Desk"])
-    .zip([100, 200])
-    .toArray();
-    // [["Chair", 100], ["Desk", 200]]
-
-const a = ListCollection
-    .zip(["Chair", "Desk"], [100, 200])
-    .toArray();
-    // [["Chair", 100], ["Desk", 200]]
+ListCollection.zip(["Chair", "Desk"], [100, 200]).toArray();
+// [["Chair", 100], ["Desk", 200]]
 ```
-
-To zip multiple collections together, you can ... yousef ta över.
