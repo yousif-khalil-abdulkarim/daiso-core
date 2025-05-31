@@ -44,6 +44,10 @@ You can add a key and provide a optional TTL to overide the default:
 await cache.add("a", "value", TimeSpan.fromSeconds("1"));
 ```
 
+:::danger
+Note [`cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.ICache.html) class instance uses [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) instead of a regular `Promise`. This means you must either await the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) or call its `defer` method to run it. Refer to the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) documentation for further information.
+:::
+
 ### Retrieving keys
 
 You can retrieve the key:
@@ -244,7 +248,7 @@ await cache.getOrAdd("ab", 1);
 ```
 
 :::info
-You can provide [`LazyPromise`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Async.LazyPromise.html), synchronous and asynchronous [`Invokable`](../7_Utilities/3_invokable.md) as default values for both `getOr` and `getOrAdd` methods.
+You can provide [`LazyPromise`](/docs/8_Async/1_lazy_promise.md), synchronous and asynchronous [`Invokable`](../7_Utilities/3_invokable.md) as default values for both `getOr` and `getOrAdd` methods.
 :::
 
 You can retrieve the key and afterwards remove it and will return true if the value was found:
