@@ -5,7 +5,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { IEventBus } from "@/event-bus/contracts/event-bus.contract.js";
 import type {
-    IFlexibleSerde,
+    ISerderRegister,
     ISerializable,
 } from "@/serde/contracts/_module-exports.js";
 import {
@@ -137,13 +137,13 @@ export const EVENT_BUS_ERRORS = {
 };
 
 /**
- * The `registerEventBusErrorsToSerde` function registers all {@link IEventBus | `IEventBus`} related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
+ * The `registerEventBusErrorsToSerde` function registers all {@link IEventBus | `IEventBus`} related errors with `ISerderRegister`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors
  */
 export function registerEventBusErrorsToSerde(
-    serde: OneOrMore<IFlexibleSerde>,
+    serde: OneOrMore<ISerderRegister>,
 ): void {
     for (const serde_ of resolveOneOrMore(serde)) {
         serde_

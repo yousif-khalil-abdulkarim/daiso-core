@@ -5,7 +5,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ICache } from "@/cache/contracts/cache.contract.js";
 import type {
-    IFlexibleSerde,
+    ISerderRegister,
     ISerializable,
 } from "@/serde/contracts/_module-exports.js";
 import {
@@ -132,13 +132,13 @@ export const CACHE_ERRORS = {
 } as const;
 
 /**
- * The `registerCacheErrorsToSerde` function registers all {@link ICache | `ICache`} related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
+ * The `registerCacheErrorsToSerde` function registers all {@link ICache | `ICache`} related errors with `ISerderRegister`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Errors
  */
 export function registerCacheErrorsToSerde(
-    serde: OneOrMore<IFlexibleSerde>,
+    serde: OneOrMore<ISerderRegister>,
 ): void {
     for (const serde_ of resolveOneOrMore(serde)) {
         serde_

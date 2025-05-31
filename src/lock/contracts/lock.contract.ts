@@ -26,10 +26,7 @@ import type {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
-export type AquireBlockingSettings = {
-    time?: TimeSpan;
-    interval?: TimeSpan;
-};
+export type AquireBlockingSettings = { time?: TimeSpan; interval?: TimeSpan };
 
 /**
  *

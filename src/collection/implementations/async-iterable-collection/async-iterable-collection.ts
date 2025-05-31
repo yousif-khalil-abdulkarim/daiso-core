@@ -324,7 +324,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return this.entries().map(([key]) => key);
     }
 
-    values(): IAsyncCollection<TInput> {
+    copy(): IAsyncCollection<TInput> {
         return this.entries().map(([_key, value]) => value);
     }
 

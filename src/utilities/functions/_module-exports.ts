@@ -5,3 +5,4 @@ export * from "@/utilities/functions/is-nullable.js";
 export * from "@/utilities/functions/object.js";
 export * from "@/utilities/functions/lazy.js";
 export * from "@/utilities/functions/resolve-one-or-more.js";
+export * from "@/utilities/functions/result.js";

@@ -35,13 +35,12 @@ export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
 };
 
 /**
- * The `IFlexibleSerde` contract defines a standard way to serialize and deserialize both plain data and custom classes.
+ * The `ISerderRegister` contract defines a standard way to register custom serialization and deserialization logic.
  *
  * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
  * @group Contracts
  */
-export interface IFlexibleSerde<TSerializedValue = unknown>
-    extends ISerde<TSerializedValue> {
+export interface ISerderRegister {
     /**
      * The `registerClass` method is used for registering custom class for serialization and deserialization.
      * The `class_` parameter must be of type {@link SerializableClass | `SerializableClass`}.
@@ -59,3 +58,12 @@ export interface IFlexibleSerde<TSerializedValue = unknown>
         prefix?: OneOrMore<string>,
     ): this;
 }
+
+/**
+ * The `IFlexibleSerde` contract defines a standard way to serialize and deserialize both plain data and custom classes.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
+ * @group Contracts
+ */
+export type IFlexibleSerde<TSerializedValue = unknown> =
+    ISerde<TSerializedValue> & ISerderRegister;

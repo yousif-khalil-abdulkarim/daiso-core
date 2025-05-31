@@ -11,7 +11,7 @@ import {
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
 import type {
-    IFlexibleSerde,
+    ISerderRegister,
     ISerializable,
 } from "@/serde/contracts/_module-exports.js";
 
@@ -253,7 +253,7 @@ export const LOCK_ERRORS = {
  * @group Errors
  */
 export function registerLockErrorsToSerde(
-    serde: OneOrMore<IFlexibleSerde>,
+    serde: OneOrMore<ISerderRegister>,
 ): void {
     for (const serde_ of resolveOneOrMore(serde)) {
         serde_

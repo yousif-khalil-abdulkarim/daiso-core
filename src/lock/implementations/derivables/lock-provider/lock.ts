@@ -9,6 +9,8 @@ import {
     type OneOrMore,
     type Result,
     resolveLazyable,
+    resultSuccess,
+    resultFailure,
 } from "@/utilities/_module-exports.js";
 import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import type {
@@ -145,15 +147,14 @@ export class Lock implements ILock {
                 try {
                     const hasAquired = await this.acquire();
                     if (!hasAquired) {
-                        return [
-                            null,
+                        return resultFailure(
                             new KeyAlreadyAcquiredLockError(
                                 `Key "${this.key.resolved}" already acquired`,
                             ),
-                        ];
+                        );
                     }
 
-                    return [await resolveLazyable(asyncFn), null];
+                    return resultSuccess(await resolveLazyable(asyncFn));
                 } finally {
                     await this.release();
                 }
@@ -181,15 +182,14 @@ export class Lock implements ILock {
                 try {
                     const hasAquired = await this.acquireBlocking(settings);
                     if (!hasAquired) {
-                        return [
-                            null,
+                        return resultFailure(
                             new KeyAlreadyAcquiredLockError(
                                 `Key "${this.key.resolved}" already acquired`,
                             ),
-                        ];
+                        );
                     }
 
-                    return [await resolveLazyable(asyncFn), null];
+                    return resultSuccess(await resolveLazyable(asyncFn));
                 } finally {
                     await this.release();
                 }

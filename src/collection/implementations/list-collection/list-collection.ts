@@ -234,7 +234,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return new ListCollection(this.array.keys());
     }
 
-    values(): ICollection<TInput> {
+    copy(): ICollection<TInput> {
         return new ListCollection(this);
     }
 

@@ -272,7 +272,7 @@ export class IterableCollection<TInput = unknown>
         return this.entries().map(([key]) => key);
     }
 
-    values(): ICollection<TInput> {
+    copy(): ICollection<TInput> {
         return this.entries().map(([_key, value]) => value);
     }
 

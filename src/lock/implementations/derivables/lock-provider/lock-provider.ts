@@ -31,7 +31,7 @@ import type {
     Unsubscribe,
 } from "@/event-bus/contracts/_module-exports.js";
 
-import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
+import type { ISerderRegister } from "@/serde/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { v4 } from "uuid";
@@ -63,7 +63,7 @@ export type LockProviderSettingsBase = {
      */
     lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
 
-    serde: OneOrMore<IFlexibleSerde>;
+    serde: OneOrMore<ISerderRegister>;
 
     /**
      * @default {""}
@@ -147,7 +147,7 @@ export type LockProviderSettings = LockProviderSettingsBase & {
  *
  * Note the {@link ILock | `ILock`} instances created by the `LockProvider` class are serializable and deserializable,
  * allowing them to be seamlessly transferred across different servers, processes, and databases.
- * This can be done directly using {@link IFlexibleSerde | `IFlexibleSerde`} or indirectly through components that rely on {@link IFlexibleSerde | `IFlexibleSerde`} internally.
+ * This can be done directly using {@link ISerderRegister | `ISerderRegister`} or indirectly through components that rely on {@link ISerderRegister | `ISerderRegister`} internally.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock"`
  * @group Derivables
@@ -162,7 +162,7 @@ export class LockProvider implements ILockProvider {
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
-    private readonly serde: OneOrMore<IFlexibleSerde>;
+    private readonly serde: OneOrMore<ISerderRegister>;
     private readonly lazyPromiseFactory: FactoryFn<
         AsyncLazy<any>,
         LazyPromise<any>

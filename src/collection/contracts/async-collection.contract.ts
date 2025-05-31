@@ -69,9 +69,9 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     keys(): IAsyncCollection<number>;
 
     /**
-     * The `values` method returns a copy of the collection.
+     * The `copy` method returns a copy of the collection.
      */
-    values(): IAsyncCollection<TInput>;
+    copy(): IAsyncCollection<TInput>;
 
     /**
      * The `filter` method filters the collection using `predicateFn`, keeping only those items that pass `predicateFn`.
