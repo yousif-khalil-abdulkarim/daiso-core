@@ -205,4 +205,7 @@ serde.registerClass(TimeSpan);
 const timeSpan = TimeSpan.fromSeconds(12);
 const serializedTimeSpan = serde.serialize(timeSpan);
 const deserializedTimeSpan = serde.deserialize(serializedTimeSpan);
+
+// logs false
+console.log(serializedTimeSpan === deserializedTimeSpan);
 ```
