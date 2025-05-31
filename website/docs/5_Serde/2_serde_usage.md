@@ -15,6 +15,8 @@ const serde = new Serde(new SuperJsonSerdeAdapter());
 
 ## Serde basics
 
+### Serializing and deserializing values
+
 Here is an example of serializing and deserializing a value.
 
 ```ts
@@ -25,6 +27,8 @@ const serializedValue = serde.serialize({
 
 const deserializedValue = serde.deserialize(serializedValue);
 ```
+
+### Custom serialization and deserialization logic of classes
 
 Serializing and deserializing a class:
 
@@ -85,6 +89,8 @@ serde.registerClass(User, "my-library");
 
 :::
 
+### Custom serialization and deserialization logic
+
 The `registerClass` method provides a simplified abstraction over `registerCustom` method, which offers finer-grained control over serialization and deserialization behavior.
 
 ```ts
@@ -120,6 +126,47 @@ serde.registerCustom(userSerdeTransformer);
 Note the `ISerdeTranformer` object can be dynamically created.
 :::
 
+## Patterns
+
+### Usage with other components
+
+When using [`Serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html) class instance there is no need to call `serialize` and `deserialize` manually. Because components like [`Cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) handle it automatically through their adapter.
+
+```ts
+import { Serde } from "@daiso-tech/core/serde";
+import { Namespace } from "@daiso-tech/core/utilities";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { Cache } from "@daiso-tech/core/cache";
+import { ListCollection } from "@daiso-tech/core/collection";
+import Redis from "ioredis";
+
+const serde = new Serde(new SuperJsonSerdeAdapter());
+serde.registerClass(ListCollection);
+
+const cache = new Cache({
+    namespace: new Namespace("cache"),
+    adapter: new RedisCacheAdapter({
+        database: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+        serde,
+    }),
+});
+
+const listCollection = new ListCollection(["a", "b", "c", "d", "e"]);
+
+await cache.add("list", listCollection);
+
+const deserializedListCollection = await cache.get("list");
+if (deserializedListCollection) {
+    // Logs "c"
+    console.log(deserializedListCollection.getOrFail(2));
+}
+```
+
+:::info
+Note you should use one [`Serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html) class instance accross all components and register all serializable objects before component usage.
+:::
+
 ## Seperating serialization, deserialization and registering custom serialization/deserialization logic
 
 The library includes 4 additional contracts:
@@ -130,6 +177,8 @@ The library includes 4 additional contracts:
 
 -   [`ISerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Serde.ISerde.html) - Allows for both serialization and deserialization.
 
--   [`IFlexibleSerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/interfaces/Serde.IFlexibleSerde.html) – Allows for both serialization and deserialization. Allows also fo customizable serialization/deserialization logic.
+-   [`IFlexibleSerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/interfaces/Serde.IFlexibleSerde.html) – Allows for both serialization and deserialization. Allows also for customizable serialization/deserialization logic.
+
+-   [`ISerderRegister`](https://yousif-khalil-abdulkarim.github.io/daiso-core/interfaces/Serde.ISerderRegister.html) - Allows only for regestering custom serialization and deserialization logic.
 
 This seperation makes it easy to visually distinguish the 4 contracts, making it immediately obvious that they serve different purposes.
