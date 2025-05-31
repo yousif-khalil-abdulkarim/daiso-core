@@ -44,9 +44,13 @@ await eventBus.dispatch("add", {
 });
 ```
 
+:::danger
+Note [`eventBus`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/EventBus.IEventBus.html) class instance uses [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) instead of a regular `Promise`. This means you must either await the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) or call its `defer` method to run it. Refer to the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) documentation for further information.
+:::
+
 ### Listener management
 
-To properly remove a listener, you must use a named function reference:
+To properly remove a listener, you must use a named function:
 
 ```ts
 import type { BaseEvent } from "@daiso-tech/core/event-bus/contracts";
