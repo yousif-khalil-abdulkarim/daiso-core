@@ -56,7 +56,15 @@ import type {
  * @group Derivables
  */
 export type CacheSettingsBase = {
-    namespace: Namespace;
+    /**
+     * @default
+     * ```ts
+     * import { Namespace } from "@daiso-tech/core/utilities";
+     *
+     * new Namespace(["@", "cache"])
+     * ```
+     */
+    namespace?: Namespace;
 
     /**
      * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `Cache` class.
@@ -146,14 +154,13 @@ export class Cache<TType = unknown> implements ICache<TType> {
      * await cacheAdapter.init();
      *
      * const cache = new Cache({
-     *   namespace: new Namespace("cache"),
      *   adapter: cacheAdapter,
      * });
      * ```
      */
     constructor(settings: CacheSettings) {
         const {
-            namespace,
+            namespace = new Namespace(["@", "cache"]),
             adapter,
             eventBus = new EventBus<any>({
                 namespace: new Namespace("event-bus"),

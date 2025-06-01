@@ -60,12 +60,10 @@ export class CacheFactory<TAdapters extends string = string>
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { Namespace } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
-     *   namespace: new Namespace("cache"),
      *   adapters: {
      *     memory: new MemoryCacheAdapter(),
      *     redis: new RedisCacheAdapter({
@@ -116,12 +114,11 @@ export class CacheFactory<TAdapters extends string = string>
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { Namespace, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheFactory = new CacheFactory({
-     *   namespace: new Namespace("cache"),
      *   adapters: {
      *     memory: new MemoryCacheAdapter(),
      *     redis: new RedisCacheAdapter({
@@ -159,7 +156,7 @@ export class CacheFactory<TAdapters extends string = string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace } = this.settings;
+        const { namespace = new Namespace(["@", "cache"]) } = this.settings;
         return new Cache({
             ...this.settings,
             adapter,
