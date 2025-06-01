@@ -24,10 +24,7 @@ import {
     type AsyncLazy,
     type FactoryFn,
 } from "@/utilities/_module-exports.js";
-import {
-    resolveFactory,
-    resolveInvokable,
-} from "@/utilities/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 
 /**
@@ -101,7 +98,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
             adapter,
             lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
-        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
+        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.adapter = adapter;
         this.namespace = namespace;
     }

@@ -19,9 +19,8 @@ import {
     TypeCacheError,
 } from "@/cache/contracts/_module-exports.js";
 import {
-    isAsyncFactory,
     resolveAsyncLazyable,
-    resolveFactory,
+    resolveInvokable,
 } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazyable,
@@ -170,7 +169,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         this.namespace = namespace;
         this.adapterFactoryable = adapter;
         this.defaultTtl = defaultTtl;
-        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
+        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.eventBus = eventBus;
 
         if (isDatabaseCacheAdapter(adapter)) {
@@ -672,11 +671,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     CACHE_EVENTS.CLEARED,
                     {},
                 );
-                if (isAsyncFactory(this.adapterFactoryable)) {
-                    await this.adapter.removeAll();
-                    promise.defer();
-                    return;
-                }
                 await this.adapter.removeByKeyPrefix(
                     this.namespace._getInternal().namespaced,
                 );

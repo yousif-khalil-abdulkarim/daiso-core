@@ -1,4 +1,3 @@
-export * from "@/utilities/functions/factory.js";
 export * from "@/utilities/functions/get-constructor-name.js";
 export * from "@/utilities/functions/invokable.js";
 export * from "@/utilities/functions/is-nullable.js";

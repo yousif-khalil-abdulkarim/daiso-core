@@ -8,8 +8,8 @@ import {
     type Factory,
     type AsyncLazy,
     type FactoryFn,
-    resolveFactory,
     resolveOneOrMore,
+    resolveInvokable,
 } from "@/utilities/_module-exports.js";
 import { Namespace, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
@@ -223,7 +223,7 @@ export class LockProvider implements ILockProvider {
         this.namespace = namespace;
         this.defaultTtl = defaultTtl;
         this.eventBus = eventBus;
-        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
+        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.serdeTransformerName = serdeTransformerName;
 
         if (isDatabaseLockAdapter(adapter)) {
