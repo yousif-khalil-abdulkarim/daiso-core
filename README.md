@@ -1,72 +1,40 @@
-# @daiso-tech/core
-
 [![npm version](https://img.shields.io/npm/v/@daiso-tech/core)](https://www.npmjs.com/package/@daiso-tech/core)
 ![NPM Downloads](https://img.shields.io/npm/dy/@daiso-tech/core)
 ![Static Badge](https://img.shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=white)
 [![ES Modules](https://img.shields.io/badge/module%20type-ESM-blue)](https://nodejs.org/api/esm.html)
 [![License](https://img.shields.io/npm/l/@daiso-tech/core)](LICENSE)
 
+# @daiso-tech/core
 
-A modular, framework-agnostic library providing essential components for modern web applications. Stop reinventing the wheel - focus on building your application while the library handles the core functionalities.
+`@daiso-tech/core` is a TypeScript-first backend library for building web apps and API servers. It includes an ecosystem of official packages designed to work seamlessly together.
 
-## ✨ Features
+[Get started now](http://localhost:3000/docs/Installation)
 
-### Current Features
+- **Type safe**
+  We pay a closer look at type-safety, seamless intellisense, and support for auto imports when designing library APIs.
 
--   **Immutable Collections**:
+- **ESM ready**
+  @daiso-tech/core leverages modern JavaScript primitives, including ES modules
 
-    -   `IterableCollection` - Simplifies work with `Iterable`
-    -   `ListCollection` - Simplifies work with `Array`
-    -   `AsyncIterableCollection` - Simplifies work with `AsyncIterable`
+- **Easily testable**
+  @daiso-tech/core includes built-in vitest helpers for custom adapters and in-memory adapters for all components, enabling testing without Docker.
 
--   **Middleware System**
-    -   Agnostic middlewares applicable to any async/sync functions.
-        -   `fallback`: Automatic recovery with default values on errors
-        -   `observe`: Monitor function execution and performance
-        -   `retry`: Smart retries with multiple backoff policies:
-            -   `constantBackoffPolicy`
-            -   `exponentialBackoffPolicy`
-            -   `linearBackoffPolicy`
-            -   `polynomialBackoffPolicy`
-        -   `sequentialHedging`: Runs fallbacks sequentially if the primary function fails, ensuring graceful failure handling.
-        -   `concurrentHedging`: Executes the primary function alongside fallbacks concurrently, returning the first successful result and aborting all remaining operations.
-        -   `timeout`: Guaranteed execution time limits
--   **LazyPromise**:
-    -   Executes only when awaited
-    -   With middleware support
--   **Pluggable Components**:
-    -   `Cache` with adapter support
-    -   `Lock` with adapter support
-    -   `EventBus` with adapter support
-    -   `Serde` (serializer, deserializer) adapters
+## A growing collection of officially maintained components
 
-### Planned Features
+- **Cache**
+  Speed up your applications by storing slowly changing data in a cache store.
 
--   Query bus
--   Command bus
--   Semaphore component
--   SharedLock (ReaderWriterLock)
--   RateLimiter
--   CircuitBreaker
--   MessageQueue
--   TaskScheduler
--   Notification system
--   Abstract file system
+- **EventBus**
+  Easily send events accross different applications or in-memory.
 
-## 🚀 Installation
+- **Atomic lock**
+  Synchronize the access to a shared resource to prevents several processes, or concurrent code, from executing a section of code at the same time.
 
-```bash
-npm install @daiso-tech/core
-```
+- **Serde**
+  Add custom serialization and deserialization logic that seamlessly integrates with all other components.
 
-## Inspired By
+- **Collection**
+  Effortlessly work with Arrays, Iterables, and AsyncIterables. Filter and transform with precision.
 
-Built with ideas from:
-
--   [Laravel](https://laravel.com/docs/11.x/readme), PHP
--   [Symfony components](https://symfony.com/components), PHP
--   [Verrou](https://verrou.dev/docs/introduction), TypeScript
--   [Distributed lock](https://github.com/ZiggyCreatures/FusionCache), C#
--   [Bento cache](https://bentocache.dev/docs/introduction), TypeScript
--   [Fusion cache](https://github.com/ZiggyCreatures/FusionCache), C#
--   [Polly](https://www.pollydocs.org/), C#
+- **Hooks**
+  Extend any sync and async function with agnostic hooks.@daiso-tech/core includes predefined retry, fallback, timeout and hedging hooks to easily allow handling transient failures.
