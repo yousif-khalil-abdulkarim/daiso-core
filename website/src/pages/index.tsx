@@ -132,9 +132,9 @@ const featureItems = (projectName: ReactNode): FeatureItemProps[] => [
         title: "Easily testable",
         description: (
             <>
-                {projectName} includes built-in vitest helpers for custom
-                adapters and in-memory adapters for all components, enabling
-                testing without Docker.
+                {projectName} includes built-in vitest helpers for testing
+                custom adapters and in-memory adapters for all components,
+                enabling testing without Docker.
             </>
         ),
     },
@@ -162,7 +162,7 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         title: "Atomic lock",
         description: (
             <>
-                Synchronize the access to a shared resource to prevents several
+                Synchronize the access to a shared resource to prevent several
                 processes, or concurrent code, from executing a section of code
                 at the same time.
             </>

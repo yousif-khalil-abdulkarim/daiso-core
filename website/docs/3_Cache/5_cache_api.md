@@ -50,7 +50,7 @@ sidebar_position: 5
 
 -   [`UnexpectedCacheError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.UnexpectedCacheError.html)
 
--   [`CACHE_ERRORS`](yousif-khalil-abdulkarim.github.io/daiso-core/variables/Cache.CACHE_ERRORS.html)
+-   [`CACHE_ERRORS`](https://yousif-khalil-abdulkarim.github.io/daiso-core/variables/Cache.CACHE_ERRORS.html)
 
 -   [`registerCacheErrorsToSerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Cache.registerCacheErrorsToSerde.html)
 
