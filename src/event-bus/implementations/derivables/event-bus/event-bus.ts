@@ -18,16 +18,13 @@ import {
     UnableToAddListenerEventBusError,
 } from "@/event-bus/contracts/_module-exports.js";
 
-import type { Namespace } from "@/utilities/_module-exports.js";
+import { Namespace } from "@/utilities/_module-exports.js";
 import {
     type Factory,
     type AsyncLazy,
     type FactoryFn,
 } from "@/utilities/_module-exports.js";
-import {
-    resolveFactory,
-    resolveInvokable,
-} from "@/utilities/_module-exports.js";
+import { resolveInvokable } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 
 /**
@@ -36,7 +33,15 @@ import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/
  * @group Derivables
  */
 export type EventBusSettingsBase = {
-    namespace: Namespace;
+    /**
+     * @default
+     * ```ts
+     * import { Namespace } from "@daiso-tech/core/utilities";
+     *
+     * new Namespace(["@", "event-bus"])
+     * ```
+     */
+    namespace?: Namespace;
 
     /**
      * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `EventBus` class.
@@ -81,21 +86,19 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
      * ```ts
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { Namespace } from "@daiso-tech/core/utilities";
      *
      * const eventBus = new EventBus({
-     *   namespace: new Namespace("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * });
      * ```
      */
     constructor(settings: EventBusSettings) {
         const {
-            namespace,
+            namespace = new Namespace(["@", "event-bus"]),
             adapter,
             lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
-        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
+        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.adapter = adapter;
         this.namespace = namespace;
     }
@@ -150,6 +153,10 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
+                this.store.getOrAdd(
+                    [key.namespaced, listener],
+                    resolvedListener,
+                );
                 throw new UnableToRemoveListenerEventBusError(
                     `A listener with name of "${String(eventName)}" could not removed of "${String(eventName)}" event`,
                     error,

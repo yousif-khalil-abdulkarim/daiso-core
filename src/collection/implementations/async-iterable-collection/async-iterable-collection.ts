@@ -60,7 +60,6 @@ import {
 } from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
 import {
     isInvokable,
-    resolveFactory,
     resolveInvokable,
     type AsyncIterableValue,
     type AsyncLazyable,
@@ -299,7 +298,7 @@ export class AsyncIterableCollection<TInput = unknown>
         const {
             lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
-        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
+        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
     }
 
     private createLazyPromise<TValue = void>(

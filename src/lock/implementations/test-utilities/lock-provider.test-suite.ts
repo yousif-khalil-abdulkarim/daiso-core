@@ -58,24 +58,16 @@ export type LockProviderTestSuiteSettings = {
  * import { Serde } from "@daiso-tech/core/serde";
  * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
  * import type { ILockData } from "@daiso-tech/core/lock/contracts";
- * import { Namespace } from "@daiso-tech/core/utilities";
  *
  * describe("class: LockProvider", () => {
- *     const eventBus = new EventBus({
- *         namespace: new Namespace("event-bus"),
- *         adapter: new MemoryEventBusAdapter(),
- *     });
  *     const serde = new Serde(new SuperJsonSerdeAdapter());
  *     let map: Map<string, ILockData>;
  *     lockProviderTestSuite({
  *         createLockProvider: () => {
- *             const lockProvider = new LockProvider({
+ *             return new LockProvider({
  *                 serde,
  *                 adapter: new MemoryLockAdapter(),
- *                 eventBus,
- *                 namespace: new Namespace("lock"),
  *             });
- *             return lockProvider;
  *         },
  *         beforeEach,
  *         describe,

@@ -8,8 +8,8 @@ import {
     type Factory,
     type AsyncLazy,
     type FactoryFn,
-    resolveFactory,
     resolveOneOrMore,
+    resolveInvokable,
 } from "@/utilities/_module-exports.js";
 import { Namespace, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
@@ -50,7 +50,15 @@ import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-pro
  * @group Derivables
  */
 export type LockProviderSettingsBase = {
-    namespace: Namespace;
+    /**
+     * @default
+     * ```ts
+     * import { Namespace } from "@daiso-tech/core/utilities";
+     *
+     * new Namespace(["@", "lock"])
+     * ```
+     */
+    namespace?: Namespace;
 
     /**
      * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `LockProvider` class.
@@ -80,10 +88,8 @@ export type LockProviderSettingsBase = {
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { Namespace } from "@daiso-tech/core/utilities";
      *
      * new EventBus({
-     *   namespace: new Namespace("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
@@ -174,7 +180,6 @@ export class LockProvider implements ILockProvider {
      * ```ts
      * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { Namespace } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import Sqlite from "better-sqlite3";
@@ -188,7 +193,6 @@ export class LockProvider implements ILockProvider {
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter())
      * const lockProvider = new LockProvider({
-     *   namespace: new Namespace("lock"),
      *   serde,
      *   adapter: lockAdapter,
      * });
@@ -202,10 +206,9 @@ export class LockProvider implements ILockProvider {
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             createOwnerId = () => v4(),
             serde,
-            namespace,
+            namespace = new Namespace(["@", "lock"]),
             adapter,
             eventBus = new EventBus<any>({
-                namespace: new Namespace("events"),
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
@@ -220,7 +223,7 @@ export class LockProvider implements ILockProvider {
         this.namespace = namespace;
         this.defaultTtl = defaultTtl;
         this.eventBus = eventBus;
-        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
+        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.serdeTransformerName = serdeTransformerName;
 
         if (isDatabaseLockAdapter(adapter)) {

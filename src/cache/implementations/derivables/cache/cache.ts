@@ -19,9 +19,8 @@ import {
     TypeCacheError,
 } from "@/cache/contracts/_module-exports.js";
 import {
-    isAsyncFactory,
     resolveAsyncLazyable,
-    resolveFactory,
+    resolveInvokable,
 } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazyable,
@@ -56,7 +55,15 @@ import type {
  * @group Derivables
  */
 export type CacheSettingsBase = {
-    namespace: Namespace;
+    /**
+     * @default
+     * ```ts
+     * import { Namespace } from "@daiso-tech/core/utilities";
+     *
+     * new Namespace(["@", "cache"])
+     * ```
+     */
+    namespace?: Namespace;
 
     /**
      * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `Cache` class.
@@ -74,10 +81,8 @@ export type CacheSettingsBase = {
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { Namespace } from "@daiso-tech/core/utilities";
      *
      * new EventBus({
-     *   namespace: new Namespace("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
@@ -146,17 +151,15 @@ export class Cache<TType = unknown> implements ICache<TType> {
      * await cacheAdapter.init();
      *
      * const cache = new Cache({
-     *   namespace: new Namespace("cache"),
      *   adapter: cacheAdapter,
      * });
      * ```
      */
     constructor(settings: CacheSettings) {
         const {
-            namespace,
+            namespace = new Namespace(["@", "cache"]),
             adapter,
             eventBus = new EventBus<any>({
-                namespace: new Namespace("event-bus"),
                 adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,
@@ -166,7 +169,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         this.namespace = namespace;
         this.adapterFactoryable = adapter;
         this.defaultTtl = defaultTtl;
-        this.lazyPromiseFactory = resolveFactory(lazyPromiseFactory);
+        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.eventBus = eventBus;
 
         if (isDatabaseCacheAdapter(adapter)) {
@@ -668,11 +671,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     CACHE_EVENTS.CLEARED,
                     {},
                 );
-                if (isAsyncFactory(this.adapterFactoryable)) {
-                    await this.adapter.removeAll();
-                    promise.defer();
-                    return;
-                }
                 await this.adapter.removeByKeyPrefix(
                     this.namespace._getInternal().namespaced,
                 );

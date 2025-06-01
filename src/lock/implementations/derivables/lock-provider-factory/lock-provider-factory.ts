@@ -62,13 +62,11 @@ export class LockProviderFactory<TAdapters extends string>
      * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { Namespace } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis"
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new LockProviderFactory({
      *   serde,
-     *   namespace: new Namespace("lock"),
      *   adapters: {
      *     memory: new MemoryLockAdapter(),
      *     redis: new RedisLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),
@@ -149,12 +147,11 @@ export class LockProviderFactory<TAdapters extends string>
      * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-     * import { Namespace, TimeSpan } from "@daiso-tech/core/utilities";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
      * import Redis from "ioredis";
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new LockProviderFactory({
-     *   namespace: new Namespace("lock"),
      *   serde,
      *   adapters: {
      *     memory: new MemoryLockAdapter(),
@@ -186,7 +183,7 @@ export class LockProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace } = this.settings;
+        const { namespace = new Namespace(["@", "lock"]) } = this.settings;
         return new LockProvider({
             ...this.settings,
             adapter,
