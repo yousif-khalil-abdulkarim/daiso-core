@@ -153,6 +153,10 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
+                this.store.getOrAdd(
+                    [key.namespaced, listener],
+                    resolvedListener,
+                );
                 throw new UnableToRemoveListenerEventBusError(
                     `A listener with name of "${String(eventName)}" could not removed of "${String(eventName)}" event`,
                     error,
