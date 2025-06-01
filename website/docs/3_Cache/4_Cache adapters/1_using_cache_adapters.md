@@ -32,9 +32,9 @@ const memoryCacheAdapter = new MemoryCacheAdapter(map);
 To use the [`MongodbCacheAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.MongodbCacheAdapter.html), you'll need to:
 
 1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package
-2. Provide a string serializer ([`ISerde`](docs/Serde/serde_usage))
+2. Provide a string serializer ([`ISerde`](/docs/Serde/serde_usage))
 
--   We recommend using [`SuperJsonSerdeAdapter`](docs/Serde/serde_usage) for this purpose
+-   We recommend using [`SuperJsonSerdeAdapter`](/docs/Serde/serde_usage) for this purpose
 
 ```ts
 import { MongodbCacheAdapter } from "@daiso-tech/core/cache/adapters";
@@ -95,9 +95,9 @@ await mongodbCacheAdapter.deInit();
 To use the [`RedisCacheAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.RedisCacheAdapter.html), you'll need to:
 
 1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package
-2. Provide a string serializer ([`ISerde`](docs/Serde/serde_usage))
+2. Provide a string serializer ([`ISerde`](/docs/Serde/serde_usage))
 
--   We recommend using [`SuperJsonSerdeAdapter`](docs/Serde/serde_usage) for this purpose
+-   We recommend using [`SuperJsonSerdeAdapter`](/docs/Serde/serde_usage) for this purpose
 
 ```ts
 import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
@@ -118,9 +118,9 @@ const redisCacheAdapter = new RedisCacheAdapter({
 To use the [`SqliteCacheAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.SqliteCacheAdapter.html), you'll need to:
 
 1. Install the required dependency: [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package
-2. Provide a string serializer ([`ISerde`](docs/Serde/serde_usage))
+2. Provide a string serializer ([`ISerde`](/docs/Serde/serde_usage))
 
--   We recommend using [`SuperJsonSerdeAdapter`](docs/Serde/serde_usage) for this purpose
+-   We recommend using [`SuperJsonSerdeAdapter`](/docs/Serde/serde_usage) for this purpose
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
@@ -200,9 +200,9 @@ await sqliteCacheAdapter.deInit();
 To use the [`LibsqlCacheAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.LibsqlCacheAdapter.html), you'll need to:
 
 1. Install the required dependency: [`@libsql/client`](https://www.npmjs.com/package/@libsql/client) package
-2. Provide a string serializer ([`ISerde`](docs/Serde/serde_usage))
+2. Provide a string serializer ([`ISerde`](/docs/Serde/serde_usage))
 
--   We recommend using [`SuperJsonSerdeAdapter`](docs/Serde/serde_usage) for this purpose
+-   We recommend using [`SuperJsonSerdeAdapter`](/docs/Serde/serde_usage) for this purpose
 
 ```ts
 import { LibsqlCacheAdapter } from "@daiso-tech/core/cache/adapters";
