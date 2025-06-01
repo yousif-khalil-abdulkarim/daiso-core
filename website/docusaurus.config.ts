@@ -1,18 +1,21 @@
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+// @ts-ignore
+import docusaurusLunrSearch from "docusaurus-lunr-search";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
     title: "@daiso-tech/core",
-    tagline: "A flexible full featured backend library - build faster and worry less.",
-        // "Build faster. Worry less. A flexible library for core backend functionalities.",
+    tagline:
+        "A flexible full featured backend library - build faster and worry less.",
+    // "Build faster. Worry less. A flexible library for core backend functionalities.",
     favicon: "img/favicon.ico",
 
     // Set the production url of your site here
     url: "https://your-docusaurus-site.example.com",
-    
+
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: "/",
@@ -32,6 +35,8 @@ const config: Config = {
         defaultLocale: "en",
         locales: ["en"],
     },
+
+    plugins: [docusaurusLunrSearch],
 
     presets: [
         [
