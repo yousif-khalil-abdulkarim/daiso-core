@@ -33,9 +33,9 @@ const eventBusAdapter = new MemoryEventBusAdapter(eventEmitter);
 To use the [`RedisPubSubEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.RedisPubSubEventBusAdapter.html), you'll need to:
 
 1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package
-2. Provide a string serializer ([`ISerde`](../../5_serde/1_serde_intro.md))
+2. Provide a string serializer ([`ISerde`](docs/Serde/serde_usage))
 
--   We recommend using [`SuperJsonSerdeAdapter`](../../5_serde/2_serde_usage.md) for this purpose
+-   We recommend using [`SuperJsonSerdeAdapter`](docs/Serde/serde_usage) for this purpose
 
 ```ts
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
