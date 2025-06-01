@@ -8,7 +8,7 @@
 
 `@daiso-tech/core` is a TypeScript-first backend library for building web apps and API servers. It includes an ecosystem of official packages designed to work seamlessly together.
 
-[Get started now](http://localhost:3000/docs/Installation)
+[Get started now](https://daiso-core.vercel.app/docs/Installation)
 
 - **Type safe**
   We pay a closer look at type-safety, seamless intellisense, and support for auto imports when designing library APIs.
