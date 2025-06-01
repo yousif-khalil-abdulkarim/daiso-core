@@ -82,10 +82,8 @@ export type CacheSettingsBase = {
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { Namespace } from "@daiso-tech/core/utilities";
      *
      * new EventBus({
-     *   namespace: new Namespace("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
@@ -163,7 +161,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
             namespace = new Namespace(["@", "cache"]),
             adapter,
             eventBus = new EventBus<any>({
-                namespace: new Namespace("event-bus"),
                 adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,

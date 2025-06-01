@@ -59,7 +59,7 @@ export class EventBusFactory<TAdapters extends string = string>
      * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBusFactory } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { Namespace, type FactoryFn } from "@daiso-tech/core/utilities";
+     * import { type FactoryFn } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
@@ -69,7 +69,6 @@ export class EventBusFactory<TAdapters extends string = string>
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const store: Store = {};
      * const eventBusFactory = new EventBusFactory({
-     *   namespace: new Namespace("event-bus"),
      *   adapters: {
      *     memory: new MemoryEventBusAdapter(),
      *     redis: new RedisPubSubEventBusAdapter({
@@ -108,14 +107,13 @@ export class EventBusFactory<TAdapters extends string = string>
      * import { type IEventBusAdapter, BaseEvent } from "@daiso-tech/core/event-bus/contracts";
      * import { EventBusFactory } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter, RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { Namespace, type FactoryFn } from "@daiso-tech/core/utilities";
+     * import { type FactoryFn } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const eventBusFactory = new EventBusFactory({
-     *   namespace: new Namespace("event-bus"),
      *   adapters: {
      *     memory: new MemoryEventBusAdapter(),
      *     redis: new RedisPubSubEventBusAdapter({

@@ -88,10 +88,8 @@ export type LockProviderSettingsBase = {
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
-     * import { Namespace } from "@daiso-tech/core/utilities";
      *
      * new EventBus({
-     *   namespace: new Namespace("event-bus"),
      *   adapter: new MemoryEventBusAdapter()
      * })
      * ```
@@ -211,7 +209,6 @@ export class LockProvider implements ILockProvider {
             namespace = new Namespace(["@", "lock"]),
             adapter,
             eventBus = new EventBus<any>({
-                namespace: new Namespace("events"),
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
