@@ -32,7 +32,7 @@ console.log(await fn.invoke());
 ```
 
 :::info
-You can provide [`LazyPromise`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Async.LazyPromise.html), synchronous and asynchronous [`Invokable`](../7_Utilities/3_invokable.md) as fallback value.
+You can provide [`LazyPromise`](/docs/8_Async/1_lazy_promise.md), synchronous and asynchronous [`Invokable`](../7_Utilities/3_invokable.md) as fallback value.
 :::
 
 ### Custom ErrorPolicy

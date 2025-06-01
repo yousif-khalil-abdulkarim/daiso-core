@@ -2,7 +2,10 @@
  * @module Utilities
  */
 
-import { resolveOneOrMoreStr } from "@/utilities//_module-exports.js";
+import {
+    resolveOneOrMoreStr,
+    resolveOneOrMore,
+} from "@/utilities//_module-exports.js";
 import type { AtLeastOne, OneOrMore } from "@/utilities/types/_module.js";
 
 /**
@@ -177,7 +180,7 @@ export class Namespace {
 
     appendRoot(str: OneOrMore<string>): Namespace {
         return new Namespace(
-            [...resolveOneOrMoreStr(this.root), ...resolveOneOrMoreStr(str)],
+            [...resolveOneOrMore(this.root), ...resolveOneOrMore(str)],
             this.settings,
         );
     }

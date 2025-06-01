@@ -8,7 +8,7 @@ sidebar_position: 3
 
 ## LazyPromise
 
--   [`LazyPromise`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Async.LazyPromise.html)
+-   [`LazyPromise`](/docs/8_Async/1_lazy_promise.md)
 
 ## Middlewares
 

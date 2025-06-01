@@ -3,7 +3,7 @@
  */
 
 import type {
-    IFlexibleSerde,
+    ISerderRegister,
     ISerializable,
 } from "@/serde/contracts/_module-exports.js";
 import {
@@ -167,13 +167,13 @@ export const COLLECTION_ERRORS = {
 } as const;
 
 /**
- * The `registerCollectionErrorsToSerde` function registers all `ICollection` related errors with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
+ * The `registerCollectionErrorsToSerde` function registers all `ICollection` related errors with `ISerderRegister`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
 export function registerCollectionErrorsToSerde(
-    serde: OneOrMore<IFlexibleSerde>,
+    serde: OneOrMore<ISerderRegister>,
 ): void {
     for (const serde_ of resolveOneOrMore(serde)) {
         serde_

@@ -63,9 +63,9 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         keys(): ICollection<number>;
 
         /**
-         * The `values` method returns a copy of the collection.
+         * The `copy` method returns a copy of the collection.
          */
-        values(): ICollection<TInput>;
+        copy(): ICollection<TInput>;
 
         /**
          * The `filter` method filters the collection using `predicateFn`, keeping only those items that pass `predicateFn`.

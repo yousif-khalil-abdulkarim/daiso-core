@@ -43,9 +43,7 @@ type PromiseQueueItem<TValue> = {
 /**
  * @internal
  */
-type PromiseQueueListener<TValue> = InvokableFn<
-    [result: Result<TValue, unknown>]
->;
+type PromiseQueueListener<TValue> = InvokableFn<[result: Result<TValue>]>;
 
 /**
  * @internal

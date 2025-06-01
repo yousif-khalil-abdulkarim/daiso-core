@@ -1,45 +1,236 @@
-import type { ReactNode } from "react";
-import clsx from "clsx";
-import Link from "@docusaurus/Link";
+import { SiTypescript, SiVitest } from "@icons-pack/react-simple-icons";
+import {
+    CheckSquare2,
+    Lock,
+    CalendarCheck,
+    Server,
+    Library,
+    Webhook,
+    Binary,
+} from "lucide-react";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import type { ReactNode } from "react";
+import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
-import HomepageFeatures from "@site/src/components/HomepageFeatures";
-import Heading from "@theme/Heading";
 
-import styles from "./index.module.css";
-
-function HomepageHeader() {
-    const { siteConfig } = useDocusaurusContext();
+type FeatureItemProps = {
+    icon?: ReactNode;
+    title: ReactNode;
+    description: ReactNode;
+};
+function FeatureItem(props: FeatureItemProps) {
     return (
-        <header className={clsx("hero hero--primary", styles.heroBanner)}>
-            <div className="container">
-                <Heading as="h1" className="hero__title">
-                    {siteConfig.title}
-                </Heading>
-                <p className="hero__subtitle">{siteConfig.tagline}</p>
-                <div className={styles.buttons}>
-                    <Link
-                        className="button button--secondary button--lg"
-                        to="/docs/Installation"
-                    >
-                        Get started ⏱️
-                    </Link>
-                </div>
+        <div className="padding--md col col--4">
+            <div
+                className="row row--2 text--primary margin--none margin-bottom--md"
+                style={{
+                    alignItems: "center",
+                    gap: "1rem",
+                }}
+            >
+                {props.icon}
+                <h3 className="margin--none">{props.title}</h3>
             </div>
-        </header>
+
+            <p>{props.description}</p>
+        </div>
     );
 }
 
+type FeatureItemsProps = {
+    items: FeatureItemProps[];
+};
+function FeatureItems(props: FeatureItemsProps) {
+    return (
+        <section>
+            <div className="container padding-horiz--xl">
+                <div className="row">
+                    {props.items.map((props, idx) => (
+                        <FeatureItem key={idx} {...props} />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+type ComponentItemProps = {
+    icon?: ReactNode;
+    title: ReactNode;
+    description: ReactNode;
+};
+function ComponentItem(props: ComponentItemProps) {
+    return (
+        <div className="col col--4 margin-bottom--lg">
+            <div
+                className="card shadow--md padding--md"
+                style={{
+                    height: "100%",
+                }}
+            >
+                <div
+                    className="card__header row text--primary"
+                    style={{
+                        alignItems: "center",
+                        gap: "1rem",
+                    }}
+                >
+                    {props.icon}
+                    <h3 className="margin--none">{props.title}</h3>
+                </div>
+                <div className="card__body">
+                    <p>{props.description}</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+type ComponentItemsProps = {
+    items: ComponentItemProps[];
+};
+function ComponentItems(props: ComponentItemsProps) {
+    return (
+        <section>
+            <div className="container padding-horiz--xl">
+                <h3 className="hero__title text--primary margin-bottom--xl col col--8">
+                    A growing collection of officially maintained components
+                </h3>
+                <div className="row">
+                    {props.items.map((props, idx) => (
+                        <ComponentItem key={idx} {...props} />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+const featureItems = (projectName: ReactNode): FeatureItemProps[] => [
+    {
+        icon: <SiTypescript size="2.5rem" />,
+        title: "Type safe",
+        description: (
+            <>
+                We pay a closer look at type-safety, seamless intellisense, and
+                support for auto imports when designing library APIs.
+            </>
+        ),
+    },
+    {
+        icon: <CheckSquare2 size="2.5rem" strokeWidth="1.5px" />,
+        title: "ESM ready",
+        description: (
+            <>
+                {projectName} leverages modern JavaScript primitives, including
+                ES modules
+            </>
+        ),
+    },
+    {
+        icon: <SiVitest size="2.5rem" />,
+        title: "Easily testable",
+        description: (
+            <>
+                {projectName} includes built-in vitest helpers for custom
+                adapters and in-memory adapters for all components, enabling
+                testing without Docker.
+            </>
+        ),
+    },
+];
+const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
+    {
+        icon: <Server size="2.5rem" />,
+        title: "Cache",
+        description: (
+            <>
+                Speed up your applications by storing slowly changing data in a
+                cache store.
+            </>
+        ),
+    },
+    {
+        icon: <CalendarCheck size="2.5rem" />,
+        title: "EventBus",
+        description: (
+            <>Easily send events accross different applications or in-memory.</>
+        ),
+    },
+    {
+        icon: <Lock size="2.5rem" />,
+        title: "Atomic lock",
+        description: (
+            <>
+                Synchronize the access to a shared resource to prevents several
+                processes, or concurrent code, from executing a section of code
+                at the same time.
+            </>
+        ),
+    },
+    {
+        icon: <Binary size="2.5rem" />,
+        title: "Serde",
+        description: (
+            <>
+                Add custom serialization and deserialization logic that
+                seamlessly integrates with all other components.
+            </>
+        ),
+    },
+    {
+        icon: <Library size="2.5rem" />,
+        title: "Collection",
+        description: (
+            <>
+                Effortlessly work with Arrays, Iterables, and AsyncIterables.
+                Filter and transform with precision.
+            </>
+        ),
+    },
+    {
+        icon: <Webhook size="2.5rem" />,
+        title: "Hooks",
+        description: (
+            <>
+                Extend any sync and async function with agnostic hooks.
+                {projectName} includes predefined retry, fallback, timeout and
+                hedging hooks to easily allow handling transient failures.
+            </>
+        ),
+    },
+];
+
 export default function Home(): ReactNode {
     const { siteConfig } = useDocusaurusContext();
+
     return (
         <Layout
-            title={`Hello from ${siteConfig.title}`}
+            title={siteConfig.title}
             description="Description will go into a meta tag in <head />"
         >
-            <HomepageHeader />
-            <main>
-                <HomepageFeatures />
+            <header className="hero hero--primary">
+                <div className="container">
+                    <h1 className="hero__title">{siteConfig.title}</h1>
+                    <p className="hero__subtitle col col--8">
+                        is a TypeScript-first backend library for building web
+                        apps and API servers. It includes an ecosystem of
+                        official packages designed to work seamlessly together.
+                    </p>
+                    <div>
+                        <Link
+                            className="button button--secondary button--lg"
+                            to="/docs/Installation"
+                        >
+                            Get started ⏱️
+                        </Link>
+                    </div>
+                </div>
+            </header>
+            <main className="padding-vert--xl">
+                <FeatureItems items={featureItems(siteConfig.title)} />
+                <div className="margin-bottom--xl" />
+                <ComponentItems items={componentItems(siteConfig.title)} />
             </main>
         </Layout>
     );

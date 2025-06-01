@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import type { IFlexibleSerde } from "@/serde/contracts/_module-exports.js";
+import type { ISerderRegister } from "@/serde/contracts/_module-exports.js";
 import {
     CORE,
     resolveOneOrMore,
@@ -81,13 +81,13 @@ export function isAsyncIterable<TItem>(
 }
 
 /**
- * The `registerCollectionsToSerde` function registers the `ListCollection` and `IterableCollection` classes with `IFlexibleSerde`, ensuring they will properly be serialized and deserialized.
+ * The `registerCollectionsToSerde` function registers the `ListCollection` and `IterableCollection` classes with `ISerderRegister`, ensuring they will properly be serialized and deserialized.
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection"`
  * @group Utilities
  */
 export function registerCollectionsToSerde(
-    serde: OneOrMore<IFlexibleSerde>,
+    serde: OneOrMore<ISerderRegister>,
 ): void {
     for (const serde_ of resolveOneOrMore(serde)) {
         serde_
