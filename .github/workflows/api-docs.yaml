@@ -35,18 +35,10 @@ jobs:
             - name: Build API docs
               run: npm run docs
 
-            - name: Install API docs Dependencies
-              working-directory: ./website
-              run: npm ci
-
-            - name: Build docs
-              working-directory: ./website
-              run: npm run build
-
             - name: Upload
               uses: actions/upload-pages-artifact@v3
               with:
-                  path: ./
+                  path: ./docs
 
     deploy:
         environment:
