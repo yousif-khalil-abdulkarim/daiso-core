@@ -50,7 +50,15 @@ import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-pro
  * @group Derivables
  */
 export type LockProviderSettingsBase = {
-    namespace: Namespace;
+    /**
+     * @default
+     * ```ts
+     * import { Namespace } from "@daiso-tech/core/utilities";
+     *
+     * new Namespace(["@", "lock"])
+     * ```
+     */
+    namespace?: Namespace;
 
     /**
      * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `LockProvider` class.
@@ -174,7 +182,6 @@ export class LockProvider implements ILockProvider {
      * ```ts
      * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
      * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { Namespace } from "@daiso-tech/core/utilities";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import Sqlite from "better-sqlite3";
@@ -188,7 +195,6 @@ export class LockProvider implements ILockProvider {
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter())
      * const lockProvider = new LockProvider({
-     *   namespace: new Namespace("lock"),
      *   serde,
      *   adapter: lockAdapter,
      * });
@@ -202,7 +208,7 @@ export class LockProvider implements ILockProvider {
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             createOwnerId = () => v4(),
             serde,
-            namespace,
+            namespace = new Namespace(["@", "lock"]),
             adapter,
             eventBus = new EventBus<any>({
                 namespace: new Namespace("events"),
