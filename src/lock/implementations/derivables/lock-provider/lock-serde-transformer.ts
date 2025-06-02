@@ -83,6 +83,9 @@ export class LockSerdeTransformer
     }
 
     get name(): OneOrMore<string> {
+        if (this.serdeTransformerName) {
+            return ["lock", getConstructorName(this.adapter)];
+        }
         return [
             "lock",
             this.serdeTransformerName,

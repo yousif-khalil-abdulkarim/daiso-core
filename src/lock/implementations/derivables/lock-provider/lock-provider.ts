@@ -320,7 +320,7 @@ export class LockProvider implements ILockProvider {
     private createLazyPromise<TValue = void>(
         asyncFn: () => PromiseLike<TValue>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(asyncFn);
+        return this.lazyPromiseFactory(asyncFn);
     }
 
     /**

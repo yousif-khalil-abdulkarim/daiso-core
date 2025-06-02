@@ -121,7 +121,6 @@ export type CacheSettings = CacheSettingsBase & {
  */
 export class Cache<TType = unknown> implements ICache<TType> {
     private readonly eventBus: IEventBus<CacheEventMap<TType>>;
-    private readonly adapterFactoryable: CacheAdapter<TType>;
     private readonly adapter: ICacheAdapter<TType>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly namespace: Namespace;
@@ -167,7 +166,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
         } = settings;
 
         this.namespace = namespace;
-        this.adapterFactoryable = adapter;
         this.defaultTtl = defaultTtl;
         this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.eventBus = eventBus;
