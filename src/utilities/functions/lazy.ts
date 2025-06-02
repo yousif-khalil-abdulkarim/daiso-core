@@ -26,13 +26,24 @@ export function isLazy<TValue>(
 /**
  * @internal
  */
+export function isPromiseLike<TValue>(
+    value: unknown,
+): value is PromiseLike<TValue> {
+    return (
+        typeof value === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        typeof (value as any)?.then === "function"
+    );
+}
+
+/**
+ * @internal
+ */
 export function isLazyPromise<TValue>(
     lazyable: AsyncLazyable<TValue>,
 ): lazyable is LazyPromise<TValue> {
     return (
-        typeof lazyable === "object" &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        typeof (lazyable as any)?.then === "function" &&
+        isPromiseLike(lazyable) &&
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         typeof (lazyable as any)?.defer === "function"
     );
