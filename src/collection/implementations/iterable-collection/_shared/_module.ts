@@ -28,5 +28,6 @@ export * from "@/collection/implementations/iterable-collection/_shared/take-unt
 export * from "@/collection/implementations/iterable-collection/_shared/tap-iterable.js";
 export * from "@/collection/implementations/iterable-collection/_shared/unique-iterable.js";
 export * from "@/collection/implementations/iterable-collection/_shared/update-iterable.js";
+export * from "@/collection/implementations/iterable-collection/_shared/validate-iterable.js";
 export * from "@/collection/implementations/iterable-collection/_shared/when-iterable.js";
 export * from "@/collection/implementations/iterable-collection/_shared/zip-iterable.js";

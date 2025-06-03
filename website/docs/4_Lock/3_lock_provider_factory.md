@@ -28,7 +28,7 @@ const lockProvider = new LockProviderFactory({
         memory: new MemoryLockAdapter(),
         redis: new RedisLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),
     },
-    // You can set the default adapter
+    // You can set an optional default adapter
     defaultAdapter: "memory",
 });
 ```

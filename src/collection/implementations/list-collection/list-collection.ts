@@ -27,10 +27,12 @@ import {
 } from "@/collection/contracts/_module-exports.js";
 import {
     isInvokable,
+    isPromiseLike,
     resolveInvokable,
     type Lazyable,
 } from "@/utilities/_module-exports.js";
 import { resolveLazyable } from "@/utilities/_module-exports.js";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
  * All methods in `ListCollection` are executed eagerly.
@@ -246,6 +248,22 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                 resolveInvokable(predicateFn)(item, index, this),
             ) as TOutput[],
         );
+    }
+
+    validate<TOutput>(
+        schema: StandardSchemaV1<TInput, TOutput>,
+    ): ICollection<TOutput> {
+        const validatedItems: TOutput[] = [];
+        for (const item of this.array) {
+            const result = schema["~standard"].validate(item);
+            if (isPromiseLike(result)) {
+                throw new TypeError("Schema validation must be synchronous");
+            }
+            if (!result.issues) {
+                validatedItems.push(result.value);
+            }
+        }
+        return new ListCollection(validatedItems);
     }
 
     reject<TOutput extends TInput>(

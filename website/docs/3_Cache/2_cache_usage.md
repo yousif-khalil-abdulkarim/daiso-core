@@ -141,9 +141,9 @@ await cache.removeMany([
 Note this works also with following methods, `exists`, `missing`, `get`, `getOrFail`, `getAndRemove`, `getOr`, `getOrAdd`, `put`, `update`, `increment`, `decrement` and `remove`.
 :::
 
-### Typed cache
+### Compile time type safety
 
-You can enforce type safety by setting the cache value type:
+You can enforce compile time type safety by setting the cache value type:
 
 ```ts
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
@@ -160,6 +160,9 @@ const cache = new Cache<IUser>({
     namespace: new Namespace("cache"),
     adapter: new MemoryCacheAdapter(),
 });
+
+// A typescript error will occur because the type is not mathcing.
+await cache.add("a", "asd")
 ```
 
 If you have multiple types you can use algeberical enums:
@@ -225,6 +228,31 @@ const productCache = new Cache<IProduct>({
     namespace: new Namespace(["cache", "product"]),
     adapter: cacheAdapter,
 });
+```
+
+### Runtime type safety
+
+You can enforce runtime type safety by passing [standard schema](https://standardschema.dev/) compliant object to the cache:
+
+```ts
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { Cache } from "@daiso-tech/core/cache";
+import { z } from "zod";
+
+const userSchema = z.object({
+    name: z.string();
+    email: z.string();
+    age: z.number();
+});
+
+// The type will be infered
+const cache = new Cache({
+    adapter: new MemoryCacheAdapter(),
+    schema: userSchema
+});
+
+// A typescript and runtime error will occur because the type is not mathcing.
+await cache.add("a", "asd")
 ```
 
 ### Additional methods

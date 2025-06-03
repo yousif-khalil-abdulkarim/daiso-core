@@ -4,6 +4,7 @@ import {
     fallback,
     type OnFallbackData,
 } from "@/async/middlewares/fallback/fallback.middleware.js";
+import { z } from "zod";
 
 describe("function: fallback", () => {
     test("Should return function value when no error is thrown", async () => {
@@ -27,7 +28,7 @@ describe("function: fallback", () => {
         ]).invoke();
         expect(returnValue).toBe("fallback-value");
     });
-    test("Should throw error when fallback value is defined and fallback policy is defined", async () => {
+    test("Should not add fallback when given custom error policy and unknown error", async () => {
         class CustomError extends Error {}
         const returnValue = new AsyncHooks((): string => {
             throw new Error("Unexpected error");
@@ -38,6 +39,42 @@ describe("function: fallback", () => {
             }),
         ]).invoke();
         await expect(returnValue).rejects.toBeInstanceOf(Error);
+    });
+    test("Should not add fallback when given custom standard schema error policy and unknown error", async () => {
+        class CustomError extends Error {}
+        const returnValue = new AsyncHooks((): string => {
+            throw new Error("Unexpected error");
+        }, [
+            fallback({
+                fallbackValue: "fallback-value",
+                errorPolicy: z.instanceof(CustomError),
+            }),
+        ]).invoke();
+        await expect(returnValue).rejects.toBeInstanceOf(Error);
+    });
+    test("Should add fallback only to specific error when given custom error policy", async () => {
+        class CustomError extends Error {}
+        const returnValue = await new AsyncHooks((): string => {
+            throw new CustomError("Unexpected error");
+        }, [
+            fallback({
+                fallbackValue: "fallback-value",
+                errorPolicy: (error) => error instanceof CustomError,
+            }),
+        ]).invoke();
+        expect(returnValue).toBe("fallback-value");
+    });
+    test("Should add fallback only to specific error when given custom standard schema error policy", async () => {
+        class CustomError extends Error {}
+        const returnValue = await new AsyncHooks((): string => {
+            throw new CustomError("Unexpected error");
+        }, [
+            fallback({
+                fallbackValue: "fallback-value",
+                errorPolicy: z.instanceof(CustomError),
+            }),
+        ]).invoke();
+        expect(returnValue).toBe("fallback-value");
     });
     test("Should call onFallback callback when error is thrown", async () => {
         let data = null as OnFallbackData | null;

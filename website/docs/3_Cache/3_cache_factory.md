@@ -31,7 +31,7 @@ const cacheFactory = new CacheFactory({
             serde,
         }),
     },
-    // You can set the default adapter
+    // You can set an optional default adapter
     defaultAdapter: "memory",
 });
 ```
@@ -67,8 +67,16 @@ Note that if you specify a non-existent adapter, an error will be thrown.
 ### 3. Overriding default settings
 
 ```ts
+import { z } from "zod";
+
 await eventBusFactory
     .setNamespace(new Namespace("@my-namespace"))
+    // You can overide the cache value type by calling setType or setSchema method again
+    .setType<string>()
+    .setSchema(z.object({
+        name: z.string(),
+        age: z.number(),
+    }))
     .use("redis")
     .add(["user", "jose@gmail.com"], {
         name: "Jose",

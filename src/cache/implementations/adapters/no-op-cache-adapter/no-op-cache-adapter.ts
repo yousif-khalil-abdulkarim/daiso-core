@@ -16,7 +16,7 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
-export class NoOpCacheAdapter<TType> implements ICacheAdapter<TType> {
+export class NoOpCacheAdapter<TType = unknown> implements ICacheAdapter<TType> {
     get(_key: string): PromiseLike<TType | null> {
         return Promise.resolve(null);
     }

@@ -57,6 +57,7 @@ import {
     AsyncReverseIterable,
     AsyncSliceIterable,
     AsyncRepeatIterable,
+    AsyncValidateIterable,
 } from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
 import {
     isInvokable,
@@ -71,6 +72,7 @@ import type {
     FactoryFn,
 } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
  *
@@ -332,6 +334,14 @@ export class AsyncIterableCollection<TInput = unknown>
     ): IAsyncCollection<TOutput> {
         return new AsyncIterableCollection<TOutput>(
             new AsyncFilterIterable(this, predicateFn),
+        );
+    }
+
+    validate<TOutput>(
+        schema: StandardSchemaV1<TInput, TOutput>,
+    ): IAsyncCollection<TOutput> {
+        return new AsyncIterableCollection(
+            new AsyncValidateIterable(this, schema),
         );
     }
 

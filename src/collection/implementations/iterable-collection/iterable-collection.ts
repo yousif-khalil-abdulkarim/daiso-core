@@ -57,6 +57,7 @@ import {
     ReverseIterable,
     SliceIterable,
     RepeatIterable,
+    ValidateIterable,
 } from "@/collection/implementations/iterable-collection/_shared/_module.js";
 import {
     isInvokable,
@@ -64,6 +65,7 @@ import {
     type Lazyable,
 } from "@/utilities/_module-exports.js";
 import { resolveLazyable } from "@/utilities/_module-exports.js";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
  * All methods that return {@link ICollection | `ICollection`} are executed lazly, meaning the execution will occur iterating the items withthe `forEach` method or `for of` loop.
@@ -282,6 +284,12 @@ export class IterableCollection<TInput = unknown>
         return new IterableCollection<TOutput>(
             new FilterIterable(this, predicateFn),
         );
+    }
+
+    validate<TOutput>(
+        schema: StandardSchemaV1<TInput, TOutput>,
+    ): ICollection<TOutput> {
+        return new IterableCollection(new ValidateIterable(this, schema));
     }
 
     reject<TOutput extends TInput>(

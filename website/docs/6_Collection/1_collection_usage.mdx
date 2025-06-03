@@ -251,10 +251,7 @@ const deserializedListCollection = serde.deserialize(serializedTimeSpan);
 // Logs false
 console.log(serializedListCollection === deserializedListCollection);
 // Logs [1, 2, 3, 4, 5] [1, 2, 3, 4, 5]
-console.log(
-    listCollection.toArray(),
-    deserializedListCollection.toArray(),
-);
+console.log(listCollection.toArray(), deserializedListCollection.toArray());
 
 const iterableCollection = new IteralbeCollection([1, 2, 3, 4, 5]);
 const serializedIteralbeCollection = serde.serialize(timeSpan);
@@ -298,6 +295,7 @@ For the remaining of the documentation, we'll discuss each method available on t
         <ol><a href="#entries">entries</a></ol>
         <ol><a href="#every">every</a></ol>
         <ol><a href="#filter">filter</a></ol>
+        <ol><a href="#validate">filter</a></ol>
         <ol><a href="#first">first</a></ol>
         <ol><a href="#firstor">firstOr</a></ol>
         <ol><a href="#firstorfail">firstOrFail</a></ol>
@@ -665,12 +663,27 @@ const isAllNumberLessThan6 = new ListCollection([0, 1, 2, 3, 4, 5]).every(
 The `filter` method filters the collection using `predicateFn`, keeping only those items that pass `predicateFn`.
 
 ```ts
-import type { ListCollection } from "@daiso-tech/core/collection/collection";
+import { ListCollection } from "@daiso-tech/core/collection/collection";
 
 new ListCollection([0, 1, 2, 3, 4, 5, 6])
     .filter((item) => 2 < item && item < 5)
     .toArray();
 // [3, 4]
+```
+
+### validate
+
+The `validate` method filters all items that matches the `schema` and transforms them afterwards.
+The `schema` can be any [standard schema](https://standardschema.dev/) compliant object.
+
+```ts
+import { ListCollection } from "@daiso-tech/core/collection/collection";
+import { z } from "zod";
+
+new ListCollection(["a", "1.2", "3", "null"])
+    .validate(z.string().pipe(z.number()))
+    .toArray();
+// [1.2, 3]
 ```
 
 ### first

@@ -29,6 +29,7 @@ import type {
 } from "@/collection/contracts/collection.errors.js";
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 import type { Lazyable } from "@/utilities/_module-exports.js";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -89,6 +90,14 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
                 ICollection<TInput>,
                 TOutput
             >,
+        ): ICollection<TOutput>;
+
+        /**
+         * The `validate` method filters all items that matches the `schema` and transforms them afterwards.
+         * The `schema` can be any [standard schema](https://standardschema.dev/) compliant object.
+         */
+        validate<TOutput>(
+            schema: StandardSchemaV1<TInput, TOutput>,
         ): ICollection<TOutput>;
 
         /**

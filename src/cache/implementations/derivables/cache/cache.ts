@@ -21,6 +21,7 @@ import {
 import {
     resolveAsyncLazyable,
     resolveInvokable,
+    validate,
 } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazyable,
@@ -48,13 +49,25 @@ import type {
     Factory,
     FactoryFn,
 } from "@/utilities/_module-exports.js";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
-export type CacheSettingsBase = {
+export type CacheSettingsBase<TType = unknown> = {
+    /**
+     * You can provide any [standard schema](https://standardschema.dev/) compliant object to validate all input and output data to ensure runtime type safety.
+     */
+    schema?: StandardSchemaV1<TType>;
+
+    /**
+     * You can enable validating cache values when retrieving them.
+     * @default {true}
+     */
+    shouldValidateOutput?: boolean;
+
     /**
      * @default
      * ```ts
@@ -110,7 +123,7 @@ export type CacheAdapter<TType> =
  * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
-export type CacheSettings = CacheSettingsBase & {
+export type CacheSettings<TType = unknown> = CacheSettingsBase<TType> & {
     adapter: CacheAdapter<any>;
 };
 
@@ -128,6 +141,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
         AsyncLazy<any>,
         LazyPromise<any>
     >;
+    private readonly schema: StandardSchemaV1<TType> | undefined;
+    private readonly shouldValidateOutput: boolean;
 
     /**
      *
@@ -154,8 +169,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
      * });
      * ```
      */
-    constructor(settings: CacheSettings) {
+    constructor(settings: CacheSettings<TType>) {
         const {
+            shouldValidateOutput = true,
+            schema,
             namespace = new Namespace(["@", "cache"]),
             adapter,
             eventBus = new EventBus<any>({
@@ -165,6 +182,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
             lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
         } = settings;
 
+        this.shouldValidateOutput = shouldValidateOutput;
+        this.schema = schema;
         this.namespace = namespace;
         this.defaultTtl = defaultTtl;
         this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
@@ -267,6 +286,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
             const keyObj = this.namespace._getInternal().create(key);
             try {
                 const value = await this.adapter.get(keyObj.namespaced);
+                if (this.shouldValidateOutput && value !== null) {
+                    await validate(this.schema, value);
+                }
+
                 if (value === null) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
@@ -281,6 +304,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                         })
                         .defer();
                 }
+
                 return value;
             } catch (error: unknown) {
                 this.eventBus
@@ -314,6 +338,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 const value = await this.adapter.getAndRemove(
                     keyObj.namespaced,
                 );
+                if (this.shouldValidateOutput && value !== null) {
+                    await validate(this.schema, value);
+                }
+
                 if (value === null) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
@@ -388,6 +416,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.namespace._getInternal().create(key);
             try {
+                await validate(this.schema, value);
                 const hasAdded = await this.adapter.add(
                     keyObj.namespaced,
                     value,
@@ -426,6 +455,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.namespace._getInternal().create(key);
             try {
+                await validate(this.schema, value);
                 const hasUpdated = await this.adapter.put(
                     keyObj.namespaced,
                     value,
@@ -468,6 +498,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return this.createLazyPromise(async () => {
             const keyObj = this.namespace._getInternal().create(key);
             try {
+                await validate(this.schema, value);
                 const hasUpdated = await this.adapter.update(
                     keyObj.namespaced,
                     value,

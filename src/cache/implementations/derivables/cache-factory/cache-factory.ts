@@ -21,6 +21,7 @@ import {
 } from "@/cache/implementations/derivables/cache/_module.js";
 import { Namespace, type TimeSpan } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
  *
@@ -36,12 +37,14 @@ export type CacheAdapters<TAdapters extends string = string> = Partial<
  * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
-export type CacheFactorySettings<TAdapters extends string = string> =
-    CacheSettingsBase & {
-        adapters: CacheAdapters<TAdapters>;
+export type CacheFactorySettings<
+    TAdapters extends string = string,
+    TType = unknown,
+> = CacheSettingsBase<TType> & {
+    adapters: CacheAdapters<TAdapters>;
 
-        defaultAdapter?: NoInfer<TAdapters>;
-    };
+    defaultAdapter?: NoInfer<TAdapters>;
+};
 
 /**
  * The `CacheFactory` class is immutable.
@@ -49,8 +52,8 @@ export type CacheFactorySettings<TAdapters extends string = string> =
  * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
-export class CacheFactory<TAdapters extends string = string>
-    implements ICacheFactory<TAdapters>
+export class CacheFactory<TAdapters extends string = string, TType = unknown>
+    implements ICacheFactory<TAdapters, TType>
 {
     /**
      * @example
@@ -74,23 +77,25 @@ export class CacheFactory<TAdapters extends string = string>
      *   defaultAdapter: "memory",
      * });
      */
-    constructor(private readonly settings: CacheFactorySettings<TAdapters>) {}
+    constructor(
+        private readonly settings: CacheFactorySettings<TAdapters, TType>,
+    ) {}
 
-    setNamespace(namespace: Namespace): CacheFactory<TAdapters> {
+    setNamespace(namespace: Namespace): CacheFactory<TAdapters, TType> {
         return new CacheFactory({
             ...this.settings,
             namespace,
         });
     }
 
-    setDefaultTtl(ttl: TimeSpan): CacheFactory<TAdapters> {
+    setDefaultTtl(ttl: TimeSpan): CacheFactory<TAdapters, TType> {
         return new CacheFactory({
             ...this.settings,
             defaultTtl: ttl,
         });
     }
 
-    setEventBus(eventBus: IEventBus): CacheFactory<TAdapters> {
+    setEventBus(eventBus: IEventBus): CacheFactory<TAdapters, TType> {
         return new CacheFactory({
             ...this.settings,
             eventBus,
@@ -99,11 +104,26 @@ export class CacheFactory<TAdapters extends string = string>
 
     setLazyPromiseFactory(
         factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
-    ): CacheFactory<TAdapters> {
+    ): CacheFactory<TAdapters, TType> {
         return new CacheFactory({
             ...this.settings,
             lazyPromiseFactory: factory,
         });
+    }
+
+    setSchema<TSchemaOutputType>(
+        schema: StandardSchemaV1<TSchemaOutputType>,
+    ): CacheFactory<TAdapters, TSchemaOutputType> {
+        return new CacheFactory({
+            ...this.settings,
+            schema,
+        });
+    }
+
+    setType<TOutputType>(): CacheFactory<TAdapters, TOutputType> {
+        return new CacheFactory(
+            this.settings as CacheFactorySettings<TAdapters, TOutputType>,
+        );
     }
 
     /**
@@ -146,7 +166,7 @@ export class CacheFactory<TAdapters extends string = string>
      *   .add("a", 1);
      * ```
      */
-    use<TType = unknown>(
+    use(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
     ): ICache<TType> {
         if (adapterName === undefined) {

@@ -56,7 +56,7 @@ type MongodbCacheDocument = {
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
-export class MongodbCacheAdapter<TType>
+export class MongodbCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private static filterUnexpiredKeys(

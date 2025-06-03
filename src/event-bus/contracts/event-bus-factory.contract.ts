@@ -19,14 +19,15 @@ import {
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
-export type IEventBusFactory<TAdapters extends string = string> = {
+export type IEventBusFactory<
+    TAdapters extends string = string,
+    TEventMap extends BaseEventMap = BaseEventMap,
+> = {
     /**
      * The `use` method will throw an error if you provide it unregisted adapter.
      * If no default adapter is defined an error will be thrown by `use` method.
      * @throws {UnregisteredAdapterError} {@link UnregisteredAdapterError}
      * @throws {DefaultAdapterNotDefinedError} {@link DefaultAdapterNotDefinedError}
      */
-    use<TEventMap extends BaseEventMap = BaseEventMap>(
-        adapterName?: TAdapters,
-    ): IEventBus<TEventMap>;
+    use(adapterName?: TAdapters): IEventBus<TEventMap>;
 };

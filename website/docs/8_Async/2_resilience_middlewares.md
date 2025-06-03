@@ -43,8 +43,25 @@ You can define an [`ErrorPolicy`](https://yousif-khalil-abdulkarim.github.io/dai
 const fn = new AsyncHooks(unstableFn, [
     fallback({
         fallbackValue: 1,
-        // Will only retry errors that are not a TypeError
+        // Will only fallback errors that are not a TypeError
         errorPolicy: (error) => !(error instanceof TypeError),
+    }),
+]);
+```
+
+You can also use [standard schema](https://standardschema.dev/) complaint object as error policy:
+
+```ts
+import { z } from "zod";
+
+const fn = new AsyncHooks(unstableFn, [
+    fallback({
+        fallbackValue: 1,
+        // Will only fallback errors that match the schema
+        errorPolicy: z.object({
+            code: z.liter("E-20"),
+            message: z.string().startWith("A error occured"),
+        }),
     }),
 ]);
 ```
@@ -70,27 +87,25 @@ For more details about `onFallback` callback data, see the [OnFallbackData](http
 
 The hedging middlewares allow you to send request to multiple redundant services and use the first successful response. The library offers 2 strategies:
 
-
--   [`sequentialHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.sequentialHedging.html)
-
+- [`sequentialHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.sequentialHedging.html)
 
     The [`sequentialHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.sequentialHedging.html) middleware executes the primary function followed by fallback [`Invokable:s`](../7_Utilities/3_invokable.md) in sequence. It:
 
-    -   Returns immediately with the first successful result.
+    - Returns immediately with the first successful result.
 
-    -   Automatically cancels pending [`Invokable:s`](../7_Utilities/3_invokable.md) once a result is obtained.
+    - Automatically cancels pending [`Invokable:s`](../7_Utilities/3_invokable.md) once a result is obtained.
 
-    -   Throws an error only if all [`Invokable:s`](../7_Utilities/3_invokable.md) fail.
+    - Throws an error only if all [`Invokable:s`](../7_Utilities/3_invokable.md) fail.
 
--   [`concurrentHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.concurrentHedging.html)
+- [`concurrentHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.concurrentHedging.html)
 
     The concurrentHedging middleware executes the primary and all fallback [`Invokable:s`](../7_Utilities/3_invokable.md) concurrently, then:
 
-    -   Returns immediately with the first successful result
+    - Returns immediately with the first successful result
 
-    -   Automatically cancels all other in-progress calls
+    - Automatically cancels all other in-progress calls
 
-    -   Throws an aggregated error if all attempts fail
+    - Throws an aggregated error if all attempts fail
 
 Both middlewares work in the same way and use the same settings.
 
@@ -310,7 +325,6 @@ The [`concurrentHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/
 import { concurrentHedging } from "@daiso-tech/core/async";
 import { AsyncHooks } from "@daiso-tech/core/utilities";
 
-
 const fetchDataEnhanced = new AsyncHooks(
     fetchData,
     [
@@ -374,6 +388,23 @@ const fn = new AsyncHooks(unstableFn, [
 ]);
 ```
 
+You can also use [standard schema](https://standardschema.dev/) complaint object as error policy:
+
+```ts
+import { z } from "zod";
+
+const fn = new AsyncHooks(unstableFn, [
+    retry({
+        maxAttemps: 4,
+        // Will only retry errors that match the schema
+        errorPolicy: z.object({
+            code: z.liter("E-20"),
+            message: z.string().startWith("A error occured"),
+        }),
+    }),
+]);
+```
+
 ### Custom BackoffPolicy
 
 You can use custom [`BackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.BackoffPolicy.html):
@@ -395,13 +426,13 @@ const fn = new AsyncHooks(unstableFn, [
 
 There are predefined backoff policies that can be used:
 
--   [`constantBackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.constantBackoffPolicy.html)
+- [`constantBackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.constantBackoffPolicy.html)
 
--   [`exponentialBackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.exponentialBackoffPolicy.html)
+- [`exponentialBackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.exponentialBackoffPolicy.html)
 
--   [`linearBackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.linearBackoffPolicy.html)
+- [`linearBackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.linearBackoffPolicy.html)
 
--   [`polynomialBackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.polynomialBackoffPolicy.html)
+- [`polynomialBackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.polynomialBackoffPolicy.html)
 
 Usage example:
 
@@ -598,12 +629,12 @@ await fn.invoke();
 
 :::info
 
--   For more details about `onStart` callback data, see the [OnObserveStartData](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.OnObserveStartData.html) type.
+- For more details about `onStart` callback data, see the [OnObserveStartData](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.OnObserveStartData.html) type.
 
--   For more details about `onSuccess` callback data, see the [OnObserveSuccessData](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.OnObserveSuccessData.html) type.
+- For more details about `onSuccess` callback data, see the [OnObserveSuccessData](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.OnObserveSuccessData.html) type.
 
--   For more details about `onError` callback data, see the [OnObserveErrorData](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.OnObserveErrorData.html) type.
+- For more details about `onError` callback data, see the [OnObserveErrorData](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.OnObserveErrorData.html) type.
 
--   For more details about `onFinally` callback data, see the [OnObserveFinallyData](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.OnObserveFinallyData.html) type.
+- For more details about `onFinally` callback data, see the [OnObserveFinallyData](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.OnObserveFinallyData.html) type.
 
 :::

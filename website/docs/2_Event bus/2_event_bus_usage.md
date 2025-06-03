@@ -72,7 +72,7 @@ await eventBus.dispatch("add", {
 
 ## Patterns
 
-### Typed events
+### Compile time type safety
 
 An event map can be used to strictly type the events:
 
@@ -91,7 +91,7 @@ type EventMap = {
     add: AddEvent;
 };
 
-const eventBus: IEventBus<EventMap> = new EventBus<EventMap>({
+const eventBus = new EventBus<EventMap>({
     namespace: new Namespace("event-bus"),
     adapter: new MemoryEventBusAdapter(),
 });
@@ -113,6 +113,34 @@ await eventBus.addListener("addd", (event) => {
     console.log(event);
 });
 ```
+
+### Runtime type safety
+
+```ts
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { z } from "zod";
+
+const eventMapSchema = {
+    add: z.object({
+        a: z.number(),
+        b: z.number(),
+    })
+}
+
+// The event type will be infered
+const eventBus = new EventBus({
+    adapter: new MemoryEventBusAdapter(),
+    eventMapSchema
+});
+
+// A typescript and runtime error will show up because the event fields doesnt match
+await eventBus.dispatch("add", {
+    nbr1: 1,
+    nbr2: 2,
+});
+```
+
 
 ### Subscribe method
 

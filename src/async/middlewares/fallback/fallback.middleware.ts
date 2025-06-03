@@ -12,7 +12,10 @@ import {
     type AsyncMiddlewareFn,
     type Invokable,
 } from "@/utilities/_module-exports.js";
-import type { ErrorPolicy } from "@/async/middlewares/_shared.js";
+import {
+    type ErrorPolicy,
+    callErrorPolicy,
+} from "@/async/middlewares/_shared.js";
 
 /**
  *
@@ -122,7 +125,7 @@ export function fallback<
         try {
             return await next(...args);
         } catch (error: unknown) {
-            if (callInvokable(errorPolicy, error)) {
+            if (await callErrorPolicy(errorPolicy, error)) {
                 const resolvedFallbackValue =
                     await resolveAsyncLazyable(fallbackValue);
                 callInvokable(onFallback, {
