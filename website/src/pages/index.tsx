@@ -138,6 +138,19 @@ const featureItems = (projectName: ReactNode): FeatureItemProps[] => [
             </>
         ),
     },
+    {
+        icon: <CheckSquare2 size="2.5rem" strokeWidth="1.5px" />,
+        title: "Supports standard schema",
+        description: (
+            <>
+                Integrated seamlessly with{" "}
+                <a href="https://standardschema.dev/">standard schema</a>{" "}
+                allowing you to use libraries like{" "}
+                <a href="https://zod.dev/">zod</a> to ensure both compile time
+                and runtimte typesafety.
+            </>
+        ),
+    },
 ];
 const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
     {
