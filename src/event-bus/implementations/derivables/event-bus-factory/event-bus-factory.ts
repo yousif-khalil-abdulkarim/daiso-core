@@ -12,6 +12,7 @@ import {
 import {
     EventBus,
     type EventBusSettingsBase,
+    type EventMapSchema,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
 import type {
     AsyncLazy,
@@ -37,12 +38,14 @@ export type EventBusAdapters<TAdapters extends string = string> = Partial<
  * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
-export type EventBusFactorySettings<TAdapters extends string = string> =
-    EventBusSettingsBase & {
-        adapters: EventBusAdapters<TAdapters>;
+export type EventBusFactorySettings<
+    TAdapters extends string = string,
+    TEventMap extends BaseEventMap = BaseEventMap,
+> = EventBusSettingsBase<TEventMap> & {
+    adapters: EventBusAdapters<TAdapters>;
 
-        defaultAdapter?: NoInfer<TAdapters>;
-    };
+    defaultAdapter?: NoInfer<TAdapters>;
+};
 
 /**
  * The `EventBusFactory` class is immutable.
@@ -50,8 +53,10 @@ export type EventBusFactorySettings<TAdapters extends string = string> =
  * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
  * @group Derivables
  */
-export class EventBusFactory<TAdapters extends string = string>
-    implements IEventBusFactory<TAdapters>
+export class EventBusFactory<
+    TAdapters extends string = string,
+    TEventMap extends BaseEventMap = BaseEventMap,
+> implements IEventBusFactory<TAdapters, TEventMap>
 {
     /**
      * @example
@@ -82,10 +87,13 @@ export class EventBusFactory<TAdapters extends string = string>
      * ```
      */
     constructor(
-        private readonly settings: EventBusFactorySettings<TAdapters>,
+        private readonly settings: EventBusFactorySettings<
+            TAdapters,
+            TEventMap
+        >,
     ) {}
 
-    setNamespace(namespace: Namespace): EventBusFactory<TAdapters> {
+    setNamespace(namespace: Namespace): EventBusFactory<TAdapters, TEventMap> {
         return new EventBusFactory({
             ...this.settings,
             namespace,
@@ -94,10 +102,28 @@ export class EventBusFactory<TAdapters extends string = string>
 
     setLazyPromiseFactory(
         factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
-    ): EventBusFactory<TAdapters> {
+    ): EventBusFactory<TAdapters, TEventMap> {
         return new EventBusFactory({
             ...this.settings,
             lazyPromiseFactory: factory,
+        });
+    }
+
+    setEventMapType<TEventMap extends BaseEventMap>(): EventBusFactory<
+        TAdapters,
+        TEventMap
+    > {
+        return new EventBusFactory({
+            ...this.settings,
+        } as EventBusFactorySettings<TAdapters, TEventMap>);
+    }
+
+    setEventMapSchema<TEventMap extends BaseEventMap>(
+        eventMapSchema: EventMapSchema<TEventMap>,
+    ): EventBusFactory<TAdapters, TEventMap> {
+        return new EventBusFactory({
+            ...this.settings,
+            eventMapSchema,
         });
     }
 
@@ -144,7 +170,7 @@ export class EventBusFactory<TAdapters extends string = string>
      *   .dispatch("add", { a: 1, b: 2 });
      * ```
      */
-    use<TEventMap extends BaseEventMap = BaseEventMap>(
+    use(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
     ): IEventBus<TEventMap> {
         if (adapterName === undefined) {
