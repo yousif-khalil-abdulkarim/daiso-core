@@ -6,6 +6,7 @@ import {
 } from "@/async/middlewares/retry/retry.middleware.js";
 import { RetryAsyncError } from "@/async/async.errors.js";
 import { AsyncHooks, TimeSpan } from "@/utilities/_module-exports.js";
+import { z } from "zod";
 
 describe("function: retry", () => {
     test("Should throw RetryAsyncError when all atempts fail", async () => {
@@ -42,7 +43,7 @@ describe("function: retry", () => {
 
         expect(repetition).toBe(maxAttempts);
     });
-    test("Should retry only specific error when given custom retry policy", async () => {
+    test("Should not retry when given custom error policy and unknown error", async () => {
         class ErrorA extends Error {}
         class ErrorB extends Error {}
 
@@ -59,7 +60,24 @@ describe("function: retry", () => {
 
         await expect(promise).rejects.toBeInstanceOf(ErrorB);
     });
-    test("Should not retry when given custom retry policy and unknown error", async () => {
+    test("Should not retry when given custom standard schema error policy and unknown error", async () => {
+        class ErrorA extends Error {}
+        class ErrorB extends Error {}
+
+        const promise = new AsyncHooks(
+            () => {
+                throw new ErrorB("My own error");
+            },
+            retry({
+                maxAttempts: 4,
+                backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                errorPolicy: z.instanceof(ErrorA),
+            }),
+        ).invoke();
+
+        await expect(promise).rejects.toBeInstanceOf(ErrorB);
+    });
+    test("Should retry only specific error when given custom error policy", async () => {
         class ErrorA extends Error {}
 
         const promise = new AsyncHooks(
@@ -70,6 +88,22 @@ describe("function: retry", () => {
                 maxAttempts: 4,
                 backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                 errorPolicy: (error) => error instanceof ErrorA,
+            }),
+        ).invoke();
+
+        await expect(promise).rejects.toBeInstanceOf(RetryAsyncError);
+    });
+    test("Should retry only specific error when given custom standard schema error policy", async () => {
+        class ErrorA extends Error {}
+
+        const promise = new AsyncHooks(
+            () => {
+                throw new ErrorA("My own error");
+            },
+            retry({
+                maxAttempts: 4,
+                backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                errorPolicy: z.instanceof(ErrorA),
             }),
         ).invoke();
 
