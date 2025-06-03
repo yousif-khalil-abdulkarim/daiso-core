@@ -28,5 +28,6 @@ export * from "@/collection/implementations/async-iterable-collection/_shared/as
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-tap-iterable.js";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-unique-iterable.js";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-update-iterable.js";
+export * from "@/collection/implementations/async-iterable-collection/_shared/async-validate-iterable.js";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-when-iterable.js";
 export * from "@/collection/implementations/async-iterable-collection/_shared/async-zip-iterable.js";

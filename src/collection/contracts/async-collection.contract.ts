@@ -32,6 +32,7 @@ import type {
     AsyncIterableValue,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
  *
@@ -91,6 +92,14 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     filter<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
+    ): IAsyncCollection<TOutput>;
+
+    /**
+     * The `validate` method filters all items that matches the `schema` and transforms them afterwards.
+     * The `schema` can be any [standard schema](https://standardschema.dev/) compliant object.
+     */
+    validate<TOutput>(
+        schema: StandardSchemaV1<TInput, TOutput>,
     ): IAsyncCollection<TOutput>;
 
     /**
