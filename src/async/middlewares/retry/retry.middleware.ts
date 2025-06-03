@@ -15,7 +15,10 @@ import {
 } from "@/async/backof-policies/_module.js";
 import { RetryAsyncError } from "@/async/async.errors.js";
 import { LazyPromise } from "@/async/utilities/_module.js";
-import { type ErrorPolicy } from "@/async/middlewares/_shared.js";
+import {
+    type ErrorPolicy,
+    callErrorPolicy,
+} from "@/async/middlewares/_shared.js";
 
 /**
  *
@@ -179,7 +182,7 @@ export function retry<
                     break;
                 }
 
-                if (callInvokable(errorPolicy, error)) {
+                if (await callErrorPolicy(errorPolicy, error)) {
                     errors.push(error);
                 } else {
                     throw error;
