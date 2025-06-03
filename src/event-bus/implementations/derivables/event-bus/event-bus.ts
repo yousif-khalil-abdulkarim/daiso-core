@@ -90,6 +90,12 @@ export type EventBusSettingsBase<
 export type EventBusSettings<TEventMap extends BaseEventMap = BaseEventMap> =
     EventBusSettingsBase<TEventMap> & {
         adapter: IEventBusAdapter;
+    } & {
+        /**
+         * Thist settings is only used for testing, dont use it in your code !
+         * @internal
+         */
+        __onUncaughtRejection?: (error: unknown) => void;
     };
 
 /**
@@ -112,6 +118,11 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     private readonly eventMapSchema: EventMapSchema<TEventMap> | undefined;
 
     /**
+     * Thist instance variable is only used for testing!
+     */
+    private readonly __onUncaughtRejection?: (error: unknown) => void;
+
+    /**
      * @example
      * ```ts
      * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
@@ -124,6 +135,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
      */
     constructor(settings: EventBusSettings<TEventMap>) {
         const {
+            __onUncaughtRejection,
             shouldValidateOutput = true,
             eventMapSchema,
             namespace = new Namespace(["@", "event-bus"]),
@@ -135,6 +147,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.adapter = adapter;
         this.namespace = namespace;
+        this.__onUncaughtRejection = __onUncaughtRejection;
     }
 
     private createLazyPromise<TValue = void>(
@@ -161,11 +174,15 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                         }
                         await resolveInvokable(listener)(event);
                     } catch (error: unknown) {
-                        console.error(
-                            `An error of type "${String(error)}" occured in listener with name of "${getInvokableName(listener)}" for "${String(eventName)}" event`,
-                        );
-                        console.log("ERROR:", error);
-                        throw error;
+                        if (this.__onUncaughtRejection !== undefined) {
+                            this.__onUncaughtRejection(error);
+                        } else {
+                            console.error(
+                                `An error of type "${String(error)}" occured in listener with name of "${getInvokableName(listener)}" for "${String(eventName)}" event`,
+                            );
+                            console.log("ERROR:", error);
+                            throw error;
+                        }
                     }
                 },
             );
@@ -231,11 +248,15 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                     const resolvedListener = resolveInvokable(listener);
                     await resolvedListener(event_);
                 } catch (error: unknown) {
-                    console.error(
-                        `An error of type "${String(error)}" occured in listener with name of "${getInvokableName(listener)}" for "${String(eventName)}" event`,
-                    );
-                    console.log("ERROR:", error);
-                    throw error;
+                    if (this.__onUncaughtRejection !== undefined) {
+                        this.__onUncaughtRejection(error);
+                    } else {
+                        console.error(
+                            `An error of type "${String(error)}" occured in listener with name of "${getInvokableName(listener)}" for "${String(eventName)}" event`,
+                        );
+                        console.log("ERROR:", error);
+                        throw error;
+                    }
                 } finally {
                     await this.removeListener(eventName, listener);
                 }
@@ -304,8 +325,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         event: TEventMap[TEventName],
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
+            await validate(this.eventMapSchema?.[eventName], event);
             try {
-                await validate(this.eventMapSchema?.[eventName], event);
                 await this.adapter.dispatch(
                     this.namespace._getInternal().create(String(eventName))
                         .namespaced,
