@@ -1,5 +1,24 @@
 # @daiso-tech/core
 
+## 0.37.0
+
+### Minor Changes
+
+- bd9e529: ---
+
+    ## "@daiso-tech/core": minor
+
+    `LibsqlLockAdapter` and `SqliteLockAdapter` have been removed. Use `KyselyLockAdapter` instead. It supports `postgres`, `mysql`, and `sqlite` (including derived databases) via `kysely`.
+
+- bd9e529: `LibsqlCacheAdapter` and `SqliteCacheAdapter` have been removed. Use `KyselyCacheAdapter` instead. It supports `postgres`, `mysql`, and `sqlite` (including derived databases) via `kysely`.
+- 2cb3dd2: Added [standard schema](https://standardschema.dev/) integration with following components:
+
+    - `Collection` and `AsyncCollection` components can now use [standard schema](https://standardschema.dev/) object filter all items match the schema and thereafter transform the matched items.
+    - `Cache` component can now use [standard schema](https://standardschema.dev/) object to validate all input and output data.
+    - `EventBus` component can now use [standard schema](https://standardschema.dev/) object to validate all input and output data.
+    - `fallback` middleware can now use [standard schema](https://standardschema.dev/) as error policy.
+    - `retry` middleware can now use [standard schema](https://standardschema.dev/) as error policy.
+
 ## 0.36.0
 
 ### Minor Changes
@@ -7,8 +26,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-        - `AsyncFactoryable`
-        - `Factoryable`
+          - `AsyncFactoryable`
+          - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
