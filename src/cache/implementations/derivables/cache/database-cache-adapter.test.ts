@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
-import { SqliteCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
+import { KyselyCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
 import Sqlite, { type Database } from "better-sqlite3";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/_module-exports.js";
+import { Kysely, SqliteDialect } from "kysely";
 
 describe("class: DatabaseCacheAdapter", () => {
     let database: Database;
@@ -16,9 +17,12 @@ describe("class: DatabaseCacheAdapter", () => {
     });
     cacheAdapterTestSuite({
         createAdapter: async () => {
-            const adapter = new SqliteCacheAdapter({
-                database: database,
-                tableName: "custom_table",
+            const adapter = new KyselyCacheAdapter({
+                kysely: new Kysely({
+                    dialect: new SqliteDialect({
+                        database,
+                    }),
+                }),
                 shouldRemoveExpiredKeys: false,
                 serde: new Serde(new SuperJsonSerdeAdapter()),
             });

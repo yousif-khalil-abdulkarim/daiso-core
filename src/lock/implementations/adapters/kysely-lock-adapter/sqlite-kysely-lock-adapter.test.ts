@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
+import { KyselyLockAdapter } from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
 import Sqlite, { type Database } from "better-sqlite3";
-import { SqliteLockAdapter } from "@/lock/implementations/adapters/sqlite-lock-adapter/sqlite-lock-adapter.js";
+import { Kysely, SqliteDialect } from "kysely";
 
-describe("class: SqliteLockAdapter", () => {
+describe("sqlite class: KyselyLockAdapter", () => {
     let database: Database;
     beforeEach(() => {
         database = new Sqlite(":memory:");
@@ -13,13 +14,16 @@ describe("class: SqliteLockAdapter", () => {
     });
     databaseLockAdapterTestSuite({
         createAdapter: async () => {
-            const lockAdapter = new SqliteLockAdapter({
-                database: database,
-                tableName: "custom_table",
+            const adapter = new KyselyLockAdapter({
+                kysely: new Kysely({
+                    dialect: new SqliteDialect({
+                        database,
+                    }),
+                }),
                 shouldRemoveExpiredKeys: false,
             });
-            await lockAdapter.init();
-            return lockAdapter;
+            await adapter.init();
+            return adapter;
         },
         test,
         beforeEach,

@@ -9,7 +9,7 @@ import {
     type ICacheUpdate,
     type IDatabaseCacheAdapter,
 } from "@/cache/contracts/_module-exports.js";
-import type { ExpressionBuilder, Transaction } from "kysely";
+import { MysqlAdapter, Transaction, type ExpressionBuilder } from "kysely";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import type {
     IDeinitizable,
@@ -20,33 +20,34 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ExpressionWrapper, SqlBool, Kysely } from "kysely";
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * @group Adapters
  */
-type KyselyCacheTable = {
+type KyselyCacheAdapterTable = {
     key: string;
     value: string;
     // In ms since unix epoch
-    expiration: number | null;
+    expiration: number | string | null;
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * @group Adapters
  */
-type KyselyTables = {
-    cache: KyselyCacheTable;
+type KyselyCacheAdapterTables = {
+    cache: KyselyCacheAdapterTable;
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * @group Adapters
  */
-type KyselySettings = {
-    database: Kysely<KyselyTables>;
+type KyselyCacheAdapterSettings = {
+    kysely: Kysely<KyselyCacheAdapterTables>;
     serde: ISerde<string>;
-
-    /**
-     * @default {false}
-     */
-    disableTransaction?: boolean;
 
     /**
      * @default
@@ -63,7 +64,9 @@ type KyselySettings = {
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * @group Adapters
  */
 export class KyselyCacheAdapter<TType = unknown>
     implements
@@ -74,8 +77,8 @@ export class KyselyCacheAdapter<TType = unknown>
 {
     private static filterUnexpiredKeys(keys: string[]) {
         return (
-            eb: ExpressionBuilder<KyselyTables, "cache">,
-        ): ExpressionWrapper<KyselyTables, "cache", SqlBool> => {
+            eb: ExpressionBuilder<KyselyCacheAdapterTables, "cache">,
+        ): ExpressionWrapper<KyselyCacheAdapterTables, "cache", SqlBool> => {
             const hasNoExpiration = eb("cache.expiration", "is", null);
             const hasExpiration = eb("cache.expiration", "is not", null);
             const hasNotExpired = eb(
@@ -96,8 +99,8 @@ export class KyselyCacheAdapter<TType = unknown>
 
     private static filterExpiredKeys(keys: string[]) {
         return (
-            eb: ExpressionBuilder<KyselyTables, "cache">,
-        ): ExpressionWrapper<KyselyTables, "cache", SqlBool> => {
+            eb: ExpressionBuilder<KyselyCacheAdapterTables, "cache">,
+        ): ExpressionWrapper<KyselyCacheAdapterTables, "cache", SqlBool> => {
             const keysMatch = eb("cache.key", "in", keys);
             const hasExpiration = eb("cache.expiration", "is not", null);
             const hasExpired = eb(
@@ -110,53 +113,77 @@ export class KyselyCacheAdapter<TType = unknown>
     }
 
     private readonly serde: ISerde<string>;
-    private readonly database: Kysely<KyselyTables>;
+    private readonly kysely: Kysely<KyselyCacheAdapterTables>;
     private readonly shouldRemoveExpiredKeys: boolean;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private timeoutId: NodeJS.Timeout | string | number | null = null;
     private readonly disableTransaction: boolean;
 
-    constructor(settings: KyselySettings) {
+    /**
+     * @example
+     * ```ts
+     * import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
+     * import Sqlite from "better-sqlite3";
+     *
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const cacheAdapter = new KyselyCacheAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database: new Sqlite("local.db"),
+     *     }),
+     *   }),
+     *   serde,
+     * });
+     * // You need initialize the adapter once before using it.
+     * await cacheAdapter.init();
+     * ```
+     */
+    constructor(settings: KyselyCacheAdapterSettings) {
         const {
-            database,
+            kysely,
             serde,
-            disableTransaction = false,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
         } = settings;
-        this.disableTransaction = disableTransaction;
-        this.database = database;
+        this.disableTransaction = kysely instanceof Transaction;
+        this.kysely = kysely;
         this.serde = serde;
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
     }
 
     async removeAllExpired(): Promise<void> {
-        await this.database
+        await this.kysely
             .deleteFrom("cache")
             .where("cache.expiration", "<=", new Date().getTime())
             .execute();
     }
 
     async init(): Promise<void> {
-        await this.database.schema
-            .createTable("cache")
-            .ifNotExists()
-            .addColumn("key", "text", (col) => col.primaryKey())
-            .addColumn("value", "text")
-            .addColumn("expiration", "integer")
-            .execute();
-        await this.database.schema
-            .createIndex("cache_expiration")
-            .ifNotExists()
-            .on("cache")
-            .columns(["expiration"])
-            .execute();
-        if (this.shouldRemoveExpiredKeys && this.timeoutId === null) {
-            this.timeoutId = setTimeout(() => {
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                this.removeAllExpired();
-            }, this.expiredKeysRemovalInterval.toMilliseconds());
+        // The method should not throw if the index already exists that why the try catch is used.
+        try {
+            await this.kysely.schema
+                .createTable("cache")
+                .ifNotExists()
+                .addColumn("key", "varchar(255)", (col) => col.primaryKey())
+                .addColumn("value", "varchar(255)")
+                .addColumn("expiration", "bigint")
+                .execute();
+            await this.kysely.schema
+                .createIndex("cache_expiration")
+                .on("cache")
+                .columns(["expiration"])
+                .execute();
+            if (this.shouldRemoveExpiredKeys && this.timeoutId === null) {
+                this.timeoutId = setTimeout(() => {
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    this.removeAllExpired();
+                }, this.expiredKeysRemovalInterval.toMilliseconds());
+            }
+        } catch {
+            /* EMPTY */
         }
     }
 
@@ -164,16 +191,16 @@ export class KyselyCacheAdapter<TType = unknown>
         if (this.shouldRemoveExpiredKeys && this.timeoutId !== null) {
             clearTimeout(this.timeoutId);
         }
-        await this.database.schema
+        await this.kysely.schema
             .dropIndex("cache_expiration")
             .ifExists()
             .on("cache")
             .execute();
-        await this.database.schema.dropTable("cache").ifExists().execute();
+        await this.kysely.schema.dropTable("cache").ifExists().execute();
     }
 
     async find(key: string): Promise<ICacheData<TType> | null> {
-        const row = await this.database
+        const row = await this.kysely
             .selectFrom("cache")
             .where("cache.key", "=", key)
             .select(["cache.expiration", "cache.value"])
@@ -183,12 +210,14 @@ export class KyselyCacheAdapter<TType = unknown>
         }
         return {
             value: this.serde.deserialize(row.value),
-            expiration: row.expiration ? new Date(row.expiration) : null,
+            expiration: row.expiration
+                ? new Date(Number(row.expiration))
+                : null,
         };
     }
 
     async insert(data: ICacheInsert<TType>): Promise<void> {
-        await this.database
+        await this.kysely
             .insertInto("cache")
             .values({
                 key: data.key,
@@ -199,12 +228,12 @@ export class KyselyCacheAdapter<TType = unknown>
     }
 
     private async transaction<TReturn>(
-        fn: (trx: Transaction<KyselyTables>) => Promise<TReturn>,
+        fn: (trx: Transaction<KyselyCacheAdapterTables>) => Promise<TReturn>,
     ): Promise<TReturn> {
         if (this.disableTransaction) {
-            return fn(this.database as Transaction<KyselyTables>);
+            return fn(this.kysely as Transaction<KyselyCacheAdapterTables>);
         }
-        return await this.database.transaction().execute(fn);
+        return await this.kysely.transaction().execute(fn);
     }
 
     async upsert(data: ICacheInsert<TType>): Promise<ICacheData<TType> | null> {
@@ -216,25 +245,30 @@ export class KyselyCacheAdapter<TType = unknown>
                 .where(KyselyCacheAdapter.filterUnexpiredKeys([data.key]))
                 .executeTakeFirst();
 
-            try {
-                await trx
-                    .insertInto("cache")
-                    .values({
-                        key: data.key,
+            const isMysqlRunning =
+                this.kysely.getExecutor().adapter instanceof MysqlAdapter;
+            await trx
+                .insertInto("cache")
+                .values({
+                    key: data.key,
+                    value: this.serde.serialize(data.value),
+                    expiration,
+                })
+                .$if(isMysqlRunning, (eb) =>
+                    eb.onDuplicateKeyUpdate({
                         value: this.serde.serialize(data.value),
                         expiration,
-                    })
-                    .executeTakeFirst();
-            } catch {
-                await trx
-                    .updateTable("cache")
-                    .where("cache.key", "=", data.key)
-                    .set({
-                        value: this.serde.serialize(data.value),
-                        expiration,
-                    })
-                    .executeTakeFirst();
-            }
+                    }),
+                )
+                .$if(!isMysqlRunning, (eb) =>
+                    eb.onConflict((eb) =>
+                        eb.columns(["key"]).doUpdateSet({
+                            value: this.serde.serialize(data.value),
+                            expiration,
+                        }),
+                    ),
+                )
+                .executeTakeFirst();
 
             if (prevRow === undefined) {
                 return null;
@@ -242,14 +276,14 @@ export class KyselyCacheAdapter<TType = unknown>
             return {
                 value: this.serde.deserialize(prevRow.value),
                 expiration: prevRow.expiration
-                    ? new Date(prevRow.expiration)
+                    ? new Date(Number(prevRow.expiration))
                     : null,
             };
         });
     }
 
     async updateExpired(data: ICacheInsert<TType>): Promise<number> {
-        const updateResult = await this.database
+        const updateResult = await this.kysely
             .updateTable("cache")
             .where(KyselyCacheAdapter.filterExpiredKeys([data.key]))
             .set({
@@ -261,7 +295,7 @@ export class KyselyCacheAdapter<TType = unknown>
     }
 
     async updateUnexpired(data: ICacheUpdate<TType>): Promise<number> {
-        const updateResult = await this.database
+        const updateResult = await this.kysely
             .updateTable("cache")
             .where(KyselyCacheAdapter.filterUnexpiredKeys([data.key]))
             .set({
@@ -300,7 +334,7 @@ export class KyselyCacheAdapter<TType = unknown>
     }
 
     async removeExpiredMany(keys: string[]): Promise<number> {
-        const deleteResult = await this.database
+        const deleteResult = await this.kysely
             .deleteFrom("cache")
             .where(KyselyCacheAdapter.filterExpiredKeys(keys))
             .executeTakeFirst();
@@ -308,7 +342,7 @@ export class KyselyCacheAdapter<TType = unknown>
     }
 
     async removeUnexpiredMany(keys: string[]): Promise<number> {
-        const deleteResult = await this.database
+        const deleteResult = await this.kysely
             .deleteFrom("cache")
             .where(KyselyCacheAdapter.filterUnexpiredKeys(keys))
             .executeTakeFirst();
@@ -316,11 +350,11 @@ export class KyselyCacheAdapter<TType = unknown>
     }
 
     async removeAll(): Promise<void> {
-        await this.database.deleteFrom("cache").execute();
+        await this.kysely.deleteFrom("cache").execute();
     }
 
     async removeByKeyPrefix(prefix: string): Promise<void> {
-        await this.database
+        await this.kysely
             .deleteFrom("cache")
             .where("cache.key", "like", `${prefix}%`)
             .execute();
