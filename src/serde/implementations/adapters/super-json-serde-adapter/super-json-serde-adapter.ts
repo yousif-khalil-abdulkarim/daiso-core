@@ -8,7 +8,7 @@ import {
     DeserializationSerdeError,
     SerializationSerdeError,
 } from "@/serde/contracts/_module-exports.js";
-import { SuperJSON } from "superjson-cjs";
+import { SuperJSON } from "superjson";
 
 /**
  *
