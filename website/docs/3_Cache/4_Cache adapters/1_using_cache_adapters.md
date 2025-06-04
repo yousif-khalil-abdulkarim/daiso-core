@@ -113,141 +113,170 @@ const redisCacheAdapter = new RedisCacheAdapter({
 });
 ```
 
-## SqliteCacheAdapter
+## KyselyCacheAdapter
 
-To use the [`SqliteCacheAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.SqliteCacheAdapter.html), you'll need to:
+To use the [`KyselyCacheAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.KyselyCacheAdapter.html), you'll need to:
 
-1. Install the required dependency: [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package
+1. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package
 2. Provide a string serializer ([`ISerde`](/docs/Serde/serde_usage))
 
 -   We recommend using [`SuperJsonSerdeAdapter`](/docs/Serde/serde_usage) for this purpose
 
+### Usage with Sqlite
+
+You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
+
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
-import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
 import Sqlite from "better-sqlite3";
+import { Kysely, SqliteDialect } from "kysely";
 
-const database = new Sqlite("local.db");
+const database = new Sqlite("DATABASE_NAME.db");
+const kysely = new Kysely({
+    dialect: new SqliteDialect({
+        database,
+    }),
+});
 const serde = new Serde(new SuperJsonSerdeAdapter());
-const sqliteCacheAdapter = new SqliteCacheAdapter({
-    database,
+const kyselyCacheAdapter = new KyselyCacheAdapter({
+    kysely,
     serde,
 });
 
 // You need initialize the adapter once before using it.
 // During the initialization the schema will be created
-await sqliteCacheAdapter.init();
+await kyselyCacheAdapter.init();
 ```
 
-You can change the table name:
+### Usage with Postgres
 
-```ts
-const sqliteCacheAdapter = new SqliteCacheAdapter({
-    database,
-    serde,
-    // By default "cache" is used as table name
-    tableName: "my-cache",
-});
-
-await sqliteCacheAdapter.init();
-```
-
-Expired keys are cleared at regular intervals and you can change the interval time:
+You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
-
-const sqliteCacheAdapter = new SqliteCacheAdapter({
-    database,
-    serde,
-    // By default, the interval is 1 minute
-    expiredKeysRemovalInterval: TimeSpan.fromSeconds(10),
-});
-
-await sqliteCacheAdapter.init();
-```
-
-Disabling scheduled interval cleanup of expired keys:
-
-```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
-
-const sqliteCacheAdapter = new SqliteCacheAdapter({
-    database,
-    serde,
-    shouldRemoveExpiredKeys: false,
-});
-
-await sqliteCacheAdapter.init();
-
-// You can remove all expired keys manually.
-await sqliteCacheAdapter.removeAllExpired();
-```
-
-:::info
-To remove the cache table and all stored cache data, use `deInit` method:
-
-```ts
-await sqliteCacheAdapter.deInit();
-```
-
-:::
-
-## LibsqlCacheAdapter
-
-To use the [`LibsqlCacheAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.LibsqlCacheAdapter.html), you'll need to:
-
-1. Install the required dependency: [`@libsql/client`](https://www.npmjs.com/package/@libsql/client) package
-2. Provide a string serializer ([`ISerde`](/docs/Serde/serde_usage))
-
--   We recommend using [`SuperJsonSerdeAdapter`](/docs/Serde/serde_usage) for this purpose
-
-```ts
-import { LibsqlCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-import { createClient } from "@libsql/client";
+import { Pool } from "pg";
+import { Kysely, PostgresDialect } from "kysely";
 
-const database = createClient({ url: "file:local.db" });
+const database = new Pool({
+    database: "DATABASE_NAME",
+    host: "DATABASE_HOST",
+    user: "DATABASE_USER",
+    // DATABASE port
+    port: 5432,
+    password: "DATABASE_PASSWORD",
+    max: 10,
+})
+const kysely = new Kysely({
+    dialect: new PostgresDialect({
+        pool: database,
+    }),
+});
 const serde = new Serde(new SuperJsonSerdeAdapter());
-const libsqlCacheAdapter = new LibsqlCacheAdapter({
-    database,
+const kyselyCacheAdapter = new KyselyCacheAdapter({
+    kysely,
     serde,
 });
 
 // You need initialize the adapter once before using it.
 // During the initialization the schema will be created
-await libsqlCacheAdapter.init();
+await kyselyCacheAdapter.init();
 ```
 
-You can change the table name:
+### Usage with Mysql
+
+You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
 ```ts
-const libsqlCacheAdapter = new LibsqlCacheAdapter({
-    database,
+import { TimeSpan } from "@daiso-tech/core/utilities";
+import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { createPool } from "mysql2";
+import { Kysely, MysqlDialect } from "kysely";
+
+const database = createPool({
+    host: "DATABASE_HOST",
+    // Database port
+    port: 3306,
+    database: "DATABASE_NAME",
+    user: "DATABASE_USER",
+    password: "DATABASE_PASSWORD",
+    connectionLimit: 10,
+});
+const kysely = new Kysely({
+    dialect: new MysqlDialect({
+        pool: database,
+    }),
+});
+const serde = new Serde(new SuperJsonSerdeAdapter());
+const kyselyCacheAdapter = new KyselyCacheAdapter({
+    kysely,
     serde,
-    // By default "cache" is used as table name
-    tableName: "my-cache",
 });
 
-await libsqlCacheAdapter.init();
+// You need initialize the adapter once before using it.
+// During the initialization the schema will be created
+await kyselyCacheAdapter.init();
 ```
+
+### Usage with Libsql
+
+You will need to install [`@libsql/kysely-libsql`](https://www.npmjs.com/package/@libsql/kysely-libsql) package:
+
+```ts
+import { TimeSpan } from "@daiso-tech/core/utilities";
+import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { LibsqlDialect }  from "@libsql/kysely-libsql";
+import { Kysely } from "kysely";
+
+const kysely = new Kysely({
+    dialect: new LibsqlDialect({
+        url: "DATABASE_URL",
+    }),
+});
+const serde = new Serde(new SuperJsonSerdeAdapter());
+const kyselyCacheAdapter = new KyselyCacheAdapter({
+    kysely,
+    serde,
+});
+
+// You need initialize the adapter once before using it.
+// During the initialization the schema will be created
+await kyselyCacheAdapter.init();
+```
+
+### Usage with other databases
+
+Note [`kysely`](https://www.npmjs.com/package/kysely) has support for multiple [databases](https://github.com/kysely-org/awesome-kysely?tab=readme-ov-file#dialects).
+
+:::danger
+Before choose a database, ensure it supports transactions. Without transaction support,
+you won't be able to use following methods `put` and `increment`, as they require transactional functionality.
+:::
+
+### Settings
 
 Expired keys are cleared at regular intervals and you can change the interval time:
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
 
-const libsqlCacheAdapter = new LibsqlCacheAdapter({
+const kyselyCacheAdapter = new KyselyCacheAdapter({
     database,
     serde,
     // By default, the interval is 1 minute
     expiredKeysRemovalInterval: TimeSpan.fromSeconds(10),
 });
 
-await libsqlCacheAdapter.init();
+await kyselyCacheAdapter.init();
 ```
 
 Disabling scheduled interval cleanup of expired keys:
@@ -255,38 +284,23 @@ Disabling scheduled interval cleanup of expired keys:
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
 
-const libsqlCacheAdapter = new LibsqlCacheAdapter({
+const kyselyCacheAdapter = new KyselyCacheAdapter({
     database,
     serde,
     shouldRemoveExpiredKeys: false,
 });
 
-await libsqlCacheAdapter.init();
+await kyselyCacheAdapter.init();
 
 // You can remove all expired keys manually.
-await libsqlCacheAdapter.removeAllExpired();
+await kyselyCacheAdapter.removeAllExpired();
 ```
-
-:::info
-You can disable transactions for increment and decrement operations. This is useful because, due to a bug, transactions do not work when running LibSQL in-memory mode. [Github thread](https://github.com/tursodatabase/libsql-client-ts/issues/229):
-
-```ts
-const libsqlCacheAdapter = new LibsqlCacheAdapter({
-    database,
-    serde,
-    disableTransaction: true,
-});
-
-await libsqlCacheAdapter.init();
-```
-
-:::
 
 :::info
 To remove the cache table and all stored cache data, use `deInit` method:
 
 ```ts
-await libsqlCacheAdapter.deInit();
+await kyselyCacheAdapter.deInit();
 ```
 
 :::
