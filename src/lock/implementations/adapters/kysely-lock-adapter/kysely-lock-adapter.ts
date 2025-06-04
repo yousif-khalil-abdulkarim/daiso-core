@@ -57,7 +57,8 @@ export class KyselyLockAdapter
     private readonly kysely: Kysely<KyselyLockAdapterTables>;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;
-    private timeoutId: string | number | NodeJS.Timeout | undefined;
+    private timeoutId: string | number | NodeJS.Timeout | undefined | null =
+        null;
 
     /**
      * @example
@@ -88,19 +89,30 @@ export class KyselyLockAdapter
     }
 
     async deInit(): Promise<void> {
-        await this.kysely.schema
-            .dropIndex("lock_expiresAt")
-            .ifExists()
-            .on("lock")
-            .execute();
-        await this.kysely.schema.dropTable("lock").ifExists().execute();
-        if (this.shouldRemoveExpiredKeys) {
+        if (this.shouldRemoveExpiredKeys && this.timeoutId !== null) {
             clearTimeout(this.timeoutId);
+        }
+
+        // Should not throw if the index does not exists thats why the try catch is used.
+        try {
+            await this.kysely.schema
+                .dropIndex("lock_expiresAt")
+                .on("lock")
+                .execute();
+        } catch {
+            /* EMPTY */
+        }
+
+        // Should not throw if the table does not exists thats why the try catch is used.
+        try {
+            await this.kysely.schema.dropTable("lock").execute();
+        } catch {
+            /* EMPTY */
         }
     }
 
     async init(): Promise<void> {
-        // The method should not throw if the index already exists that why the try catch is used.
+        // Should not throw if the table already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createTable("lock")
@@ -109,18 +121,25 @@ export class KyselyLockAdapter
                 .addColumn("owner", "varchar(255)")
                 .addColumn("expiresAt", "bigint")
                 .execute();
+        } catch {
+            /* EMPTY */
+        }
+
+        // Should not throw if the index already exists thats why the try catch is used.
+        try {
             await this.kysely.schema
                 .createIndex("lock_expiresAt")
                 .on("lock")
                 .columns(["expiresAt"])
                 .execute();
-            if (this.shouldRemoveExpiredKeys) {
-                this.timeoutId = setTimeout(() => {
-                    void this.removeAllExpired();
-                }, this.expiredKeysRemovalInterval.toMilliseconds());
-            }
         } catch {
             /* EMPTY */
+        }
+
+        if (this.shouldRemoveExpiredKeys) {
+            this.timeoutId = setTimeout(() => {
+                void this.removeAllExpired();
+            }, this.expiredKeysRemovalInterval.toMilliseconds());
         }
     }
 

@@ -162,7 +162,7 @@ export class KyselyCacheAdapter<TType = unknown>
     }
 
     async init(): Promise<void> {
-        // The method should not throw if the index already exists that why the try catch is used.
+        // Should not throw if the table already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createTable("cache")
@@ -171,19 +171,26 @@ export class KyselyCacheAdapter<TType = unknown>
                 .addColumn("value", "varchar(255)")
                 .addColumn("expiration", "bigint")
                 .execute();
+        } catch {
+            /* EMPTY */
+        }
+
+        // Should not throw if the index already exists thats why the try catch is used.
+        try {
             await this.kysely.schema
                 .createIndex("cache_expiration")
                 .on("cache")
                 .columns(["expiration"])
                 .execute();
-            if (this.shouldRemoveExpiredKeys && this.timeoutId === null) {
-                this.timeoutId = setTimeout(() => {
-                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    this.removeAllExpired();
-                }, this.expiredKeysRemovalInterval.toMilliseconds());
-            }
         } catch {
             /* EMPTY */
+        }
+
+        if (this.shouldRemoveExpiredKeys && this.timeoutId === null) {
+            this.timeoutId = setTimeout(() => {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                this.removeAllExpired();
+            }, this.expiredKeysRemovalInterval.toMilliseconds());
         }
     }
 
@@ -191,12 +198,23 @@ export class KyselyCacheAdapter<TType = unknown>
         if (this.shouldRemoveExpiredKeys && this.timeoutId !== null) {
             clearTimeout(this.timeoutId);
         }
-        await this.kysely.schema
-            .dropIndex("cache_expiration")
-            .ifExists()
-            .on("cache")
-            .execute();
-        await this.kysely.schema.dropTable("cache").ifExists().execute();
+
+        // Should not throw if the index does not exists thats why the try catch is used.
+        try {
+            await this.kysely.schema
+                .dropIndex("cache_expiration")
+                .on("cache")
+                .execute();
+        } catch {
+            /* EMPTY */
+        }
+
+        // Should not throw if the table does not exists thats why the try catch is used.
+        try {
+            await this.kysely.schema.dropTable("cache").execute();
+        } catch {
+            /* EMPTY */
+        }
     }
 
     async find(key: string): Promise<ICacheData<TType> | null> {
