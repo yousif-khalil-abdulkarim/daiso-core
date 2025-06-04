@@ -15,88 +15,117 @@ import {
 } from "@/utilities/_module-exports.js";
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * @group Adapters
  */
-type KyselyLockTable = {
+type KyselyLockAdapterTable = {
     key: string;
     owner: string;
     // In ms since unix epoch
-    expiresAt: number | null;
+    expiresAt: number | string | null;
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * @group Adapters
  */
-type KyselyTables = {
-    lock: KyselyLockTable;
+type KyselyLockAdapterTables = {
+    lock: KyselyLockAdapterTable;
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * @group Adapters
  */
-type KyselySettings = {
-    database: Kysely<KyselyTables>;
+type KyselyLockAdapterSettings = {
+    kysely: Kysely<KyselyLockAdapterTables>;
     expiredKeysRemovalInterval?: TimeSpan;
     shouldRemoveExpiredKeys?: boolean;
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * @group Adapters
  */
 export class KyselyLockAdapter
     implements IDatabaseLockAdapter, IDeinitizable, IInitizable, IPrunable
 {
-    private readonly database: Kysely<KyselyTables>;
+    private readonly kysely: Kysely<KyselyLockAdapterTables>;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;
     private timeoutId: string | number | NodeJS.Timeout | undefined;
 
-    constructor(settings: KyselySettings) {
+    /**
+     * @example
+     * ```ts
+     * import { KyselyLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import Sqlite from "better-sqlite3";
+     *
+     * const lockAdapter = new KyselyLockAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database: new Sqlite("local.db"),
+     *     }),
+     *   }),
+     * });
+     * // You need initialize the adapter once before using it.
+     * await lockAdapter.init();
+     * ```
+     */
+    constructor(settings: KyselyLockAdapterSettings) {
         const {
-            database,
+            kysely,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
         } = settings;
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
-        this.database = database;
+        this.kysely = kysely;
     }
 
     async deInit(): Promise<void> {
-        await this.database.schema
+        await this.kysely.schema
             .dropIndex("lock_expiresAt")
             .ifExists()
             .on("lock")
             .execute();
-        await this.database.schema.dropTable("lock").ifExists().execute();
+        await this.kysely.schema.dropTable("lock").ifExists().execute();
         if (this.shouldRemoveExpiredKeys) {
             clearTimeout(this.timeoutId);
         }
     }
 
     async init(): Promise<void> {
-        await this.database.schema
-            .createTable("lock")
-            .ifNotExists()
-            .addColumn("key", "varchar(255)", (col) => col.primaryKey())
-            .addColumn("owner", "varchar(255)")
-            .addColumn("expiresAt", "bigint")
-            .execute();
-        await this.database.schema
-            .createIndex("lock_expiresAt")
-            .ifNotExists()
-            .on("lock")
-            .columns(["expiresAt"])
-            .execute();
-        if (this.shouldRemoveExpiredKeys) {
-            this.timeoutId = setTimeout(() => {
-                void this.removeAllExpired();
-            }, this.expiredKeysRemovalInterval.toMilliseconds());
+        // The method should not throw if the index already exists that why the try catch is used.
+        try {
+            await this.kysely.schema
+                .createTable("lock")
+                .ifNotExists()
+                .addColumn("key", "varchar(255)", (col) => col.primaryKey())
+                .addColumn("owner", "varchar(255)")
+                .addColumn("expiresAt", "bigint")
+                .execute();
+            await this.kysely.schema
+                .createIndex("lock_expiresAt")
+                .on("lock")
+                .columns(["expiresAt"])
+                .execute();
+            if (this.shouldRemoveExpiredKeys) {
+                this.timeoutId = setTimeout(() => {
+                    void this.removeAllExpired();
+                }, this.expiredKeysRemovalInterval.toMilliseconds());
+            }
+        } catch {
+            /* EMPTY */
         }
     }
 
     async removeAllExpired(): Promise<void> {
-        await this.database
+        await this.kysely
             .deleteFrom("lock")
             .where("lock.expiresAt", "<=", new Date().getTime())
             .execute();
@@ -107,7 +136,7 @@ export class KyselyLockAdapter
         owner: string,
         expiration: Date | null,
     ): Promise<void> {
-        await this.database
+        await this.kysely
             .insertInto("lock")
             .values({
                 key,
@@ -122,7 +151,7 @@ export class KyselyLockAdapter
         owner: string,
         expiration: Date | null,
     ): Promise<number> {
-        const updateResult = await this.database
+        const updateResult = await this.kysely
             .updateTable("lock")
             .where("lock.key", "=", key)
             // Has expired
@@ -138,7 +167,7 @@ export class KyselyLockAdapter
     }
 
     async remove(key: string, owner: string | null): Promise<void> {
-        await this.database
+        await this.kysely
             .deleteFrom("lock")
             .where("lock.key", "=", key)
             .$if(owner !== null, (query) =>
@@ -152,7 +181,7 @@ export class KyselyLockAdapter
         owner: string,
         expiration: Date,
     ): Promise<number> {
-        const updateResult = await this.database
+        const updateResult = await this.kysely
             .updateTable("lock")
             .where("lock.key", "=", key)
             .where("lock.owner", "=", owner)
@@ -162,7 +191,7 @@ export class KyselyLockAdapter
     }
 
     async find(key: string): Promise<ILockData | null> {
-        const row = await this.database
+        const row = await this.kysely
             .selectFrom("lock")
             .where("lock.key", "=", key)
             .select(["lock.owner", "lock.expiresAt"])
@@ -171,7 +200,7 @@ export class KyselyLockAdapter
             return null;
         }
         return {
-            expiration: row.expiresAt ? new Date(row.expiresAt) : null,
+            expiration: row.expiresAt ? new Date(Number(row.expiresAt)) : null,
             owner: row.owner,
         };
     }

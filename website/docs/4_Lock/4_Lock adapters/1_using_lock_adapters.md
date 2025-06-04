@@ -107,52 +107,157 @@ const redisLockAdapter = new RedisLockAdapter(database);
 Note in order to use `RedisLockAdapter` correctly, ensure you use a single, consistent database across all server instances or processes.
 :::
 
-## SqliteLockAdapter
+## KyselyLockAdapter
 
-To use the [`SqliteLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.SqliteLockAdapter.html), you'll need to:
+To use the [`KyselyLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.KyselyLockAdapter.html), you'll need to:
 
-1. Install the required dependency: [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package
+1. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package
+
+### Usage with Sqlite
+
+You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
-import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
+import { KyselyLockAdapter } from "@daiso-tech/core/lock/adapters";
 import Sqlite from "better-sqlite3";
+import { Kysely, SqliteDialect } from "kysely";
 
-const sqliteLockAdapter = new SqliteLockAdapter({
-    database,
+const database = new Sqlite("DATABASE_NAME.db");
+const kysely = new Kysely({
+    dialect: new SqliteDialect({
+        database,
+    }),
+});
+const kyselyLockAdapter = new KyselyLockAdapter({
+    kysely,
 });
 
 // You need initialize the adapter once before using it.
 // During the initialization the schema will be created
-await sqliteLockAdapter.init();
+await kyselyLockAdapter.init();
 ```
 
-You can change the table name:
+:::danger
+Note using [`KyselyLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.KyselyLockAdapter.html) with `sqlite` is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes. To use it correctly, ensure all process instances access the same persisted database.
+:::
+
+### Usage with Postgres
+
+You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
 ```ts
-const sqliteLockAdapter = new SqliteLockAdapter({
-    database,
-    serde,
-    // By default "lock" is used as table name
-    tableName: "my-lock",
+import { TimeSpan } from "@daiso-tech/core/utilities";
+import { KyselyLockAdapter } from "@daiso-tech/core/lock/adapters";
+import { Pool } from "pg";
+import { Kysely, PostgresDialect } from "kysely";
+
+const database = new Pool({
+    database: "DATABASE_NAME",
+    host: "DATABASE_HOST",
+    user: "DATABASE_USER",
+    // DATABASE port
+    port: 5432,
+    password: "DATABASE_PASSWORD",
+    max: 10,
+})
+const kysely = new Kysely({
+    dialect: new PostgresDialect({
+        pool: database,
+    }),
+});
+const kyselyLockAdapter = new KyselyLockAdapter({
+    kysely,
 });
 
-await sqliteLockAdapter.init();
+// You need initialize the adapter once before using it.
+// During the initialization the schema will be created
+await kyselyLockAdapter.init();
 ```
+
+:::danger
+Note in order to use [`KyselyLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.KyselyLockAdapter.html) with `postgres` correctly, ensure you use a single, consistent database across all server instances. This means you can't use replication.
+:::
+
+### Usage with Mysql
+
+You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
+
+```ts
+import { TimeSpan } from "@daiso-tech/core/utilities";
+import { KyselyLockAdapter } from "@daiso-tech/core/lock/adapters";
+import { createPool } from "mysql2";
+import { Kysely, MysqlDialect } from "kysely";
+
+const database = createPool({
+    host: "DATABASE_HOST",
+    // Database port
+    port: 3306,
+    database: "DATABASE_NAME",
+    user: "DATABASE_USER",
+    password: "DATABASE_PASSWORD",
+    connectionLimit: 10,
+});
+const kysely = new Kysely({
+    dialect: new MysqlDialect({
+        pool: database,
+    }),
+});
+const kyselyLockAdapter = new KyselyLockAdapter({
+    kysely,
+});
+
+// You need initialize the adapter once before using it.
+// During the initialization the schema will be created
+await kyselyLockAdapter.init();
+```
+
+:::danger
+Note in order to use [`KyselyLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.KyselyLockAdapter.html) with `mysql` correctly, ensure you use a single, consistent database across all server instances. This means you can't use replication.
+:::
+
+### Usage with Libsql
+
+You will need to install [`@libsql/kysely-libsql`](https://www.npmjs.com/package/@libsql/kysely-libsql) package:
+
+```ts
+import { TimeSpan } from "@daiso-tech/core/utilities";
+import { KyselyLockAdapter } from "@daiso-tech/core/lock/adapters";
+import { LibsqlDialect }  from "@libsql/kysely-libsql";
+import { Kysely } from "kysely";
+
+const kysely = new Kysely({
+    dialect: new LibsqlDialect({
+        url: "DATABASE_URL",
+    }),
+});
+const kyselyLockAdapter = new KyselyLockAdapter({
+    kysely,
+});
+
+// You need initialize the adapter once before using it.
+// During the initialization the schema will be created
+await kyselyLockAdapter.init();
+```
+
+:::danger
+Note in order to use [`KyselyLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.KyselyLockAdapter.html) with `libsql` correctly, ensure you use a single, consistent database across all server instances. This means you can't use libsql embedded replicas.
+:::
+
+### Settings
 
 Expired keys are cleared at regular intervals and you can change the interval time:
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
 
-const sqliteLockAdapter = new SqliteLockAdapter({
+const kyselyLockAdapter = new KyselyLockAdapter({
     database,
-    serde,
     // By default, the interval is 1 minute
     expiredKeysRemovalInterval: TimeSpan.fromSeconds(10),
 });
 
-await sqliteLockAdapter.init();
+await kyselyLockAdapter.init();
 ```
 
 Disabling scheduled interval cleanup of expired keys:
@@ -160,107 +265,24 @@ Disabling scheduled interval cleanup of expired keys:
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
 
-const sqliteLockAdapter = new SqliteLockAdapter({
+const kyselyLockAdapter = new KyselyLockAdapter({
     database,
-    serde,
     shouldRemoveExpiredKeys: false,
 });
 
-await sqliteLockAdapter.init();
+await kyselyLockAdapter.init();
 
 // You can remove all expired keys manually.
-await sqliteLockAdapter.removeAllExpired();
+await kyselyLockAdapter.removeAllExpired();
 ```
 
 :::info
 To remove the lock table and all stored lock data, use `deInit` method:
 
 ```ts
-await sqliteLockAdapter.deInit();
+await kyselyLockAdapter.deInit();
 ```
 
-:::
-
-:::danger
-Note the [`SqliteLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.SqliteLockAdapter.html) is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes. To use it correctly, ensure all process instances access the same persisted database.
-
-:::
-
-## LibsqlLockAdapter
-
-To use the [`LibsqlLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.LibsqlLockAdapter.html), you'll need to:
-
-1. Install the required dependency: [`@libsql/client`](https://www.npmjs.com/package/@libsql/client) package
-
-```ts
-import { LibsqlLockAdapter } from "@daiso-tech/core/lock/adapters";
-import { createClient } from "@libsql/client";
-
-const database = createClient({ url: "file:local.db" });
-const libsqlLockAdapter = new LibsqlLockAdapter({
-    database,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await libsqlLockAdapter.init();
-```
-
-You can change the table name:
-
-```ts
-const libsqlLockAdapter = new LibsqlLockAdapter({
-    database,
-    // By default "lock" is used as table name
-    tableName: "my-lock",
-});
-
-await libsqlLockAdapter.init();
-```
-
-Expired keys are cleared at regular intervals and you can change the interval time:
-
-```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
-
-const libsqlLockAdapter = new LibsqlLockAdapter({
-    database,
-    serde,
-    // By default, the interval is 1 minute
-    expiredKeysRemovalInterval: TimeSpan.fromSeconds(10),
-});
-
-await libsqlLockAdapter.init();
-```
-
-Disabling scheduled interval cleanup of expired keys:
-
-```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
-
-const libsqlLockAdapter = new LibsqlLockAdapter({
-    database,
-    serde,
-    shouldRemoveExpiredKeys: false,
-});
-
-await libsqlLockAdapter.init();
-
-// You can remove all expired keys manually.
-await libsqlLockAdapter.removeAllExpired();
-```
-
-:::info
-To remove the lock table and all stored lock data, use `deInit` method:
-
-```ts
-await libsqlLockAdapter.deInit();
-```
-
-:::
-
-:::danger
-Note in order to use [`LibsqlLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.LibsqlLockAdapter.html) correctly, ensure you use a single, consistent database across all server instances. This means you can't use libsql [`embedded replicas`](https://docs.turso.tech/features/embedded-replicas/introduction).
 :::
 
 ## NoOpLockAdapter
@@ -268,7 +290,7 @@ Note in order to use [`LibsqlLockAdapter`](https://yousif-khalil-abdulkarim.gith
 The [`NoOpLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.NoOpLockAdapter.html) is a no-operation implementation, it performs no actions when called:
 
 ```ts
-import { NoOpLockAdapter } from "@daiso-tech/core/cache/adapters";
+import { NoOpLockAdapter } from "@daiso-tech/core/lock/adapters";
 
 const noOpLockAdapter = new NoOpLockAdapter();
 ```
