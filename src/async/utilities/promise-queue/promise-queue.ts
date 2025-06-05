@@ -97,13 +97,22 @@ export class PromiseQueue {
 
         try {
             if (item.signal.aborted) {
-                listener?.([null, item.signal.reason]);
+                listener?.({
+                    type: "failure",
+                    error: item.signal.reason,
+                });
                 return;
             }
             const value = await item.func(item.signal);
-            listener?.([value, null]);
+            listener?.({
+                type: "success",
+                value,
+            });
         } catch (error: unknown) {
-            listener?.([null, error]);
+            listener?.({
+                type: "failure",
+                error,
+            });
 
             throw error;
         }
@@ -139,13 +148,14 @@ export class PromiseQueue {
 
     private asPromise<TValue>(id: string): Promise<TValue> {
         return new Promise<TValue>((resolve, reject) => {
-            this.listenOnce(id, ([value, error]) => {
-                if (value === null) {
+            this.listenOnce(id, (result) => {
+                if (result.type === "failure") {
                     // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-                    reject(error);
+                    reject(result.error);
                     return;
+                } else {
+                    resolve(result.value as TValue);
                 }
-                resolve(value as TValue);
             });
         });
     }
