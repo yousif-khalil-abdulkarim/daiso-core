@@ -2,17 +2,28 @@
  * @module Utilities
  */
 
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- */
-export type ResultFailure<TError = unknown> = [value: null, errror: TError];
+export const RESULT = {
+    FAILURE: "failure",
+    SUCCESS: "success",
+} as const;
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  */
-export type ResultSuccess<TValue> = [value: TValue, error: null];
+export type ResultFailure<TError = unknown> = {
+    type: (typeof RESULT)["FAILURE"];
+    error: TError;
+};
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ */
+export type ResultSuccess<TValue> = {
+    type: (typeof RESULT)["SUCCESS"];
+    value: TValue;
+};
 
 /**
  *

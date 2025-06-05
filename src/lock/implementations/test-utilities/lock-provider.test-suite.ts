@@ -21,7 +21,12 @@ import {
     UnownedReleaseLockError,
     LOCK_EVENTS,
 } from "@/lock/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
+import {
+    RESULT,
+    resultSuccess,
+    type Promisable,
+    type ResultFailure,
+} from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
@@ -104,13 +109,12 @@ export function lockProviderTestSuite(
                     ttl,
                 });
 
-                const [result, error] = await lock.run(async () => {
+                const result = await lock.run(async () => {
                     await LazyPromise.delay(DELAY_TIME);
                     return "a";
                 });
 
-                expect(result).toBe("a");
-                expect(error).toBeNull();
+                expect(result).toEqual(resultSuccess("a"));
             });
             test("Should return null when lock is already acquired", async () => {
                 const key = "a";
@@ -120,13 +124,15 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquire();
-                const [result, error] = await lock.run(async () => {
+                const result = await lock.run(async () => {
                     await LazyPromise.delay(DELAY_TIME);
                     return "a";
                 });
 
-                expect(result).toBeNull();
-                expect(error).toBeInstanceOf(KeyAlreadyAcquiredLockError);
+                expect(result.type).toBe(RESULT.FAILURE);
+                expect((result as ResultFailure).error).toBeInstanceOf(
+                    KeyAlreadyAcquiredLockError,
+                );
             });
             test("Should work with LazyPromise", async () => {
                 const key = "a";
@@ -135,15 +141,14 @@ export function lockProviderTestSuite(
                     ttl,
                 });
 
-                const [result, error] = await lock.run(
+                const result = await lock.run(
                     new LazyPromise(async () => {
                         await LazyPromise.delay(DELAY_TIME);
                         return "a";
                     }),
                 );
 
-                expect(result).toBe("a");
-                expect(error).toBeNull();
+                expect(result).toEqual(resultSuccess("a"));
             });
         });
         describe("method: runOrFail", () => {
@@ -203,7 +208,7 @@ export function lockProviderTestSuite(
                     ttl,
                 });
 
-                const [result, error] = await lock.runBlocking(
+                const result = await lock.runBlocking(
                     async () => {
                         await LazyPromise.delay(DELAY_TIME);
                         return "a";
@@ -214,8 +219,7 @@ export function lockProviderTestSuite(
                     },
                 );
 
-                expect(result).toBe("a");
-                expect(error).toBeNull();
+                expect(result).toEqual(resultSuccess("a"));
             });
             test("Should return null when lock is already acquired", async () => {
                 const key = "a";
@@ -225,7 +229,7 @@ export function lockProviderTestSuite(
                 });
 
                 await lock.acquire();
-                const [result, error] = await lock.runBlocking(
+                const result = await lock.runBlocking(
                     async () => {
                         await LazyPromise.delay(DELAY_TIME);
                         return "a";
@@ -235,9 +239,10 @@ export function lockProviderTestSuite(
                         interval: TimeSpan.fromMilliseconds(5),
                     },
                 );
-
-                expect(result).toBeNull();
-                expect(error).toBeInstanceOf(KeyAlreadyAcquiredLockError);
+                expect(result.type).toBe(RESULT.FAILURE);
+                expect((result as ResultFailure).error).toBeInstanceOf(
+                    KeyAlreadyAcquiredLockError,
+                );
             });
             test("Should work with LazyPromise", async () => {
                 const key = "a";
@@ -246,7 +251,7 @@ export function lockProviderTestSuite(
                     ttl,
                 });
 
-                const [result, error] = await lock.runBlocking(
+                const result = await lock.runBlocking(
                     new LazyPromise(async () => {
                         await LazyPromise.delay(DELAY_TIME);
                         return "a";
@@ -257,8 +262,7 @@ export function lockProviderTestSuite(
                     },
                 );
 
-                expect(result).toBe("a");
-                expect(error).toBeNull();
+                expect(result).toEqual(resultSuccess("a"));
             });
             test("Should retry acquire the lock", async () => {
                 const key = "a";

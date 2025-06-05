@@ -1,7 +1,8 @@
-import type {
-    ResultFailure,
-    ResultSuccess,
-} from "@/utilities/types/_module.js";
+import {
+    RESULT,
+    type ResultFailure,
+    type ResultSuccess,
+} from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -10,7 +11,10 @@ import type {
 export function resultFailure<TError = unknown>(
     error: TError,
 ): ResultFailure<TError> {
-    return [null, error];
+    return {
+        type: RESULT.FAILURE,
+        error,
+    };
 }
 
 /**
@@ -18,5 +22,8 @@ export function resultFailure<TError = unknown>(
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  */
 export function resultSuccess<TValue>(value: TValue): ResultSuccess<TValue> {
-    return [value, null];
+    return {
+        type: RESULT.SUCCESS,
+        value,
+    };
 }
