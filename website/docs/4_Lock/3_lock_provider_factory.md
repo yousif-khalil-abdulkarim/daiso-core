@@ -22,7 +22,7 @@ import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 const lockProvider = new LockProviderFactory({
-    // The LockProviderFactory takes the same settings as EventBus class
+    // The LockProviderFactory takes the same settings as LockProvider class
     namespace: new Namespace("lock"),
     adapters: {
         memory: new MemoryLockAdapter(),
