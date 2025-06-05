@@ -26,8 +26,6 @@ import type {
 import {
     KeyAlreadyAcquiredLockError,
     LOCK_EVENTS,
-    UnableToAquireLockError,
-    UnableToReleaseLockError,
     UnownedRefreshLockError,
     UnownedReleaseLockError,
     type AquireBlockingSettings,
@@ -254,10 +252,7 @@ export class Lock implements ILock {
                     .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
                     .defer();
 
-                throw new UnableToAquireLockError(
-                    `A Lock with name of "${this.key.resolved}" could not be acquired.`,
-                    error,
-                );
+                throw error;
             }
         });
     }
@@ -344,10 +339,7 @@ export class Lock implements ILock {
                 this.eventDispatcher
                     .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
                     .defer();
-                throw new UnableToReleaseLockError(
-                    `A Lock with name of "${this.key.resolved}" could not be released.`,
-                    error,
-                );
+                throw error;
             }
         });
     }
@@ -386,10 +378,7 @@ export class Lock implements ILock {
                 this.eventDispatcher
                     .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
                     .defer();
-                throw new UnableToReleaseLockError(
-                    `A Lock with name of "${this.key.resolved}" could not be released.`,
-                    error,
-                );
+                throw error;
             }
         });
     }

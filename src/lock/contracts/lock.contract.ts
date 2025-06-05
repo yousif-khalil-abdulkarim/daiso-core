@@ -12,10 +12,6 @@ import type {
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnableToAquireLockError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnableToReleaseLockError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     KeyAlreadyAcquiredLockError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnownedReleaseLockError,
@@ -36,8 +32,6 @@ export type AquireBlockingSettings = { time?: TimeSpan; interval?: TimeSpan };
 export type ILock = {
     /**
      * The `run` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquire` and `release` method.
-     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
-     * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
@@ -45,16 +39,12 @@ export type ILock = {
 
     /**
      * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireOrFail` and `release` method.
-     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
-     * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
      */
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue>;
 
     /**
      * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlocking` and `release` method.
-     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
-     * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
@@ -63,8 +53,6 @@ export type ILock = {
 
     /**
      * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlockingOrFail` and `release` method.
-     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
-     * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
      */
     runBlockingOrFail<TValue = void>(
@@ -76,8 +64,6 @@ export type ILock = {
      * The `acquire` method acquires a lock only if the lock is not already acquired.
      *
      * @returns true if the lock is already acquired otherwise false is returned.
-     *
-     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      */
     acquire(): LazyPromise<boolean>;
 
@@ -86,8 +72,6 @@ export type ILock = {
      * If the lock is acquired, it retries every `settings.interval` until `settings.time` is reached.
      *
      * @returns true if the lock is already acquired otherwise false is returned.
-     *
-     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      */
     acquireBlocking(settings?: AquireBlockingSettings): LazyPromise<boolean>;
 
@@ -96,7 +80,6 @@ export type ILock = {
      * If the lock is acquired, it retries every `settings.interval` until `settings.time` is reached.
      * Throws an error if not lock cannot be acquired after the given `settings.time`.
      *
-     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
      */
     acquireBlockingOrFail(settings?: AquireBlockingSettings): LazyPromise<void>;
@@ -104,7 +87,7 @@ export type ILock = {
     /**
      * The `acquireOrFail` method acquires a lock only if the lock is not already acquired.
      * Throws an error if already acquired.
-     * @throws {UnableToAquireLockError} {@link UnableToAquireLockError}
+     *
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
      */
     acquireOrFail(): LazyPromise<void>;
@@ -113,22 +96,19 @@ export type ILock = {
      * The `release` method releases a lock if owned by the same owner.
      *
      * @returns true if the lock is released otherwise false is returned.
-     *
-     * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
     release(): LazyPromise<boolean>;
 
     /**
      * The `releaseOrFail` method releases a lock if owned by the same owner.
      * Throws an error if a different owner attempts to release the lock.
-     * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
+     *
      * @throws {UnownedReleaseLockError} {@link UnownedReleaseLockError}
      */
     releaseOrFail(): LazyPromise<void>;
 
     /**
      * The `forceRelease` method releases a lock regardless of the owner.
-     * @throws {UnableToReleaseLockError} {@link UnableToReleaseLockError}
      */
     forceRelease(): LazyPromise<void>;
 
