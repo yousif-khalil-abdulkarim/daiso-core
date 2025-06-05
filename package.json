@@ -198,8 +198,8 @@
     },
     "peerDependencies": {
         "ioredis": "^5.0.0",
-        "kysely": "^0.28.0",
-        "mongodb": "^6.0.0"
+        "mongodb": "^6.0.0",
+        "kysely": "^0.28.0"
     },
     "peerDependenciesMeta": {
         "mongodb": {
@@ -208,10 +208,7 @@
         "ioredis": {
             "optional": true
         },
-        "better-sqlite3": {
-            "optional": true
-        },
-        "@libsql/client": {
+        "kysely": {
             "optional": true
         }
     },
