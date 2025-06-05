@@ -22,7 +22,7 @@ import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 const cacheFactory = new CacheFactory({
-    // The CacheFactory takes the same settings as EventBus class
+    // The CacheFactory takes the same settings as Cache class
     namespace: new Namespace("cache"),
     adapters: {
         memory: new MemoryCacheAdapter(),
