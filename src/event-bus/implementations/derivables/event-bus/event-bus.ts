@@ -13,9 +13,6 @@ import type {
 import {
     type IEventBus,
     type IEventBusAdapter,
-    UnableToDispatchEventBusError,
-    UnableToRemoveListenerEventBusError,
-    UnableToAddListenerEventBusError,
 } from "@/event-bus/contracts/_module-exports.js";
 
 import {
@@ -193,10 +190,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                 );
             } catch (error: unknown) {
                 this.store.getAndRemove([key.namespaced, listener]);
-                throw new UnableToAddListenerEventBusError(
-                    `A listener with name of "${getInvokableName(listener)}" could not added for "${String(eventName)}" event`,
-                    error,
-                );
+                throw error;
             }
         });
     }
@@ -224,10 +218,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                     [key.namespaced, listener],
                     resolvedListener,
                 );
-                throw new UnableToRemoveListenerEventBusError(
-                    `A listener with name of "${getInvokableName(listener)}" could not removed of "${String(eventName)}" event`,
-                    error,
-                );
+                throw error;
             }
         });
     }
@@ -274,10 +265,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                 );
             } catch (error: unknown) {
                 this.store.getAndRemove([key.namespaced, listener]);
-                throw new UnableToAddListenerEventBusError(
-                    `A listener with name of "${getInvokableName(listener)}" could not added for "${String(eventName)}" event`,
-                    error,
-                );
+                throw error;
             }
         });
     }
@@ -326,18 +314,11 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             await validate(this.eventMapSchema?.[eventName], event);
-            try {
-                await this.adapter.dispatch(
-                    this.namespace._getInternal().create(String(eventName))
-                        .namespaced,
-                    event,
-                );
-            } catch (error: unknown) {
-                throw new UnableToDispatchEventBusError(
-                    `Events of type "${String(eventName)}" could not be dispatched`,
-                    error,
-                );
-            }
+            await this.adapter.dispatch(
+                this.namespace._getInternal().create(String(eventName))
+                    .namespaced,
+                event,
+            );
         });
     }
 }
