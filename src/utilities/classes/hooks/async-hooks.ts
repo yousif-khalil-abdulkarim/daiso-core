@@ -11,8 +11,8 @@ import {
     type Invokable,
     type InvokableFn,
     type OneOrMore,
-    type Promisable,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/functions/_module.js";
+import { type Promisable } from "@/utilities/types/_module.js";
 import type { HookContext } from "@/utilities/classes/hooks/types.js";
 
 /**

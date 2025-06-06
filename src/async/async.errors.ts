@@ -31,34 +31,6 @@ export class TimeoutAsyncError extends AsyncError {
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Errors
  */
-export type RetryAsyncErrorData = {
-    errors: unknown[];
-    maxAttempts: number;
-};
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Errors
- */
-export class RetryAsyncError extends AsyncError {
-    public readonly maxAttempts: number;
-
-    public readonly errors: unknown[] = [];
-
-    constructor(message: string, { errors, maxAttempts }: RetryAsyncErrorData) {
-        super(message, errors);
-        this.errors = errors;
-        this.maxAttempts = maxAttempts;
-        this.name = RetryAsyncError.name;
-    }
-}
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Errors
- */
 export class HedgingAsyncError extends AsyncError {
     constructor(
         message: string,
@@ -88,7 +60,6 @@ export class CapacityFullAsyncError extends AsyncError {
 export const ASYNC_ERRORS = {
     Base: AsyncError,
     Timeout: TimeoutAsyncError,
-    Retry: RetryAsyncError,
     Hedging: HedgingAsyncError,
     CapacityFull: CapacityFullAsyncError,
 } as const;

@@ -11,7 +11,7 @@ import {
 } from "@/utilities/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { CapacityFullAsyncError } from "@/async/async.errors.js";
-import { PromiseQueue } from "@/async/utilities/_module.js";
+import { PromiseQueue } from "@/async/utilities/promise-queue/_module.js";
 
 /**
  *

@@ -68,8 +68,6 @@ sidebar_position: 3
 
 -   [`HedgingAsyncError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Async.HedgingAsyncError.html)
 
--   [`RetryAsyncError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Async.RetryAsyncError.html)
-
 -   [`TimeoutAsyncError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Async.TimeoutAsyncError.html)
 
 -   [`ASYNC_ERRORS`](https://yousif-khalil-abdulkarim.github.io/daiso-core/variables/Async.ASYNC_ERRORS.html)

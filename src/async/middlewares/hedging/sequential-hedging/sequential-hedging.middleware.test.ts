@@ -2,7 +2,7 @@ import { AsyncHooks, TimeSpan } from "@/utilities/_module-exports.js";
 import { describe, expect, test } from "vitest";
 import { sequentialHedging } from "@/async/middlewares/hedging/sequential-hedging/sequential-hedging.middleware.js";
 import { HedgingAsyncError } from "@/async/async.errors.js";
-import { LazyPromise } from "@/async/utilities/_module.js";
+import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 
 describe("function: sequentialHedging", () => {
     test("Should throw HedgingAsyncError when initial function and all fallbacks fail", async () => {
