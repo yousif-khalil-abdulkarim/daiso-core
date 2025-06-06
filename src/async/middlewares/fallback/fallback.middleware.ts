@@ -2,86 +2,18 @@
  * @module Async
  */
 
-import type {
-    HookContext,
-    AsyncLazyable,
-} from "@/utilities/_module-exports.js";
 import {
-    callInvokable,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type Result,
+    type HookContext,
     resolveAsyncLazyable,
-    type AsyncMiddlewareFn,
-    type Invokable,
+    callInvokable,
+    isResult,
+    resultSuccess,
 } from "@/utilities/_module-exports.js";
-import {
-    type ErrorPolicy,
-    callErrorPolicy,
-} from "@/async/middlewares/_shared.js";
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type OnFallbackData<
-    TParameters extends unknown[] = unknown[],
-    TFallbackValue = unknown,
-    TContext extends HookContext = HookContext,
-> = {
-    error: unknown;
-    fallbackValue: TFallbackValue;
-    args: TParameters;
-    context: TContext;
-};
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type OnFallback<
-    TParameters extends unknown[] = unknown[],
-    TFallbackValue = unknown,
-    TContext extends HookContext = HookContext,
-> = Invokable<[data: OnFallbackData<TParameters, TFallbackValue, TContext>]>;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type FallbackCallbacks<
-    TParameters extends unknown[] = unknown[],
-    TReturn = unknown,
-    TContext extends HookContext = HookContext,
-> = {
-    /**
-     * Callback {@link Invokable | `Invokable`} that will be called before fallback value is returned.
-     */
-    onFallback?: OnFallback<TParameters, TReturn, TContext>;
-};
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type FallbackSettings<
-    TParameters extends unknown[] = unknown[],
-    TReturn = unknown,
-    TContext extends HookContext = HookContext,
-> = FallbackCallbacks<TParameters, TReturn, TContext> & {
-    fallbackValue: AsyncLazyable<TReturn>;
-
-    /**
-     * You can choose what errors you want to add fallback value. By default fallback value will be added to all errors.
-     *
-     * @default
-     * ```ts
-     * (_error: unknown) => true
-     * ```
-     */
-    errorPolicy?: ErrorPolicy;
-};
+import type { AsyncMiddlewareFn } from "@/utilities/_module-exports.js";
+import type { FallbackSettings } from "@/async/middlewares/fallback/fallback.types.js";
+import { callErrorPolicy } from "@/utilities/_module-exports.js";
 
 /**
  * The `fallback` middleware adds fallback value when an error occurs.
@@ -108,35 +40,75 @@ export type FallbackSettings<
  * // Will return null when the fetch method throws an error.
  * console.log(await fetchData.invoke("URL_ENDPOINT"));
  * ```
+ *
+ * The middleware works also when the function returns a {@link Result | `Result`} type.
+ * @example
+ * ```ts
+ * import { fallback } from "@daiso-tech/core/async";
+ * import { AsyncHooks, Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
+ *
+ * const fetchData = new AsyncHooks(async (url: string): Promise<Result> => {
+ *   const response = await fetch(url);
+ *   const json = await response.json();
+ *   if (!response.ok) {
+ *     return resultFailure(json);
+ *   }
+ *   return resultSuccess(json);
+ * }, [
+ *   fallback({ fallbackValue: null })
+ * ]);
+ *
+ * // Will return null when the fetch method throws an error.
+ * console.log(await fetchData.invoke("URL_ENDPOINT"));
+ * ```
  */
 export function fallback<
     TParameters extends unknown[],
     TReturn,
     TContext extends HookContext,
 >(
-    settings: NoInfer<FallbackSettings<TParameters, TReturn, TContext>>,
+    settings: NoInfer<
+        FallbackSettings<TParameters, TReturn, TContext, TReturn>
+    >,
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
-    const {
-        fallbackValue,
-        errorPolicy = () => true,
-        onFallback = () => {},
-    } = settings;
+    const { fallbackValue, errorPolicy, onFallback = () => {} } = settings;
     return async (args, next, { context }): Promise<TReturn> => {
         try {
-            return await next(...args);
-        } catch (error: unknown) {
-            if (await callErrorPolicy(errorPolicy, error)) {
-                const resolvedFallbackValue =
-                    await resolveAsyncLazyable(fallbackValue);
-                callInvokable(onFallback, {
-                    error,
-                    fallbackValue: resolvedFallbackValue,
-                    args,
-                    context,
-                });
-                return resolvedFallbackValue;
+            const value = await next(...args);
+
+            // Handle fallback value if an Result type is returned
+            if (
+                !isResult(value) ||
+                value.type === "success" ||
+                !(await callErrorPolicy<any>(errorPolicy, value))
+            ) {
+                return value;
             }
-            throw error;
+
+            const resolvedFallbackValue =
+                await resolveAsyncLazyable(fallbackValue);
+            callInvokable(onFallback, {
+                error: value.error,
+                fallbackValue: resolvedFallbackValue as TReturn,
+                args,
+                context,
+            });
+            return resultSuccess(resolvedFallbackValue) as TReturn;
+
+            // Handle fallback value if an error is thrown
+        } catch (error: unknown) {
+            if (!(await callErrorPolicy<any>(errorPolicy, error))) {
+                throw error;
+            }
+            const resolvedFallbackValue =
+                await resolveAsyncLazyable(fallbackValue);
+            callInvokable(onFallback, {
+                error,
+                fallbackValue: resolvedFallbackValue as TReturn,
+                args,
+                context,
+            });
+            return resolvedFallbackValue as TReturn;
         }
     };
 }

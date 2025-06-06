@@ -2,129 +2,20 @@
  * @module Async
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { Option } from "@/utilities/_module-exports.js";
 import {
-    callInvokable,
-    type Invokable,
     type HookContext,
     type AsyncMiddlewareFn,
+    callInvokable,
+    optionNone,
+    optionSome,
+    OPTION,
+    isResult,
 } from "@/utilities/_module-exports.js";
-import {
-    exponentialBackoffPolicy,
-    type BackoffPolicy,
-} from "@/async/backof-policies/_module.js";
-import { RetryAsyncError } from "@/async/async.errors.js";
-import { LazyPromise } from "@/async/utilities/_module.js";
-import {
-    type ErrorPolicy,
-    callErrorPolicy,
-} from "@/async/middlewares/_shared.js";
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type OnRetryAttemptData<
-    TParameters extends unknown[] = unknown[],
-    TContext extends HookContext = HookContext,
-> = {
-    attempt: number;
-    args: TParameters;
-    context: TContext;
-};
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type OnRetryAttempt<
-    TParameters extends unknown[] = unknown[],
-    TContext extends HookContext = HookContext,
-> = Invokable<[data: OnRetryAttemptData<TParameters, TContext>]>;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type OnRetryDelayData<
-    TParameters extends unknown[] = unknown[],
-    TContext extends HookContext = HookContext,
-> = {
-    error: unknown;
-    attempt: number;
-    waitTime: TimeSpan;
-    args: TParameters;
-    context: TContext;
-};
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type OnRetryDelay<
-    TParameters extends unknown[] = unknown[],
-    TContext extends HookContext = HookContext,
-> = Invokable<[data: OnRetryDelayData<TParameters, TContext>]>;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type RetryCallbacks<
-    TParameters extends unknown[] = unknown[],
-    TContext extends HookContext = HookContext,
-> = {
-    /**
-     * Callback {@link Invokable | `Invokable`} that will be called before execution attempt.
-     */
-    onExecutionAttempt?: OnRetryAttempt<TParameters, TContext>;
-
-    /**
-     * Callback {@link Invokable | `Invokable`} that will be called before the retry delay starts.
-     */
-    onRetryDelay?: OnRetryDelay<TParameters, TContext>;
-};
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
- * @group Middlewares
- */
-export type RetrySettings<
-    TParameters extends unknown[] = unknown[],
-    TContext extends HookContext = HookContext,
-> = RetryCallbacks<TParameters, TContext> & {
-    /**
-     * You can decide maximal times you can retry.
-     * @default {4}
-     */
-    maxAttempts?: number;
-
-    /**
-     * @default
-     * ```ts
-     * import { exponentialBackoffPolicy } from "@daiso-tech/core/async";
-     *
-     * exponentialBackoffPolicy();
-     * ```
-     */
-    backoffPolicy?: BackoffPolicy;
-
-    /**
-     * You can choose what errors you want to retry. By default all erros will be retried.
-     *
-     * @default
-     * ```ts
-     * (_error: unknown) => true
-     * ```
-     */
-    errorPolicy?: ErrorPolicy;
-};
+import { exponentialBackoffPolicy } from "@/async/backof-policies/_module.js";
+import type { RetrySettings } from "@/async/middlewares/retry/retry.types.js";
+import { callErrorPolicy } from "@/utilities/_module-exports.js";
+import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 
 /**
  * The `retry` middleware enables automatic retries for all errors or specific errors, with configurable backoff policies.
@@ -132,7 +23,6 @@ export type RetrySettings<
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middleware
- * @throws {RetryAsyncError} {@link RetryAsyncError}
  *
  * @example
  * ```ts
@@ -142,7 +32,39 @@ export type RetrySettings<
  * const data = await new AsyncHooks(
  *   async (url: string, signal?: AbortSignal): Promise<unknown> => {
  *     const response = await fetch(url, { signal });
- *     return await response.json();
+ *     const json = await response.json();
+ *     if (!response.ok) {
+ *       return json;
+ *     }
+ *     return json;
+ *   },
+ *   [retry()],
+ *   {
+ *     signalBinder: {
+ *       getSignal: (args) => args[1],
+ *       forwardSignal: (args, signal) => {
+ *         args[1] = signal;
+ *       }
+ *     }
+ *   }
+ * )
+ * .invoke("URL");
+ * ```
+ *
+ * The middleware works also when the function returns a {@link Result | `Result`} type.
+ * @example
+ * ```ts
+ * import { retry } from "@daiso-tech/core/async";
+ * import { AsyncHooks, TimeSpan, Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
+ *
+ * const data = await new AsyncHooks(
+ *   async (url: string, signal?: AbortSignal): Promise<Result> => {
+ *     const response = await fetch(url, { signal });
+ *     const json = await response.json();
+ *     if (!response.ok) {
+ *       return resultFailure(json);
+ *     }
+ *     return resultSuccess(json);
  *   },
  *   [retry()],
  *   {
@@ -162,28 +84,60 @@ export function retry<
     TReturn,
     TContext extends HookContext,
 >(
-    settings: NoInfer<RetrySettings<TParameters, TContext>> = {},
+    settings: NoInfer<RetrySettings<TParameters, TContext, TReturn>> = {},
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         maxAttempts = 4,
         backoffPolicy = exponentialBackoffPolicy(),
-        errorPolicy = () => true,
+        errorPolicy,
         onRetryDelay = () => {},
         onExecutionAttempt = () => {},
     } = settings;
     return async (args, next, { context, signal }) => {
-        const errors: unknown[] = [];
+        let result: Option<TReturn> = optionNone();
+        let error_: Option = optionNone();
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
                 callInvokable(onExecutionAttempt, { attempt, args, context });
-                return await next(...args);
+                const value = await next(...args);
+
+                // Handle retrying if an Result type is returned
+                result = optionSome(value);
+                if (
+                    !isResult(value) ||
+                    value.type === "success" ||
+                    !(await callErrorPolicy<any>(errorPolicy, value))
+                ) {
+                    return value;
+                }
+
+                if (signal.aborted) {
+                    break;
+                }
+
+                const waitTime = callInvokable(
+                    backoffPolicy,
+                    attempt,
+                    value.error,
+                );
+
+                callInvokable(onRetryDelay, {
+                    error: value.error,
+                    waitTime,
+                    attempt,
+                    args,
+                    context,
+                });
+                await LazyPromise.delay(waitTime, signal);
+
+                // Handle retrying if an error is thrown
             } catch (error: unknown) {
                 if (signal.aborted) {
                     break;
                 }
 
-                if (await callErrorPolicy(errorPolicy, error)) {
-                    errors.push(error);
+                if (await callErrorPolicy<any>(errorPolicy, error)) {
+                    error_ = optionSome(error);
                 } else {
                     throw error;
                 }
@@ -191,7 +145,7 @@ export function retry<
                 const waitTime = callInvokable(backoffPolicy, attempt, error);
 
                 callInvokable(onRetryDelay, {
-                    error,
+                    error: error,
                     waitTime,
                     attempt,
                     args,
@@ -201,15 +155,12 @@ export function retry<
             }
         }
 
-        let errorMessage = `Promise was failed after retried ${String(maxAttempts)} times`;
-        const lastError = errors[errors.length - 1];
-        if (lastError) {
-            // eslint-disable-next-line @typescript-eslint/no-base-to-string
-            errorMessage = `${errorMessage} and last thrown error was "${String(lastError)}"`;
+        if (error_.type === OPTION.SOME) {
+            throw error_.value;
         }
-        throw new RetryAsyncError(errorMessage, {
-            errors,
-            maxAttempts,
-        });
+        if (result.type === OPTION.SOME) {
+            return result.value;
+        }
+        throw new Error("!!__MESSAGE__!!");
     };
 }

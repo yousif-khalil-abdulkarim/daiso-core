@@ -232,7 +232,7 @@ const productCache = new Cache<IProduct>({
 
 ### Runtime type safety
 
-You can enforce runtime type safety by passing [standard schema](https://standardschema.dev/) compliant object to the cache:
+You can enforce runtime and compiletime type safety by passing [standard schema](https://standardschema.dev/) compliant object to the cache:
 
 ```ts
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";

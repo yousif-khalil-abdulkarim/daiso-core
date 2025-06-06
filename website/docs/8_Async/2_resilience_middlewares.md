@@ -37,7 +37,7 @@ You can provide [`LazyPromise`](/docs/8_Async/1_lazy_promise.md), synchronous an
 
 ### Custom ErrorPolicy
 
-You can define an [`ErrorPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.ErrorPolicy.html) to specify fallback values for specific error cases:
+You can define an [`ErrorPolicy`](/docs/7_Utilities/5_result_and_error_policy.md) to specify fallback values for specific error cases:
 
 ```ts
 const fn = new AsyncHooks(unstableFn, [
@@ -45,23 +45,6 @@ const fn = new AsyncHooks(unstableFn, [
         fallbackValue: 1,
         // Will only fallback errors that are not a TypeError
         errorPolicy: (error) => !(error instanceof TypeError),
-    }),
-]);
-```
-
-You can also use [standard schema](https://standardschema.dev/) complaint object as error policy:
-
-```ts
-import { z } from "zod";
-
-const fn = new AsyncHooks(unstableFn, [
-    fallback({
-        fallbackValue: 1,
-        // Will only fallback errors that match the schema
-        errorPolicy: z.object({
-            code: z.liter("E-20"),
-            message: z.string().startWith("A error occured"),
-        }),
     }),
 ]);
 ```
@@ -376,7 +359,7 @@ await fn.invoke();
 
 ### Custom ErrorPolicy
 
-You can define an [`ErrorPolicy`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.ErrorPolicy.html) to retry specific error cases:
+You can define an [`ErrorPolicy`](/docs/7_Utilities/5_result_and_error_policy.md) to retry specific error cases:
 
 ```ts
 const fn = new AsyncHooks(unstableFn, [
@@ -384,23 +367,6 @@ const fn = new AsyncHooks(unstableFn, [
         maxAttemps: 4,
         // Will only retry errors that are not a TypeError
         errorPolicy: (error) => !(error instanceof TypeError),
-    }),
-]);
-```
-
-You can also use [standard schema](https://standardschema.dev/) complaint object as error policy:
-
-```ts
-import { z } from "zod";
-
-const fn = new AsyncHooks(unstableFn, [
-    retry({
-        maxAttemps: 4,
-        // Will only retry errors that match the schema
-        errorPolicy: z.object({
-            code: z.liter("E-20"),
-            message: z.string().startWith("A error occured"),
-        }),
     }),
 ]);
 ```

@@ -8,8 +8,8 @@ import {
 import type {
     IInvokableObject,
     InvokableFn,
-    Promisable,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/functions/_module.js";
+import type { Promisable } from "@/utilities/types/_module.js";
 
 describe("file: lazy.ts", () => {
     describe("function: isLazy", () => {

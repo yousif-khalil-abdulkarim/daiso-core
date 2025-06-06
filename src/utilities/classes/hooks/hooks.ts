@@ -10,7 +10,7 @@ import {
     type Invokable,
     type InvokableFn,
     type OneOrMore,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/functions/_module.js";
 import type { HookContext } from "@/utilities/classes/hooks/types.js";
 
 /**

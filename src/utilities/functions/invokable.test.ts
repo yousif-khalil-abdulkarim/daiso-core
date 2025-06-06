@@ -6,7 +6,7 @@ import {
     resolveInvokable,
     type IInvokableObject,
     type InvokableFn,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/functions/_module.js";
 
 describe("file: invokable.ts", () => {
     describe("function: isInvokableObject", () => {
