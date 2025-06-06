@@ -5,7 +5,7 @@ import {
 } from "@/async/middlewares/timeout/timeout.middleware.js";
 import { AsyncError, TimeoutAsyncError } from "@/async/async.errors.js";
 import { AsyncHooks, TimeSpan } from "@/utilities/_module-exports.js";
-import { LazyPromise } from "@/async/utilities/_module.js";
+import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 
 describe("function: timeout", () => {
     test("should throw AsyncError when timed out", async () => {

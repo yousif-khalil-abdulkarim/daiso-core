@@ -16,7 +16,8 @@ import type {
     NamedFallback,
 } from "@/async/middlewares/hedging/_shared.js";
 import { HedgingAsyncError } from "@/async/async.errors.js";
-import { timeoutAndFail, abortAndFail } from "@/async/utilities/_module.js";
+import { timeoutAndFail } from "@/async/utilities/timeout-and-fail/_module.js";
+import { abortAndFail } from "@/async/utilities/abort-and-fail/abort-and-fail.js";
 
 /**
  * @internal

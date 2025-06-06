@@ -2,7 +2,7 @@ import {
     bulkhead,
     type OnProcessingData,
 } from "@/async/middlewares/bulkhead/bulkhead.middleware.js";
-import { LazyPromise } from "@/async/utilities/_module.js";
+import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 import { CapacityFullAsyncError } from "@/async/async.errors.js";
 import { AsyncHooks, TimeSpan } from "@/utilities/_module-exports.js";
 import { describe, expect, test } from "vitest";

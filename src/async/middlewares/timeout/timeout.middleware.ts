@@ -13,7 +13,7 @@ import {
 } from "@/utilities/_module-exports.js";
 import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
 import { TimeoutAsyncError } from "@/async/async.errors.js";
-import { timeoutAndFail } from "@/async/utilities/_module.js";
+import { timeoutAndFail } from "@/async/utilities/timeout-and-fail/_module.js";
 
 /**
  *

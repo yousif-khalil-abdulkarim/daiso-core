@@ -15,7 +15,7 @@ import type {
     NamedFallback,
 } from "@/async/middlewares/hedging/_shared.js";
 import { HedgingAsyncError } from "@/async/async.errors.js";
-import { timeoutAndFail } from "@/async/utilities/_module.js";
+import { timeoutAndFail } from "@/async/utilities/timeout-and-fail/_module.js";
 
 /**
  * The `sequentialHedging` middleware executes the primary function and all fallback functions sequentially.

@@ -8,7 +8,7 @@ import {
     type Promisable,
     type Result,
 } from "@/utilities/_module-exports.js";
-import { LazyPromise } from "@/async/utilities/_module.js";
+import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 import { v4 } from "uuid";
 import { CapacityFullAsyncError } from "@/async/async.errors.js";
 
