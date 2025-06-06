@@ -3,7 +3,12 @@
  */
 
 import { isIterable } from "@/collection/implementations/_shared.js";
-import type { OneOrMore } from "@/utilities/types/_module.js";
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ */
+export type OneOrMore<TItem> = TItem | Iterable<TItem>;
 
 /**
  * @internal
