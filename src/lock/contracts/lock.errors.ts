@@ -73,70 +73,6 @@ export class UnexpectedLockError
 }
 
 /**
- * The error is thrown when an unexpected error occurs while acquiring a lock.
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
- * @group Errors
- */
-export class UnableToAquireLockError
-    extends UnexpectedLockError
-    implements ISerializable<ISerializedError>
-{
-    static override deserialize(
-        serializedError: ISerializedError,
-    ): UnableToAquireLockError {
-        return new UnableToAquireLockError(
-            serializedError.message,
-            serializedError.cause,
-        );
-    }
-
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-    }
-
-    override serialize(): ISerializedError {
-        return {
-            cause: this.cause,
-            message: this.message,
-            name: this.name,
-        };
-    }
-}
-
-/**
- * The error is thrown when an unexpected error occurs while releasing a lock.
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
- * @group Errors
- */
-export class UnableToReleaseLockError
-    extends UnexpectedLockError
-    implements ISerializable<ISerializedError>
-{
-    static override deserialize(
-        serializedError: ISerializedError,
-    ): UnableToReleaseLockError {
-        return new UnableToReleaseLockError(
-            serializedError.message,
-            serializedError.cause,
-        );
-    }
-
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-    }
-
-    override serialize(): ISerializedError {
-        return {
-            cause: this.cause,
-            message: this.message,
-            name: this.name,
-        };
-    }
-}
-
-/**
  * The error is thrown when trying to acquire a lock that is owned by a different owner.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
@@ -240,8 +176,6 @@ export class UnownedRefreshLockError
 export const LOCK_ERRORS = {
     Base: LockError,
     Unexpected: UnexpectedLockError,
-    UnableToAquire: UnableToAquireLockError,
-    UnableToRelease: UnableToReleaseLockError,
     KeyAlreadyAcquired: KeyAlreadyAcquiredLockError,
     UnownedRelease: UnownedReleaseLockError,
 } as const;
@@ -259,8 +193,6 @@ export function registerLockErrorsToSerde(
         serde_
             .registerClass(LockError, CORE)
             .registerClass(UnexpectedLockError, CORE)
-            .registerClass(UnableToAquireLockError, CORE)
-            .registerClass(UnableToReleaseLockError, CORE)
             .registerClass(KeyAlreadyAcquiredLockError, CORE)
             .registerClass(UnownedReleaseLockError, CORE);
     }

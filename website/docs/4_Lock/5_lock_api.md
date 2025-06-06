@@ -50,10 +50,6 @@ sidebar_position: 5
 
 -   [`KeyAlreadyAcquiredLockError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.KeyAlreadyAcquiredLockError.html)
 
--   [`UnableToAquireLockError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.UnableToAquireLockError.html)
-
--   [`UnableToReleaseLockError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.UnableToReleaseLockError.html)
-
 -   [`UnexpectedLockError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.UnexpectedLockError.html)
 
 -   [`UnownedRefreshLockError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.UnownedRefreshLockError.html)

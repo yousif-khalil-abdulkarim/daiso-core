@@ -4,14 +4,6 @@
 
 import type { IInvokableObject } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
-import {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnableToDispatchEventBusError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnableToAddListenerEventBusError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnableToRemoveListenerEventBusError,
-} from "@/event-bus/contracts/event-bus.errors.js";
 import type {
     BaseEvent,
     EventListenerFn,
@@ -57,7 +49,6 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
     /**
      * The `addListener` method is used for listening to a {@link BaseEvent | `BaseEvent`}.
      * The same listener can only be added once for a specific event. Adding the same listener multiple times will have no effect and nothing will occur.
-     * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     addListener<TEventName extends keyof TEventMap>(
         eventName: TEventName,
@@ -67,7 +58,6 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
     /**
      * The `removeListener` method is used for stop listening to a {@link BaseEvent | `BaseEvent`}.
      * Removing unadded listener will have no effect and nothing will occur.
-     * @throws {UnableToRemoveListenerEventBusError} {@link UnableToRemoveListenerEventBusError}
      */
     removeListener<TEventName extends keyof TEventMap>(
         eventName: TEventName,
@@ -76,7 +66,6 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
 
     /**
      * The `listenOnce` method is used for listening to a {@link BaseEvent | `BaseEvent`} once.
-     * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     listenOnce<TEventName extends keyof TEventMap>(
         eventName: TEventName,
@@ -85,7 +74,6 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
 
     /**
      * The `asPromise` method returns {@link LazyPromise| `LazyPromise`} objecet that resolves once the {@link BaseEvent | `BaseEvent`} is dispatched.
-     * @throws {UnableToAddListenerEventBusError} {@link UnableToAddListenerEventBusError}
      */
     asPromise<TEventName extends keyof TEventMap>(
         eventName: TEventName,
@@ -119,8 +107,6 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
 export type IEventDispatcher<TEventMap extends BaseEventMap = BaseEventMap> = {
     /**
      * The `dispatch` method is used for dispatching a {@link BaseEvent | `BaseEvent`}.
-
-     * @throws {UnableToDispatchEventBusError} {@link UnableToDispatchEventBusError}
      */
     dispatch<TEventName extends keyof TEventMap>(
         eventName: TEventName,

@@ -67,63 +67,6 @@ export class UnexpectedEventBusError extends EventBusError {
 }
 
 /**
- * The error is thrown when an unexpected error occurs while removing a listener.
- *
- * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
- * @group Errors
- */
-export class UnableToRemoveListenerEventBusError extends UnexpectedEventBusError {
-    static override deserialize(
-        deserializedValue: ISerializedError,
-    ): EventBusError {
-        return new UnableToRemoveListenerEventBusError(
-            deserializedValue.message,
-            deserializedValue.cause,
-        );
-    }
-
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = UnableToRemoveListenerEventBusError.name;
-    }
-}
-
-/**
- * The error is thrown when an unexpected error occurs while adding a listener.
- *
- * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
- * @group Errors
- */
-export class UnableToAddListenerEventBusError extends UnexpectedEventBusError {
-    static override deserialize(
-        deserializedValue: ISerializedError,
-    ): EventBusError {
-        return new UnableToAddListenerEventBusError(
-            deserializedValue.message,
-            deserializedValue.cause,
-        );
-    }
-
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = UnableToAddListenerEventBusError.name;
-    }
-}
-
-/**
- * The error is thrown when an unexpected error occurs while dispatching an event.
- *
- * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
- * @group Errors
- */
-export class UnableToDispatchEventBusError extends UnexpectedEventBusError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = UnableToDispatchEventBusError.name;
-    }
-}
-
-/**
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Errors
@@ -131,9 +74,6 @@ export class UnableToDispatchEventBusError extends UnexpectedEventBusError {
 export const EVENT_BUS_ERRORS = {
     Base: EventBusError,
     Unexpected: UnexpectedEventBusError,
-    UnableToRemoveListener: UnableToRemoveListenerEventBusError,
-    UnableToAddListener: UnableToAddListenerEventBusError,
-    UnableToDispatch: UnableToDispatchEventBusError,
 };
 
 /**
@@ -148,9 +88,6 @@ export function registerEventBusErrorsToSerde(
     for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerClass(EventBusError, CORE)
-            .registerClass(UnexpectedEventBusError, CORE)
-            .registerClass(UnableToRemoveListenerEventBusError, CORE)
-            .registerClass(UnableToAddListenerEventBusError, CORE)
-            .registerClass(UnableToDispatchEventBusError, CORE);
+            .registerClass(UnexpectedEventBusError, CORE);
     }
 }

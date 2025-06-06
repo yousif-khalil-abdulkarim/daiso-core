@@ -32,22 +32,6 @@ sidebar_position: 5
 
 -   [`NoOpEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.NoOpEventBusAdapter.html)
 
-## Event bus errors
-
--   [`EventBusError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.EventBusError.html)
-
--   [`UnexpectedEventBusError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.UnexpectedEventBusError.html)
-
--   [`UnableToAddListenerEventBusError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.UnableToAddListenerEventBusError.html)
-
--   [`UnableToDispatchEventBusError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.UnableToDispatchEventBusError.html)
-
--   [`UnableToRemoveListenerEventBusError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.UnableToRemoveListenerEventBusError.html)
-
--   [`EVENT_BUS_ERRORS`](https://yousif-khalil-abdulkarim.github.io/daiso-core/variables/EventBus.EVENT_BUS_ERRORS.html)
-
--   [`registerEventBusErrorsToSerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/EventBus.registerEventBusErrorsToSerde.html)
-
 ## Event bus test utilities
 
 - [`eventBusAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/EventBus.eventBusAdapterTestSuite.html)
