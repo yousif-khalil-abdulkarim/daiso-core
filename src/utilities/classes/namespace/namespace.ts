@@ -6,13 +6,13 @@ import {
     resolveOneOrMoreStr,
     resolveOneOrMore,
 } from "@/utilities//_module-exports.js";
-import type { AtLeastOne, OneOrMore } from "@/utilities/types/_module.js";
+import type { OneOrMore } from "@/utilities/functions/_module.js";
 
 /**
  * @internal
  */
 type KeySettings = {
-    prefixArr: AtLeastOne<string>;
+    prefixArr: Array<string>;
     key: OneOrMore<string>;
     identifierDelimeter: string;
     keyDelimeter: string;
@@ -22,7 +22,7 @@ type KeySettings = {
  * @internal
  */
 export class Key {
-    private readonly prefixArr: AtLeastOne<string>;
+    private readonly prefixArr: Array<string>;
     private readonly key: OneOrMore<string>;
     private readonly identifierDelimeter: string;
     private readonly keyDelimeter: string;
@@ -120,7 +120,7 @@ class InternalNamespace {
         }
     }
 
-    private getKeyPrefixArray(): AtLeastOne<string> {
+    private getKeyPrefixArray(): Array<string> {
         return [
             resolveOneOrMoreStr(this._rootPrefix, this.keyDelimeter),
             this.rootIdentifier,
