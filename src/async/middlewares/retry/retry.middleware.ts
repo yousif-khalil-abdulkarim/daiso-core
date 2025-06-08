@@ -2,7 +2,7 @@
  * @module Async
  */
 
-import type { Option } from "@/utilities/_module-exports.js";
+import type { Option, ResultFailure } from "@/utilities/_module-exports.js";
 import {
     type HookContext,
     type AsyncMiddlewareFn,
@@ -10,11 +10,13 @@ import {
     optionNone,
     optionSome,
     OPTION,
-    isResult,
 } from "@/utilities/_module-exports.js";
 import { exponentialBackoffPolicy } from "@/async/backof-policies/_module.js";
 import type { RetrySettings } from "@/async/middlewares/retry/retry.types.js";
-import { callErrorPolicy } from "@/utilities/_module-exports.js";
+import {
+    callErrorPolicyOnThrow,
+    callErrorPolicyOnValue,
+} from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 
 /**
@@ -103,13 +105,11 @@ export function retry<
 
                 // Handle retrying if an Result type is returned
                 result = optionSome(value);
-                if (
-                    !isResult(value) ||
-                    value.type === "success" ||
-                    !(await callErrorPolicy<any>(errorPolicy, value))
-                ) {
+                if (!(await callErrorPolicyOnValue(errorPolicy, value))) {
                     return value;
                 }
+                // We can cast type here because callErrorPolicyOnValue ensures the value is a ResultFailure
+                const resultFailure = value as ResultFailure;
 
                 if (signal.aborted) {
                     break;
@@ -118,11 +118,11 @@ export function retry<
                 const waitTime = callInvokable(
                     backoffPolicy,
                     attempt,
-                    value.error,
+                    resultFailure.error,
                 );
 
                 callInvokable(onRetryDelay, {
-                    error: value.error,
+                    error: resultFailure.error,
                     waitTime,
                     attempt,
                     args,
@@ -136,7 +136,7 @@ export function retry<
                     break;
                 }
 
-                if (await callErrorPolicy<any>(errorPolicy, error)) {
+                if (await callErrorPolicyOnThrow<any>(errorPolicy, error)) {
                     error_ = optionSome(error);
                 } else {
                     throw error;

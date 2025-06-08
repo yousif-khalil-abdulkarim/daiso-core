@@ -1,5 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
+    callInvokable,
+    getInvokableName,
     isInvokable,
     isInvokableFn,
     isInvokableObject,
@@ -72,6 +74,53 @@ describe("file: invokable.ts", () => {
                 },
             };
             expect(resolveInvokable(invokable)).toBeTypeOf("function");
+        });
+    });
+    describe("function: callInvokable", () => {
+        test("Should resolve function", () => {
+            function fn(str: string): string {
+                return str + str;
+            }
+            expect(callInvokable(fn, "ab")).toBe("abab");
+        });
+        test("Should resolve object literal IInvokableObject", () => {
+            const invokable: IInvokableObject<[str: string], string> & {
+                STR: string;
+            } = {
+                invoke(str: string): string {
+                    return str + str + this.STR;
+                },
+                STR: "CONST",
+            };
+            expect(callInvokable(invokable, "ab")).toBe("ababCONST");
+        });
+        test("Should resolve class IInvokableObject", () => {
+            class Invokable implements IInvokableObject<[str: string], string> {
+                invoke(str: string): string {
+                    return str + str + this.STR;
+                }
+                public readonly STR = "CONST";
+            }
+            const invokable = new Invokable();
+            expect(callInvokable(invokable, "ab")).toBe("ababCONST");
+        });
+    });
+    describe("function: getInvokableName", () => {
+        test("Should get name of function", () => {
+            function fn(str: string): string {
+                return str + str;
+            }
+            expect(getInvokableName(fn)).toBe(fn.name);
+        });
+        test("Should get name of class", () => {
+            class Invokable implements IInvokableObject<[str: string], string> {
+                invoke(str: string): string {
+                    return str + str + this.STR;
+                }
+                public readonly STR = "CONST";
+            }
+            const invokable = new Invokable();
+            expect(getInvokableName(invokable)).toBe(Invokable.name);
         });
     });
 });

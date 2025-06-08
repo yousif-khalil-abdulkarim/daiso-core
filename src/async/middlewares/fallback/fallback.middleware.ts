@@ -8,12 +8,13 @@ import {
     type HookContext,
     resolveAsyncLazyable,
     callInvokable,
-    isResult,
     resultSuccess,
+    callErrorPolicyOnValue,
+    isResultFailure,
 } from "@/utilities/_module-exports.js";
 import type { AsyncMiddlewareFn } from "@/utilities/_module-exports.js";
 import type { FallbackSettings } from "@/async/middlewares/fallback/fallback.types.js";
-import { callErrorPolicy } from "@/utilities/_module-exports.js";
+import { callErrorPolicyOnThrow } from "@/utilities/_module-exports.js";
 
 /**
  * The `fallback` middleware adds fallback value when an error occurs.
@@ -77,11 +78,11 @@ export function fallback<
             const value = await next(...args);
 
             // Handle fallback value if an Result type is returned
-            if (
-                !isResult(value) ||
-                value.type === "success" ||
-                !(await callErrorPolicy<any>(errorPolicy, value))
-            ) {
+            if (!(await callErrorPolicyOnValue(errorPolicy, value))) {
+                return value;
+            }
+            // This is only needed for type inference
+            if (!isResultFailure(value)) {
                 return value;
             }
 
@@ -97,7 +98,7 @@ export function fallback<
 
             // Handle fallback value if an error is thrown
         } catch (error: unknown) {
-            if (!(await callErrorPolicy<any>(errorPolicy, error))) {
+            if (!(await callErrorPolicyOnThrow<any>(errorPolicy, error))) {
                 throw error;
             }
             const resolvedFallbackValue =

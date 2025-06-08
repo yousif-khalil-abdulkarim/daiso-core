@@ -6,6 +6,7 @@ import { isNullable } from "@/utilities/functions/is-nullable.js";
 import { getConstructorName } from "@/utilities/functions/get-constructor-name.js";
 import type { NoneFunc } from "@/utilities/types/none-func.type.js";
 import type { Promisable } from "@/utilities/types/promiseable.type.js";
+import { isClass } from "@/utilities/functions/is-class.js";
 
 /**
  *
@@ -116,7 +117,10 @@ export function isInvokableFn<TValue, TParameters extends unknown[], TReturn>(
 export function isInvokable<TValue, TParameters extends unknown[], TReturn>(
     invokable: TValue | Invokable<TParameters, TReturn>,
 ): invokable is Invokable<TParameters, TReturn> {
-    return isInvokableObject(invokable) || isInvokableFn(invokable);
+    return (
+        (isInvokableObject(invokable) || isInvokableFn(invokable)) &&
+        !isClass(invokable)
+    );
 }
 
 /**
