@@ -59,7 +59,7 @@ The `ErrorPolicy` type determines which errors should be handled for example in 
 The `ErrorPolicy` will also apply when a function returns a failed [`Result`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.Result.html).
 :::
 
-### Predicate as error policy
+### Predicate as ErrorPolicy
 
 A predicate function can be used to dynamically determine if an error should be handled:
 
@@ -84,7 +84,7 @@ const func = new AsyncHooks((): string => {
 .toFunc();
 ```
 
-### Classes as error policy:
+### Classes as ErrorPolicy:
 
 You can directly pass an class to match if errors are instance of the class:
 
@@ -100,7 +100,7 @@ const func = new AsyncHooks((): string => {
 .toFunc();
 ```
 
-### Standard Schema as Error Policy
+### Standard Schema as ErrorPolicy
 
 You can use any [standard schema](https://standardschema.dev/) compliant object as error policy:
 
@@ -121,5 +121,26 @@ const func = new AsyncHooks((): string => {
 .toFunc();
 ```
     
-### Error policy and Result type
+### False return values as error
+
+You can treat false return values as errors. This useful when you want to retry functions that return boolean.
+
+```ts
+import { AsyncHooks } from "@daiso-tech/core/utillities";
+import { retry } from "@daiso-tech/async";
+
+await new AsyncHooks((): Promise<boolean> => {
+    // Will be 
+    console.log("EXECUTING");
+    return false;
+}, [
+    retry({
+        maxAttempts: 4,
+        errorPolicy: {
+            treatFalseAsError: true
+        }
+    })
+])
+.invoke();
+```
 

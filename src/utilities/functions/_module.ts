@@ -1,5 +1,6 @@
 export * from "@/utilities/functions/error-policy.js";
 export * from "@/utilities/functions/get-constructor-name.js";
+export * from "@/utilities/functions/is-class.js";
 export * from "@/utilities/functions/invokable.js";
 export * from "@/utilities/functions/is-nullable.js";
 export * from "@/utilities/functions/is-standard-schema.js";

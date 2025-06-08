@@ -17,8 +17,162 @@ import type {
 } from "@/async/middlewares/retry/retry.types.js";
 
 describe("function: retry", () => {
+    describe("With boolean return value", () => {
+        test("Should not retry when given ErrorPolicyBoolSetting.treatFalseAsError is false and given Result success return value is false", async () => {
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): Result<boolean, Error> => {
+                    i++;
+                    return resultSuccess(false);
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: {
+                        treatFalseAsError: false,
+                    },
+                }),
+            ).invoke();
+
+            expect(i).toBe(1);
+        });
+        test("Should not retry when given ErrorPolicyBoolSetting.treatFalseAsError is false and given Result success return value is true", async () => {
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): Result<boolean, Error> => {
+                    i++;
+                    return resultSuccess(true);
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: {
+                        treatFalseAsError: false,
+                    },
+                }),
+            ).invoke();
+
+            expect(i).toBe(1);
+        });
+        test("Should not retry when given ErrorPolicyBoolSetting.treatFalseAsError is true and given Result success return value is true", async () => {
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): Result<boolean, Error> => {
+                    i++;
+                    return resultSuccess(true);
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: {
+                        treatFalseAsError: true,
+                    },
+                }),
+            ).invoke();
+
+            expect(i).toBe(1);
+        });
+        test("Should not retry when given ErrorPolicyBoolSetting.treatFalseAsError is true and given Result success return value is false", async () => {
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): Result<boolean, Error> => {
+                    i++;
+                    return resultSuccess(false);
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: {
+                        treatFalseAsError: true,
+                    },
+                }),
+            ).invoke();
+
+            expect(i).toBe(1);
+        });
+        test("Should not retry when given ErrorPolicyBoolSetting.treatFalseAsError is false and given false return value", async () => {
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): boolean => {
+                    i++;
+                    return false;
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: {
+                        treatFalseAsError: false,
+                    },
+                }),
+            ).invoke();
+
+            expect(i).toBe(1);
+        });
+        test("Should not retry when given ErrorPolicyBoolSetting.treatFalseAsError is false and given true return value", async () => {
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): boolean => {
+                    i++;
+                    return true;
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: {
+                        treatFalseAsError: false,
+                    },
+                }),
+            ).invoke();
+
+            expect(i).toBe(1);
+        });
+        test("Should not retry when given ErrorPolicyBoolSetting.treatFalseAsError is true and given true return value", async () => {
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): boolean => {
+                    i++;
+                    return true;
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: {
+                        treatFalseAsError: true,
+                    },
+                }),
+            ).invoke();
+
+            expect(i).toBe(1);
+        });
+        test("Should retry when ErrorPolicyBoolSetting.treatFalseAsError is true and given false return value", async () => {
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): boolean => {
+                    i++;
+                    return false;
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: {
+                        treatFalseAsError: true,
+                    },
+                }),
+            ).invoke();
+
+            expect(i).toBe(maxAttempts);
+        });
+    });
     describe("With result:", () => {
-        test("Should throw Error when all atempts fail", async () => {
+        test("Should return failed result type when all atempts fail", async () => {
             const result = await new AsyncHooks(
                 (): Result<string, Error> => {
                     return resultFailure(new Error("My own error"));
@@ -32,7 +186,7 @@ describe("function: retry", () => {
             expect(result.type).toBe(RESULT.FAILURE);
             expect((result as ResultFailure).error).toBeInstanceOf(Error);
         });
-        test("Should retry until given maxAtempt", async () => {
+        test("Should retry until given maxAttempts", async () => {
             let repetition = 0;
             const maxAttempts = 4;
 
@@ -53,75 +207,122 @@ describe("function: retry", () => {
 
             expect(repetition).toBe(maxAttempts);
         });
-        test("Should not retry when given custom error policy and unknown error", async () => {
+        test("Should not retry when given predicate ErrorPolicy and unknown error", async () => {
             class ErrorA extends Error {}
             class ErrorB extends Error {}
 
-            const result = await new AsyncHooks(
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
                 (): Result<string, ErrorB | ErrorA> => {
+                    i++;
                     return resultFailure(new ErrorB("My own error"));
                 },
                 retry({
-                    maxAttempts: 4,
+                    maxAttempts,
                     backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     errorPolicy: (error) => error instanceof ErrorA,
                 }),
             ).invoke();
 
-            expect(result.type).toBe(RESULT.FAILURE);
-            expect((result as ResultFailure).error).toBeInstanceOf(ErrorB);
+            expect(i).toBe(1);
         });
-        test("Should not retry when given custom standard schema error policy and unknown error", async () => {
+        test("Should not retry when given standard schema ErrorPolicy and unknown error", async () => {
             class ErrorA extends Error {}
             class ErrorB extends Error {}
 
-            const result = await new AsyncHooks(
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
                 (): Result<string, ErrorA | ErrorB> => {
+                    i++;
                     return resultFailure(new ErrorB("My own error"));
                 },
                 retry({
-                    maxAttempts: 4,
+                    maxAttempts,
                     backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     errorPolicy: z.instanceof(ErrorA),
                 }),
             ).invoke();
 
-            expect(result.type).toBe(RESULT.FAILURE);
-            expect((result as ResultFailure).error).toBeInstanceOf(ErrorB);
+            expect(i).toBe(1);
         });
-        test("Should retry only specific error when given custom error policy", async () => {
+        test("Should not retry when given class ErrorPolicy and unknown error", async () => {
+            class ErrorA extends Error {}
+            class ErrorB extends Error {}
+
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): Result<string, ErrorA | ErrorB> => {
+                    i++;
+                    return resultFailure(new ErrorB("My own error"));
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: ErrorA,
+                }),
+            ).invoke();
+
+            expect(i).toBe(1);
+        });
+        test("Should retry specific error when given predicate ErrorPolicy", async () => {
             class ErrorA extends Error {}
 
-            const result = await new AsyncHooks(
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
                 (): Result<string, ErrorA> => {
+                    i++;
                     return resultFailure(new ErrorA("My own error"));
                 },
                 retry({
-                    maxAttempts: 4,
+                    maxAttempts,
                     backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     errorPolicy: (error) => error instanceof ErrorA,
                 }),
             ).invoke();
 
-            expect(result.type).toBe(RESULT.FAILURE);
-            expect((result as ResultFailure).error).toBeInstanceOf(ErrorA);
+            expect(i).toBe(maxAttempts);
         });
-        test("Should retry only specific error when given custom standard schema error policy", async () => {
+        test("Should retry specific error when given standard schema ErrorPolicy", async () => {
             class ErrorA extends Error {}
 
-            const result = await new AsyncHooks(
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
                 (): Result<string, ErrorA> => {
+                    i++;
                     return resultFailure(new ErrorA("My own error"));
                 },
                 retry({
-                    maxAttempts: 4,
+                    maxAttempts,
                     backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     errorPolicy: z.instanceof(ErrorA),
                 }),
             ).invoke();
 
-            expect(result.type).toBe(RESULT.FAILURE);
-            expect((result as ResultFailure).error).toBeInstanceOf(ErrorA);
+            expect(i).toBe(maxAttempts);
+        });
+        test("Should retry specific error when given class ErrorPolicy", async () => {
+            class ErrorA extends Error {}
+
+            let i = 0;
+            const maxAttempts = 4;
+            await new AsyncHooks(
+                (): Result<string, ErrorA> => {
+                    i++;
+                    return resultFailure(new ErrorA("My own error"));
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: ErrorA,
+                }),
+            ).invoke();
+
+            expect(i).toBe(maxAttempts);
         });
         test("Should return value after throwing 4 times", async () => {
             let repetition = 0;
@@ -289,7 +490,7 @@ describe("function: retry", () => {
 
             await expect(promise).rejects.toBeInstanceOf(Error);
         });
-        test("Should retry until given maxAtempt", async () => {
+        test("Should retry until given maxAttempts", async () => {
             let repetition = 0;
             const maxAttempts = 4;
 
@@ -310,71 +511,158 @@ describe("function: retry", () => {
 
             expect(repetition).toBe(maxAttempts);
         });
-        test("Should not retry when given custom error policy and unknown error", async () => {
+        test("Should not retry when given predicate ErrorPolicy and unknown error", async () => {
             class ErrorA extends Error {}
             class ErrorB extends Error {}
 
+            let i = 0;
+            const maxAttempts = 4;
             const promise = new AsyncHooks(
                 (): string => {
+                    i++;
                     throw new ErrorB("My own error");
                 },
                 retry({
-                    maxAttempts: 4,
+                    maxAttempts,
                     backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     errorPolicy: (error) => error instanceof ErrorA,
                 }),
             ).invoke();
 
-            await expect(promise).rejects.toBeInstanceOf(ErrorB);
+            try {
+                await promise;
+            } catch {
+                /* EMPTY */
+            }
+
+            expect(i).toBe(1);
         });
-        test("Should not retry when given custom standard schema error policy and unknown error", async () => {
+        test("Should not retry when given standard schema ErrorPolicy and unknown error", async () => {
             class ErrorA extends Error {}
             class ErrorB extends Error {}
 
+            let i = 0;
+            const maxAttempts = 4;
             const promise = new AsyncHooks(
                 (): string => {
+                    i++;
                     throw new ErrorB("My own error");
                 },
                 retry({
-                    maxAttempts: 4,
+                    maxAttempts,
                     backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     errorPolicy: z.instanceof(ErrorA),
                 }),
             ).invoke();
 
-            await expect(promise).rejects.toBeInstanceOf(ErrorB);
-        });
-        test("Should retry only specific error when given custom error policy", async () => {
-            class ErrorA extends Error {}
+            try {
+                await promise;
+            } catch {
+                /* EMPTY */
+            }
 
+            expect(i).toBe(1);
+        });
+        test("Should not retry when given class ErrorPolicy and unknown error", async () => {
+            class ErrorA extends Error {}
+            class ErrorB extends Error {}
+
+            let i = 0;
+            const maxAttempts = 4;
             const promise = new AsyncHooks(
                 (): string => {
+                    i++;
+                    throw new ErrorB("My own error");
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: ErrorA,
+                }),
+            ).invoke();
+
+            try {
+                await promise;
+            } catch {
+                /* EMPTY */
+            }
+
+            expect(i).toBe(1);
+        });
+        test("Should retry specific error when given predicate ErrorPolicy", async () => {
+            class ErrorA extends Error {}
+
+            let i = 0;
+            const maxAttempts = 4;
+            const promise = new AsyncHooks(
+                (): string => {
+                    i++;
                     throw new ErrorA("My own error");
                 },
                 retry({
-                    maxAttempts: 4,
+                    maxAttempts,
                     backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     errorPolicy: (error) => error instanceof ErrorA,
                 }),
             ).invoke();
 
-            await expect(promise).rejects.toBeInstanceOf(ErrorA);
+            try {
+                await promise;
+            } catch {
+                /* EMPTY */
+            }
+
+            expect(i).toBe(maxAttempts);
         });
-        test("Should retry only specific error when given custom standard schema error policy", async () => {
+        test("Should retry specific error when given standard schema ErrorPolicy", async () => {
             class ErrorA extends Error {}
 
+            let i = 0;
+            const maxAttempts = 4;
             const promise = new AsyncHooks(
                 (): string => {
+                    i++;
                     throw new ErrorA("My own error");
                 },
                 retry({
-                    maxAttempts: 4,
+                    maxAttempts,
                     backoffPolicy: () => TimeSpan.fromMilliseconds(0),
                     errorPolicy: z.instanceof(ErrorA),
                 }),
             ).invoke();
 
-            await expect(promise).rejects.toBeInstanceOf(ErrorA);
+            try {
+                await promise;
+            } catch {
+                /* EMPTY */
+            }
+
+            expect(i).toBe(maxAttempts);
+        });
+        test("Should retry specific error when given class ErrorPolicy", async () => {
+            class ErrorA extends Error {}
+
+            let i = 0;
+            const maxAttempts = 4;
+            const promise = new AsyncHooks(
+                (): string => {
+                    i++;
+                    throw new ErrorA("My own error");
+                },
+                retry({
+                    maxAttempts,
+                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    errorPolicy: ErrorA,
+                }),
+            ).invoke();
+
+            try {
+                await promise;
+            } catch {
+                /* EMPTY */
+            }
+
+            expect(i).toBe(maxAttempts);
         });
         test("Should return value after throwing 4 times", async () => {
             let repetition = 0;
