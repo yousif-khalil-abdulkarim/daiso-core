@@ -1,5 +1,33 @@
 # @daiso-tech/core
 
+## 0.38.0
+
+### Minor Changes
+
+- 279becc: Update `HedgingSettings.waitTime` field. Instead you can now pass in a middlewares that wrap the primary function and fallback function.
+- 90340f9: Now the `fallback` middleware works with `Result` type, meaning the middleware will add a fallback value when the function returns a failed `Result`.
+- 32f0a88: Changed the result type to be object instead of an array
+- 90340f9: The `observe` middleware works now with `Result` type. This means the middleware will call the `onError` callback when the function returns a failed `Result`.
+- 90340f9: Removed `RetryAsyncError`. Now the `retry` middleware will throw the last error.
+- 279becc: Removed `concurrentHedging` middleware because it was buggy and unreliable.
+- 90340f9: Now the `retry` middleware works with `Result` type, meaning the middleware will retry when the function returns a failed `Result`.
+- 90340f9: The `ErrorPolicy` type has been updated and now you can pass a class. The `ErrorPolicy` will verify whether the error is an instance of that class.
+- 8608081: Now `ErrorPolicy` can handle return values that are false boolean values.
+- ba6907b: Removed the following `EventBus` errors:
+
+    - `UnableToRemoveListenerEventBusError`
+    - `UnableToAddListenerEventBusError`
+    - `UnableToDispatchEventBusError`
+
+    `EventBus` errors obscures unexpected errors originating from the underlying client, making it harder to identify the root cause.
+
+- ba6907b: Removed the following `LockProvider` errors:
+
+    - `UnableToReleaseLockError`
+    - `UnableToAquireLockError`
+
+    `LockProvider` errors obscures unexpected errors originating from the underlying client, making it harder to identify the root cause.
+
 ## 0.37.3
 
 ### Patch Changes
@@ -44,8 +72,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                - `AsyncFactoryable`
-                - `Factoryable`
+                  - `AsyncFactoryable`
+                  - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
