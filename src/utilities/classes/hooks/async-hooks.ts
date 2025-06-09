@@ -95,8 +95,12 @@ export type AsyncNextFunc<
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
-export type AsyncContext<TContext extends HookContext = HookContext> = {
+export type AsyncContext<
+    TParameters extends unknown[] = unknown[],
+    TContext extends HookContext = HookContext,
+> = {
     name: string;
+    signalBinder: AbortSignalBinder<TParameters>;
     context: TContext;
     abort: (error: unknown) => void;
     signal: AbortSignal;
@@ -115,7 +119,7 @@ export type AsyncMiddlewareFn<
     [
         arguments_: TParameters,
         next: AsyncNextFunc<TParameters, TReturn>,
-        settings: AsyncContext<TContext>,
+        settings: AsyncContext<TParameters, TContext>,
     ],
     Promisable<TReturn>
 >;
@@ -133,7 +137,7 @@ export type IAsyncMiddlewareObject<
     [
         arguments_: TParameters,
         next: AsyncNextFunc<TParameters, TReturn>,
-        settings: AsyncContext<TContext>,
+        settings: AsyncContext<TParameters, TContext>,
     ],
     Promisable<TReturn>
 >;
@@ -252,6 +256,7 @@ export class AsyncHooks<
                 );
                 return await hook(resolvedSignalBinder.changedArgs, next, {
                     name,
+                    signalBinder,
                     abort: (error: unknown) => {
                         resolvedSignalBinder.abort(error);
                     },

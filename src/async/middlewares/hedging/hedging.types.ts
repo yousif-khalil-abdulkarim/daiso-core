@@ -2,11 +2,17 @@
  * @module Async
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
+    type AsyncMiddleware,
     type HookContext,
-    type Invokable,
     type OneOrMore,
+} from "@/utilities/_module-exports.js";
+import type {
+    ErrorPolicySettings,
+    InferResultError,
+} from "@/utilities/_module-exports.js";
+import {
+    type Invokable,
     type Promisable,
 } from "@/utilities/_module-exports.js";
 
@@ -114,23 +120,51 @@ export type HedgingSettings<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext extends HookContext = HookContext,
-> = HedgingCallbacks<TParameters, TContext> & {
-    /**
-     * The maximum time to wait before automatically aborting the executing primary {@link Invokable | `Invokable`} or fallback {@link Invokable | `Invokable:s`}.
-     *
-     * @default
-     * ```ts
-     * import { TimeSpan } from "@daiso-tech/core/utilities";
-     *
-     * TimeSpan.fromSeconds(2)
-     * ```
-     */
-    waitTime?: TimeSpan;
+> = HedgingCallbacks<TParameters, TContext> &
+    ErrorPolicySettings<InferResultError<TReturn>> & {
+        /**
+         * The fallback functions that run in case the primary function fails.
+         *
+         * @default
+         * ```ts
+         * import { retry } from "@daiso-tech/core/async";
+         * import { timeout } from "@daiso-tech/core/async";
+         *
+         * [timeout(), retry()]
+         * ```
+         */
+        fallbacks: OneOrMore<
+            Fallback<TParameters, TReturn> | NamedFallback<TParameters, TReturn>
+        >;
 
-    /**
-     * The fallback functions that run in case the primary function fails.
-     */
-    fallbacks: OneOrMore<
-        Fallback<TParameters, TReturn> | NamedFallback<TParameters, TReturn>
-    >;
-};
+        /**
+         * Middlewares to apply on all fallback functions and on primary function.
+         *
+         * You can wrap primary and fallback functions with for example `retry` and `timeout` middlewares.
+         * @example
+         * ```ts
+         * import { retry, timeout, sequentialHedging } from "@daiso-tech/core/async";
+         *
+         * new AsyncHooks(fn, [
+         *   sequentialHedging({
+         *     fallbacks: [
+         *       fn1,
+         *       fn2,
+         *       fn3,
+         *     ],
+         *     middlewares: [
+         *       timeout({
+         *         waitTime: TimeSpan.fromSeconds(2),
+         *       }),
+         *       retry({
+         *         maxAttempts: 4
+         *       }),
+         *     ]
+         *   })
+         * ], {
+         *   signalBinder,
+         * })
+         * ```
+         */
+        middlewares?: Array<AsyncMiddleware<TParameters, TReturn>>;
+    };
