@@ -1,19 +1,45 @@
 import { describe, expect, test } from "vitest";
-import {
-    timeout,
-    type OnTimeoutData,
-} from "@/async/middlewares/timeout/timeout.middleware.js";
+import { timeout } from "@/async/middlewares/timeout/timeout.middleware.js";
+import { type OnTimeoutData } from "@/async/middlewares/timeout/timeout.type.js";
 import { AsyncError, TimeoutAsyncError } from "@/async/async.errors.js";
 import { AsyncHooks, TimeSpan } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 
+function createDelayedFn<TParameters extends unknown[], TReturn>(
+    time: TimeSpan,
+    fn: (...args: [...TParameters, sigal?: AbortSignal]) => TReturn,
+) {
+    return async (
+        ...args: [...TParameters, sigal?: AbortSignal]
+    ): Promise<TReturn> => {
+        const start = performance.now();
+
+        const abortSignal = args.find((arg) => arg instanceof AbortSignal);
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
+        while (true) {
+            if (abortSignal?.aborted) {
+                throw abortSignal.reason;
+            }
+            const end = performance.now();
+            await LazyPromise.delay(TimeSpan.fromMilliseconds(1));
+
+            const time_ = end - start;
+
+            if (time_ >= time.toMilliseconds()) {
+                break;
+            }
+        }
+        return fn(...args);
+    };
+}
+
 describe("function: timeout", () => {
     test("should throw AsyncError when timed out", async () => {
         const outputPromise = new AsyncHooks(
-            async () => {
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
-                return "a";
-            },
+            createDelayedFn<[], string>(
+                TimeSpan.fromMilliseconds(50),
+                () => "a",
+            ),
             timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
@@ -21,10 +47,10 @@ describe("function: timeout", () => {
     });
     test("should throw TimeoutAsyncError when timed out", async () => {
         const outputPromise = new AsyncHooks(
-            async () => {
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
-                return "a";
-            },
+            createDelayedFn<[], string>(
+                TimeSpan.fromMilliseconds(100),
+                () => "a",
+            ),
             timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
@@ -32,10 +58,10 @@ describe("function: timeout", () => {
     });
     test("should return value when not timed out", async () => {
         const outputPromise = new AsyncHooks(
-            async () => {
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(50));
-                return "a";
-            },
+            createDelayedFn<[], string>(
+                TimeSpan.fromMilliseconds(50),
+                () => "a",
+            ),
             timeout({ waitTime: TimeSpan.fromMilliseconds(100) }),
         ).invoke();
 
@@ -45,7 +71,9 @@ describe("function: timeout", () => {
         class ErrorA extends Error {}
 
         const promise = new AsyncHooks(
-            () => Promise.reject(new ErrorA()),
+            createDelayedFn<[], string>(TimeSpan.fromMilliseconds(50), () => {
+                throw new ErrorA();
+            }),
             timeout({ waitTime: TimeSpan.fromSeconds(2) }),
         ).invoke();
         await expect(promise).rejects.toBeInstanceOf(ErrorA);
@@ -54,10 +82,10 @@ describe("function: timeout", () => {
         let data = null as OnTimeoutData | null;
         const time = TimeSpan.fromMilliseconds(25);
         const outputPromise = new AsyncHooks(
-            async (_url: string) => {
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(100));
-                return "a";
-            },
+            createDelayedFn<[string], string>(
+                TimeSpan.fromMilliseconds(100),
+                () => "a",
+            ),
             timeout({
                 waitTime: time,
                 onTimeout(data_) {
@@ -87,9 +115,10 @@ describe("function: timeout", () => {
         let data = null as OnTimeoutData | null;
         const time = TimeSpan.fromMilliseconds(25);
         const outputPromise = new AsyncHooks(
-            (_url: string) => {
-                return "a";
-            },
+            createDelayedFn<[string], string>(
+                TimeSpan.fromMilliseconds(0),
+                () => "a",
+            ),
             timeout({
                 waitTime: time,
                 onTimeout(data_) {

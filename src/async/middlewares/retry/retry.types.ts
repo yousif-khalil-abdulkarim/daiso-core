@@ -91,9 +91,9 @@ export type RetryCallbacks<
 export type RetrySettings<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
-    TError = unknown,
+    TReturn = unknown,
 > = RetryCallbacks<TParameters, TContext> &
-    ErrorPolicySettings<InferResultError<TError>> & {
+    ErrorPolicySettings<InferResultError<TReturn>> & {
         /**
          * You can decide maximal times you can retry.
          * @default {4}
