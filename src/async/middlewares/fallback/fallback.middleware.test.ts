@@ -9,7 +9,6 @@ import {
 import { describe, expect, test } from "vitest";
 import { type OnFallbackData } from "@/async/middlewares/fallback/fallback.types.js";
 import { fallback } from "@/async/middlewares/fallback/fallback.middleware.js";
-import { z } from "zod";
 
 describe("function: fallback", () => {
     describe("With result:", () => {
@@ -53,38 +52,6 @@ describe("function: fallback", () => {
             expect(returnValue.type).toBe(RESULT.FAILURE);
             expect((returnValue as ResultFailure).error).toBeInstanceOf(Error);
         });
-        test("Should not add fallback when given standard schema ErrorPolicy and unknown error", async () => {
-            class CustomError extends Error {}
-            const returnValue = await new AsyncHooks((): Result<
-                string,
-                Error | CustomError
-            > => {
-                return resultFailure(new Error("Unexpected error"));
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: z.instanceof(CustomError),
-                }),
-            ]).invoke();
-            expect(returnValue.type).toBe(RESULT.FAILURE);
-            expect((returnValue as ResultFailure).error).toBeInstanceOf(Error);
-        });
-        test("Should not add fallback when given class ErrorPolicy and unknown error", async () => {
-            class CustomError extends Error {}
-            const returnValue = await new AsyncHooks((): Result<
-                string,
-                Error | CustomError
-            > => {
-                return resultFailure(new Error("Unexpected error"));
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: CustomError,
-                }),
-            ]).invoke();
-            expect(returnValue.type).toBe(RESULT.FAILURE);
-            expect((returnValue as ResultFailure).error).toBeInstanceOf(Error);
-        });
         test("Should add fallback only to specific error when given predicate ErrorPolicy", async () => {
             class CustomError extends Error {}
             const returnValue = await new AsyncHooks((): Result<
@@ -96,36 +63,6 @@ describe("function: fallback", () => {
                 fallback({
                     fallbackValue: "fallback-value",
                     errorPolicy: (error) => error instanceof CustomError,
-                }),
-            ]).invoke();
-            expect(returnValue).toEqual(resultSuccess("fallback-value"));
-        });
-        test("Should add fallback only to specific error when given standard schema ErrorPolicy", async () => {
-            class CustomError extends Error {}
-            const returnValue = await new AsyncHooks((): Result<
-                string,
-                Error | CustomError
-            > => {
-                return resultFailure(new CustomError("Unexpected error"));
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: z.instanceof(CustomError),
-                }),
-            ]).invoke();
-            expect(returnValue).toEqual(resultSuccess("fallback-value"));
-        });
-        test("Should add fallback only to specific error when given class ErrorPolicy", async () => {
-            class CustomError extends Error {}
-            const returnValue = await new AsyncHooks((): Result<
-                string,
-                Error | CustomError
-            > => {
-                return resultFailure(new CustomError("Unexpected error"));
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: CustomError,
                 }),
             ]).invoke();
             expect(returnValue).toEqual(resultSuccess("fallback-value"));
@@ -214,30 +151,6 @@ describe("function: fallback", () => {
             ]).invoke();
             await expect(returnValue).rejects.toBeInstanceOf(Error);
         });
-        test("Should not add fallback when given standard schema ErrorPolicy and unknown error", async () => {
-            class CustomError extends Error {}
-            const returnValue = new AsyncHooks((): string => {
-                throw new Error("Unexpected error");
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: z.instanceof(CustomError),
-                }),
-            ]).invoke();
-            await expect(returnValue).rejects.toBeInstanceOf(Error);
-        });
-        test("Should not add fallback when given class ErrorPolicy and unknown error", async () => {
-            class CustomError extends Error {}
-            const returnValue = new AsyncHooks((): string => {
-                throw new Error("Unexpected error");
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: CustomError,
-                }),
-            ]).invoke();
-            await expect(returnValue).rejects.toBeInstanceOf(Error);
-        });
         test("Should add fallback only to specific error when given predicate ErrorPolicy", async () => {
             class CustomError extends Error {}
             const returnValue = await new AsyncHooks((): string => {
@@ -246,30 +159,6 @@ describe("function: fallback", () => {
                 fallback({
                     fallbackValue: "fallback-value",
                     errorPolicy: (error) => error instanceof CustomError,
-                }),
-            ]).invoke();
-            expect(returnValue).toBe("fallback-value");
-        });
-        test("Should add fallback only to specific error when given standard schema ErrorPolicy", async () => {
-            class CustomError extends Error {}
-            const returnValue = await new AsyncHooks((): string => {
-                throw new CustomError("Unexpected error");
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: z.instanceof(CustomError),
-                }),
-            ]).invoke();
-            expect(returnValue).toBe("fallback-value");
-        });
-        test("Should add fallback only to specific error when given class ErrorPolicy", async () => {
-            class CustomError extends Error {}
-            const returnValue = await new AsyncHooks((): string => {
-                throw new CustomError("Unexpected error");
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: CustomError,
                 }),
             ]).invoke();
             expect(returnValue).toBe("fallback-value");
