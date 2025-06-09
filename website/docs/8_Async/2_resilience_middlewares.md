@@ -80,16 +80,6 @@ The hedging middlewares allow you to send request to multiple redundant services
 
     - Throws an error only if all [`Invokable:s`](../7_Utilities/3_invokable.md) fail.
 
-- [`concurrentHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.concurrentHedging.html)
-
-    The concurrentHedging middleware executes the primary and all fallback [`Invokable:s`](../7_Utilities/3_invokable.md) concurrently, then:
-
-    - Returns immediately with the first successful result
-
-    - Automatically cancels all other in-progress calls
-
-    - Throws an aggregated error if all attempts fail
-
 Both middlewares work in the same way and use the same settings.
 
 ### Usage
@@ -182,13 +172,20 @@ const fetchDataEnhanced = new AsyncHooks(
     fetchData,
     [
         sequentialHedging({
-            // Will abort if execution time exceedes 1 minute
-            waitTime: TimeSpan.fromMinutes(1),
             fallbacks: [
                 fetchDataFallback1,
                 fetchDataFallback2,
                 fetchDataFallback3,
             ],
+            // You can additional middlewares that will apply primary function and all fallback functions.
+            middlewares: [
+                timeout({
+                  waitTime: TimeSpan.fromSeconds(2)
+                }),
+                retry({
+                  maxAttempts: 4
+                }),
+            ]
         }),
     ],
     {
@@ -299,36 +296,6 @@ const fetchDataEnhanced = new AsyncHooks(
 :::info
 For more details about `OnHedgeError` callback data, see the [OnHedgeErrorData](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Async.OnHedgeErrorData.html) type.
 :::
-
-### Using concurrentHedging
-
-The [`concurrentHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.concurrentHedging.html) middleware works exactly the same way as [`sequentialHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.sequentialHedging.html) middleware.
-
-```ts
-import { concurrentHedging } from "@daiso-tech/core/async";
-import { AsyncHooks } from "@daiso-tech/core/utilities";
-
-const fetchDataEnhanced = new AsyncHooks(
-    fetchData,
-    [
-        concurrentHedging({
-            fallbacks: [
-                fetchDataFallback1,
-                fetchDataFallback2,
-                fetchDataFallback3,
-            ],
-        }),
-    ],
-    {
-        signalBinder: {
-            getSignal: (args) => args[1],
-            forwardSignal: (args, signal) => {
-                args[1] = signal;
-            },
-        },
-    },
-);
-```
 
 ## Retry
 
