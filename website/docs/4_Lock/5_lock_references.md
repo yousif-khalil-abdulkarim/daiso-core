@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 
-# Lock API
+# Lock references
 
 [`Lock module`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html)
 

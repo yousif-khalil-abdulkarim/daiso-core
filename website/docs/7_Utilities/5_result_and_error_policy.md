@@ -102,7 +102,7 @@ const func = new AsyncHooks((): string => {
 
 ### Standard Schema as ErrorPolicy
 
-You can use any [standard schema](https://standardschema.dev/) compliant object as error policy:
+You can use any [standard schema](https://standardschema.dev/) as error policy:
 
 ```ts
 import { z } from "zod"

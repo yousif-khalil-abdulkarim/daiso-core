@@ -68,7 +68,7 @@ For more details about `onFallback` callback data, see the [OnFallbackData](http
 
 ## Hedging
 
-The hedging middlewares allow you to send request to multiple redundant services and use the first successful response. The library offers 2 strategies:
+The hedging middlewares allow you to send request to multiple redundant services and use the first successful response. The library offers one strategy:
 
 - [`sequentialHedging`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Async.sequentialHedging.html)
 
@@ -76,11 +76,7 @@ The hedging middlewares allow you to send request to multiple redundant services
 
     - Returns immediately with the first successful result.
 
-    - Automatically cancels pending [`Invokable:s`](../7_Utilities/3_invokable.md) once a result is obtained.
-
     - Throws an error only if all [`Invokable:s`](../7_Utilities/3_invokable.md) fail.
-
-Both middlewares work in the same way and use the same settings.
 
 ### Usage
 
@@ -161,12 +157,13 @@ console.log(await response.json());
 
 :::
 
-### Providing timeout
+### Providing timeout and retry
 
 You can abort the hedging calls after a specified time period:
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
+import { retry, timeout } from "@daiso-tech/core/async";
 
 const fetchDataEnhanced = new AsyncHooks(
     fetchData,
@@ -177,15 +174,15 @@ const fetchDataEnhanced = new AsyncHooks(
                 fetchDataFallback2,
                 fetchDataFallback3,
             ],
-            // You can additional middlewares that will apply primary function and all fallback functions.
+            // You can add middlewares that will apply to both the primary function and all fallback functions.
             middlewares: [
                 timeout({
-                  waitTime: TimeSpan.fromSeconds(2)
+                    waitTime: TimeSpan.fromSeconds(2),
                 }),
                 retry({
-                  maxAttempts: 4
+                    maxAttempts: 4,
                 }),
-            ]
+            ],
         }),
     ],
     {
@@ -332,7 +329,7 @@ You can define an [`ErrorPolicy`](/docs/7_Utilities/5_result_and_error_policy.md
 const fn = new AsyncHooks(unstableFn, [
     retry({
         maxAttemps: 4,
-        // Will only retry errors that are not a TypeError
+        // Will only retry errors that are not TypeError
         errorPolicy: (error) => !(error instanceof TypeError),
     }),
 ]);

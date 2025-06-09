@@ -349,9 +349,99 @@ Note the method throws an error when the lock cannot be acquired.
 You can provide [`LazyPromise`](/docs/8_Async/1_lazy_promise.md), synchronous and asynchronous [`Invokable`](../7_Utilities/3_invokable.md) as default values for `run`, `runOrFail`, `runBlocking` and `runBlockingOrFail` methods.
 :::
 
+### Retrying acquiring lock
+
+To retry acquiring lock you can use the [`retry`](/docs/Async/resilience_middlewares#retry) middleware with [`LazyPromise.pipe`](/docs/Async/lazy_promise#adding-middlewares) method.
+
+Retrying acquiring lock with `aquireOrFail` method:
+
+```ts
+import { retry } from "@daiso-tech/core/async";
+import { KeyAlreadyAcquiredLockError } from "@daiso-tech/core/lock/contracts";
+
+const lock = lockProvider.create("lock");
+
+try {
+    await lock.acquireOrFail().pipe(
+        retry({
+            maxAttempts: 4,
+            errorPolicy: KeyAlreadyAcquiredLockError,
+        }),
+    );
+    // The critical section
+} finally {
+    await lock.release();
+}
+```
+
+Retrying acquiring lock with `acquire` method:
+
+```ts
+import { retry } from "@daiso-tech/core/async";
+
+const lock = lockProvider.create("lock");
+
+const hasAquired = await lock.acquire().pipe(
+    retry({
+        maxAttempts: 4,
+        errorPolicy: {
+            treatFalseAsError: true,
+        },
+    }),
+);
+if (hasAquired) {
+    try {
+        // The critical section
+    } finally {
+        await lock.release();
+    }
+}
+```
+
+Retrying acquiring lock with `runOrFail` method:
+
+```ts
+import { retry } from "@daiso-tech/core/async";
+import { KeyAlreadyAcquiredLockError } from "@daiso-tech/core/lock/contracts";
+
+const lock = lockProvider.create("lock");
+
+await lock
+    .runOrFail(async () => {
+        // The critical section
+    })
+    .pipe(
+        retry({
+            maxAttempts: 4,
+            errorPolicy: KeyAlreadyAcquiredLockError,
+        }),
+    );
+```
+
+Retrying acquiring lock with `run` method:
+
+```ts
+import { retry } from "@daiso-tech/core/async";
+
+const lock = lockProvider.create("lock");
+
+await lock
+    .run(async () => {
+        // The critical section
+    })
+    .pipe(
+        retry({
+            maxAttempts: 4,
+            errorPolicy: {
+                treatFalseAsError: true,
+            },
+        }),
+    );
+```
+
 ### Iterable as key name and owner name
 
-You can use an `Iterable` as a key. The elements will be joined into a single string, and the delimiter used for joining is configurable in the [`Namespace`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Namespace.html) class:
+You can use an `Iterable<string>` as a key. The elements will be joined into a single string, and the delimiter used for joining is configurable in the [`Namespace`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Namespace.html) class:
 
 ```ts
 const lockProvider = new LockProvider({
@@ -561,11 +651,11 @@ const redisLockProvider = new LockProvider({
 
 The library includes 3 additional contracts:
 
--   [`ILock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILock.html) - Allows only manipulation of locks.
+- [`ILock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILock.html) - Allows only manipulation of locks.
 
--   [`ILockProviderBase`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockProviderBase.html) - Allows only creation of locks.
+- [`ILockProviderBase`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockProviderBase.html) - Allows only creation of locks.
 
--   [`ILockListenable`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockListenable.html) – Allows only to listening to lock events.
+- [`ILockListenable`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockListenable.html) – Allows only to listening to lock events.
 
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 

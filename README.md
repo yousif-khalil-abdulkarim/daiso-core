@@ -17,7 +17,11 @@
   @daiso-tech/core leverages modern JavaScript primitives, including ES modules
 
 - **Easily testable:**
-  @daiso-tech/core includes built-in vitest helpers for custom adapters and in-memory adapters for all components, enabling testing without Docker.
+  @daiso-tech/core includes built-in [vitest](https://vitest.dev/) helpers for custom adapters and in-memory adapters for all components, enabling testing without Docker.
+
+- **Supports standard schema:**
+  Integrated seamlessly with [standard schema](https://standardschema.dev/) allowing you to use libraries like zod to ensure both compile time and runtimte typesafety.
+
 
 ## A growing collection of officially maintained components
 

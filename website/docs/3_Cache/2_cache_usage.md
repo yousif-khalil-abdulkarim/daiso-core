@@ -121,7 +121,7 @@ await cache.clear();
 
 ### Iterable as key
 
-You can use an `Iterable` as a key. The elements will be joined into a single string, and the delimiter used for joining is configurable in the [`Namespace`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Namespace.html) class:
+You can use an `Iterable<string>` as a key. The elements will be joined into a single string, and the delimiter used for joining is configurable in the [`Namespace`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Namespace.html) class:
 
 ```ts
 const cache = new cache({
@@ -232,7 +232,7 @@ const productCache = new Cache<IProduct>({
 
 ### Runtime type safety
 
-You can enforce runtime and compiletime type safety by passing [standard schema](https://standardschema.dev/) compliant object to the cache:
+You can enforce runtime and compiletime type safety by passing [standard schema](https://standardschema.dev/) to the cache:
 
 ```ts
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";

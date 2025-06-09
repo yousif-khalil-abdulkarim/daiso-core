@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# Async API
+# Async references
 
 [`Async module`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Async.html)
 
