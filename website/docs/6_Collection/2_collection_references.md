@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Collection API
+# Collection references
 
 [`Collection module`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Collection.html)
 

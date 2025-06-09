@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 
-# Event bus API
+# Event bus references
 
 [`Event bus module`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/EventBus.html)
 

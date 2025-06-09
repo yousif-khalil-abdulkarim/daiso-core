@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# Serde API
+# Serde references
 
 [`Serde module`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html)
 

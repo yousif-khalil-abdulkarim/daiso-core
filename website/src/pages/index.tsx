@@ -132,7 +132,8 @@ const featureItems = (projectName: ReactNode): FeatureItemProps[] => [
         title: "Easily testable",
         description: (
             <>
-                {projectName} includes built-in vitest helpers for testing
+                {projectName} includes built-in{" "}
+                <a href="https://vitest.dev/">vitest</a> helpers for testing
                 custom adapters and in-memory adapters for all components,
                 enabling testing without Docker.
             </>

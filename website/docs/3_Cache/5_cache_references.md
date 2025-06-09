@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 
-# Cache API
+# Cache references
 
 [`Cache module`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html)
 

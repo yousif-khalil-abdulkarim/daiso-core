@@ -116,7 +116,7 @@ await eventBus.addListener("addd", (event) => {
 
 ### Runtime type safety
 
-You can enforce runtime and compiletime type safety by passing [standard schema](https://standardschema.dev/) compliant object to the cache:
+You can enforce runtime and compiletime type safety by passing [standard schema](https://standardschema.dev/) to the cache:
 
 ```ts
 import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
