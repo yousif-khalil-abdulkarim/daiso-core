@@ -50,8 +50,6 @@ sidebar_position: 5
 
 -   [`CACHE_ERRORS`](https://yousif-khalil-abdulkarim.github.io/daiso-core/variables/Cache.CACHE_ERRORS.html)
 
--   [`registerCacheErrorsToSerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Cache.registerCacheErrorsToSerde.html)
-
 ## Cache events
 
 -   [`AddedCacheEvent`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.AddedCacheEvent.html)

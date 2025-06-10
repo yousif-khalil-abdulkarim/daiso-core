@@ -56,8 +56,6 @@ sidebar_position: 5
 
 -   [`LOCK_ERRORS`](https://yousif-khalil-abdulkarim.github.io/daiso-core/variables/Lock.LOCK_ERRORS.html)
 
--   [`registerLockErrorsToSerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.registerLockErrorsToSerde.html)
-
 ## Lock events
 
 -   [`AcquiredLockEvent`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.AcquiredLockEvent.html)

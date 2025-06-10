@@ -2,44 +2,15 @@
  * @module Collection
  */
 
-import type {
-    ISerderRegister,
-    ISerializable,
-} from "@/serde/contracts/_module-exports.js";
-import {
-    CORE,
-    resolveOneOrMore,
-    type ISerializedError,
-    type OneOrMore,
-} from "@/utilities/_module-exports.js";
-
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
-export class CollectionError
-    extends Error
-    implements ISerializable<ISerializedError>
-{
-    static deserialize(deserializedValue: ISerializedError): CollectionError {
-        return new CollectionError(
-            deserializedValue.message,
-            deserializedValue.cause,
-        );
-    }
-
+export class CollectionError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = CollectionError.name;
-    }
-
-    serialize(): ISerializedError {
-        return {
-            name: this.name,
-            message: this.message,
-            cause: this.cause,
-        };
     }
 }
 
@@ -50,15 +21,6 @@ export class CollectionError
  * @group Errors
  */
 export class ItemNotFoundCollectionError extends CollectionError {
-    static override deserialize(
-        deserializedValue: ISerializedError,
-    ): CollectionError {
-        return new ItemNotFoundCollectionError(
-            deserializedValue.message,
-            deserializedValue.cause,
-        );
-    }
-
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = ItemNotFoundCollectionError.name;
@@ -72,15 +34,6 @@ export class ItemNotFoundCollectionError extends CollectionError {
  * @group Errors
  */
 export class MultipleItemsFoundCollectionError extends CollectionError {
-    static override deserialize(
-        deserializedValue: ISerializedError,
-    ): CollectionError {
-        return new MultipleItemsFoundCollectionError(
-            deserializedValue.message,
-            deserializedValue.cause,
-        );
-    }
-
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = MultipleItemsFoundCollectionError.name;
@@ -94,15 +47,6 @@ export class MultipleItemsFoundCollectionError extends CollectionError {
  * @group Errors
  */
 export class TypeCollectionError extends CollectionError {
-    static override deserialize(
-        deserializedValue: ISerializedError,
-    ): CollectionError {
-        return new TypeCollectionError(
-            deserializedValue.message,
-            deserializedValue.cause,
-        );
-    }
-
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = TypeCollectionError.name;
@@ -116,15 +60,6 @@ export class TypeCollectionError extends CollectionError {
  * @group Errors
  */
 export class EmptyCollectionError extends CollectionError {
-    static override deserialize(
-        deserializedValue: ISerializedError,
-    ): CollectionError {
-        return new EmptyCollectionError(
-            deserializedValue.message,
-            deserializedValue.cause,
-        );
-    }
-
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = EmptyCollectionError.name;
@@ -143,22 +78,3 @@ export const COLLECTION_ERRORS = {
     Type: TypeCollectionError,
     Empty: EmptyCollectionError,
 } as const;
-
-/**
- * The `registerCollectionErrorsToSerde` function registers all `ICollection` related errors with `ISerderRegister`, ensuring they will properly be serialized and deserialized.
- *
- * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
- * @group Errors
- */
-export function registerCollectionErrorsToSerde(
-    serde: OneOrMore<ISerderRegister>,
-): void {
-    for (const serde_ of resolveOneOrMore(serde)) {
-        serde_
-            .registerClass(CollectionError, CORE)
-            .registerClass(ItemNotFoundCollectionError, CORE)
-            .registerClass(MultipleItemsFoundCollectionError, CORE)
-            .registerClass(TypeCollectionError, CORE)
-            .registerClass(EmptyCollectionError, CORE);
-    }
-}

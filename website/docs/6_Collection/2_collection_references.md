@@ -34,8 +34,6 @@ sidebar_position: 2
 
 -   [`COLLECTION_ERRORS`](https://yousif-khalil-abdulkarim.github.io/daiso-core/variables/Collection.COLLECTION_ERRORS.html)
 
--   [`registerCollectionErrorsToSerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Collection.registerCollectionErrorsToSerde.html)
-
 ## Utilities
 
 -   [`isAsyncIterable`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Collection.isAsyncIterable.html)

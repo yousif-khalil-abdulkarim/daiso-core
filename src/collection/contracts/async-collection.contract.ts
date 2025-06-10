@@ -53,7 +53,6 @@ export type AsyncCollapse<TValue> = TValue extends
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Contracts
- * @throws {UnexpectedError} {@link UnexpectedError}
  */
 export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     /**
