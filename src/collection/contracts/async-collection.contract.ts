@@ -21,8 +21,6 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     MultipleItemsFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnexpectedCollectionError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
@@ -33,6 +31,10 @@ import type {
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UnexpectedError,
+} from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -51,7 +53,6 @@ export type AsyncCollapse<TValue> = TValue extends
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Contracts
- * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
  */
 export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     /**

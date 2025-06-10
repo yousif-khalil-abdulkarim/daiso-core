@@ -2,6 +2,7 @@
  * @module Utilities
  */
 
+import { UnexpectedError } from "@/utilities/errors.js";
 import type {
     KyselyPlugin,
     PluginTransformQueryArgs,
@@ -34,7 +35,7 @@ class TableNameTransformer extends OperationNodeTransformer {
                             transformedNode.table.identifier.name;
                         const mapedTableName = this.tableNameMap[sqlTableName];
                         if (mapedTableName === undefined) {
-                            throw new Error(
+                            throw new UnexpectedError(
                                 `Table does not exist "${sqlTableName}"`,
                             );
                         }

@@ -10,6 +10,7 @@ import {
     optionNone,
     optionSome,
     OPTION,
+    UnexpectedError,
 } from "@/utilities/_module-exports.js";
 import { exponentialBackoffPolicy } from "@/async/backof-policies/_module.js";
 import type { RetrySettings } from "@/async/middlewares/retry/retry.types.js";
@@ -161,6 +162,6 @@ export function retry<
         if (result.type === OPTION.SOME) {
             return result.value;
         }
-        throw new Error("!!__MESSAGE__!!");
+        throw new UnexpectedError("!!__MESSAGE__!!");
     };
 }

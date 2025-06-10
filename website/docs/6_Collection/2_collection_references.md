@@ -32,11 +32,7 @@ sidebar_position: 2
 
 -   [`TypeCollectionError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.TypeCollectionError.html)
 
--   [`UnexpectedCollectionError`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.UnexpectedCollectionError.html)
-
 -   [`COLLECTION_ERRORS`](https://yousif-khalil-abdulkarim.github.io/daiso-core/variables/Collection.COLLECTION_ERRORS.html)
-
--   [`registerCollectionErrorsToSerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Collection.registerCollectionErrorsToSerde.html)
 
 ## Utilities
 

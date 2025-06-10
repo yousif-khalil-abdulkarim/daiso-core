@@ -18,7 +18,6 @@ import {
     type IAsyncCollection,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
-    UnexpectedCollectionError,
     TypeCollectionError,
     type AsyncReduce,
     EmptyCollectionError,
@@ -73,6 +72,10 @@ import type {
 } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UnexpectedError,
+} from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -565,16 +568,16 @@ export class AsyncIterableCollection<TInput = unknown>
             if (isEven) {
                 const [a, b] = items;
                 if (a === undefined) {
-                    throw new UnexpectedCollectionError("Is in invalid state");
+                    throw new UnexpectedError("Is in invalid state");
                 }
                 if (b === undefined) {
-                    throw new UnexpectedCollectionError("Is in invalid state");
+                    throw new UnexpectedError("Is in invalid state");
                 }
                 return ((a + b) / 2) as Extract<TInput, number>;
             }
             const [median] = items;
             if (median === undefined) {
-                throw new UnexpectedCollectionError("Is in invalid state");
+                throw new UnexpectedError("Is in invalid state");
             }
             return median as Extract<TInput, number>;
         });

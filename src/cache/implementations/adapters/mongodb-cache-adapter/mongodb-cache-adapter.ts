@@ -4,15 +4,15 @@
 
 import {
     TypeCacheError,
-    UnexpectedCacheError,
     type ICacheAdapter,
 } from "@/cache/contracts/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { MongodbCacheAdapterSerde } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter-serde.js";
-import type {
-    IDeinitizable,
-    IInitizable,
-    TimeSpan,
+import {
+    UnexpectedError,
+    type IDeinitizable,
+    type IInitizable,
+    type TimeSpan,
 } from "@/utilities/_module-exports.js";
 import { MongoServerError, type ObjectId } from "mongodb";
 import {
@@ -321,9 +321,7 @@ export class MongodbCacheAdapter<TType = unknown>
             },
         );
         if (!updateResult.acknowledged) {
-            throw new UnexpectedCacheError(
-                "Mongodb update was not acknowledged",
-            );
+            throw new UnexpectedError("Mongodb update was not acknowledged");
         }
         return updateResult.modifiedCount > 0;
     }
@@ -339,7 +337,7 @@ export class MongodbCacheAdapter<TType = unknown>
                 },
             );
             if (!updateResult.acknowledged) {
-                throw new UnexpectedCacheError(
+                throw new UnexpectedError(
                     "Mongodb update was not acknowledged",
                 );
             }
@@ -359,9 +357,7 @@ export class MongodbCacheAdapter<TType = unknown>
             MongodbCacheAdapter.filterUnexpiredKeys(keys),
         );
         if (!deleteResult.acknowledged) {
-            throw new UnexpectedCacheError(
-                "Mongodb deletion was not acknowledged",
-            );
+            throw new UnexpectedError("Mongodb deletion was not acknowledged");
         }
         return deleteResult.deletedCount > 0;
     }
@@ -369,9 +365,7 @@ export class MongodbCacheAdapter<TType = unknown>
     async removeAll(): Promise<void> {
         const mongodbResult = await this.collection.deleteMany();
         if (!mongodbResult.acknowledged) {
-            throw new UnexpectedCacheError(
-                "Mongodb deletion was not acknowledged",
-            );
+            throw new UnexpectedError("Mongodb deletion was not acknowledged");
         }
     }
 
@@ -382,9 +376,7 @@ export class MongodbCacheAdapter<TType = unknown>
             },
         });
         if (!mongodbResult.acknowledged) {
-            throw new UnexpectedCacheError(
-                "Mongodb deletion was not acknowledged",
-            );
+            throw new UnexpectedError("Mongodb deletion was not acknowledged");
         }
     }
 }

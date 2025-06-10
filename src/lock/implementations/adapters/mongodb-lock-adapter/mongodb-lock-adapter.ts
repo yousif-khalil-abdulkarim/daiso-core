@@ -3,6 +3,7 @@
  */
 
 import {
+    UnexpectedError,
     type IDeinitizable,
     type IInitizable,
     type IPrunable,
@@ -11,7 +12,6 @@ import type {
     IDatabaseLockAdapter,
     ILockData,
 } from "@/lock/contracts/_module-exports.js";
-import { UnexpectedLockError } from "@/lock/contracts/_module-exports.js";
 import type { Collection, CollectionOptions, Db } from "mongodb";
 import { ObjectId } from "mongodb";
 
@@ -129,9 +129,7 @@ export class MongodbLockAdapter
             expiresAt: expiration,
         });
         if (!insertResult.acknowledged) {
-            throw new UnexpectedLockError(
-                "Mongodb insertion was not acknowledged",
-            );
+            throw new UnexpectedError("Mongodb insertion was not acknowledged");
         }
     }
 
@@ -165,9 +163,7 @@ export class MongodbLockAdapter
             },
         );
         if (!updateResult.acknowledged) {
-            throw new UnexpectedLockError(
-                "Mongodb update was not acknowledged",
-            );
+            throw new UnexpectedError("Mongodb update was not acknowledged");
         }
         return updateResult.modifiedCount; // > 0;
     }
@@ -178,7 +174,7 @@ export class MongodbLockAdapter
                 key,
             });
             if (!deleteResult.acknowledged) {
-                throw new UnexpectedLockError(
+                throw new UnexpectedError(
                     "Mongodb deletion was not acknowledged",
                 );
             }
@@ -189,9 +185,7 @@ export class MongodbLockAdapter
             owner,
         });
         if (!deleteResult.acknowledged) {
-            throw new UnexpectedLockError(
-                "Mongodb deletion was not acknowledged",
-            );
+            throw new UnexpectedError("Mongodb deletion was not acknowledged");
         }
     }
 
@@ -212,9 +206,7 @@ export class MongodbLockAdapter
             },
         );
         if (!updateResult.acknowledged) {
-            throw new UnexpectedLockError(
-                "Mongodb update was not acknowledged",
-            );
+            throw new UnexpectedError("Mongodb update was not acknowledged");
         }
         return updateResult.modifiedCount; // > 0;
     }

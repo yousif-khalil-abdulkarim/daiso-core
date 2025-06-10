@@ -11,6 +11,7 @@ import {
     optionNone,
     optionSome,
     resolveOneOrMore,
+    UnexpectedError,
     type AbortSignalBinder,
     type AsyncMiddleware,
     type AsyncMiddlewareFn,
@@ -180,7 +181,7 @@ export function sequentialHedging<
         }
 
         if (lastError.type === "none") {
-            throw new Error("!!__MESSAGE__!!");
+            throw new UnexpectedError("!!__MESSAGE__!!");
         }
 
         throw lastError.value;
