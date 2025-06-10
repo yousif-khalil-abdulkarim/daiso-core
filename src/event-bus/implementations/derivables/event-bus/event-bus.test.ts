@@ -60,7 +60,7 @@ describe("class: EventBus", () => {
                     adapter,
                     namespace,
                     eventMapSchema,
-                    __onUncaughtRejection: (error_) => {
+                    _internal_onUncaughtRejection: (error_) => {
                         error = error_;
                     },
                 });
@@ -69,7 +69,7 @@ describe("class: EventBus", () => {
 
                 await eventBus.addListener("add", listener);
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -84,7 +84,7 @@ describe("class: EventBus", () => {
                     adapter,
                     namespace,
                     eventMapSchema,
-                    __onUncaughtRejection: (error_) => {
+                    _internal_onUncaughtRejection: (error_) => {
                         error = error_;
                     },
                 });
@@ -93,7 +93,7 @@ describe("class: EventBus", () => {
 
                 await eventBus.listenOnce("add", listener);
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -108,14 +108,14 @@ describe("class: EventBus", () => {
                     adapter,
                     namespace,
                     eventMapSchema,
-                    __onUncaughtRejection: (error_) => {
+                    _internal_onUncaughtRejection: (error_) => {
                         error = error_;
                     },
                 });
 
                 eventBus.asPromise("add").defer();
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -129,7 +129,7 @@ describe("class: EventBus", () => {
                     adapter,
                     namespace,
                     eventMapSchema,
-                    __onUncaughtRejection: (error_) => {
+                    _internal_onUncaughtRejection: (error_) => {
                         error = error_;
                     },
                 });
@@ -141,7 +141,7 @@ describe("class: EventBus", () => {
                     listener,
                 );
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -156,7 +156,7 @@ describe("class: EventBus", () => {
                     adapter,
                     namespace,
                     eventMapSchema,
-                    __onUncaughtRejection: (error_) => {
+                    _internal_onUncaughtRejection: (error_) => {
                         error = error_;
                     },
                 });
@@ -165,7 +165,7 @@ describe("class: EventBus", () => {
 
                 const unsubscribe = await eventBus.subscribe("add", listener);
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));

@@ -89,10 +89,10 @@ export type EventBusSettings<TEventMap extends BaseEventMap = BaseEventMap> =
         adapter: IEventBusAdapter;
     } & {
         /**
-         * Thist settings is only used for testing, dont use it in your code !
+         * Thist settings is only used for testing, dont use it in your code!
          * @internal
          */
-        __onUncaughtRejection?: (error: unknown) => void;
+        _internal_onUncaughtRejection?: (error: unknown) => void;
     };
 
 /**
@@ -114,10 +114,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     private readonly namespace: Namespace;
     private readonly eventMapSchema: EventMapSchema<TEventMap> | undefined;
 
-    /**
-     * Thist instance variable is only used for testing!
-     */
-    private readonly __onUncaughtRejection?: (error: unknown) => void;
+    private readonly _internal_onUncaughtRejection?: (error: unknown) => void;
 
     /**
      * @example
@@ -132,7 +129,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
      */
     constructor(settings: EventBusSettings<TEventMap>) {
         const {
-            __onUncaughtRejection,
+            _internal_onUncaughtRejection,
             shouldValidateOutput = true,
             eventMapSchema,
             namespace = new Namespace(["@", "event-bus"]),
@@ -144,7 +141,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.adapter = adapter;
         this.namespace = namespace;
-        this.__onUncaughtRejection = __onUncaughtRejection;
+        this._internal_onUncaughtRejection = _internal_onUncaughtRejection;
     }
 
     private createLazyPromise<TValue = void>(
@@ -158,7 +155,9 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.namespace._getInternal().create(String(eventName));
+            const key = this.namespace
+                ._internal_get()
+                .create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
                 [key.namespaced, listener],
                 async (event) => {
@@ -171,8 +170,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                         }
                         await resolveInvokable(listener)(event);
                     } catch (error: unknown) {
-                        if (this.__onUncaughtRejection !== undefined) {
-                            this.__onUncaughtRejection(error);
+                        if (this._internal_onUncaughtRejection !== undefined) {
+                            this._internal_onUncaughtRejection(error);
                         } else {
                             console.error(
                                 `An error of type "${String(error)}" occured in listener with name of "${getInvokableName(listener)}" for "${String(eventName)}" event`,
@@ -200,7 +199,9 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.namespace._getInternal().create(String(eventName));
+            const key = this.namespace
+                ._internal_get()
+                .create(String(eventName));
             const resolvedListener = this.store.getAndRemove([
                 key.namespaced,
                 listener,
@@ -239,8 +240,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                     const resolvedListener = resolveInvokable(listener);
                     await resolvedListener(event_);
                 } catch (error: unknown) {
-                    if (this.__onUncaughtRejection !== undefined) {
-                        this.__onUncaughtRejection(error);
+                    if (this._internal_onUncaughtRejection !== undefined) {
+                        this._internal_onUncaughtRejection(error);
                     } else {
                         console.error(
                             `An error of type "${String(error)}" occured in listener with name of "${getInvokableName(listener)}" for "${String(eventName)}" event`,
@@ -253,7 +254,9 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                 }
             };
 
-            const key = this.namespace._getInternal().create(String(eventName));
+            const key = this.namespace
+                ._internal_get()
+                .create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
                 [key.namespaced, listener],
                 wrappedListener,
@@ -315,7 +318,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         return this.createLazyPromise(async () => {
             await validate(this.eventMapSchema?.[eventName], event);
             await this.adapter.dispatch(
-                this.namespace._getInternal().create(String(eventName))
+                this.namespace._internal_get().create(String(eventName))
                     .namespaced,
                 event,
             );

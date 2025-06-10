@@ -187,9 +187,10 @@ export class Namespace {
     }
 
     /**
+     * Thist instance method is internal implementation, dont use it in your code!
      * @internal
      */
-    _getInternal(): InternalNamespace {
+    _internal_get(): InternalNamespace {
         return new InternalNamespace(this.root, this.settings);
     }
 }

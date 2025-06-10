@@ -199,7 +199,7 @@ export class Lock implements ILock {
         asyncFn: AsyncLazy<TValue>,
         settings?: AquireBlockingSettings,
     ): LazyPromise<TValue> {
-        return new LazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             try {
                 await this.acquireBlockingOrFail(settings);
 
@@ -271,7 +271,7 @@ export class Lock implements ILock {
     acquireBlocking(
         settings: AquireBlockingSettings = {},
     ): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -291,7 +291,7 @@ export class Lock implements ILock {
     acquireBlockingOrFail(
         settings?: AquireBlockingSettings,
     ): LazyPromise<void> {
-        return new LazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
                 throw new KeyAlreadyAcquiredLockError(

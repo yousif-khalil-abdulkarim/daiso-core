@@ -64,7 +64,7 @@ describe("class: Cache", () => {
         describe("output validation:", () => {
             test("method: get", async () => {
                 await adapter.add(
-                    namespace._getInternal().create("a").namespaced,
+                    namespace._internal_get().create("a").namespaced,
                     1,
                     null,
                 );
@@ -73,7 +73,7 @@ describe("class: Cache", () => {
             });
             test("method: getOrFail", async () => {
                 await adapter.add(
-                    namespace._getInternal().create("a").namespaced,
+                    namespace._internal_get().create("a").namespaced,
                     1,
                     null,
                 );
@@ -82,7 +82,7 @@ describe("class: Cache", () => {
             });
             test("method: getAndRemove", async () => {
                 await adapter.add(
-                    namespace._getInternal().create("a").namespaced,
+                    namespace._internal_get().create("a").namespaced,
                     1,
                     null,
                 );
@@ -91,7 +91,7 @@ describe("class: Cache", () => {
             });
             test("method: getOr", async () => {
                 await adapter.add(
-                    namespace._getInternal().create("a").namespaced,
+                    namespace._internal_get().create("a").namespaced,
                     1,
                     null,
                 );
@@ -100,7 +100,7 @@ describe("class: Cache", () => {
             });
             test("method: getOrAdd", async () => {
                 await adapter.add(
-                    namespace._getInternal().create("a").namespaced,
+                    namespace._internal_get().create("a").namespaced,
                     1,
                     null,
                 );
