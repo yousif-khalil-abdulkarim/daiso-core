@@ -2,6 +2,7 @@
  * @module Cache
  */
 
+import { UnexpectedError } from "@/utilities/errors.js";
 import { type Redis } from "ioredis";
 
 /**
@@ -41,7 +42,7 @@ function escapeRedisChars(value: string): string {
         (chunk) => {
             const item = replacements[chunk];
             if (item === undefined) {
-                throw new Error("Encounterd none existing field");
+                throw new UnexpectedError("Encounterd none existing field");
             }
             return item;
         },

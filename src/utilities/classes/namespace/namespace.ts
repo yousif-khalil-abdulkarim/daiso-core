@@ -5,6 +5,7 @@
 import {
     resolveOneOrMoreStr,
     resolveOneOrMore,
+    UnexpectedError,
 } from "@/utilities//_module-exports.js";
 import type { OneOrMore } from "@/utilities/functions/_module.js";
 
@@ -114,7 +115,7 @@ class InternalNamespace {
     private validate(key: OneOrMore<string>): void {
         const resolvedKey = resolveOneOrMoreStr(key);
         if (resolvedKey.includes(this.rootIdentifier)) {
-            throw new Error(
+            throw new UnexpectedError(
                 `Resolved key "${resolvedKey}" cannot not include "${this.rootIdentifier}"`,
             );
         }
