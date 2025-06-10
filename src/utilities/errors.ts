@@ -39,3 +39,15 @@ export class UnregisteredAdapterError extends FactoryError {
         this.name = UnregisteredAdapterError.name;
     }
 }
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+ * @group Errors
+ */
+export class UnexpectedError extends Error {
+    constructor(message: string, cause?: unknown) {
+        super(message, { cause });
+        this.name = UnexpectedError.name;
+    }
+}

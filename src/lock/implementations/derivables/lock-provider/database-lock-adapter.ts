@@ -2,8 +2,7 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
-import { UnexpectedLockError } from "@/lock/contracts/_module-exports.js";
+import { UnexpectedError, type TimeSpan } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
     ILockAdapter,
@@ -26,7 +25,7 @@ export class DatabaseLockAdapter implements ILockAdapter {
             await this.adapter.insert(key, owner, expiration);
             return true;
         } catch (error: unknown) {
-            if (error instanceof UnexpectedLockError) {
+            if (error instanceof UnexpectedError) {
                 throw error;
             }
             const result = await this.adapter.update(key, owner, expiration);

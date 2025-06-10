@@ -46,30 +46,6 @@ export class CacheError
 }
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
- * @group Errors
- */
-export class UnexpectedCacheError
-    extends CacheError
-    implements ISerializable<ISerializedError>
-{
-    static override deserialize(
-        deserializedValue: ISerializedError,
-    ): CacheError {
-        return new UnexpectedCacheError(
-            deserializedValue.message,
-            deserializedValue.cause,
-        );
-    }
-
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = UnexpectedCacheError.name;
-    }
-}
-
-/**
  * The error is thrown when attempting to increment or decrement a key that is not of number type.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
@@ -126,7 +102,6 @@ export class KeyNotFoundCacheError
  */
 export const CACHE_ERRORS = {
     Base: CacheError,
-    Unexpected: UnexpectedCacheError,
     Type: TypeCacheError,
     KeyNotFound: KeyNotFoundCacheError,
 } as const;
@@ -143,7 +118,6 @@ export function registerCacheErrorsToSerde(
     for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerClass(CacheError, CORE)
-            .registerClass(UnexpectedCacheError, CORE)
             .registerClass(TypeCacheError, CORE)
             .registerClass(KeyNotFoundCacheError, CORE);
     }

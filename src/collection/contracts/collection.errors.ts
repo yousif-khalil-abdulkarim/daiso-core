@@ -44,27 +44,6 @@ export class CollectionError
 }
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
- * @group Errors
- */
-export class UnexpectedCollectionError extends CollectionError {
-    static override deserialize(
-        deserializedValue: ISerializedError,
-    ): CollectionError {
-        return new UnexpectedCollectionError(
-            deserializedValue.message,
-            deserializedValue.cause,
-        );
-    }
-
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = UnexpectedCollectionError.name;
-    }
-}
-
-/**
  * The error is thrown when the item is not found.
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
@@ -159,7 +138,6 @@ export class EmptyCollectionError extends CollectionError {
  */
 export const COLLECTION_ERRORS = {
     Base: CollectionError,
-    Unexpected: UnexpectedCollectionError,
     ItemNotFound: ItemNotFoundCollectionError,
     MultipleItemsFound: MultipleItemsFoundCollectionError,
     Type: TypeCollectionError,
@@ -178,7 +156,6 @@ export function registerCollectionErrorsToSerde(
     for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerClass(CollectionError, CORE)
-            .registerClass(UnexpectedCollectionError, CORE)
             .registerClass(ItemNotFoundCollectionError, CORE)
             .registerClass(MultipleItemsFoundCollectionError, CORE)
             .registerClass(TypeCollectionError, CORE)

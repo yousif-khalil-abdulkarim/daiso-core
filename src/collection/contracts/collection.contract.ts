@@ -21,8 +21,6 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     MultipleItemsFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnexpectedCollectionError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
@@ -30,6 +28,10 @@ import type {
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 import type { Lazyable } from "@/utilities/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UnexpectedError,
+} from "@/utilities/_module-exports.js";
 
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
@@ -44,7 +46,7 @@ export type Collapse<TValue> = TValue extends
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Contracts
- * @throws {UnexpectedCollectionError} {@link UnexpectedCollectionError}
+ * @throws {UnexpectedError} {@link UnexpectedError}
  */
 export type ICollection<TInput = unknown> = Iterable<TInput> &
     ISerializable<TInput[]> & {

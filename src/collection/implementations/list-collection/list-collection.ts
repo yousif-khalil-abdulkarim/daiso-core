@@ -18,7 +18,6 @@ import {
     MultipleItemsFoundCollectionError,
     type Tap,
     type Transform,
-    UnexpectedCollectionError,
     TypeCollectionError,
     type Reduce,
     type ForEach,
@@ -33,6 +32,10 @@ import {
 } from "@/utilities/_module-exports.js";
 import { resolveLazyable } from "@/utilities/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UnexpectedError,
+} from "@/utilities/_module-exports.js";
 
 /**
  * All methods in `ListCollection` are executed eagerly.
@@ -468,12 +471,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
             isEven = this.array.length % 2 === 0,
             a = nbrs[index];
         if (a === undefined) {
-            throw new UnexpectedCollectionError("Is in invalid state");
+            throw new UnexpectedError("Is in invalid state");
         }
         const b = nbrs[index - 1];
         if (isEven) {
             if (b === undefined) {
-                throw new UnexpectedCollectionError("Is in invalid state");
+                throw new UnexpectedError("Is in invalid state");
             }
             return ((a + b) / 2) as Extract<TInput, number>;
         }

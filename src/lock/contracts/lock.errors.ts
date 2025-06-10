@@ -42,37 +42,6 @@ export class LockError
 }
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
- * @group Errors
- */
-export class UnexpectedLockError
-    extends LockError
-    implements ISerializable<ISerializedError>
-{
-    static override deserialize(
-        serializedError: ISerializedError,
-    ): UnexpectedLockError {
-        return new UnexpectedLockError(
-            serializedError.message,
-            serializedError.cause,
-        );
-    }
-
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-    }
-
-    override serialize(): ISerializedError {
-        return {
-            cause: this.cause,
-            message: this.message,
-            name: this.name,
-        };
-    }
-}
-
-/**
  * The error is thrown when trying to acquire a lock that is owned by a different owner.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
@@ -175,7 +144,6 @@ export class UnownedRefreshLockError
  */
 export const LOCK_ERRORS = {
     Base: LockError,
-    Unexpected: UnexpectedLockError,
     KeyAlreadyAcquired: KeyAlreadyAcquiredLockError,
     UnownedRelease: UnownedReleaseLockError,
 } as const;
@@ -192,7 +160,6 @@ export function registerLockErrorsToSerde(
     for (const serde_ of resolveOneOrMore(serde)) {
         serde_
             .registerClass(LockError, CORE)
-            .registerClass(UnexpectedLockError, CORE)
             .registerClass(KeyAlreadyAcquiredLockError, CORE)
             .registerClass(UnownedReleaseLockError, CORE);
     }
