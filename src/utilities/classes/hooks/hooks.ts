@@ -87,7 +87,15 @@ export type Middleware<
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group Hooks
  */
-export type HooksSettings<TContext extends HookContext = HookContext> = {
+export type HooksSettings<
+    TParameters extends unknown[],
+    TReturn = unknown,
+    TContext extends HookContext = HookContext,
+> = {
+    middlewares?: NoInfer<
+        OneOrMore<Middleware<TParameters, TReturn, TContext>>
+    >;
+
     /**
      * The name of the function which can be used for logging inside the middleware.
      * By default, it takes the function or method name. If an anonymous function is provided, the name defaults to "func".
@@ -121,11 +129,11 @@ export class Hooks<
         TContext extends HookContext,
     >(
         invokable: Invokable<TParameters, TReturn>,
-        middlewares: OneOrMore<Middleware<TParameters, TReturn, TContext>>,
         {
+            middlewares = [],
             name = getInvokableName(invokable),
             context = {} as TContext,
-        }: HooksSettings<TContext>,
+        }: HooksSettings<TParameters, TReturn, TContext>,
     ): InvokableFn<TParameters, TReturn> {
         let func = resolveInvokable(invokable);
         for (const hook of resolveOneOrMore(middlewares)
@@ -145,6 +153,9 @@ export class Hooks<
     }
 
     private readonly func: InvokableFn<TParameters, TReturn>;
+    private readonly middlewares: OneOrMore<
+        Middleware<TParameters, TReturn, TContext>
+    >;
 
     /**
      * @example
@@ -176,10 +187,11 @@ export class Hooks<
      *   return a + b;
      * }
      *
-     * const enhancedAdd = new Hooks(add, [
-     *   log(),
-     *   time()
-     * ], {
+     * const enhancedAdd = new Hooks(add, {
+     *   middlewares: [
+     *     log(),
+     *     time()
+     *   ],
      *   // You can provide addtional data to be used the middleware.
      *   context: {},
      * });
@@ -194,12 +206,15 @@ export class Hooks<
      */
     constructor(
         private readonly invokable: Invokable<TParameters, TReturn>,
-        private readonly middlewares: NoInfer<
-            OneOrMore<Middleware<TParameters, TReturn, TContext>>
-        >,
-        private readonly settings: HooksSettings<TContext> = {},
+        private readonly settings: HooksSettings<
+            TParameters,
+            TReturn,
+            TContext
+        > = {},
     ) {
-        this.func = Hooks.init(invokable, middlewares, this.settings);
+        this.func = Hooks.init(invokable, this.settings);
+        const { middlewares = [] } = settings;
+        this.middlewares = middlewares;
     }
 
     /**
@@ -210,11 +225,14 @@ export class Hooks<
     ): Hooks<TParameters, TReturn, TContext> {
         return new Hooks(
             this.invokable,
-            [
-                ...resolveOneOrMore(this.middlewares),
-                ...resolveOneOrMore(middlewares),
-            ],
-            this.settings,
+
+            {
+                ...this.settings,
+                middlewares: [
+                    ...resolveOneOrMore(this.middlewares),
+                    ...resolveOneOrMore(middlewares),
+                ],
+            },
         );
     }
 

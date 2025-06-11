@@ -56,7 +56,8 @@ function resolveFunctions<TParameters extends unknown[], TReturn>(
         ...resolvedFallbacks,
     ].map((namedFn) => ({
         name: namedFn.name,
-        invokable: new AsyncHooks(namedFn.invokable, middlewares, {
+        invokable: new AsyncHooks(namedFn.invokable, {
+            middlewares,
             signalBinder,
         }),
     }));
@@ -88,14 +89,15 @@ function resolveFunctions<TParameters extends unknown[], TReturn>(
  *   const response = await fetch("ENDPOINT-3", { signal });
  *   return await response.json();
  * }
- * const fetchData = new AsyncHooks(fn1, [
- *   sequentialHedging({
- *     fallbacks: [
- *       fn2,
- *       fn3
- *     ]
- *   })
- * ], {
+ * const fetchData = new AsyncHooks(fn1, {
+ *   middlewares: [
+ *     sequentialHedging({
+ *       fallbacks: [
+ *         fn2,
+ *         fn3
+ *       ]
+ *     })
+ *   ],
  *   signalBinder: {
  *     getSignal: (args) => args[0],
  *     forwardSignal: (args, signal) => {

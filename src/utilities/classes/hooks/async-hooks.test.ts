@@ -6,28 +6,33 @@ describe("class: AsyncHooks", () => {
         function fn(nbr: number): number {
             return nbr + 1;
         }
-        const value = await new AsyncHooks(fn, []).invoke(1);
+        const value = await new AsyncHooks(fn).invoke(1);
         expect(value).toBe(2);
     });
     test("Should call function and middleware with correct order when passed through constructor", async () => {
         const array: number[] = [];
 
-        await new AsyncHooks(() => {
-            array.push(4);
-        }, [
-            (_, next) => {
-                array.push(1);
-                return next();
+        await new AsyncHooks(
+            () => {
+                array.push(4);
             },
-            (_, next) => {
-                array.push(2);
-                return next();
+            {
+                middlewares: [
+                    (_, next) => {
+                        array.push(1);
+                        return next();
+                    },
+                    (_, next) => {
+                        array.push(2);
+                        return next();
+                    },
+                    (_, next) => {
+                        array.push(3);
+                        return next();
+                    },
+                ],
             },
-            (_, next) => {
-                array.push(3);
-                return next();
-            },
-        ]).invoke();
+        ).invoke();
 
         expect(array).toStrictEqual([1, 2, 3, 4]);
     });
@@ -36,7 +41,7 @@ describe("class: AsyncHooks", () => {
 
         await new AsyncHooks(() => {
             array.push(4);
-        }, [])
+        })
             .pipe([
                 (_, next) => {
                     array.push(1);
@@ -58,14 +63,19 @@ describe("class: AsyncHooks", () => {
     test("Should call function and middleware with correct order when passed through constructor and pipe", async () => {
         const array: number[] = [];
 
-        await new AsyncHooks(() => {
-            array.push(4);
-        }, [
-            (_, next) => {
-                array.push(1);
-                return next();
+        await new AsyncHooks(
+            () => {
+                array.push(4);
             },
-        ])
+            {
+                middlewares: [
+                    (_, next) => {
+                        array.push(1);
+                        return next();
+                    },
+                ],
+            },
+        )
             .pipe([
                 (_, next) => {
                     array.push(2);
@@ -85,12 +95,14 @@ describe("class: AsyncHooks", () => {
             return nbr + 1;
         }
         let args: unknown[] = [];
-        await new AsyncHooks(fn, [
-            async (args_, next) => {
-                args = args_;
-                return await next(...args_);
-            },
-        ]).invoke(1);
+        await new AsyncHooks(fn, {
+            middlewares: [
+                async (args_, next) => {
+                    args = args_;
+                    return await next(...args_);
+                },
+            ],
+        }).invoke(1);
         expect(args).toStrictEqual([1]);
     });
     test("Should forward arguments to middleware when given 2 arguments", async () => {
@@ -98,12 +110,14 @@ describe("class: AsyncHooks", () => {
             return a + b;
         }
         let args: unknown[] = [];
-        await new AsyncHooks(fn, [
-            async (args_, next) => {
-                args = args_;
-                return await next(...args_);
-            },
-        ]).invoke(1, 2);
+        await new AsyncHooks(fn, {
+            middlewares: [
+                async (args_, next) => {
+                    args = args_;
+                    return await next(...args_);
+                },
+            ],
+        }).invoke(1, 2);
         expect(args).toStrictEqual([1, 2]);
     });
     test("Should forward arguments to second middleware", async () => {
@@ -111,15 +125,17 @@ describe("class: AsyncHooks", () => {
             return nbr + 1;
         }
         let args: unknown[] = [];
-        await new AsyncHooks(fn, [
-            async (args_, next) => {
-                return await next(...args_);
-            },
-            async (args_, next) => {
-                args = args_;
-                return await next(...args_);
-            },
-        ]).invoke(1);
+        await new AsyncHooks(fn, {
+            middlewares: [
+                async (args_, next) => {
+                    return await next(...args_);
+                },
+                async (args_, next) => {
+                    args = args_;
+                    return await next(...args_);
+                },
+            ],
+        }).invoke(1);
         expect(args).toStrictEqual([1]);
     });
     test("Should change arguments from first middleware", async () => {
@@ -127,58 +143,66 @@ describe("class: AsyncHooks", () => {
             return nbr + 1;
         }
         let args: unknown[] = [];
-        await new AsyncHooks(fn, [
-            async (_args, next) => {
-                return await next(-1);
-            },
-            async (args_, next) => {
-                args = args_;
-                return await next(...args_);
-            },
-        ]).invoke(1);
+        await new AsyncHooks(fn, {
+            middlewares: [
+                async (_args, next) => {
+                    return await next(-1);
+                },
+                async (args_, next) => {
+                    args = args_;
+                    return await next(...args_);
+                },
+            ],
+        }).invoke(1);
         expect(args).toStrictEqual([-1]);
     });
     test("Should change return value from first middleware", async () => {
         function fn(nbr: number): number {
             return nbr + 1;
         }
-        const result = await new AsyncHooks(fn, [
-            async (args, next) => {
-                return await next(...args);
-            },
-            async (args, next) => {
-                return (await next(...args)) + 1;
-            },
-        ]).invoke(1);
+        const result = await new AsyncHooks(fn, {
+            middlewares: [
+                async (args, next) => {
+                    return await next(...args);
+                },
+                async (args, next) => {
+                    return (await next(...args)) + 1;
+                },
+            ],
+        }).invoke(1);
         expect(result).toStrictEqual(3);
     });
     test("Should change return value from second middleware", async () => {
         function fn(nbr: number): number {
             return nbr + 1;
         }
-        const result = await new AsyncHooks(fn, [
-            async (args, next) => {
-                return await next(...args);
-            },
-            async (args, next) => {
-                return (await next(...args)) + 1;
-            },
-            async (args, next) => {
-                return (await next(...args)) + -2;
-            },
-        ]).invoke(1);
+        const result = await new AsyncHooks(fn, {
+            middlewares: [
+                async (args, next) => {
+                    return await next(...args);
+                },
+                async (args, next) => {
+                    return (await next(...args)) + 1;
+                },
+                async (args, next) => {
+                    return (await next(...args)) + -2;
+                },
+            ],
+        }).invoke(1);
         expect(result).toStrictEqual(1);
     });
     test("Should overide return value from first middleware", async () => {
         function fn(nbr: number): number {
             return nbr + 1;
         }
-        const result = await new AsyncHooks(fn, [
-            async (args, next) => {
-                return await next(...args);
-            },
-            () => Promise.resolve(-1),
-        ]).invoke(1);
+        const result = await new AsyncHooks(fn, {
+            middlewares: [
+                async (args, next) => {
+                    return await next(...args);
+                },
+                () => Promise.resolve(-1),
+            ],
+        }).invoke(1);
         expect(result).toStrictEqual(-1);
     });
     test("Should forward context to first middleware", async () => {
@@ -186,21 +210,18 @@ describe("class: AsyncHooks", () => {
             return nbr + 1;
         }
         let context: unknown = undefined;
-        await new AsyncHooks(
-            fn,
-            [
+        await new AsyncHooks(fn, {
+            middlewares: [
                 async (args, next, { context: context_ }) => {
                     context = context_;
                     return await next(...args);
                 },
             ],
-            {
-                context: {
-                    name: "Kalle",
-                    age: 20,
-                },
+            context: {
+                name: "Kalle",
+                age: 20,
             },
-        ).invoke(1);
+        }).invoke(1);
         expect(context).toStrictEqual({
             name: "Kalle",
             age: 20,
@@ -211,9 +232,8 @@ describe("class: AsyncHooks", () => {
             return nbr + 1;
         }
         let context: unknown = undefined;
-        await new AsyncHooks(
-            fn,
-            [
+        await new AsyncHooks(fn, {
+            middlewares: [
                 async (args, next) => {
                     return await next(...args);
                 },
@@ -222,13 +242,11 @@ describe("class: AsyncHooks", () => {
                     return await next(...args);
                 },
             ],
-            {
-                context: {
-                    name: "Kalle",
-                    age: 20,
-                },
+            context: {
+                name: "Kalle",
+                age: 20,
             },
-        ).invoke(1);
+        }).invoke(1);
         expect(context).toStrictEqual({
             name: "Kalle",
             age: 20,
@@ -242,13 +260,13 @@ describe("class: AsyncHooks", () => {
             (_url: string, _signal?: AbortSignal): Promise<unknown> => {
                 return Promise.resolve("data");
             },
-            [
-                (args, next, { signal }) => {
-                    hasAborted = signal.aborted;
-                    return next(...args);
-                },
-            ],
             {
+                middlewares: [
+                    (args, next, { signal }) => {
+                        hasAborted = signal.aborted;
+                        return next(...args);
+                    },
+                ],
                 signalBinder: {
                     getSignal: (args) => args[1],
                     forwardSignal: (args, signal) => {
@@ -269,13 +287,13 @@ describe("class: AsyncHooks", () => {
                 }
                 return Promise.resolve("data");
             },
-            [
-                (args, next, { abort }) => {
-                    abort("Aborted");
-                    return next(...args);
-                },
-            ],
             {
+                middlewares: [
+                    (args, next, { abort }) => {
+                        abort("Aborted");
+                        return next(...args);
+                    },
+                ],
                 signalBinder: {
                     getSignal: (args) => args[1],
                     forwardSignal: (args, signal) => {

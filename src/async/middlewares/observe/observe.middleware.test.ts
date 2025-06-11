@@ -21,14 +21,14 @@ describe("function: observe", () => {
             (_url: string): string => {
                 return "DATA";
             },
-            [
-                observe({
-                    onStart(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onStart(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },
@@ -45,14 +45,14 @@ describe("function: observe", () => {
             (_url: string): string => {
                 throw new Error("Unexpected error");
             },
-            [
-                observe({
-                    onStart(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onStart(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },
@@ -74,14 +74,14 @@ describe("function: observe", () => {
             (_url: string): Result<string, Error> => {
                 return resultFailure(new Error("Unexpected error"));
             },
-            [
-                observe({
-                    onStart(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onStart(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },
@@ -103,14 +103,14 @@ describe("function: observe", () => {
             (_url: string): string => {
                 return "DATA";
             },
-            [
-                observe({
-                    onSuccess(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onSuccess(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },
@@ -128,14 +128,14 @@ describe("function: observe", () => {
             (_url: string): Result<string, Error> => {
                 return resultSuccess("DATA");
             },
-            [
-                observe({
-                    onSuccess(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onSuccess(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },
@@ -149,15 +149,20 @@ describe("function: observe", () => {
     });
     test("Should not call onSuccess callback when error is thrown", async () => {
         let data = null as OnObserveSuccessData | null;
-        const promise = new AsyncHooks((): string => {
-            throw new Error("error");
-        }, [
-            observe({
-                onSuccess(data_) {
-                    data = data_;
-                },
-            }),
-        ]).invoke();
+        const promise = new AsyncHooks(
+            (): string => {
+                throw new Error("error");
+            },
+            {
+                middlewares: [
+                    observe({
+                        onSuccess(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
+            },
+        ).invoke();
         try {
             await promise;
         } catch {
@@ -167,15 +172,20 @@ describe("function: observe", () => {
     });
     test("Should not call onSuccess callback when failed Result is returned", async () => {
         let data = null as OnObserveSuccessData | null;
-        const promise = new AsyncHooks((): Result<string, Error> => {
-            return resultFailure(new Error("error"));
-        }, [
-            observe({
-                onSuccess(data_) {
-                    data = data_;
-                },
-            }),
-        ]).invoke();
+        const promise = new AsyncHooks(
+            (): Result<string, Error> => {
+                return resultFailure(new Error("error"));
+            },
+            {
+                middlewares: [
+                    observe({
+                        onSuccess(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
+            },
+        ).invoke();
         try {
             await promise;
         } catch {
@@ -189,14 +199,14 @@ describe("function: observe", () => {
             (_url: string): string => {
                 throw new Error("UNEXPECTED");
             },
-            [
-                observe({
-                    onError(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onError(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },
@@ -219,14 +229,14 @@ describe("function: observe", () => {
             (_url: string): Result<string, Error> => {
                 return resultFailure(new Error("UNEXPECTED"));
             },
-            [
-                observe({
-                    onError(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onError(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },
@@ -245,15 +255,20 @@ describe("function: observe", () => {
     });
     test("Should not call onError callback when no error is thrown", async () => {
         let data = null as OnObserveErrorData | null;
-        await new AsyncHooks((): string => {
-            return "a";
-        }, [
-            observe({
-                onError(data_) {
-                    data = data_;
-                },
-            }),
-        ]).invoke();
+        await new AsyncHooks(
+            (): string => {
+                return "a";
+            },
+            {
+                middlewares: [
+                    observe({
+                        onError(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
+            },
+        ).invoke();
         expect(data).toBeNull();
     });
     test("Should call onFinally callback when no error is thrown", async () => {
@@ -262,14 +277,14 @@ describe("function: observe", () => {
             (): string => {
                 return "str";
             },
-            [
-                observe({
-                    onFinally(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onFinally(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },
@@ -287,14 +302,14 @@ describe("function: observe", () => {
             (): string => {
                 throw new Error("error");
             },
-            [
-                observe({
-                    onFinally(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onFinally(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },
@@ -317,14 +332,14 @@ describe("function: observe", () => {
             (): Result<string> => {
                 return resultFailure(new Error("error"));
             },
-            [
-                observe({
-                    onFinally(data_) {
-                        data = data_;
-                    },
-                }),
-            ],
             {
+                middlewares: [
+                    observe({
+                        onFinally(data_) {
+                            data = data_;
+                        },
+                    }),
+                ],
                 context: {
                     name: "fetchData",
                 },

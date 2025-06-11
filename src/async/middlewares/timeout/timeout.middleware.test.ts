@@ -40,7 +40,11 @@ describe("function: timeout", () => {
                 TimeSpan.fromMilliseconds(50),
                 () => "a",
             ),
-            timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
+            {
+                middlewares: timeout({
+                    waitTime: TimeSpan.fromMilliseconds(25),
+                }),
+            },
         ).invoke();
 
         await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
@@ -51,7 +55,11 @@ describe("function: timeout", () => {
                 TimeSpan.fromMilliseconds(100),
                 () => "a",
             ),
-            timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
+            {
+                middlewares: timeout({
+                    waitTime: TimeSpan.fromMilliseconds(25),
+                }),
+            },
         ).invoke();
 
         await expect(outputPromise).rejects.toBeInstanceOf(TimeoutAsyncError);
@@ -62,7 +70,11 @@ describe("function: timeout", () => {
                 TimeSpan.fromMilliseconds(50),
                 () => "a",
             ),
-            timeout({ waitTime: TimeSpan.fromMilliseconds(100) }),
+            {
+                middlewares: timeout({
+                    waitTime: TimeSpan.fromMilliseconds(100),
+                }),
+            },
         ).invoke();
 
         await expect(outputPromise).resolves.toBe("a");
@@ -74,7 +86,7 @@ describe("function: timeout", () => {
             createDelayedFn<[], string>(TimeSpan.fromMilliseconds(50), () => {
                 throw new ErrorA();
             }),
-            timeout({ waitTime: TimeSpan.fromSeconds(2) }),
+            { middlewares: timeout({ waitTime: TimeSpan.fromSeconds(2) }) },
         ).invoke();
         await expect(promise).rejects.toBeInstanceOf(ErrorA);
     });
@@ -86,13 +98,13 @@ describe("function: timeout", () => {
                 TimeSpan.fromMilliseconds(100),
                 () => "a",
             ),
-            timeout({
-                waitTime: time,
-                onTimeout(data_) {
-                    data = data_;
-                },
-            }),
             {
+                middlewares: timeout({
+                    waitTime: time,
+                    onTimeout(data_) {
+                        data = data_;
+                    },
+                }),
                 context: {
                     name: "fetchData",
                 },
@@ -119,13 +131,13 @@ describe("function: timeout", () => {
                 TimeSpan.fromMilliseconds(0),
                 () => "a",
             ),
-            timeout({
-                waitTime: time,
-                onTimeout(data_) {
-                    data = data_;
-                },
-            }),
             {
+                middlewares: timeout({
+                    waitTime: time,
+                    onTimeout(data_) {
+                        data = data_;
+                    },
+                }),
                 context: {
                     name: "fetchData",
                 },

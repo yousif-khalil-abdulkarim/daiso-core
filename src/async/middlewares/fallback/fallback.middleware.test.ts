@@ -15,56 +15,66 @@ describe("function: fallback", () => {
         test("Should return function value when no success result is returned", async () => {
             const returnValue = await new AsyncHooks(
                 (): Result<string, Error> => resultSuccess("a"),
-                [
-                    fallback({
-                        fallbackValue: "fallback-value",
-                    }),
-                ],
+                {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                        }),
+                    ],
+                },
             ).invoke();
             expect(returnValue).toEqual(resultSuccess("a"));
         });
         test("Should return fallback value when failure result is returned", async () => {
-            const returnValue = await new AsyncHooks((): Result<
-                string,
-                Error
-            > => {
-                return resultFailure(new Error("Unexpected error"));
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                }),
-            ]).invoke();
+            const returnValue = await new AsyncHooks(
+                (): Result<string, Error> => {
+                    return resultFailure(new Error("Unexpected error"));
+                },
+                {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                        }),
+                    ],
+                },
+            ).invoke();
             expect(returnValue).toEqual(resultSuccess("fallback-value"));
         });
         test("Should not add fallback when given predicate ErrorPolicy and unknown error", async () => {
             class CustomError extends Error {}
-            const returnValue = await new AsyncHooks((): Result<
-                string,
-                Error | CustomError
-            > => {
-                return resultFailure(new Error("Unexpected error"));
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: (error) => error instanceof CustomError,
-                }),
-            ]).invoke();
+            const returnValue = await new AsyncHooks(
+                (): Result<string, Error | CustomError> => {
+                    return resultFailure(new Error("Unexpected error"));
+                },
+                {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                            errorPolicy: (error) =>
+                                error instanceof CustomError,
+                        }),
+                    ],
+                },
+            ).invoke();
             expect(returnValue.type).toBe(RESULT.FAILURE);
             expect((returnValue as ResultFailure).error).toBeInstanceOf(Error);
         });
         test("Should add fallback only to specific error when given predicate ErrorPolicy", async () => {
             class CustomError extends Error {}
-            const returnValue = await new AsyncHooks((): Result<
-                string,
-                Error | CustomError
-            > => {
-                return resultFailure(new CustomError("Unexpected error"));
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: (error) => error instanceof CustomError,
-                }),
-            ]).invoke();
+            const returnValue = await new AsyncHooks(
+                (): Result<string, Error | CustomError> => {
+                    return resultFailure(new CustomError("Unexpected error"));
+                },
+                {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                            errorPolicy: (error) =>
+                                error instanceof CustomError,
+                        }),
+                    ],
+                },
+            ).invoke();
             expect(returnValue).toEqual(resultSuccess("fallback-value"));
         });
         test("Should call onFallback callback when failure result is returned", async () => {
@@ -73,15 +83,15 @@ describe("function: fallback", () => {
                 (_url: string): Result<string, Error> => {
                     return resultFailure(new Error("Unexpected error"));
                 },
-                [
-                    fallback({
-                        fallbackValue: "fallback-value",
-                        onFallback: (data_) => {
-                            data = data_;
-                        },
-                    }),
-                ],
                 {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                            onFallback: (data_) => {
+                                data = data_;
+                            },
+                        }),
+                    ],
                     context: {
                         name: "fetchData",
                     },
@@ -100,15 +110,15 @@ describe("function: fallback", () => {
                 (): Result<string, Error> => {
                     return resultSuccess("a");
                 },
-                [
-                    fallback({
-                        fallbackValue: "fallback-value",
-                        onFallback: (data_) => {
-                            data = data_;
-                        },
-                    }),
-                ],
                 {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                            onFallback: (data_) => {
+                                data = data_;
+                            },
+                        }),
+                    ],
                     context: {
                         name: "fetchData",
                     },
@@ -119,48 +129,64 @@ describe("function: fallback", () => {
     });
     describe("With throw error:", () => {
         test("Should return function value when no error is thrown", async () => {
-            const returnValue = await new AsyncHooks(
-                () => "a",
-                [
+            const returnValue = await new AsyncHooks(() => "a", {
+                middlewares: [
                     fallback({
                         fallbackValue: "fallback-value",
                     }),
                 ],
-            ).invoke();
+            }).invoke();
             expect(returnValue).toBe("a");
         });
         test("Should return fallback value when error is thrown", async () => {
-            const returnValue = await new AsyncHooks((): string => {
-                throw new Error("Unexpected error");
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                }),
-            ]).invoke();
+            const returnValue = await new AsyncHooks(
+                (): string => {
+                    throw new Error("Unexpected error");
+                },
+                {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                        }),
+                    ],
+                },
+            ).invoke();
             expect(returnValue).toBe("fallback-value");
         });
         test("Should not add fallback when given predicate ErrorPolicy and unknown error", async () => {
             class CustomError extends Error {}
-            const returnValue = new AsyncHooks((): string => {
-                throw new Error("Unexpected error");
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: (error) => error instanceof CustomError,
-                }),
-            ]).invoke();
+            const returnValue = new AsyncHooks(
+                (): string => {
+                    throw new Error("Unexpected error");
+                },
+                {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                            errorPolicy: (error) =>
+                                error instanceof CustomError,
+                        }),
+                    ],
+                },
+            ).invoke();
             await expect(returnValue).rejects.toBeInstanceOf(Error);
         });
         test("Should add fallback only to specific error when given predicate ErrorPolicy", async () => {
             class CustomError extends Error {}
-            const returnValue = await new AsyncHooks((): string => {
-                throw new CustomError("Unexpected error");
-            }, [
-                fallback({
-                    fallbackValue: "fallback-value",
-                    errorPolicy: (error) => error instanceof CustomError,
-                }),
-            ]).invoke();
+            const returnValue = await new AsyncHooks(
+                (): string => {
+                    throw new CustomError("Unexpected error");
+                },
+                {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                            errorPolicy: (error) =>
+                                error instanceof CustomError,
+                        }),
+                    ],
+                },
+            ).invoke();
             expect(returnValue).toBe("fallback-value");
         });
         test("Should call onFallback callback when error is thrown", async () => {
@@ -169,15 +195,15 @@ describe("function: fallback", () => {
                 (_url: string): string => {
                     throw new Error("Unexpected error");
                 },
-                [
-                    fallback({
-                        fallbackValue: "fallback-value",
-                        onFallback: (data_) => {
-                            data = data_;
-                        },
-                    }),
-                ],
                 {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                            onFallback: (data_) => {
+                                data = data_;
+                            },
+                        }),
+                    ],
                     context: {
                         name: "fetchData",
                     },
@@ -196,15 +222,15 @@ describe("function: fallback", () => {
                 (): string => {
                     return "a";
                 },
-                [
-                    fallback({
-                        fallbackValue: "fallback-value",
-                        onFallback: (data_) => {
-                            data = data_;
-                        },
-                    }),
-                ],
                 {
+                    middlewares: [
+                        fallback({
+                            fallbackValue: "fallback-value",
+                            onFallback: (data_) => {
+                                data = data_;
+                            },
+                        }),
+                    ],
                     context: {
                         name: "fetchData",
                     },

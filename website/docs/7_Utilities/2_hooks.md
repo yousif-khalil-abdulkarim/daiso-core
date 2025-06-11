@@ -65,7 +65,9 @@ function add(a: number, b: number): number {
 }
 
 // Applying the middleware on the add function
-const enhancedAdd = new Hooks(add, [log(), time()]);
+const enhancedAdd = new Hooks(add, {
+    middlewares: [log(), time()],
+});
 
 // Will log the function name, arguments, return value and execution time.
 const result = enhancedAdd.invoke(1, 2);
@@ -94,7 +96,9 @@ function average(...nbrs: number[]): number {
     return average / nbr.length;
 }
 
-const enhancedAverage = new Hooks(average, [log(), time()]);
+const enhancedAverage = new Hooks(average, {
+    middlewares: [log(), time()],
+});
 ```
 
 :::
@@ -106,18 +110,15 @@ If you use an anonymous function, you must set its name manually; otherwise, it 
 ```ts
 import { Hook } from "@daiso-tech/core/utilities";
 
-const enhancedAdd = new Hooks(
-    (a: number, b: number): number => a + b,
-    [
+const enhancedAdd = new Hooks((a: number, b: number): number => a + b, {
+    middlewares: [
         (args, next, { name: funcName }) => {
             console.log(funcName);
             return next(...args);
         },
     ],
-    {
-        name: "add",
-    },
-);
+    name: "add",
+});
 ```
 
 ### Providing additional context
@@ -148,7 +149,8 @@ function createMiddleware<
     };
 }
 
-const enhancedAdd = new Hooks(add, [createMiddleware()], {
+const enhancedAdd = new Hooks(add, {
+    middlewares: [createMiddleware()],
     // You provide context here
     context: {
         a: 1,
@@ -166,18 +168,15 @@ You can convert [`Hooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/
 import { Hook } from "@daiso-tech/core/utilities";
 
 // add is now a function and not Hook instance
-const add = new Hooks(
-    (a: number, b: number): number => a + b,
-    [
+const add = new Hooks((a: number, b: number): number => a + b, {
+    middlewares: [
         (args, next) => {
             console.log("Middleware applied");
             return next(...args);
         },
     ],
-    {
-        name: "add",
-    },
-).toFunc();
+    name: "add",
+}).toFunc();
 ```
 
 ### Deriving Hook instances
@@ -187,18 +186,15 @@ You can derive a new [`Hooks`](https://yousif-khalil-abdulkarim.github.io/daiso-
 ```ts
 import { Hook } from "@daiso-tech/core/utilities";
 
-const addA = new Hooks(
-    (a: number, b: number): number => a + b,
-    [
+const addA = new Hooks((a: number, b: number): number => a + b, {
+    middlewares: [
         (args, next) => {
             console.log("Middleware A applied");
             return next(...args);
         },
     ],
-    {
-        name: "add",
-    },
-);
+    name: "add",
+});
 
 // Will include middleware A and B
 const addB = addA.pipe((args, next) => {
@@ -229,29 +225,26 @@ The [`AsyncHooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes
 import { AsyncHooks } from "@daiso-tech/core/utilities";
 
 // Works with synchronous function
-const add1 = new AsyncHooks(
-    (a: number, b: number): number => a + b,
-    [
+const add1 = new AsyncHooks((a: number, b: number): number => a + b, {
+    middlewares: [
         async (args, next) => {
             console.log("Middleware applied");
             return await next(...args);
         },
     ],
-    {
-        name: "add",
-    },
-);
+    name: "add",
+});
 
 // Works with asynchronous function
 const add2 = new AsyncHooks(
     async (a: number, b: number): Promise<number> => a + b,
-    [
-        async (args, next) => {
-            console.log("Middleware applied");
-            return await next(...args);
-        },
-    ],
     {
+        middlewares: [
+            async (args, next) => {
+                console.log("Middleware applied");
+                return await next(...args);
+            },
+        ],
         name: "add",
     },
 );
@@ -309,7 +302,8 @@ function timeout<TParameters extends unknown[], TReturn>(
     };
 }
 
-const fetchDataEnhanced = new AsyncHooks(fetchData, [timeout()], {
+const fetchDataEnhanced = new AsyncHooks(fetchData, {
+    middlewares: [timeout()],
     signalBinder: fetchDataSignalBinder,
 });
 ```

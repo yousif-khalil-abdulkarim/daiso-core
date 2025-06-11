@@ -48,18 +48,20 @@ describe("new function: sequentialHedging", () => {
                         return resultFailure(new Error());
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    return resultFailure(new Error());
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        return resultFailure(new Error());
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             await expect(promise).rejects.toBeInstanceOf(Error);
@@ -72,18 +74,20 @@ describe("new function: sequentialHedging", () => {
                         return resultSuccess("data");
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    return resultFailure(new Error());
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        return resultFailure(new Error());
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             expect(value).toEqual(resultSuccess("data"));
@@ -96,24 +100,26 @@ describe("new function: sequentialHedging", () => {
                         return resultFailure(new Error());
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(30),
-                                () => {
-                                    return resultSuccess("data");
-                                },
-                            ),
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    return resultFailure(new Error());
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(30),
+                                    () => {
+                                        return resultSuccess("data");
+                                    },
+                                ),
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        return resultFailure(new Error());
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             expect(value).toEqual(resultSuccess("data"));
@@ -126,24 +132,26 @@ describe("new function: sequentialHedging", () => {
                         return resultFailure(new Error());
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    return resultFailure(new Error());
-                                },
-                            ),
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(30),
-                                () => {
-                                    return resultSuccess("data");
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        return resultFailure(new Error());
+                                    },
+                                ),
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(30),
+                                    () => {
+                                        return resultSuccess("data");
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             expect(value).toEqual(resultSuccess("data"));
@@ -158,27 +166,27 @@ describe("new function: sequentialHedging", () => {
                         return resultSuccess("data");
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    return resultSuccess("data");
-                                },
-                            ),
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(30),
-                                () => {
-                                    i++;
-                                    return resultSuccess("data");
-                                },
-                            ),
-                        ],
-                    }),
-                ],
                 {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        return resultSuccess("data");
+                                    },
+                                ),
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(30),
+                                    () => {
+                                        i++;
+                                        return resultSuccess("data");
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
                     signalBinder: {
                         getSignal: (args) => args[1],
                         forwardSignal: (args, signal) => {
@@ -201,27 +209,27 @@ describe("new function: sequentialHedging", () => {
                         return resultSuccess("data");
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(10),
-                                () => {
-                                    i++;
-                                    return resultSuccess("data");
-                                },
-                            ),
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(30),
-                                () => {
-                                    i++;
-                                    return resultSuccess("data");
-                                },
-                            ),
-                        ],
-                    }),
-                ],
                 {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(10),
+                                    () => {
+                                        i++;
+                                        return resultSuccess("data");
+                                    },
+                                ),
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(30),
+                                    () => {
+                                        i++;
+                                        return resultSuccess("data");
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
                     signalBinder: {
                         getSignal: (args) => args[1],
                         forwardSignal: (args, signal) => {
@@ -247,20 +255,22 @@ describe("new function: sequentialHedging", () => {
                         return resultFailure(new ErrorB());
                     },
                 ),
-                [
-                    sequentialHedging({
-                        errorPolicy: (error) => error instanceof ErrorA,
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    return resultFailure(new Error());
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            errorPolicy: (error) => error instanceof ErrorA,
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        return resultFailure(new Error());
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             try {
@@ -283,20 +293,22 @@ describe("new function: sequentialHedging", () => {
                         return resultFailure(new ErrorA());
                     },
                 ),
-                [
-                    sequentialHedging({
-                        errorPolicy: (error) => error instanceof ErrorA,
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    return resultFailure(new Error());
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            errorPolicy: (error) => error instanceof ErrorA,
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        return resultFailure(new Error());
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             try {
@@ -319,20 +331,22 @@ describe("new function: sequentialHedging", () => {
                         return resultFailure(new ErrorA());
                     },
                 ),
-                [
-                    sequentialHedging({
-                        errorPolicy: z.instanceof(ErrorA),
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    return resultFailure(new Error());
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            errorPolicy: z.instanceof(ErrorA),
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        return resultFailure(new Error());
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             try {
@@ -355,20 +369,22 @@ describe("new function: sequentialHedging", () => {
                         return resultFailure(new ErrorA());
                     },
                 ),
-                [
-                    sequentialHedging({
-                        errorPolicy: ErrorA,
-                        fallbacks: [
-                            createDelayedFn(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    return resultFailure(new Error());
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            errorPolicy: ErrorA,
+                            fallbacks: [
+                                createDelayedFn(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        return resultFailure(new Error());
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             try {
@@ -389,18 +405,20 @@ describe("new function: sequentialHedging", () => {
                         throw new Error();
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    throw new Error();
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        throw new Error();
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             await expect(promise).rejects.toBeInstanceOf(Error);
@@ -413,18 +431,20 @@ describe("new function: sequentialHedging", () => {
                         return "data";
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    throw new Error();
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        throw new Error();
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             expect(value).toBe("data");
@@ -437,24 +457,26 @@ describe("new function: sequentialHedging", () => {
                         throw new Error();
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(30),
-                                () => {
-                                    return "data";
-                                },
-                            ),
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    throw new Error();
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(30),
+                                    () => {
+                                        return "data";
+                                    },
+                                ),
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        throw new Error();
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             expect(value).toBe("data");
@@ -467,24 +489,26 @@ describe("new function: sequentialHedging", () => {
                         throw new Error();
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    throw new Error();
-                                },
-                            ),
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(30),
-                                () => {
-                                    return "data";
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        throw new Error();
+                                    },
+                                ),
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(30),
+                                    () => {
+                                        return "data";
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             expect(value).toBe("data");
@@ -499,27 +523,27 @@ describe("new function: sequentialHedging", () => {
                         return "data";
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    return "data";
-                                },
-                            ),
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(30),
-                                () => {
-                                    i++;
-                                    return "data";
-                                },
-                            ),
-                        ],
-                    }),
-                ],
                 {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        return "data";
+                                    },
+                                ),
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(30),
+                                    () => {
+                                        i++;
+                                        return "data";
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
                     signalBinder: {
                         getSignal: (args) => args[1],
                         forwardSignal: (args, signal) => {
@@ -542,27 +566,27 @@ describe("new function: sequentialHedging", () => {
                         return "data";
                     },
                 ),
-                [
-                    sequentialHedging({
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(10),
-                                () => {
-                                    i++;
-                                    return "data";
-                                },
-                            ),
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(30),
-                                () => {
-                                    i++;
-                                    return "data";
-                                },
-                            ),
-                        ],
-                    }),
-                ],
                 {
+                    middlewares: [
+                        sequentialHedging({
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(10),
+                                    () => {
+                                        i++;
+                                        return "data";
+                                    },
+                                ),
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(30),
+                                    () => {
+                                        i++;
+                                        return "data";
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
                     signalBinder: {
                         getSignal: (args) => args[1],
                         forwardSignal: (args, signal) => {
@@ -588,20 +612,22 @@ describe("new function: sequentialHedging", () => {
                         throw new ErrorB();
                     },
                 ),
-                [
-                    sequentialHedging({
-                        errorPolicy: (error) => error instanceof ErrorA,
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    throw new Error();
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            errorPolicy: (error) => error instanceof ErrorA,
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        throw new Error();
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             try {
@@ -624,20 +650,22 @@ describe("new function: sequentialHedging", () => {
                         throw new ErrorA();
                     },
                 ),
-                [
-                    sequentialHedging({
-                        errorPolicy: (error) => error instanceof ErrorA,
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    throw new Error();
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            errorPolicy: (error) => error instanceof ErrorA,
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        throw new Error();
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             try {
@@ -660,20 +688,22 @@ describe("new function: sequentialHedging", () => {
                         throw new ErrorA();
                     },
                 ),
-                [
-                    sequentialHedging({
-                        errorPolicy: z.instanceof(ErrorA),
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    throw new Error();
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            errorPolicy: z.instanceof(ErrorA),
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        throw new Error();
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             try {
@@ -696,20 +726,22 @@ describe("new function: sequentialHedging", () => {
                         throw new ErrorA();
                     },
                 ),
-                [
-                    sequentialHedging({
-                        errorPolicy: ErrorA,
-                        fallbacks: [
-                            createDelayedFn<[string], string>(
-                                TimeSpan.fromMilliseconds(20),
-                                () => {
-                                    i++;
-                                    throw new Error();
-                                },
-                            ),
-                        ],
-                    }),
-                ],
+                {
+                    middlewares: [
+                        sequentialHedging({
+                            errorPolicy: ErrorA,
+                            fallbacks: [
+                                createDelayedFn<[string], string>(
+                                    TimeSpan.fromMilliseconds(20),
+                                    () => {
+                                        i++;
+                                        throw new Error();
+                                    },
+                                ),
+                            ],
+                        }),
+                    ],
+                },
             ).invoke("URL");
 
             try {

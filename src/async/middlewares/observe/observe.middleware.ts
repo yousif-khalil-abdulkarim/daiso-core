@@ -39,13 +39,14 @@ import type { ObserveCallbacks } from "@/async/middlewares/observe/observe.types
  *        throw new Error("Unexpected error occured");
  *      }
  *      return a / b;
- *   },
- *   observe({
- *     onStart: (data) => console.log("START:", data),
- *     onSuccess: (data) => console.log("SUCCESS:", data),
- *     onError: (data) => console.error("ERROR:", data),
- *     onFinally: (data) => console.log("FINALLY:", data),
- *   })
+ *   }, {
+ *     middlewares: observe({
+ *       onStart: (data) => console.log("START:", data),
+ *       onSuccess: (data) => console.log("SUCCESS:", data),
+ *       onError: (data) => console.error("ERROR:", data),
+ *       onFinally: (data) => console.log("FINALLY:", data),
+ *     })
+ *   }
  * )
  * .invoke(20, 10);
  * // Will log when the function execution has started and the arguments.
@@ -73,13 +74,14 @@ import type { ObserveCallbacks } from "@/async/middlewares/observe/observe.types
  *        return resultFailure(new Error("Unexpected error occured"));
  *      }
  *      return resultSuccess(a / b);
- *   },
- *   observe({
- *     onStart: (data) => console.log("START:", data),
- *     onSuccess: (data) => console.log("SUCCESS:", data),
- *     onError: (data) => console.error("ERROR:", data),
- *     onFinally: (data) => console.log("FINALLY:", data),
- *   })
+ *   }, {
+ *     middlewares: observe({
+ *       onStart: (data) => console.log("START:", data),
+ *       onSuccess: (data) => console.log("SUCCESS:", data),
+ *       onError: (data) => console.error("ERROR:", data),
+ *       onFinally: (data) => console.log("FINALLY:", data),
+ *     })
+ *   }
  * )
  * .invoke(20, 10);
  * // Will log when the function execution has started and the arguments.

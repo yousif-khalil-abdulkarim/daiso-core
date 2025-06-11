@@ -21,11 +21,13 @@ function unstableFn(): number {
     }
     return Math.round((Math.random() + 1) * 99);
 }
-const fn = new AsyncHooks(unstableFn, [
-    fallback({
-        fallbackValue: 1,
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        fallback({
+            fallbackValue: 1,
+        }),
+    ],
+});
 
 // Will never throw and when error occurs the fallback value will be returned.
 console.log(await fn.invoke());
@@ -40,13 +42,15 @@ You can provide [`LazyPromise`](/docs/8_Async/1_lazy_promise.md), synchronous an
 You can define an [`ErrorPolicy`](/docs/7_Utilities/5_result_and_error_policy.md) to specify fallback values for specific error cases:
 
 ```ts
-const fn = new AsyncHooks(unstableFn, [
-    fallback({
-        fallbackValue: 1,
-        // Will only fallback errors that are not a TypeError
-        errorPolicy: (error) => !(error instanceof TypeError),
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        fallback({
+            fallbackValue: 1,
+            // Will only fallback errors that are not a TypeError
+            errorPolicy: (error) => !(error instanceof TypeError),
+        }),
+    ],
+});
 ```
 
 ### Callbacks
@@ -54,12 +58,14 @@ const fn = new AsyncHooks(unstableFn, [
 You can add callback [`Invokable`](../7_Utilities/3_invokable.md) that will be called before the fallback value is returned.
 
 ```ts
-const fn = new AsyncHooks(unstableFn, [
-    fallback({
-        fallbackValue: 1,
-        onFallback: (fallbackData) => console.log(fallbackData),
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        fallback({
+            fallbackValue: 1,
+            onFallback: (fallbackData) => console.log(fallbackData),
+        }),
+    ],
+});
 ```
 
 :::info
@@ -114,11 +120,17 @@ async function fetchDataFallback3(
     });
 }
 
-const fetchDataEnhanced = new AsyncHooks(fetchData, [
-    sequentialHedging({
-        fallbacks: [fetchDataFallback1, fetchDataFallback2, fetchDataFallback3],
-    }),
-]);
+const fetchDataEnhanced = new AsyncHooks(fetchData, {
+    middlewares: [
+        sequentialHedging({
+            fallbacks: [
+                fetchDataFallback1,
+                fetchDataFallback2,
+                fetchDataFallback3,
+            ],
+        }),
+    ],
+});
 
 const response = await fetchDataEnhanced.invoke("ENDPOINT");
 console.log(await response.json());
@@ -130,9 +142,8 @@ Note when abortion occurs, it will not abort the hedging middleware fallbacks ex
 For further information about [`AbortSignalBinder`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.AbortSignalBinder.html) and [`AsyncHooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.AsyncHooks.html) refer to [Hooks](../7_Utilities/2_hooks.md) documentation.
 
 ```ts
-const fetchDataEnhanced = new AsyncHooks(
-    fetchData,
-    [
+const fetchDataEnhanced = new AsyncHooks(fetchData, {
+    middlewares: [
         sequentialHedging({
             fallbacks: [
                 fetchDataFallback1,
@@ -141,15 +152,13 @@ const fetchDataEnhanced = new AsyncHooks(
             ],
         }),
     ],
-    {
-        signalBinder: {
-            getSignal: (args) => args[1],
-            forwardSignal: (args, signal) => {
-                args[1] = signal;
-            },
+    signalBinder: {
+        getSignal: (args) => args[1],
+        forwardSignal: (args, signal) => {
+            args[1] = signal;
         },
     },
-);
+});
 
 const response = await fetchDataEnhanced.invoke("ENDPOINT");
 console.log(await response.json());
@@ -165,9 +174,8 @@ You can abort the hedging calls after a specified time period:
 import { TimeSpan } from "@daiso-tech/core/utilities";
 import { retry, timeout } from "@daiso-tech/core/async";
 
-const fetchDataEnhanced = new AsyncHooks(
-    fetchData,
-    [
+const fetchDataEnhanced = new AsyncHooks(fetchData, {
+    middlewares: [
         sequentialHedging({
             fallbacks: [
                 fetchDataFallback1,
@@ -185,15 +193,13 @@ const fetchDataEnhanced = new AsyncHooks(
             ],
         }),
     ],
-    {
-        signalBinder: {
-            getSignal: (args) => args[1],
-            forwardSignal: (args, signal) => {
-                args[1] = signal;
-            },
+    signalBinder: {
+        getSignal: (args) => args[1],
+        forwardSignal: (args, signal) => {
+            args[1] = signal;
         },
     },
-);
+});
 ```
 
 ### Named fallbacks
@@ -201,9 +207,8 @@ const fetchDataEnhanced = new AsyncHooks(
 You can provide named fallbacks which is useful when debugging:
 
 ```ts
-const fetchDataEnhanced = new AsyncHooks(
-    fetchData,
-    [
+const fetchDataEnhanced = new AsyncHooks(fetchData, {
+    middlewares: [
         sequentialHedging({
             fallbacks: [
                 {
@@ -221,15 +226,13 @@ const fetchDataEnhanced = new AsyncHooks(
             ],
         }),
     ],
-    {
-        signalBinder: {
-            getSignal: (args) => args[1],
-            forwardSignal: (args, signal) => {
-                args[1] = signal;
-            },
+    signalBinder: {
+        getSignal: (args) => args[1],
+        forwardSignal: (args, signal) => {
+            args[1] = signal;
         },
     },
-);
+});
 ```
 
 ### Callbacks
@@ -237,9 +240,8 @@ const fetchDataEnhanced = new AsyncHooks(
 You can add callback [`Invokable`](../7_Utilities/3_invokable.md) that will be called before execution attempt:
 
 ```ts
-const fetchDataEnhanced = new AsyncHooks(
-    fetchData,
-    [
+const fetchDataEnhanced = new AsyncHooks(fetchData, {
+    middlewares: [
         sequentialHedging({
             fallbacks: [
                 fetchDataFallback1,
@@ -249,15 +251,13 @@ const fetchDataEnhanced = new AsyncHooks(
             onHedgeAttempt: (data) => console.log(data),
         }),
     ],
-    {
-        signalBinder: {
-            getSignal: (args) => args[1],
-            forwardSignal: (args, signal) => {
-                args[1] = signal;
-            },
+    signalBinder: {
+        getSignal: (args) => args[1],
+        forwardSignal: (args, signal) => {
+            args[1] = signal;
         },
     },
-);
+});
 ```
 
 :::info
@@ -267,9 +267,8 @@ For more details about `onHedgingAttempt` callback data, see the [OnHedgeAttempt
 You can add callback [`Invokable`](../7_Utilities/3_invokable.md) that will be called when a error occurs:
 
 ```ts
-const fetchDataEnhanced = new AsyncHooks(
-    fetchData,
-    [
+const fetchDataEnhanced = new AsyncHooks(fetchData, {
+    middlewares: [
         sequentialHedging({
             fallbacks: [
                 fetchDataFallback1,
@@ -279,15 +278,13 @@ const fetchDataEnhanced = new AsyncHooks(
             onHedgeError: (data) => console.log(data),
         }),
     ],
-    {
-        signalBinder: {
-            getSignal: (args) => args[1],
-            forwardSignal: (args, signal) => {
-                args[1] = signal;
-            },
+    signalBinder: {
+        getSignal: (args) => args[1],
+        forwardSignal: (args, signal) => {
+            args[1] = signal;
         },
     },
-);
+});
 ```
 
 :::info
@@ -311,12 +308,14 @@ function unstableFn(): number {
     }
     return Math.round((Math.random() + 1) * 99);
 }
-const fn = new AsyncHooks(unstableFn, [
-    retry({
-        // Will retry 4 times
-        maxAttemps: 4,
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        retry({
+            // Will retry 4 times
+            maxAttemps: 4,
+        }),
+    ],
+});
 
 await fn.invoke();
 ```
@@ -326,13 +325,15 @@ await fn.invoke();
 You can define an [`ErrorPolicy`](/docs/7_Utilities/5_result_and_error_policy.md) to retry specific error cases:
 
 ```ts
-const fn = new AsyncHooks(unstableFn, [
-    retry({
-        maxAttemps: 4,
-        // Will only retry errors that are not TypeError
-        errorPolicy: (error) => !(error instanceof TypeError),
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        retry({
+            maxAttemps: 4,
+            // Will only retry errors that are not TypeError
+            errorPolicy: (error) => !(error instanceof TypeError),
+        }),
+    ],
+});
 ```
 
 ### Custom BackoffPolicy
@@ -342,14 +343,16 @@ You can use custom [`BackoffPolicy`](https://yousif-khalil-abdulkarim.github.io/
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
 
-const fn = new AsyncHooks(unstableFn, [
-    retry({
-        maxAttemps: 4,
-        // By default a exponential policy is used
-        backoffPolicy: (attempt: number, _error: unknown) =>
-            TimeSpan.fromMilliseconds(attempt * 100),
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        retry({
+            maxAttemps: 4,
+            // By default a exponential policy is used
+            backoffPolicy: (attempt: number, _error: unknown) =>
+                TimeSpan.fromMilliseconds(attempt * 100),
+        }),
+    ],
+});
 ```
 
 ### Predefined backoff policies
@@ -369,13 +372,15 @@ Usage example:
 ```ts
 import { polynomialBackoffPolicy } from "@daiso-tech/core/async";
 
-const fn = new AsyncHooks(unstableFn, [
-    retry({
-        maxAttemps: 4,
-        // By default a exponential policy is used
-        backoffPolicy: polynomialBackoffPolicy(),
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        retry({
+            maxAttemps: 4,
+            // By default a exponential policy is used
+            backoffPolicy: polynomialBackoffPolicy(),
+        }),
+    ],
+});
 ```
 
 Dynamically adjusting the settings based on the error:
@@ -384,21 +389,23 @@ Dynamically adjusting the settings based on the error:
 import { polynomialBackoffPolicy } from "@daiso-tech/core/async";
 import { TimeSpan } from "@daiso-tech/core/utilities";
 
-const fn = new AsyncHooks(unstableFn, [
-    retry({
-        maxAttemps: 4,
-        // You can dynamicalyy adapt the setting depending on the error
-        backoffPolicy: polynomialBackoffPolicy((error) => {
-            if (isImportant(error)) {
-                return {
-                    maxDelay: TimeSpan.fromSeconds(30),
-                    degree: 3,
-                };
-            }
-            // If you dont return settings object then default settings will be used.
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        retry({
+            maxAttemps: 4,
+            // You can dynamicalyy adapt the setting depending on the error
+            backoffPolicy: polynomialBackoffPolicy((error) => {
+                if (isImportant(error)) {
+                    return {
+                        maxDelay: TimeSpan.fromSeconds(30),
+                        degree: 3,
+                    };
+                }
+                // If you dont return settings object then default settings will be used.
+            }),
         }),
-    }),
-]);
+    ],
+});
 ```
 
 :::info
@@ -410,12 +417,14 @@ All predefined backoff policies can be dynamically adjusted based on the error.
 You can add callback [`Invokable`](../7_Utilities/3_invokable.md) that will be called before execution attempt:
 
 ```ts
-const fn = new AsyncHooks(unstableFn, [
-    retry({
-        maxAttemps: 4,
-        onExecutionAttempt: (data) => console.log(data),
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        retry({
+            maxAttemps: 4,
+            onExecutionAttempt: (data) => console.log(data),
+        }),
+    ],
+});
 ```
 
 You can add callback [`Invokable`](../7_Utilities/3_invokable.md) that will be called before the retry delay starts:
@@ -425,12 +434,14 @@ For more details about `onExecutionAttempt` callback data, see the [OnRetryAttem
 :::
 
 ```ts
-const fn = new AsyncHooks(unstableFn, [
-    retry({
-        maxAttemps: 4,
-        onRetryDelay: (data) => console.log(data),
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        retry({
+            maxAttemps: 4,
+            onRetryDelay: (data) => console.log(data),
+        }),
+    ],
+});
 ```
 
 :::info
@@ -452,11 +463,13 @@ function fetchData(): Promise<Response> {
     console.log("DONE");
     return response;
 }
-const fn = new AsyncHooks(fetchData, [
-    timeout({
-        waitTime: TimeSpan.fromSeconds(2),
-    }),
-]);
+const fn = new AsyncHooks(fetchData, {
+    middlewares: [
+        timeout({
+            waitTime: TimeSpan.fromSeconds(2),
+        }),
+    ],
+});
 
 await fn.invoke();
 ```
@@ -478,22 +491,19 @@ function fetchData(signal?: AbortSginal): Promise<Response> {
     console.log("DONE");
     return response;
 }
-const fn = new AsyncHooks(
-    fetchData,
-    [
+const fn = new AsyncHooks(fetchData, {
+    middlewares: [
         timeout({
             waitTime: TimeSpan.fromSeconds(2),
         }),
     ],
-    {
-        signalBinder: {
-            getSignal: (args) => args[0],
-            forwardSignal: (args, signal) => {
-                args[0] = signal;
-            },
+    signalBinder: {
+        getSignal: (args) => args[0],
+        forwardSignal: (args, signal) => {
+            args[0] = signal;
         },
     },
-);
+});
 
 await fn.invoke();
 ```
@@ -505,23 +515,20 @@ await fn.invoke();
 You can add callback [`Invokable`](../7_Utilities/3_invokable.md) that will be called before the timeout occurs.
 
 ```ts
-const fn = new AsyncHooks(
-    fetchData,
-    [
+const fn = new AsyncHooks(fetchData, {
+    middlewares: [
         timeout({
             waitTime: TimeSpan.fromSeconds(2),
             onTimeout: (data) => console.log(data),
         }),
     ],
-    {
-        signalBinder: {
-            getSignal: (args) => args[0],
-            forwardSignal: (args, signal) => {
-                args[0] = signal;
-            },
+    signalBinder: {
+        getSignal: (args) => args[0],
+        forwardSignal: (args, signal) => {
+            args[0] = signal;
         },
     },
-);
+});
 ```
 
 :::info
@@ -545,14 +552,16 @@ function unstableFn(): Promise<number> {
     }
     return Math.round((Math.random() + 1) * 99);
 }
-const fn = new AsyncHooks(unstableFn, [
-    observe({
-        onStart: (data) => console.log("START:", data),
-        onSuccess: (data) => console.log("SUCCESS:", data),
-        onError: (data) => console.error("ERROR:", data),
-        onFinally: (data) => console.log("END:", data),
-    }),
-]);
+const fn = new AsyncHooks(unstableFn, {
+    middlewares: [
+        observe({
+            onStart: (data) => console.log("START:", data),
+            onSuccess: (data) => console.log("SUCCESS:", data),
+            onError: (data) => console.error("ERROR:", data),
+            onFinally: (data) => console.log("END:", data),
+        }),
+    ],
+});
 
 await fn.invoke();
 ```

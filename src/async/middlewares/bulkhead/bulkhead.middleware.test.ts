@@ -14,12 +14,14 @@ describe("function: bulkhead", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
                 return "data";
             },
-            [
-                bulkhead({
-                    maxCapacity: 1,
-                    maxConcurrency: 1,
-                }),
-            ],
+            {
+                middlewares: [
+                    bulkhead({
+                        maxCapacity: 1,
+                        maxConcurrency: 1,
+                    }),
+                ],
+            },
         );
 
         const promise1 = fetchData.invoke("url");
@@ -38,12 +40,14 @@ describe("function: bulkhead", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
                 return "data";
             },
-            [
-                bulkhead({
-                    maxCapacity: 1,
-                    maxConcurrency: 1,
-                }),
-            ],
+            {
+                middlewares: [
+                    bulkhead({
+                        maxCapacity: 1,
+                        maxConcurrency: 1,
+                    }),
+                ],
+            },
         );
 
         const promise1 = fetchData.invoke("url");
@@ -63,16 +67,16 @@ describe("function: bulkhead", () => {
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
                 return "data";
             },
-            [
-                bulkhead({
-                    onProcessing: (data_) => {
-                        data = data_;
-                    },
-                    maxCapacity: 1,
-                    maxConcurrency: 1,
-                }),
-            ],
             {
+                middlewares: [
+                    bulkhead({
+                        onProcessing: (data_) => {
+                            data = data_;
+                        },
+                        maxCapacity: 1,
+                        maxConcurrency: 1,
+                    }),
+                ],
                 context: {
                     a: "a",
                 },

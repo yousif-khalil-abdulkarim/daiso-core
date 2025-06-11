@@ -22,10 +22,12 @@ describe("function: retry", () => {
                 (): Result<string, Error> => {
                     return resultFailure(new Error("My own error"));
                 },
-                retry({
-                    maxAttempts: 4,
-                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                }),
+                {
+                    middlewares: retry({
+                        maxAttempts: 4,
+                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    }),
+                },
             ).invoke();
 
             expect(result.type).toBe(RESULT.FAILURE);
@@ -41,10 +43,12 @@ describe("function: retry", () => {
                         repetition++;
                         return resultFailure(new Error("My own error"));
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                    }),
+                    {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                        }),
+                    },
                 ).invoke();
             } catch {
                 /* Empty */
@@ -63,11 +67,13 @@ describe("function: retry", () => {
                     i++;
                     return resultFailure(new ErrorB("My own error"));
                 },
-                retry({
-                    maxAttempts,
-                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                    errorPolicy: (error) => error instanceof ErrorA,
-                }),
+                {
+                    middlewares: retry({
+                        maxAttempts,
+                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                        errorPolicy: (error) => error instanceof ErrorA,
+                    }),
+                },
             ).invoke();
 
             expect(i).toBe(1);
@@ -82,11 +88,13 @@ describe("function: retry", () => {
                     i++;
                     return resultFailure(new ErrorA("My own error"));
                 },
-                retry({
-                    maxAttempts,
-                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                    errorPolicy: (error) => error instanceof ErrorA,
-                }),
+                {
+                    middlewares: retry({
+                        maxAttempts,
+                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                        errorPolicy: (error) => error instanceof ErrorA,
+                    }),
+                },
             ).invoke();
 
             expect(i).toBe(maxAttempts);
@@ -103,10 +111,12 @@ describe("function: retry", () => {
                     }
                     return resultSuccess("text");
                 },
-                retry({
-                    maxAttempts,
-                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                }),
+                {
+                    middlewares: retry({
+                        maxAttempts,
+                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    }),
+                },
             ).invoke();
 
             expect(result.type).toBe(RESULT.SUCCESS);
@@ -121,15 +131,15 @@ describe("function: retry", () => {
                     (_url: string): Result<string, Error> => {
                         return resultFailure(new Error("My own error"));
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                        onExecutionAttempt(data_) {
-                            data = data_;
-                            repetition++;
-                        },
-                    }),
                     {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                            onExecutionAttempt(data_) {
+                                data = data_;
+                                repetition++;
+                            },
+                        }),
                         context: {
                             name: "fetchData",
                         },
@@ -154,15 +164,15 @@ describe("function: retry", () => {
                     (_url: string): Result<string, Error> => {
                         return resultSuccess("data");
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                        onExecutionAttempt(data_) {
-                            data = data_;
-                            repetition++;
-                        },
-                    }),
                     {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                            onExecutionAttempt(data_) {
+                                data = data_;
+                                repetition++;
+                            },
+                        }),
                         context: {
                             name: "fetchData",
                         },
@@ -187,15 +197,15 @@ describe("function: retry", () => {
                     (_url: string): Result<string, Error> => {
                         return resultFailure(new Error("My own error"));
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(25),
-                        onRetryDelay(data_) {
-                            data = data_;
-                            repetition++;
-                        },
-                    }),
                     {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(25),
+                            onRetryDelay(data_) {
+                                data = data_;
+                                repetition++;
+                            },
+                        }),
                         context: {
                             name: "fetchData",
                         },
@@ -222,15 +232,15 @@ describe("function: retry", () => {
                     (_url: string): string => {
                         return "data";
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(25),
-                        onRetryDelay(data_) {
-                            data = data_;
-                            repetition++;
-                        },
-                    }),
                     {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(25),
+                            onRetryDelay(data_) {
+                                data = data_;
+                                repetition++;
+                            },
+                        }),
                         context: {
                             name: "fetchData",
                         },
@@ -249,10 +259,12 @@ describe("function: retry", () => {
                 () => {
                     throw new Error("My own error");
                 },
-                retry({
-                    maxAttempts: 4,
-                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                }),
+                {
+                    middlewares: retry({
+                        maxAttempts: 4,
+                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    }),
+                },
             ).invoke();
 
             await expect(promise).rejects.toBeInstanceOf(Error);
@@ -267,10 +279,12 @@ describe("function: retry", () => {
                         repetition++;
                         throw new Error("My own error");
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                    }),
+                    {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                        }),
+                    },
                 ).invoke();
             } catch {
                 /* Empty */
@@ -289,11 +303,13 @@ describe("function: retry", () => {
                     i++;
                     throw new ErrorB("My own error");
                 },
-                retry({
-                    maxAttempts,
-                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                    errorPolicy: (error) => error instanceof ErrorA,
-                }),
+                {
+                    middlewares: retry({
+                        maxAttempts,
+                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                        errorPolicy: (error) => error instanceof ErrorA,
+                    }),
+                },
             ).invoke();
 
             try {
@@ -314,11 +330,13 @@ describe("function: retry", () => {
                     i++;
                     throw new ErrorA("My own error");
                 },
-                retry({
-                    maxAttempts,
-                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                    errorPolicy: (error) => error instanceof ErrorA,
-                }),
+                {
+                    middlewares: retry({
+                        maxAttempts,
+                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                        errorPolicy: (error) => error instanceof ErrorA,
+                    }),
+                },
             ).invoke();
 
             try {
@@ -341,10 +359,12 @@ describe("function: retry", () => {
                     }
                     return "text";
                 },
-                retry({
-                    maxAttempts,
-                    backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                }),
+                {
+                    middlewares: retry({
+                        maxAttempts,
+                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                    }),
+                },
             ).invoke();
 
             await expect(promise).resolves.toBe("text");
@@ -358,15 +378,15 @@ describe("function: retry", () => {
                     (_url: string): string => {
                         throw new Error("My own error");
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                        onExecutionAttempt(data_) {
-                            data = data_;
-                            repetition++;
-                        },
-                    }),
                     {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                            onExecutionAttempt(data_) {
+                                data = data_;
+                                repetition++;
+                            },
+                        }),
                         context: {
                             name: "fetchData",
                         },
@@ -391,15 +411,15 @@ describe("function: retry", () => {
                     (_url: string): string => {
                         return "data";
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(0),
-                        onExecutionAttempt(data_) {
-                            data = data_;
-                            repetition++;
-                        },
-                    }),
                     {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(0),
+                            onExecutionAttempt(data_) {
+                                data = data_;
+                                repetition++;
+                            },
+                        }),
                         context: {
                             name: "fetchData",
                         },
@@ -424,15 +444,15 @@ describe("function: retry", () => {
                     (_url: string): string => {
                         throw new Error("My own error");
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(25),
-                        onRetryDelay(data_) {
-                            data = data_;
-                            repetition++;
-                        },
-                    }),
                     {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(25),
+                            onRetryDelay(data_) {
+                                data = data_;
+                                repetition++;
+                            },
+                        }),
                         context: {
                             name: "fetchData",
                         },
@@ -459,15 +479,15 @@ describe("function: retry", () => {
                     (_url: string): string => {
                         return "data";
                     },
-                    retry({
-                        maxAttempts,
-                        backoffPolicy: () => TimeSpan.fromMilliseconds(25),
-                        onRetryDelay(data_) {
-                            data = data_;
-                            repetition++;
-                        },
-                    }),
                     {
+                        middlewares: retry({
+                            maxAttempts,
+                            backoffPolicy: () => TimeSpan.fromMilliseconds(25),
+                            onRetryDelay(data_) {
+                                data = data_;
+                                repetition++;
+                            },
+                        }),
                         context: {
                             name: "fetchData",
                         },

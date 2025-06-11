@@ -90,6 +90,8 @@ export type BulkheadSettings<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Middlewares
  * @throws {CapacityFullAsyncError} {@link CapacityFullAsyncError}
+ *
+ * @example
  * ```ts
  * import { bulkhead } from "@daiso-tech/core/async";
  * import { AsyncHooks } from "@daiso-tech/core/utilities";
@@ -98,9 +100,11 @@ export type BulkheadSettings<
  *   const response = await fetch(url);
  *   const json = await response.json();
  *   return json;
- * }, [
- *   bulkhead()
- * ]);
+ * }, {
+ *   middlewares: [
+ *     bulkhead()
+ *   ]
+ * });
  *
  * // Will run only 25 promises concurrently by default.
  * await Promise.all(Array(50).fill("").map(() => fetchData.invoke("URL")));

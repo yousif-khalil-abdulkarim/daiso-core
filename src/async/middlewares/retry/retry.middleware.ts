@@ -41,8 +41,8 @@ import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
  *     }
  *     return json;
  *   },
- *   [retry()],
  *   {
+ *     middlewares: [retry()],
  *     signalBinder: {
  *       getSignal: (args) => args[1],
  *       forwardSignal: (args, signal) => {
@@ -69,8 +69,8 @@ import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
  *     }
  *     return resultSuccess(json);
  *   },
- *   [retry()],
  *   {
+ *     middlewares: [retry()],
  *     signalBinder: {
  *       getSignal: (args) => args[1],
  *       forwardSignal: (args, signal) => {

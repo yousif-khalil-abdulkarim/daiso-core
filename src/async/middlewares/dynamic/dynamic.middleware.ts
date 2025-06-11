@@ -23,9 +23,8 @@ import {
  * import { dynamic, fallback  } from "@daiso-tech/core/async";
  * import { AsyncHooks } from "@daiso-tech/core/utilities";
  *
- * await new AsyncHooks(
- *   (a: number, b: number) => a / b,
- *   [
+ * await new AsyncHooks((a: number, b: number) => a / b, {
+ *   middlewares: [
  *     // You pass callback function where you get access to the function arguments and context.
  *     // The callback function must return a middleware.
  *     dynamic((_args, _context) =>
@@ -34,6 +33,7 @@ import {
  *       }),
  *     ),
  *   ],
+ * }
  * ).invoke(1, 0);
  * ```
  */

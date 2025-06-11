@@ -34,9 +34,11 @@ import { callErrorPolicyOnThrow } from "@/utilities/_module-exports.js";
  *     throw json
  *   }
  *   return json;
- * }, [
- *   fallback({ fallbackValue: null })
- * ]);
+ * }, {
+ *   middlewares: [
+ *     fallback({ fallbackValue: null })
+ *   ]
+ * });
  *
  * // Will return null when the fetch method throws an error.
  * console.log(await fetchData.invoke("URL_ENDPOINT"));
@@ -55,9 +57,11 @@ import { callErrorPolicyOnThrow } from "@/utilities/_module-exports.js";
  *     return resultFailure(json);
  *   }
  *   return resultSuccess(json);
- * }, [
- *   fallback({ fallbackValue: null })
- * ]);
+ * }, {
+ *   middlewares: [
+ *     fallback({ fallbackValue: null })
+ *   ]
+ * });
  *
  * // Will return null when the fetch method throws an error.
  * console.log(await fetchData.invoke("URL_ENDPOINT"));

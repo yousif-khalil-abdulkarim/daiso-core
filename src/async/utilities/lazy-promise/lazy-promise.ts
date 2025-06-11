@@ -198,10 +198,9 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         invokable: AsyncLazy<TValue>,
         middlewares: OneOrMore<AsyncMiddleware<[], TValue>> = [],
     ) {
-        this.invokable = new AsyncHooks(
-            () => resolveAsyncLazyable(invokable),
+        this.invokable = new AsyncHooks(() => resolveAsyncLazyable(invokable), {
             middlewares,
-        );
+        });
     }
 
     /**

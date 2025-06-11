@@ -54,15 +54,16 @@ export type ForwardSignal<TParameters> = Invokable<
  * const data = await new AsyncHooks(async (url: string, signal?: AbortSignal): Promise<unknown> => {
  *   const response = await fetch(url, { signal });
  *   return await response.json();
- * }, [
- *   (args, next, { abort, signal }) => {
- *     // We abort the function when it execdes 2 seconds.
- *     const id = setTimeout(() => abort("Timed out"), 2000);
- *     // We remove the timeout if function is aborted before it execdes 2 seconds.
- *     signal.addEventListener("abort", () => clearTimeout(id), { once: true });
- *     return next(...args);
- *   }
- * ], {
+ * }, {
+ *   middlewares: [
+ *     (args, next, { abort, signal }) => {
+ *       // We abort the function when it execdes 2 seconds.
+ *       const id = setTimeout(() => abort("Timed out"), 2000);
+ *       // We remove the timeout if function is aborted before it execdes 2 seconds.
+ *       signal.addEventListener("abort", () => clearTimeout(id), { once: true });
+ *       return next(...args);
+ *     }
+ *   ],
  *   signalBinder: {
  *     getSignal: (args) => args[1],
  *     forwardSignal: (args, signal) => {
@@ -162,8 +163,16 @@ export type AsyncMiddleware<
  */
 export type AsyncHooksSettings<
     TParameters extends unknown[] = unknown[],
+    TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = {
+    /**
+     * All the initial middlewares to apply to the {@link Invokable | `Invokable`}
+     */
+    middlewares?: NoInfer<
+        OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>
+    >;
+
     /**
      * The name of the function which can be used for logging inside the middleware.
      * By default, it takes the function or method name. If an anonymous function is provided, the name defaults to "func".
@@ -235,12 +244,12 @@ export class AsyncHooks<
         TContext extends HookContext,
     >(
         invokable: Invokable<TParameters, Promisable<TReturn>>,
-        middlewares: OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>,
         {
+            middlewares = [],
             name = getInvokableName(invokable),
             signalBinder = AsyncHooks.defaultAbortSignalBinder(),
             context = {} as TContext,
-        }: AsyncHooksSettings<TParameters, TContext>,
+        }: AsyncHooksSettings<TParameters, TReturn, TContext>,
     ): InvokableFn<TParameters, Promisable<TReturn>> {
         let func = resolveInvokable(invokable);
         for (const hook of resolveOneOrMore(middlewares)
@@ -269,6 +278,9 @@ export class AsyncHooks<
     }
 
     private readonly func: InvokableFn<TParameters, Promisable<TReturn>>;
+    private readonly middlewares: OneOrMore<
+        AsyncMiddleware<TParameters, TReturn, TContext>
+    >;
 
     /**
      * @example
@@ -300,10 +312,11 @@ export class AsyncHooks<
      *   return a + b;
      * }
      *
-     * const enhancedAdd = new AsyncHooks(add, [
-     *   log(),
-     *   time()
-     * ], {
+     * const enhancedAdd = new AsyncHooks(add, {
+     *   middlewares: [
+     *     log(),
+     *     time()
+     *   ],
      *   // You can provide addtional data to be used the middleware.
      *   context: {},
      * });
@@ -318,15 +331,15 @@ export class AsyncHooks<
      */
     constructor(
         private readonly invokable: Invokable<TParameters, Promisable<TReturn>>,
-        private readonly middlewares: NoInfer<
-            OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>
-        >,
         private readonly settings: AsyncHooksSettings<
             TParameters,
+            TReturn,
             TContext
         > = {},
     ) {
-        this.func = AsyncHooks.init(invokable, middlewares, this.settings);
+        this.func = AsyncHooks.init(invokable, this.settings);
+        const { middlewares = [] } = this.settings;
+        this.middlewares = middlewares;
     }
 
     /**
@@ -335,14 +348,13 @@ export class AsyncHooks<
     pipe(
         middlewares: OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>,
     ): AsyncHooks<TParameters, TReturn, TContext> {
-        return new AsyncHooks(
-            this.invokable,
-            [
+        return new AsyncHooks(this.invokable, {
+            ...this.settings,
+            middlewares: [
                 ...resolveOneOrMore(this.middlewares),
                 ...resolveOneOrMore(middlewares),
             ],
-            this.settings,
-        );
+        });
     }
 
     /**

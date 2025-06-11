@@ -36,8 +36,8 @@ import type { TimeoutSettings } from "@/async/middlewares/timeout/timeout.type.j
  *     const response = await fetch(url, { signal });
  *     return await response.json();
  *   },
- *   [timeout({ waitTime: TimeSpan.fromSeconds(2) })],
  *   {
+ *     middlewares: [timeout({ waitTime: TimeSpan.fromSeconds(2) })],
  *     signalBinder: {
  *       getSignal: (args) => args[1],
  *       forwardSignal: (args, signal) => {
