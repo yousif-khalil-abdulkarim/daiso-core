@@ -37,9 +37,9 @@ export type ExponentialBackoffPolicySettings = {
     jitter?: number;
     /**
      * @internal
-     * Should only be used for testing
+     * Should only be used for testing. Dont use in your code !
      */
-    _mathRandom?: () => number;
+    _internal_mathRandom?: () => number;
 };
 
 /**
@@ -70,14 +70,14 @@ export function exponentialBackoffPolicy(
         const {
             multiplier = 2,
             jitter = 0.5,
-            _mathRandom = Math.random,
+            _internal_mathRandom = Math.random,
         } = settings;
         const exponential = Math.min(
             maxDelay,
             minDelay * Math.pow(multiplier, attempt),
         );
         return TimeSpan.fromMilliseconds(
-            withJitter(jitter, exponential, _mathRandom),
+            withJitter(jitter, exponential, _internal_mathRandom),
         );
     };
 }

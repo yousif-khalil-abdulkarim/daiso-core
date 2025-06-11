@@ -33,9 +33,9 @@ export type LinearBackoffPolicySettings = {
     jitter?: number;
     /**
      * @internal
-     * Should only be used for testing
+     * Should only be used for testing. Dont use in your code !
      */
-    _mathRandom?: () => number;
+    _internal_mathRandom?: () => number;
 };
 
 /**
@@ -63,10 +63,10 @@ export function linearBackoffPolicy(
         if (minDelay instanceof TimeSpan) {
             minDelay = minDelay.toMilliseconds();
         }
-        const { jitter = 0.5, _mathRandom = Math.random } = settings;
+        const { jitter = 0.5, _internal_mathRandom = Math.random } = settings;
         const linear = Math.min(maxDelay, minDelay * attempt);
         return TimeSpan.fromMilliseconds(
-            withJitter(jitter, linear, _mathRandom),
+            withJitter(jitter, linear, _internal_mathRandom),
         );
     };
 }

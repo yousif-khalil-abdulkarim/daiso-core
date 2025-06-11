@@ -37,9 +37,9 @@ export type PolynomialBackoffPolicySettings = {
     jitter?: number;
     /**
      * @internal
-     * Should only be used for testing
+     * Should only be used for testing. Dont use in your code !
      */
-    _mathRandom?: () => number;
+    _internal_mathRandom?: () => number;
 };
 
 /**
@@ -70,14 +70,14 @@ export function polynomialBackoffPolicy(
         const {
             degree = 2,
             jitter = 0.5,
-            _mathRandom = Math.random,
+            _internal_mathRandom = Math.random,
         } = settings;
         const polynomial = Math.min(
             maxDelay,
             minDelay * Math.pow(attempt, degree),
         );
         return TimeSpan.fromMilliseconds(
-            withJitter(jitter, polynomial, _mathRandom),
+            withJitter(jitter, polynomial, _internal_mathRandom),
         );
     };
 }
