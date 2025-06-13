@@ -32,7 +32,10 @@ import {
     type TimeSpan,
     Namespace,
 } from "@/utilities/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import {
+    LazyPromise,
+    type LazyPromiseInvokable,
+} from "@/async/_module-exports.js";
 import type {
     IEventBus,
     Unsubscribe,
@@ -45,9 +48,9 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_mod
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
 import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/database-cache-adapter.js";
 import type {
-    AsyncLazy,
     Factory,
     FactoryFn,
+    InvokableFn,
 } from "@/utilities/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
@@ -87,7 +90,7 @@ export type CacheSettingsBase<TType = unknown> = {
      * (invokable) => new LazyPromise(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
+    lazyPromiseFactory?: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>;
 
     /**
      * @default
@@ -138,7 +141,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     private readonly defaultTtl: TimeSpan | null;
     private readonly namespace: Namespace;
     private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
+        LazyPromiseInvokable<any>,
         LazyPromise<any>
     >;
     private readonly schema: StandardSchemaV1<TType> | undefined;
@@ -262,7 +265,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     private createLazyPromise<TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: InvokableFn<[signal: AbortSignal], Promise<TValue>>,
     ): LazyPromise<TValue> {
         return this.lazyPromiseFactory(asyncFn);
     }

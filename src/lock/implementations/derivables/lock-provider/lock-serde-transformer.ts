@@ -7,7 +7,7 @@ import {
     Lock,
     type ISerializedLock,
 } from "@/lock/implementations/derivables/lock-provider/lock.js";
-import type { OneOrMore } from "@/utilities/_module-exports.js";
+import type { InvokableFn, OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     ILockAdapter,
     LockEventMap,
@@ -32,7 +32,7 @@ export type LockSerdeTransformerSettings = {
     lockStore: ILockStore;
     namespace: Namespace;
     createLazyPromise: <TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: InvokableFn<[signal: AbortSignal], Promise<TValue>>,
     ) => LazyPromise<TValue>;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
@@ -51,7 +51,7 @@ export class LockSerdeTransformer
     private readonly lockStore: ILockStore;
     private readonly namespace: Namespace;
     private readonly createLazyPromise: <TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: InvokableFn<[signal: AbortSignal], Promise<TValue>>,
     ) => LazyPromise<TValue>;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;

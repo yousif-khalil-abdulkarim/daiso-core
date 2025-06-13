@@ -2,7 +2,10 @@
  * @module EventBus
  */
 
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type {
+    LazyPromise,
+    LazyPromiseInvokable,
+} from "@/async/_module-exports.js";
 import {
     type IEventBus,
     type IEventBusFactory,
@@ -14,11 +17,7 @@ import {
     type EventBusSettingsBase,
     type EventMapSchema,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
-import type {
-    AsyncLazy,
-    Factory,
-    Namespace,
-} from "@/utilities/_module-exports.js";
+import type { Factory, Namespace } from "@/utilities/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
@@ -101,7 +100,7 @@ export class EventBusFactory<
     }
 
     setLazyPromiseFactory(
-        factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
+        factory: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>,
     ): EventBusFactory<TAdapters, TEventMap> {
         return new EventBusFactory({
             ...this.settings,

@@ -12,17 +12,16 @@ import {
     resolveOneOrMore,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
-import type {
-    AsyncLazy,
-    Factory,
-    TimeSpan,
-} from "@/utilities/_module-exports.js";
+import type { Factory, TimeSpan } from "@/utilities/_module-exports.js";
 import {
     LockProvider,
     type LockAdapter,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type {
+    LazyPromise,
+    LazyPromiseInvokable,
+} from "@/async/_module-exports.js";
 
 /**
  *
@@ -131,7 +130,7 @@ export class LockProviderFactory<TAdapters extends string>
     }
 
     setLazyPromiseFactory(
-        factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
+        factory: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>,
     ): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,

@@ -66,11 +66,14 @@ import {
 } from "@/utilities/_module-exports.js";
 import { resolveAsyncLazyable } from "@/utilities/_module-exports.js";
 import type {
-    AsyncLazy,
     Factory,
     FactoryFn,
+    InvokableFn,
 } from "@/utilities/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import {
+    LazyPromise,
+    type LazyPromiseInvokable,
+} from "@/async/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -83,7 +86,7 @@ import {
  * @group Adapters
  */
 export type AsyncIterableCollectionSettings = {
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
+    lazyPromiseFactory?: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>;
 };
 
 /**
@@ -227,7 +230,7 @@ export class AsyncIterableCollection<TInput = unknown>
     };
 
     private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
+        LazyPromiseInvokable<any>,
         LazyPromise<any>
     >;
 
@@ -307,7 +310,7 @@ export class AsyncIterableCollection<TInput = unknown>
     }
 
     private createLazyPromise<TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: InvokableFn<[signal: AbortSignal], Promise<TValue>>,
     ) {
         return this.lazyPromiseFactory(asyncFn);
     }

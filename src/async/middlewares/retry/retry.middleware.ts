@@ -129,7 +129,7 @@ export function retry<
                     args,
                     context,
                 });
-                await LazyPromise.delay(waitTime, signal);
+                await LazyPromise.delay(waitTime, { signal });
 
                 // Handle retrying if an error is thrown
             } catch (error: unknown) {
@@ -152,7 +152,7 @@ export function retry<
                     args,
                     context,
                 });
-                await LazyPromise.delay(waitTime, signal);
+                await LazyPromise.delay(waitTime, { signal });
             }
         }
 

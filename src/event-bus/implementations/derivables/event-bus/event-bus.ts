@@ -2,7 +2,10 @@
  * @module EventBus
  */
 
-import { LazyPromise } from "@/async/_module-exports.js";
+import {
+    LazyPromise,
+    type LazyPromiseInvokable,
+} from "@/async/_module-exports.js";
 import type {
     BaseEvent,
     BaseEventMap,
@@ -19,12 +22,9 @@ import {
     getInvokableName,
     Namespace,
     validate,
+    type InvokableFn,
 } from "@/utilities/_module-exports.js";
-import {
-    type Factory,
-    type AsyncLazy,
-    type FactoryFn,
-} from "@/utilities/_module-exports.js";
+import { type Factory, type FactoryFn } from "@/utilities/_module-exports.js";
 import { resolveInvokable } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
@@ -76,7 +76,7 @@ export type EventBusSettingsBase<
      * (invokable) => new LazyPromise(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
+    lazyPromiseFactory?: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>;
 };
 
 /**
@@ -108,7 +108,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     private readonly store = new ListenerStore();
     private readonly adapter: IEventBusAdapter;
     private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
+        LazyPromiseInvokable<any>,
         LazyPromise<any>
     >;
     private readonly namespace: Namespace;
@@ -145,7 +145,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     }
 
     private createLazyPromise<TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: InvokableFn<[signal: AbortSignal], Promise<TValue>>,
     ): LazyPromise<TValue> {
         return this.lazyPromiseFactory(asyncFn);
     }

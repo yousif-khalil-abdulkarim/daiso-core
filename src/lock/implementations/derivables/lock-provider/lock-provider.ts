@@ -6,10 +6,10 @@ import {
     TimeSpan,
     CORE,
     type Factory,
-    type AsyncLazy,
     type FactoryFn,
     resolveOneOrMore,
     resolveInvokable,
+    type InvokableFn,
 } from "@/utilities/_module-exports.js";
 import { Namespace, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
@@ -22,7 +22,10 @@ import {
     type ILockProvider,
     type ILockAdapter,
 } from "@/lock/contracts/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import {
+    LazyPromise,
+    type LazyPromiseInvokable,
+} from "@/async/_module-exports.js";
 import type {
     EventListener,
     IEventBus,
@@ -69,7 +72,7 @@ export type LockProviderSettingsBase = {
      * (invokable) => new LazyPromise(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
+    lazyPromiseFactory?: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>;
 
     serde: OneOrMore<ISerderRegister>;
 
@@ -170,7 +173,7 @@ export class LockProvider implements ILockProvider {
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<ISerderRegister>;
     private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
+        LazyPromiseInvokable<any>,
         LazyPromise<any>
     >;
     private readonly serdeTransformerName: string;
@@ -318,7 +321,7 @@ export class LockProvider implements ILockProvider {
     }
 
     private createLazyPromise<TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: InvokableFn<[signal: AbortSignal], Promise<TValue>>,
     ): LazyPromise<TValue> {
         return this.lazyPromiseFactory(asyncFn);
     }

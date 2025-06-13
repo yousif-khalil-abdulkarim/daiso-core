@@ -3,15 +3,14 @@
  */
 import {
     AsyncHooks,
-    type AsyncLazy,
+    callInvokable,
+    isInvokable,
     type AsyncMiddleware,
     type Invokable,
     type InvokableFn,
     type OneOrMore,
     type Promisable,
     type TimeSpan,
-    callInvokable,
-    resolveAsyncLazyable,
 } from "@/utilities/_module-exports.js";
 import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
 
@@ -20,7 +19,7 @@ import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
-export type LazyPromiseResolve<TValue> = InvokableFn<
+export type LazyPromiseResolve<TValue = unknown> = InvokableFn<
     [value: Promisable<TValue>],
     void
 >;
@@ -37,14 +36,44 @@ export type LazyPromiseReject = InvokableFn<[error: unknown], void>;
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
-export type LazyPromiseCallback<TValue> = InvokableFn<
+export type LazyPromiseCallback<TValue = unknown> = InvokableFn<
     [
         resolve: LazyPromiseResolve<TValue>,
-        // (value: TValue) => void,
         reject: LazyPromiseReject,
+        signal: AbortSignal,
     ],
     Promisable<void>
 >;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * @group Utilities
+ */
+export type LazyPromiseInvokable<TValue = unknown> =
+    | Invokable<[signal: AbortSignal], Promisable<TValue>>
+    | LazyPromise<TValue>;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * @group Utilities
+ */
+export type LazyPromiseMiddleware<TValue = unknown> = AsyncMiddleware<
+    [signal: AbortSignal],
+    TValue
+>;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * @group Utilities
+ */
+export type LazyPromiseSettings<TValue = unknown> = {
+    middlewares?: OneOrMore<LazyPromiseMiddleware<TValue>>;
+    name?: string;
+    signal?: AbortSignal;
+};
 
 /**
  * The `LazyPromise` class is used for creating lazy {@link PromiseLike | `PromiseLike`} object that will only execute when awaited or when `then` method is called.
@@ -53,27 +82,7 @@ export type LazyPromiseCallback<TValue> = InvokableFn<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
-export class LazyPromise<TValue> implements PromiseLike<TValue> {
-    /**
-     * The `wrapFn` is convience method used for wrapping async {@link Invokable | `Invokable`} with a `LazyPromise`.
-     * @example
-     * ```ts
-     * import { LazyPromise, retry } from "@daiso-tech/core/async";
-     * import { TimeSpan } from "@daiso-tech/core/utilities";
-     * import { readFile as readFileNodeJs } from "node:fs/promises";
-     *
-     * const readFile = LazyPromise.wrapFn(readFileNodeJs);
-     *
-     * const file = await readFile("none_existing_file.txt");
-     * ```
-     */
-    static wrapFn<TArgs extends unknown[], TReturn>(
-        fn: Invokable<TArgs, Promisable<TReturn>>,
-    ): InvokableFn<TArgs, LazyPromise<TReturn>> {
-        return (...parameters) =>
-            new LazyPromise<TReturn>(() => callInvokable(fn, ...parameters));
-    }
-
+export class LazyPromise<TValue = unknown> implements PromiseLike<TValue> {
     /**
      * The `delay` method creates a {@link LazyPromise | `LazyPromise`} that will be fulfilled after given `time`.
      *
@@ -89,32 +98,64 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static delay(
         time: TimeSpan,
-        abortSignal: AbortSignal = new AbortController().signal,
+        settings: LazyPromiseSettings<void> = {},
     ): LazyPromise<void> {
-        return new LazyPromise(async () => {
-            let timeoutId = null as NodeJS.Timeout | string | number | null;
-            try {
-                await abortAndFail(
-                    new Promise<void>((resolve) => {
-                        timeoutId = setTimeout(() => {
-                            resolve();
-                        }, time.toMilliseconds());
-                    }),
-                    abortSignal,
-                );
-            } finally {
-                if (timeoutId !== null) {
-                    clearTimeout(timeoutId);
+        const {
+            name,
+            signal = new AbortController().signal,
+            middlewares = [],
+        } = settings;
+        return new LazyPromise<void>(
+            async (signal) => {
+                let timeoutId = null as NodeJS.Timeout | string | number | null;
+                try {
+                    await abortAndFail(
+                        new Promise<void>((resolve) => {
+                            timeoutId = setTimeout(() => {
+                                resolve();
+                            }, time.toMilliseconds());
+                        }),
+                        signal,
+                    );
+                } finally {
+                    if (timeoutId !== null) {
+                        clearTimeout(timeoutId);
+                    }
                 }
-            }
-        });
+            },
+            {
+                name,
+                signal,
+                middlewares,
+            },
+        );
     }
 
     /**
      * The `all` method works similarly to {@link Promise.all | `Promise.all`} with the key distinction that it operates lazily.
      */
-    static all<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue[]> {
-        return new LazyPromise<TValue[]>(async () => Promise.all(promises));
+    static all<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings: LazyPromiseSettings<TValue[]> = {},
+    ): LazyPromise<TValue[]> {
+        const {
+            middlewares = [],
+            signal = new AbortController().signal,
+            name,
+        } = settings;
+        return new LazyPromise<TValue[]>(
+            async (signal) => {
+                for (const promise of promises) {
+                    promise.mergeSignal(signal);
+                }
+                return Promise.all(promises);
+            },
+            {
+                middlewares,
+                signal,
+                name,
+            },
+        );
     }
 
     /**
@@ -122,24 +163,80 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static allSettled<TValue>(
         promises: LazyPromise<TValue>[],
+        settings: LazyPromiseSettings<PromiseSettledResult<TValue>[]> = {},
     ): LazyPromise<PromiseSettledResult<TValue>[]> {
-        return new LazyPromise<PromiseSettledResult<TValue>[]>(async () =>
-            Promise.allSettled(promises),
+        const {
+            middlewares = [],
+            signal = new AbortController().signal,
+            name,
+        } = settings;
+        return new LazyPromise<PromiseSettledResult<TValue>[]>(
+            async (signal) => {
+                for (const promise of promises) {
+                    promise.mergeSignal(signal);
+                }
+                return Promise.allSettled(promises);
+            },
+            {
+                middlewares,
+                signal,
+                name,
+            },
         );
     }
 
     /**
      * The `race` method works similarly to {@link Promise.race | `Promise.race`} with the key distinction that it operates lazily.
      */
-    static race<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
-        return new LazyPromise(async () => Promise.race(promises));
+    static race<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings: LazyPromiseSettings<TValue> = {},
+    ): LazyPromise<TValue> {
+        const {
+            middlewares = [],
+            signal = new AbortController().signal,
+            name,
+        } = settings;
+        return new LazyPromise(
+            async (signal) => {
+                for (const promise of promises) {
+                    promise.mergeSignal(signal);
+                }
+                return Promise.race(promises);
+            },
+            {
+                middlewares,
+                signal,
+                name,
+            },
+        );
     }
 
     /**
      * The `any` method works similarly to {@link Promise.any | `Promise.any`} with the key distinction that it operates lazily.
      */
-    static any<TValue>(promises: LazyPromise<TValue>[]): LazyPromise<TValue> {
-        return new LazyPromise(async () => Promise.any(promises));
+    static any<TValue>(
+        promises: LazyPromise<TValue>[],
+        settings: LazyPromiseSettings<TValue> = {},
+    ): LazyPromise<TValue> {
+        const {
+            middlewares = [],
+            signal = new AbortController().signal,
+            name,
+        } = settings;
+        return new LazyPromise(
+            async (signal) => {
+                for (const promise of promises) {
+                    promise.mergeSignal(signal);
+                }
+                return Promise.any(promises);
+            },
+            {
+                middlewares,
+                signal,
+                name,
+            },
+        );
     }
 
     /**
@@ -149,8 +246,8 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * import { LazyPromise } from "@daiso-tech/core/async";
      * import { readFile } from "node:fs";
      *
-     * const lazyPromise = LazyPromise.fromCallback<Buffer  | string>((resolve, reject) => {
-     *   readFile("FILE_PATH", (err, data) => {
+     * const lazyPromise = LazyPromise.fromCallback<Buffer  | string>((resolve, reject, signal) => {
+     *   readFile("FILE_PATH", { signal }, (err, data) => {
      *     if (err !== null) {
      *       reject(err);
      *       return;
@@ -164,17 +261,35 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     static fromCallback<TValue>(
         callback: LazyPromiseCallback<TValue>,
+        settings: LazyPromiseSettings<TValue> = {},
     ): LazyPromise<TValue> {
+        const {
+            middlewares = [],
+            signal = new AbortController().signal,
+            name,
+        } = settings;
         return new LazyPromise(
-            () =>
-                new Promise((resolve, reject) => {
-                    callback(resolve, reject);
-                }),
+            (signal) => {
+                return new Promise((resolve, reject) => {
+                    callback(resolve, reject, signal);
+                });
+            },
+            {
+                middlewares,
+                signal,
+                name,
+            },
         );
     }
 
     private promise: PromiseLike<TValue> | null = null;
-    private readonly invokable: AsyncHooks<[], TValue>;
+    private readonly invokableOrLazyPromise: AsyncHooks<
+        [signal: AbortSignal],
+        TValue
+    >;
+    private signal: AbortSignal;
+    private readonly middlewares: OneOrMore<LazyPromiseMiddleware<TValue>>;
+    private readonly name: string | undefined;
 
     /**
      * @example
@@ -195,21 +310,53 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * You can pass sync or async {@link Invokable | `Invokable`}.
      */
     constructor(
-        invokable: AsyncLazy<TValue>,
-        middlewares: OneOrMore<AsyncMiddleware<[], TValue>> = [],
+        invokableOrLazyPromise: LazyPromiseInvokable<TValue>,
+        settings: LazyPromiseSettings<TValue> = {},
     ) {
-        this.invokable = new AsyncHooks(() => resolveAsyncLazyable(invokable), {
-            middlewares,
-        });
+        const {
+            middlewares = [],
+            signal = new AbortController().signal,
+            name,
+        } = settings;
+        this.name = name;
+        this.signal = signal;
+        this.middlewares = middlewares;
+        this.invokableOrLazyPromise = new AsyncHooks(
+            (signal) => {
+                if (isInvokable(invokableOrLazyPromise)) {
+                    return callInvokable(invokableOrLazyPromise, signal);
+                }
+                invokableOrLazyPromise.mergeSignal(signal);
+                return invokableOrLazyPromise;
+            },
+            {
+                name,
+                middlewares,
+                signalBinder: {
+                    getSignal: ([signal]) => signal,
+                    forwardSignal: (args, signal) => {
+                        args[0] = signal;
+                    },
+                },
+            },
+        );
+    }
+
+    private mergeSignal(signal: AbortSignal): void {
+        this.signal = AbortSignal.any([this.signal, signal]);
     }
 
     /**
      * The `pipe` method returns a new `LazyPromise` instance with the additional `middlewares` applied.
      */
     pipe(
-        middlewares: OneOrMore<AsyncMiddleware<[], TValue>>,
+        middlewares: OneOrMore<LazyPromiseMiddleware<TValue>>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(this.invokable.pipe(middlewares));
+        return new LazyPromise(this.invokableOrLazyPromise.pipe(middlewares), {
+            name: this.name,
+            signal: this.signal,
+            middlewares: this.middlewares,
+        });
     }
 
     /**
@@ -217,9 +364,16 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      */
     pipeWhen(
         condition: boolean,
-        middlewares: OneOrMore<AsyncMiddleware<[], TValue>>,
+        middlewares: OneOrMore<LazyPromiseMiddleware<TValue>>,
     ): LazyPromise<TValue> {
-        return new LazyPromise(this.invokable.pipeWhen(condition, middlewares));
+        return new LazyPromise(
+            this.invokableOrLazyPromise.pipeWhen(condition, middlewares),
+            {
+                name: this.name,
+                signal: this.signal,
+                middlewares: this.middlewares,
+            },
+        );
     }
 
     then<TResult1 = TValue, TResult2 = never>(
@@ -229,7 +383,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
         onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
     ): PromiseLike<TResult1 | TResult2> {
         if (this.promise === null) {
-            this.promise = this.invokable.invoke();
+            this.promise = this.invokableOrLazyPromise.invoke(this.signal);
         }
         // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
         return this.promise.then(onfulfilled, onrejected);
