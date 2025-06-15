@@ -24,7 +24,7 @@ import {
 } from "@/lock/contracts/_module-exports.js";
 import {
     LazyPromise,
-    type LazyPromiseInvokable,
+    type LazyPromiseHandler,
 } from "@/async/_module-exports.js";
 import type {
     EventListener,
@@ -72,7 +72,7 @@ export type LockProviderSettingsBase = {
      * (invokable) => new LazyPromise(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>;
+    lazyPromiseFactory?: Factory<LazyPromiseHandler<any>, LazyPromise<any>>;
 
     serde: OneOrMore<ISerderRegister>;
 
@@ -173,7 +173,7 @@ export class LockProvider implements ILockProvider {
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<ISerderRegister>;
     private readonly lazyPromiseFactory: FactoryFn<
-        LazyPromiseInvokable<any>,
+        LazyPromiseHandler<any>,
         LazyPromise<any>
     >;
     private readonly serdeTransformerName: string;

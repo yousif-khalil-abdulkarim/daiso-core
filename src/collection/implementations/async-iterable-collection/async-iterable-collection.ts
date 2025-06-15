@@ -72,7 +72,7 @@ import type {
 } from "@/utilities/_module-exports.js";
 import {
     LazyPromise,
-    type LazyPromiseInvokable,
+    type LazyPromiseHandler,
 } from "@/async/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
@@ -86,7 +86,7 @@ import {
  * @group Adapters
  */
 export type AsyncIterableCollectionSettings = {
-    lazyPromiseFactory?: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>;
+    lazyPromiseFactory?: Factory<LazyPromiseHandler<any>, LazyPromise<any>>;
 };
 
 /**
@@ -230,7 +230,7 @@ export class AsyncIterableCollection<TInput = unknown>
     };
 
     private readonly lazyPromiseFactory: FactoryFn<
-        LazyPromiseInvokable<any>,
+        LazyPromiseHandler<any>,
         LazyPromise<any>
     >;
 

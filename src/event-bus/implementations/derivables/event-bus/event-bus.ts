@@ -4,7 +4,7 @@
 
 import {
     LazyPromise,
-    type LazyPromiseInvokable,
+    type LazyPromiseHandler,
 } from "@/async/_module-exports.js";
 import type {
     BaseEvent,
@@ -76,7 +76,7 @@ export type EventBusSettingsBase<
      * (invokable) => new LazyPromise(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>;
+    lazyPromiseFactory?: Factory<LazyPromiseHandler<any>, LazyPromise<any>>;
 };
 
 /**
@@ -108,7 +108,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     private readonly store = new ListenerStore();
     private readonly adapter: IEventBusAdapter;
     private readonly lazyPromiseFactory: FactoryFn<
-        LazyPromiseInvokable<any>,
+        LazyPromiseHandler<any>,
         LazyPromise<any>
     >;
     private readonly namespace: Namespace;

@@ -4,7 +4,7 @@
 
 import type {
     LazyPromise,
-    LazyPromiseInvokable,
+    LazyPromiseHandler,
 } from "@/async/_module-exports.js";
 import {
     type IEventBus,
@@ -100,7 +100,7 @@ export class EventBusFactory<
     }
 
     setLazyPromiseFactory(
-        factory: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>,
+        factory: Factory<LazyPromiseHandler<any>, LazyPromise<any>>,
     ): EventBusFactory<TAdapters, TEventMap> {
         return new EventBusFactory({
             ...this.settings,

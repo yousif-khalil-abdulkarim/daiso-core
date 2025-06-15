@@ -20,7 +20,7 @@ import {
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
 import type {
     LazyPromise,
-    LazyPromiseInvokable,
+    LazyPromiseHandler,
 } from "@/async/_module-exports.js";
 
 /**
@@ -130,7 +130,7 @@ export class LockProviderFactory<TAdapters extends string>
     }
 
     setLazyPromiseFactory(
-        factory: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>,
+        factory: Factory<LazyPromiseHandler<any>, LazyPromise<any>>,
     ): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,

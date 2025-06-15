@@ -21,7 +21,7 @@ import {
 import { Namespace, type TimeSpan } from "@/utilities/_module-exports.js";
 import type {
     LazyPromise,
-    LazyPromiseInvokable,
+    LazyPromiseHandler,
 } from "@/async/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
@@ -105,7 +105,7 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
     }
 
     setLazyPromiseFactory(
-        factory: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>,
+        factory: Factory<LazyPromiseHandler<any>, LazyPromise<any>>,
     ): CacheFactory<TAdapters, TType> {
         return new CacheFactory({
             ...this.settings,

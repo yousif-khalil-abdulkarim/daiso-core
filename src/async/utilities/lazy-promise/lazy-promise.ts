@@ -1,16 +1,18 @@
 /**
  * @module Async
  */
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     AsyncHooks,
     callInvokable,
+    getInvokableName,
     isInvokable,
+    UnexpectedError,
     type AsyncMiddleware,
     type Invokable,
     type InvokableFn,
     type OneOrMore,
     type Promisable,
-    type TimeSpan,
 } from "@/utilities/_module-exports.js";
 import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
 
@@ -50,7 +52,7 @@ export type LazyPromiseCallback<TValue = unknown> = InvokableFn<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
-export type LazyPromiseInvokable<TValue = unknown> =
+export type LazyPromiseHandler<TValue = unknown> =
     | Invokable<[signal: AbortSignal], Promisable<TValue>>
     | LazyPromise<TValue>;
 
@@ -59,9 +61,22 @@ export type LazyPromiseInvokable<TValue = unknown> =
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
-export type LazyPromiseMiddleware<TValue = unknown> = AsyncMiddleware<
-    [signal: AbortSignal],
-    TValue
+export type LazyPromiseInvokableParameters<
+    TParameters extends unknown[] = any,
+> = [...args: TParameters, signal: AbortSignal];
+
+/**
+ * `LazyPromiseInvokableFn` is the internal representation of {@link LazyPromise | `LazyPromise`}.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * @group Utilities
+ */
+export type LazyPromiseInvokableFn<
+    TParameters extends unknown[] = any,
+    TReturn = unknown,
+> = InvokableFn<
+    LazyPromiseInvokableParameters<TParameters>,
+    Promisable<TReturn>
 >;
 
 /**
@@ -69,20 +84,143 @@ export type LazyPromiseMiddleware<TValue = unknown> = AsyncMiddleware<
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
-export type LazyPromiseSettings<TValue = unknown> = {
-    middlewares?: OneOrMore<LazyPromiseMiddleware<TValue>>;
+export type LazyPromiseMiddleware<
+    TValue = unknown,
+    TParameters extends unknown[] = any,
+> = AsyncMiddleware<LazyPromiseInvokableParameters<TParameters>, TValue>;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * @group Utilities
+ */
+export type LazyPromiseSettings<
+    TValue = unknown,
+    TParameters extends unknown[] = any,
+> = {
+    /**
+     * You can add initial middlewares to the {@link LazyPromise | `LazyPromise`}.
+     */
+    middlewares?: OneOrMore<LazyPromiseMiddleware<TValue, TParameters>>;
+
+    /**
+     * You can set the name of the internal function used inside the {@link LazyPromise | `LazyPromise`}.
+     * The name can be accessed afterwards inside the applied {@link AsyncMiddleware | `AsyncMiddleware:s`}.
+     */
     name?: string;
+
+    /**
+     * You can set the args of the internal function used inside the {@link LazyPromise | `LazyPromise`}.
+     * The args can be accessed afterwards inside the applied {@link AsyncMiddleware | `AsyncMiddleware:s`}.
+     */
+    args?: TParameters;
+
+    /**
+     * @default
+     * ```ts
+     * new AbortController().signal
+     * ```
+     */
     signal?: AbortSignal;
 };
 
 /**
- * The `LazyPromise` class is used for creating lazy {@link PromiseLike | `PromiseLike`} object that will only execute when awaited or when `then` method is called.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * @group Utilities
+ */
+export type LazyPromiseCreateFnSettings<
+    TParameters extends unknown[] = any,
+    TReturn = unknown,
+> = {
+    /**
+     * You can add initial middlewares to the {@link LazyPromise | `LazyPromise`}.
+     */
+    middlewares?: OneOrMore<LazyPromiseMiddleware<TReturn, TParameters>>;
+
+    /**
+     * You can set the name of the internal function used inside the {@link LazyPromise | `LazyPromise`}.
+     * The name can be accessed afterwards inside the applied {@link AsyncMiddleware | `AsyncMiddleware:s`}.
+     */
+    name?: string;
+};
+
+/**
+ * The `LazyPromise` class is used for creating lazy {@link PromiseLike | `PromiseLike`} object that will only execute when awaited or when `then` or `defer` methods are called.
+ * Internally, `LazyPromise` is a function that takes at least one argument, where the last argument is always an `AbortSignal`.
+ * This function is wrapped in {@link AsyncHooks | AsyncHooks}, allowing you to extend its functionality through {@link AsyncMiddleware | `AsyncMiddleware:s`}.
+ *
  * Note the class is immutable.
  *
  * IMPORT_PATH: `"@daiso-tech/core/async"`
  * @group Utilities
  */
-export class LazyPromise<TValue = unknown> implements PromiseLike<TValue> {
+export class LazyPromise<TValue = unknown, TParameters extends unknown[] = any>
+    implements PromiseLike<TValue>
+{
+    private static getSignalArg(args: unknown[]): AbortSignal {
+        const signal = args.at(-1);
+        if (!(signal instanceof AbortSignal)) {
+            throw new UnexpectedError("Last argument must be AbortSignal");
+        }
+        return signal;
+    }
+
+    private static setSignalArg(args: unknown[], signal: AbortSignal): void {
+        if (!(args.at(-1) instanceof AbortSignal)) {
+            throw new UnexpectedError("Last argument must be AbortSignal");
+        }
+        args[args.length - 1] = signal;
+    }
+
+    /**
+     * The `createFn` method allows for easily creating a function that returns a {@link LazyPromise | `LazyPromise`}.
+     * When creating the function you are provided access to an `AbortSignal`, allowing you to react to external abort requests.
+     * For example you can use it with `timeout` middleware to abort a `fetch` call when certain time is exceeded.
+     *
+     * @example
+     * ```ts
+     * import { LazyPromise, timeout, retry } from "@daiso-tech/core/async";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     *
+     * const fetchData = LazyPromise.createFn((url: string, signal: AbortSignal) => {
+     *   const response = await fetch(url, {
+     *     signal,
+     *     method: "GET"
+     *   });
+     *   const json = await response.json();
+     *   if (!response.ok) {
+     *     throw json;
+     *   }
+     *   return json;
+     * });
+     *
+     * // Note the created function cannot be passed an AbortSignal. If you want to abort the function you need to use a middleware.
+     * const data = await fetchData("ENPOINT").pipe([
+     *     timeout(TimeSpan.fromSeconds(2)),
+     *     retry({ maxAttempts: 4 })
+     * ]);
+     * ```
+     */
+    static createFn<TParameters extends unknown[] = [], TReturn = unknown>(
+        invokable: LazyPromiseInvokableFn<TParameters, TReturn>,
+        settings: LazyPromiseCreateFnSettings<TParameters, TReturn> = {},
+    ): InvokableFn<TParameters, LazyPromise<TReturn, TParameters>> {
+        const { name = getInvokableName(invokable), middlewares } = settings;
+        return (...args: TParameters): LazyPromise<TReturn, TParameters> => {
+            return new LazyPromise(
+                async (signal) => {
+                    return await callInvokable(invokable, ...[...args, signal]);
+                },
+                {
+                    name,
+                    args,
+                    middlewares,
+                },
+            );
+        };
+    }
+
     /**
      * The `delay` method creates a {@link LazyPromise | `LazyPromise`} that will be fulfilled after given `time`.
      *
@@ -144,10 +282,7 @@ export class LazyPromise<TValue = unknown> implements PromiseLike<TValue> {
             name,
         } = settings;
         return new LazyPromise<TValue[]>(
-            async (signal) => {
-                for (const promise of promises) {
-                    promise.mergeSignal(signal);
-                }
+            async () => {
                 return Promise.all(promises);
             },
             {
@@ -171,10 +306,7 @@ export class LazyPromise<TValue = unknown> implements PromiseLike<TValue> {
             name,
         } = settings;
         return new LazyPromise<PromiseSettledResult<TValue>[]>(
-            async (signal) => {
-                for (const promise of promises) {
-                    promise.mergeSignal(signal);
-                }
+            async () => {
                 return Promise.allSettled(promises);
             },
             {
@@ -198,10 +330,7 @@ export class LazyPromise<TValue = unknown> implements PromiseLike<TValue> {
             name,
         } = settings;
         return new LazyPromise(
-            async (signal) => {
-                for (const promise of promises) {
-                    promise.mergeSignal(signal);
-                }
+            async () => {
                 return Promise.race(promises);
             },
             {
@@ -225,10 +354,7 @@ export class LazyPromise<TValue = unknown> implements PromiseLike<TValue> {
             name,
         } = settings;
         return new LazyPromise(
-            async (signal) => {
-                for (const promise of promises) {
-                    promise.mergeSignal(signal);
-                }
+            async () => {
                 return Promise.any(promises);
             },
             {
@@ -283,80 +409,112 @@ export class LazyPromise<TValue = unknown> implements PromiseLike<TValue> {
     }
 
     private promise: PromiseLike<TValue> | null = null;
-    private readonly invokableOrLazyPromise: AsyncHooks<
-        [signal: AbortSignal],
+    private readonly invokable: AsyncHooks<
+        LazyPromiseInvokableParameters<TParameters>,
         TValue
     >;
-    private signal: AbortSignal;
-    private readonly middlewares: OneOrMore<LazyPromiseMiddleware<TValue>>;
+    private readonly signal: AbortSignal;
+    private readonly middlewares: OneOrMore<
+        LazyPromiseMiddleware<TValue, TParameters>
+    >;
     private readonly name: string | undefined;
+    private readonly args: TParameters;
 
     /**
      * @example
      * ```ts
-     * import { LazyPromise, retryMiddleware } from "@daiso-tech/core/async";
+     * import { LazyPromise, retry } from "@daiso-tech/core/async";
+     * import { TimeSpan } from "@daiso-tech/core/utilities";
      *
      * const promise = new LazyPromise(async () => {
      *   console.log("I am lazy");
-     * },
+     * }, {
      *   // You can also pass in one AsyncMiddleware or multiple (as an Array).
-     *   retry()
-     * );
+     *   middlewares: retry()
+     * });
      *
      * // "I am lazy" will only logged when awaited or then method i called.
      * await promise;
      * ```
      *
-     * You can pass sync or async {@link Invokable | `Invokable`}.
+     * The `LazyPromise` handler provides access to an `AbortSignal`, allowing you to react to external abort requests.
+     * For example you can use it with `timeout` middleware to abort a `fetch` call when certain time is exceeded.
+     * @example
+     * ```ts
+     * import { LazyPromise, timeout } from "@daiso-tech/core/async";
+     *
+     * const promise = new LazyPromise(async (signal) => {
+     *   const response = await fetch("ENDPOINT", { signal });
+     *   const json = await response.json();
+     *   if (!response.ok) {
+     *     throw json;
+     *   }
+     *   return json;
+     * }, {
+     *   middlewares: timeout(TimeSpan.fromSeconds(1))
+     * });
+     *
+     * const result = await promise;
+     * console.log(result)
+     * ```
+     *
+     * You can pass both sync or async {@link Invokable | `Invokable`}.
      */
     constructor(
-        invokableOrLazyPromise: LazyPromiseInvokable<TValue>,
-        settings: LazyPromiseSettings<TValue> = {},
+        invokableOrLazyPromise: LazyPromiseHandler<TValue>,
+        settings: LazyPromiseSettings<TValue, TParameters> = {},
     ) {
         const {
             middlewares = [],
             signal = new AbortController().signal,
             name,
+            args = [],
         } = settings;
         this.name = name;
         this.signal = signal;
         this.middlewares = middlewares;
-        this.invokableOrLazyPromise = new AsyncHooks(
-            (signal) => {
+        this.args = args as TParameters;
+        this.invokable = new AsyncHooks(
+            (...args) => {
                 if (isInvokable(invokableOrLazyPromise)) {
-                    return callInvokable(invokableOrLazyPromise, signal);
+                    return callInvokable(
+                        invokableOrLazyPromise,
+                        LazyPromise.getSignalArg(args),
+                    );
                 }
-                invokableOrLazyPromise.mergeSignal(signal);
                 return invokableOrLazyPromise;
             },
             {
                 name,
                 middlewares,
                 signalBinder: {
-                    getSignal: ([signal]) => signal,
+                    getSignal: (args) => {
+                        return LazyPromise.getSignalArg(args);
+                    },
                     forwardSignal: (args, signal) => {
-                        args[0] = signal;
+                        LazyPromise.setSignalArg(args, signal);
                     },
                 },
             },
         );
     }
 
-    private mergeSignal(signal: AbortSignal): void {
-        this.signal = AbortSignal.any([this.signal, signal]);
-    }
-
     /**
      * The `pipe` method returns a new `LazyPromise` instance with the additional `middlewares` applied.
      */
     pipe(
-        middlewares: OneOrMore<LazyPromiseMiddleware<TValue>>,
-    ): LazyPromise<TValue> {
-        return new LazyPromise(this.invokableOrLazyPromise.pipe(middlewares), {
-            name: this.name,
-            signal: this.signal,
-            middlewares: this.middlewares,
-        });
+        middlewares: OneOrMore<LazyPromiseMiddleware<TValue, TParameters>>,
+    ): LazyPromise<TValue, TParameters> {
+        return new LazyPromise(
+            (signal) =>
+                this.invokable.pipe(middlewares).invoke(...this.args, signal),
+            {
+                name: this.name,
+                signal: this.signal,
+                args: this.args,
+                middlewares: this.middlewares,
+            },
+        );
     }
 
     /**
@@ -364,13 +522,17 @@ export class LazyPromise<TValue = unknown> implements PromiseLike<TValue> {
      */
     pipeWhen(
         condition: boolean,
-        middlewares: OneOrMore<LazyPromiseMiddleware<TValue>>,
-    ): LazyPromise<TValue> {
+        middlewares: OneOrMore<LazyPromiseMiddleware<TValue, TParameters>>,
+    ): LazyPromise<TValue, TParameters> {
         return new LazyPromise(
-            this.invokableOrLazyPromise.pipeWhen(condition, middlewares),
+            (signal) =>
+                this.invokable
+                    .pipeWhen(condition, middlewares)
+                    .invoke(...this.args, signal),
             {
                 name: this.name,
                 signal: this.signal,
+                args: this.args,
                 middlewares: this.middlewares,
             },
         );
@@ -383,7 +545,7 @@ export class LazyPromise<TValue = unknown> implements PromiseLike<TValue> {
         onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
     ): PromiseLike<TResult1 | TResult2> {
         if (this.promise === null) {
-            this.promise = this.invokableOrLazyPromise.invoke(this.signal);
+            this.promise = this.invokable.invoke(...this.args, this.signal);
         }
         // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
         return this.promise.then(onfulfilled, onrejected);

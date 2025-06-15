@@ -34,7 +34,7 @@ import {
 } from "@/utilities/_module-exports.js";
 import {
     LazyPromise,
-    type LazyPromiseInvokable,
+    type LazyPromiseHandler,
 } from "@/async/_module-exports.js";
 import type {
     IEventBus,
@@ -90,7 +90,7 @@ export type CacheSettingsBase<TType = unknown> = {
      * (invokable) => new LazyPromise(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<LazyPromiseInvokable<any>, LazyPromise<any>>;
+    lazyPromiseFactory?: Factory<LazyPromiseHandler<any>, LazyPromise<any>>;
 
     /**
      * @default
@@ -141,7 +141,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     private readonly defaultTtl: TimeSpan | null;
     private readonly namespace: Namespace;
     private readonly lazyPromiseFactory: FactoryFn<
-        LazyPromiseInvokable<any>,
+        LazyPromiseHandler<any>,
         LazyPromise<any>
     >;
     private readonly schema: StandardSchemaV1<TType> | undefined;
