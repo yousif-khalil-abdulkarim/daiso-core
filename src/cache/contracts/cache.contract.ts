@@ -121,7 +121,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @param ttl - If null is passed, the item will not expire.
      *
-     * @returns true when key doesn't exists otherwise false will be returned.
+     * @returns Returns true when key doesn't exists otherwise false will be returned.
      */
     add(
         key: OneOrMore<string>,
@@ -139,7 +139,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @param ttl - If null is passed, the item will not expire.
      *
-     * @returns true if the `key` where replaced otherwise false is returned.
+     * @returns Returns true if the `key` where replaced otherwise false is returned.
      */
     put(
         key: OneOrMore<string>,
@@ -154,7 +154,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      *
-     * @returns true if the `key` where updated otherwise false will be returned.
+     * @returns Returns true if the `key` where updated otherwise false will be returned.
      */
     update(key: OneOrMore<string>, value: TType): LazyPromise<boolean>;
 
@@ -168,7 +168,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @param value - If not defined then it will be defaulted to 1.
      *
-     * @returns true if the `key` where incremented otherwise false will be returned.
+     * @returns Returns true if the `key` where incremented otherwise false will be returned.
      *
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
@@ -187,7 +187,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @param value - If not defined then it will be defaulted to 1.
      *
-     * @returns true if the `key` where decremented otherwise false will be returned.
+     * @returns Returns true if the `key` where decremented otherwise false will be returned.
      *
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
@@ -203,7 +203,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      *
-     * @returns true if the key is found otherwise false is returned.
+     * @returns Returns true if the key is found otherwise false is returned.
      */
     remove(key: OneOrMore<string>): LazyPromise<boolean>;
 
@@ -214,7 +214,7 @@ export type ICacheBase<TType = unknown> = {
      * If the param items are an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      *
-     * @returns true if one of the keys where deleted otherwise false is returned.
+     * @returns Returns true if one of the keys where deleted otherwise false is returned.
      */
     removeMany(keys: Iterable<OneOrMore<string>>): LazyPromise<boolean>;
 

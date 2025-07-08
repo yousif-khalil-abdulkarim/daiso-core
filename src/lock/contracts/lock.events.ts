@@ -67,7 +67,7 @@ export type UnownedRefreshTryLockEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type NotAvailableLockEvent = {
+export type UnavailableLockEvent = {
     key: string;
     owner: string;
 };
@@ -106,7 +106,7 @@ export const LOCK_EVENTS = {
     RELEASED: "RELEASED",
     UNOWNED_RELEASE_TRY: "UNOWNED_RELEASE_TRY",
     UNOWNED_REFRESH_TRY: "UNOWNED_REFRESH_TRY",
-    NOT_AVAILABLE: "NOT_AVAILABLE",
+    UNAVAILABLE: "UNAVAILABLE",
     FORCE_RELEASED: "FORCE_RELEASED",
     REFRESHED: "REFRESHED",
     UNEXPECTED_ERROR: "UNEXPECTED_ERROR",
@@ -122,7 +122,7 @@ export type LockEventMap = {
     [LOCK_EVENTS.RELEASED]: ReleasedLockEvent;
     [LOCK_EVENTS.UNOWNED_RELEASE_TRY]: UnownedReleaseTryLockEvent;
     [LOCK_EVENTS.UNOWNED_REFRESH_TRY]: UnownedRefreshTryLockEvent;
-    [LOCK_EVENTS.NOT_AVAILABLE]: NotAvailableLockEvent;
+    [LOCK_EVENTS.UNAVAILABLE]: UnavailableLockEvent;
     [LOCK_EVENTS.FORCE_RELEASED]: ForceReleasedLockEvent;
     [LOCK_EVENTS.REFRESHED]: RefreshedLockEvent;
     [LOCK_EVENTS.UNEXPECTED_ERROR]: UnexpectedErrorLockEvent;

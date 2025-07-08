@@ -15,7 +15,7 @@ import {
 import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import type {
     AcquiredLockEvent,
-    NotAvailableLockEvent,
+    UnavailableLockEvent,
     ReleasedLockEvent,
     UnownedReleaseTryLockEvent,
     ForceReleasedLockEvent,
@@ -28,7 +28,7 @@ import {
     LOCK_EVENTS,
     UnownedRefreshLockError,
     UnownedReleaseLockError,
-    type AquireBlockingSettings,
+    type LockAquireBlockingSettings,
     type LockEventMap,
 } from "@/lock/contracts/_module-exports.js";
 import {
@@ -173,7 +173,7 @@ export class Lock implements ILock {
 
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-        settings?: AquireBlockingSettings,
+        settings?: LockAquireBlockingSettings,
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
         return this.createLazyPromise(
             async (): Promise<Result<TValue, KeyAlreadyAcquiredLockError>> => {
@@ -197,7 +197,7 @@ export class Lock implements ILock {
 
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-        settings?: AquireBlockingSettings,
+        settings?: LockAquireBlockingSettings,
     ): LazyPromise<TValue> {
         return new LazyPromise(async () => {
             try {
@@ -231,12 +231,12 @@ export class Lock implements ILock {
                         .dispatch(LOCK_EVENTS.ACQUIRED, event)
                         .defer();
                 } else {
-                    const event: NotAvailableLockEvent = {
+                    const event: UnavailableLockEvent = {
                         key: this.key.resolved,
                         owner: this.owner,
                     };
                     this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.NOT_AVAILABLE, event)
+                        .dispatch(LOCK_EVENTS.UNAVAILABLE, event)
                         .defer();
                 }
                 return hasAquired;
@@ -269,7 +269,7 @@ export class Lock implements ILock {
     }
 
     acquireBlocking(
-        settings: AquireBlockingSettings = {},
+        settings: LockAquireBlockingSettings = {},
     ): LazyPromise<boolean> {
         return new LazyPromise(async () => {
             const {
@@ -289,7 +289,7 @@ export class Lock implements ILock {
     }
 
     acquireBlockingOrFail(
-        settings?: AquireBlockingSettings,
+        settings?: LockAquireBlockingSettings,
     ): LazyPromise<void> {
         return new LazyPromise(async () => {
             const hasAquired = await this.acquireBlocking(settings);

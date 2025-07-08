@@ -24,7 +24,7 @@ declare module "ioredis" {
 }
 
 /**
- * To utilize the `RedisLockAdapter`, you must install the `"ioredis"` package.
+ * To utilize the `RedisLockAdapter`, you must install the [`"ioredis"`](https://www.npmjs.com/package/ioredis) package.
  *
  * Note in order to use `RedisLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  *

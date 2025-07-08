@@ -11,7 +11,7 @@ import type { ILockProvider, ILock } from "@/lock/contracts/_module-exports.js";
 import {
     type UnownedRefreshTryLockEvent,
     type ForceReleasedLockEvent,
-    type NotAvailableLockEvent,
+    type UnavailableLockEvent,
     type UnownedReleaseTryLockEvent,
     type ReleasedLockEvent,
     type RefreshedLockEvent,
@@ -274,7 +274,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 let index = 0;
                 await lockProvider.addListener(
-                    LOCK_EVENTS.NOT_AVAILABLE,
+                    LOCK_EVENTS.UNAVAILABLE,
                     (_event) => {
                         index++;
                     },
@@ -366,7 +366,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 let index = 0;
                 await lockProvider.addListener(
-                    LOCK_EVENTS.NOT_AVAILABLE,
+                    LOCK_EVENTS.UNAVAILABLE,
                     (_event) => {
                         index++;
                     },
@@ -545,7 +545,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 let index = 0;
                 await lockProvider.addListener(
-                    LOCK_EVENTS.NOT_AVAILABLE,
+                    LOCK_EVENTS.UNAVAILABLE,
                     (_event) => {
                         index++;
                     },
@@ -637,7 +637,7 @@ export function lockProviderTestSuite(
                 await lock.acquire();
                 let index = 0;
                 await lockProvider.addListener(
-                    LOCK_EVENTS.NOT_AVAILABLE,
+                    LOCK_EVENTS.UNAVAILABLE,
                     (_event) => {
                         index++;
                     },
@@ -1156,17 +1156,17 @@ export function lockProviderTestSuite(
                     expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1246,17 +1246,17 @@ export function lockProviderTestSuite(
                     expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1330,17 +1330,17 @@ export function lockProviderTestSuite(
                     expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1386,17 +1386,17 @@ export function lockProviderTestSuite(
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1439,20 +1439,20 @@ export function lockProviderTestSuite(
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquireBlocking({
                         time: TimeSpan.fromMilliseconds(5),
                         interval: TimeSpan.fromMilliseconds(5),
                     });
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1495,17 +1495,17 @@ export function lockProviderTestSuite(
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquireOrFail();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1830,17 +1830,17 @@ export function lockProviderTestSuite(
                     expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -1920,17 +1920,17 @@ export function lockProviderTestSuite(
                     expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -2004,17 +2004,17 @@ export function lockProviderTestSuite(
                     expect(event_?.owner).toBe(owner);
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -2060,17 +2060,17 @@ export function lockProviderTestSuite(
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -2110,17 +2110,17 @@ export function lockProviderTestSuite(
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquire();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },
@@ -2160,17 +2160,17 @@ export function lockProviderTestSuite(
                     );
                     await unsubscribe();
                 });
-                test("Should dispatch NotAvailableLockEvent when lock is acquired", async () => {
+                test("Should dispatch UnavailableLockEvent when lock is acquired", async () => {
                     const key = "a";
                     const owner = "b";
                     const lock = lockProvider.create(key, {
                         owner,
                     });
-                    let event_ = null as NotAvailableLockEvent | null;
+                    let event_ = null as UnavailableLockEvent | null;
 
                     await lock.acquireOrFail();
                     const unsubscribe = await lockProvider.subscribe(
-                        LOCK_EVENTS.NOT_AVAILABLE,
+                        LOCK_EVENTS.UNAVAILABLE,
                         (event) => {
                             event_ = event;
                         },

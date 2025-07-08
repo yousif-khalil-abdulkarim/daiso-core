@@ -47,6 +47,10 @@ type KyselyLockAdapterSettings = {
 };
 
 /**
+ * To utilize the `KyselyLockAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
+ *
+ * Note in order to use `KyselyLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
+ * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
@@ -93,7 +97,7 @@ export class KyselyLockAdapter
             clearTimeout(this.timeoutId);
         }
 
-        // Should not throw if the index does not exists thats why the try catch is used.
+        // Should throw if the index does not exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .dropIndex("lock_expiresAt")
@@ -103,7 +107,7 @@ export class KyselyLockAdapter
             /* EMPTY */
         }
 
-        // Should not throw if the table does not exists thats why the try catch is used.
+        // Should throw if the table does not exists thats why the try catch is used.
         try {
             await this.kysely.schema.dropTable("lock").execute();
         } catch {
@@ -112,7 +116,7 @@ export class KyselyLockAdapter
     }
 
     async init(): Promise<void> {
-        // Should not throw if the table already exists thats why the try catch is used.
+        // Should throw if the table already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createTable("lock")
@@ -125,7 +129,7 @@ export class KyselyLockAdapter
             /* EMPTY */
         }
 
-        // Should not throw if the index already exists thats why the try catch is used.
+        // Should throw if the index already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createIndex("lock_expiresAt")

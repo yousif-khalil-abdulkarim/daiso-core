@@ -58,4 +58,5 @@ export const LOCK_ERRORS = {
     Base: LockError,
     KeyAlreadyAcquired: KeyAlreadyAcquiredLockError,
     UnownedRelease: UnownedReleaseLockError,
+    UnownedRefresh: UnownedRefreshLockError,
 } as const;

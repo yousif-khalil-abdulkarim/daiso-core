@@ -28,7 +28,7 @@ export type RedisPubSubEventBusAdapterSettings = {
 };
 
 /**
- * To utilize the `RedisPubSubEventBusAdapter`, you must install the `"ioredis"` package and supply a {@link ISerde | `ISerde<string>`}, with a {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
+ * To utilize the `RedisPubSubEventBusAdapter`, you must install the [`"ioredis"`](https://www.npmjs.com/package/ioredis) package and supply a {@link ISerde | `ISerde<string>`}, with a {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/adapters"`
  * @group Adapters

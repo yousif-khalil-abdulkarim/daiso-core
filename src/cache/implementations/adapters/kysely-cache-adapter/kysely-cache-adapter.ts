@@ -64,6 +64,8 @@ type KyselyCacheAdapterSettings = {
 };
 
 /**
+ * To utilize the `KyselyCacheAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
+ * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
@@ -162,7 +164,7 @@ export class KyselyCacheAdapter<TType = unknown>
     }
 
     async init(): Promise<void> {
-        // Should not throw if the table already exists thats why the try catch is used.
+        // Should throw if the table already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createTable("cache")
@@ -175,7 +177,7 @@ export class KyselyCacheAdapter<TType = unknown>
             /* EMPTY */
         }
 
-        // Should not throw if the index already exists thats why the try catch is used.
+        // Should throw if the index already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createIndex("cache_expiration")
@@ -199,7 +201,7 @@ export class KyselyCacheAdapter<TType = unknown>
             clearTimeout(this.timeoutId);
         }
 
-        // Should not throw if the index does not exists thats why the try catch is used.
+        // Should throw if the index does not exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .dropIndex("cache_expiration")
@@ -209,7 +211,7 @@ export class KyselyCacheAdapter<TType = unknown>
             /* EMPTY */
         }
 
-        // Should not throw if the table does not exists thats why the try catch is used.
+        // Should throw if the table does not exists thats why the try catch is used.
         try {
             await this.kysely.schema.dropTable("cache").execute();
         } catch {

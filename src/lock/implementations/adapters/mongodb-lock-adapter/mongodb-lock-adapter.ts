@@ -40,7 +40,7 @@ type MongodbLockDocument = {
 };
 
 /**
- * To utilize the `MongodbLockAdapter`, you must install the `"mongodb"` package.
+ * To utilize the `MongodbLockAdapter`, you must install the [`"mongodb"`](https://www.npmjs.com/package/mongodb) package.
  *
  * Note in order to use `MongodbLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  *

@@ -22,6 +22,7 @@ export class DatabaseLockAdapter implements ILockAdapter {
         const expiration = ttl?.toEndDate() ?? null;
 
         try {
+            // An error will be thrown if the lock already exists
             await this.adapter.insert(key, owner, expiration);
             return true;
         } catch (error: unknown) {
