@@ -101,9 +101,6 @@ export class Lock implements ILock {
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serdeTransformerName: string;
 
-    /**
-     * @internal
-     */
     constructor(settings: LockSettings) {
         const {
             createLazyPromise,
@@ -199,7 +196,7 @@ export class Lock implements ILock {
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
     ): LazyPromise<TValue> {
-        return new LazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             try {
                 await this.acquireBlockingOrFail(settings);
 
@@ -271,7 +268,7 @@ export class Lock implements ILock {
     acquireBlocking(
         settings: LockAquireBlockingSettings = {},
     ): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -291,7 +288,7 @@ export class Lock implements ILock {
     acquireBlockingOrFail(
         settings?: LockAquireBlockingSettings,
     ): LazyPromise<void> {
-        return new LazyPromise(async () => {
+        return this.createLazyPromise(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
                 throw new KeyAlreadyAcquiredLockError(

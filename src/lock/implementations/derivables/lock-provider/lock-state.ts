@@ -21,7 +21,7 @@ export type ILockStore = Partial<Record<string, ILockState>>;
  */
 export class LockState {
     constructor(
-        private stateRecord: ILockStore,
+        private readonly stateRecord: ILockStore,
         private readonly key: string,
     ) {}
 

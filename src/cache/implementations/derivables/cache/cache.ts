@@ -268,7 +268,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     exists(key: OneOrMore<string>): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return this.lazyPromiseFactory(async () => {
             const value = await this.get(key);
             return value !== null;
         });

@@ -159,6 +159,11 @@ export class MongodbCacheAdapter<TType = unknown>
                     unique: true,
                 },
             );
+        } catch {
+            /* Empty */
+        }
+
+        try {
             await this.collection.createIndex("expiration", {
                 expireAfterSeconds: 0,
             });
@@ -172,8 +177,17 @@ export class MongodbCacheAdapter<TType = unknown>
      * Note all cache data will be removed.
      */
     async deInit(): Promise<void> {
-        await this.collection.dropIndexes();
-        await this.collection.drop();
+        try {
+            await this.collection.dropIndexes();
+        } catch {
+            /* EMPTY */
+        }
+
+        try {
+            await this.collection.drop();
+        } catch {
+            /* EMPTY */
+        }
     }
 
     private getDocValue(document: MongodbCacheDocument | null): TType | null {
