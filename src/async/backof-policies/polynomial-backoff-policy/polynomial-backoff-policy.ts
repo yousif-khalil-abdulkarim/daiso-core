@@ -28,11 +28,11 @@ export type PolynomialBackoffPolicySettings = {
      */
     minDelay?: TimeSpan;
     /**
-     * @default {2}
+     * @default 2
      */
     degree?: number;
     /**
-     * @default {0.5}
+     * @default 0.5
      */
     jitter?: number;
     /**

@@ -74,7 +74,7 @@ export type LockProviderSettingsBase = {
     serde: OneOrMore<ISerderRegister>;
 
     /**
-     * @default {""}
+     * @default ""
      */
     serdeTransformerName?: string;
 

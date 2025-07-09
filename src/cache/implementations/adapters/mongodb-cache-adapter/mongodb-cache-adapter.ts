@@ -34,7 +34,7 @@ export type MongodbCacheAdapterSettings = {
     database: Db;
     serde: ISerde<string>;
     /**
-     * @default {"cache"}
+     * @default "cache"
      */
     collectionName?: string;
     collectionSettings?: CollectionOptions;

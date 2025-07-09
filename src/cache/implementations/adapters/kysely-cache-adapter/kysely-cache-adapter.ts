@@ -47,6 +47,7 @@ type KyselyCacheAdapterTables = {
  */
 type KyselyCacheAdapterSettings = {
     kysely: Kysely<KyselyCacheAdapterTables>;
+
     serde: ISerde<string>;
 
     /**
@@ -58,7 +59,7 @@ type KyselyCacheAdapterSettings = {
     expiredKeysRemovalInterval?: TimeSpan;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldRemoveExpiredKeys?: boolean;
 };

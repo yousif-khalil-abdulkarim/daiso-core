@@ -46,112 +46,112 @@ import {
  */
 export type SerdeSettings = {
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleArrayBuffer?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleBuffer?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleUint8Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleInt8Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleUint16Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleInt16Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleUint32Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleInt32Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleBigUint64Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleBigInt64Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleFloat32Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleFloat64Array?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleMap?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleSet?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleBigInt?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleNaN?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleInfinity?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleUndefined?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleRegExp?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleDate?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleURL?: boolean;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldHandleURLSearchParams?: boolean;
 };

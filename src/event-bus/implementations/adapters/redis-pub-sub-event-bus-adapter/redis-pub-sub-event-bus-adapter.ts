@@ -57,11 +57,8 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
      * });
      * ```
      */
-    constructor({
-        dispatcherClient,
-        listenerClient,
-        serde,
-    }: RedisPubSubEventBusAdapterSettings) {
+    constructor(settings: RedisPubSubEventBusAdapterSettings) {
+        const { dispatcherClient, listenerClient, serde } = settings;
         this.dispatcherClient = dispatcherClient;
         this.listenerClient = listenerClient;
         this.serde = new RedisSerde(serde);

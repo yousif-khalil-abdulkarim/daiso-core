@@ -60,7 +60,7 @@ export type BulkheadSettings<
     /**
      * The maximum number of promises allowed to run concurrently. If this limit is exceeded, additional promises will be queued until a slot becomes available.
      *
-     * @default {25}
+     * @default 25
      */
     maxConcurrency?: number;
 
@@ -68,7 +68,7 @@ export type BulkheadSettings<
      * The maximum capacity of the promise queue. If null, the queue can grow indefinitely.
      * If a number is provided and the queue exceeds this limit, an error will be thrown, and no further promises will be enqueued.
      *
-     * @default {null}
+     * @default null
      */
     maxCapacity?: number | null;
 

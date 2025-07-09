@@ -66,17 +66,17 @@ export class Key {
  */
 export type NamespaceSettings = {
     /**
-     * @default {":"}
+     * @default ":"
      */
     identifierDelimeter?: string;
 
     /**
-     * @default {"/"}
+     * @default "/"
      */
     keyDelimeter?: string;
 
     /**
-     * @default {"_rt"}
+     * @default "_rt"
      */
     rootIdentifier?: string;
 };

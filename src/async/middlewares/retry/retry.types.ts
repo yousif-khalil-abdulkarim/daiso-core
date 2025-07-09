@@ -96,7 +96,7 @@ export type RetrySettings<
     ErrorPolicySettings<InferResultError<TReturn>> & {
         /**
          * You can decide maximal times you can retry.
-         * @default {4}
+         * @default 4
          */
         maxAttempts?: number;
 

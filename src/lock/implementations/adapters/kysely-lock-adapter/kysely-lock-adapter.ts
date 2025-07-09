@@ -42,7 +42,18 @@ type KyselyLockAdapterTables = {
  */
 type KyselyLockAdapterSettings = {
     kysely: Kysely<KyselyLockAdapterTables>;
+
+    /**
+     * @default
+     * ```ts
+     * TimeSpan.fromMinutes(1)
+     * ```
+     */
     expiredKeysRemovalInterval?: TimeSpan;
+
+    /**
+     * @default true
+     */
     shouldRemoveExpiredKeys?: boolean;
 };
 
