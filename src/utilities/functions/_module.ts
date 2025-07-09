@@ -3,6 +3,7 @@ export * from "@/utilities/functions/get-constructor-name.js";
 export * from "@/utilities/functions/is-class.js";
 export * from "@/utilities/functions/invokable.js";
 export * from "@/utilities/functions/is-nullable.js";
+export * from "@/utilities/functions/is-positive-nbr.js";
 export * from "@/utilities/functions/is-standard-schema.js";
 export * from "@/utilities/functions/lazy.js";
 export * from "@/utilities/functions/object.js";
