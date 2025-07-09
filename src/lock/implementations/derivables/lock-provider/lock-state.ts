@@ -17,6 +17,8 @@ export type ILockState = {
 export type ILockStore = Partial<Record<string, ILockState>>;
 
 /**
+ * Keeps track of lock states in memory
+ *
  * @internal
  */
 export class LockState {
@@ -26,28 +28,23 @@ export class LockState {
     ) {}
 
     /**
-     * Return the expiration as a date.
+     * Return the expiration as a TimeSpan.
      */
-    get(): Date | null {
+    get(): TimeSpan | null {
         const state = this.stateRecord[this.key];
         if (state === undefined) {
             return null;
         }
-        const { expiration } = state;
-        return expiration;
+        if (state.expiration === null) {
+            return null;
+        }
+        return TimeSpan.fromDateRange(new Date(), state.expiration);
     }
 
     /**
-     * Sets the expiration time.
-     * If a number is provided, it must be in milliseconds.
+     * Sets the key expiration time.
      */
-    set(ttl: TimeSpan | number | null): void {
-        if (typeof ttl === "number") {
-            this.stateRecord[this.key] = {
-                expiration: new Date(ttl),
-            };
-            return;
-        }
+    set(ttl: TimeSpan | null): void {
         this.stateRecord[this.key] = {
             expiration: ttl?.toEndDate() ?? null,
         };
@@ -69,22 +66,7 @@ export class LockState {
     }
 
     /**
-     * Returns the remaining time.
-     */
-    getRemainingTime(): TimeSpan | null {
-        const state = this.stateRecord[this.key];
-        if (state === undefined) {
-            return null;
-        }
-        const { expiration } = state;
-        if (expiration === null) {
-            return null;
-        }
-        return TimeSpan.fromDateRange(new Date(), expiration);
-    }
-
-    /**
-     * Removes the expiration from the record.
+     * Removes the key.
      */
     remove(): void {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete

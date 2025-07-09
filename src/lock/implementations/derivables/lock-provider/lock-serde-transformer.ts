@@ -97,7 +97,8 @@ export class LockSerdeTransformer
         return (
             value instanceof Lock &&
             getConstructorName(value) === Lock.name &&
-            value.getSerdeTransformerName() === this.serdeTransformerName
+            value._internal_getSerdeTransformerName() ===
+                this.serdeTransformerName
         );
     }
 
@@ -122,6 +123,6 @@ export class LockSerdeTransformer
     }
 
     serialize(deserializedValue: Lock): ISerializedLock {
-        return Lock.serialize(deserializedValue);
+        return Lock._internal_serialize(deserializedValue);
     }
 }

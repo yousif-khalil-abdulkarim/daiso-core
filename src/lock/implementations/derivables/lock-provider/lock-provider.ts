@@ -235,7 +235,7 @@ export class LockProvider implements ILockProvider {
         this.registerToSerde();
     }
 
-    private registerToSerde() {
+    private registerToSerde(): void {
         const transformer = new LockSerdeTransformer({
             adapter: this.adapter,
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
@@ -359,7 +359,6 @@ export class LockProvider implements ILockProvider {
             owner,
             ttl,
             serdeTransformerName: this.serdeTransformerName,
-            expirationInMs: null,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
