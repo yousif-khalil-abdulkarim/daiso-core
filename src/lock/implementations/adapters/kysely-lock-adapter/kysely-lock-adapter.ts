@@ -19,10 +19,11 @@ import {
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
-type KyselyLockAdapterTable = {
+export type KyselyLockAdapterTable = {
     key: string;
     owner: string;
     // In ms since unix epoch
+    // The type in mysql is bigint and will be returned as a string
     expiresAt: number | string | null;
 };
 
@@ -31,7 +32,7 @@ type KyselyLockAdapterTable = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
-type KyselyLockAdapterTables = {
+export type KyselyLockAdapterTables = {
     lock: KyselyLockAdapterTable;
 };
 
@@ -40,7 +41,7 @@ type KyselyLockAdapterTables = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
-type KyselyLockAdapterSettings = {
+export type KyselyLockAdapterSettings = {
     kysely: Kysely<KyselyLockAdapterTables>;
 
     /**
@@ -133,7 +134,7 @@ export class KyselyLockAdapter
                 .createTable("lock")
                 .ifNotExists()
                 .addColumn("key", "varchar(255)", (col) => col.primaryKey())
-                .addColumn("owner", "varchar(255)")
+                .addColumn("owner", "varchar(255)", (col) => col.notNull())
                 .addColumn("expiresAt", "bigint")
                 .execute();
         } catch {
