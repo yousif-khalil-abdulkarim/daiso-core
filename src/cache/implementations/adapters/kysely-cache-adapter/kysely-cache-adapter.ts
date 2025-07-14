@@ -171,7 +171,7 @@ export class KyselyCacheAdapter<TType = unknown>
                 .createTable("cache")
                 .ifNotExists()
                 .addColumn("key", "varchar(255)", (col) => col.primaryKey())
-                .addColumn("value", "varchar(255)")
+                .addColumn("value", "varchar(255)", (col) => col.notNull())
                 .addColumn("expiration", "bigint")
                 .execute();
         } catch {
@@ -254,7 +254,10 @@ export class KyselyCacheAdapter<TType = unknown>
         if (this.disableTransaction) {
             return fn(this.kysely as Transaction<KyselyCacheAdapterTables>);
         }
-        return await this.kysely.transaction().execute(fn);
+        return await this.kysely
+            .transaction()
+            .setIsolationLevel("serializable")
+            .execute(fn);
     }
 
     async upsert(data: ICacheInsert<TType>): Promise<ICacheData<TType> | null> {
