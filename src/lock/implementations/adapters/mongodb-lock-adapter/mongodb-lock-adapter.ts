@@ -6,7 +6,6 @@ import {
     UnexpectedError,
     type IDeinitizable,
     type IInitizable,
-    type IPrunable,
 } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
@@ -48,7 +47,7 @@ type MongodbLockDocument = {
  * @group Adapters
  */
 export class MongodbLockAdapter
-    implements IDatabaseLockAdapter, IDeinitizable, IInitizable, IPrunable
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
 {
     private readonly database: Db;
     private readonly collection: Collection<MongodbLockDocument>;
@@ -69,25 +68,18 @@ export class MongodbLockAdapter
      * await lockAdapter.init()
      * ```
      */
-    constructor({
-        collectionName = "lock",
-        collectionSettings,
-        database,
-    }: MongodbLockAdapterSettings) {
+    constructor(settings: MongodbLockAdapterSettings) {
+        const {
+            collectionName = "lock",
+            collectionSettings,
+            database,
+        } = settings;
         this.collectionName = collectionName;
         this.database = database;
         this.collection = database.collection(
             collectionName,
             collectionSettings,
         );
-    }
-
-    async removeAllExpired(): Promise<void> {
-        await this.collection.deleteMany({
-            expiresAt: {
-                $lte: new Date(),
-            },
-        });
     }
 
     /**
