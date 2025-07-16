@@ -114,7 +114,7 @@ export class LockSerdeTransformer
             key: keyObj,
             owner,
             serdeTransformerName: this.serdeTransformerName,
-            ttl: ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null,
+            ttl: ttlInMs !== null ? TimeSpan.fromMilliseconds(ttlInMs) : null,
             expirationInMs,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,

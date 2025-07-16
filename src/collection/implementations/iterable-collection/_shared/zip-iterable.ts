@@ -20,7 +20,7 @@ export class ZipIterable<TInput, TExtended>
         while (true) {
             const itemA = iteratorA.next(),
                 itemB = iteratorB.next();
-            if (itemA.done || itemB.done) {
+            if (itemA.done === true || itemB.done === true) {
                 break;
             }
             yield [itemA.value, itemB.value];

@@ -130,7 +130,7 @@ export class RedisLockAdapter implements ILockAdapter {
             owner,
             String(ttl?.toMilliseconds() ?? null),
         );
-        return result > 0;
+        return result === 1;
     }
 
     async release(key: string, owner: string): Promise<boolean> {
@@ -148,6 +148,6 @@ export class RedisLockAdapter implements ILockAdapter {
             owner,
             ttl.toMilliseconds().toString(),
         );
-        return Boolean(result);
+        return result === 1;
     }
 }
