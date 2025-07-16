@@ -15,6 +15,7 @@ import {
 import type {
     AsyncLazy,
     Factory,
+    Invokable,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
 import {
@@ -86,7 +87,9 @@ export class LockProviderFactory<TAdapters extends string>
         });
     }
 
-    setCreateOwnerId(createId: () => string): LockProviderFactory<TAdapters> {
+    setCreateOwnerId(
+        createId: Invokable<[], string>,
+    ): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
             createOwnerId: createId,
