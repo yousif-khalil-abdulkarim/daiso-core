@@ -29,9 +29,11 @@ export type MongodbLockAdapterSettings = {
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * @group Adapters
  */
-type MongodbLockDocument = {
+export type MongodbLockDocument = {
     _id: ObjectId;
     key: string;
     owner: string;

@@ -41,9 +41,11 @@ export type MongodbCacheAdapterSettings = {
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * @group Adapters
  */
-type MongodbCacheDocument = {
+export type MongodbCacheDocument = {
     _id: ObjectId;
     key: string;
     value: number | string;
