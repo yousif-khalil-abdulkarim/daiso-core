@@ -132,7 +132,6 @@ export class KyselyLockAdapter
         try {
             await this.kysely.schema
                 .createTable("lock")
-                .ifNotExists()
                 .addColumn("key", "varchar(255)", (col) => col.primaryKey())
                 .addColumn("owner", "varchar(255)", (col) => col.notNull())
                 .addColumn("expiresAt", "bigint")
@@ -153,7 +152,7 @@ export class KyselyLockAdapter
         }
 
         if (this.shouldRemoveExpiredKeys) {
-            this.timeoutId = setTimeout(() => {
+            this.timeoutId = setInterval(() => {
                 void this.removeAllExpired();
             }, this.expiredKeysRemovalInterval.toMilliseconds());
         }
@@ -235,7 +234,8 @@ export class KyselyLockAdapter
             return null;
         }
         return {
-            expiration: row.expiresAt ? new Date(Number(row.expiresAt)) : null,
+            expiration:
+                row.expiresAt !== null ? new Date(Number(row.expiresAt)) : null,
             owner: row.owner,
         };
     }
