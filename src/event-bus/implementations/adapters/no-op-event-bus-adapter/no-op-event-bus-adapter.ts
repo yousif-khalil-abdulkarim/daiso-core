@@ -22,18 +22,18 @@ export class NoOpEventBusAdapter implements IEventBusAdapter {
     addListener(
         _eventName: string,
         _listener: EventListenerFn<BaseEvent>,
-    ): PromiseLike<void> {
+    ): Promise<void> {
         return Promise.resolve();
     }
 
     removeListener(
         _eventName: string,
         _listener: EventListenerFn<BaseEvent>,
-    ): PromiseLike<void> {
+    ): Promise<void> {
         return Promise.resolve();
     }
 
-    dispatch(_eventName: string, _eventData: BaseEvent): PromiseLike<void> {
+    dispatch(_eventName: string, _eventData: BaseEvent): Promise<void> {
         return Promise.resolve();
     }
 }
