@@ -1,5 +1,12 @@
 # @daiso-tech/core
 
+## 0.40.0
+
+### Minor Changes
+
+- 85d0b53: Simplified the `IEventBusAdapter` it now uses `Promises` intead of `PromiseLike`
+- 9b004d2: Simplified `ICacheAdapter` and `IDatabaseCacheAdapter`, now they return `Promise` instead of `PromiseLike`
+
 ## 0.39.0
 
 ### Minor Changes
@@ -86,8 +93,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                    - `AsyncFactoryable`
-                    - `Factoryable`
+                      - `AsyncFactoryable`
+                      - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
