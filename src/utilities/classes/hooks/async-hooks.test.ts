@@ -264,7 +264,7 @@ describe("class: AsyncHooks", () => {
         let hasAborted = false;
         await new AsyncHooks(
             (_url: string, signal?: AbortSignal): Promise<unknown> => {
-                if (signal?.aborted) {
+                if (signal?.aborted !== undefined && signal.aborted) {
                     hasAborted = signal.aborted;
                 }
                 return Promise.resolve("data");

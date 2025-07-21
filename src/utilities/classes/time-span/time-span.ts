@@ -139,7 +139,11 @@ export class TimeSpan implements ISerializable<number> {
 
     /**
      * Will return endDate relative to a given `startDate` argument.
-     * @default {new Date()} - current date
+     *
+     * @default
+     * ```ts
+     * new Date()
+     * ```
      */
     toEndDate(startDate = new Date()): Date {
         return new Date(startDate.getTime() + this.toMilliseconds());
@@ -147,7 +151,11 @@ export class TimeSpan implements ISerializable<number> {
 
     /**
      * Will return startDate relative to a given `endDate` argument.
-     * @default {new Date()} - current date
+     *
+     * @default
+     * ```ts
+     * new Date()
+     * ```
      */
     toStartDate(endDate = new Date()): Date {
         return new Date(endDate.getTime() - this.toMilliseconds());

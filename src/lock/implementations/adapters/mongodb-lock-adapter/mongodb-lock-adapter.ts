@@ -6,7 +6,6 @@ import {
     UnexpectedError,
     type IDeinitizable,
     type IInitizable,
-    type IPrunable,
 } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseLockAdapter,
@@ -23,16 +22,18 @@ import { ObjectId } from "mongodb";
 export type MongodbLockAdapterSettings = {
     database: Db;
     /**
-     * @default {"lock"}
+     * @default "lock"
      */
     collectionName?: string;
     collectionSettings?: CollectionOptions;
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * @group Adapters
  */
-type MongodbLockDocument = {
+export type MongodbLockDocument = {
     _id: ObjectId;
     key: string;
     owner: string;
@@ -40,7 +41,7 @@ type MongodbLockDocument = {
 };
 
 /**
- * To utilize the `MongodbLockAdapter`, you must install the `"mongodb"` package.
+ * To utilize the `MongodbLockAdapter`, you must install the [`"mongodb"`](https://www.npmjs.com/package/mongodb) package.
  *
  * Note in order to use `MongodbLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  *
@@ -48,7 +49,7 @@ type MongodbLockDocument = {
  * @group Adapters
  */
 export class MongodbLockAdapter
-    implements IDatabaseLockAdapter, IDeinitizable, IInitizable, IPrunable
+    implements IDatabaseLockAdapter, IDeinitizable, IInitizable
 {
     private readonly database: Db;
     private readonly collection: Collection<MongodbLockDocument>;
@@ -69,25 +70,18 @@ export class MongodbLockAdapter
      * await lockAdapter.init()
      * ```
      */
-    constructor({
-        collectionName = "lock",
-        collectionSettings,
-        database,
-    }: MongodbLockAdapterSettings) {
+    constructor(settings: MongodbLockAdapterSettings) {
+        const {
+            collectionName = "lock",
+            collectionSettings,
+            database,
+        } = settings;
         this.collectionName = collectionName;
         this.database = database;
         this.collection = database.collection(
             collectionName,
             collectionSettings,
         );
-    }
-
-    async removeAllExpired(): Promise<void> {
-        await this.collection.deleteMany({
-            expiresAt: {
-                $lte: new Date(),
-            },
-        });
     }
 
     /**

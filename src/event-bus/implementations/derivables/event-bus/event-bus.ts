@@ -53,7 +53,7 @@ export type EventBusSettingsBase<
 
     /**
      * You can enable validating events in listeners.
-     * @default {true}
+     * @default true
      */
     shouldValidateOutput?: boolean;
 

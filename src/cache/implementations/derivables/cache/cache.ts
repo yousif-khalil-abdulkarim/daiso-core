@@ -64,7 +64,7 @@ export type CacheSettingsBase<TType = unknown> = {
 
     /**
      * You can enable validating cache values when retrieving them.
-     * @default {true}
+     * @default true
      */
     shouldValidateOutput?: boolean;
 
@@ -104,7 +104,7 @@ export type CacheSettingsBase<TType = unknown> = {
 
     /**
      * You can decide the default ttl value. If null is passed then no ttl will be used by default.
-     * @default {null}
+     * @default null
      */
     defaultTtl?: TimeSpan | null;
 };
@@ -268,7 +268,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     exists(key: OneOrMore<string>): LazyPromise<boolean> {
-        return new LazyPromise(async () => {
+        return this.lazyPromiseFactory(async () => {
             const value = await this.get(key);
             return value !== null;
         });

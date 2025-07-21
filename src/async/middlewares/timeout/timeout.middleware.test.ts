@@ -17,7 +17,7 @@ function createDelayedFn<TParameters extends unknown[], TReturn>(
         const abortSignal = args.find((arg) => arg instanceof AbortSignal);
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
         while (true) {
-            if (abortSignal?.aborted) {
+            if (abortSignal?.aborted !== undefined && abortSignal.aborted) {
                 throw abortSignal.reason;
             }
             const end = performance.now();

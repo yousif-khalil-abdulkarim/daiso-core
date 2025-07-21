@@ -15,6 +15,8 @@ import type {
     KeyAlreadyAcquiredLockError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnownedReleaseLockError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UnownedRefreshLockError,
 } from "@/lock/contracts/lock.errors.js";
 
 /**
@@ -22,7 +24,10 @@ import type {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
-export type AquireBlockingSettings = { time?: TimeSpan; interval?: TimeSpan };
+export type LockAquireBlockingSettings = {
+    time?: TimeSpan;
+    interval?: TimeSpan;
+};
 
 /**
  *
@@ -48,7 +53,7 @@ export type ILock = {
      */
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-        settings?: AquireBlockingSettings,
+        settings?: LockAquireBlockingSettings,
     ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
 
     /**
@@ -57,35 +62,18 @@ export type ILock = {
      */
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-        settings?: AquireBlockingSettings,
+        settings?: LockAquireBlockingSettings,
     ): LazyPromise<TValue>;
 
     /**
-     * The `acquire` method acquires a lock only if the lock is not already acquired.
+     * The `acquire` method acquires a lock only if the lock is available.
      *
-     * @returns true if the lock is already acquired otherwise false is returned.
+     * @returns Returns true if the lock is acquired otherwise false is returned.
      */
     acquire(): LazyPromise<boolean>;
 
     /**
-     * The `acquireBlocking` method acquires a lock only if the lock is not already acquired.
-     * If the lock is acquired, it retries every `settings.interval` until `settings.time` is reached.
-     *
-     * @returns true if the lock is already acquired otherwise false is returned.
-     */
-    acquireBlocking(settings?: AquireBlockingSettings): LazyPromise<boolean>;
-
-    /**
-     * The `acquireBlockingOrFail` method acquires a lock only if the lock is not already acquired.
-     * If the lock is acquired, it retries every `settings.interval` until `settings.time` is reached.
-     * Throws an error if not lock cannot be acquired after the given `settings.time`.
-     *
-     * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
-     */
-    acquireBlockingOrFail(settings?: AquireBlockingSettings): LazyPromise<void>;
-
-    /**
-     * The `acquireOrFail` method acquires a lock only if the lock is not already acquired.
+     * The `acquireOrFail` method acquires a lock only if the lock is available.
      * Throws an error if already acquired.
      *
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
@@ -93,9 +81,30 @@ export type ILock = {
     acquireOrFail(): LazyPromise<void>;
 
     /**
+     * The `acquireBlocking` method acquires a lock only if the lock is available.
+     * If the lock is not acquired, it retries every `settings.interval` until `settings.time` is reached.
+     *
+     * @returns Returns true if the lock is acquired otherwise false is returned.
+     */
+    acquireBlocking(
+        settings?: LockAquireBlockingSettings,
+    ): LazyPromise<boolean>;
+
+    /**
+     * The `acquireBlockingOrFail` method acquires a lock only if the lock is available.
+     * If the lock is not acquired, it retries every `settings.interval` until `settings.time` is reached.
+     * Throws an error if the lock cannot be acquired after the given `settings.time`.
+     *
+     * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
+     */
+    acquireBlockingOrFail(
+        settings?: LockAquireBlockingSettings,
+    ): LazyPromise<void>;
+
+    /**
      * The `release` method releases a lock if owned by the same owner.
      *
-     * @returns true if the lock is released otherwise false is returned.
+     * @returns Returns true if the lock is released otherwise false is returned.
      */
     release(): LazyPromise<boolean>;
 
@@ -113,7 +122,7 @@ export type ILock = {
     forceRelease(): LazyPromise<void>;
 
     /**
-     * The `isExpired` method returns true if the expired otherwise false is returned.
+     * The `isExpired` method returns true if the lock is expired otherwise false is returned.
      */
     isExpired(): LazyPromise<boolean>;
 
@@ -123,15 +132,14 @@ export type ILock = {
     isLocked(): LazyPromise<boolean>;
 
     /**
-     * The `refresh` method updates the TTL of the lock if owned by the same owner.
+     * The `refresh` method updates the `ttl` of the lock if owned by the same owner.
      *
-     * @returns true if the lock is refreshed occurs otherwise false is returned.
+     * @returns Returns true if the lock is refreshed otherwise false is returned.
      */
-
     refresh(ttl?: TimeSpan): LazyPromise<boolean>;
 
     /**
-     * The `refreshOrFail` method updates the TTL of the lock if owned by the same owner.
+     * The `refreshOrFail` method updates the `ttl` of the lock if owned by the same owner.
      * Throws an error if a different owner attempts to refresh the lock.
      * @throws {UnownedRefreshLockError} {@link UnownedRefreshLockError}
      */
@@ -140,7 +148,7 @@ export type ILock = {
     /**
      * The `getRemainingTime` return the reaming time as {@link TimeSpan | `TimeSpan`}.
      *
-     * @returns null if the key doesnt exist, key has no expiration and key has expired.
+     * @returns Returns null if the key doesnt exist, key has no expiration and key has expired.
      */
     getRemainingTime(): LazyPromise<TimeSpan | null>;
 

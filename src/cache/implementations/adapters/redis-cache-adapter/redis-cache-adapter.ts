@@ -34,7 +34,7 @@ export type RedisCacheAdapterSettings = {
 };
 
 /**
- * To utilize the `RedisCacheAdapter`, you must install the `"ioredis"` package and supply a {@link ISerde | `ISerde<string>`}, with adapter like {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
+ * To utilize the `RedisCacheAdapter`, you must install the [`"ioredis"`](https://www.npmjs.com/package/ioredis) package and supply a {@link ISerde | `ISerde<string>`}, with adapter like {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters

@@ -28,11 +28,11 @@ export type ExponentialBackoffPolicySettings = {
      */
     minDelay?: TimeSpan;
     /**
-     * @default {2}
+     * @default 2
      */
     multiplier?: number;
     /**
-     * @default {0.5}
+     * @default 0.5
      */
     jitter?: number;
     /**

@@ -690,7 +690,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
         for (let index = 1; index <= restSize; index++) {
             const chunkIndex = (index - 1) % chunkAmount;
-            if (chunkSizes[chunkIndex]) {
+            if (chunkSizes[chunkIndex] !== undefined) {
                 chunkSizes[chunkIndex] = chunkSizes[chunkIndex] + 1;
             }
         }
@@ -845,7 +845,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         const restAmount = maxLength - (repeat * fillItemsArray.length + size);
         for (let index = 0; index < restAmount; index++) {
             const fillItem = fillItemsArray[index];
-            if (fillItem) {
+            if (fillItem !== undefined) {
                 resultItemsArray.push(fillItem);
             }
         }
@@ -867,7 +867,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         const restAmount = maxLength - (repeat * fillItemsArray.length + size);
         for (let index = 0; index < restAmount; index++) {
             const fillItem = fillItemsArray[index];
-            if (fillItem) {
+            if (fillItem !== undefined) {
                 resultItemsArray.push(fillItem);
             }
         }
@@ -1015,7 +1015,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
             }
         } else {
             const firstItem = this.array[0];
-            if (firstItem) {
+            if (firstItem !== undefined) {
                 return firstItem as TOutput;
             }
         }
@@ -1049,12 +1049,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                     matchedItem = item as TOutput;
                 }
             }
-            if (matchedItem) {
+            if (matchedItem !== null) {
                 return matchedItem;
             }
         } else {
             const lastItem = this.array.at(-1);
-            if (lastItem) {
+            if (lastItem !== undefined) {
                 return lastItem as TOutput;
             }
         }

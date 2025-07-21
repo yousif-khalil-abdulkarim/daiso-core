@@ -34,16 +34,18 @@ export type MongodbCacheAdapterSettings = {
     database: Db;
     serde: ISerde<string>;
     /**
-     * @default {"cache"}
+     * @default "cache"
      */
     collectionName?: string;
     collectionSettings?: CollectionOptions;
 };
 
 /**
- * @internal
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * @group Adapters
  */
-type MongodbCacheDocument = {
+export type MongodbCacheDocument = {
     _id: ObjectId;
     key: string;
     value: number | string;
@@ -51,7 +53,7 @@ type MongodbCacheDocument = {
 };
 
 /**
- * To utilize the `MongodbCacheAdapter`, you must install the `"mongodb"` package and supply a {@link ISerde | `ISerde<string>`}, with an adapter like {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
+ * To utilize the `MongodbCacheAdapter`, you must install the [`"mongodb"`](https://www.npmjs.com/package/mongodb) package and supply a {@link ISerde | `ISerde<string>`}, with an adapter like {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
@@ -159,6 +161,11 @@ export class MongodbCacheAdapter<TType = unknown>
                     unique: true,
                 },
             );
+        } catch {
+            /* Empty */
+        }
+
+        try {
             await this.collection.createIndex("expiration", {
                 expireAfterSeconds: 0,
             });
@@ -172,8 +179,17 @@ export class MongodbCacheAdapter<TType = unknown>
      * Note all cache data will be removed.
      */
     async deInit(): Promise<void> {
-        await this.collection.dropIndexes();
-        await this.collection.drop();
+        try {
+            await this.collection.dropIndexes();
+        } catch {
+            /* EMPTY */
+        }
+
+        try {
+            await this.collection.drop();
+        } catch {
+            /* EMPTY */
+        }
     }
 
     private getDocValue(document: MongodbCacheDocument | null): TType | null {

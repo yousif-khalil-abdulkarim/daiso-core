@@ -10,6 +10,8 @@ import {
     type FactoryFn,
     resolveOneOrMore,
     resolveInvokable,
+    type Invokable,
+    callInvokable,
 } from "@/utilities/_module-exports.js";
 import { Namespace, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
@@ -74,14 +76,14 @@ export type LockProviderSettingsBase = {
     serde: OneOrMore<ISerderRegister>;
 
     /**
-     * @default {""}
+     * @default ""
      */
     serdeTransformerName?: string;
 
     /**
      * You can pass your owner id generator function.
      */
-    createOwnerId?: () => string;
+    createOwnerId?: Invokable<[], string>;
 
     /**
      * @default
@@ -163,7 +165,7 @@ export class LockProvider implements ILockProvider {
     private readonly eventBus: IEventBus<LockEventMap>;
     private readonly adapter: ILockAdapter;
     private readonly namespace: Namespace;
-    private readonly createOwnerId: () => string;
+    private readonly createOwnerId: Invokable<[], string>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
@@ -235,7 +237,7 @@ export class LockProvider implements ILockProvider {
         this.registerToSerde();
     }
 
-    private registerToSerde() {
+    private registerToSerde(): void {
         const transformer = new LockSerdeTransformer({
             adapter: this.adapter,
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
@@ -345,8 +347,10 @@ export class LockProvider implements ILockProvider {
         key: OneOrMore<string>,
         settings: LockProviderCreateSettings = {},
     ): ILock {
-        const { ttl = this.defaultTtl, owner = this.createOwnerId() } =
-            settings;
+        const {
+            ttl = this.defaultTtl,
+            owner = callInvokable(this.createOwnerId),
+        } = settings;
 
         const keyObj = this.namespace._getInternal().create(key);
 
@@ -359,7 +363,6 @@ export class LockProvider implements ILockProvider {
             owner,
             ttl,
             serdeTransformerName: this.serdeTransformerName,
-            expirationInMs: null,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,

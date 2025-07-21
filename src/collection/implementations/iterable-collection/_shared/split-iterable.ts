@@ -27,7 +27,7 @@ export class SplitIterable<TInput> implements Iterable<ICollection<TInput>> {
 
         for (let i = 1; i <= restSize; i++) {
             const chunkIndex = (i - 1) % this.chunkAmount;
-            if (chunkSizes[chunkIndex]) {
+            if (chunkSizes[chunkIndex] !== undefined) {
                 chunkSizes[chunkIndex] = chunkSizes[chunkIndex] + 1;
             }
         }

@@ -1073,7 +1073,7 @@ export class AsyncIterableCollection<TInput = unknown>
                     matchedItem = item as TOutput;
                 }
             }
-            if (matchedItem) {
+            if (matchedItem !== null) {
                 return matchedItem;
             }
             return await resolveAsyncLazyable(defaultValue);
@@ -1108,7 +1108,7 @@ export class AsyncIterableCollection<TInput = unknown>
             for await (const item of this) {
                 if (
                     (await resolveInvokable(predicateFn)(item, index, this)) &&
-                    beforeItem
+                    beforeItem !== null
                 ) {
                     return beforeItem;
                 }

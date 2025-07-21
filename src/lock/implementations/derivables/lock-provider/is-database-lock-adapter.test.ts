@@ -43,7 +43,7 @@ describe("function: isDatabaseLockAdapter", () => {
         };
         expect(isDatabaseLockAdapter(adapter)).toBe(true);
     });
-    test("Should return true when given ILockAdapter", () => {
+    test("Should return false when given ILockAdapter", () => {
         const adapter: ILockAdapter = {
             acquire: function (
                 _key: string,

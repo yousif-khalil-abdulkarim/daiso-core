@@ -24,7 +24,7 @@ import type { ExpressionWrapper, SqlBool, Kysely } from "kysely";
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
-type KyselyCacheAdapterTable = {
+export type KyselyCacheAdapterTable = {
     key: string;
     value: string;
     // In ms since unix epoch
@@ -36,7 +36,7 @@ type KyselyCacheAdapterTable = {
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
-type KyselyCacheAdapterTables = {
+export type KyselyCacheAdapterTables = {
     cache: KyselyCacheAdapterTable;
 };
 
@@ -45,8 +45,9 @@ type KyselyCacheAdapterTables = {
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
  */
-type KyselyCacheAdapterSettings = {
+export type KyselyCacheAdapterSettings = {
     kysely: Kysely<KyselyCacheAdapterTables>;
+
     serde: ISerde<string>;
 
     /**
@@ -58,12 +59,14 @@ type KyselyCacheAdapterSettings = {
     expiredKeysRemovalInterval?: TimeSpan;
 
     /**
-     * @default {true}
+     * @default true
      */
     shouldRemoveExpiredKeys?: boolean;
 };
 
 /**
+ * To utilize the `KyselyCacheAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
+ * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
  * @group Adapters
@@ -81,11 +84,7 @@ export class KyselyCacheAdapter<TType = unknown>
         ): ExpressionWrapper<KyselyCacheAdapterTables, "cache", SqlBool> => {
             const hasNoExpiration = eb("cache.expiration", "is", null);
             const hasExpiration = eb("cache.expiration", "is not", null);
-            const hasNotExpired = eb(
-                "cache.expiration",
-                ">",
-                new Date().getTime(),
-            );
+            const hasNotExpired = eb("cache.expiration", ">", Date.now());
             const keysMatch = eb("cache.key", "in", keys);
             return eb.and([
                 keysMatch,
@@ -103,11 +102,7 @@ export class KyselyCacheAdapter<TType = unknown>
         ): ExpressionWrapper<KyselyCacheAdapterTables, "cache", SqlBool> => {
             const keysMatch = eb("cache.key", "in", keys);
             const hasExpiration = eb("cache.expiration", "is not", null);
-            const hasExpired = eb(
-                "cache.expiration",
-                "<=",
-                new Date().getTime(),
-            );
+            const hasExpired = eb("cache.expiration", "<=", Date.now());
             return eb.and([keysMatch, hasExpiration, hasExpired]);
         };
     }
@@ -157,25 +152,24 @@ export class KyselyCacheAdapter<TType = unknown>
     async removeAllExpired(): Promise<void> {
         await this.kysely
             .deleteFrom("cache")
-            .where("cache.expiration", "<=", new Date().getTime())
+            .where("cache.expiration", "<=", Date.now())
             .execute();
     }
 
     async init(): Promise<void> {
-        // Should not throw if the table already exists thats why the try catch is used.
+        // Should throw if the table already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createTable("cache")
-                .ifNotExists()
                 .addColumn("key", "varchar(255)", (col) => col.primaryKey())
-                .addColumn("value", "varchar(255)")
+                .addColumn("value", "varchar(255)", (col) => col.notNull())
                 .addColumn("expiration", "bigint")
                 .execute();
         } catch {
             /* EMPTY */
         }
 
-        // Should not throw if the index already exists thats why the try catch is used.
+        // Should throw if the index already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createIndex("cache_expiration")
@@ -187,7 +181,7 @@ export class KyselyCacheAdapter<TType = unknown>
         }
 
         if (this.shouldRemoveExpiredKeys && this.timeoutId === null) {
-            this.timeoutId = setTimeout(() => {
+            this.timeoutId = setInterval(() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 this.removeAllExpired();
             }, this.expiredKeysRemovalInterval.toMilliseconds());
@@ -199,7 +193,7 @@ export class KyselyCacheAdapter<TType = unknown>
             clearTimeout(this.timeoutId);
         }
 
-        // Should not throw if the index does not exists thats why the try catch is used.
+        // Should throw if the index does not exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .dropIndex("cache_expiration")
@@ -209,7 +203,7 @@ export class KyselyCacheAdapter<TType = unknown>
             /* EMPTY */
         }
 
-        // Should not throw if the table does not exists thats why the try catch is used.
+        // Should throw if the table does not exists thats why the try catch is used.
         try {
             await this.kysely.schema.dropTable("cache").execute();
         } catch {
@@ -228,9 +222,10 @@ export class KyselyCacheAdapter<TType = unknown>
         }
         return {
             value: this.serde.deserialize(row.value),
-            expiration: row.expiration
-                ? new Date(Number(row.expiration))
-                : null,
+            expiration:
+                row.expiration !== null
+                    ? new Date(Number(row.expiration))
+                    : null,
         };
     }
 
@@ -251,7 +246,10 @@ export class KyselyCacheAdapter<TType = unknown>
         if (this.disableTransaction) {
             return fn(this.kysely as Transaction<KyselyCacheAdapterTables>);
         }
-        return await this.kysely.transaction().execute(fn);
+        return await this.kysely
+            .transaction()
+            .setIsolationLevel("serializable")
+            .execute(fn);
     }
 
     async upsert(data: ICacheInsert<TType>): Promise<ICacheData<TType> | null> {
@@ -293,9 +291,10 @@ export class KyselyCacheAdapter<TType = unknown>
             }
             return {
                 value: this.serde.deserialize(prevRow.value),
-                expiration: prevRow.expiration
-                    ? new Date(Number(prevRow.expiration))
-                    : null,
+                expiration:
+                    prevRow.expiration !== null
+                        ? new Date(Number(prevRow.expiration))
+                        : null,
             };
         });
     }

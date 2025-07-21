@@ -19,10 +19,11 @@ import {
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
-type KyselyLockAdapterTable = {
+export type KyselyLockAdapterTable = {
     key: string;
     owner: string;
     // In ms since unix epoch
+    // The type in mysql is bigint and will be returned as a string
     expiresAt: number | string | null;
 };
 
@@ -31,7 +32,7 @@ type KyselyLockAdapterTable = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
-type KyselyLockAdapterTables = {
+export type KyselyLockAdapterTables = {
     lock: KyselyLockAdapterTable;
 };
 
@@ -40,13 +41,28 @@ type KyselyLockAdapterTables = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
-type KyselyLockAdapterSettings = {
+export type KyselyLockAdapterSettings = {
     kysely: Kysely<KyselyLockAdapterTables>;
+
+    /**
+     * @default
+     * ```ts
+     * TimeSpan.fromMinutes(1)
+     * ```
+     */
     expiredKeysRemovalInterval?: TimeSpan;
+
+    /**
+     * @default true
+     */
     shouldRemoveExpiredKeys?: boolean;
 };
 
 /**
+ * To utilize the `KyselyLockAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
+ *
+ * Note in order to use `KyselyLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
+ * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
@@ -93,7 +109,7 @@ export class KyselyLockAdapter
             clearTimeout(this.timeoutId);
         }
 
-        // Should not throw if the index does not exists thats why the try catch is used.
+        // Should throw if the index does not exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .dropIndex("lock_expiresAt")
@@ -103,7 +119,7 @@ export class KyselyLockAdapter
             /* EMPTY */
         }
 
-        // Should not throw if the table does not exists thats why the try catch is used.
+        // Should throw if the table does not exists thats why the try catch is used.
         try {
             await this.kysely.schema.dropTable("lock").execute();
         } catch {
@@ -112,20 +128,19 @@ export class KyselyLockAdapter
     }
 
     async init(): Promise<void> {
-        // Should not throw if the table already exists thats why the try catch is used.
+        // Should throw if the table already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createTable("lock")
-                .ifNotExists()
                 .addColumn("key", "varchar(255)", (col) => col.primaryKey())
-                .addColumn("owner", "varchar(255)")
+                .addColumn("owner", "varchar(255)", (col) => col.notNull())
                 .addColumn("expiresAt", "bigint")
                 .execute();
         } catch {
             /* EMPTY */
         }
 
-        // Should not throw if the index already exists thats why the try catch is used.
+        // Should throw if the index already exists thats why the try catch is used.
         try {
             await this.kysely.schema
                 .createIndex("lock_expiresAt")
@@ -137,7 +152,7 @@ export class KyselyLockAdapter
         }
 
         if (this.shouldRemoveExpiredKeys) {
-            this.timeoutId = setTimeout(() => {
+            this.timeoutId = setInterval(() => {
                 void this.removeAllExpired();
             }, this.expiredKeysRemovalInterval.toMilliseconds());
         }
@@ -219,7 +234,8 @@ export class KyselyLockAdapter
             return null;
         }
         return {
-            expiration: row.expiresAt ? new Date(Number(row.expiresAt)) : null,
+            expiration:
+                row.expiresAt !== null ? new Date(Number(row.expiresAt)) : null,
             owner: row.owner,
         };
     }

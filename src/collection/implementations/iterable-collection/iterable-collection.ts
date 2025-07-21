@@ -937,7 +937,7 @@ export class IterableCollection<TInput = unknown>
             }
             index++;
         }
-        if (matchedItem) {
+        if (matchedItem !== null) {
             return matchedItem;
         }
         return resolveLazyable(defaultValue);
@@ -968,7 +968,7 @@ export class IterableCollection<TInput = unknown>
         for (const item of this) {
             if (
                 resolveInvokable(predicateFn)(item, index, this) &&
-                beforeItem
+                beforeItem !== null
             ) {
                 return beforeItem;
             }

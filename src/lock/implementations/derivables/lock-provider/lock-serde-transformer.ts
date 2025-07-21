@@ -97,7 +97,8 @@ export class LockSerdeTransformer
         return (
             value instanceof Lock &&
             getConstructorName(value) === Lock.name &&
-            value.getSerdeTransformerName() === this.serdeTransformerName
+            value._internal_getSerdeTransformerName() ===
+                this.serdeTransformerName
         );
     }
 
@@ -113,7 +114,7 @@ export class LockSerdeTransformer
             key: keyObj,
             owner,
             serdeTransformerName: this.serdeTransformerName,
-            ttl: ttlInMs ? TimeSpan.fromMilliseconds(ttlInMs) : null,
+            ttl: ttlInMs !== null ? TimeSpan.fromMilliseconds(ttlInMs) : null,
             expirationInMs,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
@@ -122,6 +123,6 @@ export class LockSerdeTransformer
     }
 
     serialize(deserializedValue: Lock): ISerializedLock {
-        return Lock.serialize(deserializedValue);
+        return Lock._internal_serialize(deserializedValue);
     }
 }
