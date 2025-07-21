@@ -1,5 +1,19 @@
 # @daiso-tech/core
 
+## 0.39.0
+
+### Minor Changes
+
+- 7d25a1f: Removed `UnexpectedLockError`, `UnexpectedCollectionError`, `UnexpectedCacheError`, `registerLockErrorsToSerde`, `registerCahceErrorsToSerde`, `registerCollectionErrorsToSerde`, removed `EventBusError` and `UnexpectedEventBusError`
+
+### Patch Changes
+
+- 4a8b68f: Made the internal types, KyselyLockAdapterTable, KyselyLockAdapterTables, KyselyCacheAdapterTable, KyselyCacheAdapterTables, KyselyCacheAdapterSettings, MongodbLockDocument and MongodbCacheDocument public.
+- aea3c29: Updated documentation
+- 4a8b68f: KyselyCacheAdapter now performs cleanup periodically instead of once.
+- 4a8b68f: KyselyCacheAdapter now performs cleanup periodically instead of once.
+- 9a1e697: Updated the docs
+
 ## 0.38.0
 
 ### Minor Changes
@@ -72,8 +86,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                  - `AsyncFactoryable`
-                  - `Factoryable`
+                    - `AsyncFactoryable`
+                    - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:

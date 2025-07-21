@@ -13,42 +13,38 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
 describe("function: isDatabaseCacheAdapter", () => {
     test("Should return true when is IDatabaseCacheAdapter", () => {
         const adapter: IDatabaseCacheAdapter = {
-            find: function (_key: string): PromiseLike<ICacheData | null> {
+            find: function (_key: string): Promise<ICacheData | null> {
                 throw new Error("Function not implemented.");
             },
-            insert: function (_data: ICacheInsert): PromiseLike<void> {
+            insert: function (_data: ICacheInsert): Promise<void> {
                 throw new Error("Function not implemented.");
             },
             upsert: function (
                 _data: ICacheInsert,
-            ): PromiseLike<ICacheDataExpiration | null> {
+            ): Promise<ICacheDataExpiration | null> {
                 throw new Error("Function not implemented.");
             },
-            updateExpired: function (_data: ICacheInsert): PromiseLike<number> {
+            updateExpired: function (_data: ICacheInsert): Promise<number> {
                 throw new Error("Function not implemented.");
             },
-            updateUnexpired: function (
-                _data: ICacheUpdate,
-            ): PromiseLike<number> {
+            updateUnexpired: function (_data: ICacheUpdate): Promise<number> {
                 throw new Error("Function not implemented.");
             },
             incrementUnexpired: function (
                 _data: ICacheUpdate<number>,
-            ): PromiseLike<number> {
+            ): Promise<number> {
                 throw new Error("Function not implemented.");
             },
-            removeExpiredMany: function (_keys: string[]): PromiseLike<number> {
+            removeExpiredMany: function (_keys: string[]): Promise<number> {
                 throw new Error("Function not implemented.");
             },
-            removeUnexpiredMany: function (
-                _keys: string[],
-            ): PromiseLike<number> {
+            removeUnexpiredMany: function (_keys: string[]): Promise<number> {
                 throw new Error("Function not implemented.");
             },
-            removeAll: function (): PromiseLike<void> {
+            removeAll: function (): Promise<void> {
                 throw new Error("Function not implemented.");
             },
-            removeByKeyPrefix: function (_prefix: string): PromiseLike<void> {
+            removeByKeyPrefix: function (_prefix: string): Promise<void> {
                 throw new Error("Function not implemented.");
             },
         };
@@ -56,45 +52,42 @@ describe("function: isDatabaseCacheAdapter", () => {
     });
     test("Should return false when is not IDatabaseCacheAdapter", () => {
         const adapter: ICacheAdapter = {
-            get: function (_key: string): PromiseLike<unknown> {
+            get: function (_key: string): Promise<unknown> {
                 throw new Error("Function not implemented.");
             },
-            getAndRemove: function (_key: string): PromiseLike<unknown> {
+            getAndRemove: function (_key: string): Promise<unknown> {
                 throw new Error("Function not implemented.");
             },
             add: function (
                 _key: string,
                 _value: unknown,
                 _ttl: TimeSpan | null,
-            ): PromiseLike<boolean> {
+            ): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
             put: function (
                 _key: string,
                 _value: unknown,
                 _ttl: TimeSpan | null,
-            ): PromiseLike<boolean> {
+            ): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
-            update: function (
-                _key: string,
-                _value: unknown,
-            ): PromiseLike<boolean> {
+            update: function (_key: string, _value: unknown): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
             increment: function (
                 _key: string,
                 _value: number,
-            ): PromiseLike<boolean> {
+            ): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
-            removeMany: function (_keys: string[]): PromiseLike<boolean> {
+            removeMany: function (_keys: string[]): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
-            removeAll: function (): PromiseLike<void> {
+            removeAll: function (): Promise<void> {
                 throw new Error("Function not implemented.");
             },
-            removeByKeyPrefix: function (_prefix: string): PromiseLike<void> {
+            removeByKeyPrefix: function (_prefix: string): Promise<void> {
                 throw new Error("Function not implemented.");
             },
         };

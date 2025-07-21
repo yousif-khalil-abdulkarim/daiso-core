@@ -32,7 +32,7 @@ export type IEventBusAdapter = {
     addListener(
         eventName: string,
         listener: EventListenerFn<BaseEvent>,
-    ): PromiseLike<void>;
+    ): Promise<void>;
 
     /**
      * The `removeListener` method is used for removing {@link EventListenerFn | `listener`} for certain `eventName`.
@@ -40,10 +40,10 @@ export type IEventBusAdapter = {
     removeListener(
         eventName: string,
         listener: EventListenerFn<BaseEvent>,
-    ): PromiseLike<void>;
+    ): Promise<void>;
 
     /**
      * The `dispatch` method is used for dispatching one or multiple `events`.
      */
-    dispatch(eventName: string, eventData: BaseEvent): PromiseLike<void>;
+    dispatch(eventName: string, eventData: BaseEvent): Promise<void>;
 };
