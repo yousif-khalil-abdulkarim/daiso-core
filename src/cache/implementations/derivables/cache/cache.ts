@@ -262,7 +262,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     private createLazyPromise<TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: () => Promise<TValue>,
     ): LazyPromise<TValue> {
         return this.lazyPromiseFactory(asyncFn);
     }

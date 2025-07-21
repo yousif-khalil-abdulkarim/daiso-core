@@ -53,51 +53,51 @@ export type IDatabaseCacheAdapter<TType = unknown> = {
     /**
      * The `find` method returns the the `key` data which includs {@link ICacheData | `ICacheData.value`}  and {@link ICacheData | `ICacheData.expiration`}.
      */
-    find(key: string): PromiseLike<ICacheData<TType> | null>;
+    find(key: string): Promise<ICacheData<TType> | null>;
 
     /**
      * The `insert` method inserts the given cache `data`.
      */
-    insert(data: ICacheInsert<TType>): PromiseLike<void>;
+    insert(data: ICacheInsert<TType>): Promise<void>;
 
     /**
      * The `upsert` method inserts a key and if the key already exists then key will be updated with new `data.value` and `data.expiration`.
      * The method always returns the old cache data if it exists otherwise null will be returned.
      */
-    upsert(data: ICacheInsert<TType>): PromiseLike<ICacheDataExpiration | null>;
+    upsert(data: ICacheInsert<TType>): Promise<ICacheDataExpiration | null>;
 
     /**
      * The `removeExpiredMany` method updates a expired `key`.
      */
-    updateExpired(data: ICacheInsert<TType>): PromiseLike<number>;
+    updateExpired(data: ICacheInsert<TType>): Promise<number>;
 
     /**
      * The `removeExpiredMany` method updates a unexpired `key`.
      */
-    updateUnexpired(data: ICacheUpdate<TType>): PromiseLike<number>;
+    updateUnexpired(data: ICacheUpdate<TType>): Promise<number>;
 
     /**
      * The `incrementUnexpired` should always throw an error if the existing item is not a number type.
      */
-    incrementUnexpired(data: ICacheUpdate<number>): PromiseLike<number>;
+    incrementUnexpired(data: ICacheUpdate<number>): Promise<number>;
 
     /**
      * The `removeExpiredMany` method removes multiple expired `keys`.
      */
-    removeExpiredMany(keys: string[]): PromiseLike<number>;
+    removeExpiredMany(keys: string[]): Promise<number>;
 
     /**
      * The `removeExpiredMany` method removes multiple unexpired `keys`.
      */
-    removeUnexpiredMany(keys: string[]): PromiseLike<number>;
+    removeUnexpiredMany(keys: string[]): Promise<number>;
 
     /**
      * The `removeAll` method removes all keys from the cache.
      */
-    removeAll(): PromiseLike<void>;
+    removeAll(): Promise<void>;
 
     /**
      * The `removeByKeyPrefix` method removes all the keys in the cache that starts with the given `prefix`.
      */
-    removeByKeyPrefix(prefix: string): PromiseLike<void>;
+    removeByKeyPrefix(prefix: string): Promise<void>;
 };
