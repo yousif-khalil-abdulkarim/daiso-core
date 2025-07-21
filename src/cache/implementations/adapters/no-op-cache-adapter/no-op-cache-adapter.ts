@@ -17,47 +17,39 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
  * @group Adapters
  */
 export class NoOpCacheAdapter<TType = unknown> implements ICacheAdapter<TType> {
-    get(_key: string): PromiseLike<TType | null> {
+    get(_key: string): Promise<TType | null> {
         return Promise.resolve(null);
     }
 
-    getAndRemove(_key: string): PromiseLike<TType | null> {
+    getAndRemove(_key: string): Promise<TType | null> {
         return Promise.resolve(null);
     }
 
-    add(
-        _key: string,
-        _value: TType,
-        _ttl: TimeSpan | null,
-    ): PromiseLike<boolean> {
+    add(_key: string, _value: TType, _ttl: TimeSpan | null): Promise<boolean> {
         return Promise.resolve(true);
     }
 
-    put(
-        _key: string,
-        _value: TType,
-        _ttl: TimeSpan | null,
-    ): PromiseLike<boolean> {
+    put(_key: string, _value: TType, _ttl: TimeSpan | null): Promise<boolean> {
         return Promise.resolve(true);
     }
 
-    update(_key: string, _value: TType): PromiseLike<boolean> {
+    update(_key: string, _value: TType): Promise<boolean> {
         return Promise.resolve(true);
     }
 
-    increment(_key: string, _value: number): PromiseLike<boolean> {
+    increment(_key: string, _value: number): Promise<boolean> {
         return Promise.resolve(true);
     }
 
-    removeMany(_keys: string[]): PromiseLike<boolean> {
+    removeMany(_keys: string[]): Promise<boolean> {
         return Promise.resolve(true);
     }
 
-    removeAll(): PromiseLike<void> {
+    removeAll(): Promise<void> {
         return Promise.resolve();
     }
 
-    removeByKeyPrefix(_prefix: string): PromiseLike<void> {
+    removeByKeyPrefix(_prefix: string): Promise<void> {
         return Promise.resolve();
     }
 }
