@@ -148,7 +148,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     }
 
     private createLazyPromise<TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: () => Promise<TValue>,
     ): LazyPromise<TValue> {
         return this.lazyPromiseFactory(asyncFn);
     }
