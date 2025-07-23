@@ -18,23 +18,19 @@ export class NoOpLockAdapter implements ILockAdapter {
         _key: string,
         _owner: string,
         _ttl: TimeSpan | null,
-    ): PromiseLike<boolean> {
+    ): Promise<boolean> {
         return Promise.resolve(true);
     }
 
-    release(_key: string, _owner: string): PromiseLike<boolean> {
+    release(_key: string, _owner: string): Promise<boolean> {
         return Promise.resolve(true);
     }
 
-    forceRelease(_key: string): PromiseLike<void> {
+    forceRelease(_key: string): Promise<void> {
         return Promise.resolve();
     }
 
-    refresh(
-        _key: string,
-        _owner: string,
-        _ttl: TimeSpan,
-    ): PromiseLike<boolean> {
+    refresh(_key: string, _owner: string, _ttl: TimeSpan): Promise<boolean> {
         return Promise.resolve(true);
     }
 }

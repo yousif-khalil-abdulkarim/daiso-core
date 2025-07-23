@@ -23,11 +23,7 @@ export type IDatabaseLockAdapter = {
     /**
      * The `insert` method will create a lock if it does not exist and if the lock already exists an error must be thrown.
      */
-    insert(
-        key: string,
-        owner: string,
-        expiration: Date | null,
-    ): PromiseLike<void>;
+    insert(key: string, owner: string, expiration: Date | null): Promise<void>;
 
     /**
      * The `update` method will update a lock if it has expired, matches the given `key` and  matches the given `owner`.
@@ -38,22 +34,22 @@ export type IDatabaseLockAdapter = {
         key: string,
         owner: string,
         expiration: Date | null,
-    ): PromiseLike<number>;
+    ): Promise<number>;
 
     /**
      * The `remove` method will remove a lock if it matches the given `key` and matches the given `owner`.
      */
-    remove(key: string, owner: string | null): PromiseLike<void>;
+    remove(key: string, owner: string | null): Promise<void>;
 
     /**
      * The `refresh` method will upadte expiration of lock if it matches the given `key` and matches the given `owner`.
      *
      * @returns Returns number of updated rows or documents.
      */
-    refresh(key: string, owner: string, expiration: Date): PromiseLike<number>;
+    refresh(key: string, owner: string, expiration: Date): Promise<number>;
 
     /**
      * The `find` method will return a lock by the given `key`.
      */
-    find(key: string): PromiseLike<ILockData | null>;
+    find(key: string): Promise<ILockData | null>;
 };

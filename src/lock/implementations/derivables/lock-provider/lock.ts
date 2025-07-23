@@ -55,7 +55,7 @@ export type ISerializedLock = {
  */
 export type LockSettings = {
     createLazyPromise: <TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: () => Promise<TValue>,
     ) => LazyPromise<TValue>;
     serdeTransformerName: string;
     adapter: ILockAdapter;
@@ -89,7 +89,7 @@ export class Lock implements ILock {
     }
 
     private readonly createLazyPromise: <TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: () => Promise<TValue>,
     ) => LazyPromise<TValue>;
     private readonly adapter: ILockAdapter;
     private readonly lockState: LockState;

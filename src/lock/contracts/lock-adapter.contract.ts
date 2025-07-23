@@ -19,27 +19,23 @@ export type ILockAdapter = {
      *
      * @returns Returns true if not already acquired othewise false is returned.
      */
-    acquire(
-        key: string,
-        owner: string,
-        ttl: TimeSpan | null,
-    ): PromiseLike<boolean>;
+    acquire(key: string, owner: string, ttl: TimeSpan | null): Promise<boolean>;
 
     /**
      * The `release` method releases a lock if the owner matches.
      *
      * @returns Returns true if released otherwise false is returned.
      */
-    release(key: string, owner: string): PromiseLike<boolean>;
+    release(key: string, owner: string): Promise<boolean>;
 
     /**
      * The `forceRelease` method releases a lock regardless of the owner.
      */
-    forceRelease(key: string): PromiseLike<void>;
+    forceRelease(key: string): Promise<void>;
 
     /**
      * The `refresh` method will upadte `ttl` of lock if it matches the given `key` and matches the given `owner`.
      * Returns true if the update occured otherwise false is returned.
      */
-    refresh(key: string, owner: string, ttl: TimeSpan): PromiseLike<boolean>;
+    refresh(key: string, owner: string, ttl: TimeSpan): Promise<boolean>;
 };
