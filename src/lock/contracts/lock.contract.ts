@@ -68,13 +68,13 @@ export type ILock = {
     /**
      * The `acquire` method acquires a lock only if the lock is available.
      *
-     * @returns Returns true if the lock is acquired otherwise false is returned.
+     * @returns Returns true if lock is not acquired or is acquired by same owner othewise false.
      */
     acquire(): LazyPromise<boolean>;
 
     /**
      * The `acquireOrFail` method acquires a lock only if the lock is available.
-     * Throws an error if already acquired.
+     * Throws an error if the lock is already acquired by different owner.
      *
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
      */
@@ -84,7 +84,7 @@ export type ILock = {
      * The `acquireBlocking` method acquires a lock only if the lock is available.
      * If the lock is not acquired, it retries every `settings.interval` until `settings.time` is reached.
      *
-     * @returns Returns true if the lock is acquired otherwise false is returned.
+     * @returns Returns true if lock is not acquired or is acquired by same owner othewise false.
      */
     acquireBlocking(
         settings?: LockAquireBlockingSettings,
@@ -93,7 +93,7 @@ export type ILock = {
     /**
      * The `acquireBlockingOrFail` method acquires a lock only if the lock is available.
      * If the lock is not acquired, it retries every `settings.interval` until `settings.time` is reached.
-     * Throws an error if the lock cannot be acquired after the given `settings.time`.
+     * Throws an error if the lock is already acquired by different owner.
      *
      * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
      */
@@ -139,9 +139,12 @@ export type ILock = {
     refresh(ttl?: TimeSpan): LazyPromise<boolean>;
 
     /**
-     * The `refreshOrFail` method updates the `ttl` of the lock if owned by the same owner.
+     * The `refreshOrFail` method updates the `ttl` of the lock if expireable and owned by the same owner.
      * Throws an error if a different owner attempts to refresh the lock.
+     * Throws an error if the key is unexpirable.
+     *
      * @throws {UnownedRefreshLockError} {@link UnownedRefreshLockError}
+     * @throws {UnrefreshableKeyLockError} {@link UnrefreshableKeyLockError}
      */
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
 

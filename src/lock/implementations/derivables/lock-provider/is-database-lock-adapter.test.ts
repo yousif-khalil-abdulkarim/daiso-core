@@ -4,7 +4,10 @@ import type {
 } from "@/lock/contracts/database-lock-adapter.contract.js";
 import { describe, expect, test } from "vitest";
 import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
-import type { ILockAdapter } from "@/lock/contracts/lock-adapter.contract.js";
+import type {
+    ILockAdapter,
+    LockRefreshResult,
+} from "@/lock/contracts/lock-adapter.contract.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 
 describe("function: isDatabaseLockAdapter", () => {
@@ -17,20 +20,24 @@ describe("function: isDatabaseLockAdapter", () => {
             ): Promise<void> {
                 throw new Error("Function not implemented.");
             },
-            update: function (
+            updateIfExpired: function (
                 _key: string,
                 _owner: string,
+
                 _expiration: Date | null,
-            ): Promise<number> {
+            ): Promise<ILockData> {
                 throw new Error("Function not implemented.");
             },
-            remove: function (
+            remove: function (_key: string): Promise<void> {
+                throw new Error("Function not implemented.");
+            },
+            removeIfOwner: function (
                 _key: string,
-                _owner: string | null,
-            ): Promise<void> {
+                _owner: string,
+            ): Promise<ILockData | null> {
                 throw new Error("Function not implemented.");
             },
-            refresh: function (
+            updateExpirationIfOwner: function (
                 _key: string,
                 _owner: string,
                 _expiration: Date,
@@ -62,7 +69,7 @@ describe("function: isDatabaseLockAdapter", () => {
                 _key: string,
                 _owner: string,
                 _ttl: TimeSpan,
-            ): Promise<boolean> {
+            ): Promise<LockRefreshResult> {
                 throw new Error("Function not implemented.");
             },
         };

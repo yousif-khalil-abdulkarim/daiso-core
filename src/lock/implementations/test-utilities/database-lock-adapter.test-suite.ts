@@ -6,11 +6,12 @@ import {
     type SuiteAPI,
     type ExpectStatic,
     type beforeEach,
-    vi,
 } from "vitest";
-import { type IDatabaseLockAdapter } from "@/lock/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import {
+    type IDatabaseLockAdapter,
+    type ILockData,
+} from "@/lock/contracts/_module-exports.js";
+import { TimeSpan, type Promisable } from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -69,239 +70,235 @@ export function databaseLockAdapterTestSuite(
     settings: DatabaseLockAdapterTestSuiteSettings,
 ): void {
     const { expect, test, createAdapter, describe, beforeEach } = settings;
+
     let adapter: IDatabaseLockAdapter;
     beforeEach(async () => {
         adapter = await createAdapter();
     });
 
-    const ttl = TimeSpan.fromMilliseconds(50);
     describe("method: insert", () => {
-        test("Should insert lock when not existing", async () => {
-            const key = "a";
-            const owner = "b";
-            const expiration = null;
-
+        test("Should insert when key doesnt exists", async () => {
+            const key = "key";
+            const owner = "a";
+            const expiration = new Date("2025");
             await adapter.insert(key, owner, expiration);
 
-            const result = await adapter.find(key);
-            expect(result).toEqual({
+            expect(await adapter.find(key)).toEqual({
                 owner,
                 expiration,
-            });
+            } satisfies ILockData);
         });
-        test("Should insert lock with expiration when not existing", async () => {
-            const key = "a";
-            const owner = "b";
-            const expiration = ttl.toEndDate();
-
+        test("Should throw error when key already exsists", async () => {
+            const key = "key";
+            const owner = "a";
+            const expiration = new Date("2025");
             await adapter.insert(key, owner, expiration);
 
-            const result = await adapter.find(key);
-            expect(result).toEqual({
-                owner,
-                expiration,
-            });
-        });
-        test("Should throw error when lock already existing", async () => {
-            const key = "a";
-            const owner = "b";
-            const expiration = null;
+            const promise = adapter.insert(key, owner, expiration);
 
-            await adapter.insert(key, owner, expiration);
-
-            const result = adapter.insert(key, owner, expiration);
-            await expect(result).rejects.toBeDefined();
+            await expect(promise).rejects.toBeDefined();
         });
     });
-    describe("method: update", () => {
-        test("Should return false when lock has no expiration", async () => {
-            const key = "a";
-            const owner1 = "b";
-            const expiration = null;
-            await adapter.insert(key, owner1, expiration);
+    describe("method: updateIfExpired", () => {
+        test("Should return null after update when key doesnt exists", async () => {
+            const noneExistingKey = "key";
+            const noneExistingOwner = "b";
+            const expiration = TimeSpan.fromMinutes(4).toStartDate();
 
-            const owner2 = "c";
-            const result = await adapter.update(key, owner2, expiration);
-
-            expect(result).toBe(0);
-        });
-        test("Should not update when lock has no expiration", async () => {
-            const key = "a";
-            const owner1 = "b";
-            const expiration = null;
-            await adapter.insert(key, owner1, expiration);
-
-            const owner2 = "c";
-            await adapter.update(key, owner2, expiration);
-
-            const result = await adapter.find(key);
-            expect(result).toEqual({
-                owner: owner1,
+            const lockData = await adapter.updateIfExpired(
+                noneExistingKey,
+                noneExistingOwner,
                 expiration,
-            });
+            );
+
+            expect(lockData).toBeNull();
         });
-        test("Should return false when lock has not expired", async () => {
-            vi.useFakeTimers();
-            const key = "a";
-            const owner1 = "b";
-            const expiration1 = ttl.toEndDate();
-            await adapter.insert(key, owner1, expiration1);
-            vi.advanceTimersByTime(ttl.divide(2).toMilliseconds());
+        test("Should update when key is expired", async () => {
+            const key = "key";
+            const ownerA = "a";
+            const expirationA = TimeSpan.fromMinutes(2).toStartDate();
+            await adapter.insert(key, ownerA, expirationA);
 
-            const owner2 = "c";
-            const expiration2 = ttl.addMilliseconds(25).toEndDate();
-            const result = await adapter.update(key, owner2, expiration2);
+            const ownerB = "b";
+            const expirationB = TimeSpan.fromMinutes(2).toEndDate();
+            const lockData = await adapter.updateIfExpired(
+                key,
+                ownerB,
+                expirationB,
+            );
 
-            expect(result).toBe(0);
-            vi.useRealTimers();
+            expect(lockData).toEqual({
+                owner: ownerB,
+                expiration: expirationB,
+            } satisfies ILockData);
         });
-        test("Should not update when lock has not expired", async () => {
-            vi.useFakeTimers();
-            const key = "a";
-            const owner1 = "b";
-            const expiration1 = ttl.toEndDate();
-            await adapter.insert(key, owner1, expiration1);
-            vi.advanceTimersByTime(ttl.divide(2).toMilliseconds());
+        test("Should not update when key is unexpired", async () => {
+            const key = "key";
+            const ownerA = "a";
+            const expirationA = TimeSpan.fromMinutes(2).toEndDate();
+            await adapter.insert(key, ownerA, expirationA);
 
-            const owner2 = "c";
-            const expiration2 = ttl.addMilliseconds(25).toEndDate();
-            await adapter.update(key, owner2, expiration2);
+            const ownerB = "b";
+            const expirationB = TimeSpan.fromMinutes(2).toEndDate();
+            const result = await adapter.updateIfExpired(
+                key,
+                ownerB,
+                expirationB,
+            );
 
-            const result = await adapter.find(key);
             expect(result).toEqual({
-                owner: owner1,
-                expiration: expiration1,
-            });
-            vi.useRealTimers();
+                expiration: expirationA,
+                owner: ownerA,
+            } satisfies ILockData);
         });
-        test("Should return true when lock has expired", async () => {
-            vi.useFakeTimers();
-            const key = "a";
-            const owner1 = "b";
-            const expiration1 = ttl.toEndDate();
-            await adapter.insert(key, owner1, expiration1);
-            vi.advanceTimersByTime(ttl.addMilliseconds(1).toMilliseconds());
+        test("Should not update when key is unexpirable", async () => {
+            const key = "key";
+            const ownerA = "a";
+            const expirationA = null;
+            await adapter.insert(key, ownerA, expirationA);
 
-            const owner2 = "c";
-            const expiration2 = ttl.addMilliseconds(25).toEndDate();
-            const result = await adapter.update(key, owner2, expiration2);
+            const ownerB = "b";
+            const expirationB = TimeSpan.fromMinutes(2).toEndDate();
+            const result = await adapter.updateIfExpired(
+                key,
+                ownerB,
+                expirationB,
+            );
 
-            expect(result).toBe(1);
-            vi.useRealTimers();
-        });
-        test("Should update when lock has expired", async () => {
-            vi.useFakeTimers();
-            const key = "a";
-            const owner1 = "b";
-            const expiration1 = ttl.toEndDate();
-            await adapter.insert(key, owner1, expiration1);
-            vi.advanceTimersByTime(ttl.addMilliseconds(1).toMilliseconds());
-
-            const owner2 = "c";
-            const expiration2 = ttl.addMilliseconds(25).toEndDate();
-            await adapter.update(key, owner2, expiration2);
-
-            const result = await adapter.find(key);
             expect(result).toEqual({
-                owner: owner2,
-                expiration: expiration2,
-            });
-            vi.useRealTimers();
+                expiration: expirationA,
+                owner: ownerA,
+            } satisfies ILockData);
         });
     });
     describe("method: remove", () => {
-        test("Should not remove lock when not same owner", async () => {
-            const key = "a";
-            const owner1 = "b";
-            const expiration = null;
-            await adapter.insert(key, owner1, expiration);
-
-            const owner2 = "c";
-            await adapter.remove(key, owner2);
-
-            const result = await adapter.find(key);
-            expect(result).toEqual({
-                owner: owner1,
-                expiration,
-            });
-        });
-        test("Should remove lock when same owner", async () => {
-            const key = "a";
-            const owner = "b";
-            const expiration = null;
+        test("Should remove key", async () => {
+            const key = "key";
+            const owner = "a";
+            const expiration = new Date("2025");
+            expiration.setMinutes(expiration.getMinutes() + 2);
             await adapter.insert(key, owner, expiration);
 
-            await adapter.remove(key, owner);
+            await adapter.remove(key);
 
-            const result = await adapter.find(key);
-            expect(result).toBeNull();
-        });
-        test("Should remove lock when given null as owner", async () => {
-            const key = "a";
-            const owner = "b";
-            const expiration = null;
-            await adapter.insert(key, owner, expiration);
-
-            await adapter.remove(key, null);
-
-            const result = await adapter.find(key);
-            expect(result).toBeNull();
+            expect(await adapter.find(key)).toBeNull();
         });
     });
-    describe("method: refresh", () => {
-        test("Should return false when not same owner", async () => {
-            const key = "a";
-            const owner1 = "b";
-            const expiration1 = ttl.toEndDate();
-            await adapter.insert(key, owner1, expiration1);
+    describe("method: removeIfOwner", () => {
+        test("Should return null when key deosnt exists", async () => {
+            const noneExsistingKey = "key";
+            const noneExsistingOwner = "b";
 
-            const expiration2 = ttl.multiply(2).toEndDate();
-            const owner2 = "c";
-            const result = await adapter.refresh(key, owner2, expiration2);
+            const lockExpirationData = await adapter.removeIfOwner(
+                noneExsistingKey,
+                noneExsistingOwner,
+            );
+
+            expect(lockExpirationData).toBeNull();
+        });
+        test("Should remove when key exists and owner match", async () => {
+            const key = "key";
+            const owner = "a";
+            const expiration = new Date("2025");
+            await adapter.insert(key, owner, expiration);
+
+            const lockExpirationData = await adapter.removeIfOwner(key, owner);
+
+            expect(lockExpirationData).toEqual({
+                expiration,
+                owner,
+            } satisfies ILockData);
+            expect(await adapter.find(key)).toBeNull();
+        });
+        test("Should not remove when key exists and owner doesnt match", async () => {
+            const key = "key";
+            const owner = "a";
+            const expiration = new Date("2025");
+            await adapter.insert(key, owner, expiration);
+
+            const noneExsistingOwner = "b";
+            const lockExpirationData = await adapter.removeIfOwner(
+                key,
+                noneExsistingOwner,
+            );
+
+            expect(lockExpirationData).toBeNull();
+            expect(await adapter.find(key)).toEqual({
+                owner,
+                expiration,
+            } satisfies ILockData);
+        });
+    });
+    describe("method: updateExpirationIfOwner", () => {
+        test("Should return 0 when key doesnt exists", async () => {
+            const newExpiration = new Date("2025");
+            const noneExsistingKey = "key";
+            const owner = "b";
+            const result = await adapter.updateExpirationIfOwner(
+                noneExsistingKey,
+                owner,
+                newExpiration,
+            );
 
             expect(result).toBe(0);
         });
-        test("Should not update lock when not same owner", async () => {
-            const key = "a";
-            const owner1 = "b";
-            const expiration1 = ttl.toEndDate();
-            await adapter.insert(key, owner1, expiration1);
+        test("Should update expiration when owner match", async () => {
+            const key = "key";
+            const owner = "a";
+            const expiration = new Date("2024");
+            await adapter.insert(key, owner, expiration);
 
-            const expiration2 = ttl.multiply(2).toEndDate();
-            const owner2 = "c";
-            await adapter.refresh(key, owner2, expiration2);
-
-            const result = await adapter.find(key);
-            expect(result).toEqual({
-                owner: owner1,
-                expiration: expiration1,
-            });
-        });
-        test("Should return true when same owner", async () => {
-            const key = "a";
-            const owner = "b";
-            const expiration1 = ttl.toEndDate();
-            await adapter.insert(key, owner, expiration1);
-
-            const expiration2 = ttl.multiply(2).toEndDate();
-            const result = await adapter.refresh(key, owner, expiration2);
-
-            expect(result).toBe(1);
-        });
-        test("Should update lock when same owner", async () => {
-            const key = "a";
-            const owner = "b";
-            const expiration1 = ttl.toEndDate();
-            await adapter.insert(key, owner, expiration1);
-
-            const expiration2 = ttl.multiply(2).toEndDate();
-            await adapter.refresh(key, owner, expiration2);
-
-            const result = await adapter.find(key);
-            expect(result).toEqual({
+            const newExpiration = new Date("2025");
+            const result = await adapter.updateExpirationIfOwner(
+                key,
                 owner,
-                expiration: expiration2,
-            });
+                newExpiration,
+            );
+
+            expect(result).toBeGreaterThanOrEqual(1);
+            expect(await adapter.find(key)).toEqual({
+                expiration: newExpiration,
+                owner,
+            } satisfies ILockData);
+        });
+        test("Should not update expiration when owner doesnt match", async () => {
+            const key = "key";
+            const ownerA = "a";
+            const expiration = new Date("2024");
+            await adapter.insert(key, ownerA, expiration);
+
+            const newExpiration = new Date("2025");
+            const ownerB = "b";
+            const result = await adapter.updateExpirationIfOwner(
+                key,
+                ownerB,
+                newExpiration,
+            );
+
+            expect(result).toBe(0);
+            expect(await adapter.find(key)).toEqual({
+                expiration,
+                owner: ownerA,
+            } satisfies ILockData);
+        });
+    });
+    describe("method: find", () => {
+        test("Should return null when key doesnt exists", async () => {
+            const noneExsistingKey = "key";
+            const lockData = await adapter.find(noneExsistingKey);
+            expect(lockData).toBeNull();
+        });
+        test("Should return ILockData when key exists", async () => {
+            const key = "key";
+            const owner = "a";
+            const expiration = new Date();
+            await adapter.insert(key, owner, expiration);
+
+            const lockData = await adapter.find(key);
+            expect(lockData).toEqual({
+                owner,
+                expiration,
+            } satisfies ILockData);
         });
     });
 }

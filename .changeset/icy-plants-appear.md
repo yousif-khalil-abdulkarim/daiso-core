@@ -1,32 +1,55 @@
-/**
- * @module Lock
- */
+---
+"@daiso-tech/core": minor
+---
 
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
- * @group Contracts
- */
-export type ILockData = {
+Updated `IDatabaseLockAdapter` contract:
+
+Before update:
+
+```ts
+export type IDatabaseLockAdapter = {
     /**
-     * The expiration date and time of the lock.
-     * `null` indicates the lock does not expire.
+     * The `insert` method will create a lock if it does not exist and if the lock already exists an error must be thrown.
      */
-    expiration: Date | null;
+    insert(
+        key: string,
+        owner: string,
+        expiration: Date | null,
+    ): PromiseLike<void>;
 
     /**
-     * The identifier of the entity currently holding the lock.
+     * The `update` method will update a lock if it has expired, matches the given `key` and  matches the given `owner`.
+     *
+     * @returns Returns number of updated rows or documents.
      */
-    owner: string;
+    update(
+        key: string,
+        owner: string,
+        expiration: Date | null,
+    ): PromiseLike<number>;
+
+    /**
+     * The `remove` method will remove a lock if it matches the given `key` and matches the given `owner`.
+     */
+    remove(key: string, owner: string | null): PromiseLike<void>;
+
+    /**
+     * The `refresh` method will upadte expiration of lock if it matches the given `key` and matches the given `owner`.
+     *
+     * @returns Returns number of updated rows or documents.
+     */
+    refresh(key: string, owner: string, expiration: Date): PromiseLike<number>;
+
+    /**
+     * The `find` method will return a lock by the given `key`.
+     */
+    find(key: string): PromiseLike<ILockData | null>;
 };
+```
 
-/**
- * The `IDatabaseLockAdapter` contract defines a way for managing locks independent of data storage.
- * This contract simplifies the implementation of lock adapters with CRUD-based databases, such as SQL databases and ORMs like TypeOrm and MikroOrm.
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
- * @group Contracts
- */
+After update:
+
+```ts
 export type IDatabaseLockAdapter = {
     /**
      * Inserts a new lock into the database.
@@ -44,13 +67,13 @@ export type IDatabaseLockAdapter = {
      * @param key The unique identifier for the lock.
      * @param owner The new identifier for the entity acquiring the lock.
      * @param expiration The new date and time when the lock should expire. Use `null` for a lock that doesn't expire.
-     * @returns Returns the lock's owner and expiration data after update or null if key is not found.
+     * @returns Returns a number greater than or equal to `1` if the lock was successfully updated because it was expired, or `0` if the lock was not updated (e.g., it was not expired or did not exist).
      */
     updateIfExpired(
         key: string,
         owner: string,
         expiration: Date | null,
-    ): Promise<ILockData | null>;
+    ): Promise<number>;
 
     /**
      * Removes a lock from the database regardless of its owner.
@@ -64,9 +87,12 @@ export type IDatabaseLockAdapter = {
      *
      * @param key The unique identifier for the lock.
      * @param owner The identifier of the expected owner.
-     * @returns Returns {@link ILockExpirationData |`ILockExpirationData | null`}. The {@link ILockExpirationData |`ILockExpirationData`} data if successfully removed, otherwise `null` if the lock wasn't found or the owner didn't match.
+     * @returns A promise that resolves to {@link ILockExpirationData |`ILockExpirationData | null`}. Returns the lock's expiration data if successfully removed, otherwise `null` if the lock wasn't found or the owner didn't match.
      */
-    removeIfOwner(key: string, owner: string): Promise<ILockData | null>;
+    removeIfOwner(
+        key: string,
+        owner: string,
+    ): Promise<ILockExpirationData | null>;
 
     /**
      * Updates the expiration date of a lock if it is currently held by the specified owner.
@@ -90,3 +116,4 @@ export type IDatabaseLockAdapter = {
      */
     find(key: string): Promise<ILockData | null>;
 };
+```

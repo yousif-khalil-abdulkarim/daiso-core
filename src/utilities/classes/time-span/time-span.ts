@@ -160,4 +160,8 @@ export class TimeSpan implements ISerializable<number> {
     toStartDate(endDate = new Date()): Date {
         return new Date(endDate.getTime() - this.toMilliseconds());
     }
+
+    toString(): string {
+        return this.milliseconds.toString();
+    }
 }
