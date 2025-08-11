@@ -1,5 +1,90 @@
 # @daiso-tech/core
 
+## 0.40.0
+
+### Minor Changes
+
+- 99e8913: Simplified `ILockAdapter` methods, now they return `Promise` instead of `PromiseLike`. Also updated `forceRelease` and `refresh` methods:
+    - `forceRelease` method returns true if the lock was released or false if the lock doesnt exists.
+    - `forceRelease` method returns `LockRefreshResult` enum instead of `boolean`.
+- 99e8913: Updated `IDatabaseLockAdapter` contract.
+
+    Before update:
+
+    ```ts
+    export type ILockData = {
+        owner: string;
+        expiration: Date | null;
+    };
+
+    export type IDatabaseLockAdapter = {
+        insert(
+            key: string,
+            owner: string,
+            expiration: Date | null,
+        ): PromiseLike<void>;
+
+        update(
+            key: string,
+            owner: string,
+            expiration: Date | null,
+        ): PromiseLike<number>;
+
+        remove(key: string, owner: string | null): PromiseLike<void>;
+
+        refresh(
+            key: string,
+            owner: string,
+            expiration: Date,
+        ): PromiseLike<number>;
+
+        find(key: string): PromiseLike<ILockData | null>;
+    };
+    ```
+
+    After update:
+
+    ```ts
+    export type ILockExpirationData = {
+        expiration: Date | null;
+    };
+
+    export type ILockData = ILockExpirationData & {
+        owner: string;
+    };
+
+    export type IDatabaseLockAdapter = {
+        insert(
+            key: string,
+            owner: string,
+            expiration: Date | null,
+        ): Promise<void>;
+
+        updateIfExpired(
+            key: string,
+            owner: string,
+            expiration: Date | null,
+        ): Promise<number>;
+
+        remove(key: string): Promise<ILockExpirationData | null>;
+
+        removeIfOwner(key: string, owner: string): Promise<ILockData | null>;
+
+        updateExpirationIfOwner(
+            key: string,
+            owner: string,
+            expiration: Date,
+        ): Promise<number>;
+
+        find(key: string): Promise<ILockData | null>;
+    };
+    ```
+
+- 85d0b53: Simplified the `IEventBusAdapter` it now uses `Promises` intead of `PromiseLike`
+- 99e8913: Updated `ILock` contract, now `forceRelease` method returns `true` when if the lock was released or `false` if the lock doesnt exists.
+- 9b004d2: Simplified `ICacheAdapter` and `IDatabaseCacheAdapter`, now they return `Promise` instead of `PromiseLike`
+- 99e8913: Updated `IPrunable`, `IDeinitizable`, and `IInitizable` contracts, they now use Promises instead of PromiseLike
+
 ## 0.39.0
 
 ### Minor Changes
@@ -86,8 +171,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                    - `AsyncFactoryable`
-                    - `Factoryable`
+                      - `AsyncFactoryable`
+                      - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
