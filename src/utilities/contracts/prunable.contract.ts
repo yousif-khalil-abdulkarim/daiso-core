@@ -8,5 +8,5 @@
  * @group Contracts
  */
 export type IPrunable = {
-    removeAllExpired(): PromiseLike<void>;
+    removeAllExpired(): Promise<void>;
 };
