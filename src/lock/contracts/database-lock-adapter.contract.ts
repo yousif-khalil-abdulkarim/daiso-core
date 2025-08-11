@@ -7,9 +7,24 @@
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
-export type ILockData = {
-    owner: string;
+export type ILockExpirationData = {
+    /**
+     * The expiration date and time of the lock.
+     * `null` indicates the lock does not expire.
+     */
     expiration: Date | null;
+};
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Contracts
+ */
+export type ILockData = ILockExpirationData & {
+    /**
+     * The identifier of the entity currently holding the lock.
+     */
+    owner: string;
 };
 
 /**
@@ -21,39 +36,64 @@ export type ILockData = {
  */
 export type IDatabaseLockAdapter = {
     /**
-     * The `insert` method will create a lock if it does not exist and if the lock already exists an error must be thrown.
+     * Inserts a new lock into the database.
+     *
+     * @param key The unique identifier for the lock.
+     * @param owner The identifier of the entity acquiring the lock.
+     * @param expiration The date and time when the lock should expire. Use `null` for a lock that doesn't expire.
      */
-    insert(
+    insert(key: string, owner: string, expiration: Date | null): Promise<void>;
+
+    /**
+     * Conditionally renews the lock on `key` if it has already expired, setting a new `owner` and `expiration`.
+     * Note you need to check if the expiration field is not null and greater than or equal to current time.
+     *
+     * @param key The unique identifier for the lock.
+     * @param owner The new identifier for the entity acquiring the lock.
+     * @param expiration The new date and time when the lock should expire. Use `null` for a lock that doesn't expire.
+     * @returns Returns number of updated.
+     */
+    updateIfExpired(
         key: string,
         owner: string,
         expiration: Date | null,
-    ): PromiseLike<void>;
+    ): Promise<number>;
 
     /**
-     * The `update` method will update a lock if it has expired, matches the given `key` and  matches the given `owner`.
+     * Removes a lock from the database regardless of its owner.
      *
-     * @returns Returns number of updated rows or documents.
+     * @param key The unique identifier for the lock to remove.
      */
-    update(
+    remove(key: string): Promise<ILockExpirationData | null>;
+
+    /**
+     * Removes a lock from the database only if it is currently held by the specified owner.
+     *
+     * @param key The unique identifier for the lock.
+     * @param owner The identifier of the expected owner.
+     * @returns Returns {@link ILockExpirationData |`ILockExpirationData | null`}. The {@link ILockExpirationData |`ILockExpirationData`} data if successfully removed, otherwise `null` if the lock wasn't found or the owner didn't match.
+     */
+    removeIfOwner(key: string, owner: string): Promise<ILockData | null>;
+
+    /**
+     * Updates the expiration date of a lock if it is currently held by the specified owner.
+     *
+     * @param key The unique identifier for the lock.
+     * @param owner The identifier of the expected owner.
+     * @param expiration The new date and time when the lock should expire.
+     * @returns Returns a number greater than or equal to `1` if the lock's expiration was updated, or `0` if the lock wasn't found or the owner didn't match.
+     */
+    updateExpirationIfOwner(
         key: string,
         owner: string,
-        expiration: Date | null,
-    ): PromiseLike<number>;
+        expiration: Date,
+    ): Promise<number>;
 
     /**
-     * The `remove` method will remove a lock if it matches the given `key` and matches the given `owner`.
-     */
-    remove(key: string, owner: string | null): PromiseLike<void>;
-
-    /**
-     * The `refresh` method will upadte expiration of lock if it matches the given `key` and matches the given `owner`.
+     * Retrieves the current lock data for a given key.
      *
-     * @returns Returns number of updated rows or documents.
+     * @param key The unique identifier for the lock.
+     * @returns Returns the lock's owner and expiration data if found, otherwise `null`.
      */
-    refresh(key: string, owner: string, expiration: Date): PromiseLike<number>;
-
-    /**
-     * The `find` method will return a lock by the given `key`.
-     */
-    find(key: string): PromiseLike<ILockData | null>;
+    find(key: string): Promise<ILockData | null>;
 };
