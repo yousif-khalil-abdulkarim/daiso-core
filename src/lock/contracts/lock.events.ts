@@ -62,6 +62,17 @@ export type UnownedRefreshTryLockEvent = {
 };
 
 /**
+ * The event is dispatched when trying to refefresh a lock that is unexpireable.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Events
+ */
+export type UnexpireableKeyRefreshTryLockEvent = {
+    key: string;
+    owner: string;
+};
+
+/**
  * The event is dispatched when trying to acquire a lock that is owned by a different owner.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
@@ -106,6 +117,7 @@ export const LOCK_EVENTS = {
     RELEASED: "RELEASED",
     UNOWNED_RELEASE_TRY: "UNOWNED_RELEASE_TRY",
     UNOWNED_REFRESH_TRY: "UNOWNED_REFRESH_TRY",
+    UNEXPIREABLE_KEY_REFRESH_TRY: "UNEXPIREABLE_KEY_REFRESH_TRY",
     UNAVAILABLE: "UNAVAILABLE",
     FORCE_RELEASED: "FORCE_RELEASED",
     REFRESHED: "REFRESHED",
@@ -122,6 +134,7 @@ export type LockEventMap = {
     [LOCK_EVENTS.RELEASED]: ReleasedLockEvent;
     [LOCK_EVENTS.UNOWNED_RELEASE_TRY]: UnownedReleaseTryLockEvent;
     [LOCK_EVENTS.UNOWNED_REFRESH_TRY]: UnownedRefreshTryLockEvent;
+    [LOCK_EVENTS.UNEXPIREABLE_KEY_REFRESH_TRY]: UnexpireableKeyRefreshTryLockEvent;
     [LOCK_EVENTS.UNAVAILABLE]: UnavailableLockEvent;
     [LOCK_EVENTS.FORCE_RELEASED]: ForceReleasedLockEvent;
     [LOCK_EVENTS.REFRESHED]: RefreshedLockEvent;

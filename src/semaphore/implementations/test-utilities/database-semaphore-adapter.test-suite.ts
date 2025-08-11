@@ -9,7 +9,8 @@ import {
 } from "vitest";
 import { type IDatabaseSemaphoreAdapter } from "@/semaphore/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
@@ -73,6 +74,9 @@ export function databaseSemaphoreAdapterTestSuite(
         adapter = await createAdapter();
     });
 
-    const ttl = TimeSpan.fromMilliseconds(50);
+    async function delay(time: TimeSpan): Promise<void> {
+        await LazyPromise.delay(time);
+    }
+
     test.todo("Write tests!!!");
 }

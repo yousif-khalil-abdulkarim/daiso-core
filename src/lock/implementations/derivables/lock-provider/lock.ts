@@ -22,12 +22,16 @@ import type {
     RefreshedLockEvent,
     UnownedRefreshTryLockEvent,
     UnexpectedErrorLockEvent,
+    LockRefreshResult,
+    UnexpireableKeyRefreshTryLockEvent,
 } from "@/lock/contracts/_module-exports.js";
 import {
     KeyAlreadyAcquiredLockError,
     LOCK_EVENTS,
+    LOCK_REFRESH_RESULT,
     UnownedRefreshLockError,
     UnownedReleaseLockError,
+    UnrefreshableKeyLockError,
     type LockAquireBlockingSettings,
     type LockEventMap,
 } from "@/lock/contracts/_module-exports.js";
@@ -55,7 +59,7 @@ export type ISerializedLock = {
  */
 export type LockSettings = {
     createLazyPromise: <TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: () => Promise<TValue>,
     ) => LazyPromise<TValue>;
     serdeTransformerName: string;
     adapter: ILockAdapter;
@@ -89,7 +93,7 @@ export class Lock implements ILock {
     }
 
     private readonly createLazyPromise: <TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
+        asyncFn: () => Promise<TValue>,
     ) => LazyPromise<TValue>;
     private readonly adapter: ILockAdapter;
     private readonly lockState: LockState;
@@ -280,7 +284,7 @@ export class Lock implements ILock {
                 interval = this.defaultBlockingInterval,
             } = settings;
             const endDate = time.toEndDate();
-            while (endDate.getTime() > new Date().getTime()) {
+            while (endDate > new Date()) {
                 const hasAquired = await this.acquire();
                 if (hasAquired) {
                     return true;
@@ -356,17 +360,22 @@ export class Lock implements ILock {
         });
     }
 
-    forceRelease(): LazyPromise<void> {
+    forceRelease(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             try {
-                await this.adapter.forceRelease(this.key.namespaced);
+                const hasRelased = await this.adapter.forceRelease(
+                    this.key.namespaced,
+                );
                 this.lockState.remove();
-                const event: ForceReleasedLockEvent = {
-                    key: this.key.resolved,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.FORCE_RELEASED, event)
-                    .defer();
+                if (hasRelased) {
+                    const event: ForceReleasedLockEvent = {
+                        key: this.key.resolved,
+                    };
+                    this.eventDispatcher
+                        .dispatch(LOCK_EVENTS.FORCE_RELEASED, event)
+                        .defer();
+                }
+                return hasRelased;
             } catch (error: unknown) {
                 const event: UnexpectedErrorLockEvent = {
                     key: this.key.resolved,
@@ -409,55 +418,75 @@ export class Lock implements ILock {
         });
     }
 
-    refresh(ttl: TimeSpan = this.defaultRefreshTime): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
-            try {
-                const hasRefreshed = await this.adapter.refresh(
-                    this.key.namespaced,
-                    this.owner,
-                    ttl,
-                );
-                if (hasRefreshed) {
-                    const event: RefreshedLockEvent = {
-                        key: this.key.resolved,
-                        owner: this.owner,
-                        ttl,
-                    };
-                    this.lockState.set(ttl);
-                    this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.REFRESHED, event)
-                        .defer();
-                } else {
-                    const event: UnownedRefreshTryLockEvent = {
-                        key: this.key.resolved,
-                        owner: this.owner,
-                    };
-                    this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.UNOWNED_REFRESH_TRY, event)
-                        .defer();
-                }
-                return hasRefreshed;
-            } catch (error: unknown) {
-                const event: UnexpectedErrorLockEvent = {
+    private async _refresh(
+        ttl: TimeSpan = this.defaultRefreshTime,
+    ): Promise<LockRefreshResult> {
+        try {
+            const result = await this.adapter.refresh(
+                this.key.namespaced,
+                this.owner,
+                ttl,
+            );
+            if (result === LOCK_REFRESH_RESULT.REFRESHED) {
+                const event: RefreshedLockEvent = {
                     key: this.key.resolved,
                     owner: this.owner,
-                    ttl: this.ttl,
-                    error,
+                    ttl,
+                };
+                this.lockState.set(ttl);
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.REFRESHED, event)
+                    .defer();
+            } else if (result === LOCK_REFRESH_RESULT.UNOWNED_REFRESH) {
+                const event: UnownedRefreshTryLockEvent = {
+                    key: this.key.resolved,
+                    owner: this.owner,
                 };
                 this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
+                    .dispatch(LOCK_EVENTS.UNOWNED_REFRESH_TRY, event)
                     .defer();
-                throw error;
+            } else {
+                const event: UnexpireableKeyRefreshTryLockEvent = {
+                    key: this.key.resolved,
+                    owner: this.owner,
+                };
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.UNEXPIREABLE_KEY_REFRESH_TRY, event)
+                    .defer();
             }
+            return result;
+        } catch (error: unknown) {
+            const event: UnexpectedErrorLockEvent = {
+                key: this.key.resolved,
+                owner: this.owner,
+                ttl: this.ttl,
+                error,
+            };
+            this.eventDispatcher
+                .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
+                .defer();
+            throw error;
+        }
+    }
+
+    refresh(ttl: TimeSpan = this.defaultRefreshTime): LazyPromise<boolean> {
+        return this.createLazyPromise(async () => {
+            const result = await this._refresh(ttl);
+            return result === LOCK_REFRESH_RESULT.REFRESHED;
         });
     }
 
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const hasRefreshed = await this.refresh(ttl);
-            if (!hasRefreshed) {
+            const result = await this._refresh(ttl);
+            if (result === LOCK_REFRESH_RESULT.UNOWNED_REFRESH) {
                 throw new UnownedRefreshLockError(
                     `Unonwed refresh on key "${this.key.resolved}" by owner "${this.owner}"`,
+                );
+            }
+            if (result === LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY) {
+                throw new UnrefreshableKeyLockError(
+                    `Key "${this.key.resolved}" is not`,
                 );
             }
         });

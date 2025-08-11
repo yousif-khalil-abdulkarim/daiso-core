@@ -7,6 +7,25 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ILockProvider } from "@/lock/contracts/lock-provider.contract.js";
 
 /**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Contracts
+ */
+export const LOCK_REFRESH_RESULT = {
+    REFRESHED: "refreshed",
+    UNOWNED_REFRESH: "unonwned_refresh",
+    UNEXPIRABLE_KEY: "unexpireable_key",
+} as const;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Contracts
+ */
+export type LockRefreshResult =
+    (typeof LOCK_REFRESH_RESULT)[keyof typeof LOCK_REFRESH_RESULT];
+
+/**
  * The `ILockAdapter` contract defines a way for managing locks independent of the underlying technology.
  * This contract is not meant to be used directly, instead you should use {@link ILockProvider | `ILockProvider`} contract.
  *
@@ -15,31 +34,36 @@ import type { ILockProvider } from "@/lock/contracts/lock-provider.contract.js";
  */
 export type ILockAdapter = {
     /**
-     * The `acquire` method acquires a lock only if the lock is not already acquired.
+     * The `acquire` method acquires a lock only if the lock is not acquired.
      *
-     * @returns Returns true if not already acquired othewise false is returned.
+     * @returns Returns true if lock is not already acquired or false.
      */
-    acquire(
-        key: string,
-        owner: string,
-        ttl: TimeSpan | null,
-    ): PromiseLike<boolean>;
+    acquire(key: string, owner: string, ttl: TimeSpan | null): Promise<boolean>;
 
     /**
      * The `release` method releases a lock if the owner matches.
      *
      * @returns Returns true if released otherwise false is returned.
      */
-    release(key: string, owner: string): PromiseLike<boolean>;
+    release(key: string, owner: string): Promise<boolean>;
 
     /**
      * The `forceRelease` method releases a lock regardless of the owner.
+     *
+     * @returns Returns true if the lock was released or false if the lock doesnt exists
      */
-    forceRelease(key: string): PromiseLike<void>;
+    forceRelease(key: string): Promise<boolean>;
 
     /**
-     * The `refresh` method will upadte `ttl` of lock if it matches the given `key` and matches the given `owner`.
-     * Returns true if the update occured otherwise false is returned.
+     * The `refresh` method will upadte `ttl` of lock if it matches the given `key`, given `owner` and is expireable.
+     * @returns
+     * - {@link LOCK_REFRESH_RESULT.UNOWNED_REFRESH | `LOCK_REFRESH_RESULT.UNOWNED_REFRESH`}: The lock doesn't exist or is owned by a different owner.
+     * - {@link LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY | `LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY`}: The lock is owned by the same owner but cannot be refreshed because it's unexpirable.
+     * - {@link LOCK_REFRESH_RESULT.REFRESHED | `LOCK_REFRESH_RESULT.REFRESHED`}: The lock is owned by the same owner and its ttl has been updated.
      */
-    refresh(key: string, owner: string, ttl: TimeSpan): PromiseLike<boolean>;
+    refresh(
+        key: string,
+        owner: string,
+        ttl: TimeSpan,
+    ): Promise<LockRefreshResult>;
 };

@@ -153,6 +153,30 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         return this.lazyPromiseFactory(asyncFn);
     }
 
+    private createWrappedListener<TEventName extends keyof TEventMap>(
+        eventName: TEventName,
+        listener: EventListener<TEventMap[TEventName]>,
+    ) {
+        return async (event: TEventMap[TEventName]) => {
+            try {
+                if (this.shouldValidateOutput) {
+                    await validate(this.eventMapSchema?.[eventName], event);
+                }
+                await resolveInvokable(listener)(event);
+            } catch (error: unknown) {
+                if (this.__onUncaughtRejection !== undefined) {
+                    this.__onUncaughtRejection(error);
+                } else {
+                    console.error(
+                        `An error of type "${String(error)}" occured in listener with name of "${getInvokableName(listener)}" for "${String(eventName)}" event`,
+                    );
+                    console.log("ERROR:", error);
+                    throw error;
+                }
+            }
+        };
+    }
+
     addListener<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
@@ -160,28 +184,9 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         return this.createLazyPromise(async () => {
             const key = this.namespace._getInternal().create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
-                [key.namespaced, listener],
-                async (event) => {
-                    try {
-                        if (this.shouldValidateOutput) {
-                            await validate(
-                                this.eventMapSchema?.[eventName],
-                                event,
-                            );
-                        }
-                        await resolveInvokable(listener)(event);
-                    } catch (error: unknown) {
-                        if (this.__onUncaughtRejection !== undefined) {
-                            this.__onUncaughtRejection(error);
-                        } else {
-                            console.error(
-                                `An error of type "${String(error)}" occured in listener with name of "${getInvokableName(listener)}" for "${String(eventName)}" event`,
-                            );
-                            console.log("ERROR:", error);
-                            throw error;
-                        }
-                    }
-                },
+                key.namespaced,
+                listener,
+                this.createWrappedListener(eventName, listener),
             );
             try {
                 await this.adapter.addListener(
@@ -189,7 +194,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getAndRemove([key.namespaced, listener]);
+                this.store.getAndRemove(key.namespaced, listener);
                 throw error;
             }
         });
@@ -201,10 +206,10 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
             const key = this.namespace._getInternal().create(String(eventName));
-            const resolvedListener = this.store.getAndRemove([
+            const resolvedListener = this.store.getAndRemove(
                 key.namespaced,
                 listener,
-            ]);
+            );
             if (resolvedListener === null) {
                 return;
             }
@@ -214,10 +219,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getOrAdd(
-                    [key.namespaced, listener],
-                    resolvedListener,
-                );
+                this.store.getOrAdd(key.namespaced, listener, resolvedListener);
                 throw error;
             }
         });
@@ -255,7 +257,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
 
             const key = this.namespace._getInternal().create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
-                [key.namespaced, listener],
+                key.namespaced,
+                listener,
                 wrappedListener,
             );
             try {
@@ -264,7 +267,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getAndRemove([key.namespaced, listener]);
+                this.store.getAndRemove(key.namespaced, listener);
                 throw error;
             }
         });

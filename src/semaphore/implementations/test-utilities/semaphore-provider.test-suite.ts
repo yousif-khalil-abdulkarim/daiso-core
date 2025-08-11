@@ -13,10 +13,11 @@ import type {
     ISemaphore,
 } from "@/semaphore/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
@@ -79,12 +80,15 @@ export function semaphoreProviderTestSuite(
         beforeEach,
         serde = new Serde(new NoOpSerdeAdapter()),
     } = settings;
-    let semaphoreProvider: ISemaphoreProvider;
+    let provider: ISemaphoreProvider;
     beforeEach(async () => {
-        semaphoreProvider = await createSemaphoreProvider();
+        provider = await createSemaphoreProvider();
     });
-    const TTL = TimeSpan.fromMilliseconds(50);
-    const DELAY_TIME = TimeSpan.fromMilliseconds(50);
+
+    async function delay(time: TimeSpan): Promise<void> {
+        await LazyPromise.delay(time);
+    }
+
     describe("Api tests:", () => {
         test.todo("Write tests");
     });

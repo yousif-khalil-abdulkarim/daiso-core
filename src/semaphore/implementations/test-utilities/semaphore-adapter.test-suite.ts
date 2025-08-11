@@ -9,7 +9,8 @@ import {
 } from "vitest";
 import { type ISemaphoreAdapter } from "@/semaphore/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
  *
@@ -68,12 +69,15 @@ export function semaphoreAdapterTestSuite(
     settings: SemaphoreAdapterTestSuiteSettings,
 ): void {
     const { expect, test, createAdapter, describe, beforeEach } = settings;
-    let semaphoreAdapterA: ISemaphoreAdapter;
+    let adapter: ISemaphoreAdapter;
     beforeEach(async () => {
-        semaphoreAdapterA = await createAdapter();
+        adapter = await createAdapter();
     });
 
-    const ttl = TimeSpan.fromMilliseconds(50);
+    async function delay(time: TimeSpan): Promise<void> {
+        await LazyPromise.delay(time);
+    }
+
     describe("method: acquire", () => {
         test.todo("Write tests!!!");
     });

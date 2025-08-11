@@ -23,6 +23,7 @@ export type AcquiredSemaphoreEvent = {
 
 /**
  * The event is dispatched when a semaphore slot is released.
+ * Note this event is only dispatched when the semaphore slot is released and not when the semaphore slot expired.
  *
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events

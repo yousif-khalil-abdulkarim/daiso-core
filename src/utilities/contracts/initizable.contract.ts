@@ -8,5 +8,5 @@
  * @group Contracts
  */
 export type IInitizable = {
-    init(): PromiseLike<void>;
+    init(): Promise<void>;
 };

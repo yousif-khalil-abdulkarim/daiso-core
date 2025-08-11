@@ -8,6 +8,7 @@ import {
     type ExpectStatic,
     type beforeEach,
     describe,
+    vi,
 } from "vitest";
 import type {
     BaseEvent,
@@ -46,40 +47,45 @@ export function eventBusAdapterTestSuite(
         adapter = await createAdapter();
     });
 
+    async function delay(time: TimeSpan): Promise<void> {
+        await LazyPromise.delay(time);
+    }
+
     const TTL = TimeSpan.fromMilliseconds(50);
     describe("method: addListener, removeListener, dispatch", () => {
         test("Should be null when listener added and event is not triggered", async () => {
-            let result: BaseEvent | null = null;
-            await adapter.addListener("event", (event: BaseEvent) => {
-                result = event;
-            });
-            expect(result).toBeNull();
+            const handlerFn = vi.fn((_event: BaseEvent) => {});
+
+            await adapter.addListener("event", handlerFn);
+
+            expect(handlerFn).not.toHaveBeenCalled();
         });
         test("Should be TestEvent when listener added and event is triggered", async () => {
-            let result: BaseEvent | null = null;
-            await adapter.addListener("event", (event: BaseEvent) => {
-                result = event;
-            });
+            const handlerFn = vi.fn((_event: BaseEvent) => {});
+            await adapter.addListener("event", handlerFn);
+
             const event = {
                 type: "event",
             };
             await adapter.dispatch("event", event);
-            await LazyPromise.delay(TTL);
-            expect(result).toEqual(event);
+            await delay(TTL);
+
+            expect(handlerFn).toHaveBeenCalledTimes(1);
+            expect(handlerFn).toHaveBeenCalledWith(event);
         });
         test("Should be null when listener removed and event is triggered", async () => {
-            let result: BaseEvent | null = null;
-            const listener = (event: BaseEvent) => {
-                result = event;
-            };
-            await adapter.addListener("event", listener);
-            await adapter.removeListener("event", listener);
+            const handlerFn = vi.fn((_event: BaseEvent) => {});
+
+            await adapter.addListener("event", handlerFn);
+            await adapter.removeListener("event", handlerFn);
             const event = {
                 type: "event",
             };
+
             await adapter.dispatch("event", event);
-            await LazyPromise.delay(TTL);
-            expect(result).toBeNull();
+            await delay(TTL);
+
+            expect(handlerFn).not.toHaveBeenCalled();
         });
     });
 }

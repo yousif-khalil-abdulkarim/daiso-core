@@ -3,9 +3,11 @@
  */
 
 import { UnexpectedError, type TimeSpan } from "@/utilities/_module-exports.js";
-import type {
-    IDatabaseLockAdapter,
-    ILockAdapter,
+import {
+    LOCK_REFRESH_RESULT,
+    type IDatabaseLockAdapter,
+    type ILockAdapter,
+    type LockRefreshResult,
 } from "@/lock/contracts/_module-exports.js";
 
 /**
@@ -19,9 +21,8 @@ export class DatabaseLockAdapter implements ILockAdapter {
         owner: string,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
-        const expiration = ttl?.toEndDate() ?? null;
-
         try {
+            const expiration = ttl?.toEndDate() ?? null;
             // An error will be thrown if the lock already exists
             await this.adapter.insert(key, owner, expiration);
             return true;
@@ -29,27 +30,76 @@ export class DatabaseLockAdapter implements ILockAdapter {
             if (error instanceof UnexpectedError) {
                 throw error;
             }
-            const result = await this.adapter.update(key, owner, expiration);
+            const expiration = ttl?.toEndDate() ?? null;
+            const result = await this.adapter.updateIfExpired(
+                key,
+                owner,
+                expiration,
+            );
             return result > 0;
         }
     }
 
     async release(key: string, owner: string): Promise<boolean> {
-        const lock = await this.adapter.find(key);
-        if (lock === null) {
+        const lockData = await this.adapter.removeIfOwner(key, owner);
+        if (lockData === null) {
+            return false;
+        }
+
+        const { expiration } = lockData;
+        const hasNoExpiration = expiration === null;
+        if (hasNoExpiration) {
             return true;
         }
-        await this.adapter.remove(key, owner);
-        const isOwner = lock.owner === owner;
-        return isOwner;
+
+        const { owner: currentOwner } = lockData;
+        const isNotExpired = expiration > new Date();
+        const isCurrentOwner = owner === currentOwner;
+        return isNotExpired && isCurrentOwner;
     }
 
-    async forceRelease(key: string): Promise<void> {
-        await this.adapter.remove(key, null);
+    async forceRelease(key: string): Promise<boolean> {
+        const lockData = await this.adapter.remove(key);
+        if (lockData === null) {
+            return false;
+        }
+        if (lockData.expiration === null) {
+            return true;
+        }
+        return lockData.expiration > new Date();
     }
 
-    async refresh(key: string, owner: string, ttl: TimeSpan): Promise<boolean> {
-        const result = await this.adapter.refresh(key, owner, ttl.toEndDate());
-        return result > 0;
+    async refresh(
+        key: string,
+        owner: string,
+        ttl: TimeSpan,
+    ): Promise<LockRefreshResult> {
+        const lockData = await this.adapter.find(key);
+        if (lockData === null) {
+            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+        }
+
+        if (lockData.owner !== owner) {
+            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+        }
+
+        if (lockData.expiration === null) {
+            return LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY;
+        }
+
+        if (lockData.expiration <= new Date()) {
+            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+        }
+
+        const expiration = ttl.toEndDate();
+        const result = await this.adapter.updateExpirationIfOwner(
+            key,
+            owner,
+            expiration,
+        );
+        if (result > 0) {
+            return LOCK_REFRESH_RESULT.REFRESHED;
+        }
+        return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
     }
 }
