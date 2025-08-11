@@ -47,12 +47,12 @@ const lock = lockProvider.create("shared-resource");
 ### Acquiring and releasing the lock the lock
 
 ```ts
-const hasAquired = await lockProvider.aquire();
+const hasAquired = await lock.aquire();
 if (hasAquired) {
     try {
         // The critical section
     } finally {
-        await lockProvider.release();
+        await lock.release();
     }
 }
 ```
@@ -62,10 +62,10 @@ Alternatively you could write it as follows:
 ```ts
 try {
     // This method will throw if the lock is not acquired
-    await lockProvider.aquireOrFail();
+    await lock.aquireOrFail();
     // The critical section
 } finally {
-    await lockProvider.release();
+    await lock.release();
 }
 ```
 
@@ -75,6 +75,19 @@ You need always to wrap the critical section with `try-finally` so the lock get 
 
 :::danger
 Note [`lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILock.html) object uses [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) instead of a regular `Promise`. This means you must either await the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) or call its `defer` method to run it. Refer to the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) documentation for further information.
+:::
+
+:::info
+Note If the same owner acquires the lock multiple times, the subsequent calls will throw error.
+
+```ts
+// First acquisition by the owner
+await lock.aquireOrFail();
+
+// Subsequent acquisitions by the same owner will throw an error
+await lock.aquireOrFail();
+```
+
 :::
 
 ### Locks with custom TTL
@@ -94,19 +107,19 @@ const lock = lockProvider.create("shared-resource", {
 You can check whether the lock has expired. If it has, the lock is available for acquisition:
 
 ```ts
-await lockProvider.isExpired();
+await lock.isExpired();
 ```
 
 You can check whether the lock is in use, in other words acquired:
 
 ```ts
-await lockProvider.isLocked();
+await lock.isLocked();
 ```
 
 You can also get reamining expiration time:
 
 ```ts
-await lockProvider.getRemainingTime();
+await lock.getRemainingTime();
 ```
 
 :::info
@@ -169,6 +182,23 @@ if (hasAcquired) {
     }
 }
 ```
+
+:::warning
+Note: A lock must have an expiration (a `ttl` value) to be refreshed. You cannot refresh a lock that was created without an expiration (with `ttl: null`)
+
+```ts
+// Create a lock with no expiration (non-refreshable)
+const lock = lockProvider.create("resource", {
+    ttl: null,
+});
+
+// A refresh attempt on this lock will fail
+const hasRefreshed = await lock.refresh();
+
+// This will log 'false' because the lock cannot be refreshed
+console.log(hasRefreshed);
+```
+:::
 
 ### Lock owners
 
