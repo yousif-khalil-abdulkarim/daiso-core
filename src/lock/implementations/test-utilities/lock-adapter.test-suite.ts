@@ -7,7 +7,10 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { type ILockAdapter } from "@/lock/contracts/_module-exports.js";
+import {
+    LOCK_REFRESH_RESULT,
+    type ILockAdapter,
+} from "@/lock/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
@@ -69,115 +72,369 @@ export function lockAdapterTestSuite(
     settings: LockAdapterTestSuiteSettings,
 ): void {
     const { expect, test, createAdapter, describe, beforeEach } = settings;
-    let lockAdapterA: ILockAdapter;
+    let adapter: ILockAdapter;
     beforeEach(async () => {
-        lockAdapterA = await createAdapter();
+        adapter = await createAdapter();
     });
 
-    const ttl = TimeSpan.fromMilliseconds(50);
+    async function delay(time: TimeSpan): Promise<void> {
+        await LazyPromise.delay(time.addMilliseconds(10));
+    }
+
     describe("method: acquire", () => {
-        test("Should return true when key is not acquired", async () => {
+        test("Should return true when key doesnt exists", async () => {
             const key = "a";
             const owner = "b";
-            const result = await lockAdapterA.acquire(key, owner, null);
+            const ttl = null;
+
+            const result = await adapter.acquire(key, owner, ttl);
+
             expect(result).toBe(true);
         });
         test("Should return true when key is expired", async () => {
             const key = "a";
             const owner = "b";
-            await lockAdapterA.acquire(key, owner, ttl);
-            await LazyPromise.delay(ttl);
-            const result = await lockAdapterA.acquire(key, owner, null);
+            const ttl = TimeSpan.fromMilliseconds(50);
+
+            await adapter.acquire(key, owner, ttl);
+            await delay(ttl);
+
+            const result = await adapter.acquire(key, owner, null);
             expect(result).toBe(true);
         });
-        test("Should return false when key is already acquired by same owner", async () => {
+        test("Should return false when key is unexpireable and acquired by same owner", async () => {
             const key = "a";
             const owner = "b";
-            await lockAdapterA.acquire(key, owner, null);
-            const result = await lockAdapterA.acquire(key, owner, null);
+            const ttl = null;
+
+            await adapter.acquire(key, owner, ttl);
+            const result = await adapter.acquire(key, owner, ttl);
+
             expect(result).toBe(false);
         });
-        test("Should return false when key is already acquired by different owner", async () => {
+        test("Should return false when key is unexpired and acquired by same owner", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+
+            await adapter.acquire(key, owner, ttl);
+            const result = await adapter.acquire(key, owner, ttl);
+
+            expect(result).toBe(false);
+        });
+        test("Should return false when key is unexpireable and acquired by different owner", async () => {
             const key = "a";
             const owner1 = "b";
-            await lockAdapterA.acquire(key, owner1, null);
+            const ttl = null;
+
+            await adapter.acquire(key, owner1, ttl);
             const owner2 = "c";
-            const result = await lockAdapterA.acquire(key, owner2, null);
+            const result = await adapter.acquire(key, owner2, ttl);
+
             expect(result).toBe(false);
         });
-        test("Should return false when key is already acquired and not expired", async () => {
+        test("Should return false when key is unexpired and acquired by different owner", async () => {
             const key = "a";
-            const owner = "b";
-            await lockAdapterA.acquire(key, owner, ttl);
-            await LazyPromise.delay(ttl.divide(2));
-            const result = await lockAdapterA.acquire(key, owner, null);
+            const owner1 = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+
+            await adapter.acquire(key, owner1, ttl);
+            const owner2 = "c";
+            const result = await adapter.acquire(key, owner2, ttl);
+
             expect(result).toBe(false);
         });
     });
     describe("method: release", () => {
-        test("Should return true when key is released by same owner", async () => {
+        test("Should return false when key doesnt exists", async () => {
             const key = "a";
             const owner = "b";
-            await lockAdapterA.acquire(key, owner, null);
-            const result = await lockAdapterA.release(key, owner);
-            expect(result).toBe(true);
-        });
-        test("Should return false when key is tried to be released by different owner", async () => {
-            const key = "a";
-            const owner1 = "b";
-            await lockAdapterA.acquire(key, owner1, null);
-            const owner2 = "c";
-            const result = await lockAdapterA.release(key, owner2);
+
+            const result = await adapter.release(key, owner);
+
             expect(result).toBe(false);
         });
-        test("Should be reacquirable by new owner after release", async () => {
+        test("Should return false when key is unexpireable and released by different owner", async () => {
             const key = "a";
             const owner1 = "b";
-            await lockAdapterA.acquire(key, owner1, null);
-            await lockAdapterA.release(key, owner1);
+            const ttl = null;
+            await adapter.acquire(key, owner1, ttl);
+
             const owner2 = "c";
-            const result = await lockAdapterA.acquire(key, owner2, null);
+            const result = await adapter.release(key, owner2);
+
+            expect(result).toBe(false);
+        });
+        test("Should return false when key is unexpired and released by different owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner1, ttl);
+
+            const owner2 = "c";
+            const result = await adapter.release(key, owner2);
+
+            expect(result).toBe(false);
+        });
+        test("Should return false when key is expired and released by different owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner1, ttl);
+
+            const owner2 = "c";
+            const result = await adapter.release(key, owner2);
+            await delay(ttl);
+
+            expect(result).toBe(false);
+        });
+        test("Should return false when key is expired and released by same owner", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner, ttl);
+            await delay(ttl);
+
+            const result = await adapter.release(key, owner);
+
+            expect(result).toBe(false);
+        });
+        test("Should return true when key is unexpireable and released by same owner", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = null;
+            await adapter.acquire(key, owner, ttl);
+
+            const result = await adapter.release(key, owner);
+
+            expect(result).toBe(true);
+        });
+        test("Should return true when key is unexpired and released by same owner", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner, ttl);
+
+            const result = await adapter.release(key, owner);
+
+            expect(result).toBe(true);
+        });
+        test("Should not be reacquirable when key is unexpireable and released by different owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = null;
+            await adapter.acquire(key, owner1, ttl);
+            const owner2 = "c";
+
+            await adapter.release(key, owner2);
+            const result = await adapter.acquire(key, owner2, ttl);
+
+            expect(result).toBe(false);
+        });
+        test("Should not be reacquirable when key is unexpired and released by different owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner1, ttl);
+
+            const owner2 = "c";
+            await adapter.release(key, owner2);
+            const result = await adapter.acquire(key, owner2, ttl);
+
+            expect(result).toBe(false);
+        });
+        test("Should be reacquirable when key is unexpireable and released by same owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = null;
+            await adapter.acquire(key, owner1, ttl);
+            await adapter.release(key, owner1);
+
+            const owner2 = "c";
+            const result = await adapter.acquire(key, owner2, ttl);
+
+            expect(result).toBe(true);
+        });
+        test("Should be reacquirable when key is unexpired and released by same owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner1, ttl);
+            await adapter.release(key, owner1);
+
+            const owner2 = "c";
+            const result = await adapter.acquire(key, owner2, ttl);
+
             expect(result).toBe(true);
         });
     });
     describe("method: forceRelease", () => {
-        test("Should be reacquirable by new owner after release", async () => {
+        test("Should return false when key doesnt exists", async () => {
+            const key = "a";
+
+            const result = await adapter.forceRelease(key);
+
+            expect(result).toBe(false);
+        });
+        test("Should return false when key is expired", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+
+            await adapter.acquire(key, owner, ttl);
+            await delay(ttl);
+
+            const result = await adapter.forceRelease(key);
+
+            expect(result).toBe(false);
+        });
+        test("Should return true when key is uenxpired", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+
+            await adapter.acquire(key, owner, ttl);
+
+            const result = await adapter.forceRelease(key);
+
+            expect(result).toBe(true);
+        });
+        test("Should return true when key is unexpireable", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = null;
+
+            await adapter.acquire(key, owner, ttl);
+
+            const result = await adapter.forceRelease(key);
+
+            expect(result).toBe(true);
+        });
+        test("Should be reacquirable when force released", async () => {
             const key = "a";
             const owner1 = "b";
-            await lockAdapterA.acquire(key, owner1, null);
-            await lockAdapterA.forceRelease(key);
+            const ttl = null;
+            await adapter.acquire(key, owner1, ttl);
+
+            await adapter.forceRelease(key);
+
             const owner2 = "c";
-            const result = await lockAdapterA.acquire(key, owner2, null);
+            const result = await adapter.acquire(key, owner2, ttl);
             expect(result).toBe(true);
         });
     });
     describe("method: refresh", () => {
-        test("Should return true when extended by same owner", async () => {
+        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key doesnt exists", async () => {
             const key = "a";
             const owner = "b";
 
-            await lockAdapterA.acquire(key, owner, ttl);
-            const result = await lockAdapterA.refresh(
-                key,
-                owner,
-                ttl.multiply(2),
-            );
+            const newTtl = TimeSpan.fromMinutes(1);
+            const result = await adapter.refresh(key, owner, newTtl);
 
-            expect(result).toBe(true);
+            expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
         });
-        test("Should return false when extended by different owner", async () => {
+        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key is unexpireable and refreshed by different owner", async () => {
             const key = "a";
             const owner1 = "b";
+            const ttl = null;
+            await adapter.acquire(key, owner1, ttl);
 
-            await lockAdapterA.acquire(key, owner1, ttl);
+            const newTtl = TimeSpan.fromMinutes(1);
             const owner2 = "c";
-            const result = await lockAdapterA.refresh(
-                key,
-                owner2,
-                ttl.multiply(2),
-            );
+            const result = await adapter.refresh(key, owner2, newTtl);
+
+            expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
+        });
+        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key is unexpired and refreshed by different owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner1, ttl);
+
+            const newTtl = TimeSpan.fromMinutes(1);
+            const owner2 = "c";
+            const result = await adapter.refresh(key, owner2, newTtl);
+
+            expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
+        });
+        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key is expired and refreshed by different owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner1, ttl);
+            await delay(ttl);
+
+            const newTtl = TimeSpan.fromMinutes(1);
+            const owner2 = "c";
+            const result = await adapter.refresh(key, owner2, newTtl);
+
+            expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
+        });
+        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key is expired and refreshed by same owner", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner, ttl);
+            await delay(ttl);
+
+            const newTtl = TimeSpan.fromMinutes(1);
+            const result = await adapter.refresh(key, owner, newTtl);
+
+            expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
+        });
+        test("Should return LOCK_REFRESH.UNEXPIRABLE_KEY when key is unexpireable and refreshed by same owner", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = null;
+            await adapter.acquire(key, owner, ttl);
+
+            const newTtl = TimeSpan.fromMinutes(1);
+            const result = await adapter.refresh(key, owner, newTtl);
+
+            expect(result).toBe(LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY);
+        });
+        test("Should return LOCK_REFRESH.REFRESHED when key is unexpired and refreshed by same owner", async () => {
+            const key = "a";
+            const owner = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner, ttl);
+
+            const newTtl = TimeSpan.fromMinutes(1);
+            const result = await adapter.refresh(key, owner, newTtl);
+
+            expect(result).toBe(LOCK_REFRESH_RESULT.REFRESHED);
+        });
+        test("Should not update expiration when key is unexpireable and refreshed by same owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = null;
+            await adapter.acquire(key, owner1, ttl);
+
+            const newTtl = TimeSpan.fromMilliseconds(50);
+            await adapter.refresh(key, owner1, newTtl);
+            await delay(newTtl);
+            const owner2 = "b";
+            const result = await adapter.acquire(key, owner2, ttl);
 
             expect(result).toBe(false);
+        });
+        test("Should update expiration when key is unexpired and refreshed by same owner", async () => {
+            const key = "a";
+            const owner1 = "b";
+            const ttl = TimeSpan.fromMilliseconds(50);
+            await adapter.acquire(key, owner1, ttl);
+
+            const newTtl = TimeSpan.fromMilliseconds(100);
+            await adapter.refresh(key, owner1, newTtl);
+            await delay(newTtl.divide(2));
+
+            const owner2 = "c";
+            const result1 = await adapter.acquire(key, owner2, ttl);
+            expect(result1).toBe(false);
+
+            await delay(newTtl.divide(2));
+            const result2 = await adapter.acquire(key, owner2, ttl);
+            expect(result2).toBe(true);
         });
     });
 }
