@@ -8,5 +8,5 @@
  * @group Contracts
  */
 export type IDeinitizable = {
-    deInit(): PromiseLike<void>;
+    deInit(): Promise<void>;
 };
