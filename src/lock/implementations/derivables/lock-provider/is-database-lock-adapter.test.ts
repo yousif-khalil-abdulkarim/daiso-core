@@ -1,10 +1,14 @@
 import type {
     IDatabaseLockAdapter,
     ILockData,
+    ILockExpirationData,
 } from "@/lock/contracts/database-lock-adapter.contract.js";
 import { describe, expect, test } from "vitest";
 import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
-import type { ILockAdapter } from "@/lock/contracts/lock-adapter.contract.js";
+import type {
+    ILockAdapter,
+    LockRefreshResult,
+} from "@/lock/contracts/lock-adapter.contract.js";
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 
 describe("function: isDatabaseLockAdapter", () => {
@@ -14,30 +18,34 @@ describe("function: isDatabaseLockAdapter", () => {
                 _key: string,
                 _owner: string,
                 _expiration: Date | null,
-            ): PromiseLike<void> {
+            ): Promise<void> {
                 throw new Error("Function not implemented.");
             },
-            update: function (
+            updateIfExpired: function (
                 _key: string,
                 _owner: string,
+
                 _expiration: Date | null,
-            ): PromiseLike<number> {
+            ): Promise<number> {
                 throw new Error("Function not implemented.");
             },
-            remove: function (
+            remove: function (_key: string): Promise<ILockExpirationData> {
+                throw new Error("Function not implemented.");
+            },
+            removeIfOwner: function (
                 _key: string,
-                _owner: string | null,
-            ): PromiseLike<void> {
+                _owner: string,
+            ): Promise<ILockData | null> {
                 throw new Error("Function not implemented.");
             },
-            refresh: function (
+            updateExpirationIfOwner: function (
                 _key: string,
                 _owner: string,
                 _expiration: Date,
-            ): PromiseLike<number> {
+            ): Promise<number> {
                 throw new Error("Function not implemented.");
             },
-            find: function (_key: string): PromiseLike<ILockData | null> {
+            find: function (_key: string): Promise<ILockData | null> {
                 throw new Error("Function not implemented.");
             },
         };
@@ -49,23 +57,20 @@ describe("function: isDatabaseLockAdapter", () => {
                 _key: string,
                 _owner: string,
                 _ttl: TimeSpan | null,
-            ): PromiseLike<boolean> {
+            ): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
-            release: function (
-                _key: string,
-                _owner: string,
-            ): PromiseLike<boolean> {
+            release: function (_key: string, _owner: string): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
-            forceRelease: function (_key: string): PromiseLike<void> {
+            forceRelease: function (_key: string): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
             refresh: function (
                 _key: string,
                 _owner: string,
                 _ttl: TimeSpan,
-            ): PromiseLike<boolean> {
+            ): Promise<LockRefreshResult> {
                 throw new Error("Function not implemented.");
             },
         };
