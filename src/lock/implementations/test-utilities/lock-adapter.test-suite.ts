@@ -324,7 +324,7 @@ export function lockAdapterTestSuite(
         });
     });
     describe("method: refresh", () => {
-        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key doesnt exists", async () => {
+        test("Should return LOCK_REFRESH_RESULT.UNOWNED_REFRESH when key doesnt exists", async () => {
             const key = "a";
             const owner = "b";
 
@@ -333,7 +333,7 @@ export function lockAdapterTestSuite(
 
             expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
         });
-        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key is unexpireable and refreshed by different owner", async () => {
+        test("Should return LOCK_REFRESH_RESULT.UNOWNED_REFRESH when key is unexpireable and refreshed by different owner", async () => {
             const key = "a";
             const owner1 = "b";
             const ttl = null;
@@ -345,7 +345,7 @@ export function lockAdapterTestSuite(
 
             expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
         });
-        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key is unexpired and refreshed by different owner", async () => {
+        test("Should return LOCK_REFRESH_RESULT.UNOWNED_REFRESH when key is unexpired and refreshed by different owner", async () => {
             const key = "a";
             const owner1 = "b";
             const ttl = TimeSpan.fromMilliseconds(50);
@@ -357,7 +357,7 @@ export function lockAdapterTestSuite(
 
             expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
         });
-        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key is expired and refreshed by different owner", async () => {
+        test("Should return LOCK_REFRESH_RESULT.UNOWNED_REFRESH when key is expired and refreshed by different owner", async () => {
             const key = "a";
             const owner1 = "b";
             const ttl = TimeSpan.fromMilliseconds(50);
@@ -370,7 +370,7 @@ export function lockAdapterTestSuite(
 
             expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
         });
-        test("Should return LOCK_REFRESH.UNOWNED_REFRESH when key is expired and refreshed by same owner", async () => {
+        test("Should return LOCK_REFRESH_RESULT.UNOWNED_REFRESH when key is expired and refreshed by same owner", async () => {
             const key = "a";
             const owner = "b";
             const ttl = TimeSpan.fromMilliseconds(50);
@@ -382,7 +382,7 @@ export function lockAdapterTestSuite(
 
             expect(result).toBe(LOCK_REFRESH_RESULT.UNOWNED_REFRESH);
         });
-        test("Should return LOCK_REFRESH.UNEXPIRABLE_KEY when key is unexpireable and refreshed by same owner", async () => {
+        test("Should return LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY when key is unexpireable and refreshed by same owner", async () => {
             const key = "a";
             const owner = "b";
             const ttl = null;
@@ -393,7 +393,7 @@ export function lockAdapterTestSuite(
 
             expect(result).toBe(LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY);
         });
-        test("Should return LOCK_REFRESH.REFRESHED when key is unexpired and refreshed by same owner", async () => {
+        test("Should return LOCK_REFRESH_RESULT.REFRESHED when key is unexpired and refreshed by same owner", async () => {
             const key = "a";
             const owner = "b";
             const ttl = TimeSpan.fromMilliseconds(50);
