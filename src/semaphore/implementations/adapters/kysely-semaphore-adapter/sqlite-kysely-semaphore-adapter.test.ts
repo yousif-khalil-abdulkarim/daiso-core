@@ -20,7 +20,7 @@ describe("sqlite class: KyselySemaphoreAdapter", () => {
                         database,
                     }),
                 }),
-                shouldRemoveExpiredSemaphores: false,
+                shouldRemoveExpiredKeys: false,
             });
             await adapter.init();
             return adapter;
@@ -29,5 +29,14 @@ describe("sqlite class: KyselySemaphoreAdapter", () => {
         beforeEach,
         expect,
         describe,
+    });
+    describe("method: removeAllExpired", () => {
+        test.todo("Write tests");
+    });
+    describe("method: init", () => {
+        test.todo("Write tests");
+    });
+    describe("method: deInit", () => {
+        test.todo("Write tests");
     });
 });

@@ -119,17 +119,17 @@ export type ILock = {
     /**
      * The `forceRelease` method releases a lock regardless of the owner.
      *
-     * @returns Returns true if the lock was released or false if the lock doesnt exists
+     * @returns Returns true if the lock exists or false if the lock doesnt exists.
      */
     forceRelease(): LazyPromise<boolean>;
 
     /**
-     * The `isExpired` method returns true if the lock is expired otherwise false is returned.
+     * The `isExpired` method returns true if the lock is expired or not acquired otherwise false is returned.
      */
     isExpired(): LazyPromise<boolean>;
 
     /**
-     * The `isLocked` method returns true if the lock is unexpirable or unexpired otherwise false is returned.
+     * The `isLocked` method returns true if the lock has been aquired and is unexpirable or unexpired otherwise false is returned.
      */
     isLocked(): LazyPromise<boolean>;
 

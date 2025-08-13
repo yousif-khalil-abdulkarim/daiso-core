@@ -33,10 +33,6 @@ import {
     type Invokable,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
-import {
-    SemaphoreSlotState,
-    type ISemaphoreStore,
-} from "@/semaphore/implementations/derivables/semaphore-provider/semaphore-slot-state.js";
 import { Semaphore } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore.js";
 import { v4 } from "uuid";
 import { SemaphoreSerdeTransformer } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore-serde-transformer.js";
@@ -158,7 +154,6 @@ export type SemaphoreProviderSettings = SemaphoreProviderSettingsBase & {
  * @group Derivables
  */
 export class SemaphoreProvider implements ISemaphoreProvider {
-    private semaphoreStore: ISemaphoreStore = {};
     private readonly eventBus: IEventBus<SemaphoreEventMap>;
     private readonly adapter: ISemaphoreAdapter;
     private readonly namespace: Namespace;
@@ -220,7 +215,6 @@ export class SemaphoreProvider implements ISemaphoreProvider {
             defaultRefreshTime: this.defaultRefreshTime,
             eventBus: this.eventBus,
             namespace: this.namespace,
-            semaphoreStore: this.semaphoreStore,
             serdeTransformerName: this.serdeTransformerName,
         });
         for (const serde of resolveOneOrMore(this.serde)) {
@@ -314,12 +308,6 @@ export class SemaphoreProvider implements ISemaphoreProvider {
             limit,
             adapter: this.adapter,
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
-            semaphoreState: new SemaphoreSlotState({
-                store: this.semaphoreStore,
-                key: keyObj.namespaced,
-                slotId,
-                limit,
-            }),
             eventDispatcher: this.eventBus,
             key: keyObj,
             ttl,

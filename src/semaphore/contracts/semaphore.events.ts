@@ -31,9 +31,9 @@ export type AcquiredSemaphoreEvent = {
 export type ReleasedSemaphoreEvent = {
     key: string;
     slotId: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    limit?: number;
+    availableSlots?: number;
+    unavailableSlots?: number;
 };
 
 /**
@@ -42,12 +42,12 @@ export type ReleasedSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type AllReleasedSemaphoreEvent = {
+export type AllForceReleasedSemaphoreEvent = {
     key: string;
-    slotIds: string[];
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    slotIds?: string[];
+    limit?: number;
+    availableSlots?: number;
+    unavailableSlots?: number;
 };
 
 /**
@@ -56,11 +56,24 @@ export type AllReleasedSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type ExpiredRefreshTrySemaphoreEvent = {
+export type UnsuccessfulRefreshSemaphoreEvent = {
     key: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    limit?: number;
+    availableSlots?: number;
+    unavailableSlots?: number;
+};
+
+/**
+ * The error is dispatched when trying to release a semaphore slot that is already expired.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Events
+ */
+export type UnsuccessfulReleaseSemaphoreEvent = {
+    key: string;
+    limit?: number;
+    availableSlots?: number;
+    unavailableSlots?: number;
 };
 
 /**
@@ -69,11 +82,11 @@ export type ExpiredRefreshTrySemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type UnavailableSlotsSemaphoreEvent = {
+export type LimitReachedSemaphoreEvent = {
     key: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    limit?: number;
+    availableSlots?: number;
+    unavailableSlots?: number;
 };
 
 /**
@@ -85,9 +98,9 @@ export type UnavailableSlotsSemaphoreEvent = {
 export type RefreshedSemaphoreEvent = {
     key: string;
     slotId: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    limit?: number;
+    availableSlots?: number;
+    unavailableSlots?: number;
     ttl: TimeSpan;
 };
 
@@ -98,9 +111,9 @@ export type RefreshedSemaphoreEvent = {
  */
 export type UnexpectedErrorSemaphoreEvent = {
     key: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    limit?: number;
+    availableSlots?: number;
+    unavailableSlots?: number;
     ttl: TimeSpan | null;
     error: unknown;
 };
@@ -113,10 +126,10 @@ export type UnexpectedErrorSemaphoreEvent = {
 export const SEMAPHORE_EVENTS = {
     ACQUIRED: "ACQUIRED",
     RELEASED: "RELEASED",
-    ALL_RELEASED: "ALL_RELEASED",
-    EXPIRED_RELEASE_TRY: "EXPIRED_RELEASE_TRY",
-    EXPIRED_REFRESH_TRY: "EXPIRED_REFRESH_TRY",
-    UNAVAILABLE_SLOTS: "UNAVAILABLE_SLOTS",
+    ALL_FORCE_RELEASED: "ALL_FORCE_RELEASED",
+    UNSUCCESSFUL_RELEASE: "UNSUCCESSFUL_RELEASE",
+    UNSUCCESSFUL_REFRESH: "UNSUCCESSFUL_REFRESH",
+    LIMIT_REACHED: "LIMIT_REACHED",
     FORCE_RELEASED: "FORCE_RELEASED",
     REFRESHED: "REFRESHED",
     UNEXPECTED_ERROR: "UNEXPECTED_ERROR",
@@ -130,9 +143,10 @@ export const SEMAPHORE_EVENTS = {
 export type SemaphoreEventMap = {
     [SEMAPHORE_EVENTS.ACQUIRED]: AcquiredSemaphoreEvent;
     [SEMAPHORE_EVENTS.RELEASED]: ReleasedSemaphoreEvent;
-    [SEMAPHORE_EVENTS.ALL_RELEASED]: AllReleasedSemaphoreEvent;
-    [SEMAPHORE_EVENTS.EXPIRED_REFRESH_TRY]: ExpiredRefreshTrySemaphoreEvent;
-    [SEMAPHORE_EVENTS.UNAVAILABLE_SLOTS]: UnavailableSlotsSemaphoreEvent;
+    [SEMAPHORE_EVENTS.ALL_FORCE_RELEASED]: AllForceReleasedSemaphoreEvent;
+    [SEMAPHORE_EVENTS.UNSUCCESSFUL_RELEASE]: UnsuccessfulReleaseSemaphoreEvent;
+    [SEMAPHORE_EVENTS.UNSUCCESSFUL_REFRESH]: UnsuccessfulRefreshSemaphoreEvent;
+    [SEMAPHORE_EVENTS.LIMIT_REACHED]: LimitReachedSemaphoreEvent;
     [SEMAPHORE_EVENTS.REFRESHED]: RefreshedSemaphoreEvent;
     [SEMAPHORE_EVENTS.UNEXPECTED_ERROR]: UnexpectedErrorSemaphoreEvent;
 };

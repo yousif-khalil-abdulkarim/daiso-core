@@ -10,6 +10,7 @@
 export class SemaphoreError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
+        this.name = SemaphoreError.name;
     }
 }
 
@@ -19,9 +20,10 @@ export class SemaphoreError extends Error {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Errors
  */
-export class ReachedLimitSemaphoreError extends SemaphoreError {
+export class LimitReachedSemaphoreError extends SemaphoreError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
+        this.name = LimitReachedSemaphoreError.name;
     }
 }
 
@@ -31,9 +33,23 @@ export class ReachedLimitSemaphoreError extends SemaphoreError {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Errors
  */
-export class ExpiredRefreshSemaphoreError extends SemaphoreError {
+export class UnsuccessfulRefreshSemaphoreError extends SemaphoreError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
+        this.name = UnsuccessfulRefreshSemaphoreError.name;
+    }
+}
+
+/**
+ * The error is thrown when trying to release a semaphore slot that is already expired.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Errors
+ */
+export class UnsuccessfulReleaseSemaphoreError extends SemaphoreError {
+    constructor(message: string, cause?: unknown) {
+        super(message, { cause });
+        this.name = UnsuccessfulReleaseSemaphoreError.name;
     }
 }
 
@@ -44,6 +60,7 @@ export class ExpiredRefreshSemaphoreError extends SemaphoreError {
  */
 export const SEMAPHORE_ERRORS = {
     Base: SemaphoreError,
-    ReachedLimit: ReachedLimitSemaphoreError,
-    ExpiredRefresh: ExpiredRefreshSemaphoreError,
+    ReachedLimit: LimitReachedSemaphoreError,
+    UnsuccessfulRefresh: UnsuccessfulRefreshSemaphoreError,
+    UnsuccessfulRelease: UnsuccessfulReleaseSemaphoreError,
 } as const;

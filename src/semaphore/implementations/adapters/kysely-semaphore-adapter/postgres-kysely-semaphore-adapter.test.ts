@@ -34,7 +34,7 @@ describe("postgres class: KyselySemaphoreAdapter", () => {
                         pool: database,
                     }),
                 }),
-                shouldRemoveExpiredSemaphores: false,
+                shouldRemoveExpiredKeys: false,
             });
             await adapter.init();
             return adapter;
@@ -43,5 +43,14 @@ describe("postgres class: KyselySemaphoreAdapter", () => {
         beforeEach,
         expect,
         describe,
+    });
+    describe("method: removeAllExpired", () => {
+        test.todo("Write tests");
+    });
+    describe("method: init", () => {
+        test.todo("Write tests");
+    });
+    describe("method: deInit", () => {
+        test.todo("Write tests");
     });
 });

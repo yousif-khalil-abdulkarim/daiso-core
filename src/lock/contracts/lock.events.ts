@@ -132,8 +132,11 @@ export const LOCK_EVENTS = {
 export type LockEventMap = {
     [LOCK_EVENTS.ACQUIRED]: AcquiredLockEvent;
     [LOCK_EVENTS.RELEASED]: ReleasedLockEvent;
+    // bad name
     [LOCK_EVENTS.UNOWNED_RELEASE_TRY]: UnownedReleaseTryLockEvent;
+    // bad name
     [LOCK_EVENTS.UNOWNED_REFRESH_TRY]: UnownedRefreshTryLockEvent;
+    // bad name
     [LOCK_EVENTS.UNEXPIREABLE_KEY_REFRESH_TRY]: UnexpireableKeyRefreshTryLockEvent;
     [LOCK_EVENTS.UNAVAILABLE]: UnavailableLockEvent;
     [LOCK_EVENTS.FORCE_RELEASED]: ForceReleasedLockEvent;

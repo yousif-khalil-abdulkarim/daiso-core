@@ -21,7 +21,7 @@ describe("class: DatabaseSemaphoreAdapter", () => {
                         database,
                     }),
                 }),
-                shouldRemoveExpiredSemaphores: false,
+                shouldRemoveExpiredKeys: false,
             });
             await databaseSemaphoreAdapter.init();
             return new DatabaseSemaphoreAdapter(databaseSemaphoreAdapter);
