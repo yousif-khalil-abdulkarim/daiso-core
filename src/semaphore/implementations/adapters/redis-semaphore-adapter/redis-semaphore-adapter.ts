@@ -17,20 +17,25 @@ declare module "ioredis" {
             limit: number,
             expiration: number | null,
             now: number,
-        ): Result<number, Context>;
+        ): Result<1 | 0, Context>;
 
         daiso_semaphore_release(
             key: string,
             slotId: string,
             now: number,
-        ): Result<void, Context>;
+        ): Result<1 | 0, Context>;
+
+        daiso_semaphore_force_release_all(
+            key: string,
+            now: number,
+        ): Result<1 | 0, Context>;
 
         daiso_semaphore_refresh(
             key: string,
             slotId: string,
             newExpiration: number,
             now: number,
-        ): Result<number, Context>;
+        ): Result<1 | 0, Context>;
     }
 }
 
@@ -47,33 +52,44 @@ export class RedisSemaphoreAdapter implements ISemaphoreAdapter {
         this.initAquireCommand();
         this.initReleaseCommand();
         this.initRefreshComand();
+        this.initForceReleaseAllCommand();
     }
 
     private initAquireCommand(): void {
-        if (typeof this.database.daiso_lock_acquire === "function") {
+        if (typeof this.database.daiso_semaphore_acquire === "function") {
             return;
         }
 
-        this.database.defineCommand("daiso_lock_acquire", {
+        this.database.defineCommand("daiso_semaphore_acquire", {
             numberOfKeys: 1,
             lua: `
                 local key = KEYS[1]
                 local slotId = ARGV[1]
-                local limit = tonumber(ARGV[2])
+                local inputLimit = tonumber(ARGV[2])
                 -- unix timestamp in ms
                 local expiration = tonumber(ARGV[3])
                 -- unix timestamp in ms
                 local now = tonumber(ARGV[4])
 
+                local currentLimit = tonumber(redis.call("getset", key .. "__limit", inputLimit))
+                if currentLimit == nil then
+                    currentLimit = inputLimit
+                end
+
                 -- Removes all expired slots
                 redis.call("zremrangebyscore", key, 1, now + 1)
 
-                local isLimitReached = tonumber(redis.call("zcard", key)) >= limit
+                local isLimitReached = tonumber(redis.call("zcard", key)) >= currentLimit
                 if isLimitReached then
                     return 0
                 end
 
-                local isSlotNotExpirable = expiration == null  
+                local isSlotAlreadyAcquired = tonumber(redis.call("zscore", key, slotId)) ~= nil
+                if isSlotAlreadyAcquired then
+                    return 0
+                end
+
+                local isSlotNotExpirable = expiration == nil  
                 if isSlotNotExpirable then
                     redis.call("zadd", key, 0, slotId)
                     redis.call("persist", key) 
@@ -93,42 +109,77 @@ export class RedisSemaphoreAdapter implements ISemaphoreAdapter {
     }
 
     private initReleaseCommand(): void {
-        if (typeof this.database.daiso_lock_release === "function") {
+        if (typeof this.database.daiso_semaphore_release === "function") {
             return;
         }
 
-        this.database.defineCommand("daiso_lock_release", {
+        this.database.defineCommand("daiso_semaphore_release", {
             numberOfKeys: 1,
             lua: `
                 local key = KEYS[1]
                 local slotId = ARGV[1]
                 -- unix timestamp in ms
-                local now = tonumber(ARGV[4])
+                local now = tonumber(ARGV[2])
                 
                 -- Removes all expired slots
                 redis.call("zremrangebyscore", key, 1, now + 1)
 
                 -- Removes the given slot
-                redis.call("zrem", key, slotId)
+                local removedCount = redis.call("zrem", key, slotId)
+                local hasRemoved = removedCount == 1
 
                 local hasAtLeastOneUnexpirableSlot = tonumber(redis.call("zcount", key, 0, 0)) > 0;
                 if hasAtLeastOneUnexpirableSlot then
                     redis.call("persist", key)
-                    return 
+                    return hasRemoved 
                 end
 
                 local longestExpiration = tonumber(redis.call("zrange", key, 0, 0, "BYSCORE", "REV", "WITHSCORES")[2])
-                redis.call("pexpireat", longestExpiration)
+                if longestExpiration ~= nil then
+                    redis.call("pexpireat", longestExpiration)
+                end
+
+                return hasRemoved
+            `,
+        });
+    }
+
+    private initForceReleaseAllCommand(): void {
+        if (
+            typeof this.database.daiso_semaphore_force_release_all ===
+            "function"
+        ) {
+            return;
+        }
+
+        this.database.defineCommand("daiso_semaphore_force_release_all", {
+            numberOfKeys: 1,
+            lua: `
+                local key = KEYS[1]
+                local now = ARGV[1]
+                
+                -- Removes all expired slots
+                redis.call("zremrangebyscore", key, 1, now + 1)
+
+                local slotCount = redis.call("zcard", key)
+                redis.call("del", key)
+                
+                local hasSlots = slotCount > 0
+                if hasSlots then
+                    return 1
+                end
+
+                return 0
             `,
         });
     }
 
     private initRefreshComand(): void {
-        if (typeof this.database.daiso_lock_refresh === "function") {
+        if (typeof this.database.daiso_semaphore_refresh === "function") {
             return;
         }
 
-        this.database.defineCommand("daiso_lock_refresh", {
+        this.database.defineCommand("daiso_semaphore_refresh", {
             numberOfKeys: 1,
             lua: `
                 local key = KEYS[1]
@@ -136,7 +187,7 @@ export class RedisSemaphoreAdapter implements ISemaphoreAdapter {
                 -- unix timestamp in ms
                 local newExpiration = tonumber(ARGV[2])
                 -- unix timestamp in ms
-                local now = tonumber(ARGV[4])
+                local now = tonumber(ARGV[3])
 
                 -- Removes all expired slots
                 redis.call("zremrangebyscore", key, 1, now + 1)
@@ -144,6 +195,11 @@ export class RedisSemaphoreAdapter implements ISemaphoreAdapter {
                 local expiration = tonumber(redis.call("zscore", key, slotId));
                 local hasExpiredOrDoesNotExist = expiration == nil
                 if hasExpiredOrDoesNotExist then
+                    return 0
+                end
+
+                local isUnexpireable = expiration == 0
+                if isUnexpireable then
                     return 0
                 end
                 
@@ -167,12 +223,22 @@ export class RedisSemaphoreAdapter implements ISemaphoreAdapter {
         return result === 1;
     }
 
-    async release(key: string, slotId: string): Promise<void> {
-        await this.database.daiso_semaphore_release(key, slotId, Date.now());
+    async release(key: string, slotId: string): Promise<boolean> {
+        const result = await this.database.daiso_semaphore_release(
+            key,
+            slotId,
+            Date.now(),
+        );
+        return result === 1;
     }
 
-    async forceReleaseAll(key: string): Promise<void> {
-        await this.database.del(key);
+    async forceReleaseAll(key: string): Promise<boolean> {
+        const hasDeleted =
+            await this.database.daiso_semaphore_force_release_all(
+                key,
+                Date.now(),
+            );
+        return hasDeleted === 1;
     }
 
     async refresh(

@@ -75,7 +75,7 @@ export function databaseSemaphoreAdapterTestSuite(
     });
 
     async function delay(time: TimeSpan): Promise<void> {
-        await LazyPromise.delay(time);
+        await LazyPromise.delay(time.addMilliseconds(10));
     }
 
     test.todo("Write tests!!!");

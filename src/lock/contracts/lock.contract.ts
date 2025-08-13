@@ -119,7 +119,7 @@ export type ILock = {
     /**
      * The `forceRelease` method releases a lock regardless of the owner.
      *
-     * @returns Returns true if the lock was released or false if the lock doesnt exists
+     * @returns Returns true if the lock exists or false if the lock doesnt exists.
      */
     forceRelease(): LazyPromise<boolean>;
 

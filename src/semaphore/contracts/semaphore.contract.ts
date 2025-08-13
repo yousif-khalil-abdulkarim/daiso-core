@@ -100,13 +100,17 @@ export type ISemaphore = {
 
     /**
      * The `release` method releases the current slot.
+     *
+     * @returns Returns true if the semaphore exists and has at least one busy slot or false.
      */
-    release(): LazyPromise<void>;
+    release(): LazyPromise<boolean>;
 
     /**
      * The `forceReleaseAll` method releases the all slots.
+     *
+     * @returns Returns true if the semaphore exists and has at least one unavailable slot or false if all slots are available.
      */
-    forceReleaseAll(): LazyPromise<void>;
+    forceReleaseAll(): LazyPromise<boolean>;
 
     /**
      * The `isExpired` method returns true if the slot is expired otherwise false is returned.

@@ -35,13 +35,15 @@ export type ISemaphoreAdapter = {
 
     /**
      * The `release` method releases given slot related to the key.
+     *
+     * @returns Returns true if the semaphore exists and has at least one unavailable slot or false if all slots are available.
      */
-    release(key: string, slotId: string): Promise<void>;
+    release(key: string, slotId: string): Promise<boolean>;
 
     /**
      * The `forceReleaseAll` method releases all slots related to the key.
      */
-    forceReleaseAll(key: string): Promise<void>;
+    forceReleaseAll(key: string): Promise<boolean>;
 
     /**
      * The `refresh` method expiration of slot if not already expired.

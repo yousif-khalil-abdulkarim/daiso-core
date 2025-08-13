@@ -86,7 +86,7 @@ export function semaphoreProviderTestSuite(
     });
 
     async function delay(time: TimeSpan): Promise<void> {
-        await LazyPromise.delay(time);
+        await LazyPromise.delay(time.addMilliseconds(10));
     }
 
     describe("Api tests:", () => {

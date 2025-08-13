@@ -316,21 +316,29 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    release(): LazyPromise<void> {
+    release(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             try {
-                await this.adapter.release(this.key.namespaced, this.slotId);
-                this.semaphoreSlotState.remove();
-                const event: ReleasedSemaphoreEvent = {
-                    key: this.key.resolved,
-                    slotId: this.slotId,
-                    limit: this.limit_,
-                    availableSlots: await this.availableSlots(),
-                    unavailableSlots: await this.unavailableSlots(),
-                };
-                this.eventDispatcher
-                    .dispatch(SEMAPHORE_EVENTS.RELEASED, event)
-                    .defer();
+                const hasReleased = await this.adapter.release(
+                    this.key.namespaced,
+                    this.slotId,
+                );
+
+                if (hasReleased) {
+                    this.semaphoreSlotState.remove();
+                    const event: ReleasedSemaphoreEvent = {
+                        key: this.key.resolved,
+                        slotId: this.slotId,
+                        limit: this.limit_,
+                        availableSlots: await this.availableSlots(),
+                        unavailableSlots: await this.unavailableSlots(),
+                    };
+                    this.eventDispatcher
+                        .dispatch(SEMAPHORE_EVENTS.RELEASED, event)
+                        .defer();
+                }
+
+                return hasReleased;
             } catch (error: unknown) {
                 const event: UnexpectedErrorSemaphoreEvent = {
                     key: this.key.resolved,
@@ -348,20 +356,29 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    forceReleaseAll(): LazyPromise<void> {
+    forceReleaseAll(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            await this.adapter.forceReleaseAll(this.key.namespaced);
+            const hasReleasedAll = await this.adapter.forceReleaseAll(
+                this.key.namespaced,
+            );
 
-            const event: AllReleasedSemaphoreEvent = {
-                key: this.key.resolved,
-                slotIds: this.semaphoreSlotState.getAllSlotIds(),
-                limit: this.limit_,
-                availableSlots: await this.availableSlots(),
-                unavailableSlots: await this.unavailableSlots(),
-            };
-            this.eventDispatcher.dispatch(SEMAPHORE_EVENTS.ALL_RELEASED, event);
+            if (hasReleasedAll) {
+                const event: AllReleasedSemaphoreEvent = {
+                    key: this.key.resolved,
+                    slotIds: this.semaphoreSlotState.getAllSlotIds(),
+                    limit: this.limit_,
+                    availableSlots: await this.availableSlots(),
+                    unavailableSlots: await this.unavailableSlots(),
+                };
+                this.eventDispatcher.dispatch(
+                    SEMAPHORE_EVENTS.ALL_RELEASED,
+                    event,
+                );
+            }
 
             this.semaphoreSlotState.removeAll();
+
+            return hasReleasedAll;
         });
     }
 

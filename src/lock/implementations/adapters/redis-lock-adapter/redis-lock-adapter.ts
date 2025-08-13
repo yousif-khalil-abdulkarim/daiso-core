@@ -17,8 +17,8 @@ declare module "ioredis" {
             key: string,
             owner: string,
             expiration: string,
-        ): Result<number, Context>;
-        daiso_lock_release(key: string, owner: string): Result<number, Context>;
+        ): Result<1 | 0, Context>;
+        daiso_lock_release(key: string, owner: string): Result<1 | 0, Context>;
         daiso_lock_refresh(
             key: string,
             owner: string,
