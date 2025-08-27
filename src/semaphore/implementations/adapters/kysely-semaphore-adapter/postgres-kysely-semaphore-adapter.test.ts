@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { databaseSemaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module-exports.js";
 import {
     KyselySemaphoreAdapter,
@@ -60,6 +60,7 @@ describe("postgres class: KyselySemaphoreAdapter", () => {
                 kysely,
                 shouldRemoveExpiredKeys: false,
             });
+            await adapter.init();
 
             const limit = 3;
             const expiration = TimeSpan.fromMinutes(2).toStartDate();
@@ -91,11 +92,13 @@ describe("postgres class: KyselySemaphoreAdapter", () => {
             const result2 = await adapter.transaction(async (trx) => {
                 return await trx.findSlots(key1);
             });
+            expect(result2).toEqual([]);
             expect(result2.length).toBe(0);
 
             const result3 = await adapter.transaction(async (trx) => {
                 return await trx.findSlots(key2);
             });
+            expect(result3).toEqual([]);
             expect(result3.length).toBe(0);
 
             const result4 = await adapter.transaction(async (trx) => {
@@ -182,6 +185,29 @@ describe("postgres class: KyselySemaphoreAdapter", () => {
 
             await expect(promise).resolves.toBeUndefined();
         });
+        test("Should call not setInterval when shouldRemoveExpiredKeys is false", async () => {
+            const intervalFn = vi.spyOn(globalThis, "setInterval");
+
+            const adapter = new KyselySemaphoreAdapter({
+                kysely,
+                shouldRemoveExpiredKeys: false,
+            });
+            await adapter.init();
+
+            expect(intervalFn).not.toHaveBeenCalledTimes(1);
+        });
+        test("Should call setInterval when shouldRemoveExpiredKeys is true", async () => {
+            const intervalFn = vi.spyOn(globalThis, "setInterval");
+
+            const adapter = new KyselySemaphoreAdapter({
+                kysely,
+                shouldRemoveExpiredKeys: true,
+            });
+            await adapter.init();
+
+            expect(intervalFn).toHaveBeenCalledTimes(1);
+            await adapter.deInit();
+        });
     });
     describe("method: deInit", () => {
         test("Should remove semaphore table", async () => {
@@ -236,6 +262,31 @@ describe("postgres class: KyselySemaphoreAdapter", () => {
             await adapter.init();
 
             await expect(promise).resolves.toBeUndefined();
+        });
+        test("Should call not clearInterval when shouldRemoveExpiredKeys is false", async () => {
+            const intervalFn = vi.spyOn(globalThis, "clearInterval");
+
+            const adapter = new KyselySemaphoreAdapter({
+                kysely,
+                shouldRemoveExpiredKeys: false,
+            });
+            await adapter.init();
+            await adapter.deInit();
+
+            expect(intervalFn).not.toHaveBeenCalledTimes(1);
+        });
+        test("Should call clearInterval when shouldRemoveExpiredKeys is true", async () => {
+            const intervalFn = vi.spyOn(globalThis, "clearInterval");
+
+            const adapter = new KyselySemaphoreAdapter({
+                kysely,
+                shouldRemoveExpiredKeys: true,
+            });
+            await adapter.init();
+            await adapter.deInit();
+
+            expect(intervalFn).toHaveBeenCalledTimes(1);
+            await adapter.deInit();
         });
     });
 });

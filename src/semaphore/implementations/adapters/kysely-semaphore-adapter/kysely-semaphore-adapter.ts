@@ -185,7 +185,7 @@ export class KyselySemaphoreAdapter
     private readonly kysely: Kysely<KyselySemaphoreTables>;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;
-    private timeoutId: string | number | NodeJS.Timeout | undefined | null =
+    private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
     private readonly isMysql: boolean;
 
@@ -266,15 +266,15 @@ export class KyselySemaphoreAdapter
         }
 
         if (this.shouldRemoveExpiredKeys) {
-            this.timeoutId = setInterval(() => {
+            this.intervalId = setInterval(() => {
                 void this.removeAllExpired();
             }, this.expiredKeysRemovalInterval.toMilliseconds());
         }
     }
 
     async deInit(): Promise<void> {
-        if (this.shouldRemoveExpiredKeys && this.timeoutId !== null) {
-            clearInterval(this.timeoutId);
+        if (this.shouldRemoveExpiredKeys && this.intervalId !== null) {
+            clearInterval(this.intervalId);
         }
 
         // Should throw if the index does not exists thats why the try catch is used.
