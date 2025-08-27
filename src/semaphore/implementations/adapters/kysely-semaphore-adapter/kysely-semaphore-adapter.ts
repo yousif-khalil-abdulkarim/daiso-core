@@ -3,23 +3,27 @@
  */
 
 import type {
-    DatabaseSemaphoreInsertSlotSettings,
+    IDatabaseSemaphoreTransaction,
     IDatabaseSemaphoreAdapter,
+    ISemaphoreData,
+    ISemaphoreSlotData,
+    ISemaphoreSlotExpirationData,
 } from "@/semaphore/contracts/_module-exports.js";
 import {
     TimeSpan,
     type IDeinitizable,
     type IInitizable,
+    type InvokableFn,
     type IPrunable,
 } from "@/utilities/_module-exports.js";
-import { type ExpressionBuilder, type Kysely } from "kysely";
+import { MysqlAdapter, type Kysely } from "kysely";
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
  * @group Adapters
  */
-export type KyselySemaphoreAdapterTable = {
+export type KyselySemaphoreTable = {
     key: string;
     limit: number;
 };
@@ -29,7 +33,7 @@ export type KyselySemaphoreAdapterTable = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
  * @group Adapters
  */
-export type KyselySemaphoreSlotAdapterTable = {
+export type KyselySemaphoreSlotTable = {
     id: string;
     key: string;
     // In ms since unix epoch
@@ -42,9 +46,9 @@ export type KyselySemaphoreSlotAdapterTable = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
  * @group Adapters
  */
-export type KyselySemaphoreAdapterTables = {
-    semaphore: KyselySemaphoreAdapterTable;
-    semaphoreSlot: KyselySemaphoreSlotAdapterTable;
+export type KyselySemaphoreTables = {
+    semaphore: KyselySemaphoreTable;
+    semaphoreSlot: KyselySemaphoreSlotTable;
 };
 
 /**
@@ -53,7 +57,7 @@ export type KyselySemaphoreAdapterTables = {
  * @group Adapters
  */
 export type KyselySemaphoreAdapterSettings = {
-    kysely: Kysely<KyselySemaphoreAdapterTables>;
+    kysely: Kysely<KyselySemaphoreTables>;
 
     /**
      * @default
@@ -61,13 +65,110 @@ export type KyselySemaphoreAdapterSettings = {
      * TimeSpan.fromMinutes(1)
      * ```
      */
-    expiredSemaphoresRemovalInterval?: TimeSpan;
+    expiredKeysRemovalInterval?: TimeSpan;
 
     /**
      * @default true
      */
-    shouldRemoveExpiredSemaphores?: boolean;
+    shouldRemoveExpiredKeys?: boolean;
 };
+
+/**
+ * @internal
+ */
+class DatabaseSemaphoreTransaction implements IDatabaseSemaphoreTransaction {
+    private readonly isMysql: boolean;
+
+    constructor(private readonly kysely: Kysely<KyselySemaphoreTables>) {
+        this.isMysql =
+            this.kysely.getExecutor().adapter instanceof MysqlAdapter;
+    }
+
+    async findSlots(key: string): Promise<ISemaphoreSlotData[]> {
+        const rows = await this.kysely
+            .selectFrom("semaphoreSlot")
+            .where("semaphoreSlot.key", "=", key)
+            .select(["semaphoreSlot.id", "semaphoreSlot.expiration"])
+            .execute();
+        return rows.map((row) => {
+            if (row.expiration === null) {
+                return {
+                    id: row.id,
+                    expiration: null,
+                };
+            }
+            return {
+                id: row.id,
+                expiration: new Date(Number(row.expiration)),
+            };
+        });
+    }
+
+    async findSemaphore(key: string): Promise<ISemaphoreData | null> {
+        const row = await this.kysely
+            .selectFrom("semaphore")
+            .where("semaphore.key", "=", key)
+            .select("limit")
+            .executeTakeFirst();
+        if (row === undefined) {
+            return null;
+        }
+        return row;
+    }
+
+    async upsertSemaphore(key: string, limit: number): Promise<void> {
+        await this.kysely
+            .insertInto("semaphore")
+            .values({ key, limit })
+            .$if(!this.isMysql, (eb) =>
+                eb.onConflict((eb) =>
+                    eb.column("key").doUpdateSet({
+                        key,
+                        limit,
+                    }),
+                ),
+            )
+            .$if(this.isMysql, (eb) =>
+                eb.onDuplicateKeyUpdate({
+                    key,
+                    limit,
+                }),
+            )
+            .execute();
+    }
+
+    async upsertSlot(
+        key: string,
+        slotId: string,
+        expiration: Date | null,
+    ): Promise<void> {
+        const expirationAsMs = expiration?.getTime() ?? null;
+        await this.kysely
+            .insertInto("semaphoreSlot")
+            .values({
+                key,
+                id: slotId,
+                expiration: expirationAsMs,
+            })
+            .$if(!this.isMysql, (eb) =>
+                eb.onConflict((eb) =>
+                    eb.column("id").doUpdateSet({
+                        key,
+                        id: slotId,
+                        expiration: expirationAsMs,
+                    }),
+                ),
+            )
+            .$if(this.isMysql, (eb) =>
+                eb.onDuplicateKeyUpdate({
+                    key,
+                    id: slotId,
+                    expiration: expirationAsMs,
+                }),
+            )
+            .execute();
+    }
+}
 
 /**
  * To utilize the `KyselySemaphoreAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
@@ -81,11 +182,12 @@ export type KyselySemaphoreAdapterSettings = {
 export class KyselySemaphoreAdapter
     implements IDatabaseSemaphoreAdapter, IDeinitizable, IInitizable, IPrunable
 {
-    private readonly kysely: Kysely<KyselySemaphoreAdapterTables>;
-    private readonly expiredSemaphoresRemovalInterval: TimeSpan;
-    private readonly shouldRemoveExpiredSemaphores: boolean;
+    private readonly kysely: Kysely<KyselySemaphoreTables>;
+    private readonly expiredKeysRemovalInterval: TimeSpan;
+    private readonly shouldRemoveExpiredKeys: boolean;
     private timeoutId: string | number | NodeJS.Timeout | undefined | null =
         null;
+    private readonly isMysql: boolean;
 
     /**
      * @example
@@ -107,13 +209,14 @@ export class KyselySemaphoreAdapter
     constructor(settings: KyselySemaphoreAdapterSettings) {
         const {
             kysely,
-            expiredSemaphoresRemovalInterval = TimeSpan.fromMinutes(1),
-            shouldRemoveExpiredSemaphores = true,
+            expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
+            shouldRemoveExpiredKeys = true,
         } = settings;
-        this.expiredSemaphoresRemovalInterval =
-            expiredSemaphoresRemovalInterval;
-        this.shouldRemoveExpiredSemaphores = shouldRemoveExpiredSemaphores;
+        this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
+        this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.kysely = kysely;
+        this.isMysql =
+            this.kysely.getExecutor().adapter instanceof MysqlAdapter;
     }
 
     async init(): Promise<void> {
@@ -121,7 +224,9 @@ export class KyselySemaphoreAdapter
         try {
             await this.kysely.schema
                 .createTable("semaphore")
-                .addColumn("key", "varchar(255)", (col) => col.primaryKey())
+                .addColumn("key", "varchar(255)", (col) =>
+                    col.notNull().primaryKey(),
+                )
                 .addColumn("limit", "integer", (col) => col.notNull())
                 .execute();
         } catch {
@@ -132,7 +237,9 @@ export class KyselySemaphoreAdapter
         try {
             await this.kysely.schema
                 .createTable("semaphoreSlot")
-                .addColumn("id", "varchar(255)", (col) => col.primaryKey())
+                .addColumn("id", "varchar(255)", (col) =>
+                    col.notNull().primaryKey(),
+                )
                 .addColumn("key", "varchar(255)", (col) => col.notNull())
                 .addColumn("expiration", "bigint")
                 .addForeignKeyConstraint(
@@ -158,16 +265,16 @@ export class KyselySemaphoreAdapter
             /* EMPTY */
         }
 
-        if (this.shouldRemoveExpiredSemaphores) {
+        if (this.shouldRemoveExpiredKeys) {
             this.timeoutId = setInterval(() => {
                 void this.removeAllExpired();
-            }, this.expiredSemaphoresRemovalInterval.toMilliseconds());
+            }, this.expiredKeysRemovalInterval.toMilliseconds());
         }
     }
 
     async deInit(): Promise<void> {
-        if (this.shouldRemoveExpiredSemaphores && this.timeoutId !== null) {
-            clearTimeout(this.timeoutId);
+        if (this.shouldRemoveExpiredKeys && this.timeoutId !== null) {
+            clearInterval(this.timeoutId);
         }
 
         // Should throw if the index does not exists thats why the try catch is used.
@@ -182,29 +289,17 @@ export class KyselySemaphoreAdapter
 
         // Should throw if the table does not exists thats why the try catch is used.
         try {
-            await this.kysely.schema.dropTable("semapahoreSlot").execute();
+            await this.kysely.schema.dropTable("semaphoreSlot").execute();
         } catch {
             /* EMPTY */
         }
 
         // Should throw if the table does not exists thats why the try catch is used.
         try {
-            await this.kysely.schema.dropTable("semapahore").execute();
+            await this.kysely.schema.dropTable("semaphore").execute();
         } catch {
             /* EMPTY */
         }
-    }
-
-    private isUnexpiredSlot(
-        eb: ExpressionBuilder<KyselySemaphoreAdapterTables, "semaphoreSlot">,
-    ) {
-        const hasNotExpiration = eb("semaphoreSlot.expiration", "is", null);
-        const hasExpiration = eb("semaphoreSlot.expiration", "is not", null);
-        const hasNotExpired = eb("semaphoreSlot.expiration", "<", Date.now());
-        return eb.or([
-            hasNotExpiration,
-            eb.and([hasExpiration, hasNotExpired]),
-        ]);
     }
 
     async removeAllExpired(): Promise<void> {
@@ -215,81 +310,117 @@ export class KyselySemaphoreAdapter
                     .selectFrom("semaphoreSlot")
                     .select(eb.val(1).as("value"))
                     .where("semaphoreSlot.key", "=", eb.ref("semaphore.key"))
-                    .where((eb) => this.isUnexpiredSlot(eb));
+                    .where((eb) =>
+                        eb.and([
+                            eb("semaphoreSlot.expiration", "is not", null),
+                            eb("semaphoreSlot.expiration", ">", Date.now()),
+                        ]),
+                    );
                 return eb.not(eb.exists(hasUnexpiredSlots));
             })
             .execute();
     }
 
-    async findLimit(key: string): Promise<number | null> {
-        const row = await this.kysely
-            .selectFrom("semaphore")
-            .select(["semaphore.limit"])
-            .where("semaphore.key", "=", key)
-            .executeTakeFirst();
+    async transaction<TValue>(
+        fn: InvokableFn<
+            [methods: IDatabaseSemaphoreTransaction],
+            Promise<TValue>
+        >,
+    ): Promise<TValue> {
+        return await this.kysely
+            .transaction()
+            .setIsolationLevel("serializable")
+            .execute(async (trx) => {
+                return await fn(new DatabaseSemaphoreTransaction(trx));
+            });
+    }
+
+    async removeSlot(
+        key: string,
+        slotId: string,
+    ): Promise<ISemaphoreSlotExpirationData | null> {
+        let row: Pick<KyselySemaphoreSlotTable, "expiration"> | undefined;
+
+        if (this.isMysql) {
+            row = await this.kysely
+                .transaction()
+                .setIsolationLevel("serializable")
+                .execute(async (trx) => {
+                    const row = await trx
+                        .selectFrom("semaphoreSlot")
+                        .select("semaphoreSlot.expiration")
+                        .where("semaphoreSlot.key", "=", key)
+                        .where("semaphoreSlot.id", "=", slotId)
+                        .executeTakeFirst();
+                    await trx
+                        .deleteFrom("semaphoreSlot")
+                        .where("semaphoreSlot.key", "=", key)
+                        .where("semaphoreSlot.id", "=", slotId)
+                        .executeTakeFirst();
+                    return row;
+                });
+        } else {
+            row = await this.kysely
+                .deleteFrom("semaphoreSlot")
+                .where("semaphoreSlot.key", "=", key)
+                .where("semaphoreSlot.id", "=", slotId)
+                .returning("semaphoreSlot.expiration")
+                .executeTakeFirst();
+        }
+
         if (row === undefined) {
             return null;
         }
-        return row.limit;
-    }
-
-    async insertSemaphore(key: string, limit: number): Promise<void> {
-        await this.kysely
-            .insertInto("semaphore")
-            .values({
-                key,
-                limit,
-            })
-            .execute();
-    }
-
-    async removeSemaphore(key: string): Promise<void> {
-        await this.kysely
-            .deleteFrom("semaphore")
-            .where("semaphore.key", "=", key)
-            .execute();
-    }
-
-    async insertSlotIfLimitNotReached(
-        settings: DatabaseSemaphoreInsertSlotSettings,
-    ): Promise<number> {
-        const { key, slotId, limit, expiration } = settings;
-        const result = await this.kysely
-            .insertInto("semaphoreSlot")
-            .columns(["id", "key", "expiration"])
-            .expression((eb) =>
-                eb
-                    .selectFrom("semaphoreSlot")
-                    .select([
-                        eb.val(slotId).as("id"),
-                        eb.val(key).as("key"),
-                        eb.val(expiration).as("expiration"),
-                    ])
-                    .where((eb) => {
-                        const countSubQuery = eb
-                            .selectFrom("semaphoreSlot")
-                            .select(eb.fn.countAll().as("count"))
-                            .where("semaphoreSlot.key", "=", key)
-                            .where((eb) => this.isUnexpiredSlot(eb));
-                        return eb(countSubQuery, "<", limit);
-                    }),
-            )
-            .executeTakeFirst();
-        if (result.numInsertedOrUpdatedRows === undefined) {
-            return 0;
+        if (row.expiration === null) {
+            return {
+                expiration: null,
+            };
         }
-        return Number(result.numInsertedOrUpdatedRows);
+        return {
+            expiration: new Date(Number(row.expiration)),
+        };
     }
 
-    async removeSlot(key: string, slotId: string): Promise<void> {
-        await this.kysely
-            .deleteFrom("semaphoreSlot")
-            .where("semaphoreSlot.key", "=", key)
-            .where("semaphoreSlot.id", "=", slotId)
-            .execute();
+    async removeAllSlots(key: string): Promise<ISemaphoreSlotExpirationData[]> {
+        let rows: Pick<KyselySemaphoreSlotTable, "expiration">[];
+
+        if (this.isMysql) {
+            rows = await this.kysely
+                .transaction()
+                .setIsolationLevel("serializable")
+                .execute(async (trx) => {
+                    const rows = trx
+                        .selectFrom("semaphoreSlot")
+                        .where("semaphoreSlot.key", "=", key)
+                        .select("semaphoreSlot.expiration")
+                        .execute();
+                    await trx
+                        .deleteFrom("semaphoreSlot")
+                        .where("semaphoreSlot.key", "=", key)
+                        .execute();
+                    return rows;
+                });
+        } else {
+            rows = await this.kysely
+                .deleteFrom("semaphoreSlot")
+                .where("semaphoreSlot.key", "=", key)
+                .returning("semaphoreSlot.expiration")
+                .execute();
+        }
+
+        return rows.map((row) => {
+            if (row.expiration === null) {
+                return {
+                    expiration: null,
+                };
+            }
+            return {
+                expiration: new Date(Number(row.expiration)),
+            };
+        });
     }
 
-    async updateSlotIfUnexpired(
+    async updateExpiration(
         key: string,
         slotId: string,
         expiration: Date,
@@ -298,7 +429,12 @@ export class KyselySemaphoreAdapter
             .updateTable("semaphoreSlot")
             .where("semaphoreSlot.key", "=", key)
             .where("semaphoreSlot.id", "=", slotId)
-            .where((eb) => this.isUnexpiredSlot(eb))
+            .where((eb) =>
+                eb.and([
+                    eb("semaphoreSlot.expiration", "is not", null),
+                    eb("semaphoreSlot.expiration", ">", Date.now()),
+                ]),
+            )
             .set({
                 expiration: expiration.getTime(),
             })
