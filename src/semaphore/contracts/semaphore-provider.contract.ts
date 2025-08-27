@@ -27,6 +27,8 @@ export type SemaphoreProviderCreateSettings = {
      * You can also provide a `settings.ttl` value using. If not specified it defaults to null, meaning no TTL is applied.
      */
     ttl?: TimeSpan | null;
+
+    slotId?: OneOrMore<string>;
 };
 
 /**
