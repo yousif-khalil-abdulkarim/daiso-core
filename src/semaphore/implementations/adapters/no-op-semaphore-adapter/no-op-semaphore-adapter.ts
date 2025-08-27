@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 /**
  * @module Semaphore
  */
@@ -8,8 +5,10 @@
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type {
     ISemaphoreAdapter,
+    ISemaphoreAdapterState,
     SemaphoreAcquireSettings,
 } from "@/semaphore/contracts/_module-exports.js";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ISemaphoreProvider } from "@/semaphore/contracts/_module-exports.js";
 
 /**
@@ -19,19 +18,26 @@ import type { ISemaphoreProvider } from "@/semaphore/contracts/_module-exports.j
  * @group Adapters
  */
 export class NoOpSemaphoreAdapter implements ISemaphoreAdapter {
-    async acquire(_settings: SemaphoreAcquireSettings): Promise<boolean> {
-        return true;
+    getState(_key: string): Promise<ISemaphoreAdapterState | null> {
+        return Promise.resolve({
+            limit: Infinity,
+            acquiredSlots: new Map(),
+        });
     }
 
-    async release(_key: string, _slotId: string): Promise<void> {}
+    acquire(_settings: SemaphoreAcquireSettings): Promise<boolean> {
+        return Promise.resolve(true);
+    }
 
-    async forceReleaseAll(_key: string): Promise<void> {}
+    release(_key: string, _slotId: string): Promise<boolean> {
+        return Promise.resolve(true);
+    }
 
-    async refresh(
-        _key: string,
-        _slotId: string,
-        _ttl: TimeSpan,
-    ): Promise<boolean> {
-        return true;
+    forceReleaseAll(_key: string): Promise<boolean> {
+        return Promise.resolve(true);
+    }
+
+    refresh(_key: string, _slotId: string, _ttl: TimeSpan): Promise<boolean> {
+        return Promise.resolve(true);
     }
 }
