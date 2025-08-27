@@ -2,11 +2,12 @@
  * @module Semaphore
  */
 
-import { UnexpectedError, type TimeSpan } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type {
     SemaphoreAcquireSettings,
     IDatabaseSemaphoreAdapter,
     ISemaphoreAdapter,
+    ISemaphoreAdapterState,
 } from "@/semaphore/contracts/_module-exports.js";
 
 /**
@@ -16,52 +17,65 @@ export class DatabaseSemaphoreAdapter implements ISemaphoreAdapter {
     constructor(private readonly adapter: IDatabaseSemaphoreAdapter) {}
 
     async acquire(settings: SemaphoreAcquireSettings): Promise<boolean> {
-        const { key, slotId, ttl } = settings;
-        let { limit } = settings;
+        return await this.adapter.transaction(async (methods) => {
+            const expiration = settings.ttl?.toEndDate() ?? null;
 
-        // If an error is thrown it means the semaphore already exists
-        try {
-            await this.adapter.insertSemaphore(key, limit);
-        } catch (error: unknown) {
-            if (error instanceof UnexpectedError) {
-                throw error;
+            const semaphoreData = await methods.findSemaphore(settings.key);
+
+            let limit = semaphoreData?.limit;
+            if (limit === undefined) {
+                limit = settings.limit;
+                await methods.upsertSemaphore(settings.key, limit);
             }
 
-            // If the semaphore already exists we need to retrieve the limit from the database
-            // If null is returned it means the semaphore does not exists because of cleanup or manually removed
-            const limit_ = await this.adapter.findLimit(key);
-            if (limit_ === null) {
+            const slots = await methods.findSlots(settings.key);
+            const unexpiredSlots = slots.filter(
+                (slot) =>
+                    slot.expiration === null || slot.expiration > new Date(),
+            );
+
+            if (unexpiredSlots.length === 0) {
+                await methods.upsertSemaphore(settings.key, settings.limit);
+            }
+
+            if (unexpiredSlots.length >= limit) {
                 return false;
             }
-            limit = limit_;
-        }
 
-        // If an error is thrown it means the semaphore does not exists because of cleanup or manually removed
-        try {
-            const insertedRows = await this.adapter.insertSlotIfLimitNotReached(
-                {
-                    key,
-                    slotId,
-                    limit,
-                    expiration: ttl?.toEndDate() ?? null,
-                },
+            const hasNotSlot = unexpiredSlots.every(
+                (slot) => slot.id !== settings.slotId,
             );
-            return insertedRows > 0;
-        } catch (error: unknown) {
-            if (error instanceof UnexpectedError) {
-                throw error;
+            if (hasNotSlot) {
+                await methods.upsertSlot(
+                    settings.key,
+                    settings.slotId,
+                    expiration,
+                );
             }
 
+            return true;
+        });
+    }
+
+    async release(key: string, slotId: string): Promise<boolean> {
+        const semapahoreSlotData = await this.adapter.removeSlot(key, slotId);
+        if (semapahoreSlotData === null) {
             return false;
         }
+        return (
+            semapahoreSlotData.expiration === null ||
+            semapahoreSlotData.expiration > new Date()
+        );
     }
 
-    async release(key: string, slotId: string): Promise<void> {
-        await this.adapter.removeSlot(key, slotId);
-    }
-
-    async forceReleaseAll(key: string): Promise<void> {
-        await this.adapter.removeSemaphore(key);
+    async forceReleaseAll(key: string): Promise<boolean> {
+        const semapahoreSlotDataArray = await this.adapter.removeAllSlots(key);
+        return semapahoreSlotDataArray.some((semapahoreSlotData) => {
+            return (
+                semapahoreSlotData.expiration === null ||
+                semapahoreSlotData.expiration > new Date()
+            );
+        });
     }
 
     async refresh(
@@ -69,11 +83,37 @@ export class DatabaseSemaphoreAdapter implements ISemaphoreAdapter {
         slotId: string,
         ttl: TimeSpan,
     ): Promise<boolean> {
-        const updatedRows = await this.adapter.updateSlotIfUnexpired(
+        const updateCount = await this.adapter.updateExpiration(
             key,
             slotId,
             ttl.toEndDate(),
         );
-        return updatedRows > 0;
+        return Number(updateCount) > 0;
+    }
+
+    async getState(key: string): Promise<ISemaphoreAdapterState | null> {
+        return await this.adapter.transaction(async (trx) => {
+            const semaphore = await trx.findSemaphore(key);
+            if (semaphore === null) {
+                return null;
+            }
+            const slots = await trx.findSlots(key);
+            const unexpiredSlots = slots.filter(
+                (slot) =>
+                    slot.expiration === null || slot.expiration > new Date(),
+            );
+            if (unexpiredSlots.length === 0) {
+                return null;
+            }
+            const unexpiredSlotsAsMap = new Map(
+                unexpiredSlots.map(
+                    (slot) => [slot.id, slot.expiration] as const,
+                ),
+            );
+            return {
+                limit: semaphore.limit,
+                acquiredSlots: unexpiredSlotsAsMap,
+            };
+        });
     }
 }
