@@ -1,5 +1,16 @@
 # @daiso-tech/core
 
+## 0.41.0
+
+### Minor Changes
+
+- 69ab9fc: Added semaphore component
+
+### Patch Changes
+
+- 69ab9fc: Updated bug with `KyselyCacheAdapter`, now when the `detInit` method is called it will remove the interval timer.
+- 69ab9fc: Updated bug with `KyselyLockAdapter`, now when the `detInit` method is called it will remove the interval timer.
+
 ## 0.40.0
 
 ### Minor Changes
@@ -171,8 +182,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                      - `AsyncFactoryable`
-                      - `Factoryable`
+                        - `AsyncFactoryable`
+                        - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
