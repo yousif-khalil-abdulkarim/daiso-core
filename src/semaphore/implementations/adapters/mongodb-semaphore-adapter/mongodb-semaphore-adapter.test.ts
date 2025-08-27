@@ -33,4 +33,60 @@ describe("class: MongodbSemaphoreAdapter", () => {
         expect,
         describe,
     });
+    describe("method: init", () => {
+        test("Should not throw error when called multiple times", async () => {
+            const adapter = new MongodbSemaphoreAdapter({
+                database: client.db("database"),
+                collectionName: "locks",
+            });
+            await adapter.init();
+
+            const promise = adapter.init();
+
+            await expect(promise).resolves.toBeUndefined();
+        });
+    });
+    describe("method: deInit", () => {
+        test("Should remove collection", async () => {
+            const adapter = new MongodbSemaphoreAdapter({
+                database: client.db("database"),
+                collectionName: "locks",
+            });
+            await adapter.init();
+            await adapter.deInit();
+
+            const collections = await client
+                .db("database")
+                .listCollections()
+                .toArray();
+
+            const collection = collections.find(
+                (collection) => collection.name === "locks",
+            );
+
+            expect(collection).toBeUndefined();
+        });
+        test("Should not throw error when called multiple times", async () => {
+            const adapter = new MongodbSemaphoreAdapter({
+                database: client.db("database"),
+                collectionName: "locks",
+            });
+            await adapter.init();
+            await adapter.deInit();
+
+            const promise = adapter.deInit();
+
+            await expect(promise).resolves.toBeUndefined();
+        });
+        test("Should not throw error when called before init", async () => {
+            const adapter = new MongodbSemaphoreAdapter({
+                database: client.db("database"),
+                collectionName: "locks",
+            });
+
+            const promise = adapter.deInit();
+
+            await expect(promise).resolves.toBeUndefined();
+        });
+    });
 });

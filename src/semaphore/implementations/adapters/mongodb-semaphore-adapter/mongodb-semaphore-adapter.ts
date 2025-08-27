@@ -4,12 +4,12 @@
 
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
-    UnexpectedError,
     type IDeinitizable,
     type IInitizable,
 } from "@/utilities/_module-exports.js";
 import type {
     ISemaphoreAdapter,
+    ISemaphoreAdapterState,
     SemaphoreAcquireSettings,
 } from "@/semaphore/contracts/_module-exports.js";
 import type { ObjectId } from "mongodb";
@@ -64,17 +64,8 @@ export type MongodbSemaphoreAdapterSettings = {
 export class MongodbSemaphoreAdapter
     implements ISemaphoreAdapter, IDeinitizable, IInitizable
 {
-    private static isSlotNotExpired = (slotId: string) => {
-        return (slot: MongodbSemaphoreSlotSubDocument): boolean => {
-            const hasNotExpiration = slot.expiration === null;
-            const hasExpirationAndNotExpired =
-                slot.expiration !== null && slot.expiration < new Date();
-            return (
-                slot.id === slotId &&
-                (hasNotExpiration || hasExpirationAndNotExpired)
-            );
-        };
-    };
+    private static isSlotNotExpired = (slot: MongodbSemaphoreSlotSubDocument) =>
+        slot.expiration === null || slot.expiration > new Date();
 
     private readonly collection: Collection<MongodbSemaphoreDocument>;
 
@@ -154,7 +145,7 @@ export class MongodbSemaphoreAdapter
                     $ifNull: ["$limit", limit],
                 },
                 slots: {
-                    $ifNull: ["$limit", []],
+                    $ifNull: ["$slots", []],
                 },
             },
         };
@@ -164,29 +155,19 @@ export class MongodbSemaphoreAdapter
         return {
             $set: {
                 slots: {
-                    // We filter all slots that are no expired
+                    // We filter all slots that are not expired
                     $filter: {
                         input: "$slots",
-                        tag: "slot",
+                        as: "slot",
                         cond: {
                             $or: [
                                 // We filter all slots that have no ttl
                                 {
                                     $eq: ["$$slot.expiration", null],
                                 },
+                                // We filter all slots that have ttl but are not expired
                                 {
-                                    // We filter all slots that have ttl but are not expired
-                                    $and: [
-                                        {
-                                            $ne: ["$$slot.expiration", null],
-                                        },
-                                        {
-                                            $gte: [
-                                                "$$slot.expiration",
-                                                new Date(),
-                                            ],
-                                        },
-                                    ],
+                                    $gt: ["$$slot.expiration", new Date()],
                                 },
                             ],
                         },
@@ -197,25 +178,29 @@ export class MongodbSemaphoreAdapter
     }
 
     private updateSemaphoreExpiration(): Document[] {
+        const hasUnexpireableSlotQuery = {
+            $in: [
+                null,
+                {
+                    $map: {
+                        input: "$slots",
+                        as: "slot",
+                        in: "$$slot.expiration",
+                    },
+                },
+            ],
+        };
+        const hasSlotsQuery = {
+            $eq: [{ $size: "$slots" }, 0],
+        };
         return [
             {
                 $set: {
                     expiration: {
                         $cond: {
                             // Check if there is at least one unexpirable slot
-                            if: {
-                                $in: [
-                                    null,
-                                    {
-                                        $map: {
-                                            input: "$slots",
-                                            as: "slot",
-                                            in: "$$slot.expiration",
-                                        },
-                                    },
-                                ],
-                            },
-                            // If there are at least on expirable slot we set the expiration to null
+                            if: hasUnexpireableSlotQuery,
+                            // If there are at least one unexpirable slot we set the expiration to null
                             then: null,
                             // If all slots are expireable we set the expiration to highest expiration
                             else: {
@@ -230,7 +215,7 @@ export class MongodbSemaphoreAdapter
                     expiration: {
                         $cond: {
                             // Are there slots acquired
-                            if: { $eq: [{ $size: "$slots" }, 0] },
+                            if: hasSlotsQuery,
                             // If there are no slots acquired we immediatley expire the semaphore
                             then: new Date(),
                             // If there are slots acquired we do nothing
@@ -244,7 +229,32 @@ export class MongodbSemaphoreAdapter
 
     async acquire(settings: SemaphoreAcquireSettings): Promise<boolean> {
         const { key, slotId, limit, ttl } = settings;
-        const semaphore = await this.collection.findOneAndUpdate(
+        const hasNotReachedLimitQuery = {
+            $lt: [
+                {
+                    $size: "$slots",
+                },
+                "$limit",
+            ],
+        };
+        const hasAlreadyAcquiredSlotQuery = {
+            $not: [
+                {
+                    $in: [
+                        slotId,
+                        // We select the ids of each element in the $slots
+                        {
+                            $map: {
+                                input: "$slots",
+                                as: "slot",
+                                in: "$$slot.id",
+                            },
+                        },
+                    ],
+                },
+            ],
+        };
+        const semaphoreData = await this.collection.findOneAndUpdate(
             {
                 key,
             },
@@ -253,43 +263,36 @@ export class MongodbSemaphoreAdapter
                 this.removeExpiredSlotsStage(),
                 {
                     $set: {
+                        limit: {
+                            $cond: {
+                                if: {
+                                    $eq: [
+                                        {
+                                            $size: "$slots",
+                                        },
+                                        0,
+                                    ],
+                                },
+                                then: limit,
+                                else: "$limit",
+                            },
+                        },
+                    },
+                },
+                {
+                    $set: {
                         slots: {
                             $cond: {
                                 // We check if the limit is not reached and slotId does not exist
                                 if: {
                                     $and: [
-                                        // We check if the limit is not reached
-                                        {
-                                            $lt: [
-                                                {
-                                                    $size: "$slots",
-                                                },
-                                                "$limit",
-                                            ],
-                                        },
-                                        // We check if the slot id does not exist
-                                        {
-                                            $not: [
-                                                {
-                                                    $in: [
-                                                        slotId,
-                                                        // We select the ids of each element in the $slots
-                                                        {
-                                                            $map: {
-                                                                input: "$slots",
-                                                                as: "slot",
-                                                                in: "$$slot.id",
-                                                            },
-                                                        },
-                                                    ],
-                                                },
-                                            ],
-                                        },
+                                        hasNotReachedLimitQuery,
+                                        hasAlreadyAcquiredSlotQuery,
                                     ],
                                 },
                                 // If the limit is not reached and slot id does not exist we append the slot
                                 then: {
-                                    $contactArrays: [
+                                    $concatArrays: [
                                         "$slots",
                                         [
                                             {
@@ -312,22 +315,37 @@ export class MongodbSemaphoreAdapter
                 upsert: true,
                 projection: {
                     _id: 0,
+                    limit: 1,
                     slots: 1,
                 },
-                returnDocument: "after",
             },
         );
-
-        if (semaphore === null) {
-            throw new UnexpectedError("!!__MESSAGE__!!");
+        if (semaphoreData === null) {
+            return true;
         }
-        return semaphore.slots.some(
-            MongodbSemaphoreAdapter.isSlotNotExpired(slotId),
+
+        // We need to filter out expired slots from semaphoreData to ensure the data is current.
+        // The update that handles slot expiration runs after this function.
+        const unexpiredSlots = semaphoreData.slots.filter(
+            MongodbSemaphoreAdapter.isSlotNotExpired,
         );
+        const hasReachedLimit = unexpiredSlots.length >= semaphoreData.limit;
+        if (hasReachedLimit) {
+            return false;
+        }
+
+        const hasAlreadyAcquiredSlot = unexpiredSlots.some(
+            (slot) => slot.id === slotId,
+        );
+        if (hasAlreadyAcquiredSlot) {
+            return true;
+        }
+
+        return true;
     }
 
-    async release(key: string, slotId: string): Promise<void> {
-        await this.collection.updateOne(
+    async release(key: string, slotId: string): Promise<boolean> {
+        const semaphoreData = await this.collection.findOneAndUpdate(
             {
                 key,
             },
@@ -340,7 +358,7 @@ export class MongodbSemaphoreAdapter
                                 input: "$slots",
                                 as: "slot",
                                 cond: {
-                                    $ne: ["$$slot", slotId],
+                                    $ne: ["$$slot.id", slotId],
                                 },
                             },
                         },
@@ -348,13 +366,46 @@ export class MongodbSemaphoreAdapter
                 },
                 ...this.updateSemaphoreExpiration(),
             ],
+            {
+                projection: {
+                    _id: 0,
+                    slots: 1,
+                },
+            },
         );
+        if (semaphoreData === null) {
+            return false;
+        }
+
+        const hasSlot = semaphoreData.slots.some(
+            (slot) =>
+                slot.id === slotId &&
+                MongodbSemaphoreAdapter.isSlotNotExpired(slot),
+        );
+        if (hasSlot) {
+            return true;
+        }
+
+        return false;
     }
 
-    async forceReleaseAll(key: string): Promise<void> {
-        await this.collection.deleteOne({
-            key,
-        });
+    async forceReleaseAll(key: string): Promise<boolean> {
+        const semaphoreData = await this.collection.findOneAndDelete(
+            {
+                key,
+            },
+            {
+                projection: { _id: 0, slots: 1 },
+            },
+        );
+        if (semaphoreData === null) {
+            return false;
+        }
+        const unexpiredSlots = semaphoreData.slots.filter(
+            MongodbSemaphoreAdapter.isSlotNotExpired,
+        );
+
+        return unexpiredSlots.length > 0;
     }
 
     async refresh(
@@ -362,40 +413,15 @@ export class MongodbSemaphoreAdapter
         slotId: string,
         ttl: TimeSpan,
     ): Promise<boolean> {
-        const semaphore = await this.collection.findOneAndUpdate(
+        const isExpireableQuery = {
+            $ne: ["$$slot.expiration", null],
+        };
+        const isUnexpiredQuery = {
+            $gt: ["$$slot.expiration", new Date()],
+        };
+        const semaphoreData = await this.collection.findOneAndUpdate(
             {
                 key,
-                slots: {
-                    $elemMatch: {
-                        $or: [
-                            // Slot that doesnt have expiration
-                            {
-                                id: slotId,
-                                expiration: null,
-                            },
-                            // Slots that have expiration and is not expired
-                            {
-                                id: slotId,
-                                expiration: {
-                                    $and: [
-                                        // Has expiration
-                                        {
-                                            expiration: {
-                                                $ne: null,
-                                            },
-                                        },
-                                        // And has not expired
-                                        {
-                                            expiration: {
-                                                $lt: new Date(),
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        ],
-                    },
-                },
             },
             [
                 this.removeExpiredSlotsStage(),
@@ -408,7 +434,13 @@ export class MongodbSemaphoreAdapter
                                 in: {
                                     $cond: {
                                         if: {
-                                            $eq: ["$$slot.id", slotId],
+                                            $and: [
+                                                {
+                                                    $eq: ["$$slot.id", slotId],
+                                                },
+                                                isExpireableQuery,
+                                                isUnexpiredQuery,
+                                            ],
                                         },
                                         then: {
                                             id: "$$slot.id",
@@ -421,7 +453,7 @@ export class MongodbSemaphoreAdapter
                         },
                     },
                 },
-                this.updateSemaphoreExpiration(),
+                ...this.updateSemaphoreExpiration(),
             ],
             {
                 projection: {
@@ -432,11 +464,42 @@ export class MongodbSemaphoreAdapter
             },
         );
 
-        if (semaphore === null) {
+        if (semaphoreData === null) {
             return false;
         }
-        return semaphore.slots.some(
-            MongodbSemaphoreAdapter.isSlotNotExpired(slotId),
+
+        const hasRefreshed = semaphoreData.slots
+            .filter(MongodbSemaphoreAdapter.isSlotNotExpired)
+            .some((slot) => slot.id === slotId && slot.expiration !== null);
+        return hasRefreshed;
+    }
+
+    async getState(key: string): Promise<ISemaphoreAdapterState | null> {
+        const semaphore = await this.collection.findOne(
+            { key },
+            {
+                projection: {
+                    _id: 0,
+                    slots: 1,
+                    limit: 1,
+                },
+            },
         );
+        if (semaphore === null) {
+            return null;
+        }
+        const unexpiredSlots = semaphore.slots.filter((slot) => {
+            return slot.expiration === null || slot.expiration > new Date();
+        });
+        if (unexpiredSlots.length === 0) {
+            return null;
+        }
+        const unexpiredSlotsAsMap = new Map(
+            unexpiredSlots.map((slot) => [slot.id, slot.expiration] as const),
+        );
+        return {
+            limit: semaphore.limit,
+            acquiredSlots: unexpiredSlotsAsMap,
+        };
     }
 }
