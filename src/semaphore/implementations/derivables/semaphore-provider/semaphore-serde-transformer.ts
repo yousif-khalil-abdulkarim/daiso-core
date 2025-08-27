@@ -9,6 +9,7 @@ import {
 } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore.js";
 import { TimeSpan, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
+    IDatabaseSemaphoreAdapter,
     ISemaphoreAdapter,
     SemaphoreEventMap,
 } from "@/semaphore/contracts/_module-exports.js";
@@ -24,6 +25,7 @@ import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
  */
 export type SemaphoreSerdeTransformerSettings = {
     adapter: ISemaphoreAdapter;
+    originalAdapter: ISemaphoreAdapter | IDatabaseSemaphoreAdapter;
     namespace: Namespace;
     createLazyPromise: <TValue = void>(
         asyncFn: () => Promise<TValue>,
@@ -42,6 +44,9 @@ export class SemaphoreSerdeTransformer
     implements ISerdeTransformer<Semaphore, ISerializedSemaphore>
 {
     private readonly adapter: ISemaphoreAdapter;
+    private readonly originalAdapter:
+        | ISemaphoreAdapter
+        | IDatabaseSemaphoreAdapter;
     private readonly namespace: Namespace;
     private readonly createLazyPromise: <TValue = void>(
         asyncFn: () => Promise<TValue>,
@@ -55,6 +60,7 @@ export class SemaphoreSerdeTransformer
     constructor(settings: SemaphoreSerdeTransformerSettings) {
         const {
             adapter,
+            originalAdapter,
             namespace,
             createLazyPromise,
             defaultBlockingInterval,
@@ -65,6 +71,7 @@ export class SemaphoreSerdeTransformer
         } = settings;
         this.serdeTransformerName = serdeTransformerName;
         this.adapter = adapter;
+        this.originalAdapter = originalAdapter;
         this.namespace = namespace;
         this.createLazyPromise = createLazyPromise;
         this.defaultBlockingInterval = defaultBlockingInterval;
@@ -74,29 +81,38 @@ export class SemaphoreSerdeTransformer
     }
 
     get name(): OneOrMore<string> {
-        if (this.serdeTransformerName === "") {
-            return [
-                "semaphore",
-                getConstructorName(this.adapter),
-                this.namespace._getInternal().namespaced,
-            ];
-        }
         return [
             "semaphore",
             this.serdeTransformerName,
-            getConstructorName(this.adapter),
+            getConstructorName(this.originalAdapter),
             this.namespace._getInternal().namespaced,
-        ];
+        ].filter((str) => str !== "");
     }
 
     isApplicable(value: unknown): value is Semaphore {
-        return (
+        const isSemaphore =
             value instanceof Semaphore &&
-            getConstructorName(value) === Semaphore.name &&
+            getConstructorName(value) === Semaphore.name;
+        if (!isSemaphore) {
+            return false;
+        }
+
+        const isSerdTransformerNameMathcing =
             value._internal_getSerdeTransformerName() ===
-                this.serdeTransformerName &&
+            this.serdeTransformerName;
+
+        const isNamespaceMatching =
             this.namespace._getInternal().namespaced ===
-                value._internal_getNamespace()._getInternal().namespaced
+            value._internal_getNamespace()._getInternal().namespaced;
+
+        const isAdapterMatching =
+            getConstructorName(this.originalAdapter) ===
+            getConstructorName(value._internal_getAdapter());
+
+        return (
+            isSerdTransformerNameMathcing &&
+            isNamespaceMatching &&
+            isAdapterMatching
         );
     }
 
@@ -107,6 +123,7 @@ export class SemaphoreSerdeTransformer
             slotId,
             createLazyPromise: this.createLazyPromise,
             adapter: this.adapter,
+            originalAdapter: this.originalAdapter,
             eventDispatcher: this.eventBus,
             key: keyObj,
             limit,

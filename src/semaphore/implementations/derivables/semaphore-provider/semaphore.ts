@@ -5,6 +5,7 @@
 import { LazyPromise } from "@/async/_module-exports.js";
 import { type IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
 import type {
+    IDatabaseSemaphoreAdapter,
     ISemaphoreAdapter,
     SemaphoreEventMap,
 } from "@/semaphore/contracts/_module-exports.js";
@@ -54,6 +55,7 @@ export type SemaphoreSettings = {
     ) => LazyPromise<TValue>;
     serdeTransformerName: string;
     adapter: ISemaphoreAdapter;
+    originalAdapter: ISemaphoreAdapter | IDatabaseSemaphoreAdapter;
     eventDispatcher: IEventDispatcher<SemaphoreEventMap>;
     key: Key;
     ttl: TimeSpan | null;
@@ -88,6 +90,9 @@ export class Semaphore implements ISemaphore {
         asyncFn: () => Promise<TValue>,
     ) => LazyPromise<TValue>;
     private readonly adapter: ISemaphoreAdapter;
+    private readonly originalAdapter:
+        | ISemaphoreAdapter
+        | IDatabaseSemaphoreAdapter;
     private readonly eventDispatcher: IEventDispatcher<SemaphoreEventMap>;
     private readonly key: Key;
     private readonly ttl: TimeSpan | null;
@@ -103,6 +108,7 @@ export class Semaphore implements ISemaphore {
             limit,
             createLazyPromise,
             adapter,
+            originalAdapter,
             eventDispatcher,
             key,
             ttl,
@@ -124,6 +130,7 @@ export class Semaphore implements ISemaphore {
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
+        this.originalAdapter = originalAdapter;
     }
 
     _internal_getNamespace(): Namespace {
@@ -132,6 +139,10 @@ export class Semaphore implements ISemaphore {
 
     _internal_getSerdeTransformerName(): string {
         return this.serdeTransformerName;
+    }
+
+    _internal_getAdapter(): IDatabaseSemaphoreAdapter | ISemaphoreAdapter {
+        return this.originalAdapter;
     }
 
     run<TValue = void>(

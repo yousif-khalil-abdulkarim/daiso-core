@@ -156,6 +156,9 @@ export type SemaphoreProviderSettings = SemaphoreProviderSettingsBase & {
 export class SemaphoreProvider implements ISemaphoreProvider {
     private readonly eventBus: IEventBus<SemaphoreEventMap>;
     private readonly adapter: ISemaphoreAdapter;
+    private readonly originalAdapter:
+        | ISemaphoreAdapter
+        | IDatabaseSemaphoreAdapter;
     private readonly namespace: Namespace;
     private readonly defaultTtl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
@@ -197,6 +200,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.serdeTransformerName = serdeTransformerName;
 
+        this.originalAdapter = adapter;
         if (isDatabaseSemaphoreAdapter(adapter)) {
             this.adapter = new DatabaseSemaphoreAdapter(adapter);
         } else {
@@ -209,6 +213,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     private registerToSerde(): void {
         const transformer = new SemaphoreSerdeTransformer({
             adapter: this.adapter,
+            originalAdapter: this.originalAdapter,
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
@@ -312,6 +317,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
             slotId: slotIdAsStr,
             limit,
             adapter: this.adapter,
+            originalAdapter: this.originalAdapter,
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
             eventDispatcher: this.eventBus,
             key: keyObj,
