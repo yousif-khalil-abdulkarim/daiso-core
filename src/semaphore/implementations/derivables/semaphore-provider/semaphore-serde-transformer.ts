@@ -7,18 +7,13 @@ import {
     Semaphore,
     type ISerializedSemaphore,
 } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore.js";
-import type { OneOrMore } from "@/utilities/_module-exports.js";
+import { TimeSpan, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     ISemaphoreAdapter,
     SemaphoreEventMap,
 } from "@/semaphore/contracts/_module-exports.js";
 import {
-    SemaphoreSlotState,
-    type ISemaphoreStore,
-} from "@/semaphore/implementations/derivables/semaphore-provider/semaphore-slot-state.js";
-import {
     getConstructorName,
-    TimeSpan,
     type Namespace,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
@@ -29,7 +24,6 @@ import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
  */
 export type SemaphoreSerdeTransformerSettings = {
     adapter: ISemaphoreAdapter;
-    semaphoreStore: ISemaphoreStore;
     namespace: Namespace;
     createLazyPromise: <TValue = void>(
         asyncFn: () => Promise<TValue>,
@@ -48,7 +42,6 @@ export class SemaphoreSerdeTransformer
     implements ISerdeTransformer<Semaphore, ISerializedSemaphore>
 {
     private readonly adapter: ISemaphoreAdapter;
-    private readonly semaphoreStore: ISemaphoreStore;
     private readonly namespace: Namespace;
     private readonly createLazyPromise: <TValue = void>(
         asyncFn: () => Promise<TValue>,
@@ -62,7 +55,6 @@ export class SemaphoreSerdeTransformer
     constructor(settings: SemaphoreSerdeTransformerSettings) {
         const {
             adapter,
-            semaphoreStore,
             namespace,
             createLazyPromise,
             defaultBlockingInterval,
@@ -73,7 +65,6 @@ export class SemaphoreSerdeTransformer
         } = settings;
         this.serdeTransformerName = serdeTransformerName;
         this.adapter = adapter;
-        this.semaphoreStore = semaphoreStore;
         this.namespace = namespace;
         this.createLazyPromise = createLazyPromise;
         this.defaultBlockingInterval = defaultBlockingInterval;
@@ -83,13 +74,18 @@ export class SemaphoreSerdeTransformer
     }
 
     get name(): OneOrMore<string> {
-        if (this.serdeTransformerName) {
-            return ["semaphore", getConstructorName(this.adapter)];
+        if (this.serdeTransformerName === "") {
+            return [
+                "semaphore",
+                getConstructorName(this.adapter),
+                this.namespace._getInternal().namespaced,
+            ];
         }
         return [
             "semaphore",
             this.serdeTransformerName,
             getConstructorName(this.adapter),
+            this.namespace._getInternal().namespaced,
         ];
     }
 
@@ -98,51 +94,31 @@ export class SemaphoreSerdeTransformer
             value instanceof Semaphore &&
             getConstructorName(value) === Semaphore.name &&
             value._internal_getSerdeTransformerName() ===
-                this.serdeTransformerName
+                this.serdeTransformerName &&
+            this.namespace._getInternal().namespaced ===
+                value._internal_getNamespace()._getInternal().namespaced
         );
     }
 
     deserialize(serializedValue: ISerializedSemaphore): Semaphore {
-        const { key, keyState, slotId, ttlInMs, limit, expirationInMs } =
-            serializedValue;
+        const { key, slotId, limit, expirationInMs } = serializedValue;
         const keyObj = this.namespace._getInternal().create(key);
-
-        // We merge the state of this server/process with serialized state from another server/process
-        const currentKeyState = this.semaphoreStore[key]?.entries() ?? [];
-        const serializedKeyState = Object.entries(keyState).map<
-            [string, Date | null]
-        >(([key, value]) => [
-            key,
-            typeof value === "number" ? new Date(value) : null,
-        ]);
-        const mergedKeyState = new Map([
-            ...currentKeyState,
-            ...serializedKeyState,
-        ]);
-        const newStore = {
-            ...this.semaphoreStore,
-            [key]: mergedKeyState,
-        };
-
         return new Semaphore({
             slotId,
             createLazyPromise: this.createLazyPromise,
             adapter: this.adapter,
-            semaphoreState: new SemaphoreSlotState({
-                slotId,
-                key,
-                limit,
-                store: newStore,
-            }),
             eventDispatcher: this.eventBus,
             key: keyObj,
             limit,
             serdeTransformerName: this.serdeTransformerName,
-            ttl: ttlInMs !== null ? TimeSpan.fromMilliseconds(ttlInMs) : null,
-            expirationInMs,
+            ttl:
+                expirationInMs !== null
+                    ? TimeSpan.fromMilliseconds(expirationInMs)
+                    : null,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
+            namespace: this.namespace,
         });
     }
 
