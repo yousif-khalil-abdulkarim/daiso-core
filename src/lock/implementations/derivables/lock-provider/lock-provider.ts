@@ -353,6 +353,7 @@ export class LockProvider implements ILockProvider {
         } = settings;
 
         const keyObj = this.namespace._getInternal().create(key);
+        const ownerAsStr = this.namespace._getInternal().create(owner).resolved;
 
         return new Lock({
             adapter: this.adapter,
@@ -360,7 +361,7 @@ export class LockProvider implements ILockProvider {
             lockState: new LockState(this.lockStore, keyObj.namespaced),
             eventDispatcher: this.eventBus,
             key: keyObj,
-            owner,
+            owner: ownerAsStr,
             ttl,
             serdeTransformerName: this.serdeTransformerName,
             defaultBlockingInterval: this.defaultBlockingInterval,
