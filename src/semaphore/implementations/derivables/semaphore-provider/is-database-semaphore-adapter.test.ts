@@ -67,7 +67,9 @@ describe("function: isDatabaseSemaphoreAdapter", () => {
             ): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
-            getState: function (_key: string): Promise<ISemaphoreAdapterState | null> {
+            getState: function (
+                _key: string,
+            ): Promise<ISemaphoreAdapterState | null> {
                 throw new Error("Function not implemented.");
             },
         };
