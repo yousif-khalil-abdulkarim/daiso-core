@@ -2192,7 +2192,7 @@ export function lockProviderTestSuite(
             });
         });
         describe("method: isExpired", () => {
-            test("Should return false when lock has no expiration", async () => {
+            test("Should return false when is unexpireable", async () => {
                 const key = "a";
                 const ttl = null;
                 const owner = "b";
@@ -2206,7 +2206,7 @@ export function lockProviderTestSuite(
 
                 expect(result).toBe(false);
             });
-            test("Should return false when lock has not expired", async () => {
+            test("Should return false when is unexpired", async () => {
                 const key = "a";
                 const owner = "b";
                 const ttl = TimeSpan.fromMilliseconds(50);
@@ -2220,7 +2220,7 @@ export function lockProviderTestSuite(
 
                 expect(result).toBe(false);
             });
-            test("Should return true when lock has expired", async () => {
+            test("Should return true when is expired", async () => {
                 const key = "a";
                 const owner = "b";
                 const ttl = TimeSpan.fromMilliseconds(50);
@@ -2231,6 +2231,19 @@ export function lockProviderTestSuite(
 
                 await lock.acquire();
                 await delay(ttl);
+                const result = await lock.isExpired();
+
+                expect(result).toBe(true);
+            });
+            test("Should return true when key doesnt exists", async () => {
+                const key = "a";
+                const owner = "b";
+                const ttl = TimeSpan.fromMilliseconds(50);
+                const lock = lockProvider.create(key, {
+                    ttl,
+                    owner,
+                });
+
                 const result = await lock.isExpired();
 
                 expect(result).toBe(true);
@@ -2279,6 +2292,19 @@ export function lockProviderTestSuite(
                 const result = await lock.isLocked();
 
                 expect(result).toBe(false);
+            });
+            test("Should return false when key doesnt exists", async () => {
+                const key = "a";
+                const owner = "b";
+                const ttl = TimeSpan.fromMilliseconds(50);
+                const lock = lockProvider.create(key, {
+                    ttl,
+                    owner,
+                });
+
+                const result = await lock.isLocked();
+
+                expect(result).toBe(true);
             });
         });
         describe("method: refresh", () => {

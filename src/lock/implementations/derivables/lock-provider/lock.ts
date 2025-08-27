@@ -6,13 +6,11 @@ import { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type Key,
     type AsyncLazy,
-    type OneOrMore,
     type Result,
     resolveLazyable,
     resultSuccess,
     resultFailure,
 } from "@/utilities/_module-exports.js";
-import { resolveOneOrMoreStr } from "@/utilities/_module-exports.js";
 import type {
     AcquiredLockEvent,
     UnavailableLockEvent,
@@ -66,7 +64,7 @@ export type LockSettings = {
     lockState: LockState;
     eventDispatcher: IEventDispatcher<LockEventMap>;
     key: Key;
-    owner: OneOrMore<string>;
+    owner: string;
     ttl: TimeSpan | null;
     expirationInMs?: number | null;
     defaultBlockingInterval: TimeSpan;
@@ -135,7 +133,7 @@ export class Lock implements ILock {
         }
         this.eventDispatcher = eventDispatcher;
         this.key = key;
-        this.owner = resolveOneOrMoreStr(owner);
+        this.owner = owner;
         this.ttl = ttl;
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
