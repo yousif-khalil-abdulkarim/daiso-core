@@ -2,16 +2,67 @@
  * @module Semaphore
  */
 
+import type { InvokableFn } from "@/utilities/_module-exports.js";
+
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Contracts
  */
-export type DatabaseSemaphoreInsertSlotSettings = {
-    key: string;
-    slotId: string;
-    limit: number;
+export type ISemaphoreSlotExpirationData = {
+    /**
+     * The expiration date and time of the lock.
+     * `null` indicates the lock does not expire.
+     */
     expiration: Date | null;
+};
+
+/**
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Contracts
+ */
+export type ISemaphoreSlotData = ISemaphoreSlotExpirationData & {
+    id: string;
+};
+
+/**
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Contracts
+ */
+export type ISemaphoreData = {
+    limit: number;
+};
+
+/**
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Contracts
+ */
+export type IDatabaseSemaphoreTransaction = {
+    /**
+     * The `findSemaphore` returns the semaphore if it exists otherwise `null` is returned.
+     */
+    findSemaphore(key: string): Promise<ISemaphoreData | null>;
+
+    /**
+     * The `findSlots` returns the semaphore slot if it exists otherwise `null` is returned.
+     *
+     */
+    findSlots(key: string): Promise<ISemaphoreSlotData[]>;
+
+    /**
+     * The `upsertSemaphore` inserts a semaphore if it doesnt exist otherwise it will be updated.
+     *
+     */
+    upsertSemaphore(key: string, limit: number): Promise<void>;
+
+    /**
+     * The `upsertSlot` inserts a semaphore slot if it doesnt exist otherwise it will be updated.
+     *
+     */
+    upsertSlot(
+        key: string,
+        slotId: string,
+        expiration: Date | null,
+    ): Promise<void>;
 };
 
 /**
@@ -23,43 +74,39 @@ export type DatabaseSemaphoreInsertSlotSettings = {
  */
 export type IDatabaseSemaphoreAdapter = {
     /**
-     * The `findLimit` method returns the semaphore limit.
+     * The `transaction` method runs the `fn` function inside a transaction.
+     * The `fn` function is given a {@link IDatabaseSemaphoreTransaction | `IDatabaseSemaphoreTransaction`} object.
+     */
+    transaction<TValue>(
+        fn: InvokableFn<
+            [methods: IDatabaseSemaphoreTransaction],
+            Promise<TValue>
+        >,
+    ): Promise<TValue>;
+
+    /**
+     * The `removeSlot` removes the specified slot.
      *
-     * @returns Returns the limit if it exists and if doesnt exists null is returned.
+     * @returns Returns the slot expiration.
      */
-    findLimit(key: string): Promise<number | null>;
+    removeSlot(
+        key: string,
+        slotId: string,
+    ): Promise<ISemaphoreSlotExpirationData | null>;
 
     /**
-     * The `insertSemaphore` method creates a seampahore if it does not exist and if the seampahore already exists an error must be thrown.
-     */
-    insertSemaphore(key: string, limit: number): Promise<void>;
-
-    /**
-     * The `removeSemaphore` method removes the semaphore and all related slots.
-     */
-    removeSemaphore(key: string): Promise<void>;
-
-    /**
-     * The `insertSlotIfLimitNotReached` should only insert a slot if limit is not reached.
-     * An error should be thrown if key doesnt exist.
+     * The `removeAllSlots` removes all slots of the given semaphore.
      *
-     * @returns Returns Amount of inserted rows.
+     * @returns Returns the slot expiration.
      */
-    insertSlotIfLimitNotReached(
-        settings: DatabaseSemaphoreInsertSlotSettings,
-    ): Promise<number>;
+    removeAllSlots(key: string): Promise<ISemaphoreSlotExpirationData[]>;
 
     /**
-     * The `removeSlot` method removes a slot.
-     */
-    removeSlot(key: string, slotId: string): Promise<void>;
-
-    /**
-     * The `updateSlotIfUnexpired` method updates a slot if not expired.
+     * The `updateExpiration` updates the specified slot expiration as long as it is expireable and unexpired of the given semaphore.
      *
-     * @returns Returns Amount of updated rows.
+     * @returns Returns a number greater than 0 if the slot expiration was updated, otherwise returns 0.
      */
-    updateSlotIfUnexpired(
+    updateExpiration(
         key: string,
         slotId: string,
         expiration: Date,
