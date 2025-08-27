@@ -226,6 +226,7 @@ export class Lock implements ILock {
                     this.ttl,
                 );
                 this.lockState.remove();
+
                 if (hasAquired) {
                     this.lockState.set(this.ttl);
                     const event: AcquiredLockEvent = {
@@ -236,15 +237,17 @@ export class Lock implements ILock {
                     this.eventDispatcher
                         .dispatch(LOCK_EVENTS.ACQUIRED, event)
                         .defer();
-                } else {
-                    const event: UnavailableLockEvent = {
-                        key: this.key.resolved,
-                        owner: this.owner,
-                    };
-                    this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.UNAVAILABLE, event)
-                        .defer();
+                    return hasAquired;
                 }
+
+                const event: UnavailableLockEvent = {
+                    key: this.key.resolved,
+                    owner: this.owner,
+                };
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.UNAVAILABLE, event)
+                    .defer();
+
                 return hasAquired;
             } catch (error: unknown) {
                 const event: UnexpectedErrorLockEvent = {
@@ -313,6 +316,7 @@ export class Lock implements ILock {
                     this.key.namespaced,
                     this.owner,
                 );
+
                 if (hasReleased) {
                     this.lockState.remove();
                     const event: ReleasedLockEvent = {
@@ -322,15 +326,17 @@ export class Lock implements ILock {
                     this.eventDispatcher
                         .dispatch(LOCK_EVENTS.RELEASED, event)
                         .defer();
-                } else {
-                    const event: UnownedReleaseTryLockEvent = {
-                        key: this.key.resolved,
-                        owner: this.owner,
-                    };
-                    this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.UNOWNED_RELEASE_TRY, event)
-                        .defer();
+                    return hasReleased;
                 }
+
+                const event: UnownedReleaseTryLockEvent = {
+                    key: this.key.resolved,
+                    owner: this.owner,
+                };
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.UNOWNED_RELEASE_TRY, event)
+                    .defer();
+
                 return hasReleased;
             } catch (error: unknown) {
                 const event: UnexpectedErrorLockEvent = {
@@ -425,6 +431,7 @@ export class Lock implements ILock {
                 this.owner,
                 ttl,
             );
+
             if (result === LOCK_REFRESH_RESULT.REFRESHED) {
                 const event: RefreshedLockEvent = {
                     key: this.key.resolved,
@@ -435,7 +442,10 @@ export class Lock implements ILock {
                 this.eventDispatcher
                     .dispatch(LOCK_EVENTS.REFRESHED, event)
                     .defer();
-            } else if (result === LOCK_REFRESH_RESULT.UNOWNED_REFRESH) {
+                return result;
+            }
+
+            if (result === LOCK_REFRESH_RESULT.UNOWNED_REFRESH) {
                 const event: UnownedRefreshTryLockEvent = {
                     key: this.key.resolved,
                     owner: this.owner,
@@ -443,15 +453,17 @@ export class Lock implements ILock {
                 this.eventDispatcher
                     .dispatch(LOCK_EVENTS.UNOWNED_REFRESH_TRY, event)
                     .defer();
-            } else {
-                const event: UnexpireableKeyRefreshTryLockEvent = {
-                    key: this.key.resolved,
-                    owner: this.owner,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNEXPIREABLE_KEY_REFRESH_TRY, event)
-                    .defer();
+                return result;
             }
+
+            const event: UnexpireableKeyRefreshTryLockEvent = {
+                key: this.key.resolved,
+                owner: this.owner,
+            };
+            this.eventDispatcher
+                .dispatch(LOCK_EVENTS.UNEXPIREABLE_KEY_REFRESH_TRY, event)
+                .defer();
+
             return result;
         } catch (error: unknown) {
             const event: UnexpectedErrorLockEvent = {
