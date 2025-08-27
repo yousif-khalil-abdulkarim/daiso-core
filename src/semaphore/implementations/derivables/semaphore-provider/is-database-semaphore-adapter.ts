@@ -14,17 +14,13 @@ export function isDatabaseSemaphoreAdapter(
         Record<string, (...args_: unknown[]) => unknown>
     >;
     return (
-        typeof adapter_["findLimit"] === "function" &&
-        adapter_["findLimit"].length === 1 &&
-        typeof adapter_["insertSemaphore"] === "function" &&
-        adapter_["insertSemaphore"].length === 2 &&
-        typeof adapter_["removeSemaphore"] === "function" &&
-        adapter_["removeSemaphore"].length === 1 &&
-        typeof adapter_["insertSlotIfLimitNotReached"] === "function" &&
-        adapter_["insertSlotIfLimitNotReached"].length === 1 &&
+        typeof adapter_["transaction"] === "function" &&
+        adapter_["transaction"].length === 1 &&
         typeof adapter_["removeSlot"] === "function" &&
         adapter_["removeSlot"].length === 2 &&
-        typeof adapter_["updateSlotIfUnexpired"] === "function" &&
-        adapter_["updateSlotIfUnexpired"].length === 3
+        typeof adapter_["removeAllSlots"] === "function" &&
+        adapter_["removeAllSlots"].length === 1 &&
+        typeof adapter_["updateExpiration"] === "function" &&
+        adapter_["updateExpiration"].length === 3
     );
 }
