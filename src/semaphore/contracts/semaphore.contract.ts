@@ -10,10 +10,13 @@ import type {
 } from "@/utilities/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ReachedLimitSemaphoreError,
+    LimitReachedSemaphoreError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ExpiredRefreshSemaphoreError,
+    FailedRefreshSemaphoreError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    FailedReleaseSemaphoreError,
 } from "@/semaphore/contracts/semaphore.errors.js";
+import type { ISemaphoreState } from "@/semaphore/contracts/semaphore-state.contract.js";
 
 /**
  *
@@ -30,18 +33,27 @@ export type SemaphoreAquireBlockingSettings = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Contracts
  */
-export type ISemaphore = {
+export type ISemaphoreGetState = {
+    getState(): LazyPromise<ISemaphoreState | null>;
+};
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Contracts
+ */
+export type ISemaphoreBase = {
     /**
      * The `run` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquire` and `release` method.
      *
      */
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, ReachedLimitSemaphoreError>>;
+    ): LazyPromise<Result<TValue, LimitReachedSemaphoreError>>;
 
     /**
      * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireOrFail` and `release` method.
-     * @throws {ReachedLimitSemaphoreError} {@link ReachedLimitSemaphoreError}
+     * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue>;
 
@@ -51,11 +63,11 @@ export type ISemaphore = {
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SemaphoreAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, ReachedLimitSemaphoreError>>;
+    ): LazyPromise<Result<TValue, LimitReachedSemaphoreError>>;
 
     /**
      * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlockingOrFail` and `release` method.
-     * @throws {ReachedLimitSemaphoreError} {@link ReachedLimitSemaphoreError}
+     * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
@@ -73,7 +85,7 @@ export type ISemaphore = {
      * The `acquireOrFail` method acquires an amount of slots only if the slot limit is not reached.
      * Throws an error if the slot limit is reached.
      *
-     * @throws {ReachedLimitSemaphoreError} {@link ReachedLimitSemaphoreError}
+     * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
     acquireOrFail(): LazyPromise<void>;
 
@@ -92,7 +104,7 @@ export type ISemaphore = {
      * If the slot limit is reached, it retries every `settings.interval` until `settings.time` is reached.
      * Throws an error if the slot limit is reached after the given `settings.time`.
      *
-     * @throws {ReachedLimitSemaphoreError} {@link ReachedLimitSemaphoreError}
+     * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
     acquireBlockingOrFail(
         settings?: SemaphoreAquireBlockingSettings,
@@ -100,23 +112,24 @@ export type ISemaphore = {
 
     /**
      * The `release` method releases the current slot.
+     *
+     * @returns Returns true if the semaphore exists and has at least one busy slot or false.
      */
-    release(): LazyPromise<void>;
+    release(): LazyPromise<boolean>;
+
+    /**
+     * The `releaseOrFail` method releases the current slot.
+     * Throws an error if the slot is not acquired.
+     * @throws {FailedReleaseSemaphoreError} {@link FailedReleaseSemaphoreError}
+     */
+    releaseOrFail(): LazyPromise<void>;
 
     /**
      * The `forceReleaseAll` method releases the all slots.
+     *
+     * @returns Returns true if the semaphore exists and has at least one unavailable slot or false if all slots are available.
      */
-    forceReleaseAll(): LazyPromise<void>;
-
-    /**
-     * The `isExpired` method returns true if the slot is expired otherwise false is returned.
-     */
-    isExpired(): LazyPromise<boolean>;
-
-    /**
-     * The `isAcquired` method returns true if the slot is in use otherwise false is returned.
-     */
-    isAcquired(): LazyPromise<boolean>;
+    forceReleaseAll(): LazyPromise<boolean>;
 
     /**
      * The `refresh` method updates the `ttl` of the slot when acquired.
@@ -128,29 +141,14 @@ export type ISemaphore = {
     /**
      * The `refreshOrFail` method updates the `ttl` of the slot when acquired.
      * Throws an error if the slot is not acquired.
-     * @throws {ExpiredRefreshSemaphoreError} {@link ExpiredRefreshSemaphoreError}
+     * @throws {FailedRefreshSemaphoreError} {@link FailedRefreshSemaphoreError}
      */
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
-
-    /**
-     * The `getRemainingTime` return the reaming time as {@link TimeSpan | `TimeSpan`}.
-     *
-     * @returns Returns null if the key doesnt exist, key has no expiration and key has expired.
-     */
-    getRemainingTime(): LazyPromise<TimeSpan | null>;
-
-    /**
-     * The `limit` method returns a number of slots.
-     */
-    limit(): LazyPromise<number>;
-
-    /**
-     * The `availableSlots` method returns amount of free slots.
-     */
-    availableSlots(): LazyPromise<number>;
-
-    /**
-     * The `unavailableSlots` method returns amount of currently used slots.
-     */
-    unavailableSlots(): LazyPromise<number>;
 };
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Contracts
+ */
+export type ISemaphore = ISemaphoreGetState & ISemaphoreBase;
