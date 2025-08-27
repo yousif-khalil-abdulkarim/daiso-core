@@ -190,7 +190,7 @@ export class KyselyCacheAdapter<TType = unknown>
 
     async deInit(): Promise<void> {
         if (this.shouldRemoveExpiredKeys && this.timeoutId !== null) {
-            clearTimeout(this.timeoutId);
+            clearInterval(this.timeoutId);
         }
 
         // Should throw if the index does not exists thats why the try catch is used.
