@@ -5,6 +5,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { ISemaphoreGetState } from "@/semaphore/contracts/semaphore.contract.js";
 
 /**
  * The event is dispatched when a semaphore slot is aquired.
@@ -15,10 +16,8 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
 export type AcquiredSemaphoreEvent = {
     key: string;
     slotId: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
     ttl: TimeSpan | null;
+    semaphore: ISemaphoreGetState;
 };
 
 /**
@@ -31,9 +30,7 @@ export type AcquiredSemaphoreEvent = {
 export type ReleasedSemaphoreEvent = {
     key: string;
     slotId: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    semaphore: ISemaphoreGetState;
 };
 
 /**
@@ -42,12 +39,10 @@ export type ReleasedSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type AllReleasedSemaphoreEvent = {
+export type AllForceReleasedSemaphoreEvent = {
     key: string;
-    slotIds: string[];
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    isFound: boolean;
+    semaphore: ISemaphoreGetState;
 };
 
 /**
@@ -56,11 +51,22 @@ export type AllReleasedSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type ExpiredRefreshTrySemaphoreEvent = {
+export type FailedRefreshSemaphoreEvent = {
     key: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    slotId: string;
+    semaphore: ISemaphoreGetState;
+};
+
+/**
+ * The error is dispatched when trying to release a semaphore slot that is already expired.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Events
+ */
+export type FailedReleaseSemaphoreEvent = {
+    key: string;
+    slotId: string;
+    semaphore: ISemaphoreGetState;
 };
 
 /**
@@ -69,11 +75,10 @@ export type ExpiredRefreshTrySemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type UnavailableSlotsSemaphoreEvent = {
+export type LimitReachedSemaphoreEvent = {
     key: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    slotId: string;
+    semaphore: ISemaphoreGetState;
 };
 
 /**
@@ -85,10 +90,8 @@ export type UnavailableSlotsSemaphoreEvent = {
 export type RefreshedSemaphoreEvent = {
     key: string;
     slotId: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
-    ttl: TimeSpan;
+    semaphore: ISemaphoreGetState;
+    newTtl: TimeSpan;
 };
 
 /**
@@ -98,9 +101,8 @@ export type RefreshedSemaphoreEvent = {
  */
 export type UnexpectedErrorSemaphoreEvent = {
     key: string;
-    limit: number;
-    availableSlots: number;
-    unavailableSlots: number;
+    slotId: string;
+    semaphore: ISemaphoreGetState;
     ttl: TimeSpan | null;
     error: unknown;
 };
@@ -113,11 +115,10 @@ export type UnexpectedErrorSemaphoreEvent = {
 export const SEMAPHORE_EVENTS = {
     ACQUIRED: "ACQUIRED",
     RELEASED: "RELEASED",
-    ALL_RELEASED: "ALL_RELEASED",
-    EXPIRED_RELEASE_TRY: "EXPIRED_RELEASE_TRY",
-    EXPIRED_REFRESH_TRY: "EXPIRED_REFRESH_TRY",
-    UNAVAILABLE_SLOTS: "UNAVAILABLE_SLOTS",
-    FORCE_RELEASED: "FORCE_RELEASED",
+    ALL_FORCE_RELEASED: "ALL_FORCE_RELEASED",
+    FAILED_RELEASE: "FAILED_RELEASE",
+    FAILED_REFRESH: "FAILED_REFRESH",
+    LIMIT_REACHED: "LIMIT_REACHED",
     REFRESHED: "REFRESHED",
     UNEXPECTED_ERROR: "UNEXPECTED_ERROR",
 } as const;
@@ -130,9 +131,10 @@ export const SEMAPHORE_EVENTS = {
 export type SemaphoreEventMap = {
     [SEMAPHORE_EVENTS.ACQUIRED]: AcquiredSemaphoreEvent;
     [SEMAPHORE_EVENTS.RELEASED]: ReleasedSemaphoreEvent;
-    [SEMAPHORE_EVENTS.ALL_RELEASED]: AllReleasedSemaphoreEvent;
-    [SEMAPHORE_EVENTS.EXPIRED_REFRESH_TRY]: ExpiredRefreshTrySemaphoreEvent;
-    [SEMAPHORE_EVENTS.UNAVAILABLE_SLOTS]: UnavailableSlotsSemaphoreEvent;
+    [SEMAPHORE_EVENTS.ALL_FORCE_RELEASED]: AllForceReleasedSemaphoreEvent;
+    [SEMAPHORE_EVENTS.FAILED_RELEASE]: FailedReleaseSemaphoreEvent;
+    [SEMAPHORE_EVENTS.FAILED_REFRESH]: FailedRefreshSemaphoreEvent;
+    [SEMAPHORE_EVENTS.LIMIT_REACHED]: LimitReachedSemaphoreEvent;
     [SEMAPHORE_EVENTS.REFRESHED]: RefreshedSemaphoreEvent;
     [SEMAPHORE_EVENTS.UNEXPECTED_ERROR]: UnexpectedErrorSemaphoreEvent;
 };
