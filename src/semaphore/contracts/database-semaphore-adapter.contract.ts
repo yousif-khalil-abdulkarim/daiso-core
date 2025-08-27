@@ -76,6 +76,8 @@ export type IDatabaseSemaphoreAdapter = {
     /**
      * The `transaction` method runs the `fn` function inside a transaction.
      * The `fn` function is given a {@link IDatabaseSemaphoreTransaction | `IDatabaseSemaphoreTransaction`} object.
+     *
+     * Note when implementing this method use the strictest transaction level mode.
      */
     transaction<TValue>(
         fn: InvokableFn<
