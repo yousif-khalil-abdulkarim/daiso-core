@@ -423,6 +423,10 @@ export class Semaphore implements ISemaphore {
         });
     }
 
+    getId(): string {
+        return this.slotId;
+    }
+
     getState(): LazyPromise<ISemaphoreState | null> {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(

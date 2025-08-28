@@ -144,6 +144,11 @@ export type ISemaphoreBase = {
      * @throws {FailedRefreshSemaphoreError} {@link FailedRefreshSemaphoreError}
      */
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
+
+    /**
+     * The `getId` returns the id of the `ISemaphore` instance.
+     */
+    getId(): string;
 };
 
 /**
