@@ -41,7 +41,7 @@ export type ISerializedSemaphore = {
     key: string;
     slotId: string;
     limit: number;
-    expirationInMs: number | null;
+    ttlInMs: number | null;
 };
 
 /**
@@ -79,8 +79,7 @@ export class Semaphore implements ISemaphore {
             key: deserializedValue.key.resolved,
             limit: deserializedValue.limit_,
             slotId: deserializedValue.slotId,
-            expirationInMs:
-                deserializedValue.ttl?.toEndDate().getTime() ?? null,
+            ttlInMs: deserializedValue.ttl?.toMilliseconds() ?? null,
         };
     }
 
