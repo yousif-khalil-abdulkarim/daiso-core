@@ -293,7 +293,7 @@ export function semaphoreProviderTestSuite(
                     });
                     await semaphore.run(handlerFn);
 
-                    expect(handlerFn).toHaveBeenCalledTimes(0);
+                    expect(handlerFn).not.toHaveBeenCalled();
                 });
                 test("Should not call handler function when slot is unexpired", async () => {
                     const key = "a";
@@ -310,7 +310,7 @@ export function semaphoreProviderTestSuite(
                     });
                     await semaphore.run(handlerFn);
 
-                    expect(handlerFn).toHaveBeenCalledTimes(0);
+                    expect(handlerFn).not.toHaveBeenCalled();
                 });
                 test("Should not call handler function when slot is unexpireable", async () => {
                     const key = "a";
@@ -412,9 +412,13 @@ export function semaphoreProviderTestSuite(
                         return Promise.resolve(RETURN_VALUE);
                     });
 
-                    expect(result.type).toBe(RESULT.FAILURE);
-                    expect((result as ResultFailure).error).toBeInstanceOf(
-                        LimitReachedSemaphoreError,
+                    expect(result).toEqual(
+                        expect.objectContaining({
+                            type: RESULT.FAILURE,
+                            error: expect.any(
+                                LimitReachedSemaphoreError,
+                            ) as LimitReachedSemaphoreError,
+                        } satisfies ResultFailure<LimitReachedSemaphoreError>),
                     );
                 });
                 test("Should return ResultFailure<LimitReachedSemaphoreError> when slot is unexpired", async () => {
@@ -431,9 +435,13 @@ export function semaphoreProviderTestSuite(
                         return Promise.resolve(RETURN_VALUE);
                     });
 
-                    expect(result.type).toBe(RESULT.FAILURE);
-                    expect((result as ResultFailure).error).toBeInstanceOf(
-                        LimitReachedSemaphoreError,
+                    expect(result).toEqual(
+                        expect.objectContaining({
+                            type: RESULT.FAILURE,
+                            error: expect.any(
+                                LimitReachedSemaphoreError,
+                            ) as LimitReachedSemaphoreError,
+                        } satisfies ResultFailure<LimitReachedSemaphoreError>),
                     );
                 });
                 test("Should return ResultFailure<LimitReachedSemaphoreError> when slot is unexpireable", async () => {
@@ -456,9 +464,13 @@ export function semaphoreProviderTestSuite(
                             return Promise.resolve(RETURN_VALUE);
                         });
 
-                    expect(result.type).toBe(RESULT.FAILURE);
-                    expect((result as ResultFailure).error).toBeInstanceOf(
-                        LimitReachedSemaphoreError,
+                    expect(result).toEqual(
+                        expect.objectContaining({
+                            type: RESULT.FAILURE,
+                            error: expect.any(
+                                LimitReachedSemaphoreError,
+                            ) as LimitReachedSemaphoreError,
+                        } satisfies ResultFailure<LimitReachedSemaphoreError>),
                     );
                 });
                 test("Should return ResultFailure<LimitReachedSemaphoreError> when slot is unexpired", async () => {
@@ -481,9 +493,13 @@ export function semaphoreProviderTestSuite(
                             return Promise.resolve(RETURN_VALUE);
                         });
 
-                    expect(result.type).toBe(RESULT.FAILURE);
-                    expect((result as ResultFailure).error).toBeInstanceOf(
-                        LimitReachedSemaphoreError,
+                    expect(result).toEqual(
+                        expect.objectContaining({
+                            type: RESULT.FAILURE,
+                            error: expect.any(
+                                LimitReachedSemaphoreError,
+                            ) as LimitReachedSemaphoreError,
+                        } satisfies ResultFailure<LimitReachedSemaphoreError>),
                     );
                 });
             });
@@ -666,7 +682,7 @@ export function semaphoreProviderTestSuite(
                         /* EMPTY */
                     }
 
-                    expect(handlerFn).toHaveBeenCalledTimes(0);
+                    expect(handlerFn).not.toHaveBeenCalled();
                 });
                 test("Should not call handler function when slot is unexpired", async () => {
                     const key = "a";
@@ -687,7 +703,7 @@ export function semaphoreProviderTestSuite(
                         /* EMPTY */
                     }
 
-                    expect(handlerFn).toHaveBeenCalledTimes(0);
+                    expect(handlerFn).not.toHaveBeenCalled();
                 });
                 test("Should not call handler function when slot is unexpireable", async () => {
                     const key = "a";
@@ -1078,7 +1094,7 @@ export function semaphoreProviderTestSuite(
                         interval: TimeSpan.fromMilliseconds(5),
                     });
 
-                    expect(handlerFn).toHaveBeenCalledTimes(0);
+                    expect(handlerFn).not.toHaveBeenCalled();
                 });
                 test("Should not call handler function when slot is unexpired", async () => {
                     const key = "a";
@@ -1098,7 +1114,7 @@ export function semaphoreProviderTestSuite(
                         interval: TimeSpan.fromMilliseconds(5),
                     });
 
-                    expect(handlerFn).toHaveBeenCalledTimes(0);
+                    expect(handlerFn).not.toHaveBeenCalled();
                 });
                 test("Should not call handler function when slot is unexpireable", async () => {
                     const key = "a";
@@ -1224,9 +1240,13 @@ export function semaphoreProviderTestSuite(
                         },
                     );
 
-                    expect(result.type).toBe(RESULT.FAILURE);
-                    expect((result as ResultFailure).error).toBeInstanceOf(
-                        LimitReachedSemaphoreError,
+                    expect(result).toEqual(
+                        expect.objectContaining({
+                            type: RESULT.FAILURE,
+                            error: expect.any(
+                                LimitReachedSemaphoreError,
+                            ) as LimitReachedSemaphoreError,
+                        } satisfies ResultFailure<LimitReachedSemaphoreError>),
                     );
                 });
                 test("Should return ResultFailure<LimitReachedSemaphoreError> when slot is unexpired", async () => {
@@ -1249,9 +1269,13 @@ export function semaphoreProviderTestSuite(
                         },
                     );
 
-                    expect(result.type).toBe(RESULT.FAILURE);
-                    expect((result as ResultFailure).error).toBeInstanceOf(
-                        LimitReachedSemaphoreError,
+                    expect(result).toEqual(
+                        expect.objectContaining({
+                            type: RESULT.FAILURE,
+                            error: expect.any(
+                                LimitReachedSemaphoreError,
+                            ) as LimitReachedSemaphoreError,
+                        } satisfies ResultFailure<LimitReachedSemaphoreError>),
                     );
                 });
                 test("Should return ResultFailure<LimitReachedSemaphoreError> when slot is unexpireable", async () => {
@@ -1280,9 +1304,13 @@ export function semaphoreProviderTestSuite(
                             },
                         );
 
-                    expect(result.type).toBe(RESULT.FAILURE);
-                    expect((result as ResultFailure).error).toBeInstanceOf(
-                        LimitReachedSemaphoreError,
+                    expect(result).toEqual(
+                        expect.objectContaining({
+                            type: RESULT.FAILURE,
+                            error: expect.any(
+                                LimitReachedSemaphoreError,
+                            ) as LimitReachedSemaphoreError,
+                        } satisfies ResultFailure<LimitReachedSemaphoreError>),
                     );
                 });
                 test("Should return ResultFailure<LimitReachedSemaphoreError> when slot is unexpired", async () => {
@@ -1311,9 +1339,13 @@ export function semaphoreProviderTestSuite(
                             },
                         );
 
-                    expect(result.type).toBe(RESULT.FAILURE);
-                    expect((result as ResultFailure).error).toBeInstanceOf(
-                        LimitReachedSemaphoreError,
+                    expect(result).toEqual(
+                        expect.objectContaining({
+                            type: RESULT.FAILURE,
+                            error: expect.any(
+                                LimitReachedSemaphoreError,
+                            ) as LimitReachedSemaphoreError,
+                        } satisfies ResultFailure<LimitReachedSemaphoreError>),
                     );
                 });
                 test("Should retry acquire the lock", async () => {
@@ -1565,7 +1597,7 @@ export function semaphoreProviderTestSuite(
                         /* EMPTY */
                     }
 
-                    expect(handlerFn).toHaveBeenCalledTimes(0);
+                    expect(handlerFn).not.toHaveBeenCalled();
                 });
                 test("Should not call handler function when slot is unexpired", async () => {
                     const key = "a";
@@ -1589,7 +1621,7 @@ export function semaphoreProviderTestSuite(
                         /* EMPTY */
                     }
 
-                    expect(handlerFn).toHaveBeenCalledTimes(0);
+                    expect(handlerFn).not.toHaveBeenCalled();
                 });
                 test("Should not call handler function when slot is unexpireable", async () => {
                     const key = "a";
@@ -3649,6 +3681,60 @@ export function semaphoreProviderTestSuite(
                     expect(result2).toBe(true);
                 });
             });
+            describe("method: getId", () => {
+                test("Should return semaphore id of ILock instance when given explicitly", () => {
+                    const key = "a";
+                    const limit = 2;
+                    const slotId = "1";
+
+                    const semaphore = semaphoreProvider.create(key, {
+                        slotId,
+                        limit,
+                    });
+
+                    expect(semaphore.getId()).toBe(slotId);
+                });
+                test("Should return semaphore id of ILock instance when given explicitly", () => {
+                    const key = "a";
+                    const limit = 2;
+
+                    const semaphore = semaphoreProvider.create(key, {
+                        limit,
+                    });
+
+                    expect(semaphore.getId()).toBeTypeOf("string");
+                    expect(semaphore.getId().length).toBeGreaterThan(0);
+                });
+            });
+            describe("method: getTtl", () => {
+                test("Should return null when given null ttl", () => {
+                    const key = "a";
+                    const limit = 2;
+                    const ttl = null;
+
+                    const semaphore = semaphoreProvider.create(key, {
+                        ttl,
+                        limit,
+                    });
+
+                    expect(semaphore.getTtl()).toBeNull();
+                });
+                test("Should return TimeSpan when given TimeSpan", () => {
+                    const key = "a";
+                    const limit = 2;
+                    const ttl = TimeSpan.fromMilliseconds(100);
+
+                    const semaphore = semaphoreProvider.create(key, {
+                        ttl,
+                        limit,
+                    });
+
+                    expect(semaphore.getTtl()).toBeInstanceOf(TimeSpan);
+                    expect(semaphore.getTtl()?.toMilliseconds()).toBe(
+                        ttl.toMilliseconds(),
+                    );
+                });
+            });
             describe("method: getState", () => {
                 test("Should return null when key doesnt exists", async () => {
                     const key = "a";
@@ -3680,7 +3766,7 @@ export function semaphoreProviderTestSuite(
 
                     expect(result).toBeNull();
                 });
-                test("Should return null when all slots are released with forceRelease method", async () => {
+                test("Should return null when all slots are released with forceReleaseAll method", async () => {
                     const key = "a";
                     const limit = 2;
 
@@ -3729,7 +3815,6 @@ export function semaphoreProviderTestSuite(
 
                     expect(result).toBeNull();
                 });
-
                 describe("method: isExpired", () => {
                     test("Should return false when slot is unexpireable", async () => {
                         const key = "a";
@@ -4094,7 +4179,6 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
 
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4107,7 +4191,6 @@ export function semaphoreProviderTestSuite(
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
 
@@ -4115,7 +4198,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4129,12 +4212,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = TimeSpan.fromMilliseconds(50);
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -4152,7 +4233,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4172,11 +4253,9 @@ export function semaphoreProviderTestSuite(
                         ttl,
                     });
                     await semaphore1.acquire();
-                    const slotId2 = "2";
                     const semaphore2 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId: slotId2,
                     });
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4192,7 +4271,7 @@ export function semaphoreProviderTestSuite(
                         expect.objectContaining({
                             key,
                             ttl,
-                            slotId: slotId2,
+                            slotId: semaphore2.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -4224,11 +4303,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.LIMIT_REACHED,
                         handlerFn,
                     );
-                    const slotId3 = "3";
                     const semaphore3 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId: slotId3,
                     });
                     await semaphore3.acquire();
 
@@ -4236,7 +4313,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId: slotId3,
+                            slotId: semaphore3.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -4271,11 +4348,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.ACQUIRED,
                         handlerFn,
                     );
-                    const slotId3 = "3";
                     const semaphore3 = semaphoreProvider.create(key, {
                         limit,
                         ttl: ttl3,
-                        slotId: slotId3,
                     });
                     await semaphore3.acquire();
 
@@ -4284,7 +4359,7 @@ export function semaphoreProviderTestSuite(
                         expect.objectContaining({
                             key,
                             ttl: ttl3,
-                            slotId: slotId3,
+                            slotId: semaphore3.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -4297,7 +4372,6 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
 
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4309,7 +4383,6 @@ export function semaphoreProviderTestSuite(
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await semaphore.acquire();
@@ -4318,7 +4391,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4340,11 +4413,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.ACQUIRED,
                         handlerFn,
                     );
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await semaphore.acquire();
@@ -4353,7 +4424,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4369,7 +4440,6 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
 
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4382,7 +4452,6 @@ export function semaphoreProviderTestSuite(
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquireOrFail();
 
@@ -4390,7 +4459,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4404,12 +4473,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = TimeSpan.fromMilliseconds(50);
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -4427,7 +4494,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4447,11 +4514,9 @@ export function semaphoreProviderTestSuite(
                         ttl,
                     });
                     await semaphore1.acquire();
-                    const slotId2 = "2";
                     const semaphore2 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId: slotId2,
                     });
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4466,7 +4531,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId: slotId2,
+                            slotId: semaphore2.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4499,11 +4564,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.LIMIT_REACHED,
                         handlerFn,
                     );
-                    const slotId3 = "3";
                     const semaphore3 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId: slotId3,
                     });
                     try {
                         await semaphore3.acquireOrFail();
@@ -4515,7 +4578,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId: slotId3,
+                            slotId: semaphore3.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -4550,11 +4613,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.ACQUIRED,
                         handlerFn,
                     );
-                    const slotId3 = "3";
                     const semaphore3 = semaphoreProvider.create(key, {
                         limit,
                         ttl: ttl3,
-                        slotId: slotId3,
                     });
                     await semaphore3.acquireOrFail();
 
@@ -4563,7 +4624,7 @@ export function semaphoreProviderTestSuite(
                         expect.objectContaining({
                             key,
                             ttl: ttl3,
-                            slotId: slotId3,
+                            slotId: semaphore3.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -4576,7 +4637,6 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
 
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4588,7 +4648,6 @@ export function semaphoreProviderTestSuite(
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await semaphore.acquireOrFail();
@@ -4597,7 +4656,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4619,11 +4678,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.ACQUIRED,
                         handlerFn,
                     );
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await semaphore.acquireOrFail();
@@ -4632,7 +4689,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4648,7 +4705,6 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
 
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4661,7 +4717,6 @@ export function semaphoreProviderTestSuite(
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquireBlocking({
                         time: TimeSpan.fromMilliseconds(5),
@@ -4672,7 +4727,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4686,12 +4741,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = TimeSpan.fromMilliseconds(50);
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -4712,7 +4765,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4732,11 +4785,9 @@ export function semaphoreProviderTestSuite(
                         ttl,
                     });
                     await semaphore1.acquire();
-                    const slotId2 = "2";
                     const semaphore2 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId: slotId2,
                     });
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4755,7 +4806,7 @@ export function semaphoreProviderTestSuite(
                         expect.objectContaining({
                             key,
                             ttl,
-                            slotId: slotId2,
+                            slotId: semaphore2.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -4787,11 +4838,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.LIMIT_REACHED,
                         handlerFn,
                     );
-                    const slotId3 = "3";
                     const semaphore3 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId: slotId3,
                     });
                     await semaphore3.acquireBlocking({
                         time: TimeSpan.fromMilliseconds(5),
@@ -4802,7 +4851,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId: slotId3,
+                            slotId: semaphore3.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -4837,11 +4886,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.ACQUIRED,
                         handlerFn,
                     );
-                    const slotId3 = "3";
                     const semaphore3 = semaphoreProvider.create(key, {
                         limit,
                         ttl: ttl3,
-                        slotId: slotId3,
                     });
                     await semaphore3.acquireBlocking({
                         time: TimeSpan.fromMilliseconds(5),
@@ -4853,7 +4900,7 @@ export function semaphoreProviderTestSuite(
                         expect.objectContaining({
                             key,
                             ttl: ttl3,
-                            slotId: slotId3,
+                            slotId: semaphore3.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -4866,7 +4913,6 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
 
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4878,7 +4924,6 @@ export function semaphoreProviderTestSuite(
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await semaphore.acquireBlocking({
@@ -4890,7 +4935,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4912,11 +4957,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.ACQUIRED,
                         handlerFn,
                     );
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await semaphore.acquireBlocking({
@@ -4928,7 +4971,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4939,12 +4982,11 @@ export function semaphoreProviderTestSuite(
                     );
                 });
             });
-            describe("method: acquireBlocking", () => {
+            describe("method: acquireBlockingOrFail", () => {
                 test("Should dispatch AcquiredSemaphoreEvent when key doesnt exists", async () => {
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
 
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -4957,7 +4999,6 @@ export function semaphoreProviderTestSuite(
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquireBlockingOrFail({
                         time: TimeSpan.fromMilliseconds(5),
@@ -4968,7 +5009,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -4982,12 +5023,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = TimeSpan.fromMilliseconds(50);
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -5008,7 +5047,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -5028,11 +5067,9 @@ export function semaphoreProviderTestSuite(
                         ttl,
                     });
                     await semaphore1.acquire();
-                    const slotId2 = "2";
                     const semaphore2 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId: slotId2,
                     });
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -5051,7 +5088,7 @@ export function semaphoreProviderTestSuite(
                         expect.objectContaining({
                             key,
                             ttl,
-                            slotId: slotId2,
+                            slotId: semaphore2.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5083,11 +5120,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.LIMIT_REACHED,
                         handlerFn,
                     );
-                    const slotId3 = "3";
                     const semaphore3 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId: slotId3,
                     });
                     try {
                         await semaphore3.acquireBlockingOrFail({
@@ -5102,7 +5137,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId: slotId3,
+                            slotId: semaphore3.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5137,11 +5172,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.ACQUIRED,
                         handlerFn,
                     );
-                    const slotId3 = "3";
                     const semaphore3 = semaphoreProvider.create(key, {
                         limit,
                         ttl: ttl3,
-                        slotId: slotId3,
                     });
                     await semaphore3.acquireBlockingOrFail({
                         time: TimeSpan.fromMilliseconds(5),
@@ -5153,7 +5186,7 @@ export function semaphoreProviderTestSuite(
                         expect.objectContaining({
                             key,
                             ttl: ttl3,
-                            slotId: slotId3,
+                            slotId: semaphore3.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5166,7 +5199,6 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
 
                     const handlerFn = vi.fn(
                         (_event: AcquiredSemaphoreEvent) => {},
@@ -5178,7 +5210,6 @@ export function semaphoreProviderTestSuite(
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await semaphore.acquireBlockingOrFail({
@@ -5190,7 +5221,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -5212,11 +5243,9 @@ export function semaphoreProviderTestSuite(
                         SEMAPHORE_EVENTS.ACQUIRED,
                         handlerFn,
                     );
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         limit,
                         ttl,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await semaphore.acquireBlockingOrFail({
@@ -5228,7 +5257,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             ttl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -5252,13 +5281,11 @@ export function semaphoreProviderTestSuite(
                         .acquire();
 
                     const noneExistingKey = "c";
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(
                         noneExistingKey,
                         {
                             limit,
                             ttl,
-                            slotId,
                         },
                     );
 
@@ -5275,7 +5302,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key: noneExistingKey,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5336,11 +5363,9 @@ export function semaphoreProviderTestSuite(
                     await semaphore1.acquire();
                     await delay(ttl);
 
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseSemaphoreEvent) => {},
@@ -5355,7 +5380,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5369,11 +5394,9 @@ export function semaphoreProviderTestSuite(
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
 
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -5391,7 +5414,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5400,16 +5423,14 @@ export function semaphoreProviderTestSuite(
                         } satisfies FailedReleaseSemaphoreEvent),
                     );
                 });
-                test("Should disptach ReleasedSemaphoreEvent when slot exists, is unexpired", async () => {
+                test("Should dispatch ReleasedSemaphoreEvent when slot exists, is unexpired", async () => {
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
 
@@ -5431,20 +5452,18 @@ export function semaphoreProviderTestSuite(
                                     Function,
                                 ) as ISemaphoreGetState["getState"],
                             }) as ISemaphoreGetState,
-                            slotId,
+                            slotId: semaphore.getId(),
                         } satisfies ReleasedSemaphoreEvent),
                     );
                 });
-                test("Should disptach ReleasedSemaphoreEvent when slot exists, is unexpireable", async () => {
+                test("Should dispatch ReleasedSemaphoreEvent when slot exists, is unexpireable", async () => {
                     const key = "a";
                     const ttl = null;
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
 
@@ -5461,7 +5480,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5484,13 +5503,11 @@ export function semaphoreProviderTestSuite(
                         .acquire();
 
                     const noneExistingKey = "c";
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(
                         noneExistingKey,
                         {
                             limit,
                             ttl,
-                            slotId,
                         },
                     );
 
@@ -5511,7 +5528,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key: noneExistingKey,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5576,11 +5593,9 @@ export function semaphoreProviderTestSuite(
                     await semaphore1.acquire();
                     await delay(ttl);
 
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseSemaphoreEvent) => {},
@@ -5599,7 +5614,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5613,11 +5628,9 @@ export function semaphoreProviderTestSuite(
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
 
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -5639,7 +5652,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5648,16 +5661,14 @@ export function semaphoreProviderTestSuite(
                         } satisfies FailedReleaseSemaphoreEvent),
                     );
                 });
-                test("Should disptach ReleasedSemaphoreEvent when slot exists, is unexpired", async () => {
+                test("Should dispatch ReleasedSemaphoreEvent when slot exists, is unexpired", async () => {
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
 
@@ -5679,20 +5690,18 @@ export function semaphoreProviderTestSuite(
                                     Function,
                                 ) as ISemaphoreGetState["getState"],
                             }) as ISemaphoreGetState,
-                            slotId,
+                            slotId: semaphore.getId(),
                         } satisfies ReleasedSemaphoreEvent),
                     );
                 });
-                test("Should disptach ReleasedSemaphoreEvent when slot exists, is unexpireable", async () => {
+                test("Should dispatch ReleasedSemaphoreEvent when slot exists, is unexpireable", async () => {
                     const key = "a";
                     const ttl = null;
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
 
@@ -5709,7 +5718,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5761,7 +5770,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            isFound: false,
+                            hasReleased: false,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5802,7 +5811,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            isFound: true,
+                            hasReleased: true,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5817,7 +5826,6 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
                     const semaphore1 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
@@ -5830,7 +5838,6 @@ export function semaphoreProviderTestSuite(
                         noneExistingKey,
                         {
                             ttl: newTtl,
-                            slotId,
                             limit,
                         },
                     );
@@ -5848,7 +5855,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key: noneExistingKey,
-                            slotId,
+                            slotId: semaphore2.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5901,11 +5908,9 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = TimeSpan.fromMilliseconds(50);
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -5924,7 +5929,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5937,12 +5942,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -5961,7 +5964,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -5974,12 +5977,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const ttl = null;
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
 
@@ -5997,7 +5998,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -6010,12 +6011,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
 
@@ -6033,7 +6032,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             newTtl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -6049,7 +6048,6 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = null;
-                    const slotId = "1";
                     const semaphore1 = semaphoreProvider.create(key, {
                         limit,
                         ttl,
@@ -6062,7 +6060,6 @@ export function semaphoreProviderTestSuite(
                         noneExistingKey,
                         {
                             ttl: newTtl,
-                            slotId,
                             limit,
                         },
                     );
@@ -6084,7 +6081,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key: noneExistingKey,
-                            slotId,
+                            slotId: semaphore2.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -6141,11 +6138,9 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const limit = 2;
                     const ttl = TimeSpan.fromMilliseconds(50);
-                    const slotId = "1";
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -6168,7 +6163,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -6181,12 +6176,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
                     await delay(ttl);
@@ -6209,7 +6202,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -6222,12 +6215,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const ttl = null;
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
 
@@ -6249,7 +6240,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
                                     Function,
@@ -6262,12 +6253,10 @@ export function semaphoreProviderTestSuite(
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
-                    const slotId = "1";
 
                     const semaphore = semaphoreProvider.create(key, {
                         ttl,
                         limit,
-                        slotId,
                     });
                     await semaphore.acquire();
 
@@ -6285,7 +6274,7 @@ export function semaphoreProviderTestSuite(
                     expect(handlerFn).toHaveBeenCalledWith(
                         expect.objectContaining({
                             key,
-                            slotId,
+                            slotId: semaphore.getId(),
                             newTtl,
                             semaphore: expect.objectContaining({
                                 getState: expect.any(
@@ -6638,8 +6627,8 @@ export function semaphoreProviderTestSuite(
                 const state1 = await semaphore1.getState();
                 const deserializedState1 =
                     await deserializedSemaphore1.getState();
-                const currentDate = new Date();
 
+                const currentDate = new Date();
                 expect(
                     state1?.getRemainingTime()?.toEndDate(currentDate),
                 ).toEqual(

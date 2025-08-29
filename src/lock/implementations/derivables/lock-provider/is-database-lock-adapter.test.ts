@@ -1,5 +1,6 @@
 import type {
     IDatabaseLockAdapter,
+    IDatabaseLockTransaction,
     ILockData,
     ILockExpirationData,
 } from "@/lock/contracts/database-lock-adapter.contract.js";
@@ -7,40 +8,35 @@ import { describe, expect, test } from "vitest";
 import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
 import type {
     ILockAdapter,
-    LockRefreshResult,
+    ILockAdapterState,
 } from "@/lock/contracts/lock-adapter.contract.js";
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { InvokableFn, TimeSpan } from "@/utilities/_module-exports.js";
 
 describe("function: isDatabaseLockAdapter", () => {
     test("Should return true when given IDatabaseLockAdapter", () => {
         const adapter: IDatabaseLockAdapter = {
-            insert: function (
-                _key: string,
-                _owner: string,
-                _expiration: Date | null,
-            ): Promise<void> {
+            transaction: function <TReturn>(
+                _fn: InvokableFn<
+                    [transaction: IDatabaseLockTransaction],
+                    Promise<TReturn>
+                >,
+            ): Promise<TReturn> {
                 throw new Error("Function not implemented.");
             },
-            updateIfExpired: function (
+            remove: function (
                 _key: string,
-                _owner: string,
-
-                _expiration: Date | null,
-            ): Promise<number> {
-                throw new Error("Function not implemented.");
-            },
-            remove: function (_key: string): Promise<ILockExpirationData> {
+            ): Promise<ILockExpirationData | null> {
                 throw new Error("Function not implemented.");
             },
             removeIfOwner: function (
                 _key: string,
-                _owner: string,
+                _lockId: string,
             ): Promise<ILockData | null> {
                 throw new Error("Function not implemented.");
             },
-            updateExpirationIfOwner: function (
+            updateExpiration: function (
                 _key: string,
-                _owner: string,
+                _lockId: string,
                 _expiration: Date,
             ): Promise<number> {
                 throw new Error("Function not implemented.");
@@ -55,12 +51,15 @@ describe("function: isDatabaseLockAdapter", () => {
         const adapter: ILockAdapter = {
             acquire: function (
                 _key: string,
-                _owner: string,
+                _lockId: string,
                 _ttl: TimeSpan | null,
             ): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
-            release: function (_key: string, _owner: string): Promise<boolean> {
+            release: function (
+                _key: string,
+                _lockId: string,
+            ): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
             forceRelease: function (_key: string): Promise<boolean> {
@@ -68,9 +67,12 @@ describe("function: isDatabaseLockAdapter", () => {
             },
             refresh: function (
                 _key: string,
-                _owner: string,
+                _lockId: string,
                 _ttl: TimeSpan,
-            ): Promise<LockRefreshResult> {
+            ): Promise<boolean> {
+                throw new Error("Function not implemented.");
+            },
+            getState(_key: string): Promise<ILockAdapterState> {
                 throw new Error("Function not implemented.");
             },
         };

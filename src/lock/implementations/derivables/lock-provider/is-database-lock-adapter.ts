@@ -15,16 +15,14 @@ export function isDatabaseLockAdapter(
     >;
 
     return (
-        typeof adapter_["insert"] === "function" &&
-        adapter_["insert"].length === 3 &&
-        typeof adapter_["updateIfExpired"] === "function" &&
-        adapter_["updateIfExpired"].length === 3 &&
+        typeof adapter_["transaction"] === "function" &&
+        adapter_["transaction"].length === 1 &&
         typeof adapter_["remove"] === "function" &&
         adapter_["remove"].length === 1 &&
         typeof adapter_["removeIfOwner"] === "function" &&
         adapter_["removeIfOwner"].length === 2 &&
-        typeof adapter_["updateExpirationIfOwner"] === "function" &&
-        adapter_["updateExpirationIfOwner"].length === 3 &&
+        typeof adapter_["updateExpiration"] === "function" &&
+        adapter_["updateExpiration"].length === 3 &&
         typeof adapter_["find"] === "function" &&
         adapter_["find"].length === 1
     );

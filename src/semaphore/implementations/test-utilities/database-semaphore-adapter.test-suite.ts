@@ -351,6 +351,30 @@ export function databaseSemaphoreAdapterTestSuite(
                 });
                 expect(slot).toBeUndefined();
             });
+            test("Should not remove slot when key exists and slotId does not exists", async () => {
+                const key = "a";
+                const slotId = "b";
+                const limit = 2;
+                const expiration = null;
+                await adapter.transaction(async (trx) => {
+                    await trx.upsertSemaphore(key, limit);
+                });
+                await adapter.transaction(async (trx) => {
+                    await trx.upsertSlot(key, slotId, expiration);
+                });
+
+                const noneExistingSlotId = "c";
+                await adapter.removeSlot(key, noneExistingSlotId);
+
+                const slot = await adapter.transaction(async (trx) => {
+                    const slots = await trx.findSlots(key);
+                    return slots.find((slot) => slot.id === slotId);
+                });
+                expect(slot).toEqual({
+                    id: slotId,
+                    expiration,
+                } satisfies ISemaphoreSlotData);
+            });
         });
         describe("method: removeAllSlots", () => {
             test("Should return empty array when key doesnt exists", async () => {

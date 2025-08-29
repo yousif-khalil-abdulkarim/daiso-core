@@ -38,10 +38,6 @@ import { EventBus } from "@/event-bus/implementations/derivables/_module-exports
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { v4 } from "uuid";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
-import {
-    LockState,
-    type ILockStore,
-} from "@/lock/implementations/derivables/lock-provider/lock-state.js";
 import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
 import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter.js";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
@@ -81,9 +77,9 @@ export type LockProviderSettingsBase = {
     serdeTransformerName?: string;
 
     /**
-     * You can pass your owner id generator function.
+     * You can pass your lock id id generator function.
      */
-    createOwnerId?: Invokable<[], string>;
+    createLockId?: Invokable<[], string>;
 
     /**
      * @default
@@ -161,11 +157,11 @@ export type LockProviderSettings = LockProviderSettingsBase & {
  * @group Derivables
  */
 export class LockProvider implements ILockProvider {
-    private lockStore: ILockStore = {};
     private readonly eventBus: IEventBus<LockEventMap>;
+    private readonly originalAdapter: ILockAdapter | IDatabaseLockAdapter;
     private readonly adapter: ILockAdapter;
     private readonly namespace: Namespace;
-    private readonly createOwnerId: Invokable<[], string>;
+    private readonly creatLockId: Invokable<[], string>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
@@ -206,7 +202,7 @@ export class LockProvider implements ILockProvider {
             defaultBlockingInterval = TimeSpan.fromSeconds(1),
             defaultBlockingTime = TimeSpan.fromMinutes(1),
             defaultRefreshTime = TimeSpan.fromMinutes(5),
-            createOwnerId = () => v4(),
+            createLockId = () => v4(),
             serde,
             namespace = new Namespace(["@", "lock"]),
             adapter,
@@ -221,13 +217,14 @@ export class LockProvider implements ILockProvider {
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
-        this.createOwnerId = createOwnerId;
+        this.creatLockId = createLockId;
         this.namespace = namespace;
         this.defaultTtl = defaultTtl;
         this.eventBus = eventBus;
         this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.serdeTransformerName = serdeTransformerName;
 
+        this.originalAdapter = adapter;
         if (isDatabaseLockAdapter(adapter)) {
             this.adapter = new DatabaseLockAdapter(adapter);
         } else {
@@ -239,6 +236,7 @@ export class LockProvider implements ILockProvider {
 
     private registerToSerde(): void {
         const transformer = new LockSerdeTransformer({
+            originalAdapter: this.originalAdapter,
             adapter: this.adapter,
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
             defaultBlockingInterval: this.defaultBlockingInterval,
@@ -246,7 +244,6 @@ export class LockProvider implements ILockProvider {
             defaultRefreshTime: this.defaultRefreshTime,
             eventBus: this.eventBus,
             namespace: this.namespace,
-            lockStore: this.lockStore,
             serdeTransformerName: this.serdeTransformerName,
         });
         for (const serde of resolveOneOrMore(this.serde)) {
@@ -349,19 +346,22 @@ export class LockProvider implements ILockProvider {
     ): ILock {
         const {
             ttl = this.defaultTtl,
-            owner = callInvokable(this.createOwnerId),
+            lockId = callInvokable(this.creatLockId),
         } = settings;
 
         const keyObj = this.namespace._getInternal().create(key);
-        const ownerAsStr = this.namespace._getInternal().create(owner).resolved;
+        const lockIdAsStr = this.namespace
+            ._getInternal()
+            .create(lockId).resolved;
 
         return new Lock({
+            namespace: this.namespace,
             adapter: this.adapter,
+            originalAdapter: this.originalAdapter,
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
-            lockState: new LockState(this.lockStore, keyObj.namespaced),
             eventDispatcher: this.eventBus,
             key: keyObj,
-            owner: ownerAsStr,
+            lockId: lockIdAsStr,
             ttl,
             serdeTransformerName: this.serdeTransformerName,
             defaultBlockingInterval: this.defaultBlockingInterval,

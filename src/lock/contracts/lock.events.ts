@@ -5,6 +5,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { ILockGetState } from "@/lock/contracts/lock.contract.js";
 
 /**
  * The event is dispatched when a lock is aquired.
@@ -14,7 +15,8 @@ import type { TimeSpan } from "@/utilities/_module-exports.js";
  */
 export type AcquiredLockEvent = {
     key: string;
-    owner: string;
+    lockId: string;
+    lock: ILockGetState;
     ttl: TimeSpan | null;
 };
 
@@ -26,7 +28,8 @@ export type AcquiredLockEvent = {
  */
 export type ReleasedLockEvent = {
     key: string;
-    owner: string;
+    lockId: string;
+    lock: ILockGetState;
 };
 
 /**
@@ -37,6 +40,8 @@ export type ReleasedLockEvent = {
  */
 export type ForceReleasedLockEvent = {
     key: string;
+    lock: ILockGetState;
+    hasReleased: boolean;
 };
 
 /**
@@ -45,9 +50,10 @@ export type ForceReleasedLockEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type UnownedReleaseTryLockEvent = {
+export type FailedReleaseLockEvent = {
     key: string;
-    owner: string;
+    lockId: string;
+    lock: ILockGetState;
 };
 
 /**
@@ -56,20 +62,10 @@ export type UnownedReleaseTryLockEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type UnownedRefreshTryLockEvent = {
+export type FailedRefreshLockEvent = {
     key: string;
-    owner: string;
-};
-
-/**
- * The event is dispatched when trying to refefresh a lock that is unexpireable.
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
- * @group Events
- */
-export type UnexpireableKeyRefreshTryLockEvent = {
-    key: string;
-    owner: string;
+    lockId: string;
+    lock: ILockGetState;
 };
 
 /**
@@ -80,7 +76,8 @@ export type UnexpireableKeyRefreshTryLockEvent = {
  */
 export type UnavailableLockEvent = {
     key: string;
-    owner: string;
+    lockId: string;
+    lock: ILockGetState;
 };
 
 /**
@@ -91,8 +88,9 @@ export type UnavailableLockEvent = {
  */
 export type RefreshedLockEvent = {
     key: string;
-    owner: string;
-    ttl: TimeSpan;
+    lockId: string;
+    newTtl: TimeSpan;
+    lock: ILockGetState;
 };
 
 /**
@@ -102,9 +100,10 @@ export type RefreshedLockEvent = {
  */
 export type UnexpectedErrorLockEvent = {
     key: string;
-    owner: string;
+    lockId: string;
     ttl: TimeSpan | null;
     error: unknown;
+    lock: ILockGetState;
 };
 
 /**
@@ -115,9 +114,8 @@ export type UnexpectedErrorLockEvent = {
 export const LOCK_EVENTS = {
     ACQUIRED: "ACQUIRED",
     RELEASED: "RELEASED",
-    UNOWNED_RELEASE_TRY: "UNOWNED_RELEASE_TRY",
-    UNOWNED_REFRESH_TRY: "UNOWNED_REFRESH_TRY",
-    UNEXPIREABLE_KEY_REFRESH_TRY: "UNEXPIREABLE_KEY_REFRESH_TRY",
+    FAILED_RELEASE: "FAILED_RELEASE",
+    FAILED_REFRESH: "FAILED_REFRESH",
     UNAVAILABLE: "UNAVAILABLE",
     FORCE_RELEASED: "FORCE_RELEASED",
     REFRESHED: "REFRESHED",
@@ -132,12 +130,8 @@ export const LOCK_EVENTS = {
 export type LockEventMap = {
     [LOCK_EVENTS.ACQUIRED]: AcquiredLockEvent;
     [LOCK_EVENTS.RELEASED]: ReleasedLockEvent;
-    // bad name
-    [LOCK_EVENTS.UNOWNED_RELEASE_TRY]: UnownedReleaseTryLockEvent;
-    // bad name
-    [LOCK_EVENTS.UNOWNED_REFRESH_TRY]: UnownedRefreshTryLockEvent;
-    // bad name
-    [LOCK_EVENTS.UNEXPIREABLE_KEY_REFRESH_TRY]: UnexpireableKeyRefreshTryLockEvent;
+    [LOCK_EVENTS.FAILED_RELEASE]: FailedReleaseLockEvent;
+    [LOCK_EVENTS.FAILED_REFRESH]: FailedRefreshLockEvent;
     [LOCK_EVENTS.UNAVAILABLE]: UnavailableLockEvent;
     [LOCK_EVENTS.FORCE_RELEASED]: ForceReleasedLockEvent;
     [LOCK_EVENTS.REFRESHED]: RefreshedLockEvent;

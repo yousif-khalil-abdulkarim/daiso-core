@@ -12,12 +12,13 @@ import type {
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    KeyAlreadyAcquiredLockError,
+    FailedAcquireLockError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnownedReleaseLockError,
+    FailedReleaseLockError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnownedRefreshLockError,
+    FailedRefreshLockError,
 } from "@/lock/contracts/lock.errors.js";
+import type { ILockState } from "@/lock/contracts/lock-state.contract.js";
 
 /**
  *
@@ -34,17 +35,26 @@ export type LockAquireBlockingSettings = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
-export type ILock = {
+export type ILockGetState = {
+    getState(): LazyPromise<ILockState | null>;
+};
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Contracts
+ */
+export type ILockBase = {
     /**
      * The `run` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquire` and `release` method.
      */
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
+    ): LazyPromise<Result<TValue, FailedAcquireLockError>>;
 
     /**
      * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireOrFail` and `release` method.
-     * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
+     * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue>;
 
@@ -54,11 +64,11 @@ export type ILock = {
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>>;
+    ): LazyPromise<Result<TValue, FailedAcquireLockError>>;
 
     /**
      * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlockingOrFail` and `release` method.
-     * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
+     * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
@@ -66,22 +76,22 @@ export type ILock = {
     ): LazyPromise<TValue>;
 
     /**
-     * The `acquire` method acquires a lock only if the lock is not already acquired by different owner.
+     * The `acquire` method acquires a lock only if the key is not already acquired by different owner.
      *
      * @returns Returns true if the lock is not already acquired otherwise false is returned.
      */
     acquire(): LazyPromise<boolean>;
 
     /**
-     * The `acquireOrFail` method acquires a lock only if the lock is not already acquired by different owner.
+     * The `acquireOrFail` method acquires a lock only if the key is not already acquired by different owner.
      * Throws an error if the lock is already acquired by different owner.
      *
-     * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
+     * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
     acquireOrFail(): LazyPromise<void>;
 
     /**
-     * The `acquireBlocking` method acquires a lock only if the lock is not already acquired by different owner.
+     * The `acquireBlocking` method acquires a lock only if the key is not already acquired by different owner.
      * If the lock is not acquired, it retries every `settings.interval` until `settings.time` is reached.
      *
      * @returns Returns true if the lock is not already acquired otherwise false is returned.
@@ -91,11 +101,11 @@ export type ILock = {
     ): LazyPromise<boolean>;
 
     /**
-     * The `acquireBlockingOrFail` method acquires a lock only if the lock is not already acquired by different owner.
+     * The `acquireBlockingOrFail` method acquires a lock only if the key is not already acquired by different owner.
      * If the lock is not acquired, it retries every `settings.interval` until `settings.time` is reached.
      * Throws an error if the lock is already acquired by different owner.
      *
-     * @throws {KeyAlreadyAcquiredLockError} {@link KeyAlreadyAcquiredLockError}
+     * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
     acquireBlockingOrFail(
         settings?: LockAquireBlockingSettings,
@@ -110,9 +120,9 @@ export type ILock = {
 
     /**
      * The `releaseOrFail` method releases a lock if owned by the same owner.
-     * Throws an error if a different owner attempts to release the lock.
+     * Throws an error if the lock is not owned by same owner.
      *
-     * @throws {UnownedReleaseLockError} {@link UnownedReleaseLockError}
+     * @throws {FailedReleaseLockError} {@link FailedReleaseLockError}
      */
     releaseOrFail(): LazyPromise<void>;
 
@@ -124,16 +134,6 @@ export type ILock = {
     forceRelease(): LazyPromise<boolean>;
 
     /**
-     * The `isExpired` method returns true if the lock is expired or not acquired otherwise false is returned.
-     */
-    isExpired(): LazyPromise<boolean>;
-
-    /**
-     * The `isLocked` method returns true if the lock has been aquired and is unexpirable or unexpired otherwise false is returned.
-     */
-    isLocked(): LazyPromise<boolean>;
-
-    /**
      * The `refresh` method updates the `ttl` of the lock if expireable and owned by the same owner.
      *
      * @returns Returns true if the lock is refreshed otherwise false is returned.
@@ -142,23 +142,27 @@ export type ILock = {
 
     /**
      * The `refreshOrFail` method updates the `ttl` of the lock if expireable and owned by the same owner.
-     * Throws an error if a different owner attempts to refresh the lock.
+     * Throws an error if the lock is not owned by same owner.
      * Throws an error if the key is unexpirable.
      *
-     * @throws {UnownedRefreshLockError} {@link UnownedRefreshLockError}
-     * @throws {UnrefreshableKeyLockError} {@link UnrefreshableKeyLockError}
+     * @throws {FailedRefreshLockError} {@link FailedRefreshLockError}
      */
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
 
     /**
-     * The `getRemainingTime` return the reaming time as {@link TimeSpan | `TimeSpan`}.
-     *
-     * @returns Returns null if the key doesnt exist, key has no expiration and key has expired.
+     * The `getId` method returns the id of the `ILock` instance.
      */
-    getRemainingTime(): LazyPromise<TimeSpan | null>;
+    getId(): string;
 
     /**
-     * The `getOwner` method return the current owner.
+     * The `getTtl` method returns the `ttl` of `ILock` instance.
      */
-    getOwner(): LazyPromise<string>;
+    getTtl(): TimeSpan | null;
 };
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Contracts
+ */
+export type ILock = ILockBase & ILockGetState;

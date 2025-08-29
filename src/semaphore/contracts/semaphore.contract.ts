@@ -149,6 +149,16 @@ export type ISemaphoreBase = {
      * The `getId` returns the id of the `ISemaphore` instance.
      */
     getId(): string;
+
+    /**
+     * The `getId` method returns the id of the `ISemaphore` instance.
+     */
+    getId(): string;
+
+    /**
+     * The `getTtl` method returns the `ttl` of `ISemaphore` instance.
+     */
+    getTtl(): TimeSpan | null;
 };
 
 /**

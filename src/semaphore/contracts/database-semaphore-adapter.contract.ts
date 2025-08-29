@@ -81,7 +81,7 @@ export type IDatabaseSemaphoreAdapter = {
      */
     transaction<TValue>(
         fn: InvokableFn<
-            [methods: IDatabaseSemaphoreTransaction],
+            [transaction: IDatabaseSemaphoreTransaction],
             Promise<TValue>
         >,
     ): Promise<TValue>;

@@ -41,8 +41,8 @@ export type ReleasedSemaphoreEvent = {
  */
 export type AllForceReleasedSemaphoreEvent = {
     key: string;
-    isFound: boolean;
     semaphore: ISemaphoreGetState;
+    hasReleased: boolean;
 };
 
 /**

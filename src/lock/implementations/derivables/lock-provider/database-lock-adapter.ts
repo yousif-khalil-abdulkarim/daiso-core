@@ -2,12 +2,11 @@
  * @module Lock
  */
 
-import { UnexpectedError, type TimeSpan } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
-    LOCK_REFRESH_RESULT,
     type IDatabaseLockAdapter,
     type ILockAdapter,
-    type LockRefreshResult,
+    type ILockAdapterState,
 } from "@/lock/contracts/_module-exports.js";
 
 /**
@@ -18,30 +17,32 @@ export class DatabaseLockAdapter implements ILockAdapter {
 
     async acquire(
         key: string,
-        owner: string,
+        lockId: string,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
-        try {
-            const expiration = ttl?.toEndDate() ?? null;
-            // An error will be thrown if the lock already exists
-            await this.adapter.insert(key, owner, expiration);
-            return true;
-        } catch (error: unknown) {
-            if (error instanceof UnexpectedError) {
-                throw error;
+        return await this.adapter.transaction<boolean>(async (trx) => {
+            const lockData = await trx.find(key);
+            if (lockData === null) {
+                await trx.upsert(key, lockId, ttl?.toEndDate() ?? null);
+                return true;
             }
-            const expiration = ttl?.toEndDate() ?? null;
-            const result = await this.adapter.updateIfExpired(
-                key,
-                owner,
-                expiration,
-            );
-            return result > 0;
-        }
+            if (lockData.owner === lockId) {
+                return true;
+            }
+            if (lockData.expiration === null) {
+                return false;
+            }
+            if (lockData.expiration <= new Date()) {
+                await trx.upsert(key, lockId, ttl?.toEndDate() ?? null);
+                return true;
+            }
+
+            return lockData.expiration <= new Date();
+        });
     }
 
-    async release(key: string, owner: string): Promise<boolean> {
-        const lockData = await this.adapter.removeIfOwner(key, owner);
+    async release(key: string, lockId: string): Promise<boolean> {
+        const lockData = await this.adapter.removeIfOwner(key, lockId);
         if (lockData === null) {
             return false;
         }
@@ -52,9 +53,9 @@ export class DatabaseLockAdapter implements ILockAdapter {
             return true;
         }
 
-        const { owner: currentOwner } = lockData;
+        const { owner } = lockData;
         const isNotExpired = expiration > new Date();
-        const isCurrentOwner = owner === currentOwner;
+        const isCurrentOwner = lockId === owner;
         return isNotExpired && isCurrentOwner;
     }
 
@@ -71,35 +72,28 @@ export class DatabaseLockAdapter implements ILockAdapter {
 
     async refresh(
         key: string,
-        owner: string,
+        lockId: string,
         ttl: TimeSpan,
-    ): Promise<LockRefreshResult> {
+    ): Promise<boolean> {
+        const updateCount = await this.adapter.updateExpiration(
+            key,
+            lockId,
+            ttl.toEndDate(),
+        );
+        return Number(updateCount) > 0;
+    }
+
+    async getState(key: string): Promise<ILockAdapterState | null> {
         const lockData = await this.adapter.find(key);
         if (lockData === null) {
-            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+            return null;
         }
-
-        if (lockData.owner !== owner) {
-            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
-        }
-
         if (lockData.expiration === null) {
-            return LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY;
+            return lockData;
         }
-
         if (lockData.expiration <= new Date()) {
-            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+            return null;
         }
-
-        const expiration = ttl.toEndDate();
-        const result = await this.adapter.updateExpirationIfOwner(
-            key,
-            owner,
-            expiration,
-        );
-        if (result > 0) {
-            return LOCK_REFRESH_RESULT.REFRESHED;
-        }
-        return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+        return lockData;
     }
 }

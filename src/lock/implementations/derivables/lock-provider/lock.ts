@@ -2,7 +2,11 @@
  * @module Lock
  */
 
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import type {
+    InvokableFn,
+    Namespace,
+    TimeSpan,
+} from "@/utilities/_module-exports.js";
 import {
     type Key,
     type AsyncLazy,
@@ -15,23 +19,22 @@ import type {
     AcquiredLockEvent,
     UnavailableLockEvent,
     ReleasedLockEvent,
-    UnownedReleaseTryLockEvent,
+    FailedReleaseLockEvent,
     ForceReleasedLockEvent,
     RefreshedLockEvent,
-    UnownedRefreshTryLockEvent,
+    FailedRefreshLockEvent,
     UnexpectedErrorLockEvent,
-    LockRefreshResult,
-    UnexpireableKeyRefreshTryLockEvent,
+    ILockState,
+    IDatabaseLockAdapter,
 } from "@/lock/contracts/_module-exports.js";
 import {
-    KeyAlreadyAcquiredLockError,
+    FailedAcquireLockError,
     LOCK_EVENTS,
-    LOCK_REFRESH_RESULT,
-    UnownedRefreshLockError,
-    UnownedReleaseLockError,
-    UnrefreshableKeyLockError,
+    FailedReleaseLockError,
+    FailedRefreshLockError,
     type LockAquireBlockingSettings,
     type LockEventMap,
+    LockError,
 } from "@/lock/contracts/_module-exports.js";
 import {
     type ILock,
@@ -39,16 +42,14 @@ import {
 } from "@/lock/contracts/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
-
-import type { LockState } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
+import { LockState } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
 
 /**
  * @internal
  */
 export type ISerializedLock = {
     key: string;
-    expirationInMs: number | null;
-    owner: string;
+    lockId: string;
     ttlInMs: number | null;
 };
 
@@ -60,13 +61,13 @@ export type LockSettings = {
         asyncFn: () => Promise<TValue>,
     ) => LazyPromise<TValue>;
     serdeTransformerName: string;
+    namespace: Namespace;
     adapter: ILockAdapter;
-    lockState: LockState;
+    originalAdapter: IDatabaseLockAdapter | ILockAdapter;
     eventDispatcher: IEventDispatcher<LockEventMap>;
     key: Key;
-    owner: string;
+    lockId: string;
     ttl: TimeSpan | null;
-    expirationInMs?: number | null;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
@@ -82,10 +83,7 @@ export class Lock implements ILock {
     static _internal_serialize(deserializedValue: Lock): ISerializedLock {
         return {
             key: deserializedValue.key.resolved,
-            expirationInMs:
-                deserializedValue.lockState.get()?.toEndDate().getTime() ??
-                null,
-            owner: deserializedValue.owner,
+            lockId: deserializedValue.lockId,
             ttlInMs: deserializedValue.ttl?.toMilliseconds() ?? null,
         };
     }
@@ -93,11 +91,12 @@ export class Lock implements ILock {
     private readonly createLazyPromise: <TValue = void>(
         asyncFn: () => Promise<TValue>,
     ) => LazyPromise<TValue>;
+    private readonly namespace: Namespace;
     private readonly adapter: ILockAdapter;
-    private readonly lockState: LockState;
+    private readonly originalAdapter: IDatabaseLockAdapter | ILockAdapter;
     private readonly eventDispatcher: IEventDispatcher<LockEventMap>;
     private readonly key: Key;
-    private readonly owner: string;
+    private readonly lockId: string;
     private readonly ttl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
@@ -107,53 +106,54 @@ export class Lock implements ILock {
     constructor(settings: LockSettings) {
         const {
             createLazyPromise,
+            namespace,
             adapter,
-            lockState,
+            originalAdapter,
             eventDispatcher,
             key,
-            owner,
+            lockId,
             ttl,
             serdeTransformerName,
-            expirationInMs,
             defaultBlockingInterval,
             defaultBlockingTime,
             defaultRefreshTime,
         } = settings;
+        this.namespace = namespace;
+        this.originalAdapter = originalAdapter;
         this.serdeTransformerName = serdeTransformerName;
         this.createLazyPromise = createLazyPromise;
         this.adapter = adapter;
-        this.lockState = lockState;
-        if (expirationInMs !== undefined && expirationInMs === null) {
-            this.lockState.set(null);
-        }
-        if (expirationInMs !== undefined && expirationInMs !== null) {
-            this.lockState.set(
-                TimeSpan.fromDateRange(new Date(), new Date(expirationInMs)),
-            );
-        }
         this.eventDispatcher = eventDispatcher;
         this.key = key;
-        this.owner = owner;
+        this.lockId = lockId;
         this.ttl = ttl;
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
     }
 
+    _internal_getNamespace(): Namespace {
+        return this.namespace;
+    }
+
     _internal_getSerdeTransformerName(): string {
         return this.serdeTransformerName;
     }
 
+    _internal_getAdapter(): IDatabaseLockAdapter | ILockAdapter {
+        return this.originalAdapter;
+    }
+
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
+    ): LazyPromise<Result<TValue, FailedAcquireLockError>> {
         return this.createLazyPromise(
-            async (): Promise<Result<TValue, KeyAlreadyAcquiredLockError>> => {
+            async (): Promise<Result<TValue, FailedAcquireLockError>> => {
                 try {
                     const hasAquired = await this.acquire();
                     if (!hasAquired) {
                         return resultFailure(
-                            new KeyAlreadyAcquiredLockError(
+                            new FailedAcquireLockError(
                                 `Key "${this.key.resolved}" already acquired`,
                             ),
                         );
@@ -181,14 +181,14 @@ export class Lock implements ILock {
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, KeyAlreadyAcquiredLockError>> {
+    ): LazyPromise<Result<TValue, FailedAcquireLockError>> {
         return this.createLazyPromise(
-            async (): Promise<Result<TValue, KeyAlreadyAcquiredLockError>> => {
+            async (): Promise<Result<TValue, FailedAcquireLockError>> => {
                 try {
                     const hasAquired = await this.acquireBlocking(settings);
                     if (!hasAquired) {
                         return resultFailure(
-                            new KeyAlreadyAcquiredLockError(
+                            new FailedAcquireLockError(
                                 `Key "${this.key.resolved}" already acquired`,
                             ),
                         );
@@ -217,22 +217,45 @@ export class Lock implements ILock {
         });
     }
 
+    private async handleUnexpectedError<TReturn>(
+        fn: InvokableFn<[], Promise<TReturn>>,
+    ): Promise<TReturn> {
+        try {
+            return await fn();
+        } catch (error: unknown) {
+            if (error instanceof LockError) {
+                throw error;
+            }
+            const event: UnexpectedErrorLockEvent = {
+                key: this.key.resolved,
+                lockId: this.lockId,
+                ttl: this.ttl,
+                error,
+                lock: this,
+            };
+            this.eventDispatcher
+                .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
+                .defer();
+
+            throw error;
+        }
+    }
+
     acquire(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            try {
+            return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquire(
                     this.key.namespaced,
-                    this.owner,
+                    this.lockId,
                     this.ttl,
                 );
-                this.lockState.remove();
 
                 if (hasAquired) {
-                    this.lockState.set(this.ttl);
                     const event: AcquiredLockEvent = {
                         key: this.key.resolved,
-                        owner: this.owner,
+                        lockId: this.lockId,
                         ttl: this.ttl,
+                        lock: this,
                     };
                     this.eventDispatcher
                         .dispatch(LOCK_EVENTS.ACQUIRED, event)
@@ -242,26 +265,15 @@ export class Lock implements ILock {
 
                 const event: UnavailableLockEvent = {
                     key: this.key.resolved,
-                    owner: this.owner,
+                    lockId: this.lockId,
+                    lock: this,
                 };
                 this.eventDispatcher
                     .dispatch(LOCK_EVENTS.UNAVAILABLE, event)
                     .defer();
 
                 return hasAquired;
-            } catch (error: unknown) {
-                const event: UnexpectedErrorLockEvent = {
-                    key: this.key.resolved,
-                    owner: this.owner,
-                    ttl: this.ttl,
-                    error,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
-                    .defer();
-
-                throw error;
-            }
+            });
         });
     }
 
@@ -269,7 +281,7 @@ export class Lock implements ILock {
         return this.createLazyPromise(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
-                throw new KeyAlreadyAcquiredLockError(
+                throw new FailedAcquireLockError(
                     `Key "${this.key.resolved}" already acquired`,
                 );
             }
@@ -302,7 +314,7 @@ export class Lock implements ILock {
         return this.createLazyPromise(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
-                throw new KeyAlreadyAcquiredLockError(
+                throw new FailedAcquireLockError(
                     `Key "${this.key.resolved}" already acquired`,
                 );
             }
@@ -311,17 +323,17 @@ export class Lock implements ILock {
 
     release(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            try {
+            return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.release(
                     this.key.namespaced,
-                    this.owner,
+                    this.lockId,
                 );
 
                 if (hasReleased) {
-                    this.lockState.remove();
                     const event: ReleasedLockEvent = {
                         key: this.key.resolved,
-                        owner: this.owner,
+                        lockId: this.lockId,
+                        lock: this,
                     };
                     this.eventDispatcher
                         .dispatch(LOCK_EVENTS.RELEASED, event)
@@ -329,27 +341,17 @@ export class Lock implements ILock {
                     return hasReleased;
                 }
 
-                const event: UnownedReleaseTryLockEvent = {
+                const event: FailedReleaseLockEvent = {
                     key: this.key.resolved,
-                    owner: this.owner,
+                    lockId: this.lockId,
+                    lock: this,
                 };
                 this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNOWNED_RELEASE_TRY, event)
+                    .dispatch(LOCK_EVENTS.FAILED_RELEASE, event)
                     .defer();
 
                 return hasReleased;
-            } catch (error: unknown) {
-                const event: UnexpectedErrorLockEvent = {
-                    key: this.key.resolved,
-                    owner: this.owner,
-                    ttl: this.ttl,
-                    error,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
-                    .defer();
-                throw error;
-            }
+            });
         });
     }
 
@@ -357,8 +359,8 @@ export class Lock implements ILock {
         return this.createLazyPromise(async () => {
             const hasRelased = await this.release();
             if (!hasRelased) {
-                throw new UnownedReleaseLockError(
-                    `Unonwed release on key "${this.key.resolved}" by owner "${this.owner}"`,
+                throw new FailedReleaseLockError(
+                    `Unonwed release on key "${this.key.resolved}" by owner "${this.lockId}"`,
                 );
             }
         });
@@ -366,179 +368,84 @@ export class Lock implements ILock {
 
     forceRelease(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            try {
-                const hasRelased = await this.adapter.forceRelease(
+            return await this.handleUnexpectedError(async () => {
+                const hasReleased = await this.adapter.forceRelease(
                     this.key.namespaced,
                 );
-                this.lockState.remove();
-                if (hasRelased) {
-                    const event: ForceReleasedLockEvent = {
-                        key: this.key.resolved,
-                    };
-                    this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.FORCE_RELEASED, event)
-                        .defer();
-                }
-                return hasRelased;
-            } catch (error: unknown) {
-                const event: UnexpectedErrorLockEvent = {
+                const event: ForceReleasedLockEvent = {
                     key: this.key.resolved,
-                    owner: this.owner,
-                    ttl: this.ttl,
-                    error,
+                    lock: this,
+                    hasReleased,
                 };
                 this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
+                    .dispatch(LOCK_EVENTS.FORCE_RELEASED, event)
                     .defer();
-                throw error;
-            }
+                return hasReleased;
+            });
         });
-    }
-
-    isExpired(): LazyPromise<boolean> {
-        // eslint-disable-next-line @typescript-eslint/require-await
-        return this.createLazyPromise(async () => {
-            try {
-                return this.lockState.isExpired();
-            } catch (error: unknown) {
-                const event: UnexpectedErrorLockEvent = {
-                    key: this.key.resolved,
-                    owner: this.owner,
-                    ttl: this.ttl,
-                    error,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
-                    .defer();
-                throw error;
-            }
-        });
-    }
-
-    isLocked(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
-            const isExpired = await this.isExpired();
-            return !isExpired;
-        });
-    }
-
-    private async _refresh(
-        ttl: TimeSpan = this.defaultRefreshTime,
-    ): Promise<LockRefreshResult> {
-        try {
-            const result = await this.adapter.refresh(
-                this.key.namespaced,
-                this.owner,
-                ttl,
-            );
-
-            if (result === LOCK_REFRESH_RESULT.REFRESHED) {
-                const event: RefreshedLockEvent = {
-                    key: this.key.resolved,
-                    owner: this.owner,
-                    ttl,
-                };
-                this.lockState.set(ttl);
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.REFRESHED, event)
-                    .defer();
-                return result;
-            }
-
-            if (result === LOCK_REFRESH_RESULT.UNOWNED_REFRESH) {
-                const event: UnownedRefreshTryLockEvent = {
-                    key: this.key.resolved,
-                    owner: this.owner,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNOWNED_REFRESH_TRY, event)
-                    .defer();
-                return result;
-            }
-
-            const event: UnexpireableKeyRefreshTryLockEvent = {
-                key: this.key.resolved,
-                owner: this.owner,
-            };
-            this.eventDispatcher
-                .dispatch(LOCK_EVENTS.UNEXPIREABLE_KEY_REFRESH_TRY, event)
-                .defer();
-
-            return result;
-        } catch (error: unknown) {
-            const event: UnexpectedErrorLockEvent = {
-                key: this.key.resolved,
-                owner: this.owner,
-                ttl: this.ttl,
-                error,
-            };
-            this.eventDispatcher
-                .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
-                .defer();
-            throw error;
-        }
     }
 
     refresh(ttl: TimeSpan = this.defaultRefreshTime): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const result = await this._refresh(ttl);
-            return result === LOCK_REFRESH_RESULT.REFRESHED;
+            return await this.handleUnexpectedError(async () => {
+                const hasRefreshed = await this.adapter.refresh(
+                    this.key.namespaced,
+                    this.lockId,
+                    ttl,
+                );
+
+                if (hasRefreshed) {
+                    const event: RefreshedLockEvent = {
+                        key: this.key.resolved,
+                        lockId: this.lockId,
+                        newTtl: ttl,
+                        lock: this,
+                    };
+                    this.eventDispatcher
+                        .dispatch(LOCK_EVENTS.REFRESHED, event)
+                        .defer();
+                } else {
+                    const event: FailedRefreshLockEvent = {
+                        key: this.key.resolved,
+                        lockId: this.lockId,
+                        lock: this,
+                    };
+                    this.eventDispatcher
+                        .dispatch(LOCK_EVENTS.FAILED_REFRESH, event)
+                        .defer();
+                }
+
+                return hasRefreshed;
+            });
         });
     }
 
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const result = await this._refresh(ttl);
-            if (result === LOCK_REFRESH_RESULT.UNOWNED_REFRESH) {
-                throw new UnownedRefreshLockError(
-                    `Unonwed refresh on key "${this.key.resolved}" by owner "${this.owner}"`,
-                );
-            }
-            if (result === LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY) {
-                throw new UnrefreshableKeyLockError(
-                    `Key "${this.key.resolved}" is not`,
+            const hasRefreshed = await this.refresh(ttl);
+            if (!hasRefreshed) {
+                throw new FailedRefreshLockError(
+                    `Unonwed refresh on key "${this.key.resolved}" by owner "${this.lockId}"`,
                 );
             }
         });
     }
 
-    getRemainingTime(): LazyPromise<TimeSpan | null> {
-        // eslint-disable-next-line @typescript-eslint/require-await
-        return this.createLazyPromise(async () => {
-            try {
-                return this.lockState.get();
-            } catch (error: unknown) {
-                const event: UnexpectedErrorLockEvent = {
-                    key: this.key.resolved,
-                    owner: this.owner,
-                    ttl: this.ttl,
-                    error,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
-                    .defer();
-                throw error;
-            }
-        });
+    getId(): string {
+        return this.lockId;
     }
 
-    getOwner(): LazyPromise<string> {
-        // eslint-disable-next-line @typescript-eslint/require-await
-        return this.createLazyPromise(async () => {
-            try {
-                return this.owner;
-            } catch (error: unknown) {
-                const event: UnexpectedErrorLockEvent = {
-                    key: this.key.resolved,
-                    owner: this.owner,
-                    ttl: this.ttl,
-                    error,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
-                    .defer();
-                throw error;
+    getTtl(): TimeSpan | null {
+        return this.ttl;
+    }
+
+    getState(): LazyPromise<ILockState | null> {
+        return this.createLazyPromise<ILockState | null>(async () => {
+            const state = await this.adapter.getState(this.key.namespaced);
+            if (state === null) {
+                return null;
             }
+            return new LockState(state, this.lockId);
         });
     }
 }

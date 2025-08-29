@@ -3,30 +3,41 @@
  */
 
 import type { TimeSpan } from "@/utilities/_module-exports.js";
-import {
-    LOCK_REFRESH_RESULT,
-    type ILockAdapter,
-    type LockRefreshResult,
+import type {
+    ILockAdapter,
+    ILockAdapterState,
 } from "@/lock/contracts/_module-exports.js";
 import type { Redis } from "ioredis";
 import type { Result } from "ioredis";
+
+/**
+ * @internal
+ */
+type IRedisJsonLockState = {
+    owner: string;
+    expiration: number;
+};
 
 declare module "ioredis" {
     interface RedisCommander<Context> {
         daiso_lock_acquire(
             key: string,
-            owner: string,
+            lockId: string,
             expiration: string,
         ): Result<1 | 0, Context>;
-        daiso_lock_release(key: string, owner: string): Result<1 | 0, Context>;
+
+        daiso_lock_release(key: string, lockId: string): Result<1 | 0, Context>;
+
         daiso_lock_refresh(
             key: string,
-            owner: string,
+            lockId: string,
             expiration: string,
-            REFRESHED: typeof LOCK_REFRESH_RESULT.REFRESHED,
-            UNOWNED_REFRESH: typeof LOCK_REFRESH_RESULT.UNOWNED_REFRESH,
-            UNEXPIRABLE_KEY: typeof LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY,
-        ): Result<LockRefreshResult, Context>;
+        ): Result<1 | 0, Context>;
+
+        /**
+         * Returns {@link IRedisJsonLockState | `IRedisJsonLockState | null`} as json string.
+         */
+        daiso_lock_get_state(key: string): Result<string, Context>;
     }
 }
 
@@ -53,6 +64,7 @@ export class RedisLockAdapter implements ILockAdapter {
         this.initAquireCommand();
         this.initReleaseCommand();
         this.initRefreshComand();
+        this.initGetStateComand();
     }
 
     private initAquireCommand(): void {
@@ -63,20 +75,20 @@ export class RedisLockAdapter implements ILockAdapter {
             numberOfKeys: 1,
             lua: `
                 local key = KEYS[1];
-                local owner = ARGV[1];
-                local expiration = tonumber(ARGV[2])
+                local lockId = ARGV[1];
+                local expiration = tonumber(ARGV[2]);
 
                 if redis.call("exists", key) == 1 then
-                    return 0
+                    return redis.call("get", key) == lockId;
                 end
                 
                 if expiration == nil then
-                    redis.call("set", key, owner, "nx")
+                    redis.call("set", key, lockId, "nx");
                 else
-                    redis.call("set", key, owner, "px", expiration, "nx")
+                    redis.call("set", key, lockId, "px", expiration, "nx");
                 end
                 
-                return 1
+                return 1;
             `,
         });
     }
@@ -90,13 +102,13 @@ export class RedisLockAdapter implements ILockAdapter {
             numberOfKeys: 1,
             lua: `
                 local key = KEYS[1];
-                local owner = ARGV[1];
+                local lockId = ARGV[1];
 
                 if redis.call("exists", key) == 0 then
                     return 0
                 end
 
-                local isNotCurrentOwner = redis.call("get", key) ~= owner
+                local isNotCurrentOwner = redis.call("get", key) ~= lockId
                 if isNotCurrentOwner then
                     return 0
                 end
@@ -118,50 +130,70 @@ export class RedisLockAdapter implements ILockAdapter {
             lua: `
                 -- Arguments
                 local key = KEYS[1];
-                local owner = ARGV[1];
+                local lockId = ARGV[1];
                 local expiration = ARGV[2]
 
-                -- Constant values
-                local REFRESHED = ARGV[3]
-                local UNOWNED_REFRESH = ARGV[4]
-                local UNEXPIRABLE_KEY = ARGV[5]
-
                 if redis.call("exists", key) == 0 then
-                    return UNOWNED_REFRESH
+                    return 0
                 end
                 
-                local isNotCurrentOwner = redis.call("get", key) ~= owner
-                if redis.call("get", key) ~= owner then
-                    return UNOWNED_REFRESH
+                local isNotCurrentOwner = redis.call("get", key) ~= lockId
+                if redis.call("get", key) ~= lockId then
+                    return 0
                 end
 
                 local currentExpiration = redis.call("pttl", key)
                 local isUnexpireable = currentExpiration == -1
                 if isUnexpireable then
-                    return UNEXPIRABLE_KEY
+                    return 0
                 end
 
                 redis.call("pexpire", key, expiration)
-                return REFRESHED
+                return 1
+            `,
+        });
+    }
+
+    private initGetStateComand(): void {
+        if (typeof this.database.daiso_lock_get_state === "function") {
+            return;
+        }
+
+        this.database.defineCommand("daiso_lock_get_state", {
+            numberOfKeys: 1,
+            lua: `
+                -- Arguments
+                local key = KEYS[1];
+
+                if tonumber(redis.call("exists", key)) == 0 then
+                    return cjson.encode(nil);
+                end
+
+                local state = {
+                    owner = redis.call("get", key),
+                    expiration = tonumber(redis.call("pexpiretime", key))
+                };
+
+                return cjson.encode(state); 
             `,
         });
     }
 
     async acquire(
         key: string,
-        owner: string,
+        lockId: string,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
         const result = await this.database.daiso_lock_acquire(
             key,
-            owner,
+            lockId,
             String(ttl?.toMilliseconds() ?? null),
         );
         return result === 1;
     }
 
-    async release(key: string, owner: string): Promise<boolean> {
-        const result = await this.database.daiso_lock_release(key, owner);
+    async release(key: string, lockId: string): Promise<boolean> {
+        const result = await this.database.daiso_lock_release(key, lockId);
         return result === 1;
     }
 
@@ -172,16 +204,33 @@ export class RedisLockAdapter implements ILockAdapter {
 
     async refresh(
         key: string,
-        owner: string,
+        lockId: string,
         ttl: TimeSpan,
-    ): Promise<LockRefreshResult> {
-        return await this.database.daiso_lock_refresh(
+    ): Promise<boolean> {
+        const result = await this.database.daiso_lock_refresh(
             key,
-            owner,
+            lockId,
             ttl.toMilliseconds().toString(),
-            LOCK_REFRESH_RESULT.REFRESHED,
-            LOCK_REFRESH_RESULT.UNOWNED_REFRESH,
-            LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY,
         );
+        return result === 1;
+    }
+
+    async getState(key: string): Promise<ILockAdapterState | null> {
+        const json = JSON.parse(
+            await this.database.daiso_lock_get_state(key),
+        ) as IRedisJsonLockState | null;
+        if (json === null) {
+            return null;
+        }
+        if (json.expiration === -1) {
+            return {
+                owner: json.owner,
+                expiration: null,
+            };
+        }
+        return {
+            owner: json.owner,
+            expiration: new Date(json.expiration),
+        };
     }
 }

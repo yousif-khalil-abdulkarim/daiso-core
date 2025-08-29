@@ -4,6 +4,7 @@
 
 import type {
     IDatabaseLockAdapter,
+    IDatabaseLockTransaction,
     ILockData,
     ILockExpirationData,
 } from "@/lock/contracts/_module-exports.js";
@@ -11,6 +12,7 @@ import { MysqlAdapter, type Kysely } from "kysely";
 import {
     type IDeinitizable,
     type IInitizable,
+    type InvokableFn,
     type IPrunable,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
@@ -20,7 +22,7 @@ import {
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
-export type KyselyLockAdapterTable = {
+export type KyselyLockTable = {
     key: string;
     owner: string;
     // In ms since unix epoch.
@@ -34,8 +36,8 @@ export type KyselyLockAdapterTable = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
  * @group Adapters
  */
-export type KyselyLockAdapterTables = {
-    lock: KyselyLockAdapterTable;
+export type KyselyLockTables = {
+    lock: KyselyLockTable;
 };
 
 /**
@@ -44,7 +46,7 @@ export type KyselyLockAdapterTables = {
  * @group Adapters
  */
 export type KyselyLockAdapterSettings = {
-    kysely: Kysely<KyselyLockAdapterTables>;
+    kysely: Kysely<KyselyLockTables>;
 
     /**
      * @default
@@ -76,6 +78,78 @@ export type KyselyLockAdapterSettings = {
     setInterval?: typeof setInterval;
 };
 
+async function find(
+    kysely: Kysely<KyselyLockTables>,
+    key: string,
+): Promise<ILockData | null> {
+    const row = await kysely
+        .selectFrom("lock")
+        .where("lock.key", "=", key)
+        .select(["lock.owner", "lock.expiration"])
+        .executeTakeFirst();
+    if (row === undefined) {
+        return null;
+    }
+    if (row.expiration === null) {
+        return {
+            owner: row.owner,
+            expiration: null,
+        };
+    }
+    return {
+        owner: row.owner,
+        expiration: new Date(Number(row.expiration)),
+    };
+}
+
+/**
+ * @internal
+ */
+class DatabaseLockTransaction implements IDatabaseLockTransaction {
+    private readonly isMysql: boolean;
+
+    constructor(private readonly kysely: Kysely<KyselyLockTables>) {
+        this.isMysql =
+            this.kysely.getExecutor().adapter instanceof MysqlAdapter;
+    }
+
+    async find(key: string): Promise<ILockData | null> {
+        return await find(this.kysely, key);
+    }
+
+    async upsert(
+        key: string,
+        lockId: string,
+        expiration: Date | null,
+    ): Promise<void> {
+        const expirationAsMs = expiration?.getTime() ?? null;
+        await this.kysely
+            .insertInto("lock")
+            .values({
+                key,
+                owner: lockId,
+                expiration: expirationAsMs,
+            })
+            .$if(!this.isMysql, (eb) =>
+                eb.onConflict((eb) =>
+                    eb.column("key").doUpdateSet({
+                        key,
+                        owner: lockId,
+                        expiration: expirationAsMs,
+                    }),
+                ),
+            )
+            .$if(this.isMysql, (eb) =>
+                eb.onDuplicateKeyUpdate({
+                    key,
+                    owner: lockId,
+                    expiration: expirationAsMs,
+                }),
+            )
+            .execute();
+    }
+}
+
 /**
  * To utilize the `KyselyLockAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
  *
@@ -88,7 +162,7 @@ export type KyselyLockAdapterSettings = {
 export class KyselyLockAdapter
     implements IDatabaseLockAdapter, IDeinitizable, IInitizable, IPrunable
 {
-    private readonly kysely: Kysely<KyselyLockAdapterTables>;
+    private readonly kysely: Kysely<KyselyLockTables>;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;
     private timeoutId: string | number | NodeJS.Timeout | undefined | null =
@@ -160,7 +234,7 @@ export class KyselyLockAdapter
             await this.kysely.schema
                 .createTable("lock")
                 .addColumn("key", "varchar(255)", (col) =>
-                    col.notNull().primaryKey(),
+                    col.primaryKey().notNull(),
                 )
                 .addColumn("owner", "varchar(255)", (col) => col.notNull())
                 .addColumn("expiration", "bigint")
@@ -174,7 +248,7 @@ export class KyselyLockAdapter
             await this.kysely.schema
                 .createIndex("lock_expiration")
                 .on("lock")
-                .columns(["expiration"])
+                .column("expiration")
                 .execute();
         } catch {
             /* EMPTY */
@@ -194,44 +268,22 @@ export class KyselyLockAdapter
             .execute();
     }
 
-    async insert(
-        key: string,
-        owner: string,
-        expiration: Date | null,
-    ): Promise<void> {
-        await this.kysely
-            .insertInto("lock")
-            .values({
-                key,
-                owner,
-                expiration: expiration?.getTime() ?? null,
-            })
-            .execute();
-    }
-
-    async updateIfExpired(
-        key: string,
-        owner: string,
-        expiration: Date | null,
-    ): Promise<number> {
-        const result = await this.kysely
-            .updateTable("lock")
-            .where("lock.key", "=", key)
-            .where((eb) => {
-                const hasExpiration = eb("lock.expiration", "is not", null);
-                const hasExpired = eb("lock.expiration", "<=", Date.now());
-                return eb.and([hasExpiration, hasExpired]);
-            })
-            .set({
-                owner,
-                expiration: expiration?.getTime() ?? null,
-            })
-            .executeTakeFirst();
-        return Number(result.numUpdatedRows);
+    async transaction<TReturn>(
+        fn: InvokableFn<
+            [transaction: IDatabaseLockTransaction],
+            Promise<TReturn>
+        >,
+    ): Promise<TReturn> {
+        return await this.kysely
+            .transaction()
+            .setIsolationLevel("serializable")
+            .execute(async (trx) => {
+                return await fn(new DatabaseLockTransaction(trx));
+            });
     }
 
     async remove(key: string): Promise<ILockExpirationData | null> {
-        let result: Pick<KyselyLockAdapterTable, "expiration"> | undefined;
+        let result: Pick<KyselyLockTable, "expiration"> | undefined;
         if (this.isMysql) {
             result = await this.kysely
                 .transaction()
@@ -239,8 +291,8 @@ export class KyselyLockAdapter
                 .execute(async (trx) => {
                     const row = await trx
                         .selectFrom("lock")
-                        .select("lock.expiration")
                         .where("lock.key", "=", key)
+                        .select("lock.expiration")
                         .executeTakeFirst();
                     await trx
                         .deleteFrom("lock")
@@ -268,10 +320,11 @@ export class KyselyLockAdapter
         };
     }
 
-    async removeIfOwner(key: string, owner: string): Promise<ILockData | null> {
-        let row:
-            | Pick<KyselyLockAdapterTable, "owner" | "expiration">
-            | undefined;
+    async removeIfOwner(
+        key: string,
+        lockId: string,
+    ): Promise<ILockData | null> {
+        let row: Pick<KyselyLockTable, "owner" | "expiration"> | undefined;
         if (this.isMysql) {
             row = await this.kysely
                 .transaction()
@@ -280,13 +333,13 @@ export class KyselyLockAdapter
                     const row = await trx
                         .selectFrom("lock")
                         .where("lock.key", "=", key)
-                        .where("lock.owner", "=", owner)
+                        .where("lock.owner", "=", lockId)
                         .select(["lock.expiration", "lock.owner"])
                         .executeTakeFirst();
                     await trx
                         .deleteFrom("lock")
                         .where("lock.key", "=", key)
-                        .where("lock.owner", "=", owner)
+                        .where("lock.owner", "=", lockId)
                         .execute();
                     return row;
                 });
@@ -294,7 +347,7 @@ export class KyselyLockAdapter
             row = await this.kysely
                 .deleteFrom("lock")
                 .where("lock.key", "=", key)
-                .where("lock.owner", "=", owner)
+                .where("lock.owner", "=", lockId)
                 .returning(["lock.expiration", "lock.owner"])
                 .executeTakeFirst();
         }
@@ -317,15 +370,21 @@ export class KyselyLockAdapter
         };
     }
 
-    async updateExpirationIfOwner(
+    async updateExpiration(
         key: string,
-        owner: string,
+        lockId: string,
         expiration: Date,
     ): Promise<number> {
         const result = await this.kysely
             .updateTable("lock")
             .where("lock.key", "=", key)
-            .where("lock.owner", "=", owner)
+            .where("lock.owner", "=", lockId)
+            .where((eb) =>
+                eb.and([
+                    eb("lock.expiration", "is not", null),
+                    eb("lock.expiration", ">", Date.now()),
+                ]),
+            )
             .set({
                 expiration: expiration.getTime(),
             })
@@ -334,27 +393,6 @@ export class KyselyLockAdapter
     }
 
     async find(key: string): Promise<ILockData | null> {
-        const row = await this.kysely
-            .selectFrom("lock")
-            .select(["lock.owner", "lock.expiration"])
-            .where("lock.key", "=", key)
-            .executeTakeFirst();
-
-        if (row === undefined) {
-            return null;
-        }
-
-        const { owner, expiration } = row;
-        if (expiration === null) {
-            return {
-                owner,
-                expiration: null,
-            };
-        }
-
-        return {
-            owner,
-            expiration: new Date(Number(expiration)),
-        };
+        return await find(this.kysely, key);
     }
 }
