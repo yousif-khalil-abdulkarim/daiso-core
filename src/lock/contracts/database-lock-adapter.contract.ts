@@ -2,6 +2,8 @@
  * @module Lock
  */
 
+import type { InvokableFn } from "@/utilities/_module-exports.js";
+
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
@@ -28,6 +30,17 @@ export type ILockData = ILockExpirationData & {
 };
 
 /**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Contracts
+ */
+export type IDatabaseLockTransaction = {
+    find(key: string): Promise<ILockData | null>;
+
+    upsert(key: string, lockId: string, expiration: Date | null): Promise<void>;
+};
+
+/**
  * The `IDatabaseLockAdapter` contract defines a way for managing locks independent of data storage.
  * This contract simplifies the implementation of lock adapters with CRUD-based databases, such as SQL databases and ORMs like TypeOrm and MikroOrm.
  *
@@ -35,29 +48,12 @@ export type ILockData = ILockExpirationData & {
  * @group Contracts
  */
 export type IDatabaseLockAdapter = {
-    /**
-     * Inserts a new lock into the database.
-     *
-     * @param key The unique identifier for the lock.
-     * @param owner The identifier of the entity acquiring the lock.
-     * @param expiration The date and time when the lock should expire. Use `null` for a lock that doesn't expire.
-     */
-    insert(key: string, owner: string, expiration: Date | null): Promise<void>;
-
-    /**
-     * Conditionally renews the lock on `key` if it has already expired, setting a new `owner` and `expiration`.
-     * Note you need to check if the expiration field is not null and greater than or equal to current time.
-     *
-     * @param key The unique identifier for the lock.
-     * @param owner The new identifier for the entity acquiring the lock.
-     * @param expiration The new date and time when the lock should expire. Use `null` for a lock that doesn't expire.
-     * @returns Returns number of updated.
-     */
-    updateIfExpired(
-        key: string,
-        owner: string,
-        expiration: Date | null,
-    ): Promise<number>;
+    transaction<TReturn>(
+        fn: InvokableFn<
+            [transaction: IDatabaseLockTransaction],
+            Promise<TReturn>
+        >,
+    ): Promise<TReturn>;
 
     /**
      * Removes a lock from the database regardless of its owner.
@@ -73,7 +69,7 @@ export type IDatabaseLockAdapter = {
      * @param owner The identifier of the expected owner.
      * @returns Returns {@link ILockExpirationData |`ILockExpirationData | null`}. The {@link ILockExpirationData |`ILockExpirationData`} data if successfully removed, otherwise `null` if the lock wasn't found or the owner didn't match.
      */
-    removeIfOwner(key: string, owner: string): Promise<ILockData | null>;
+    removeIfOwner(key: string, lockId: string): Promise<ILockData | null>;
 
     /**
      * Updates the expiration date of a lock if it is currently held by the specified owner.
@@ -83,9 +79,9 @@ export type IDatabaseLockAdapter = {
      * @param expiration The new date and time when the lock should expire.
      * @returns Returns a number greater than or equal to `1` if the lock's expiration was updated, or `0` if the lock wasn't found or the owner didn't match.
      */
-    updateExpirationIfOwner(
+    updateExpiration(
         key: string,
-        owner: string,
+        lockId: string,
         expiration: Date,
     ): Promise<number>;
 

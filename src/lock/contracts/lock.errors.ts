@@ -19,7 +19,7 @@ export class LockError extends Error {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Errors
  */
-export class KeyAlreadyAcquiredLockError extends LockError {
+export class FailedAcquireLockError extends LockError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
     }
@@ -31,7 +31,7 @@ export class KeyAlreadyAcquiredLockError extends LockError {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Errors
  */
-export class UnownedReleaseLockError extends LockError {
+export class FailedReleaseLockError extends LockError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
     }
@@ -43,19 +43,7 @@ export class UnownedReleaseLockError extends LockError {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Errors
  */
-export class UnownedRefreshLockError extends LockError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-    }
-}
-
-/**
- * The error is thrown when trying to referesh a lock that is unexpireable.
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
- * @group Errors
- */
-export class UnrefreshableKeyLockError extends LockError {
+export class FailedRefreshLockError extends LockError {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
     }
@@ -68,8 +56,7 @@ export class UnrefreshableKeyLockError extends LockError {
  */
 export const LOCK_ERRORS = {
     Base: LockError,
-    UnrefreshableKey: UnrefreshableKeyLockError,
-    KeyAlreadyAcquired: KeyAlreadyAcquiredLockError,
-    UnownedRelease: UnownedReleaseLockError,
-    UnownedRefresh: UnownedRefreshLockError,
+    FailedAcquire: FailedAcquireLockError,
+    FailedRelease: FailedReleaseLockError,
+    FailedRefresh: FailedRefreshLockError,
 } as const;
