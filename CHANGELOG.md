@@ -1,5 +1,288 @@
 # @daiso-tech/core
 
+## 0.41.0
+
+### Minor Changes
+
+- d4cd60b: Update the `IDatabaseLockAdapter` contract.
+
+    before:
+
+    ```ts
+    export type IDatabaseLockAdapter = {
+        /**
+         * Inserts a new lock into the database.
+         *
+         * @param key The unique identifier for the lock.
+         * @param owner The identifier of the entity acquiring the lock.
+         * @param expiration The date and time when the lock should expire. Use `null` for a lock that doesn't expire.
+         */
+        insert(
+            key: string,
+            owner: string,
+            expiration: Date | null,
+        ): Promise<void>;
+
+        /**
+         * Conditionally renews the lock on `key` if it has already expired, setting a new `owner` and `expiration`.
+         * Note you need to check if the expiration field is not null and greater than or equal to current time.
+         *
+         * @param key The unique identifier for the lock.
+         * @param owner The new identifier for the entity acquiring the lock.
+         * @param expiration The new date and time when the lock should expire. Use `null` for a lock that doesn't expire.
+         * @returns Returns number of updated.
+         */
+        updateIfExpired(
+            key: string,
+            owner: string,
+            expiration: Date | null,
+        ): Promise<number>;
+
+        /**
+         * Removes a lock from the database regardless of its owner.
+         *
+         * @param key The unique identifier for the lock to remove.
+         */
+        remove(key: string): Promise<ILockExpirationData | null>;
+
+        /**
+         * Removes a lock from the database only if it is currently held by the specified owner.
+         *
+         * @param key The unique identifier for the lock.
+         * @param owner The identifier of the expected owner.
+         * @returns Returns {@link ILockExpirationData |`ILockExpirationData | null`}. The {@link ILockExpirationData |`ILockExpirationData`} data if successfully removed, otherwise `null` if the lock wasn't found or the owner didn't match.
+         */
+        removeIfOwner(key: string, owner: string): Promise<ILockData | null>;
+
+        /**
+         * Updates the expiration date of a lock if it is currently held by the specified owner.
+         *
+         * @param key The unique identifier for the lock.
+         * @param owner The identifier of the expected owner.
+         * @param expiration The new date and time when the lock should expire.
+         * @returns Returns a number greater than or equal to `1` if the lock's expiration was updated, or `0` if the lock wasn't found or the owner didn't match.
+         */
+        updateExpirationIfOwner(
+            key: string,
+            owner: string,
+            expiration: Date,
+        ): Promise<number>;
+
+        /**
+         * Retrieves the current lock data for a given key.
+         *
+         * @param key The unique identifier for the lock.
+         * @returns Returns the lock's owner and expiration data if found, otherwise `null`.
+         */
+        find(key: string): Promise<ILockData | null>;
+    };
+    ```
+
+    after:
+
+    ```ts
+    export type IDatabaseLockAdapter = {
+        transaction<TReturn>(
+            fn: InvokableFn<
+                [transaction: IDatabaseLockTransaction],
+                Promise<TReturn>
+            >,
+        ): Promise<TReturn>;
+
+        /**
+         * Removes a lock from the database regardless of its owner.
+         *
+         * @param key The unique identifier for the lock to remove.
+         */
+        remove(key: string): Promise<ILockExpirationData | null>;
+
+        /**
+         * Removes a lock from the database only if it is currently held by the specified owner.
+         *
+         * @param key The unique identifier for the lock.
+         * @param owner The identifier of the expected owner.
+         * @returns Returns {@link ILockExpirationData |`ILockExpirationData | null`}. The {@link ILockExpirationData |`ILockExpirationData`} data if successfully removed, otherwise `null` if the lock wasn't found or the owner didn't match.
+         */
+        removeIfOwner(key: string, lockId: string): Promise<ILockData | null>;
+
+        /**
+         * Updates the expiration date of a lock if it is currently held by the specified owner.
+         *
+         * @param key The unique identifier for the lock.
+         * @param owner The identifier of the expected owner.
+         * @param expiration The new date and time when the lock should expire.
+         * @returns Returns a number greater than or equal to `1` if the lock's expiration was updated, or `0` if the lock wasn't found or the owner didn't match.
+         */
+        updateExpiration(
+            key: string,
+            lockId: string,
+            expiration: Date,
+        ): Promise<number>;
+
+        /**
+         * Retrieves the current lock data for a given key.
+         *
+         * @param key The unique identifier for the lock.
+         * @returns Returns the lock's owner and expiration data if found, otherwise `null`.
+         */
+        find(key: string): Promise<ILockData | null>;
+    };
+    ```
+
+- d4cd60b: Updated `LockProviderCreateSettings` type.
+
+    before:
+
+    ```ts
+    export type LockProviderCreateSettings = {
+        /**
+         * You can also provide a `settings.ttl` value using. If not specified it defaults to null, meaning no TTL is applied.
+         */
+        ttl?: TimeSpan | null;
+
+        /**
+         * You can provide a custom owner. If not specified a unique owner will be generated by default.
+         */
+        owner?: OneOrMore<string>;
+    };
+    ```
+
+    after:
+
+    ```ts
+    export type LockProviderCreateSettings = {
+        /**
+         * You can also provide a `settings.ttl` value using. If not specified it defaults to null, meaning no TTL is applied.
+         */
+        ttl?: TimeSpan | null;
+
+        /**
+         * You can provide a custom lock id. If not specified a unique lock id will be generated by default.
+         */
+        lockId?: OneOrMore<string>;
+    };
+    ```
+
+- d4cd60b: Updated `ILock` contract.
+
+    - Removed the method `getRemainingTime`.
+    - Removed the method `getOwner`.
+    - Removed the method `isExpired`.
+    - Removed the method `isLocked`.
+    - Added `getState` method that replaces the following methods `getRemainingTime`, `getOwner`, `isExpired` and `isLocked`.
+    - The `refreshOrFail` now only throws one error, it throws `FailedRefreshLockError`
+
+- d4cd60b: Updated LockProviderFactory class.
+
+    - Renamed `setCreateOwnerId` to `setCreateLockId`.
+
+- d4cd60b: Updated and removed some lock events.
+
+    - Renamed error `KeyAlreadyAcquiredLockError` to `FailedAcquireLockError`.
+    - Renamed error `UnownedReleaseLockError` to `FailedReleaseLockError`.
+    - Renamed error `UnownedRefreshLockError` to `FailedRefreshLockError`.
+
+- d4cd60b: Renamed, updated and removed some lock events.
+
+    - Renamed event `UnownedReleaseTryLockEvent` to `FailedReleaseLockEvent`.
+    - Renamed event `UnownedRefreshTryLockEvent` to `FailedRefreshLockEvent`.
+    - Removed event `UnexpireableKeyRefreshTryLockEvent`.
+    - Renamed `owner` field to `lockId`.
+    - Now in all events you can access the lock state.
+
+- d4cd60b: Update the `ILockAdapter` contract.
+
+    before:
+
+    ```ts
+    export type ILockAdapter = {
+        /**
+         * The `acquire` method acquires a lock only if the lock is not acquired.
+         *
+         * @returns Returns true if lock is not already acquired or false.
+         */
+        acquire(
+            key: string,
+            owner: string,
+            ttl: TimeSpan | null,
+        ): Promise<boolean>;
+
+        /**
+         * The `release` method releases a lock if the owner matches.
+         *
+         * @returns Returns true if released otherwise false is returned.
+         */
+        release(key: string, owner: string): Promise<boolean>;
+
+        /**
+         * The `forceRelease` method releases a lock regardless of the owner.
+         *
+         * @returns Returns true if the lock exists or false if the lock doesnt exists.
+         */
+        forceRelease(key: string): Promise<boolean>;
+
+        /**
+         * The `refresh` method will upadte `ttl` of lock if it matches the given `key`, given `owner` and is expireable.
+         * @returns
+         * - {@link LOCK_REFRESH_RESULT.UNOWNED_REFRESH | `LOCK_REFRESH_RESULT.UNOWNED_REFRESH`}: The lock doesn't exist or is owned by a different owner.
+         * - {@link LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY | `LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY`}: The lock is owned by the same owner but cannot be refreshed because it's unexpirable.
+         * - {@link LOCK_REFRESH_RESULT.REFRESHED | `LOCK_REFRESH_RESULT.REFRESHED`}: The lock is owned by the same owner and its ttl has been updated.
+         */
+        refresh(
+            key: string,
+            owner: string,
+            ttl: TimeSpan,
+        ): Promise<LockRefreshResult>;
+    };
+    ```
+
+    after:
+
+    ```ts
+    export type ILockAdapter = {
+        /**
+         * The `acquire` method acquires a lock only if expired.
+         *
+         * @returns Returns `true` if expired otherwise `false` is returned.
+         */
+        acquire(
+            key: string,
+            lockId: string,
+            ttl: TimeSpan | null,
+        ): Promise<boolean>;
+
+        /**
+         * The `release` method releases a lock if the owner matches.
+         *
+         * @returns Returns `true` if released otherwise `false` is returned.
+         */
+        release(key: string, lockId: string): Promise<boolean>;
+
+        /**
+         * The `forceRelease` method releases a lock regardless of the owner.
+         *
+         * @returns Returns `true` if the lock exists or `false` if the lock is expired.
+         */
+        forceRelease(key: string): Promise<boolean>;
+
+        /**
+         * The `refresh` method will upadte `ttl` of lock if it matches the `owner` and is expireable.
+         *
+         * @returns Returns `false` if the lock is unexpireable, the is expired, does not match the `owner` otherwise `true` is returned.
+         */
+        refresh(key: string, lockId: string, ttl: TimeSpan): Promise<boolean>;
+
+        getState(key: string): Promise<ILockAdapterState | null>;
+    };
+    ```
+
+- 69ab9fc: Added semaphore component
+
+### Patch Changes
+
+- 69ab9fc: Updated bug with `KyselyCacheAdapter`, now when the `detInit` method is called it will remove the interval timer.
+- 69ab9fc: Updated bug with `KyselyLockAdapter`, now when the `detInit` method is called it will remove the interval timer.
+
 ## 0.40.0
 
 ### Minor Changes
@@ -171,8 +454,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                      - `AsyncFactoryable`
-                      - `Factoryable`
+                        - `AsyncFactoryable`
+                        - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
