@@ -81,7 +81,7 @@ export type IDatabaseSemaphoreAdapter = {
      */
     transaction<TValue>(
         fn: InvokableFn<
-            [methods: IDatabaseSemaphoreTransaction],
+            [transaction: IDatabaseSemaphoreTransaction],
             Promise<TValue>
         >,
     ): Promise<TValue>;
@@ -106,7 +106,7 @@ export type IDatabaseSemaphoreAdapter = {
     /**
      * The `updateExpiration` updates the specified slot expiration as long as it is expireable and unexpired of the given semaphore.
      *
-     * @returns Returns a number greater than 0 if the slot expiration was updated, otherwise returns 0.
+     * @returns Returns a number greater than `0` if the slot expiration was updated, otherwise returns `0`.
      */
     updateExpiration(
         key: string,

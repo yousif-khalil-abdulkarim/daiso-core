@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type IDeinitizable,
     type IInitizable,
@@ -190,7 +190,7 @@ export class MongodbSemaphoreAdapter
                 },
             ],
         };
-        const hasSlotsQuery = {
+        const hasNoSlotsQuery = {
             $eq: [{ $size: "$slots" }, 0],
         };
         return [
@@ -215,9 +215,9 @@ export class MongodbSemaphoreAdapter
                     expiration: {
                         $cond: {
                             // Are there slots acquired
-                            if: hasSlotsQuery,
+                            if: hasNoSlotsQuery,
                             // If there are no slots acquired we immediatley expire the semaphore
-                            then: new Date(),
+                            then: TimeSpan.fromMinutes(1).toStartDate(),
                             // If there are slots acquired we do nothing
                             else: "$expiration",
                         },

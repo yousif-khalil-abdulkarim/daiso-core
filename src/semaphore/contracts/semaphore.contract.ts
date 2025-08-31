@@ -75,14 +75,14 @@ export type ISemaphoreBase = {
     ): LazyPromise<TValue>;
 
     /**
-     * The `acquire` method acquires an amount of slots only if the slot limit is not reached.
+     * The `acquire` method acquires an slots only if the slot limit is not reached.
      *
      * @returns Returns true if the slot limit is not reached otherwise false is returned.
      */
     acquire(): LazyPromise<boolean>;
 
     /**
-     * The `acquireOrFail` method acquires an amount of slots only if the slot limit is not reached.
+     * The `acquireOrFail` method acquires an slots only if the slot limit is not reached.
      * Throws an error if the slot limit is reached.
      *
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
@@ -90,7 +90,7 @@ export type ISemaphoreBase = {
     acquireOrFail(): LazyPromise<void>;
 
     /**
-     * The `acquireBlocking` method acquires an amount of slots only if the slot limit is not reached.
+     * The `acquireBlocking` method acquires an slots only if the slot limit is not reached.
      * If the slot limit is reached, it retries every `settings.interval` until `settings.time` is reached.
      *
      * @returns Returns true if the slot limit is not reached otherwise false is returned.
@@ -100,7 +100,7 @@ export type ISemaphoreBase = {
     ): LazyPromise<boolean>;
 
     /**
-     * The `acquireBlockingOrFail` method acquires an amount of slots only if the slot limit is not reached.
+     * The `acquireBlockingOrFail` method acquires an slots only if the slot limit is not reached.
      * If the slot limit is reached, it retries every `settings.interval` until `settings.time` is reached.
      * Throws an error if the slot limit is reached after the given `settings.time`.
      *
@@ -144,6 +144,16 @@ export type ISemaphoreBase = {
      * @throws {FailedRefreshSemaphoreError} {@link FailedRefreshSemaphoreError}
      */
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
+
+    /**
+     * The `getId` returns the id of the `ISemaphore` instance.
+     */
+    getId(): string;
+
+    /**
+     * The `getTtl` method returns the `ttl` of `ISemaphore` instance.
+     */
+    getTtl(): TimeSpan | null;
 };
 
 /**
