@@ -87,12 +87,12 @@ export class LockProviderFactory<TAdapters extends string>
         });
     }
 
-    setCreateOwnerId(
+    setCreateLockId(
         createId: Invokable<[], string>,
     ): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
-            createOwnerId: createId,
+            createLockId: createId,
         });
     }
 
