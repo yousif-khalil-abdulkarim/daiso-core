@@ -7,10 +7,9 @@ import {
     type IDeinitizable,
     type IInitizable,
 } from "@/utilities/_module-exports.js";
-import {
-    LOCK_REFRESH_RESULT,
-    type ILockAdapter,
-    type LockRefreshResult,
+import type {
+    ILockAdapter,
+    ILockAdapterState,
 } from "@/lock/contracts/_module-exports.js";
 import type { Collection, CollectionOptions, Db } from "mongodb";
 import type { ObjectId } from "mongodb";
@@ -128,7 +127,7 @@ export class MongodbLockAdapter
 
         // Should throw if the collection already does not exists thats why the try catch is used.
         try {
-            await this.database.dropCollection(this.collectionName);
+            await this.collection.drop();
         } catch {
             /* EMPTY */
         }
@@ -136,7 +135,7 @@ export class MongodbLockAdapter
 
     async acquire(
         key: string,
-        owner: string,
+        lockId: string,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
         const expiration = ttl?.toEndDate() ?? null;
@@ -159,7 +158,7 @@ export class MongodbLockAdapter
                     $set: {
                         key,
                         owner: {
-                            $ifNull: ["$owner", owner],
+                            $ifNull: ["$owner", lockId],
                         },
                         expiration: {
                             $ifNull: ["$expiration", expiration],
@@ -171,7 +170,7 @@ export class MongodbLockAdapter
                         owner: {
                             $cond: {
                                 if: isExpiredQuery,
-                                then: owner,
+                                then: lockId,
                                 else: "$owner",
                             },
                         },
@@ -192,13 +191,16 @@ export class MongodbLockAdapter
         if (lockData === null) {
             return true;
         }
+        if (lockData.owner === lockId) {
+            return true;
+        }
         if (lockData.expiration === null) {
             return false;
         }
         return lockData.expiration <= new Date();
     }
 
-    async release(key: string, owner: string): Promise<boolean> {
+    async release(key: string, lockId: string): Promise<boolean> {
         const isUnexpirableQuery = {
             expiration: {
                 $eq: null,
@@ -211,7 +213,7 @@ export class MongodbLockAdapter
         };
         const lockData = await this.collection.findOneAndDelete({
             key,
-            owner,
+            owner: lockId,
             $or: [isUnexpirableQuery, isUnexpiredQuery],
         });
 
@@ -227,7 +229,7 @@ export class MongodbLockAdapter
 
         const { owner: currentOwner } = lockData;
         const isNotExpired = expiration > new Date();
-        const isCurrentOwner = owner === currentOwner;
+        const isCurrentOwner = lockId === currentOwner;
         return isNotExpired && isCurrentOwner;
     }
 
@@ -245,9 +247,9 @@ export class MongodbLockAdapter
 
     async refresh(
         key: string,
-        owner: string,
+        lockId: string,
         ttl: TimeSpan,
-    ): Promise<LockRefreshResult> {
+    ): Promise<boolean> {
         const isUnexpiredQuery = {
             $and: [
                 {
@@ -279,21 +281,37 @@ export class MongodbLockAdapter
         );
 
         if (lockData === null) {
-            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+            return false;
         }
 
-        if (lockData.owner !== owner) {
-            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+        if (lockData.owner !== lockId) {
+            return false;
         }
 
         if (lockData.expiration === null) {
-            return LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY;
+            return false;
         }
 
         if (lockData.expiration <= new Date()) {
-            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+            return false;
         }
 
-        return LOCK_REFRESH_RESULT.REFRESHED;
+        return true;
+    }
+
+    async getState(key: string): Promise<ILockAdapterState | null> {
+        const lockData = await this.collection.findOne({
+            key,
+        });
+        if (lockData === null) {
+            return null;
+        }
+        if (lockData.expiration !== null && lockData.expiration <= new Date()) {
+            return null;
+        }
+        return {
+            owner: lockData.owner,
+            expiration: lockData.expiration,
+        };
     }
 }

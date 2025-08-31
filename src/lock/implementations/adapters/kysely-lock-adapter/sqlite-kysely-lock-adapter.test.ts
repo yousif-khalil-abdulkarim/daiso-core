@@ -1,16 +1,21 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
 import {
     KyselyLockAdapter,
-    type KyselyLockAdapterTables,
+    type KyselyLockTables,
 } from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
 import Sqlite, { type Database } from "better-sqlite3";
-import { Kysely, SqliteDialect } from "kysely";
+import {
+    Kysely,
+    SqliteDialect,
+    type ColumnMetadata,
+    type TableMetadata,
+} from "kysely";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 
 describe("sqlite class: KyselyLockAdapter", () => {
     let database: Database;
-    let kysely: Kysely<KyselyLockAdapterTables>;
+    let kysely: Kysely<KyselyLockTables>;
 
     beforeEach(() => {
         database = new Sqlite(":memory:");
@@ -45,21 +50,23 @@ describe("sqlite class: KyselyLockAdapter", () => {
             });
             await adapter.init();
 
-            await adapter.insert(
-                "a",
-                "owner",
-                TimeSpan.fromMilliseconds(50).toStartDate(),
-            );
-            await adapter.insert(
-                "b",
-                "owner",
-                TimeSpan.fromMilliseconds(50).toStartDate(),
-            );
-            await adapter.insert(
-                "c",
-                "owner",
-                TimeSpan.fromMilliseconds(50).toEndDate(),
-            );
+            await adapter.transaction(async (trx) => {
+                await trx.upsert(
+                    "a",
+                    "owner",
+                    TimeSpan.fromMilliseconds(50).toStartDate(),
+                );
+                await trx.upsert(
+                    "b",
+                    "owner",
+                    TimeSpan.fromMilliseconds(50).toStartDate(),
+                );
+                await trx.upsert(
+                    "c",
+                    "owner",
+                    TimeSpan.fromMilliseconds(50).toEndDate(),
+                );
+            });
 
             await adapter.removeAllExpired();
 
@@ -69,7 +76,7 @@ describe("sqlite class: KyselyLockAdapter", () => {
         });
     });
     describe("method: init", () => {
-        test("Should create table", async () => {
+        test("Should create lock table", async () => {
             const adapter = new KyselyLockAdapter({
                 kysely,
                 shouldRemoveExpiredKeys: false,
@@ -77,73 +84,33 @@ describe("sqlite class: KyselyLockAdapter", () => {
             await adapter.init();
 
             const tables = await kysely.introspection.getTables();
-            const table = tables.find((table) => table.name === "lock");
 
-            expect(table).toBeDefined();
-            expect(table?.name).toBe("lock");
-        });
-        test("Should define column key column", async () => {
-            const adapter = new KyselyLockAdapter({
-                kysely,
-                shouldRemoveExpiredKeys: false,
-            });
-            await adapter.init();
-
-            const tables = await kysely.introspection.getTables();
-            const table = tables.find((table) => table.name === "lock");
-
-            expect(table).toBeDefined();
-            const keyColumn = table?.columns.find(
-                (column) => column.name === "key",
+            expect(tables).toContainEqual(
+                expect.objectContaining<Partial<TableMetadata>>({
+                    name: "lock",
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
+                    columns: expect.arrayContaining<Partial<ColumnMetadata>>([
+                        expect.objectContaining<Partial<ColumnMetadata>>({
+                            name: "key",
+                            dataType: "varchar(255)",
+                            isNullable: false,
+                            hasDefaultValue: false,
+                        }),
+                        expect.objectContaining({
+                            name: "owner",
+                            dataType: "varchar(255)",
+                            isNullable: false,
+                            hasDefaultValue: false,
+                        }),
+                        expect.objectContaining({
+                            name: "expiration",
+                            dataType: "bigint",
+                            isNullable: true,
+                            hasDefaultValue: false,
+                        }),
+                    ]),
+                }),
             );
-            expect(keyColumn).toBeDefined();
-            expect(keyColumn?.name).toBe("key");
-            expect(keyColumn?.dataType).toBe("varchar(255)");
-            expect(keyColumn?.isNullable).toBe(false);
-        });
-        test("Should define column owner column", async () => {
-            const adapter = new KyselyLockAdapter({
-                kysely,
-                shouldRemoveExpiredKeys: false,
-            });
-            await adapter.init();
-
-            const tables = await kysely.introspection.getTables();
-            const table = tables.find((table) => table.name === "lock");
-
-            const ownerColumn = table?.columns.find(
-                (column) => column.name === "owner",
-            );
-            expect(ownerColumn).toBeDefined();
-            expect(ownerColumn?.name).toBe("owner");
-            expect(ownerColumn?.dataType).toBe("varchar(255)");
-            expect(ownerColumn?.isNullable).toBe(false);
-
-            const expirationColumn = table?.columns.find(
-                (column) => column.name === "expiration",
-            );
-            expect(expirationColumn).toBeDefined();
-            expect(expirationColumn?.name).toBe("expiration");
-            expect(expirationColumn?.dataType).toBe("bigint");
-            expect(expirationColumn?.isNullable).toBe(true);
-        });
-        test("Should define column expiration column", async () => {
-            const adapter = new KyselyLockAdapter({
-                kysely,
-                shouldRemoveExpiredKeys: false,
-            });
-            await adapter.init();
-
-            const tables = await kysely.introspection.getTables();
-            const table = tables.find((table) => table.name === "lock");
-
-            const expirationColumn = table?.columns.find(
-                (column) => column.name === "expiration",
-            );
-            expect(expirationColumn).toBeDefined();
-            expect(expirationColumn?.name).toBe("expiration");
-            expect(expirationColumn?.dataType).toBe("bigint");
-            expect(expirationColumn?.isNullable).toBe(true);
         });
         test("Should not throw error when called multiple times", async () => {
             const adapter = new KyselyLockAdapter({
@@ -156,9 +123,32 @@ describe("sqlite class: KyselyLockAdapter", () => {
 
             await expect(promise).resolves.toBeUndefined();
         });
+        test("Should call not setInterval when shouldRemoveExpiredKeys is false", async () => {
+            const intervalFn = vi.spyOn(globalThis, "setInterval");
+
+            const adapter = new KyselyLockAdapter({
+                kysely,
+                shouldRemoveExpiredKeys: false,
+            });
+            await adapter.init();
+
+            expect(intervalFn).not.toHaveBeenCalledTimes(1);
+        });
+        test("Should call setInterval when shouldRemoveExpiredKeys is true", async () => {
+            const intervalFn = vi.spyOn(globalThis, "setInterval");
+
+            const adapter = new KyselyLockAdapter({
+                kysely,
+                shouldRemoveExpiredKeys: true,
+            });
+            await adapter.init();
+
+            expect(intervalFn).toHaveBeenCalledTimes(1);
+            await adapter.deInit();
+        });
     });
     describe("method: deInit", () => {
-        test("Should remove table", async () => {
+        test("Should remove lock table", async () => {
             const adapter = new KyselyLockAdapter({
                 kysely,
                 shouldRemoveExpiredKeys: false,
@@ -167,9 +157,12 @@ describe("sqlite class: KyselyLockAdapter", () => {
             await adapter.deInit();
 
             const tables = await kysely.introspection.getTables();
-            const table = tables.find((table) => table.name === "lock");
 
-            expect(table).toBeUndefined();
+            expect(tables).not.toContainEqual(
+                expect.objectContaining<Partial<TableMetadata>>({
+                    name: "lock",
+                }),
+            );
         });
         test("Should not throw error when called multiple times", async () => {
             const adapter = new KyselyLockAdapter({
@@ -192,6 +185,32 @@ describe("sqlite class: KyselyLockAdapter", () => {
             const promise = adapter.deInit();
 
             await expect(promise).resolves.toBeUndefined();
+        });
+        test("Should call not clearInterval when shouldRemoveExpiredKeys is false", async () => {
+            const intervalFn = vi.spyOn(globalThis, "clearInterval");
+
+            const adapter = new KyselyLockAdapter({
+                kysely,
+                shouldRemoveExpiredKeys: false,
+            });
+            await adapter.init();
+            await adapter.deInit();
+
+            expect(intervalFn).not.toHaveBeenCalledTimes(1);
+        });
+        test("Should call clearInterval when shouldRemoveExpiredKeys is true", async () => {
+            vi.useFakeTimers();
+            const intervalFn = vi.spyOn(globalThis, "clearInterval");
+
+            const adapter = new KyselyLockAdapter({
+                kysely,
+                shouldRemoveExpiredKeys: true,
+            });
+            await adapter.init();
+            await adapter.deInit();
+
+            expect(intervalFn).toHaveBeenCalledTimes(1);
+            await adapter.deInit();
         });
     });
 });

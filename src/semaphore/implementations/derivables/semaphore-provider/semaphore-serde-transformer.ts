@@ -117,7 +117,7 @@ export class SemaphoreSerdeTransformer
     }
 
     deserialize(serializedValue: ISerializedSemaphore): Semaphore {
-        const { key, slotId, limit, expirationInMs } = serializedValue;
+        const { key, slotId, limit, ttlInMs } = serializedValue;
         const keyObj = this.namespace._getInternal().create(key);
         return new Semaphore({
             slotId,
@@ -128,10 +128,7 @@ export class SemaphoreSerdeTransformer
             key: keyObj,
             limit,
             serdeTransformerName: this.serdeTransformerName,
-            ttl:
-                expirationInMs !== null
-                    ? TimeSpan.fromMilliseconds(expirationInMs)
-                    : null,
+            ttl: ttlInMs === null ? null : TimeSpan.fromMilliseconds(ttlInMs),
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,

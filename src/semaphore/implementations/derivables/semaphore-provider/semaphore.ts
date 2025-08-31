@@ -41,7 +41,7 @@ export type ISerializedSemaphore = {
     key: string;
     slotId: string;
     limit: number;
-    expirationInMs: number | null;
+    ttlInMs: number | null;
 };
 
 /**
@@ -79,8 +79,7 @@ export class Semaphore implements ISemaphore {
             key: deserializedValue.key.resolved,
             limit: deserializedValue.limit_,
             slotId: deserializedValue.slotId,
-            expirationInMs:
-                deserializedValue.ttl?.toEndDate().getTime() ?? null,
+            ttlInMs: deserializedValue.ttl?.toMilliseconds() ?? null,
         };
     }
 
@@ -363,7 +362,7 @@ export class Semaphore implements ISemaphore {
     forceReleaseAll(): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(async () => {
-                const hasReleasedAll = await this.adapter.forceReleaseAll(
+                const hasReleased = await this.adapter.forceReleaseAll(
                     this.key.namespaced,
                 );
 
@@ -371,11 +370,11 @@ export class Semaphore implements ISemaphore {
                     .dispatch(SEMAPHORE_EVENTS.ALL_FORCE_RELEASED, {
                         key: this.key.resolved,
                         semaphore: this,
-                        isFound: hasReleasedAll,
+                        hasReleased,
                     })
                     .defer();
 
-                return hasReleasedAll;
+                return hasReleased;
             });
         });
     }
@@ -422,6 +421,14 @@ export class Semaphore implements ISemaphore {
                 );
             }
         });
+    }
+
+    getId(): string {
+        return this.slotId;
+    }
+
+    getTtl(): TimeSpan | null {
+        return this.ttl;
     }
 
     getState(): LazyPromise<ISemaphoreState | null> {
