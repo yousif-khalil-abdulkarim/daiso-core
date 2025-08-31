@@ -3,10 +3,9 @@
  */
 
 import type { IDeinitizable, TimeSpan } from "@/utilities/_module-exports.js";
-import {
-    LOCK_REFRESH_RESULT,
-    type ILockAdapter,
-    type LockRefreshResult,
+import type {
+    ILockAdapter,
+    ILockAdapterState,
 } from "@/lock/contracts/_module-exports.js";
 
 /**
@@ -19,6 +18,7 @@ export type MemoryLockData =
           owner: string;
           hasExpiration: true;
           timeoutId: string | number | NodeJS.Timeout;
+          expiration: Date;
       }
     | {
           owner: string;
@@ -64,17 +64,17 @@ export class MemoryLockAdapter implements ILockAdapter, IDeinitizable {
     // eslint-disable-next-line @typescript-eslint/require-await
     async acquire(
         key: string,
-        owner: string,
+        lockId: string,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
         let lock = this.map.get(key);
         if (lock !== undefined) {
-            return false;
+            return lock.owner === lockId;
         }
 
         if (ttl === null) {
             lock = {
-                owner,
+                owner: lockId,
                 hasExpiration: false,
             };
             this.map.set(key, lock);
@@ -83,9 +83,10 @@ export class MemoryLockAdapter implements ILockAdapter, IDeinitizable {
                 this.map.delete(key);
             }, ttl.toMilliseconds());
             lock = {
-                owner,
+                owner: lockId,
                 hasExpiration: true,
                 timeoutId,
+                expiration: ttl.toEndDate(),
             };
             this.map.set(key, lock);
         }
@@ -94,12 +95,12 @@ export class MemoryLockAdapter implements ILockAdapter, IDeinitizable {
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
-    async release(key: string, owner: string): Promise<boolean> {
+    async release(key: string, lockId: string): Promise<boolean> {
         const lock = this.map.get(key);
         if (lock === undefined) {
             return false;
         }
-        if (lock.owner !== owner) {
+        if (lock.owner !== lockId) {
             return false;
         }
 
@@ -131,18 +132,18 @@ export class MemoryLockAdapter implements ILockAdapter, IDeinitizable {
     // eslint-disable-next-line @typescript-eslint/require-await
     async refresh(
         key: string,
-        owner: string,
+        lockId: string,
         ttl: TimeSpan,
-    ): Promise<LockRefreshResult> {
+    ): Promise<boolean> {
         const lock = this.map.get(key);
         if (lock === undefined) {
-            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+            return false;
         }
-        if (lock.owner !== owner) {
-            return LOCK_REFRESH_RESULT.UNOWNED_REFRESH;
+        if (lock.owner !== lockId) {
+            return false;
         }
         if (!lock.hasExpiration) {
-            return LOCK_REFRESH_RESULT.UNEXPIRABLE_KEY;
+            return false;
         }
 
         clearTimeout(lock.timeoutId);
@@ -154,6 +155,27 @@ export class MemoryLockAdapter implements ILockAdapter, IDeinitizable {
             timeoutId,
         });
 
-        return LOCK_REFRESH_RESULT.REFRESHED;
+        return true;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/require-await
+    async getState(key: string): Promise<ILockAdapterState | null> {
+        const lockData = this.map.get(key);
+        if (lockData === undefined) {
+            return null;
+        }
+        if (!lockData.hasExpiration) {
+            return {
+                owner: lockData.owner,
+                expiration: null,
+            };
+        }
+        if (lockData.expiration <= new Date()) {
+            return null;
+        }
+        return {
+            owner: lockData.owner,
+            expiration: lockData.expiration,
+        };
     }
 }

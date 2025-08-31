@@ -24,7 +24,7 @@ describe("class: MemoryLockAdapter", () => {
         describe,
     });
     describe("method: deInit", () => {
-        test("Should remove table", async () => {
+        test("Should clear map", async () => {
             await adapter.acquire("a", "1", null);
             await adapter.acquire("a", "2", TimeSpan.fromMilliseconds(100));
             await adapter.acquire("b", "1", null);
