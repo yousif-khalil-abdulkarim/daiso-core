@@ -1,14 +1,16 @@
 /**
  * @module Semaphore
  */
-import type { IDatabaseSemaphoreAdapter } from "@/semaphore/contracts/_module-exports.js";
-import type { ISemaphoreAdapter } from "@/semaphore/contracts/_module-exports.js";
+import type {
+    IDatabaseSemaphoreAdapter,
+    SemaphoreAdapterVariants,
+} from "@/semaphore/contracts/_module-exports.js";
 
 /**
  * @internal
  */
 export function isDatabaseSemaphoreAdapter(
-    adapter: ISemaphoreAdapter | IDatabaseSemaphoreAdapter,
+    adapter: SemaphoreAdapterVariants,
 ): adapter is IDatabaseSemaphoreAdapter {
     const adapter_ = adapter as Partial<
         Record<string, (...args_: unknown[]) => unknown>

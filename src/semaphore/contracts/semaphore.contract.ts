@@ -23,9 +23,8 @@ import type { ISemaphoreState } from "@/semaphore/contracts/semaphore-state.cont
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Contracts
  */
-export type SemaphoreAquireBlockingSettings = {
-    time?: TimeSpan;
-    interval?: TimeSpan;
+export type ISemaphoreGetState = {
+    getState(): LazyPromise<ISemaphoreState | null>;
 };
 
 /**
@@ -33,8 +32,9 @@ export type SemaphoreAquireBlockingSettings = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Contracts
  */
-export type ISemaphoreGetState = {
-    getState(): LazyPromise<ISemaphoreState | null>;
+export type SemaphoreAquireBlockingSettings = {
+    time?: TimeSpan;
+    interval?: TimeSpan;
 };
 
 /**

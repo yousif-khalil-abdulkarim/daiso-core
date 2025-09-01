@@ -6,3 +6,4 @@ export * from "@/semaphore/contracts/semaphore-state.contract.js";
 export * from "@/semaphore/contracts/semaphore.contract.js";
 export * from "@/semaphore/contracts/semaphore.errors.js";
 export * from "@/semaphore/contracts/semaphore.events.js";
+export * from "@/semaphore/contracts/types.js";

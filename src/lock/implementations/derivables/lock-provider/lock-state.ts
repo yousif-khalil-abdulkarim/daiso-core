@@ -2,8 +2,10 @@
  * @module Lock
  */
 
-import type { ILockAdapterState } from "@/lock/contracts/lock-adapter.contract.js";
-import type { ILockState } from "@/lock/contracts/lock-state.contract.js";
+import type {
+    ILockState,
+    ILockAdapterState,
+} from "@/lock/contracts/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**

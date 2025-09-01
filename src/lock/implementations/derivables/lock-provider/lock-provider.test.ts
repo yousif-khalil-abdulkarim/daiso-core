@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from "vitest";
 import {
     KyselyLockAdapter,
     MemoryLockAdapter,
+    type MemoryLockData,
 } from "@/lock/implementations/adapters/_module-exports.js";
 import { LockProvider } from "@/lock/implementations/derivables/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
@@ -10,7 +11,11 @@ import { lockProviderTestSuite } from "@/lock/implementations/test-utilities/_mo
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 import { Namespace, TimeSpan } from "@/utilities/_module-exports.js";
-import type { ILock } from "@/lock/contracts/_module-exports.js";
+import type {
+    ILock,
+    ILockAdapter,
+    ILockAdapterState,
+} from "@/lock/contracts/_module-exports.js";
 import { Kysely, SqliteDialect } from "kysely";
 import Sqlite from "better-sqlite3";
 
@@ -73,6 +78,7 @@ describe("class: LockProvider", () => {
             const lock2 = lockProvider2.create(key, {
                 ttl: ttl2,
             });
+            await lock2.acquire();
             const deserializedLock2 = serde.deserialize<ILock>(
                 serde.serialize(lock2),
             );
@@ -125,12 +131,65 @@ describe("class: LockProvider", () => {
             const lock2 = lockProvider2.create(key, {
                 ttl: ttl2,
             });
+            await lock1.acquire();
             const deserializedLock2 = serde.deserialize<ILock>(
                 serde.serialize(lock2),
             );
             const state2 = await deserializedLock2.getState();
 
             expect(state1?.getOwner()).not.toBe(state2?.getOwner());
+        });
+        test("Should differentiate between serdeTransformerNames", async () => {
+            const key = "a";
+            const namespace = new Namespace("lock");
+
+            const store1 = new Map<string, MemoryLockData>();
+            const lockProvider1 = new LockProvider({
+                serde,
+                eventBus: new EventBus({
+                    namespace: namespace.appendRoot("memory"),
+                    adapter: new MemoryEventBusAdapter(),
+                }),
+                adapter: new MemoryLockAdapter(store1),
+                // serdeTransformerName: "adapter1",
+                namespace,
+            });
+            const ttl1 = null;
+            const lock1 = lockProvider1.create(key, {
+                ttl: ttl1,
+            });
+            const deserializedLock1 = serde.deserialize<ILock>(
+                serde.serialize(lock1),
+            );
+            await deserializedLock1.acquire();
+
+            const store2 = new Map<string, MemoryLockData>();
+            const lockProvider2 = new LockProvider({
+                serde,
+                eventBus: new EventBus({
+                    namespace: namespace.appendRoot("sqlite"),
+                    adapter: new MemoryEventBusAdapter(),
+                }),
+                adapter: new MemoryLockAdapter(store2),
+                // serdeTransformerName: "adapter2",
+                namespace,
+            });
+            const ttl2 = TimeSpan.fromMinutes(4);
+            const lock2 = lockProvider2.create(key, {
+                ttl: ttl2,
+            });
+            const deserializedLock2 = serde.deserialize<ILock>(
+                serde.serialize(lock1),
+            );
+            await deserializedLock2.acquire();
+
+            await deserializedLock1.release();
+
+            console.log("getState1:", await deserializedLock1.getState());
+            console.log("store1:", store1);
+            
+            console.log("getState2:", await deserializedLock2.getState());
+            console.log("store2:", store2);
         });
     });
 });

@@ -5,6 +5,7 @@ import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
     ISemaphoreProviderFactory,
     ISemaphoreProvider,
+    SemaphoreAdapterVariants,
 } from "@/semaphore/contracts/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
@@ -19,7 +20,6 @@ import type {
 } from "@/utilities/_module-exports.js";
 import {
     SemaphoreProvider,
-    type SemaphoreAdapter,
     type SemaphoreProviderSettingsBase,
 } from "@/semaphore/implementations/derivables/semaphore-provider/_module.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
@@ -30,7 +30,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
  * @group Derivables
  */
 export type SemaphoreAdapters<TAdapters extends string> = Partial<
-    Record<TAdapters, SemaphoreAdapter>
+    Record<TAdapters, SemaphoreAdapterVariants>
 >;
 
 /**

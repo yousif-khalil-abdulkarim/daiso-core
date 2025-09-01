@@ -2,8 +2,10 @@
  * @module Semaphore
  */
 
-import type { ISemaphoreAdapterState } from "@/semaphore/contracts/semaphore-adapter.contract.js";
-import type { ISemaphoreState } from "@/semaphore/contracts/semaphore-state.contract.js";
+import type {
+    ISemaphoreAdapterState,
+    ISemaphoreState,
+} from "@/semaphore/contracts/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 
 /**

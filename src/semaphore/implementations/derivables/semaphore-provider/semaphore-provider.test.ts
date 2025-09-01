@@ -10,7 +10,7 @@ import { semaphoreProviderTestSuite } from "@/semaphore/implementations/test-uti
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
 import { Namespace, TimeSpan } from "@/utilities/_module-exports.js";
-import type { ISemaphore } from "@/semaphore/contracts/semaphore.contract.js";
+import type { ISemaphore } from "@/semaphore/contracts/_module-exports.js";
 import { Kysely, SqliteDialect } from "kysely";
 import Sqlite from "better-sqlite3";
 

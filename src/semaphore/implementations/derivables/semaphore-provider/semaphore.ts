@@ -7,6 +7,7 @@ import { type IEventDispatcher } from "@/event-bus/contracts/_module-exports.js"
 import type {
     IDatabaseSemaphoreAdapter,
     ISemaphoreAdapter,
+    SemaphoreAdapterVariants,
     SemaphoreEventMap,
 } from "@/semaphore/contracts/_module-exports.js";
 import {
@@ -18,7 +19,7 @@ import {
     SemaphoreError,
     SEMAPHORE_EVENTS,
 } from "@/semaphore/contracts/_module-exports.js";
-import type { ISemaphoreState } from "@/semaphore/contracts/semaphore-state.contract.js";
+import type { ISemaphoreState } from "@/semaphore/contracts/_module-exports.js";
 import type {
     InvokableFn,
     Namespace,
@@ -55,7 +56,7 @@ export type SemaphoreSettings = {
     ) => LazyPromise<TValue>;
     serdeTransformerName: string;
     adapter: ISemaphoreAdapter;
-    originalAdapter: ISemaphoreAdapter | IDatabaseSemaphoreAdapter;
+    originalAdapter: SemaphoreAdapterVariants;
     eventDispatcher: IEventDispatcher<SemaphoreEventMap>;
     key: Key;
     ttl: TimeSpan | null;
@@ -77,14 +78,14 @@ export class Semaphore implements ISemaphore {
     ): ISerializedSemaphore {
         return {
             key: deserializedValue.key.resolved,
-            limit: deserializedValue.limit_,
+            limit: deserializedValue.limit,
             slotId: deserializedValue.slotId,
             ttlInMs: deserializedValue.ttl?.toMilliseconds() ?? null,
         };
     }
 
     private readonly slotId: string;
-    private readonly limit_: number;
+    private readonly limit: number;
     private readonly createLazyPromise: <TValue = void>(
         asyncFn: () => Promise<TValue>,
     ) => LazyPromise<TValue>;
@@ -119,7 +120,7 @@ export class Semaphore implements ISemaphore {
         } = settings;
         this.namespace = namespace;
         this.slotId = slotId;
-        this.limit_ = limit;
+        this.limit = limit;
         this.serdeTransformerName = serdeTransformerName;
         this.createLazyPromise = createLazyPromise;
         this.adapter = adapter;
@@ -154,7 +155,7 @@ export class Semaphore implements ISemaphore {
                     if (!hasAquired) {
                         return resultFailure(
                             new LimitReachedSemaphoreError(
-                                `Key "${this.key.resolved}" has reached the limit ${String(this.limit_)}`,
+                                `Key "${this.key.resolved}" has reached the limit ${String(this.limit)}`,
                             ),
                         );
                     }
@@ -189,7 +190,7 @@ export class Semaphore implements ISemaphore {
                     if (!hasAquired) {
                         return resultFailure(
                             new LimitReachedSemaphoreError(
-                                `Key "${this.key.resolved}" has reached the limit ${String(this.limit_)}`,
+                                `Key "${this.key.resolved}" has reached the limit ${String(this.limit)}`,
                             ),
                         );
                     }
@@ -245,7 +246,7 @@ export class Semaphore implements ISemaphore {
                 const hasAquired = await this.adapter.acquire({
                     key: this.key.namespaced,
                     slotId: this.slotId,
-                    limit: this.limit_,
+                    limit: this.limit,
                     ttl: this.ttl,
                 });
 

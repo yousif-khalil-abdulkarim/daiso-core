@@ -2,8 +2,6 @@
  * @module Semaphore
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-
 import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ISemaphoreGetState } from "@/semaphore/contracts/semaphore.contract.js";
 
