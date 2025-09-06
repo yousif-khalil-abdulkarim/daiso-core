@@ -36,6 +36,12 @@
         "Multi semaphore",
         "Database multi semaphore",
         "Distributed multi semaphore",
+        "Shared lock",
+        "Database shared lock",
+        "Distributed shared lock",
+        "Reader writer lock",
+        "Database reader writer lock",
+        "Distributed reader writer lock",
         "Serialization",
         "Serializer",
         "Deserialization",
@@ -168,6 +174,26 @@
         "./serde/test-utilities": {
             "types": "./dist/serde/implementations/test-utilities/_module-exports.d.ts",
             "import": "./dist/serde/implementations/test-utilities/_module-exports.js"
+        },
+        "./shared-lock": {
+            "types": "./dist/shared-lock/implementations/derivables/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/derivables/_module-exports.js"
+        },
+        "./shared-lock/contracts": {
+            "types": "./dist/shared-lock/contracts/_module-exports.d.ts",
+            "import": "./dist/shared-lock/contracts/_module-exports.js"
+        },
+        "./shared-lock/adapters": {
+            "types": "./dist/shared-lock/implementations/adapters/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/adapters/_module-exports.js"
+        },
+        "./shared-lock/test-utilities": {
+            "types": "./dist/shared-lock/implementations/test-utilities/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/test-utilities/_module-exports.js"
+        },
+        "./shared-lock/helpers": {
+            "types": "./dist/shared-lock/implementations/helpers/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/helpers/_module-exports.js"
         },
         "./utilities": {
             "types": "./dist/utilities/_module-exports.d.ts",

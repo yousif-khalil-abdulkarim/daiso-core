@@ -48,8 +48,10 @@ export type LockProviderTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createLockProvider: () => Promisable<ILockProvider>;
-    serde?: ISerde;
+    createLockProvider: () => Promisable<{
+        lockProvider: ILockProvider;
+        serde: ISerde;
+    }>;
 
     /**
      * @default true
@@ -107,14 +109,17 @@ export function lockProviderTestSuite(
         createLockProvider,
         describe,
         beforeEach,
-        serde = new Serde(new NoOpSerdeAdapter()),
         includeEventTests = true,
         includeSerdeTests = true,
     } = settings;
 
     let lockProvider: ILockProvider;
+    let serde: ISerde;
     beforeEach(async () => {
-        lockProvider = await createLockProvider();
+        const { lockProvider: lockProvider_, serde: serde_ } =
+            await createLockProvider();
+        lockProvider = lockProvider_;
+        serde = serde_;
     });
     async function delay(time: TimeSpan): Promise<void> {
         await LazyPromise.delay(time.addMilliseconds(10));
