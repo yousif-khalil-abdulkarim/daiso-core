@@ -2,7 +2,7 @@
  * @module Serde
  */
 
-import { type TestAPI, type ExpectStatic, beforeEach } from "vitest";
+import { type TestAPI, type ExpectStatic, beforeEach, vi } from "vitest";
 import type {
     IFlexibleSerde,
     ISerdeTransformer,
@@ -427,5 +427,109 @@ export function flexibleSerdeTestSuite(
             },
         };
         flexibleSerde.registerCustom(transformer);
+
+        const value = new User("a", 20);
+        const deserializedValue = flexibleSerde.deserialize<User>(
+            flexibleSerde.serialize(value),
+        );
+        expect(deserializedValue).toBeInstanceOf(User);
+        expect(deserializedValue.age).toBe(value.age);
+        expect(deserializedValue.name).toBe(value.name);
+    });
+    test("Should call on the first ISerdeTransformer when same name is used", () => {
+        const transformer1: ISerdeTransformer<User, SerializedUser> = {
+            name: User.name,
+            isApplicable: (value: unknown): value is User => {
+                return (
+                    value instanceof User &&
+                    value.constructor.name === User.name
+                );
+            },
+            deserialize: (serializedValue: SerializedUser): User => {
+                return User.deserialize(serializedValue);
+            },
+            serialize: (deserializedValue: User): SerializedUser => {
+                return deserializedValue.serialize();
+            },
+        };
+
+        const isApplicable = vi.spyOn(transformer1, "isApplicable");
+        const serialize = vi.spyOn(transformer1, "serialize");
+        const deserialize = vi.spyOn(transformer1, "deserialize");
+
+        flexibleSerde.registerCustom(transformer1);
+
+        const transformer2: ISerdeTransformer<User, SerializedUser> = {
+            name: User.name,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            isApplicable: vi.fn((value: unknown): value is User => {
+                return (
+                    value instanceof User &&
+                    value.constructor.name === User.name
+                );
+            }) as any,
+            deserialize: vi.fn((serializedValue: SerializedUser): User => {
+                return User.deserialize(serializedValue);
+            }),
+            serialize: vi.fn((deserializedValue: User): SerializedUser => {
+                return deserializedValue.serialize();
+            }),
+        };
+        flexibleSerde.registerCustom(transformer2);
+
+        const value = new User("a", 20);
+        flexibleSerde.deserialize<User>(flexibleSerde.serialize(value));
+
+        expect(isApplicable).toHaveBeenCalled();
+        expect(serialize).toHaveBeenCalled();
+        expect(deserialize).toHaveBeenCalled();
+    });
+    test("Should not call on the second ISerdeTransformer when same name is used", () => {
+        const transformer1: ISerdeTransformer<User, SerializedUser> = {
+            name: User.name,
+            isApplicable: (value: unknown): value is User => {
+                return (
+                    value instanceof User &&
+                    value.constructor.name === User.name
+                );
+            },
+            deserialize: (serializedValue: SerializedUser): User => {
+                return User.deserialize(serializedValue);
+            },
+            serialize: (deserializedValue: User): SerializedUser => {
+                return deserializedValue.serialize();
+            },
+        };
+        flexibleSerde.registerCustom(transformer1);
+
+        const transformer2: ISerdeTransformer<User, SerializedUser> = {
+            name: User.name,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            isApplicable: vi.fn((value: unknown): value is User => {
+                return (
+                    value instanceof User &&
+                    value.constructor.name === User.name
+                );
+            }) as any,
+            deserialize: vi.fn((serializedValue: SerializedUser): User => {
+                return User.deserialize(serializedValue);
+            }),
+            serialize: vi.fn((deserializedValue: User): SerializedUser => {
+                return deserializedValue.serialize();
+            }),
+        };
+
+        const isApplicable = vi.spyOn(transformer2, "isApplicable");
+        const serialize = vi.spyOn(transformer2, "serialize");
+        const deserialize = vi.spyOn(transformer2, "deserialize");
+
+        flexibleSerde.registerCustom(transformer2);
+
+        const value = new User("a", 20);
+        flexibleSerde.deserialize<User>(flexibleSerde.serialize(value));
+
+        expect(isApplicable).not.toHaveBeenCalled();
+        expect(serialize).not.toHaveBeenCalled();
+        expect(deserialize).not.toHaveBeenCalled();
     });
 }

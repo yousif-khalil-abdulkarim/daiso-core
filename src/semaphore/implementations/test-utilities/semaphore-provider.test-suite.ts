@@ -33,8 +33,6 @@ import {
 } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
-import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
@@ -47,8 +45,10 @@ export type SemaphoreProviderTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createSemaphoreProvider: () => Promisable<ISemaphoreProvider>;
-    serde?: ISerde;
+    createSemaphoreProvider: () => Promisable<{
+        semaphoreProvider: ISemaphoreProvider;
+        serde: ISerde;
+    }>;
 
     /**
      * @default true
@@ -79,14 +79,14 @@ export type SemaphoreProviderTestSuiteSettings = {
  * import type { ISemaphoreData } from "@daiso-tech/core/semaphore/contracts";
  *
  * describe("class: SemaphoreProvider", () => {
- *     const serde = new Serde(new SuperJsonSerdeAdapter());
- *     let map: Map<string, ISemaphoreData>;
  *     semaphoreProviderTestSuite({
  *         createSemaphoreProvider: () => {
- *             return new SemaphoreProvider({
+ *             const serde = new Serde(new SuperJsonSerdeAdapter());
+ *             const semaphoreProvider = new SemaphoreProvider({
  *                 serde,
  *                 adapter: new MemorySemaphoreAdapter(),
  *             });
+ *             return { semaphoreProvider, serde };
  *         },
  *         beforeEach,
  *         describe,
@@ -106,11 +106,11 @@ export function semaphoreProviderTestSuite(
         createSemaphoreProvider,
         describe,
         beforeEach,
-        serde = new Serde(new NoOpSerdeAdapter()),
         includeEventTests = true,
         includeSerdeTests = true,
     } = settings;
     let semaphoreProvider: ISemaphoreProvider;
+    let serde: ISerde;
 
     async function delay(time: TimeSpan): Promise<void> {
         await LazyPromise.delay(time.addMilliseconds(10));
@@ -119,7 +119,10 @@ export function semaphoreProviderTestSuite(
     const RETURN_VALUE = "RETURN_VALUE";
     describe("Reusable tests:", () => {
         beforeEach(async () => {
-            semaphoreProvider = await createSemaphoreProvider();
+            const { semaphoreProvider: semaphoreProvider_, serde: serde_ } =
+                await createSemaphoreProvider();
+            semaphoreProvider = semaphoreProvider_;
+            serde = serde_;
         });
         describe("Api tests:", () => {
             describe("method: run", () => {

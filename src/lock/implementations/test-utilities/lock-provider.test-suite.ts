@@ -34,8 +34,6 @@ import {
 } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
-import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 
 /**
@@ -48,8 +46,10 @@ export type LockProviderTestSuiteSettings = {
     test: TestAPI;
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
-    createLockProvider: () => Promisable<ILockProvider>;
-    serde?: ISerde;
+    createLockProvider: () => Promisable<{
+        lockProvider: ILockProvider;
+        serde: ISerde;
+    }>;
 
     /**
      * @default true
@@ -80,14 +80,14 @@ export type LockProviderTestSuiteSettings = {
  * import type { ILockData } from "@daiso-tech/core/lock/contracts";
  *
  * describe("class: LockProvider", () => {
- *     const serde = new Serde(new SuperJsonSerdeAdapter());
- *     let map: Map<string, ILockData>;
  *     lockProviderTestSuite({
  *         createLockProvider: () => {
- *             return new LockProvider({
+ *             const serde = new Serde(new SuperJsonSerdeAdapter());
+ *             const lockProvider = new LockProvider({
  *                 serde,
  *                 adapter: new MemoryLockAdapter(),
  *             });
+ *             return { lockProvider, serde };
  *         },
  *         beforeEach,
  *         describe,
@@ -107,18 +107,24 @@ export function lockProviderTestSuite(
         createLockProvider,
         describe,
         beforeEach,
-        serde = new Serde(new NoOpSerdeAdapter()),
         includeEventTests = true,
         includeSerdeTests = true,
     } = settings;
 
     let lockProvider: ILockProvider;
+    let serde: ISerde;
+
     beforeEach(async () => {
-        lockProvider = await createLockProvider();
+        const { lockProvider: lockProvider_, serde: serde_ } =
+            await createLockProvider();
+        lockProvider = lockProvider_;
+        serde = serde_;
     });
+
     async function delay(time: TimeSpan): Promise<void> {
         await LazyPromise.delay(time.addMilliseconds(10));
     }
+
     const RETURN_VALUE = "RETURN_VALUE";
     describe("Reusable tests:", () => {
         describe("Api tests:", () => {
@@ -4452,8 +4458,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.isExpired()).toBe(
-                        deserializedState?.isExpired(),
+                    expect(deserializedState?.isExpired()).toBe(
+                        state?.isExpired(),
                     );
                 });
                 test("Should preserve isExpired when key is unexpireable", async () => {
@@ -4470,8 +4476,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.isExpired()).toBe(
-                        deserializedState?.isExpired(),
+                    expect(deserializedState?.isExpired()).toBe(
+                        state?.isExpired(),
                     );
                 });
                 test("Should preserve isExpired when key is expired", async () => {
@@ -4489,8 +4495,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.isExpired()).toBe(
-                        deserializedState?.isExpired(),
+                    expect(deserializedState?.isExpired()).toBe(
+                        state?.isExpired(),
                     );
                 });
                 test("Should preserve isExpired when key is unexpired", async () => {
@@ -4507,8 +4513,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.isExpired()).toBe(
-                        deserializedState?.isExpired(),
+                    expect(deserializedState?.isExpired()).toBe(
+                        state?.isExpired(),
                     );
                 });
                 test("Should preserve isAcquired when key does not exists", async () => {
@@ -4524,8 +4530,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.isAcquired()).toBe(
-                        deserializedState?.isAcquired(),
+                    expect(deserializedState?.isAcquired()).toBe(
+                        state?.isAcquired(),
                     );
                 });
                 test("Should preserve isAcquired when key is unexpireable", async () => {
@@ -4542,8 +4548,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.isAcquired()).toBe(
-                        deserializedState?.isAcquired(),
+                    expect(deserializedState?.isAcquired()).toBe(
+                        state?.isAcquired(),
                     );
                 });
                 test("Should preserve isAcquired when key is expired", async () => {
@@ -4561,8 +4567,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.isAcquired()).toBe(
-                        deserializedState?.isAcquired(),
+                    expect(deserializedState?.isAcquired()).toBe(
+                        state?.isAcquired(),
                     );
                 });
                 test("Should preserve isAcquired when key is unexpired", async () => {
@@ -4579,8 +4585,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.isAcquired()).toBe(
-                        deserializedState?.isAcquired(),
+                    expect(deserializedState?.isAcquired()).toBe(
+                        state?.isAcquired(),
                     );
                 });
                 test("Should preserve getRemainingTime when key does not exists", async () => {
@@ -4598,11 +4604,11 @@ export function lockProviderTestSuite(
 
                     const currentDate = new Date();
                     expect(
-                        state?.getRemainingTime()?.toEndDate(currentDate),
-                    ).toEqual(
                         deserializedState
                             ?.getRemainingTime()
                             ?.toEndDate(currentDate),
+                    ).toEqual(
+                        state?.getRemainingTime()?.toEndDate(currentDate),
                     );
                 });
                 test("Should preserve getRemainingTime when key is unexpireable", async () => {
@@ -4621,11 +4627,11 @@ export function lockProviderTestSuite(
 
                     const currentDate = new Date();
                     expect(
-                        state?.getRemainingTime()?.toEndDate(currentDate),
-                    ).toEqual(
                         deserializedState
                             ?.getRemainingTime()
                             ?.toEndDate(currentDate),
+                    ).toEqual(
+                        state?.getRemainingTime()?.toEndDate(currentDate),
                     );
                 });
                 test("Should preserve getRemainingTime when key is expired", async () => {
@@ -4645,11 +4651,11 @@ export function lockProviderTestSuite(
 
                     const currentDate = new Date();
                     expect(
-                        state?.getRemainingTime()?.toEndDate(currentDate),
-                    ).toEqual(
                         deserializedState
                             ?.getRemainingTime()
                             ?.toEndDate(currentDate),
+                    ).toEqual(
+                        state?.getRemainingTime()?.toEndDate(currentDate),
                     );
                 });
                 test("Should preserve getRemainingTime when key is unexpired", async () => {
@@ -4668,11 +4674,11 @@ export function lockProviderTestSuite(
 
                     const currentDate = new Date();
                     expect(
-                        state?.getRemainingTime()?.toEndDate(currentDate),
-                    ).toEqual(
                         deserializedState
                             ?.getRemainingTime()
                             ?.toEndDate(currentDate),
+                    ).toEqual(
+                        state?.getRemainingTime()?.toEndDate(currentDate),
                     );
                 });
                 test("Should preserve getOwner when key does not exists", async () => {
@@ -4688,8 +4694,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.getOwner()).toBe(
-                        deserializedState?.getOwner(),
+                    expect(deserializedState?.getOwner()).toBe(
+                        state?.getOwner(),
                     );
                 });
                 test("Should preserve getOwner", async () => {
@@ -4706,8 +4712,8 @@ export function lockProviderTestSuite(
                     const state = await lock.getState();
                     const deserializedState = await deserializedLock.getState();
 
-                    expect(state?.getOwner()).toBe(
-                        deserializedState?.getOwner(),
+                    expect(deserializedState?.getOwner()).toBe(
+                        state?.getOwner(),
                     );
                 });
             });

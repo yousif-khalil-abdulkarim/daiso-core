@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, test } from "vitest";
 import {
     KyselyLockAdapter,
     MemoryLockAdapter,
-    type MemoryLockData,
 } from "@/lock/implementations/adapters/_module-exports.js";
 import { LockProvider } from "@/lock/implementations/derivables/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
@@ -10,19 +9,15 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_mod
 import { lockProviderTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { Namespace, TimeSpan } from "@/utilities/_module-exports.js";
-import type {
-    ILock,
-    ILockAdapter,
-    ILockAdapterState,
-} from "@/lock/contracts/_module-exports.js";
+import { Namespace } from "@/utilities/_module-exports.js";
 import { Kysely, SqliteDialect } from "kysely";
 import Sqlite from "better-sqlite3";
+import type { ILock } from "@/lock/contracts/lock.contract.js";
 
 describe("class: LockProvider", () => {
-    const serde = new Serde(new SuperJsonSerdeAdapter());
     lockProviderTestSuite({
         createLockProvider: () => {
+            const serde = new Serde(new SuperJsonSerdeAdapter());
             const lockProvider = new LockProvider({
                 serde,
                 eventBus: new EventBus({
@@ -32,84 +27,72 @@ describe("class: LockProvider", () => {
                 adapter: new MemoryLockAdapter(),
                 namespace: new Namespace("lock"),
             });
-            return lockProvider;
+            return {
+                lockProvider,
+                serde,
+            };
         },
         beforeEach,
         describe,
         expect,
         test,
-        serde,
     });
     describe("Serde tests:", () => {
-        test("Should differentiate between namespaces", async () => {
+        test("Should differentiate between different namespaces", async () => {
+            const serde = new Serde(new SuperJsonSerdeAdapter());
             const key = "a";
+            const ttl = null;
 
-            const namespace1 = new Namespace("lock1");
             const lockProvider1 = new LockProvider({
-                serde,
-                eventBus: new EventBus({
-                    namespace: namespace1,
-                    adapter: new MemoryEventBusAdapter(),
-                }),
                 adapter: new MemoryLockAdapter(),
-                namespace: namespace1,
+                namespace: new Namespace("@lock-1"),
+                eventBus: new EventBus({
+                    adapter: new MemoryEventBusAdapter(),
+                    namespace: new Namespace("@event-bus/lock-1"),
+                }),
+                serde,
             });
-            const ttl1 = null;
-            const lock1 = lockProvider1.create(key, {
-                ttl: ttl1,
-            });
+            const lock1 = lockProvider1.create(key, { ttl });
             await lock1.acquire();
-            const deserializedLock1 = serde.deserialize<ILock>(
-                serde.serialize(lock1),
-            );
-            const state1 = await deserializedLock1.getState();
 
-            const namespace2 = new Namespace("lock2");
             const lockProvider2 = new LockProvider({
-                serde,
-                eventBus: new EventBus({
-                    namespace: namespace2,
-                    adapter: new MemoryEventBusAdapter(),
-                }),
                 adapter: new MemoryLockAdapter(),
-                namespace: namespace2,
+                namespace: new Namespace("@lock-2"),
+                eventBus: new EventBus({
+                    adapter: new MemoryEventBusAdapter(),
+                    namespace: new Namespace("@event-bus/lock-2"),
+                }),
+                serde,
             });
-            const ttl2 = TimeSpan.fromMinutes(4);
-            const lock2 = lockProvider2.create(key, {
-                ttl: ttl2,
-            });
-            await lock2.acquire();
+
+            const lock2 = lockProvider2.create(key, { ttl });
             const deserializedLock2 = serde.deserialize<ILock>(
                 serde.serialize(lock2),
             );
-            const state2 = await deserializedLock2.getState();
-
-            expect(state1?.getOwner()).not.toBe(state2?.getOwner());
+            const result = await deserializedLock2.acquire();
+            expect(result).toBe(true);
         });
-        test("Should differentiate between adapters", async () => {
+        test("Should differentiate between different adapters and the same namespace", async () => {
+            const serde = new Serde(new SuperJsonSerdeAdapter());
+            const lockNamespace = new Namespace("@lock");
+            const eventNamespace = new Namespace("@event-bus/lock");
             const key = "a";
-            const namespace = new Namespace("lock");
+            const ttl = null;
 
+            const adapter1 = new MemoryLockAdapter();
             const lockProvider1 = new LockProvider({
-                serde,
+                adapter: adapter1,
+                namespace: lockNamespace,
                 eventBus: new EventBus({
-                    namespace: namespace.appendRoot("memory"),
                     adapter: new MemoryEventBusAdapter(),
+                    namespace: eventNamespace,
                 }),
-                adapter: new MemoryLockAdapter(),
-                namespace,
+                serde,
             });
-            const ttl1 = null;
-            const lock1 = lockProvider1.create(key, {
-                ttl: ttl1,
-            });
+            const lock1 = lockProvider1.create(key, { ttl });
             await lock1.acquire();
-            const deserializedLock1 = serde.deserialize<ILock>(
-                serde.serialize(lock1),
-            );
-            const state1 = await deserializedLock1.getState();
 
-            const kyselyLockAdapter = new KyselyLockAdapter({
+            const adapter2 = new KyselyLockAdapter({
                 kysely: new Kysely({
                     dialect: new SqliteDialect({
                         database: new Sqlite(":memory:"),
@@ -117,79 +100,63 @@ describe("class: LockProvider", () => {
                 }),
                 shouldRemoveExpiredKeys: false,
             });
-            await kyselyLockAdapter.init();
+            await adapter2.init();
             const lockProvider2 = new LockProvider({
-                serde,
+                adapter: adapter2,
+                namespace: lockNamespace,
                 eventBus: new EventBus({
-                    namespace: namespace.appendRoot("sqlite"),
                     adapter: new MemoryEventBusAdapter(),
+                    namespace: eventNamespace,
                 }),
-                adapter: kyselyLockAdapter,
-                namespace,
+                serde,
             });
-            const ttl2 = TimeSpan.fromMinutes(4);
-            const lock2 = lockProvider2.create(key, {
-                ttl: ttl2,
-            });
-            await lock1.acquire();
-            const deserializedLock2 = serde.deserialize<ILock>(
+
+            const lock2 = lockProvider2.create(key, { ttl });
+            const deserializeLock2 = serde.deserialize<ILock>(
                 serde.serialize(lock2),
             );
-            const state2 = await deserializedLock2.getState();
+            const result = await deserializeLock2.acquire();
 
-            expect(state1?.getOwner()).not.toBe(state2?.getOwner());
+            expect(result).toBe(true);
         });
-        test("Should differentiate between serdeTransformerNames", async () => {
+        test("Should differentiate between different serdeTransformerNames", async () => {
+            const serde = new Serde(new SuperJsonSerdeAdapter());
+            const lockNamespace = new Namespace("@lock");
+            const eventNamespace = new Namespace("@event-bus/lock");
             const key = "a";
-            const namespace = new Namespace("lock");
+            const ttl = null;
 
-            const store1 = new Map<string, MemoryLockData>();
             const lockProvider1 = new LockProvider({
-                serde,
+                adapter: new MemoryLockAdapter(),
+                namespace: lockNamespace,
                 eventBus: new EventBus({
-                    namespace: namespace.appendRoot("memory"),
                     adapter: new MemoryEventBusAdapter(),
+                    namespace: eventNamespace,
                 }),
-                adapter: new MemoryLockAdapter(store1),
-                // serdeTransformerName: "adapter1",
-                namespace,
+                serdeTransformerName: "adapter1",
+                serde,
             });
-            const ttl1 = null;
-            const lock1 = lockProvider1.create(key, {
-                ttl: ttl1,
-            });
-            const deserializedLock1 = serde.deserialize<ILock>(
-                serde.serialize(lock1),
-            );
-            await deserializedLock1.acquire();
+            const lock1 = lockProvider1.create(key, { ttl });
+            await lock1.acquire();
 
-            const store2 = new Map<string, MemoryLockData>();
             const lockProvider2 = new LockProvider({
-                serde,
+                adapter: new MemoryLockAdapter(),
+                namespace: lockNamespace,
                 eventBus: new EventBus({
-                    namespace: namespace.appendRoot("sqlite"),
                     adapter: new MemoryEventBusAdapter(),
+                    namespace: eventNamespace,
                 }),
-                adapter: new MemoryLockAdapter(store2),
-                // serdeTransformerName: "adapter2",
-                namespace,
+                serdeTransformerName: "adapter2",
+                serde,
             });
-            const ttl2 = TimeSpan.fromMinutes(4);
-            const lock2 = lockProvider2.create(key, {
-                ttl: ttl2,
-            });
-            const deserializedLock2 = serde.deserialize<ILock>(
-                serde.serialize(lock1),
+
+            const lock2 = lockProvider2.create(key, { ttl });
+            const deserializeLock2 = serde.deserialize<ILock>(
+                serde.serialize(lock2),
             );
-            await deserializedLock2.acquire();
+            const result = await deserializeLock2.acquire();
 
-            await deserializedLock1.release();
-
-            console.log("getState1:", await deserializedLock1.getState());
-            console.log("store1:", store1);
-            
-            console.log("getState2:", await deserializedLock2.getState());
-            console.log("store2:", store2);
+            expect(result).toBe(true);
         });
     });
 });
