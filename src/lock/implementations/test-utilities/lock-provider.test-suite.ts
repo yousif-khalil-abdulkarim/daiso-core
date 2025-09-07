@@ -114,19 +114,18 @@ export function lockProviderTestSuite(
     let lockProvider: ILockProvider;
     let serde: ISerde;
 
-    beforeEach(async () => {
-        const { lockProvider: lockProvider_, serde: serde_ } =
-            await createLockProvider();
-        lockProvider = lockProvider_;
-        serde = serde_;
-    });
-
     async function delay(time: TimeSpan): Promise<void> {
         await LazyPromise.delay(time.addMilliseconds(10));
     }
 
     const RETURN_VALUE = "RETURN_VALUE";
     describe("Reusable tests:", () => {
+        beforeEach(async () => {
+            const { lockProvider: lockProvider_, serde: serde_ } =
+                await createLockProvider();
+            lockProvider = lockProvider_;
+            serde = serde_;
+        });
         describe("Api tests:", () => {
             describe("method: run", () => {
                 test("Should call acquire method", async () => {

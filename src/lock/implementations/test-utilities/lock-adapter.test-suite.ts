@@ -73,15 +73,15 @@ export function lockAdapterTestSuite(
 ): void {
     const { expect, test, createAdapter, describe, beforeEach } = settings;
     let adapter: ILockAdapter;
-    beforeEach(async () => {
-        adapter = await createAdapter();
-    });
 
     async function delay(time: TimeSpan): Promise<void> {
         await LazyPromise.delay(time.addMilliseconds(10));
     }
 
     describe("Reusable tests:", () => {
+        beforeEach(async () => {
+            adapter = await createAdapter();
+        });
         describe("method: acquire", () => {
             test("Should return true when key doesnt exists", async () => {
                 const key = "a";
