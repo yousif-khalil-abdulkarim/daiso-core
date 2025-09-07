@@ -10,25 +10,21 @@ import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisPubSubEventBusAdapter", () => {
-    let dispatcherClient: Redis;
-    let listenerClient: Redis;
+    let client: Redis;
     let startedContainer: StartedRedisContainer;
     beforeEach(async () => {
         startedContainer = await new RedisContainer().start();
-        dispatcherClient = new Redis(startedContainer.getConnectionUrl());
-        listenerClient = new Redis(startedContainer.getConnectionUrl());
+        client = new Redis(startedContainer.getConnectionUrl());
     }, timeout.toMilliseconds());
     afterEach(async () => {
-        await dispatcherClient.quit();
-        await listenerClient.quit();
+        await client.quit();
         await startedContainer.stop();
     }, timeout.toMilliseconds());
     const serde = new Serde(new SuperJsonSerdeAdapter());
     eventBusAdapterTestSuite({
         createAdapter: () =>
             new RedisPubSubEventBusAdapter({
-                dispatcherClient,
-                listenerClient,
+                client,
                 serde,
             }),
         test,
