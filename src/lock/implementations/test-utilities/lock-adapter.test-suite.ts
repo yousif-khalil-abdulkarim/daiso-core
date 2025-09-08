@@ -6,6 +6,7 @@ import {
     type SuiteAPI,
     type ExpectStatic,
     type beforeEach,
+    vi,
 } from "vitest";
 import {
     type ILockAdapter,
@@ -481,7 +482,7 @@ export function lockAdapterTestSuite(
 
                 expect(lockData).toBeNull();
             });
-            test("Should return ILockAdapterState when key exists", async () => {
+            test("Should return ILockAdapterState when key exists and is uenxpireable", async () => {
                 const key = "a";
                 const ttl = null;
                 const owner = "1";
@@ -492,6 +493,27 @@ export function lockAdapterTestSuite(
                 expect(lockData).toEqual({
                     owner,
                     expiration: ttl,
+                } satisfies ILockAdapterState);
+            });
+            test("Should return ILockAdapterState when key exists and is unexpired", async () => {
+                const key = "a";
+                const owner = "1";
+
+                const ttl = TimeSpan.fromMinutes(5);
+                let expiration: Date;
+                try {
+                    vi.useFakeTimers();
+                    expiration = ttl.toEndDate();
+                    await adapter.acquire(key, owner, ttl);
+                } finally {
+                    vi.useRealTimers();
+                }
+
+                const lockData = await adapter.getState(key);
+
+                expect(lockData).toEqual({
+                    owner,
+                    expiration,
                 } satisfies ILockAdapterState);
             });
         });

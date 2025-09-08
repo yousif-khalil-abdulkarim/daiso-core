@@ -14,8 +14,11 @@ import type {
     FailedReleaseLockEvent,
     ForceReleasedLockEvent,
     ILock,
+    ILockAcquiredState,
+    ILockExpiredState,
     ILockGetState,
     ILockProvider,
+    ILockUnavailableState,
     RefreshedLockEvent,
     ReleasedLockEvent,
     UnavailableLockEvent,
@@ -25,6 +28,7 @@ import {
     FailedReleaseLockError,
     LOCK_EVENTS,
     FailedRefreshLockError,
+    LOCK_STATE,
 } from "@/lock/contracts/_module-exports.js";
 import {
     RESULT,
@@ -2501,7 +2505,7 @@ export function lockProviderTestSuite(
                 });
             });
             describe("method: getState", () => {
-                test("Should return null when key doesnt exists", async () => {
+                test("Should return ILockExpiredState when key doesnt exists", async () => {
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
 
@@ -2511,9 +2515,11 @@ export function lockProviderTestSuite(
 
                     const result = await lock.getState();
 
-                    expect(result).toBeNull();
+                    expect(result).toEqual({
+                        type: LOCK_STATE.EXPIRED,
+                    } satisfies ILockExpiredState);
                 });
-                test("Should return null when key is expired", async () => {
+                test("Should return ILockExpiredState when key is expired", async () => {
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
 
@@ -2525,9 +2531,11 @@ export function lockProviderTestSuite(
 
                     const result = await lock.getState();
 
-                    expect(result).toBeNull();
+                    expect(result).toEqual({
+                        type: LOCK_STATE.EXPIRED,
+                    } satisfies ILockExpiredState);
                 });
-                test("Should return null when all slots are released with forceRelease method", async () => {
+                test("Should return ILockExpiredState when all key is released with forceRelease method", async () => {
                     const key = "a";
 
                     const ttl1 = null;
@@ -2546,9 +2554,11 @@ export function lockProviderTestSuite(
 
                     const result = await lock1.getState();
 
-                    expect(result).toBeNull();
+                    expect(result).toEqual({
+                        type: LOCK_STATE.EXPIRED,
+                    } satisfies ILockExpiredState);
                 });
-                test("Should return null when all slots are released with release method", async () => {
+                test("Should return ILockExpiredState when all key is released with release method", async () => {
                     const key = "a";
 
                     const ttl1 = null;
@@ -2568,150 +2578,57 @@ export function lockProviderTestSuite(
 
                     const result = await lock2.getState();
 
-                    expect(result).toBeNull();
+                    expect(result).toEqual({
+                        type: LOCK_STATE.EXPIRED,
+                    } satisfies ILockExpiredState);
                 });
-                describe("method: isExpired", () => {
-                    test("Should return false when slot is unexpireable", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
-
-                        const state = await lock.getState();
-                        const result = state?.isExpired();
-
-                        expect(result).toBe(false);
+                test("Should return ILockAcquiredState when key is unexpireable", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    const lock = lockProvider.create(key, {
+                        ttl,
                     });
-                    test("Should return false when slot is unexpired", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
+                    await lock.acquire();
 
-                        const state = await lock.getState();
-                        const result = state?.isExpired();
+                    const state = await lock.getState();
 
-                        expect(result).toBe(false);
-                    });
-                    test("Should return true when slot is expired", async () => {
-                        const key = "a";
-
-                        const ttl1 = null;
-                        const lock1 = lockProvider.create(key, {
-                            ttl: ttl1,
-                        });
-                        await lock1.acquire();
-
-                        const ttl2 = TimeSpan.fromMilliseconds(50);
-                        const lock2 = lockProvider.create(key, {
-                            ttl: ttl2,
-                        });
-                        await lock2.acquire();
-                        await delay(ttl2);
-
-                        const state = await lock2.getState();
-                        const result = state?.isExpired();
-
-                        expect(result).toBe(true);
-                    });
+                    expect(state).toEqual({
+                        type: LOCK_STATE.ACQUIRED,
+                        remainingTime: ttl,
+                    } satisfies ILockAcquiredState);
                 });
-                describe("method: isAcquired", () => {
-                    test("Should return true when is unexpireable", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-
-                        await lock.acquire();
-                        const state = await lock.getState();
-                        const result = state?.isAcquired();
-
-                        expect(result).toBe(true);
+                test("Should return ILockAcquiredState when key is unexpired", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    const lock = lockProvider.create(key, {
+                        ttl,
                     });
-                    test("Should return true when is unexpired", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
+                    await lock.acquire();
 
-                        await lock.acquire();
-                        const state = await lock.getState();
-                        const result = state?.isAcquired();
+                    const state = await lock.getState();
 
-                        expect(result).toBe(true);
-                    });
-                    test("Should return false when is expired", async () => {
-                        const key = "a";
-
-                        const ttl1 = null;
-                        const lock1 = lockProvider.create(key, {
-                            ttl: ttl1,
-                        });
-                        await lock1.acquire();
-
-                        const ttl2 = TimeSpan.fromMilliseconds(50);
-                        const lock2 = lockProvider.create(key, {
-                            ttl: ttl2,
-                        });
-                        await lock2.acquire();
-                        await delay(ttl2);
-
-                        const state = await lock2.getState();
-                        const result = state?.isAcquired();
-
-                        expect(result).toBe(false);
-                    });
+                    expect(state).toEqual({
+                        type: LOCK_STATE.ACQUIRED,
+                        remainingTime: ttl,
+                    } satisfies ILockAcquiredState);
                 });
-                describe("method: getRemainingTime", () => {
-                    test("Should return null when lock is unexpireable", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
-
-                        const state = await lock.getState();
-
-                        expect(state?.getRemainingTime()).toBeNull();
+                test("Should return ILockUnavailableState when key is acquired by different owner", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    const lock1 = lockProvider.create(key, {
+                        ttl,
                     });
-                    test("Should return expiration when lock is unexpired", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMinutes(4);
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
+                    await lock1.acquire();
 
-                        const state = await lock.getState();
-
-                        expect(state?.getRemainingTime()).toBeInstanceOf(
-                            TimeSpan,
-                        );
-                        expect(
-                            state?.getRemainingTime()?.toEndDate().getTime(),
-                        ).toBeGreaterThan(Date.now());
+                    const lock2 = lockProvider.create(key, {
+                        ttl,
                     });
-                });
-                describe("method: getOwner", () => {
-                    test("Should return acquired lock id", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
+                    const state = await lock2.getState();
 
-                        const state = await lock.getState();
-
-                        expect(state?.getOwner()).toBe(lock.getId());
-                    });
+                    expect(state).toEqual({
+                        type: LOCK_STATE.UNAVAILABLE,
+                        owner: lock1.getId(),
+                    } satisfies ILockUnavailableState);
                 });
             });
         });
@@ -4444,276 +4361,161 @@ export function lockProviderTestSuite(
         }
         if (includeSerdeTests) {
             describe("Serde tests:", () => {
-                test("Should preserve isExpired when key does not exists", async () => {
+                test("Should return ILockExpiredState when is derserialized and key doesnt exists", async () => {
                     const key = "a";
-
-                    const ttl = null;
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
-
-                    expect(deserializedState?.isExpired()).toBe(
-                        state?.isExpired(),
-                    );
-                });
-                test("Should preserve isExpired when key is unexpireable", async () => {
-                    const key = "a";
-
-                    const ttl = null;
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
-
-                    expect(deserializedState?.isExpired()).toBe(
-                        state?.isExpired(),
-                    );
-                });
-                test("Should preserve isExpired when key is expired", async () => {
-                    const key = "a";
-
                     const ttl = TimeSpan.fromMilliseconds(50);
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const deserializedLock = serde.deserialize<ILock>(
+                        serde.serialize(lock),
+                    );
+                    const result = await deserializedLock.getState();
+
+                    expect(result).toEqual({
+                        type: LOCK_STATE.EXPIRED,
+                    } satisfies ILockExpiredState);
+                });
+                test("Should return ILockExpiredState when is derserialized and key is expired", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+
                     const lock = lockProvider.create(key, {
                         ttl,
                     });
                     await lock.acquire();
                     await delay(ttl);
+
                     const deserializedLock = serde.deserialize<ILock>(
                         serde.serialize(lock),
                     );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
+                    const result = await deserializedLock.getState();
 
-                    expect(deserializedState?.isExpired()).toBe(
-                        state?.isExpired(),
-                    );
+                    expect(result).toEqual({
+                        type: LOCK_STATE.EXPIRED,
+                    } satisfies ILockExpiredState);
                 });
-                test("Should preserve isExpired when key is unexpired", async () => {
+                test("Should return ILockExpiredState when is derserialized and all key is released with forceRelease method", async () => {
                     const key = "a";
 
-                    const ttl = TimeSpan.fromMinutes(10);
-                    const lock = lockProvider.create(key, {
-                        ttl,
+                    const ttl1 = null;
+                    const lock1 = lockProvider.create(key, {
+                        ttl: ttl1,
                     });
-                    await lock.acquire();
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
+                    await lock1.acquire();
 
-                    expect(deserializedState?.isExpired()).toBe(
-                        state?.isExpired(),
+                    const ttl2 = null;
+                    const lock2 = lockProvider.create(key, {
+                        ttl: ttl2,
+                    });
+                    await lock2.acquire();
+
+                    await lock2.forceRelease();
+
+                    const deserializedLock1 = serde.deserialize<ILock>(
+                        serde.serialize(lock1),
                     );
+                    const result = await deserializedLock1.getState();
+
+                    expect(result).toEqual({
+                        type: LOCK_STATE.EXPIRED,
+                    } satisfies ILockExpiredState);
                 });
-                test("Should preserve isAcquired when key does not exists", async () => {
+                test("Should return ILockExpiredState when is derserialized and all key is released with release method", async () => {
                     const key = "a";
 
+                    const ttl1 = null;
+                    const lock1 = lockProvider.create(key, {
+                        ttl: ttl1,
+                    });
+                    await lock1.acquire();
+
+                    const ttl2 = null;
+                    const lock2 = lockProvider.create(key, {
+                        ttl: ttl2,
+                    });
+                    await lock2.acquire();
+
+                    await lock1.release();
+                    await lock2.release();
+
+                    const deserializedLock2 = serde.deserialize<ILock>(
+                        serde.serialize(lock2),
+                    );
+                    const result = await deserializedLock2.getState();
+
+                    expect(result).toEqual({
+                        type: LOCK_STATE.EXPIRED,
+                    } satisfies ILockExpiredState);
+                });
+                test("Should return ILockAcquiredState when is derserialized and key is unexpireable", async () => {
+                    const key = "a";
                     const ttl = null;
                     const lock = lockProvider.create(key, {
                         ttl,
                     });
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
-
-                    expect(deserializedState?.isAcquired()).toBe(
-                        state?.isAcquired(),
-                    );
-                });
-                test("Should preserve isAcquired when key is unexpireable", async () => {
-                    const key = "a";
-
-                    const ttl = null;
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
                     await lock.acquire();
+
                     const deserializedLock = serde.deserialize<ILock>(
                         serde.serialize(lock),
                     );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
+                    const state = await deserializedLock.getState();
 
-                    expect(deserializedState?.isAcquired()).toBe(
-                        state?.isAcquired(),
-                    );
+                    expect(state).toEqual({
+                        type: LOCK_STATE.ACQUIRED,
+                        remainingTime: ttl,
+                    } satisfies ILockAcquiredState);
                 });
-                test("Should preserve isAcquired when key is expired", async () => {
+                test("Should return ILockAcquiredState when is derserialized and key is unexpired", async () => {
                     const key = "a";
-
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const lock = lockProvider.create(key, {
                         ttl,
                     });
                     await lock.acquire();
-                    await delay(ttl);
+
                     const deserializedLock = serde.deserialize<ILock>(
                         serde.serialize(lock),
                     );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
+                    const state = await deserializedLock.getState();
 
-                    expect(deserializedState?.isAcquired()).toBe(
-                        state?.isAcquired(),
-                    );
-                });
-                test("Should preserve isAcquired when key is unexpired", async () => {
-                    const key = "a";
+                    const lockAcquiredState = state as ILockAcquiredState;
 
-                    const ttl = TimeSpan.fromMinutes(10);
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
-
-                    expect(deserializedState?.isAcquired()).toBe(
-                        state?.isAcquired(),
-                    );
-                });
-                test("Should preserve getRemainingTime when key does not exists", async () => {
-                    const key = "a";
-
-                    const ttl = null;
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
-
-                    const currentDate = new Date();
+                    expect(state.type).toBe(LOCK_STATE.ACQUIRED);
                     expect(
-                        deserializedState
-                            ?.getRemainingTime()
-                            ?.toEndDate(currentDate),
-                    ).toEqual(
-                        state?.getRemainingTime()?.toEndDate(currentDate),
+                        lockAcquiredState.remainingTime?.toMilliseconds(),
+                    ).toBeLessThan(
+                        (lockAcquiredState.remainingTime?.toMilliseconds() ??
+                            0) + 10,
                     );
-                });
-                test("Should preserve getRemainingTime when key is unexpireable", async () => {
-                    const key = "a";
-
-                    const ttl = null;
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
-
-                    const currentDate = new Date();
                     expect(
-                        deserializedState
-                            ?.getRemainingTime()
-                            ?.toEndDate(currentDate),
-                    ).toEqual(
-                        state?.getRemainingTime()?.toEndDate(currentDate),
+                        lockAcquiredState.remainingTime?.toMilliseconds(),
+                    ).toBeGreaterThan(
+                        (lockAcquiredState.remainingTime?.toMilliseconds() ??
+                            0) - 10,
                     );
                 });
-                test("Should preserve getRemainingTime when key is expired", async () => {
+                test("Should return ILockUnavailableState when is derserialized and key is acquired by different owner", async () => {
                     const key = "a";
-
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-                    await delay(ttl);
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
-
-                    const currentDate = new Date();
-                    expect(
-                        deserializedState
-                            ?.getRemainingTime()
-                            ?.toEndDate(currentDate),
-                    ).toEqual(
-                        state?.getRemainingTime()?.toEndDate(currentDate),
-                    );
-                });
-                test("Should preserve getRemainingTime when key is unexpired", async () => {
-                    const key = "a";
-
-                    const ttl = TimeSpan.fromMinutes(10);
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
-
-                    const currentDate = new Date();
-                    expect(
-                        deserializedState
-                            ?.getRemainingTime()
-                            ?.toEndDate(currentDate),
-                    ).toEqual(
-                        state?.getRemainingTime()?.toEndDate(currentDate),
-                    );
-                });
-                test("Should preserve getOwner when key does not exists", async () => {
-                    const key = "a";
-
                     const ttl = null;
-                    const lock = lockProvider.create(key, {
+                    const lock1 = lockProvider.create(key, {
                         ttl,
                     });
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
+                    await lock1.acquire();
 
-                    expect(deserializedState?.getOwner()).toBe(
-                        state?.getOwner(),
-                    );
-                });
-                test("Should preserve getOwner", async () => {
-                    const key = "a";
-
-                    const ttl = null;
-                    const lock = lockProvider.create(key, {
+                    const lock2 = lockProvider.create(key, {
                         ttl,
                     });
-                    await lock.acquire();
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
+                    const deserializedLock2 = serde.deserialize<ILock>(
+                        serde.serialize(lock2),
                     );
-                    const state = await lock.getState();
-                    const deserializedState = await deserializedLock.getState();
+                    const state = await deserializedLock2.getState();
 
-                    expect(deserializedState?.getOwner()).toBe(
-                        state?.getOwner(),
-                    );
+                    expect(state).toEqual({
+                        type: LOCK_STATE.UNAVAILABLE,
+                        owner: lock1.getId(),
+                    } satisfies ILockUnavailableState);
                 });
             });
         }

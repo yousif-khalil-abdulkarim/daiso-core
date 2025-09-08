@@ -36,7 +36,7 @@ export type LockAquireBlockingSettings = {
  * @group Contracts
  */
 export type ILockGetState = {
-    getState(): LazyPromise<ILockState | null>;
+    getState(): LazyPromise<ILockState>;
 };
 
 /**

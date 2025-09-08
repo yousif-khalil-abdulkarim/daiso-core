@@ -2,10 +2,10 @@
  * @module Lock
  */
 
-import type {
-    InvokableFn,
-    Namespace,
+import {
     TimeSpan,
+    type InvokableFn,
+    type Namespace,
 } from "@/utilities/_module-exports.js";
 import {
     type Key,
@@ -35,6 +35,7 @@ import {
     type LockAquireBlockingSettings,
     type LockEventMap,
     LockError,
+    LOCK_STATE,
 } from "@/lock/contracts/_module-exports.js";
 import {
     type ILock,
@@ -42,7 +43,6 @@ import {
 } from "@/lock/contracts/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
-import { LockState } from "@/lock/implementations/derivables/lock-provider/lock-state.js";
 
 /**
  * @internal
@@ -439,13 +439,30 @@ export class Lock implements ILock {
         return this.ttl;
     }
 
-    getState(): LazyPromise<ILockState | null> {
-        return this.createLazyPromise<ILockState | null>(async () => {
+    getState(): LazyPromise<ILockState> {
+        return this.createLazyPromise(async () => {
             const state = await this.adapter.getState(this.key.namespaced);
             if (state === null) {
-                return null;
+                return {
+                    type: LOCK_STATE.EXPIRED,
+                };
             }
-            return new LockState(state, this.lockId);
+            if (state.owner === this.lockId) {
+                return {
+                    type: LOCK_STATE.ACQUIRED,
+                    remainingTime:
+                        state.expiration === null
+                            ? null
+                            : TimeSpan.fromDateRange(
+                                  new Date(),
+                                  state.expiration,
+                              ),
+                };
+            }
+            return {
+                type: LOCK_STATE.UNAVAILABLE,
+                owner: state.owner,
+            };
         });
     }
 }
