@@ -24,7 +24,7 @@ import type { ISemaphoreState } from "@/semaphore/contracts/semaphore-state.cont
  * @group Contracts
  */
 export type ISemaphoreGetState = {
-    getState(): LazyPromise<ISemaphoreState | null>;
+    getState(): LazyPromise<ISemaphoreState>;
 };
 
 /**

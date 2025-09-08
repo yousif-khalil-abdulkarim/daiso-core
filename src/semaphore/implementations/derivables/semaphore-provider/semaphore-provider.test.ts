@@ -49,7 +49,7 @@ describe("class: SemaphoreProvider", () => {
                 namespace: new Namespace("@lock-1"),
                 eventBus: new EventBus({
                     adapter: new MemoryEventBusAdapter(),
-                    namespace: new Namespace("@event-bus/lock-1"),
+                    namespace: new Namespace("@event-bus/semaphore-1"),
                 }),
                 serde,
             });
@@ -61,7 +61,7 @@ describe("class: SemaphoreProvider", () => {
                 namespace: new Namespace("@lock-2"),
                 eventBus: new EventBus({
                     adapter: new MemoryEventBusAdapter(),
-                    namespace: new Namespace("@event-bus/lock-2"),
+                    namespace: new Namespace("@event-bus/semaphore-2"),
                 }),
                 serde,
             });
@@ -76,7 +76,7 @@ describe("class: SemaphoreProvider", () => {
         test("Should differentiate between different adapters and the same namespace", async () => {
             const serde = new Serde(new SuperJsonSerdeAdapter());
             const lockNamespace = new Namespace("@lock");
-            const eventNamespace = new Namespace("@event-bus/lock");
+            const eventNamespace = new Namespace("@event-bus/semaphore");
             const key = "a";
             const ttl = null;
             const limit = 1;
@@ -124,7 +124,7 @@ describe("class: SemaphoreProvider", () => {
         test("Should differentiate between different serdeTransformerNames", async () => {
             const serde = new Serde(new SuperJsonSerdeAdapter());
             const lockNamespace = new Namespace("@lock");
-            const eventNamespace = new Namespace("@event-bus/lock");
+            const eventNamespace = new Namespace("@event-bus/semaphore");
             const key = "a";
             const ttl = null;
             const limit = 1;

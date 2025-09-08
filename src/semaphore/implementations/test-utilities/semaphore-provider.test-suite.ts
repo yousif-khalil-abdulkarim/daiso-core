@@ -24,6 +24,11 @@ import {
     type FailedRefreshSemaphoreEvent,
     type RefreshedSemaphoreEvent,
     type AllForceReleasedSemaphoreEvent,
+    SEMAPHORE_STATE,
+    type ISemaphoreExpiredState,
+    type ISemaphoreUnacquiredState,
+    type ISemaphoreLimitReachedState,
+    type ISemaphoreAcquiredState,
 } from "@/semaphore/contracts/_module-exports.js";
 import {
     RESULT,
@@ -2088,7 +2093,9 @@ export function semaphoreProviderTestSuite(
                     expect(result1).toBe(false);
 
                     const state = await semaphore3.getState();
-                    expect(state?.getLimit()).toBe(limit);
+                    expect((state as ISemaphoreLimitReachedState).limit).toBe(
+                        limit,
+                    );
                 });
             });
             describe("method: acquireOrFail", () => {
@@ -2287,7 +2294,9 @@ export function semaphoreProviderTestSuite(
                     );
 
                     const state = await semaphore3.getState();
-                    expect(state?.getLimit()).toBe(limit);
+                    expect((state as ISemaphoreLimitReachedState).limit).toBe(
+                        limit,
+                    );
                 });
             });
             describe("method: acquireBlocking", () => {
@@ -2512,7 +2521,9 @@ export function semaphoreProviderTestSuite(
                     expect(result1).toBe(false);
 
                     const state = await semaphore3.getState();
-                    expect(state?.getLimit()).toBe(limit);
+                    expect((state as ISemaphoreLimitReachedState).limit).toBe(
+                        limit,
+                    );
                 });
                 test("Should retry acquire the semaphore", async () => {
                     const key = "a";
@@ -2769,7 +2780,9 @@ export function semaphoreProviderTestSuite(
                     );
 
                     const state = await semaphore3.getState();
-                    expect(state?.getLimit()).toBe(limit);
+                    expect((state as ISemaphoreLimitReachedState).limit).toBe(
+                        limit,
+                    );
                 });
                 test("Should retry acquire the semaphore", async () => {
                     const key = "a";
@@ -2950,7 +2963,9 @@ export function semaphoreProviderTestSuite(
                     expect(result1).toBe(true);
 
                     const state = await semaphore5.getState();
-                    expect(state?.getLimit()).toBe(newLimit);
+                    expect((state as ISemaphoreLimitReachedState).limit).toBe(
+                        newLimit,
+                    );
 
                     const semaphore6 = semaphoreProvider.create(key, {
                         ttl,
@@ -3145,7 +3160,9 @@ export function semaphoreProviderTestSuite(
                     expect(result1).toBe(true);
 
                     const state = await semaphore5.getState();
-                    expect(state?.getLimit()).toBe(newLimit);
+                    expect((state as ISemaphoreLimitReachedState).limit).toBe(
+                        newLimit,
+                    );
 
                     const semaphore6 = semaphoreProvider.create(key, {
                         ttl,
@@ -3332,7 +3349,9 @@ export function semaphoreProviderTestSuite(
                     expect(result1).toBe(true);
 
                     const state = await semaphore5.getState();
-                    expect(state?.getLimit()).toBe(newLimit);
+                    expect((state as ISemaphoreLimitReachedState).limit).toBe(
+                        newLimit,
+                    );
 
                     const semaphore6 = semaphoreProvider.create(key, {
                         ttl,
@@ -3751,7 +3770,7 @@ export function semaphoreProviderTestSuite(
                 });
             });
             describe("method: getState", () => {
-                test("Should return null when key doesnt exists", async () => {
+                test("Should return ISemaphoreExpiredState when key doesnt exists", async () => {
                     const key = "a";
                     const limit = 3;
                     const ttl = TimeSpan.fromMilliseconds(50);
@@ -3763,9 +3782,11 @@ export function semaphoreProviderTestSuite(
 
                     const result = await semaphore.getState();
 
-                    expect(result).toBeNull();
+                    expect(result).toEqual({
+                        type: SEMAPHORE_STATE.EXPIRED,
+                    } satisfies ISemaphoreExpiredState);
                 });
-                test("Should return null when key is expired", async () => {
+                test("Should return ISemaphoreExpiredState when key is expired", async () => {
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
@@ -3779,9 +3800,11 @@ export function semaphoreProviderTestSuite(
 
                     const result = await semaphore.getState();
 
-                    expect(result).toBeNull();
+                    expect(result).toEqual({
+                        type: SEMAPHORE_STATE.EXPIRED,
+                    } satisfies ISemaphoreExpiredState);
                 });
-                test("Should return null when all slots are released with forceReleaseAll method", async () => {
+                test("Should return ISemaphoreExpiredState when all slots are released with forceReleaseAll method", async () => {
                     const key = "a";
                     const limit = 2;
 
@@ -3803,9 +3826,11 @@ export function semaphoreProviderTestSuite(
 
                     const result = await semaphore1.getState();
 
-                    expect(result).toBeNull();
+                    expect(result).toEqual({
+                        type: SEMAPHORE_STATE.EXPIRED,
+                    } satisfies ISemaphoreExpiredState);
                 });
-                test("Should return null when all slots are released with release method", async () => {
+                test("Should return ISemaphoreExpiredState when all slots are released with release method", async () => {
                     const key = "a";
                     const limit = 2;
 
@@ -3828,363 +3853,120 @@ export function semaphoreProviderTestSuite(
 
                     const result = await semaphore2.getState();
 
-                    expect(result).toBeNull();
+                    expect(result).toEqual({
+                        type: SEMAPHORE_STATE.EXPIRED,
+                    } satisfies ISemaphoreExpiredState);
                 });
-                describe("method: isExpired", () => {
-                    test("Should return false when slot is unexpireable", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const limit = 1;
-                        const semaphore = semaphoreProvider.create(key, {
-                            ttl,
-                            limit,
-                        });
-                        await semaphore.acquire();
+                test("Should return ISemaphoreUnacquiredState when slot is unacquired", async () => {
+                    const key = "a";
+                    const limit = 3;
 
-                        const state = await semaphore.getState();
-                        const result = state?.isExpired();
-
-                        expect(result).toBe(false);
+                    const ttl1 = null;
+                    const semaphore1 = semaphoreProvider.create(key, {
+                        ttl: ttl1,
+                        limit,
                     });
-                    test("Should return false when slot is unexpired", async () => {
-                        const key = "a";
-                        const limit = 1;
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const semaphore = semaphoreProvider.create(key, {
-                            ttl,
-                            limit,
-                        });
-                        await semaphore.acquire();
+                    await semaphore1.acquire();
 
-                        const state = await semaphore.getState();
-                        const result = state?.isExpired();
-
-                        expect(result).toBe(false);
+                    const ttl2 = TimeSpan.fromMilliseconds(50);
+                    const semaphore2 = semaphoreProvider.create(key, {
+                        ttl: ttl2,
+                        limit,
                     });
-                    test("Should return true when slot is expired", async () => {
-                        const key = "a";
-                        const limit = 1;
 
-                        const ttl1 = null;
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            ttl: ttl1,
-                            limit,
-                        });
-                        await semaphore1.acquire();
+                    const state = await semaphore2.getState();
 
-                        const ttl2 = TimeSpan.fromMilliseconds(50);
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            ttl: ttl2,
-                            limit,
-                        });
-                        await semaphore2.acquire();
-                        await delay(ttl2);
-
-                        const state = await semaphore2.getState();
-                        const result = state?.isExpired();
-
-                        expect(result).toBe(true);
-                    });
-                    test("Should return true when limit is reached", async () => {
-                        const key = "a";
-                        const limit = 1;
-                        const ttl = null;
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            ttl,
-                            limit,
-                        });
-                        await semaphore1.acquire();
-
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            ttl,
-                            limit,
-                        });
-
-                        const state = await semaphore2.getState();
-                        const result = state?.isExpired();
-
-                        expect(result).toBe(true);
-                    });
+                    expect(state).toEqual({
+                        type: SEMAPHORE_STATE.UNACQUIRED,
+                        limit,
+                        freeSlotsCount: limit - 1,
+                        acquiredSlotsCount: 1,
+                        acquiredSlots: [semaphore1.getId()],
+                    } satisfies ISemaphoreUnacquiredState);
                 });
-                describe("method: isAcquired", () => {
-                    test("Should return true when is unexpireable", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const limit = 1;
-                        const semaphore = semaphoreProvider.create(key, {
-                            ttl,
-                            limit,
-                        });
+                test("Should return ISemaphoreUnacquiredState when slot is expired", async () => {
+                    const key = "a";
+                    const limit = 3;
 
-                        await semaphore.acquire();
-                        const state = await semaphore.getState();
-                        const result = state?.isAcquired();
-
-                        expect(result).toBe(true);
+                    const ttl1 = null;
+                    const semaphore1 = semaphoreProvider.create(key, {
+                        ttl: ttl1,
+                        limit,
                     });
-                    test("Should return true when is unexpired", async () => {
-                        const key = "a";
-                        const limit = 1;
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const semaphore = semaphoreProvider.create(key, {
-                            ttl,
-                            limit,
-                        });
+                    await semaphore1.acquire();
 
-                        await semaphore.acquire();
-                        const state = await semaphore.getState();
-                        const result = state?.isAcquired();
-
-                        expect(result).toBe(true);
+                    const ttl2 = TimeSpan.fromMilliseconds(50);
+                    const semaphore2 = semaphoreProvider.create(key, {
+                        ttl: ttl2,
+                        limit,
                     });
-                    test("Should return false when is expired", async () => {
-                        const key = "a";
-                        const limit = 1;
+                    await semaphore2.acquire();
+                    await delay(ttl2);
 
-                        const ttl1 = null;
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            ttl: ttl1,
-                            limit,
-                        });
-                        await semaphore1.acquire();
+                    const state = await semaphore2.getState();
 
-                        const ttl2 = TimeSpan.fromMilliseconds(50);
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            ttl: ttl2,
-                            limit,
-                        });
-                        await semaphore2.acquire();
-                        await delay(ttl2);
-
-                        const state = await semaphore2.getState();
-                        const result = state?.isAcquired();
-
-                        expect(result).toBe(false);
-                    });
-                    test("Should return false when limit is reached", async () => {
-                        const key = "a";
-                        const limit = 1;
-                        const ttl = null;
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            ttl,
-                            limit,
-                        });
-                        await semaphore1.acquire();
-
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            ttl,
-                            limit,
-                        });
-                        const state = await semaphore2.getState();
-                        const result = state?.isAcquired();
-
-                        expect(result).toBe(false);
-                    });
+                    expect(state).toEqual({
+                        type: SEMAPHORE_STATE.UNACQUIRED,
+                        limit,
+                        freeSlotsCount: limit - 1,
+                        acquiredSlotsCount: 1,
+                        acquiredSlots: [semaphore1.getId()],
+                    } satisfies ISemaphoreUnacquiredState);
                 });
-                describe("method: getLimit", () => {
-                    test("Should return limit when key exists", async () => {
-                        const key = "a";
-                        const limit = 3;
+                test("Should return ISemaphoreAcquiredState when slot is unexpired", async () => {
+                    const key = "a";
+                    const limit = 3;
 
-                        const ttl1 = TimeSpan.fromMinutes(2);
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            limit,
-                            ttl: ttl1,
-                        });
-                        await semaphore1.acquire();
-
-                        const ttl2 = null;
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            limit,
-                            ttl: ttl2,
-                        });
-                        await semaphore2.acquire();
-
-                        const ttl3 = TimeSpan.fromMinutes(2);
-                        const semaphore3 = semaphoreProvider.create(key, {
-                            limit,
-                            ttl: ttl3,
-                        });
-                        await semaphore3.acquire();
-
-                        const ttl4 = TimeSpan.fromMilliseconds(50);
-                        const semaphore4 = semaphoreProvider.create(key, {
-                            limit,
-                            ttl: ttl4,
-                        });
-                        await semaphore4.acquire();
-                        await delay(ttl4);
-
-                        const state = await semaphore1.getState();
-                        const result = state?.getLimit();
-
-                        expect(result).toBe(limit);
+                    const ttl1 = null;
+                    const semaphore1 = semaphoreProvider.create(key, {
+                        ttl: ttl1,
+                        limit,
                     });
+                    await semaphore1.acquire();
+
+                    const ttl2 = TimeSpan.fromMilliseconds(50);
+                    const semaphore2 = semaphoreProvider.create(key, {
+                        ttl: ttl2,
+                        limit,
+                    });
+                    await semaphore2.acquire();
+
+                    const state = await semaphore2.getState();
+
+                    expect(state).toEqual({
+                        type: SEMAPHORE_STATE.ACQUIRED,
+                        limit,
+                        freeSlotsCount: limit - 2,
+                        acquiredSlotsCount: 2,
+                        acquiredSlots: [semaphore1.getId(), semaphore2.getId()],
+                        remainingTime: ttl2,
+                    } satisfies ISemaphoreAcquiredState);
                 });
-                describe("method: freeSlotsCount", () => {
-                    test("Should return 1 when limit is 3 and 2 slots are acquired", async () => {
-                        const key = "a";
-                        const limit = 3;
+                test("Should return ISemaphoreLimitReachedState when limit is reached", async () => {
+                    const key = "a";
+                    const limit = 1;
 
-                        const ttl1 = TimeSpan.fromMinutes(2);
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            ttl: ttl1,
-                            limit,
-                        });
-                        await semaphore1.acquire();
-
-                        const ttl2 = TimeSpan.fromMilliseconds(50);
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            ttl: ttl2,
-                            limit,
-                        });
-                        await semaphore2.acquire();
-                        await delay(ttl2);
-
-                        const ttl3 = null;
-                        const semaphore3 = semaphoreProvider.create(key, {
-                            ttl: ttl3,
-                            limit,
-                        });
-                        await semaphore3.acquire();
-
-                        const state = await semaphore3.getState();
-                        const result = state?.freeSlotsCount();
-
-                        expect(result).toBe(1);
+                    const ttl1 = null;
+                    const semaphore1 = semaphoreProvider.create(key, {
+                        ttl: ttl1,
+                        limit,
                     });
-                    test("Should return 0 when limit is 3 and all slots are acquired", async () => {
-                        const key = "a";
-                        const limit = 3;
+                    await semaphore1.acquire();
 
-                        const ttl1 = TimeSpan.fromMinutes(2);
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            ttl: ttl1,
-                            limit,
-                        });
-                        await semaphore1.acquire();
-
-                        const ttl2 = null;
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            ttl: ttl2,
-                            limit,
-                        });
-                        await semaphore2.acquire();
-
-                        const ttl3 = TimeSpan.fromMilliseconds(50);
-                        const semaphore3 = semaphoreProvider.create(key, {
-                            ttl: ttl3,
-                            limit,
-                        });
-                        await semaphore3.acquire();
-                        await delay(ttl3);
-
-                        const ttl4 = TimeSpan.fromMinutes(2);
-                        const semaphore4 = semaphoreProvider.create(key, {
-                            ttl: ttl4,
-                            limit,
-                        });
-                        await semaphore4.acquire();
-
-                        const state = await semaphore4.getState();
-                        const result = state?.freeSlotsCount();
-
-                        expect(result).toBe(0);
+                    const ttl2 = TimeSpan.fromMilliseconds(50);
+                    const semaphore2 = semaphoreProvider.create(key, {
+                        ttl: ttl2,
+                        limit,
                     });
-                });
-                describe("method: acquiredSlotsCount", () => {
-                    test("Should return 1 when limit is 3 and 1 slots is acquired", async () => {
-                        const key = "a";
-                        const limit = 3;
+                    await delay(ttl2);
 
-                        const ttl1 = TimeSpan.fromMinutes(2);
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            ttl: ttl1,
-                            limit,
-                        });
-                        await semaphore1.acquire();
+                    const state = await semaphore2.getState();
 
-                        const ttl2 = TimeSpan.fromMilliseconds(50);
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            ttl: ttl2,
-                            limit,
-                        });
-                        await semaphore2.acquire();
-                        await delay(ttl2);
-
-                        const state = await semaphore1.getState();
-                        const result = state?.acquiredSlotsCount();
-
-                        expect(result).toBe(1);
-                    });
-                    test("Should return 2 when limit is 3 and 2 slots is acquired", async () => {
-                        const key = "a";
-                        const limit = 3;
-
-                        const ttl1 = TimeSpan.fromMinutes(2);
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            ttl: ttl1,
-                            limit,
-                        });
-                        await semaphore1.acquire();
-
-                        const ttl2 = null;
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            ttl: ttl2,
-                            limit,
-                        });
-                        await semaphore2.acquire();
-
-                        const ttl3 = TimeSpan.fromMilliseconds(50);
-                        const semaphore3 = semaphoreProvider.create(key, {
-                            ttl: ttl3,
-                            limit,
-                        });
-                        await semaphore3.acquire();
-                        await delay(ttl3);
-
-                        const state = await semaphore1.getState();
-                        const result = state?.acquiredSlotsCount();
-
-                        expect(result).toBe(2);
-                    });
-                    test("Should return 3 when limit is 3 and all slots is acquired", async () => {
-                        const key = "a";
-                        const limit = 3;
-
-                        const ttl1 = TimeSpan.fromMinutes(2);
-                        const semaphore1 = semaphoreProvider.create(key, {
-                            ttl: ttl1,
-                            limit,
-                        });
-                        await semaphore1.acquire();
-
-                        const ttl2 = null;
-                        const semaphore2 = semaphoreProvider.create(key, {
-                            ttl: ttl2,
-                            limit,
-                        });
-                        await semaphore2.acquire();
-
-                        const ttl3 = TimeSpan.fromMilliseconds(50);
-                        const semaphore3 = semaphoreProvider.create(key, {
-                            ttl: ttl3,
-                            limit,
-                        });
-                        await semaphore3.acquire();
-
-                        const ttl4 = TimeSpan.fromMinutes(2);
-                        const semaphore4 = semaphoreProvider.create(key, {
-                            ttl: ttl4,
-                            limit,
-                        });
-                        await semaphore4.acquire();
-
-                        const state = await semaphore1.getState();
-                        const result = state?.acquiredSlotsCount();
-
-                        expect(result).toBe(3);
-                    });
+                    expect(state).toEqual({
+                        type: SEMAPHORE_STATE.LIMIT_REACHED,
+                        limit,
+                        acquiredSlots: [semaphore1.getId()],
+                    } satisfies ISemaphoreLimitReachedState);
                 });
             });
         });
@@ -6305,123 +6087,47 @@ export function semaphoreProviderTestSuite(
         }
         if (includeSerdeTests) {
             describe("Serde tests:", () => {
-                test("Should preserve acquiredSlots", async () => {
+                test("Should return ISemaphoreExpiredState when is derserialized and key doesnt exists", async () => {
                     const key = "a";
-                    const limit = 2;
+                    const limit = 3;
+                    const ttl = TimeSpan.fromMilliseconds(50);
 
-                    const ttl1 = null;
-                    const semaphore1 = semaphoreProvider.create(key, {
-                        ttl: ttl1,
+                    const semaphore = semaphoreProvider.create(key, {
                         limit,
+                        ttl,
                     });
-                    await semaphore1.acquire();
-                    const deserializedSemaphore1 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore1),
-                        );
-                    const state1 = await semaphore1.getState();
-                    const deserializedState1 =
-                        await deserializedSemaphore1.getState();
-
-                    expect(state1?.acquiredSlots()).toEqual(
-                        deserializedState1?.acquiredSlots(),
+                    const deserializedSemaphore = serde.deserialize<ISemaphore>(
+                        serde.serialize(semaphore),
                     );
 
-                    const ttl2 = TimeSpan.fromMinutes(2);
-                    const semaphore2 = semaphoreProvider.create(key, {
-                        ttl: ttl2,
-                        limit,
-                    });
-                    await semaphore2.acquire();
-                    const deserializedSemaphore2 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore2),
-                        );
-                    const state2 = await semaphore2.getState();
-                    const deserializedState2 =
-                        await deserializedSemaphore2.getState();
+                    const result = await deserializedSemaphore.getState();
 
-                    expect(state2?.acquiredSlots()).toEqual(
-                        deserializedState2?.acquiredSlots(),
-                    );
-
-                    const ttl3 = TimeSpan.fromMinutes(2);
-                    const semaphore3 = semaphoreProvider.create(key, {
-                        ttl: ttl3,
-                        limit,
-                    });
-                    await semaphore3.acquire();
-                    const deserializedSemaphore3 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore3),
-                        );
-                    const state3 = await semaphore3.getState();
-                    const deserializedState3 =
-                        await deserializedSemaphore3.getState();
-
-                    expect(state3?.acquiredSlots()).toEqual(
-                        deserializedState3?.acquiredSlots(),
-                    );
+                    expect(result).toEqual({
+                        type: SEMAPHORE_STATE.EXPIRED,
+                    } satisfies ISemaphoreExpiredState);
                 });
-                test("Should preserve acquiredSlotsCount", async () => {
+                test("Should return ISemaphoreExpiredState when is derserialized and key is expired", async () => {
                     const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
                     const limit = 2;
 
-                    const ttl1 = null;
-                    const semaphore1 = semaphoreProvider.create(key, {
-                        ttl: ttl1,
+                    const semaphore = semaphoreProvider.create(key, {
+                        ttl,
                         limit,
                     });
-                    await semaphore1.acquire();
-                    const deserializedSemaphore1 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore1),
-                        );
-                    const state1 = await semaphore1.getState();
-                    const deserializedState1 =
-                        await deserializedSemaphore1.getState();
-
-                    expect(state1?.acquiredSlotsCount()).toBe(
-                        deserializedState1?.acquiredSlotsCount(),
+                    const deserializedSemaphore = serde.deserialize<ISemaphore>(
+                        serde.serialize(semaphore),
                     );
+                    await deserializedSemaphore.acquire();
+                    await delay(ttl);
 
-                    const ttl2 = TimeSpan.fromMinutes(2);
-                    const semaphore2 = semaphoreProvider.create(key, {
-                        ttl: ttl2,
-                        limit,
-                    });
-                    await semaphore2.acquire();
-                    const deserializedSemaphore2 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore2),
-                        );
-                    const state2 = await semaphore2.getState();
-                    const deserializedState2 =
-                        await deserializedSemaphore2.getState();
+                    const result = await semaphore.getState();
 
-                    expect(state2?.acquiredSlotsCount()).toBe(
-                        deserializedState2?.acquiredSlotsCount(),
-                    );
-
-                    const ttl3 = TimeSpan.fromMinutes(2);
-                    const semaphore3 = semaphoreProvider.create(key, {
-                        ttl: ttl3,
-                        limit,
-                    });
-                    await semaphore3.acquire();
-                    const deserializedSemaphore3 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore3),
-                        );
-                    const state3 = await semaphore3.getState();
-                    const deserializedState3 =
-                        await deserializedSemaphore3.getState();
-
-                    expect(state3?.acquiredSlotsCount()).toBe(
-                        deserializedState3?.acquiredSlotsCount(),
-                    );
+                    expect(result).toEqual({
+                        type: SEMAPHORE_STATE.EXPIRED,
+                    } satisfies ISemaphoreExpiredState);
                 });
-                test("Should preserve freeSlotsCount", async () => {
+                test("Should return ISemaphoreExpiredState when is derserialized and all slots are released with forceReleaseAll method", async () => {
                     const key = "a";
                     const limit = 2;
 
@@ -6431,115 +6137,60 @@ export function semaphoreProviderTestSuite(
                         limit,
                     });
                     await semaphore1.acquire();
-                    const deserializedSemaphore1 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore1),
-                        );
-                    const state1 = await semaphore1.getState();
-                    const deserializedState1 =
-                        await deserializedSemaphore1.getState();
 
-                    expect(state1?.freeSlotsCount()).toBe(
-                        deserializedState1?.freeSlotsCount(),
-                    );
-
-                    const ttl2 = TimeSpan.fromMinutes(2);
+                    const ttl2 = null;
                     const semaphore2 = semaphoreProvider.create(key, {
                         ttl: ttl2,
                         limit,
                     });
-                    await semaphore2.acquire();
                     const deserializedSemaphore2 =
                         serde.deserialize<ISemaphore>(
                             serde.serialize(semaphore2),
                         );
-                    const state2 = await semaphore2.getState();
-                    const deserializedState2 =
-                        await deserializedSemaphore2.getState();
+                    await deserializedSemaphore2.acquire();
 
-                    expect(state2?.freeSlotsCount()).toBe(
-                        deserializedState2?.freeSlotsCount(),
-                    );
+                    await deserializedSemaphore2.forceReleaseAll();
 
-                    const ttl3 = TimeSpan.fromMinutes(2);
-                    const semaphore3 = semaphoreProvider.create(key, {
-                        ttl: ttl3,
-                        limit,
-                    });
-                    await semaphore3.acquire();
-                    const deserializedSemaphore3 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore3),
-                        );
-                    const state3 = await semaphore3.getState();
-                    const deserializedState3 =
-                        await deserializedSemaphore3.getState();
+                    const result = await semaphore1.getState();
 
-                    expect(state3?.freeSlotsCount()).toBe(
-                        deserializedState3?.freeSlotsCount(),
-                    );
+                    expect(result).toEqual({
+                        type: SEMAPHORE_STATE.EXPIRED,
+                    } satisfies ISemaphoreExpiredState);
                 });
-                test("Should preserve getLimit", async () => {
+                test("Should return ISemaphoreExpiredState when is derserialized and all slots are released with release method", async () => {
                     const key = "a";
                     const limit = 2;
 
                     const ttl1 = null;
                     const semaphore1 = semaphoreProvider.create(key, {
-                        ttl: ttl1,
                         limit,
+                        ttl: ttl1,
                     });
                     await semaphore1.acquire();
-                    const deserializedSemaphore1 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore1),
-                        );
-                    const state1 = await semaphore1.getState();
-                    const deserializedState1 =
-                        await deserializedSemaphore1.getState();
 
-                    expect(state1?.getLimit()).toBe(
-                        deserializedState1?.getLimit(),
-                    );
-
-                    const ttl2 = TimeSpan.fromMinutes(2);
+                    const ttl2 = null;
                     const semaphore2 = semaphoreProvider.create(key, {
                         ttl: ttl2,
                         limit,
                     });
-                    await semaphore2.acquire();
-                    const deserializedSemaphore2 =
+                    const deserialziedSemaphore2 =
                         serde.deserialize<ISemaphore>(
                             serde.serialize(semaphore2),
                         );
-                    const state2 = await semaphore2.getState();
-                    const deserializedState2 =
-                        await deserializedSemaphore2.getState();
+                    await deserialziedSemaphore2.acquire();
 
-                    expect(state2?.getLimit()).toBe(
-                        deserializedState2?.getLimit(),
-                    );
+                    await semaphore1.release();
+                    await deserialziedSemaphore2.release();
 
-                    const ttl3 = TimeSpan.fromMinutes(2);
-                    const semaphore3 = semaphoreProvider.create(key, {
-                        ttl: ttl3,
-                        limit,
-                    });
-                    await semaphore3.acquire();
-                    const deserializedSemaphore3 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore3),
-                        );
-                    const state3 = await semaphore3.getState();
-                    const deserializedState3 =
-                        await deserializedSemaphore3.getState();
+                    const result = await deserialziedSemaphore2.getState();
 
-                    expect(state3?.getLimit()).toBe(
-                        deserializedState3?.getLimit(),
-                    );
+                    expect(result).toEqual({
+                        type: SEMAPHORE_STATE.EXPIRED,
+                    } satisfies ISemaphoreExpiredState);
                 });
-                test("Should preserve isExpired", async () => {
+                test("Should return ISemaphoreUnacquiredState when is derserialized and slot is unacquired", async () => {
                     const key = "a";
-                    const limit = 2;
+                    const limit = 3;
 
                     const ttl1 = null;
                     const semaphore1 = semaphoreProvider.create(key, {
@@ -6547,57 +6198,30 @@ export function semaphoreProviderTestSuite(
                         limit,
                     });
                     await semaphore1.acquire();
-                    const deserializedSemaphore1 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore1),
-                        );
-                    const state1 = await semaphore1.getState();
-                    const deserializedState1 =
-                        await deserializedSemaphore1.getState();
 
-                    expect(state1?.isExpired()).toBe(
-                        deserializedState1?.isExpired(),
-                    );
-
-                    const ttl2 = TimeSpan.fromMinutes(2);
+                    const ttl2 = TimeSpan.fromMilliseconds(50);
                     const semaphore2 = semaphoreProvider.create(key, {
                         ttl: ttl2,
                         limit,
                     });
-                    await semaphore2.acquire();
-                    const deserializedSemaphore2 =
+                    const deserialziedSemaphore2 =
                         serde.deserialize<ISemaphore>(
                             serde.serialize(semaphore2),
                         );
-                    const state2 = await semaphore2.getState();
-                    const deserializedState2 =
-                        await deserializedSemaphore2.getState();
 
-                    expect(state2?.isExpired()).toBe(
-                        deserializedState2?.isExpired(),
-                    );
+                    const state = await deserialziedSemaphore2.getState();
 
-                    const ttl3 = TimeSpan.fromMinutes(2);
-                    const semaphore3 = semaphoreProvider.create(key, {
-                        ttl: ttl3,
+                    expect(state).toEqual({
+                        type: SEMAPHORE_STATE.UNACQUIRED,
                         limit,
-                    });
-                    await semaphore3.acquire();
-                    const deserializedSemaphore3 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore3),
-                        );
-                    const state3 = await semaphore3.getState();
-                    const deserializedState3 =
-                        await deserializedSemaphore3.getState();
-
-                    expect(state3?.isExpired()).toBe(
-                        deserializedState3?.isExpired(),
-                    );
+                        freeSlotsCount: limit - 1,
+                        acquiredSlotsCount: 1,
+                        acquiredSlots: [semaphore1.getId()],
+                    } satisfies ISemaphoreUnacquiredState);
                 });
-                test("Should preserve isAcquired", async () => {
+                test("Should return ISemaphoreUnacquiredState when is derserialized and slot is expired", async () => {
                     const key = "a";
-                    const limit = 2;
+                    const limit = 3;
 
                     const ttl1 = null;
                     const semaphore1 = semaphoreProvider.create(key, {
@@ -6605,57 +6229,32 @@ export function semaphoreProviderTestSuite(
                         limit,
                     });
                     await semaphore1.acquire();
-                    const deserializedSemaphore1 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore1),
-                        );
-                    const state1 = await semaphore1.getState();
-                    const deserializedState1 =
-                        await deserializedSemaphore1.getState();
 
-                    expect(state1?.isAcquired()).toBe(
-                        deserializedState1?.isAcquired(),
-                    );
-
-                    const ttl2 = TimeSpan.fromMinutes(2);
+                    const ttl2 = TimeSpan.fromMilliseconds(50);
                     const semaphore2 = semaphoreProvider.create(key, {
                         ttl: ttl2,
                         limit,
                     });
-                    await semaphore2.acquire();
                     const deserializedSemaphore2 =
                         serde.deserialize<ISemaphore>(
                             serde.serialize(semaphore2),
                         );
-                    const state2 = await semaphore2.getState();
-                    const deserializedState2 =
-                        await deserializedSemaphore2.getState();
+                    await deserializedSemaphore2.acquire();
+                    await delay(ttl2);
 
-                    expect(state2?.isAcquired()).toBe(
-                        deserializedState2?.isAcquired(),
-                    );
+                    const state = await deserializedSemaphore2.getState();
 
-                    const ttl3 = TimeSpan.fromMinutes(2);
-                    const semaphore3 = semaphoreProvider.create(key, {
-                        ttl: ttl3,
+                    expect(state).toEqual({
+                        type: SEMAPHORE_STATE.UNACQUIRED,
                         limit,
-                    });
-                    await semaphore3.acquire();
-                    const deserializedSemaphore3 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore3),
-                        );
-                    const state3 = await semaphore3.getState();
-                    const deserializedState3 =
-                        await deserializedSemaphore3.getState();
-
-                    expect(state3?.isAcquired()).toBe(
-                        deserializedState3?.isAcquired(),
-                    );
+                        freeSlotsCount: limit - 1,
+                        acquiredSlotsCount: 1,
+                        acquiredSlots: [semaphore1.getId()],
+                    } satisfies ISemaphoreUnacquiredState);
                 });
-                test("Should preserve getRemainingTime", async () => {
+                test("Should return ISemaphoreAcquiredState when is derserialized and slot is unexpired", async () => {
                     const key = "a";
-                    const limit = 2;
+                    const limit = 3;
 
                     const ttl1 = null;
                     const semaphore1 = semaphoreProvider.create(key, {
@@ -6663,66 +6262,58 @@ export function semaphoreProviderTestSuite(
                         limit,
                     });
                     await semaphore1.acquire();
-                    const deserializedSemaphore1 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore1),
-                        );
-                    const state1 = await semaphore1.getState();
-                    const deserializedState1 =
-                        await deserializedSemaphore1.getState();
 
-                    const currentDate = new Date();
-                    expect(
-                        state1?.getRemainingTime()?.toEndDate(currentDate),
-                    ).toEqual(
-                        deserializedState1
-                            ?.getRemainingTime()
-                            ?.toEndDate(currentDate),
-                    );
-
-                    const ttl2 = TimeSpan.fromMinutes(2);
+                    const ttl2 = TimeSpan.fromMilliseconds(50);
                     const semaphore2 = semaphoreProvider.create(key, {
                         ttl: ttl2,
                         limit,
                     });
-                    await semaphore2.acquire();
                     const deserializedSemaphore2 =
                         serde.deserialize<ISemaphore>(
                             serde.serialize(semaphore2),
                         );
-                    const state2 = await semaphore2.getState();
-                    const deserializedState2 =
-                        await deserializedSemaphore2.getState();
+                    await deserializedSemaphore2.acquire();
 
-                    expect(
-                        state2?.getRemainingTime()?.toEndDate(currentDate),
-                    ).toEqual(
-                        deserializedState2
-                            ?.getRemainingTime()
-                            ?.toEndDate(currentDate),
-                    );
+                    const state = await deserializedSemaphore2.getState();
 
-                    const ttl3 = TimeSpan.fromMinutes(2);
-                    const semaphore3 = semaphoreProvider.create(key, {
-                        ttl: ttl3,
+                    expect(state).toEqual({
+                        type: SEMAPHORE_STATE.ACQUIRED,
+                        limit,
+                        freeSlotsCount: limit - 2,
+                        acquiredSlotsCount: 2,
+                        acquiredSlots: [semaphore1.getId(), semaphore2.getId()],
+                        remainingTime: ttl2,
+                    } satisfies ISemaphoreAcquiredState);
+                });
+                test("Should return ISemaphoreLimitReachedState when is derserialized and limit is reached", async () => {
+                    const key = "a";
+                    const limit = 1;
+
+                    const ttl1 = null;
+                    const semaphore1 = semaphoreProvider.create(key, {
+                        ttl: ttl1,
                         limit,
                     });
-                    await semaphore3.acquire();
-                    const deserializedSemaphore3 =
-                        serde.deserialize<ISemaphore>(
-                            serde.serialize(semaphore3),
-                        );
-                    const state3 = await semaphore3.getState();
-                    const deserializedState3 =
-                        await deserializedSemaphore3.getState();
+                    await semaphore1.acquire();
 
-                    expect(
-                        state3?.getRemainingTime()?.toEndDate(currentDate),
-                    ).toEqual(
-                        deserializedState3
-                            ?.getRemainingTime()
-                            ?.toEndDate(currentDate),
-                    );
+                    const ttl2 = TimeSpan.fromMilliseconds(50);
+                    const semaphore2 = semaphoreProvider.create(key, {
+                        ttl: ttl2,
+                        limit,
+                    });
+                    const deserializedSemaphore2 =
+                        serde.deserialize<ISemaphore>(
+                            serde.serialize(semaphore2),
+                        );
+                    await delay(ttl2);
+
+                    const state = await deserializedSemaphore2.getState();
+
+                    expect(state).toEqual({
+                        type: SEMAPHORE_STATE.LIMIT_REACHED,
+                        limit,
+                        acquiredSlots: [semaphore1.getId()],
+                    } satisfies ISemaphoreLimitReachedState);
                 });
             });
         }

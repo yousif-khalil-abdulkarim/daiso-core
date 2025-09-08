@@ -6,6 +6,7 @@ import {
     type SuiteAPI,
     type ExpectStatic,
     type beforeEach,
+    vi,
 } from "vitest";
 import { type ISemaphoreAdapter } from "@/semaphore/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
@@ -1046,49 +1047,66 @@ export function semaphoreAdapterTestSuite(
 
                 expect(state?.acquiredSlots.size).toBe(2);
             });
-            test("Should return unexpireable or unexpired slots when key exists", async () => {
+            test("Should return slot when key exists, slot exists and slot is unexpired", async () => {
                 const key = "a";
                 const limit = 3;
 
-                const slotId1 = "1";
-                const ttl1 = null;
+                const slotId = "a";
+                const ttl = null;
                 await adapter.acquire({
                     key,
                     limit,
-                    slotId: slotId1,
-                    ttl: ttl1,
+                    slotId,
+                    ttl: ttl,
                 });
-
-                const slotId2 = "2";
-                const ttl2 = TimeSpan.fromMilliseconds(100);
-                await adapter.acquire({
-                    key,
-                    limit,
-                    slotId: slotId2,
-                    ttl: ttl2,
-                });
-
-                const slotId3 = "3";
-                const ttl3 = TimeSpan.fromMilliseconds(40);
-                await adapter.acquire({
-                    key,
-                    limit,
-                    slotId: slotId3,
-                    ttl: ttl3,
-                });
-                await delay(ttl3);
 
                 const state = await adapter.getState(key);
 
-                const slot1 = state?.acquiredSlots.get(slotId1);
-                expect(slot1).toBeNull();
+                expect({
+                    ...state,
+                    acquiredSlots: Object.fromEntries(
+                        state?.acquiredSlots ?? [],
+                    ),
+                }).toEqual({
+                    limit,
+                    acquiredSlots: {
+                        [slotId]: ttl,
+                    },
+                });
+            });
+            test("Should return slot when key exists, slot exists and slot is unexpireable", async () => {
+                const key = "a";
+                const limit = 3;
 
-                const slot2 = state?.acquiredSlots.get(slotId2);
-                expect(slot2).toBeInstanceOf(Date);
-                expect(slot2?.getTime()).toBeGreaterThan(new Date().getTime());
+                const slotId = "a";
+                const ttl = TimeSpan.fromMinutes(5);
+                let expiration: Date;
+                try {
+                    vi.useFakeTimers();
+                    expiration = ttl.toEndDate();
+                    await adapter.acquire({
+                        key,
+                        limit,
+                        slotId,
+                        ttl: ttl,
+                    });
+                } finally {
+                    vi.useRealTimers();
+                }
 
-                const slot3 = state?.acquiredSlots.get(slotId3);
-                expect(slot3).toBeUndefined();
+                const state = await adapter.getState(key);
+
+                expect({
+                    ...state,
+                    acquiredSlots: Object.fromEntries(
+                        state?.acquiredSlots ?? [],
+                    ),
+                }).toEqual({
+                    limit,
+                    acquiredSlots: {
+                        [slotId]: expiration,
+                    },
+                });
             });
         });
     });

@@ -18,12 +18,13 @@ import {
     FailedReleaseSemaphoreError,
     SemaphoreError,
     SEMAPHORE_EVENTS,
+    SEMAPHORE_STATE,
 } from "@/semaphore/contracts/_module-exports.js";
 import type { ISemaphoreState } from "@/semaphore/contracts/_module-exports.js";
-import type {
-    InvokableFn,
-    Namespace,
+import {
     TimeSpan,
+    type InvokableFn,
+    type Namespace,
 } from "@/utilities/_module-exports.js";
 import type { Key } from "@/utilities/_module-exports.js";
 import {
@@ -33,7 +34,6 @@ import {
     type AsyncLazy,
     type Result,
 } from "@/utilities/_module-exports.js";
-import { SemaphoreState } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore-state.js";
 
 /**
  * @internal
@@ -432,17 +432,50 @@ export class Semaphore implements ISemaphore {
         return this.ttl;
     }
 
-    getState(): LazyPromise<ISemaphoreState | null> {
+    getState(): LazyPromise<ISemaphoreState> {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(
-                async (): Promise<ISemaphoreState | null> => {
+                async (): Promise<ISemaphoreState> => {
                     const state = await this.adapter.getState(
                         this.key.namespaced,
                     );
                     if (state === null) {
-                        return null;
+                        return {
+                            type: SEMAPHORE_STATE.EXPIRED,
+                        };
                     }
-                    return new SemaphoreState(state, this.slotId);
+
+                    if (state.acquiredSlots.size >= state.limit) {
+                        return {
+                            type: SEMAPHORE_STATE.LIMIT_REACHED,
+                            limit: state.limit,
+                            acquiredSlots: [...state.acquiredSlots.keys()],
+                        };
+                    }
+
+                    const slot = state.acquiredSlots.get(this.slotId);
+                    if (slot === undefined) {
+                        return {
+                            type: SEMAPHORE_STATE.UNACQUIRED,
+                            acquiredSlots: [...state.acquiredSlots.keys()],
+                            acquiredSlotsCount: state.acquiredSlots.size,
+                            freeSlotsCount:
+                                state.limit - state.acquiredSlots.size,
+                            limit: state.limit,
+                        };
+                    }
+
+                    return {
+                        type: SEMAPHORE_STATE.ACQUIRED,
+                        acquiredSlots: [...state.acquiredSlots.keys()],
+                        acquiredSlotsCount: state.acquiredSlots.size,
+                        freeSlotsCount: state.limit - state.acquiredSlots.size,
+                        limit: state.limit,
+                        remainingTime:
+                            slot === null
+                                ? null
+                                : TimeSpan.fromDateRange(new Date(), slot),
+                    };
                 },
             );
         });
