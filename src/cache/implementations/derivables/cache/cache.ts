@@ -23,10 +23,7 @@ import {
     resolveInvokable,
     validate,
 } from "@/utilities/_module-exports.js";
-import {
-    type AsyncLazyable,
-    type OneOrMore,
-} from "@/utilities/_module-exports.js";
+import type { AsyncLazyable } from "@/utilities/_module-exports.js";
 import { type NoneFunc, Namespace } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
@@ -266,21 +263,21 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return this.lazyPromiseFactory(asyncFn);
     }
 
-    exists(key: OneOrMore<string>): LazyPromise<boolean> {
+    exists(key: string): LazyPromise<boolean> {
         return this.lazyPromiseFactory(async () => {
             const value = await this.get(key);
             return value !== null;
         });
     }
 
-    missing(key: OneOrMore<string>): LazyPromise<boolean> {
+    missing(key: string): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             const hasKey = await this.exists(key);
             return !hasKey;
         });
     }
 
-    get(key: OneOrMore<string>): LazyPromise<TType | null> {
+    get(key: string): LazyPromise<TType | null> {
         return this.createLazyPromise(async () => {
             const keyObj = this.namespace._getInternal().create(key);
             try {
@@ -318,7 +315,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    getOrFail(key: OneOrMore<string>): LazyPromise<TType> {
+    getOrFail(key: string): LazyPromise<TType> {
         return this.createLazyPromise<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
@@ -330,7 +327,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    getAndRemove(key: OneOrMore<string>): LazyPromise<TType | null> {
+    getAndRemove(key: string): LazyPromise<TType | null> {
         return this.createLazyPromise(async () => {
             const keyObj = this.namespace._getInternal().create(key);
             try {
@@ -376,7 +373,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     getOr(
-        key: OneOrMore<string>,
+        key: string,
         defaultValue: AsyncLazyable<NoneFunc<TType>>,
     ): LazyPromise<TType> {
         return this.createLazyPromise<TType>(async () => {
@@ -391,7 +388,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     getOrAdd(
-        key: OneOrMore<string>,
+        key: string,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,
         ttl?: ITimeSpan | null,
     ): LazyPromise<TType> {
@@ -408,7 +405,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     add(
-        key: OneOrMore<string>,
+        key: string,
         value: TType,
         ttl: ITimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
@@ -449,7 +446,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     put(
-        key: OneOrMore<string>,
+        key: string,
         value: TType,
         ttl: ITimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
@@ -497,7 +494,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    update(key: OneOrMore<string>, value: TType): LazyPromise<boolean> {
+    update(key: string, value: TType): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             const keyObj = this.namespace._getInternal().create(key);
             try {
@@ -537,7 +534,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     increment(
-        key: OneOrMore<string>,
+        key: string,
         value = 0 as Extract<TType, number>,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
@@ -591,7 +588,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     decrement(
-        key: OneOrMore<string>,
+        key: string,
         value = 0 as Extract<TType, number>,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
@@ -599,7 +596,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    remove(key: OneOrMore<string>): LazyPromise<boolean> {
+    remove(key: string): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             const keyObj = this.namespace._getInternal().create(key);
             try {
@@ -634,7 +631,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    removeMany(keys: Iterable<OneOrMore<string>>): LazyPromise<boolean> {
+    removeMany(keys: Iterable<string>): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
             const keysArr = [...keys];
             if (keysArr.length === 0) {
