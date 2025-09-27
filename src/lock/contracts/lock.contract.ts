@@ -7,7 +7,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
     Result,
-    TimeSpan,
+    ITimeSpan,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type {
@@ -26,8 +26,8 @@ import type { ILockState } from "@/lock/contracts/lock-state.contract.js";
  * @group Contracts
  */
 export type LockAquireBlockingSettings = {
-    time?: TimeSpan;
-    interval?: TimeSpan;
+    time?: ITimeSpan;
+    interval?: ITimeSpan;
 };
 
 /**
@@ -51,7 +51,7 @@ export type ILockStateMethods = {
     /**
      * The `ttl` of `ILock` instance.
      */
-    readonly ttl: TimeSpan | null;
+    readonly ttl: ITimeSpan | null;
 };
 
 /**
@@ -153,7 +153,7 @@ export type ILockBase = {
      *
      * @returns Returns true if the lock is refreshed otherwise false is returned.
      */
-    refresh(ttl?: TimeSpan): LazyPromise<boolean>;
+    refresh(ttl?: ITimeSpan): LazyPromise<boolean>;
 
     /**
      * The `refreshOrFail` method updates the `ttl` of the lock if expireable and owned by the same owner.
@@ -162,7 +162,7 @@ export type ILockBase = {
      *
      * @throws {FailedRefreshLockError} {@link FailedRefreshLockError}
      */
-    refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
+    refreshOrFail(ttl?: ITimeSpan): LazyPromise<void>;
 };
 
 /**
