@@ -2,16 +2,14 @@
  * @module Async
  */
 
-import type {
-    InferResultError,
-    ITimeSpan,
-} from "@/utilities/_module-exports.js";
+import type { InferResultError } from "@/utilities/_module-exports.js";
 import {
     type Invokable,
     type HookContext,
 } from "@/utilities/_module-exports.js";
 import { type BackoffPolicy } from "@/async/backof-policies/_module.js";
 import { type ErrorPolicySettings } from "@/utilities/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *

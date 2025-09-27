@@ -8,7 +8,8 @@ import type {
 } from "@/semaphore/contracts/_module-exports.js";
 import { describe, expect, test } from "vitest";
 import { isDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/is-database-semaphore-adapter.js";
-import type { InvokableFn, TimeSpan } from "@/utilities/_module-exports.js";
+import type { InvokableFn } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 describe("function: isDatabaseSemaphoreAdapter", () => {
     test("Should return true when given IDatabaseSemaphoreAdapter", () => {

@@ -27,8 +27,6 @@ import {
     Namespace,
     resolveInvokable,
     resolveOneOrMore,
-    TimeSpan,
-    type ITimeSpan,
     type AsyncLazy,
     type Factory,
     type FactoryFn,
@@ -39,6 +37,8 @@ import { Semaphore } from "@/semaphore/implementations/derivables/semaphore-prov
 import { v4 } from "uuid";
 import { SemaphoreSerdeTransformer } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore-serde-transformer.js";
 import { resolveDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/resolve-database-semaphore-adapter.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *

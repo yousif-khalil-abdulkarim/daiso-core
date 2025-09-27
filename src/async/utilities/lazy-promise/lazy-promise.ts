@@ -5,16 +5,16 @@ import {
     AsyncHooks,
     type AsyncLazy,
     type AsyncMiddleware,
-    type ITimeSpan,
     type Invokable,
     type InvokableFn,
     type OneOrMore,
     type Promisable,
-    TimeSpan,
     callInvokable,
     resolveAsyncLazyable,
 } from "@/utilities/_module-exports.js";
 import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

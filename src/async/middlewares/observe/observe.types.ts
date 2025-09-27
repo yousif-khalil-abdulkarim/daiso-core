@@ -2,10 +2,8 @@
  * @module Async
  */
 
-import type {
-    InferResultSuccess,
-    TimeSpan,
-} from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { InferResultSuccess } from "@/utilities/_module-exports.js";
 import { type HookContext } from "@/utilities/_module-exports.js";
 import { type Invokable } from "@/utilities/_module-exports.js";
 

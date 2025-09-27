@@ -2,7 +2,6 @@
  * @module Async
  */
 
-import type { ITimeSpan } from "@/utilities/_module-exports.js";
 import {
     type InvokableFn,
     type Promisable,
@@ -11,6 +10,7 @@ import {
 import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 import { v4 } from "uuid";
 import { CapacityFullAsyncError } from "@/async/async.errors.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  * @internal

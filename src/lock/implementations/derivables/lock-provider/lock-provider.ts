@@ -3,9 +3,7 @@
  */
 
 import {
-    TimeSpan,
     CORE,
-    type ITimeSpan,
     type Factory,
     type AsyncLazy,
     type FactoryFn,
@@ -43,6 +41,8 @@ import { v4 } from "uuid";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
 import { resolveDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-database-lock-adapter.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *

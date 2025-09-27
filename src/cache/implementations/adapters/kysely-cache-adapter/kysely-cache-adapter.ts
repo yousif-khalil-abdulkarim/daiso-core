@@ -16,8 +16,8 @@ import type {
     IInitizable,
     IPrunable,
 } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ExpressionWrapper, SqlBool, Kysely } from "kysely";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

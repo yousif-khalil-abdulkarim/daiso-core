@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 /**
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type IDatabaseLockAdapter,
     type ILockAdapter,
     type ILockAdapterState,
 } from "@/lock/contracts/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  * @internal

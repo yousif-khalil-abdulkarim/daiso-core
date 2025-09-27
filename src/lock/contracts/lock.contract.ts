@@ -7,7 +7,6 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
     Result,
-    ITimeSpan,
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type {
@@ -19,6 +18,7 @@ import type {
     FailedRefreshLockError,
 } from "@/lock/contracts/lock.errors.js";
 import type { ILockState } from "@/lock/contracts/lock-state.contract.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *

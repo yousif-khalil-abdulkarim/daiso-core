@@ -2,7 +2,8 @@
  * @module Async
  */
 
-import type { Invokable, ITimeSpan } from "@/utilities/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import type { Invokable } from "@/utilities/_module-exports.js";
 
 /**
  * @returns Amount milliseconds to wait

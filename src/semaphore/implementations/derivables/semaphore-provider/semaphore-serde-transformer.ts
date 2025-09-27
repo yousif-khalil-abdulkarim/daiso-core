@@ -7,7 +7,7 @@ import {
     Semaphore,
     type ISerializedSemaphore,
 } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore.js";
-import { TimeSpan, type OneOrMore } from "@/utilities/_module-exports.js";
+import { type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseSemaphoreAdapter,
     ISemaphoreAdapter,
@@ -20,6 +20,7 @@ import {
 } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  * @internal

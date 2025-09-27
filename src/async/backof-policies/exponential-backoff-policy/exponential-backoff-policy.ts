@@ -2,18 +2,17 @@
  * @module Async
  */
 
-import {
-    callInvokable,
-    isInvokable,
-    type ITimeSpan,
-    TimeSpan,
-    TO_MILLISECONDS,
-} from "@/utilities/_module-exports.js";
+import { callInvokable, isInvokable } from "@/utilities/_module-exports.js";
 import type {
     BackoffPolicy,
     DynamicBackoffPolicy,
 } from "@/async/backof-policies/_shared.js";
 import { withJitter } from "@/async/backof-policies/_shared.js";
+import {
+    TO_MILLISECONDS,
+    type ITimeSpan,
+} from "@/time-span/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

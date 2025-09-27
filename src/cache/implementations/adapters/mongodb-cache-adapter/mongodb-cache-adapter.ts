@@ -12,7 +12,6 @@ import {
     UnexpectedError,
     type IDeinitizable,
     type IInitizable,
-    type TimeSpan,
 } from "@/utilities/_module-exports.js";
 import { MongoServerError, type ObjectId } from "mongodb";
 import {
@@ -24,6 +23,7 @@ import {
 import escapeStringRegexp from "escape-string-regexp";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

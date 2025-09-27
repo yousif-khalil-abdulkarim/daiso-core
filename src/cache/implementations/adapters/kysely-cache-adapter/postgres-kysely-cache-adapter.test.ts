@@ -7,7 +7,7 @@ import { Kysely, PostgresDialect } from "kysely";
 import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { Pool } from "pg";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("postgres class: KyselyCacheAdapter", () => {

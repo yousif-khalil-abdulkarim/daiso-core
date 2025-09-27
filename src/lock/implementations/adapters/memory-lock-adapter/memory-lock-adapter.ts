@@ -2,11 +2,12 @@
  * @module Lock
  */
 
-import type { IDeinitizable, TimeSpan } from "@/utilities/_module-exports.js";
+import type { IDeinitizable } from "@/utilities/_module-exports.js";
 import type {
     ILockAdapter,
     ILockAdapterState,
 } from "@/lock/contracts/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

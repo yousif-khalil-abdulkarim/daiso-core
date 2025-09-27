@@ -4,8 +4,6 @@
 
 import {
     callInvokable,
-    TimeSpan,
-    type ITimeSpan,
     type AsyncMiddlewareFn,
     type HookContext,
     type Invokable,
@@ -13,6 +11,8 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { CapacityFullAsyncError } from "@/async/async.errors.js";
 import { PromiseQueue } from "@/async/utilities/promise-queue/_module.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

@@ -9,8 +9,8 @@ import type {
     ISemaphoreSlotData,
     ISemaphoreSlotExpirationData,
 } from "@/semaphore/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import {
-    TimeSpan,
     type IDeinitizable,
     type IInitizable,
     type InvokableFn,

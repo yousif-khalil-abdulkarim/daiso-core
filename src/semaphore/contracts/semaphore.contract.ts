@@ -3,11 +3,7 @@
  */
 
 import type { LazyPromise } from "@/async/_module-exports.js";
-import type {
-    AsyncLazy,
-    Result,
-    ITimeSpan,
-} from "@/utilities/_module-exports.js";
+import type { AsyncLazy, Result } from "@/utilities/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     LimitReachedSemaphoreError,
@@ -17,6 +13,7 @@ import type {
     FailedReleaseSemaphoreError,
 } from "@/semaphore/contracts/semaphore.errors.js";
 import type { ISemaphoreState } from "@/semaphore/contracts/semaphore-state.contract.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *

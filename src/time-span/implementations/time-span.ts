@@ -1,13 +1,9 @@
-/**
- * @module Utilities
- */
-
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 import {
-    type IComparable,
-    type ITimeSpan,
     TO_MILLISECONDS,
-} from "@/utilities/_module-exports.js";
+    type ITimeSpan,
+} from "@/time-span/contracts/_module-exports.js";
+import type { IComparable } from "@/utilities/_module-exports.js";
 
 /**
  * The `TimeSpan` class is used for representing time interval.

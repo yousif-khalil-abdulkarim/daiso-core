@@ -2,10 +2,10 @@
  * @module Semaphore
  */
 
-import type { ITimeSpan } from "@/utilities/_module-exports.js";
 import type { ISemaphore } from "@/semaphore/contracts/semaphore.contract.js";
 import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 import type { SemaphoreEventMap } from "@/semaphore/contracts/semaphore.events.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  * The `ISemaphoreListenable` contract defines a way for listening {@link ISemaphore | `ISemaphore`} operations.

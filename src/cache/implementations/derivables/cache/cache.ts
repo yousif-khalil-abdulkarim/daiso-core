@@ -27,12 +27,7 @@ import {
     type AsyncLazyable,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
-import {
-    type NoneFunc,
-    type ITimeSpan,
-    Namespace,
-    TimeSpan,
-} from "@/utilities/_module-exports.js";
+import { type NoneFunc, Namespace } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     IEventBus,
@@ -51,6 +46,8 @@ import type {
     FactoryFn,
 } from "@/utilities/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

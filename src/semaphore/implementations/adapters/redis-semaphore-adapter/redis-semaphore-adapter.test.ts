@@ -6,7 +6,7 @@ import {
     RedisContainer,
     type StartedRedisContainer,
 } from "@testcontainers/redis";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisSemaphoreAdapter", () => {

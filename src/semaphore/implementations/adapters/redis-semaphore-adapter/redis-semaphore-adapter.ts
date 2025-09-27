@@ -2,12 +2,12 @@
  * @module Semaphore
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type {
     ISemaphoreAdapter,
     ISemaphoreAdapterState,
     SemaphoreAcquireSettings,
 } from "@/semaphore/contracts/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { Redis, Result } from "ioredis";
 
 /**

@@ -17,13 +17,13 @@ import type {
     AsyncLazy,
     Factory,
     Invokable,
-    TimeSpan,
 } from "@/utilities/_module-exports.js";
 import {
     LockProvider,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *
@@ -103,7 +103,7 @@ export class LockProviderFactory<TAdapters extends string>
         });
     }
 
-    setDefaultTtl(ttl: TimeSpan): LockProviderFactory<TAdapters> {
+    setDefaultTtl(ttl: ITimeSpan): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
             defaultTtl: ttl,
@@ -111,7 +111,7 @@ export class LockProviderFactory<TAdapters extends string>
     }
 
     setDefaultBlockingInterval(
-        interval: TimeSpan,
+        interval: ITimeSpan,
     ): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
@@ -119,14 +119,14 @@ export class LockProviderFactory<TAdapters extends string>
         });
     }
 
-    setDefaultBlockingTime(time: TimeSpan): LockProviderFactory<TAdapters> {
+    setDefaultBlockingTime(time: ITimeSpan): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
             defaultBlockingTime: time,
         });
     }
 
-    setDefaultRefreshTime(time: TimeSpan): LockProviderFactory<TAdapters> {
+    setDefaultRefreshTime(time: ITimeSpan): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
             defaultRefreshTime: time,

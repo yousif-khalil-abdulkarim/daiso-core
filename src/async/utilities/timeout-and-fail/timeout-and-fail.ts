@@ -2,11 +2,11 @@
  * @module Async
  */
 import { TimeoutAsyncError } from "@/async/async.errors.js";
+import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
 import {
     TO_MILLISECONDS,
     type ITimeSpan,
-} from "@/utilities/_module-exports.js";
-import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
+} from "@/time-span/contracts/_module-exports.js";
 
 /**
  * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}

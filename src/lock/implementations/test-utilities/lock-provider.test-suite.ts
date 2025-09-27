@@ -33,13 +33,13 @@ import {
 import {
     RESULT,
     resultSuccess,
-    TO_MILLISECONDS,
     type Promisable,
     type ResultFailure,
 } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TO_MILLISECONDS } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *

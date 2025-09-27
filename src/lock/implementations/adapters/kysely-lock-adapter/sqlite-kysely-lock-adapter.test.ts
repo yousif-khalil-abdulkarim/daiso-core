@@ -11,7 +11,7 @@ import {
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 describe("sqlite class: KyselyLockAdapter", () => {
     let database: Database;

@@ -13,16 +13,13 @@ import {
     resolveOneOrMore,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
-import type {
-    AsyncLazy,
-    Factory,
-    TimeSpan,
-} from "@/utilities/_module-exports.js";
+import type { AsyncLazy, Factory } from "@/utilities/_module-exports.js";
 import {
     SemaphoreProvider,
     type SemaphoreProviderSettingsBase,
 } from "@/semaphore/implementations/derivables/semaphore-provider/_module.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *
@@ -72,7 +69,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
         });
     }
 
-    setDefaultTtl(ttl: TimeSpan): SemaphoreProviderFactory<TAdapters> {
+    setDefaultTtl(ttl: ITimeSpan): SemaphoreProviderFactory<TAdapters> {
         return new SemaphoreProviderFactory({
             ...this.settings,
             defaultTtl: ttl,
@@ -80,7 +77,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
     }
 
     setDefaultBlockingInterval(
-        interval: TimeSpan,
+        interval: ITimeSpan,
     ): SemaphoreProviderFactory<TAdapters> {
         return new SemaphoreProviderFactory({
             ...this.settings,
@@ -89,7 +86,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
     }
 
     setDefaultBlockingTime(
-        time: TimeSpan,
+        time: ITimeSpan,
     ): SemaphoreProviderFactory<TAdapters> {
         return new SemaphoreProviderFactory({
             ...this.settings,
@@ -97,7 +94,9 @@ export class SemaphoreProviderFactory<TAdapters extends string>
         });
     }
 
-    setDefaultRefreshTime(time: TimeSpan): SemaphoreProviderFactory<TAdapters> {
+    setDefaultRefreshTime(
+        time: ITimeSpan,
+    ): SemaphoreProviderFactory<TAdapters> {
         return new SemaphoreProviderFactory({
             ...this.settings,
             defaultRefreshTime: time,
