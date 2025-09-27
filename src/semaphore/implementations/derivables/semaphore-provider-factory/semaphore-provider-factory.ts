@@ -129,7 +129,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
             ...this.settings,
             adapter,
             namespace: new Namespace([
-                ...resolveOneOrMore(namespace._getInternal().original),
+                ...resolveOneOrMore(namespace._internal_get().original),
                 adapterName,
             ]),
             serdeTransformerName: adapterName,

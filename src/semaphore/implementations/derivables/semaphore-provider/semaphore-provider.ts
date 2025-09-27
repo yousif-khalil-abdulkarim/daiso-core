@@ -299,9 +299,9 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         } = settings;
         isPositiveNbr(limit);
 
-        const keyObj = this.namespace._getInternal().create(key);
+        const keyObj = this.namespace._internal_get().create(key);
         const slotIdAsStr = this.namespace
-            ._getInternal()
+            ._internal_get()
             .create(slotId).resolved;
         return new Semaphore({
             slotId: slotIdAsStr,

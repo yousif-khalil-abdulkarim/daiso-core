@@ -66,7 +66,7 @@ describe("class: EventBus", () => {
 
                 await eventBus.addListener("add", listener);
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -90,7 +90,7 @@ describe("class: EventBus", () => {
 
                 await eventBus.listenOnce("add", listener);
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -112,7 +112,7 @@ describe("class: EventBus", () => {
 
                 eventBus.asPromise("add").defer();
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -138,7 +138,7 @@ describe("class: EventBus", () => {
                     listener,
                 );
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -162,7 +162,7 @@ describe("class: EventBus", () => {
 
                 const unsubscribe = await eventBus.subscribe("add", listener);
                 await adapter.dispatch(
-                    namespace._getInternal().create("add").namespaced,
+                    namespace._internal_get().create("add").namespaced,
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));

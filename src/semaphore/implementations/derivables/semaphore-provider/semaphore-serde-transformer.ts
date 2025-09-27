@@ -87,7 +87,7 @@ export class SemaphoreSerdeTransformer
             "semaphore",
             this.serdeTransformerName,
             getConstructorName(this.originalAdapter),
-            this.namespace._getInternal().namespaced,
+            this.namespace._internal_get().namespaced,
         ].filter((str) => str !== "");
     }
 
@@ -104,8 +104,8 @@ export class SemaphoreSerdeTransformer
             this.serdeTransformerName;
 
         const isNamespaceMatching =
-            this.namespace._getInternal().namespaced ===
-            value._internal_getNamespace()._getInternal().namespaced;
+            this.namespace._internal_get().namespaced ===
+            value._internal_getNamespace()._internal_get().namespaced;
 
         const isAdapterMatching =
             getConstructorName(this.originalAdapter) ===
@@ -120,7 +120,7 @@ export class SemaphoreSerdeTransformer
 
     deserialize(serializedValue: ISerializedSemaphore): Semaphore {
         const { key, slotId, limit, ttlInMs } = serializedValue;
-        const keyObj = this.namespace._getInternal().create(key);
+        const keyObj = this.namespace._internal_get().create(key);
         return new Semaphore({
             slotId,
             createLazyPromise: this.createLazyPromise,

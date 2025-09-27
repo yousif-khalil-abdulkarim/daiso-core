@@ -189,7 +189,7 @@ export class Namespace {
     /**
      * @internal
      */
-    _getInternal(): InternalNamespace {
+    _internal_get(): InternalNamespace {
         return new InternalNamespace(this.root, this.settings);
     }
 }
