@@ -8,7 +8,8 @@ import type {
     ILockData,
     ILockExpirationData,
 } from "@/lock/contracts/_module-exports.js";
-import type { InvokableFn, TimeSpan } from "@/utilities/_module-exports.js";
+import type { InvokableFn } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 describe("function: isDatabaseLockAdapter", () => {
     test("Should return true when given IDatabaseLockAdapter", () => {

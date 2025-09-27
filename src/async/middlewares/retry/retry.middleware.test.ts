@@ -3,7 +3,6 @@ import {
     RESULT,
     resultFailure,
     resultSuccess,
-    TimeSpan,
     type ResultFailure,
     type ResultSuccess,
     type Result,
@@ -14,6 +13,8 @@ import type {
     OnRetryAttemptData,
     OnRetryDelayData,
 } from "@/async/middlewares/retry/retry.types.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TO_MILLISECONDS } from "@/time-span/contracts/_module-exports.js";
 
 describe("function: retry", () => {
     describe("With result:", () => {
@@ -210,7 +211,7 @@ describe("function: retry", () => {
                 name: "fetchData",
             });
             expect(data?.error).toBeInstanceOf(Error);
-            expect(data?.waitTime.toMilliseconds()).toBe(25);
+            expect(data?.waitTime[TO_MILLISECONDS]()).toBe(25);
             expect(repetition).toBe(maxAttempts);
         });
         test("Should not call onRetryDelay callback when no failed result is returned", async () => {
@@ -447,7 +448,7 @@ describe("function: retry", () => {
                 name: "fetchData",
             });
             expect(data?.error).toBeInstanceOf(Error);
-            expect(data?.waitTime.toMilliseconds()).toBe(25);
+            expect(data?.waitTime[TO_MILLISECONDS]()).toBe(25);
             expect(repetition).toBe(maxAttempts);
         });
         test("Should not call onRetryDelay callback when no error is thrown", async () => {

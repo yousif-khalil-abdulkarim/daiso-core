@@ -10,8 +10,8 @@ import {
 } from "vitest";
 import { type ISemaphoreAdapter } from "@/semaphore/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

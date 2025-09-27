@@ -19,9 +19,10 @@ import {
     type CacheSettingsBase,
     type CacheAdapterVariants,
 } from "@/cache/implementations/derivables/cache/_module.js";
-import { Namespace, type TimeSpan } from "@/utilities/_module-exports.js";
+import { Namespace } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *
@@ -88,7 +89,7 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
         });
     }
 
-    setDefaultTtl(ttl: TimeSpan): CacheFactory<TAdapters, TType> {
+    setDefaultTtl(ttl: ITimeSpan): CacheFactory<TAdapters, TType> {
         return new CacheFactory({
             ...this.settings,
             defaultTtl: ttl,

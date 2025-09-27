@@ -12,7 +12,8 @@ import {
     type ILockData,
     type ILockExpirationData,
 } from "@/lock/contracts/_module-exports.js";
-import { TimeSpan, type Promisable } from "@/utilities/_module-exports.js";
+import { type Promisable } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

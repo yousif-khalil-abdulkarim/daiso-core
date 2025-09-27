@@ -1,9 +1,9 @@
 /**
  * @module Cache
  */
-import type { TimeSpan } from "@/utilities/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { TypeCacheError } from "@/cache/contracts/cache.errors.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  * The `ICacheAdapter` contract defines a way for key-value pairs independent of data storage.

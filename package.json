@@ -71,7 +71,10 @@
         "Sequential hedging",
         "Parallel hedging",
         "Concurrent hedging",
-        "Latency hedging"
+        "Latency hedging",
+        "Time",
+        "TimeSpan",
+        "Duration"
     ],
     "files": [
         "./dist"
@@ -168,6 +171,14 @@
         "./serde/test-utilities": {
             "types": "./dist/serde/implementations/test-utilities/_module-exports.d.ts",
             "import": "./dist/serde/implementations/test-utilities/_module-exports.js"
+        },
+        "./time-span": {
+            "types": "./dist/time-span/implementations/_module-exports.d.ts",
+            "import": "./dist/time-span/implementations/_module-exports.js"
+        },
+        "./time-span/contracts": {
+            "types": "./dist/time-span/contracts/_module-exports.d.ts",
+            "import": "./dist/time-span/contracts/_module-exports.js"
         },
         "./utilities": {
             "types": "./dist/utilities/_module-exports.d.ts",

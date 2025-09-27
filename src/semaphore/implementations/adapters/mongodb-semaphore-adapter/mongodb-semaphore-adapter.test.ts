@@ -3,11 +3,11 @@ import { semaphoreAdapterTestSuite } from "@/semaphore/implementations/test-util
 import { MongoClient } from "mongodb";
 import type { StartedMongoDBContainer } from "@testcontainers/mongodb";
 import { MongoDBContainer } from "@testcontainers/mongodb";
-import { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     MongodbSemaphoreAdapter,
     type MongodbSemaphoreDocument,
 } from "@/semaphore/implementations/adapters/mongodb-semaphore-adapter/mongodb-semaphore-adapter.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: MongodbSemaphoreAdapter", () => {

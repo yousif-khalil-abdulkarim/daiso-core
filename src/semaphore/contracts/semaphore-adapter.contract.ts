@@ -2,9 +2,9 @@
  * @module Semaphore
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ISemaphoreProvider } from "@/semaphore/contracts/semaphore-provider.contract.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

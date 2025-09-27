@@ -3,7 +3,6 @@
  */
 
 import type { Key } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type InvokableFn,
     type Namespace,
@@ -46,6 +45,7 @@ import {
 } from "@/lock/contracts/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  * @internal
@@ -291,13 +291,16 @@ export class Lock implements ILock {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
             } = settings;
-            const endDate = time.toEndDate();
+
+            const timeAsTimeSpan = TimeSpan.fromTimeSpan(time);
+            const intervalAsTimeSpan = TimeSpan.fromTimeSpan(interval);
+            const endDate = timeAsTimeSpan.toEndDate();
             while (endDate > new Date()) {
                 const hasAquired = await this.acquire();
                 if (hasAquired) {
                     return true;
                 }
-                await LazyPromise.delay(interval);
+                await LazyPromise.delay(intervalAsTimeSpan);
             }
             return false;
         });

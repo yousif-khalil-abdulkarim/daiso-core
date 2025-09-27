@@ -13,9 +13,10 @@ import type {
     LockAdapterVariants,
     LockEventMap,
 } from "@/lock/contracts/_module-exports.js";
-import { getConstructorName, TimeSpan } from "@/utilities/_module-exports.js";
+import { getConstructorName } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  * @internal

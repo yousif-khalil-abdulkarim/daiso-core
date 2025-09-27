@@ -14,8 +14,8 @@ import {
     type IInitizable,
     type InvokableFn,
     type IPrunable,
-    TimeSpan,
 } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

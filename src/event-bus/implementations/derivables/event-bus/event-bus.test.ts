@@ -3,14 +3,11 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memo
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus.js";
 import { eventBusTestSuite } from "@/event-bus/implementations/test-utilities/_module-exports.js";
 import { EventEmitter } from "node:events";
-import {
-    Namespace,
-    TimeSpan,
-    ValidationError,
-} from "@/utilities/_module-exports.js";
+import { Namespace, ValidationError } from "@/utilities/_module-exports.js";
 import { z } from "zod";
 import type { EventListenerFn } from "@/event-bus/contracts/event-bus-adapter.contract.js";
 import { LazyPromise } from "@/async/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 describe("class: EventBus", () => {
     let eventEmitter: EventEmitter;

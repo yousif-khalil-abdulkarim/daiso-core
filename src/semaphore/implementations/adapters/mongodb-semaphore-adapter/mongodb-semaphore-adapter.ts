@@ -2,7 +2,6 @@
  * @module Semaphore
  */
 
-import { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type IDeinitizable,
     type IInitizable,
@@ -15,6 +14,7 @@ import type {
 import type { ObjectId } from "mongodb";
 import { type Document } from "mongodb";
 import { type Collection, type CollectionOptions, type Db } from "mongodb";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

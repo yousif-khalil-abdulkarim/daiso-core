@@ -3,7 +3,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  * The event is dispatched when key is found.

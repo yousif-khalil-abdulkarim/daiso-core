@@ -1,8 +1,9 @@
-/**
- * @module Utilities
- */
-
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
+import {
+    TO_MILLISECONDS,
+    type ITimeSpan,
+} from "@/time-span/contracts/_module-exports.js";
+import type { IComparable } from "@/utilities/_module-exports.js";
 
 /**
  * The `TimeSpan` class is used for representing time interval.
@@ -11,7 +12,9 @@ import type { ISerializable } from "@/serde/contracts/_module-exports.js";
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  * @group TimeSpan
  */
-export class TimeSpan implements ISerializable<number> {
+export class TimeSpan
+    implements ITimeSpan, ISerializable<number>, IComparable<ITimeSpan>
+{
     private static secondInMilliseconds = 1000;
     private static minuteInMilliseconds = 60 * TimeSpan.secondInMilliseconds;
     private static hourInMilliseconds = 60 * TimeSpan.minuteInMilliseconds;
@@ -23,6 +26,26 @@ export class TimeSpan implements ISerializable<number> {
 
     private constructor(private readonly milliseconds: number = 0) {
         this.milliseconds = Math.max(0, this.milliseconds);
+    }
+
+    equals(value: ITimeSpan): boolean {
+        return value[TO_MILLISECONDS]() === this.toMilliseconds();
+    }
+
+    gt(value: ITimeSpan): boolean {
+        return value[TO_MILLISECONDS]() < this.toMilliseconds();
+    }
+
+    gte(value: ITimeSpan): boolean {
+        return value[TO_MILLISECONDS]() <= this.toMilliseconds();
+    }
+
+    lt(value: ITimeSpan): boolean {
+        return value[TO_MILLISECONDS]() > this.toMilliseconds();
+    }
+
+    lte(value: ITimeSpan): boolean {
+        return value[TO_MILLISECONDS]() >= this.toMilliseconds();
     }
 
     serialize(): number {
@@ -49,7 +72,7 @@ export class TimeSpan implements ISerializable<number> {
         return new TimeSpan().addDays(days);
     }
 
-    static fromTimeSpan(timeSpan: TimeSpan): TimeSpan {
+    static fromTimeSpan(timeSpan: ITimeSpan): TimeSpan {
         return new TimeSpan().addTimeSpan(timeSpan);
     }
 
@@ -77,8 +100,8 @@ export class TimeSpan implements ISerializable<number> {
         return this.addMilliseconds(TimeSpan.dayInMilliseconds * days);
     }
 
-    addTimeSpan(timeSpan: TimeSpan): TimeSpan {
-        return this.addMilliseconds(timeSpan.toMilliseconds());
+    addTimeSpan(timeSpan: ITimeSpan): TimeSpan {
+        return this.addMilliseconds(timeSpan[TO_MILLISECONDS]());
     }
 
     subtractMilliseconds(milliseconds: number): TimeSpan {
@@ -105,8 +128,8 @@ export class TimeSpan implements ISerializable<number> {
         return this.subtractMilliseconds(TimeSpan.dayInMilliseconds * days);
     }
 
-    subtractTimeSpan(timeSpan: TimeSpan): TimeSpan {
-        return this.subtractMilliseconds(timeSpan.toMilliseconds());
+    subtractTimeSpan(timeSpan: ITimeSpan): TimeSpan {
+        return this.subtractMilliseconds(timeSpan[TO_MILLISECONDS]());
     }
 
     multiply(value: number): TimeSpan {
@@ -117,8 +140,12 @@ export class TimeSpan implements ISerializable<number> {
         return new TimeSpan(Math.round(this.toMilliseconds() / value));
     }
 
-    toMilliseconds(): number {
+    [TO_MILLISECONDS](): number {
         return this.milliseconds;
+    }
+
+    toMilliseconds(): number {
+        return this[TO_MILLISECONDS]();
     }
 
     toSeconds(): number {

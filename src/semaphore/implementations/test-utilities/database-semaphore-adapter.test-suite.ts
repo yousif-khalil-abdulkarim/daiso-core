@@ -14,7 +14,7 @@ import {
     type ISemaphoreSlotExpirationData,
 } from "@/semaphore/contracts/_module-exports.js";
 import type { Promisable } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *

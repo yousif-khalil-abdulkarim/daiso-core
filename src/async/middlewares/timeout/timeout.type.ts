@@ -2,7 +2,8 @@
  * @module Async
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { type HookContext } from "@/utilities/_module-exports.js";
 import { type Invokable } from "@/utilities/_module-exports.js";
 
@@ -64,5 +65,5 @@ export type TimeoutSettings<
      * TimeSpan.fromSeconds(2)
      * ```
      */
-    waitTime?: TimeSpan;
+    waitTime?: ITimeSpan;
 };

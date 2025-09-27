@@ -4,7 +4,7 @@ import {
     MemoryLockAdapter,
     type MemoryLockData,
 } from "@/lock/implementations/adapters/memory-lock-adapter/_module.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 describe("class: MemoryLockAdapter", () => {
     let map = new Map<string, MemoryLockData>();

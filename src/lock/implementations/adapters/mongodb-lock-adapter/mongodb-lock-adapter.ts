@@ -2,7 +2,6 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
 import {
     type IDeinitizable,
     type IInitizable,
@@ -13,6 +12,7 @@ import type {
 } from "@/lock/contracts/_module-exports.js";
 import type { Collection, CollectionOptions, Db } from "mongodb";
 import type { ObjectId } from "mongodb";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
@@ -51,9 +51,7 @@ export type MongodbLockDocument = {
 export class MongodbLockAdapter
     implements ILockAdapter, IDeinitizable, IInitizable
 {
-    private readonly database: Db;
     private readonly collection: Collection<MongodbLockDocument>;
-    private readonly collectionName: string;
 
     /**
      * @example
@@ -76,8 +74,6 @@ export class MongodbLockAdapter
             collectionSettings,
             database,
         } = settings;
-        this.collectionName = collectionName;
-        this.database = database;
         this.collection = database.collection(
             collectionName,
             collectionSettings,

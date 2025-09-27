@@ -3,7 +3,6 @@
  */
 
 import {
-    TimeSpan,
     CORE,
     type Factory,
     type AsyncLazy,
@@ -42,6 +41,8 @@ import { v4 } from "uuid";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
 import { resolveDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-database-lock-adapter.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *
@@ -102,7 +103,7 @@ export type LockProviderSettingsBase = {
      * TimeSpan.fromMinutes(5);
      * ```
      */
-    defaultTtl?: TimeSpan | null;
+    defaultTtl?: ITimeSpan | null;
 
     /**
      * The default refresh time used in the {@link ILock | `ILock`} `acquireBlocking` and `runBlocking` methods.
@@ -111,7 +112,7 @@ export type LockProviderSettingsBase = {
      * TimeSpan.fromSeconds(1);
      * ```
      */
-    defaultBlockingInterval?: TimeSpan;
+    defaultBlockingInterval?: ITimeSpan;
 
     /**
      * The default refresh time used in the {@link ILock | `ILock`} `acquireBlocking` and `runBlocking` methods.
@@ -120,7 +121,7 @@ export type LockProviderSettingsBase = {
      * TimeSpan.fromMinutes(1);
      * ```
      */
-    defaultBlockingTime?: TimeSpan;
+    defaultBlockingTime?: ITimeSpan;
 
     /**
      * The default refresh time used in the {@link ILock | `ILock`} `referesh` method.
@@ -128,7 +129,7 @@ export type LockProviderSettingsBase = {
      * TimeSpan.fromMinutes(5);
      * ```
      */
-    defaultRefreshTime?: TimeSpan;
+    defaultRefreshTime?: ITimeSpan;
 };
 
 /**
@@ -208,12 +209,15 @@ export class LockProvider implements ILockProvider {
         } = settings;
 
         this.serde = serde;
-        this.defaultBlockingInterval = defaultBlockingInterval;
-        this.defaultBlockingTime = defaultBlockingTime;
-        this.defaultRefreshTime = defaultRefreshTime;
+        this.defaultBlockingInterval = TimeSpan.fromTimeSpan(
+            defaultBlockingInterval,
+        );
+        this.defaultBlockingTime = TimeSpan.fromTimeSpan(defaultBlockingTime);
+        this.defaultRefreshTime = TimeSpan.fromTimeSpan(defaultRefreshTime);
         this.creatLockId = createLockId;
         this.namespace = namespace;
-        this.defaultTtl = defaultTtl;
+        this.defaultTtl =
+            defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
         this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.serdeTransformerName = serdeTransformerName;
@@ -345,7 +349,7 @@ export class LockProvider implements ILockProvider {
             eventDispatcher: this.eventBus,
             key: keyObj,
             lockId,
-            ttl,
+            ttl: ttl === null ? null : TimeSpan.fromTimeSpan(ttl),
             serdeTransformerName: this.serdeTransformerName,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,

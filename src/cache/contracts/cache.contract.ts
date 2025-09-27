@@ -6,7 +6,6 @@ import type { LazyPromise } from "@/async/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
-    TimeSpan,
 } from "@/utilities/_module-exports.js";
 import type {
     AsyncLazyable,
@@ -17,6 +16,7 @@ import type { CacheEventMap } from "@/cache/contracts/cache.events.js";
 import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { TypeCacheError } from "@/cache/contracts/cache.errors.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  * The `ICacheListenable` contract defines a way for listening {@link ICache | `ICache`} operation events.
@@ -109,7 +109,7 @@ export type ICacheBase<TType = unknown> = {
     getOrAdd(
         key: OneOrMore<string>,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,
-        ttl?: TimeSpan | null,
+        ttl?: ITimeSpan | null,
     ): LazyPromise<TType>;
 
     /**
@@ -126,7 +126,7 @@ export type ICacheBase<TType = unknown> = {
     add(
         key: OneOrMore<string>,
         value: TType,
-        ttl?: TimeSpan | null,
+        ttl?: ITimeSpan | null,
     ): LazyPromise<boolean>;
 
     /**
@@ -144,7 +144,7 @@ export type ICacheBase<TType = unknown> = {
     put(
         key: OneOrMore<string>,
         value: TType,
-        ttl?: TimeSpan | null,
+        ttl?: ITimeSpan | null,
     ): LazyPromise<boolean>;
 
     /**

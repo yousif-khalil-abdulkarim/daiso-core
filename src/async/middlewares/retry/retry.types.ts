@@ -2,16 +2,14 @@
  * @module Async
  */
 
-import type {
-    InferResultError,
-    TimeSpan,
-} from "@/utilities/_module-exports.js";
+import type { InferResultError } from "@/utilities/_module-exports.js";
 import {
     type Invokable,
     type HookContext,
 } from "@/utilities/_module-exports.js";
 import { type BackoffPolicy } from "@/async/backof-policies/_module.js";
 import { type ErrorPolicySettings } from "@/utilities/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *
@@ -48,7 +46,7 @@ export type OnRetryDelayData<
 > = {
     error: unknown;
     attempt: number;
-    waitTime: TimeSpan;
+    waitTime: ITimeSpan;
     args: TParameters;
     context: TContext;
 };

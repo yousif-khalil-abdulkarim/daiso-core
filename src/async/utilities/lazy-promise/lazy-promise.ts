@@ -9,11 +9,12 @@ import {
     type InvokableFn,
     type OneOrMore,
     type Promisable,
-    type TimeSpan,
     callInvokable,
     resolveAsyncLazyable,
 } from "@/utilities/_module-exports.js";
 import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
@@ -88,7 +89,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * ```
      */
     static delay(
-        time: TimeSpan,
+        time: ITimeSpan,
         abortSignal: AbortSignal = new AbortController().signal,
     ): LazyPromise<void> {
         return new LazyPromise(async () => {
@@ -98,7 +99,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
                     new Promise<void>((resolve) => {
                         timeoutId = setTimeout(() => {
                             resolve();
-                        }, time.toMilliseconds());
+                        }, TimeSpan.fromTimeSpan(time).toMilliseconds());
                     }),
                     abortSignal,
                 );

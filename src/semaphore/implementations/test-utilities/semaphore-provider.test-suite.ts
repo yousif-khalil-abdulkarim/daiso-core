@@ -36,9 +36,10 @@ import {
     type Promisable,
     type ResultFailure,
 } from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TO_MILLISECONDS } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *
@@ -3764,7 +3765,7 @@ export function semaphoreProviderTestSuite(
                     });
 
                     expect(semaphore.ttl).toBeInstanceOf(TimeSpan);
-                    expect(semaphore.ttl?.toMilliseconds()).toBe(
+                    expect(semaphore.ttl?.[TO_MILLISECONDS]()).toBe(
                         ttl.toMilliseconds(),
                     );
                 });

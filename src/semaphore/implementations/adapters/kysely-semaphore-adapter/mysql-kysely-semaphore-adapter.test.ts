@@ -15,7 +15,7 @@ import {
 import type { StartedMySqlContainer } from "@testcontainers/mysql";
 import { MySqlContainer } from "@testcontainers/mysql";
 import { createPool, type Pool } from "mysql2";
-import { TimeSpan } from "@/utilities/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("mysql class: KyselySemaphoreAdapter", () => {

@@ -2,11 +2,11 @@
  * @module Lock
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type {
     ILockAdapter,
     ILockAdapterState,
 } from "@/lock/contracts/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { Redis } from "ioredis";
 import type { Result } from "ioredis";
 
