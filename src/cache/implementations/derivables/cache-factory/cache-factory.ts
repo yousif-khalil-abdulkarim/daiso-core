@@ -17,7 +17,7 @@ import type {
 import {
     Cache,
     type CacheSettingsBase,
-    type CacheAdapter,
+    type CacheAdapterVariants,
 } from "@/cache/implementations/derivables/cache/_module.js";
 import { Namespace, type TimeSpan } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
@@ -29,7 +29,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
  * @group Derivables
  */
 export type CacheAdapters<TAdapters extends string = string> = Partial<
-    Record<TAdapters, CacheAdapter<any>>
+    Record<TAdapters, CacheAdapterVariants<any>>
 >;
 
 /**
