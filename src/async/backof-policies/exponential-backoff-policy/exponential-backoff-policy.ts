@@ -7,6 +7,7 @@ import {
     isInvokable,
     type ITimeSpan,
     TimeSpan,
+    TO_MILLISECONDS,
 } from "@/utilities/_module-exports.js";
 import type {
     BackoffPolicy,
@@ -72,8 +73,8 @@ export function exponentialBackoffPolicy(
             _mathRandom = Math.random,
         } = settings;
         const exponential = Math.min(
-            maxDelay.toMilliseconds(),
-            minDelay.toMilliseconds() * Math.pow(multiplier, attempt),
+            maxDelay[TO_MILLISECONDS](),
+            minDelay[TO_MILLISECONDS]() * Math.pow(multiplier, attempt),
         );
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, exponential, _mathRandom),

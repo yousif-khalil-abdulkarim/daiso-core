@@ -2,7 +2,10 @@
  * @module Async
  */
 import { TimeoutAsyncError } from "@/async/async.errors.js";
-import type { ITimeSpan } from "@/utilities/_module-exports.js";
+import {
+    TO_MILLISECONDS,
+    type ITimeSpan,
+} from "@/utilities/_module-exports.js";
 import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
 
 /**
@@ -18,7 +21,7 @@ export async function timeoutAndFail<TValue>(
 ): Promise<TValue> {
     const timeoutId = setTimeout(() => {
         abort(new TimeoutAsyncError("The promise exceded time"));
-    }, time.toMilliseconds());
+    }, time[TO_MILLISECONDS]());
     try {
         return await abortAndFail(promise, signal);
     } finally {

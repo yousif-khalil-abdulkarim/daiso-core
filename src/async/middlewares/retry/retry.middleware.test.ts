@@ -7,6 +7,7 @@ import {
     type ResultFailure,
     type ResultSuccess,
     type Result,
+    TO_MILLISECONDS,
 } from "@/utilities/_module-exports.js";
 import { describe, expect, test } from "vitest";
 import { retry } from "@/async/middlewares/retry/retry.middleware.js";
@@ -210,7 +211,7 @@ describe("function: retry", () => {
                 name: "fetchData",
             });
             expect(data?.error).toBeInstanceOf(Error);
-            expect(data?.waitTime.toMilliseconds()).toBe(25);
+            expect(data?.waitTime[TO_MILLISECONDS]()).toBe(25);
             expect(repetition).toBe(maxAttempts);
         });
         test("Should not call onRetryDelay callback when no failed result is returned", async () => {
@@ -447,7 +448,7 @@ describe("function: retry", () => {
                 name: "fetchData",
             });
             expect(data?.error).toBeInstanceOf(Error);
-            expect(data?.waitTime.toMilliseconds()).toBe(25);
+            expect(data?.waitTime[TO_MILLISECONDS]()).toBe(25);
             expect(repetition).toBe(maxAttempts);
         });
         test("Should not call onRetryDelay callback when no error is thrown", async () => {

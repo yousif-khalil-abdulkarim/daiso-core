@@ -33,6 +33,7 @@ import {
 import {
     RESULT,
     resultSuccess,
+    TO_MILLISECONDS,
     type Promisable,
     type ResultFailure,
 } from "@/utilities/_module-exports.js";
@@ -3764,7 +3765,7 @@ export function semaphoreProviderTestSuite(
                     });
 
                     expect(semaphore.ttl).toBeInstanceOf(TimeSpan);
-                    expect(semaphore.ttl?.toMilliseconds()).toBe(
+                    expect(semaphore.ttl?.[TO_MILLISECONDS]()).toBe(
                         ttl.toMilliseconds(),
                     );
                 });

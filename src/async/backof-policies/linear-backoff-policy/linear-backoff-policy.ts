@@ -6,6 +6,7 @@ import {
     callInvokable,
     isInvokable,
     TimeSpan,
+    TO_MILLISECONDS,
     type ITimeSpan,
 } from "@/utilities/_module-exports.js";
 import type {
@@ -63,8 +64,8 @@ export function linearBackoffPolicy(
         } = settings;
         const { jitter = 0.5, _mathRandom = Math.random } = settings;
         const linear = Math.min(
-            maxDelay.toMilliseconds(),
-            minDelay.toMilliseconds() * attempt,
+            maxDelay[TO_MILLISECONDS](),
+            minDelay[TO_MILLISECONDS]() * attempt,
         );
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, linear, _mathRandom),

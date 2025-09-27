@@ -33,6 +33,7 @@ import {
 import {
     RESULT,
     resultSuccess,
+    TO_MILLISECONDS,
     type Promisable,
     type ResultFailure,
 } from "@/utilities/_module-exports.js";
@@ -2499,7 +2500,7 @@ export function lockProviderTestSuite(
                     });
 
                     expect(lock.ttl).toBeInstanceOf(TimeSpan);
-                    expect(lock.ttl?.toMilliseconds()).toBe(
+                    expect(lock.ttl?.[TO_MILLISECONDS]()).toBe(
                         ttl.toMilliseconds(),
                     );
                 });

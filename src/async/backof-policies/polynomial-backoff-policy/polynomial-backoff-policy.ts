@@ -6,6 +6,7 @@ import {
     callInvokable,
     isInvokable,
     TimeSpan,
+    TO_MILLISECONDS,
     type ITimeSpan,
 } from "@/utilities/_module-exports.js";
 import type {
@@ -71,8 +72,8 @@ export function polynomialBackoffPolicy(
             _mathRandom = Math.random,
         } = settings;
         const polynomial = Math.min(
-            maxDelay.toMilliseconds(),
-            minDelay.toMilliseconds() * Math.pow(attempt, degree),
+            maxDelay[TO_MILLISECONDS](),
+            minDelay[TO_MILLISECONDS]() * Math.pow(attempt, degree),
         );
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, polynomial, _mathRandom),

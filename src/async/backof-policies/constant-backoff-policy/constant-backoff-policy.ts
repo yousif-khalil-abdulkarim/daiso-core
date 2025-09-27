@@ -7,6 +7,7 @@ import {
     callInvokable,
     isInvokable,
     TimeSpan,
+    TO_MILLISECONDS,
 } from "@/utilities/_module-exports.js";
 import {
     withJitter,
@@ -57,7 +58,7 @@ export function constantBackoffPolicy(
 
         const { jitter = 0.5, _mathRandom = Math.random } = settings;
         return TimeSpan.fromMilliseconds(
-            withJitter(jitter, delay.toMilliseconds(), _mathRandom),
+            withJitter(jitter, delay[TO_MILLISECONDS](), _mathRandom),
         );
     };
 }

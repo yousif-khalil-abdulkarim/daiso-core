@@ -3,7 +3,11 @@
  */
 
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
-import type { IComparable, ITimeSpan } from "@/utilities/_module-exports.js";
+import {
+    type IComparable,
+    type ITimeSpan,
+    TO_MILLISECONDS,
+} from "@/utilities/_module-exports.js";
 
 /**
  * The `TimeSpan` class is used for representing time interval.
@@ -29,23 +33,23 @@ export class TimeSpan
     }
 
     equals(value: ITimeSpan): boolean {
-        return value.toMilliseconds() === this.toMilliseconds();
+        return value[TO_MILLISECONDS]() === this.toMilliseconds();
     }
 
     gt(value: ITimeSpan): boolean {
-        return value.toMilliseconds() < this.toMilliseconds();
+        return value[TO_MILLISECONDS]() < this.toMilliseconds();
     }
 
     gte(value: ITimeSpan): boolean {
-        return value.toMilliseconds() <= this.toMilliseconds();
+        return value[TO_MILLISECONDS]() <= this.toMilliseconds();
     }
 
     lt(value: ITimeSpan): boolean {
-        return value.toMilliseconds() > this.toMilliseconds();
+        return value[TO_MILLISECONDS]() > this.toMilliseconds();
     }
 
     lte(value: ITimeSpan): boolean {
-        return value.toMilliseconds() >= this.toMilliseconds();
+        return value[TO_MILLISECONDS]() >= this.toMilliseconds();
     }
 
     serialize(): number {
@@ -101,7 +105,7 @@ export class TimeSpan
     }
 
     addTimeSpan(timeSpan: ITimeSpan): TimeSpan {
-        return this.addMilliseconds(timeSpan.toMilliseconds());
+        return this.addMilliseconds(timeSpan[TO_MILLISECONDS]());
     }
 
     subtractMilliseconds(milliseconds: number): TimeSpan {
@@ -129,7 +133,7 @@ export class TimeSpan
     }
 
     subtractTimeSpan(timeSpan: ITimeSpan): TimeSpan {
-        return this.subtractMilliseconds(timeSpan.toMilliseconds());
+        return this.subtractMilliseconds(timeSpan[TO_MILLISECONDS]());
     }
 
     multiply(value: number): TimeSpan {
@@ -140,8 +144,12 @@ export class TimeSpan
         return new TimeSpan(Math.round(this.toMilliseconds() / value));
     }
 
-    toMilliseconds(): number {
+    [TO_MILLISECONDS](): number {
         return this.milliseconds;
+    }
+
+    toMilliseconds(): number {
+        return this[TO_MILLISECONDS]();
     }
 
     toSeconds(): number {
