@@ -2,14 +2,12 @@ import type {
     IDatabaseSemaphoreAdapter,
     IDatabaseSemaphoreTransaction,
     ISemaphoreSlotExpirationData,
-} from "@/semaphore/contracts/database-semaphore-adapter.contract.js";
-import { describe, expect, test } from "vitest";
-import { isDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/is-database-semaphore-adapter.js";
-import type {
     ISemaphoreAdapter,
     ISemaphoreAdapterState,
     SemaphoreAcquireSettings,
-} from "@/semaphore/contracts/semaphore-adapter.contract.js";
+} from "@/semaphore/contracts/_module-exports.js";
+import { describe, expect, test } from "vitest";
+import { isDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/is-database-semaphore-adapter.js";
 import type { InvokableFn, TimeSpan } from "@/utilities/_module-exports.js";
 
 describe("function: isDatabaseSemaphoreAdapter", () => {

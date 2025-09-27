@@ -23,9 +23,23 @@ import type { ISemaphoreState } from "@/semaphore/contracts/semaphore-state.cont
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Contracts
  */
-export type SemaphoreAquireBlockingSettings = {
-    time?: TimeSpan;
-    interval?: TimeSpan;
+export type ISemaphoreStateMethods = {
+    getState(): LazyPromise<ISemaphoreState>;
+
+    /**
+     * The `key` of the `ISemaphore` instance.
+     */
+    readonly key: string;
+
+    /**
+     * The `id` of the `ISemaphore` instance.
+     */
+    readonly id: string;
+
+    /**
+     * The `ttl` of `ISemaphore` instance.
+     */
+    readonly ttl: TimeSpan | null;
 };
 
 /**
@@ -33,8 +47,9 @@ export type SemaphoreAquireBlockingSettings = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Contracts
  */
-export type ISemaphoreGetState = {
-    getState(): LazyPromise<ISemaphoreState | null>;
+export type SemaphoreAquireBlockingSettings = {
+    time?: TimeSpan;
+    interval?: TimeSpan;
 };
 
 /**
@@ -144,16 +159,6 @@ export type ISemaphoreBase = {
      * @throws {FailedRefreshSemaphoreError} {@link FailedRefreshSemaphoreError}
      */
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
-
-    /**
-     * The `getId` returns the id of the `ISemaphore` instance.
-     */
-    getId(): string;
-
-    /**
-     * The `getTtl` method returns the `ttl` of `ISemaphore` instance.
-     */
-    getTtl(): TimeSpan | null;
 };
 
 /**
@@ -161,4 +166,4 @@ export type ISemaphoreBase = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Contracts
  */
-export type ISemaphore = ISemaphoreGetState & ISemaphoreBase;
+export type ISemaphore = ISemaphoreStateMethods & ISemaphoreBase;

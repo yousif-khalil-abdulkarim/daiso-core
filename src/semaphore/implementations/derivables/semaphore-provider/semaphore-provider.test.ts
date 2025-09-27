@@ -9,15 +9,15 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_mod
 import { semaphoreProviderTestSuite } from "@/semaphore/implementations/test-utilities/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
-import { Namespace, TimeSpan } from "@/utilities/_module-exports.js";
-import type { ISemaphore } from "@/semaphore/contracts/semaphore.contract.js";
+import { Namespace } from "@/utilities/_module-exports.js";
+import type { ISemaphore } from "@/semaphore/contracts/_module-exports.js";
 import { Kysely, SqliteDialect } from "kysely";
 import Sqlite from "better-sqlite3";
 
 describe("class: SemaphoreProvider", () => {
-    const serde = new Serde(new SuperJsonSerdeAdapter());
     semaphoreProviderTestSuite({
         createSemaphoreProvider: () => {
+            const serde = new Serde(new SuperJsonSerdeAdapter());
             const semaphoreProvider = new SemaphoreProvider({
                 serde,
                 eventBus: new EventBus({
@@ -27,90 +27,74 @@ describe("class: SemaphoreProvider", () => {
                 adapter: new MemorySemaphoreAdapter(),
                 namespace: new Namespace("semaphore"),
             });
-            return semaphoreProvider;
+            return {
+                semaphoreProvider,
+                serde,
+            };
         },
         beforeEach,
         describe,
         expect,
         test,
-        serde,
     });
     describe("Serde tests:", () => {
-        test("Should differentiate between namespaces", async () => {
+        test("Should differentiate between different namespaces", async () => {
+            const serde = new Serde(new SuperJsonSerdeAdapter());
             const key = "a";
-            const limit = 2;
+            const ttl = null;
+            const limit = 1;
 
-            const namespace1 = new Namespace("semaphore1");
-            const semaphoreProvider1 = new SemaphoreProvider({
-                serde,
-                eventBus: new EventBus({
-                    namespace: namespace1,
-                    adapter: new MemoryEventBusAdapter(),
-                }),
+            const lockProvider1 = new SemaphoreProvider({
                 adapter: new MemorySemaphoreAdapter(),
-                namespace: namespace1,
+                namespace: new Namespace("@lock-1"),
+                eventBus: new EventBus({
+                    adapter: new MemoryEventBusAdapter(),
+                    namespace: new Namespace("@event-bus/semaphore-1"),
+                }),
+                serde,
             });
-            const ttl1 = null;
-            const semaphore1 = semaphoreProvider1.create(key, {
-                ttl: ttl1,
-                limit,
-            });
-            await semaphore1.acquire();
-            const deserializedSemaphore1 = serde.deserialize<ISemaphore>(
-                serde.serialize(semaphore1),
-            );
-            const state1 = await deserializedSemaphore1.getState();
+            const lock1 = lockProvider1.create(key, { ttl, limit });
+            await lock1.acquire();
 
-            const namespace2 = new Namespace("semaphore2");
-            const semaphoreProvider2 = new SemaphoreProvider({
-                serde,
-                eventBus: new EventBus({
-                    namespace: namespace2,
-                    adapter: new MemoryEventBusAdapter(),
-                }),
+            const lockProvider2 = new SemaphoreProvider({
                 adapter: new MemorySemaphoreAdapter(),
-                namespace: namespace2,
+                namespace: new Namespace("@lock-2"),
+                eventBus: new EventBus({
+                    adapter: new MemoryEventBusAdapter(),
+                    namespace: new Namespace("@event-bus/semaphore-2"),
+                }),
+                serde,
             });
-            const ttl2 = TimeSpan.fromMinutes(4);
-            const semaphore2 = semaphoreProvider2.create(key, {
-                ttl: ttl2,
-                limit,
-            });
+
+            const lock2 = lockProvider2.create(key, { ttl, limit });
             const deserializedSemaphore2 = serde.deserialize<ISemaphore>(
-                serde.serialize(semaphore2),
+                serde.serialize(lock2),
             );
-            const state2 = await deserializedSemaphore2.getState();
-
-            expect(state1?.acquiredSlots()).not.toEqual(
-                state2?.acquiredSlots(),
-            );
+            const result = await deserializedSemaphore2.acquire();
+            expect(result).toBe(true);
         });
-        test("Should differentiate between adapters", async () => {
+        test("Should differentiate between different adapters and the same namespace", async () => {
+            const serde = new Serde(new SuperJsonSerdeAdapter());
+            const lockNamespace = new Namespace("@lock");
+            const eventNamespace = new Namespace("@event-bus/semaphore");
             const key = "a";
-            const limit = 2;
-            const namespace = new Namespace("semaphore");
+            const ttl = null;
+            const limit = 1;
 
-            const semaphoreProvider1 = new SemaphoreProvider({
-                serde,
+            const adapter1 = new MemorySemaphoreAdapter();
+            const lockProvider1 = new SemaphoreProvider({
+                adapter: adapter1,
+                namespace: lockNamespace,
                 eventBus: new EventBus({
-                    namespace: namespace.appendRoot("memory"),
                     adapter: new MemoryEventBusAdapter(),
+                    namespace: eventNamespace,
                 }),
-                adapter: new MemorySemaphoreAdapter(),
-                namespace,
+                serde,
             });
-            const ttl1 = null;
-            const semaphore1 = semaphoreProvider1.create(key, {
-                ttl: ttl1,
-                limit,
-            });
-            await semaphore1.acquire();
-            const deserializedSemaphore1 = serde.deserialize<ISemaphore>(
-                serde.serialize(semaphore1),
-            );
-            const state1 = await deserializedSemaphore1.getState();
+            const lock1 = lockProvider1.create(key, { ttl, limit });
+            await lock1.acquire();
 
-            const kyselySemaphoreAdapter = new KyselySemaphoreAdapter({
+            const adapter2 = new KyselySemaphoreAdapter({
                 kysely: new Kysely({
                     dialect: new SqliteDialect({
                         database: new Sqlite(":memory:"),
@@ -118,29 +102,64 @@ describe("class: SemaphoreProvider", () => {
                 }),
                 shouldRemoveExpiredKeys: false,
             });
-            await kyselySemaphoreAdapter.init();
-            const semaphoreProvider2 = new SemaphoreProvider({
-                serde,
+            await adapter2.init();
+            const lockProvider2 = new SemaphoreProvider({
+                adapter: adapter2,
+                namespace: lockNamespace,
                 eventBus: new EventBus({
-                    namespace: namespace.appendRoot("sqlite"),
                     adapter: new MemoryEventBusAdapter(),
+                    namespace: eventNamespace,
                 }),
-                adapter: kyselySemaphoreAdapter,
-                namespace,
+                serde,
             });
-            const ttl2 = TimeSpan.fromMinutes(4);
-            const semaphore2 = semaphoreProvider2.create(key, {
-                ttl: ttl2,
-                limit,
-            });
-            const deserializedSemaphore2 = serde.deserialize<ISemaphore>(
-                serde.serialize(semaphore2),
-            );
-            const state2 = await deserializedSemaphore2.getState();
 
-            expect(state1?.acquiredSlots()).not.toEqual(
-                state2?.acquiredSlots(),
+            const lock2 = lockProvider2.create(key, { ttl, limit });
+            const deserializeSemaphore2 = serde.deserialize<ISemaphore>(
+                serde.serialize(lock2),
             );
+            const result = await deserializeSemaphore2.acquire();
+
+            expect(result).toBe(true);
+        });
+        test("Should differentiate between different serdeTransformerNames", async () => {
+            const serde = new Serde(new SuperJsonSerdeAdapter());
+            const lockNamespace = new Namespace("@lock");
+            const eventNamespace = new Namespace("@event-bus/semaphore");
+            const key = "a";
+            const ttl = null;
+            const limit = 1;
+
+            const lockProvider1 = new SemaphoreProvider({
+                adapter: new MemorySemaphoreAdapter(),
+                namespace: lockNamespace,
+                eventBus: new EventBus({
+                    adapter: new MemoryEventBusAdapter(),
+                    namespace: eventNamespace,
+                }),
+                serdeTransformerName: "adapter1",
+                serde,
+            });
+            const lock1 = lockProvider1.create(key, { ttl, limit });
+            await lock1.acquire();
+
+            const lockProvider2 = new SemaphoreProvider({
+                adapter: new MemorySemaphoreAdapter(),
+                namespace: lockNamespace,
+                eventBus: new EventBus({
+                    adapter: new MemoryEventBusAdapter(),
+                    namespace: eventNamespace,
+                }),
+                serdeTransformerName: "adapter2",
+                serde,
+            });
+
+            const lock2 = lockProvider2.create(key, { ttl, limit });
+            const deserializeSemaphore2 = serde.deserialize<ISemaphore>(
+                serde.serialize(lock2),
+            );
+            const result = await deserializeSemaphore2.acquire();
+
+            expect(result).toBe(true);
         });
     });
 });

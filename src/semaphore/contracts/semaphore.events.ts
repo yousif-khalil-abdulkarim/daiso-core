@@ -2,10 +2,15 @@
  * @module Semaphore
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { ISemaphoreStateMethods } from "@/semaphore/contracts/semaphore.contract.js";
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
-import type { ISemaphoreGetState } from "@/semaphore/contracts/semaphore.contract.js";
+/**
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Events
+ */
+export type SemaphoreEventBase = {
+    semaphore: ISemaphoreStateMethods;
+};
 
 /**
  * The event is dispatched when a semaphore slot is aquired.
@@ -13,12 +18,7 @@ import type { ISemaphoreGetState } from "@/semaphore/contracts/semaphore.contrac
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type AcquiredSemaphoreEvent = {
-    key: string;
-    slotId: string;
-    ttl: TimeSpan | null;
-    semaphore: ISemaphoreGetState;
-};
+export type AcquiredSemaphoreEvent = SemaphoreEventBase;
 
 /**
  * The event is dispatched when a semaphore slot is released.
@@ -27,11 +27,7 @@ export type AcquiredSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type ReleasedSemaphoreEvent = {
-    key: string;
-    slotId: string;
-    semaphore: ISemaphoreGetState;
-};
+export type ReleasedSemaphoreEvent = SemaphoreEventBase;
 
 /**
  * The event is dispatched when all slot of semapahore are released.
@@ -39,9 +35,7 @@ export type ReleasedSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type AllForceReleasedSemaphoreEvent = {
-    key: string;
-    semaphore: ISemaphoreGetState;
+export type AllForceReleasedSemaphoreEvent = SemaphoreEventBase & {
     hasReleased: boolean;
 };
 
@@ -51,11 +45,7 @@ export type AllForceReleasedSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type FailedRefreshSemaphoreEvent = {
-    key: string;
-    slotId: string;
-    semaphore: ISemaphoreGetState;
-};
+export type FailedRefreshSemaphoreEvent = SemaphoreEventBase;
 
 /**
  * The error is dispatched when trying to release a semaphore slot that is already expired.
@@ -63,11 +53,7 @@ export type FailedRefreshSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type FailedReleaseSemaphoreEvent = {
-    key: string;
-    slotId: string;
-    semaphore: ISemaphoreGetState;
-};
+export type FailedReleaseSemaphoreEvent = SemaphoreEventBase;
 
 /**
  * The event is dispatched when trying to acquire a semaphore slot when all slots are unavailable.
@@ -75,11 +61,7 @@ export type FailedReleaseSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type LimitReachedSemaphoreEvent = {
-    key: string;
-    slotId: string;
-    semaphore: ISemaphoreGetState;
-};
+export type LimitReachedSemaphoreEvent = SemaphoreEventBase;
 
 /**
  * The event is dispatched when a semaphore slot is refreshed.
@@ -87,23 +69,14 @@ export type LimitReachedSemaphoreEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type RefreshedSemaphoreEvent = {
-    key: string;
-    slotId: string;
-    semaphore: ISemaphoreGetState;
-    newTtl: TimeSpan;
-};
+export type RefreshedSemaphoreEvent = SemaphoreEventBase;
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Events
  */
-export type UnexpectedErrorSemaphoreEvent = {
-    key: string;
-    slotId: string;
-    semaphore: ISemaphoreGetState;
-    ttl: TimeSpan | null;
+export type UnexpectedErrorSemaphoreEvent = SemaphoreEventBase & {
     error: unknown;
 };
 
