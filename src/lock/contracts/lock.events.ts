@@ -4,8 +4,15 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
-import type { ILockGetState } from "@/lock/contracts/lock.contract.js";
+import type { ILockStateMethods } from "@/lock/contracts/lock.contract.js";
+
+/**
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Events
+ */
+export type LockEventBase = {
+    lock: ILockStateMethods;
+};
 
 /**
  * The event is dispatched when a lock is aquired.
@@ -13,12 +20,7 @@ import type { ILockGetState } from "@/lock/contracts/lock.contract.js";
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type AcquiredLockEvent = {
-    key: string;
-    lockId: string;
-    lock: ILockGetState;
-    ttl: TimeSpan | null;
-};
+export type AcquiredLockEvent = LockEventBase;
 
 /**
  * The event is dispatched when a lock is released.
@@ -26,11 +28,7 @@ export type AcquiredLockEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type ReleasedLockEvent = {
-    key: string;
-    lockId: string;
-    lock: ILockGetState;
-};
+export type ReleasedLockEvent = LockEventBase;
 
 /**
  * The event is dispatched when a lock is forcefully released.
@@ -38,9 +36,7 @@ export type ReleasedLockEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type ForceReleasedLockEvent = {
-    key: string;
-    lock: ILockGetState;
+export type ForceReleasedLockEvent = LockEventBase & {
     hasReleased: boolean;
 };
 
@@ -50,11 +46,7 @@ export type ForceReleasedLockEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type FailedReleaseLockEvent = {
-    key: string;
-    lockId: string;
-    lock: ILockGetState;
-};
+export type FailedReleaseLockEvent = LockEventBase;
 
 /**
  * The event is dispatched when trying to refefresh a lock that is owned by a different owner.
@@ -62,11 +54,7 @@ export type FailedReleaseLockEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type FailedRefreshLockEvent = {
-    key: string;
-    lockId: string;
-    lock: ILockGetState;
-};
+export type FailedRefreshLockEvent = LockEventBase;
 
 /**
  * The event is dispatched when trying to acquire a lock that is owned by a different owner.
@@ -74,11 +62,7 @@ export type FailedRefreshLockEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type UnavailableLockEvent = {
-    key: string;
-    lockId: string;
-    lock: ILockGetState;
-};
+export type UnavailableLockEvent = LockEventBase;
 
 /**
  * The event is dispatched when a lock is refreshed.
@@ -86,24 +70,15 @@ export type UnavailableLockEvent = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type RefreshedLockEvent = {
-    key: string;
-    lockId: string;
-    newTtl: TimeSpan;
-    lock: ILockGetState;
-};
+export type RefreshedLockEvent = LockEventBase;
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Events
  */
-export type UnexpectedErrorLockEvent = {
-    key: string;
-    lockId: string;
-    ttl: TimeSpan | null;
+export type UnexpectedErrorLockEvent = LockEventBase & {
     error: unknown;
-    lock: ILockGetState;
 };
 
 /**

@@ -6,3 +6,4 @@ export * from "@/lock/contracts/lock-state.contract.js";
 export * from "@/lock/contracts/lock.contract.js";
 export * from "@/lock/contracts/lock.errors.js";
 export * from "@/lock/contracts/lock.events.js";
+export * from "@/lock/contracts/types.js";

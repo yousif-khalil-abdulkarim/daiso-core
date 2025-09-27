@@ -5,6 +5,7 @@ import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
     ILockProviderFactory,
     ILockProvider,
+    LockAdapterVariants,
 } from "@/lock/contracts/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
@@ -20,7 +21,6 @@ import type {
 } from "@/utilities/_module-exports.js";
 import {
     LockProvider,
-    type LockAdapter,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
@@ -31,7 +31,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
  * @group Derivables
  */
 export type LockAdapters<TAdapters extends string> = Partial<
-    Record<TAdapters, LockAdapter>
+    Record<TAdapters, LockAdapterVariants>
 >;
 
 /**

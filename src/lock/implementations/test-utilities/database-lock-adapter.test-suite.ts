@@ -72,11 +72,11 @@ export function databaseLockAdapterTestSuite(
 ): void {
     const { expect, test, createAdapter, describe, beforeEach } = settings;
 
-    let adapter: IDatabaseLockAdapter;
-    beforeEach(async () => {
-        adapter = await createAdapter();
-    });
     describe("Reusable tests:", () => {
+        let adapter: IDatabaseLockAdapter;
+        beforeEach(async () => {
+            adapter = await createAdapter();
+        });
         describe("method: transaction find", () => {
             test("Should return null when key doesnt exists", async () => {
                 const key = "a";

@@ -35,8 +35,23 @@ export type LockAquireBlockingSettings = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
-export type ILockGetState = {
-    getState(): LazyPromise<ILockState | null>;
+export type ILockStateMethods = {
+    getState(): LazyPromise<ILockState>;
+
+    /**
+     * The `key` of the `ILock` instance.
+     */
+    readonly key: string;
+
+    /**
+     * The `id` of the `ILock` instance.
+     */
+    readonly id: string;
+
+    /**
+     * The `ttl` of `ILock` instance.
+     */
+    readonly ttl: TimeSpan | null;
 };
 
 /**
@@ -148,16 +163,6 @@ export type ILockBase = {
      * @throws {FailedRefreshLockError} {@link FailedRefreshLockError}
      */
     refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
-
-    /**
-     * The `getId` method returns the id of the `ILock` instance.
-     */
-    getId(): string;
-
-    /**
-     * The `getTtl` method returns the `ttl` of `ILock` instance.
-     */
-    getTtl(): TimeSpan | null;
 };
 
 /**
@@ -165,4 +170,4 @@ export type ILockBase = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
-export type ILock = ILockBase & ILockGetState;
+export type ILock = ILockBase & ILockStateMethods;
