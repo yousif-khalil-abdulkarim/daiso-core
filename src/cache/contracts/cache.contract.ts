@@ -7,11 +7,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
 } from "@/utilities/_module-exports.js";
-import type {
-    AsyncLazyable,
-    NoneFunc,
-    OneOrMore,
-} from "@/utilities/_module-exports.js";
+import type { AsyncLazyable, NoneFunc } from "@/utilities/_module-exports.js";
 import type { CacheEventMap } from "@/cache/contracts/cache.events.js";
 import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -42,7 +38,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      */
-    exists(key: OneOrMore<string>): LazyPromise<boolean>;
+    exists(key: string): LazyPromise<boolean>;
 
     /**
      * The `missing` method returns true when `key` is not found otherwise false will be returned.
@@ -51,7 +47,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      */
-    missing(key: OneOrMore<string>): LazyPromise<boolean>;
+    missing(key: string): LazyPromise<boolean>;
 
     /**
      * The `get` method returns the value when `key` is found otherwise null will be returned.
@@ -60,7 +56,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      */
-    get(key: OneOrMore<string>): LazyPromise<TType | null>;
+    get(key: string): LazyPromise<TType | null>;
 
     /**
      * The `getOrFail` method returns the value when `key` is found otherwise an error will be thrown.
@@ -71,7 +67,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @throws {KeyNotFoundCacheError} {@link KeyNotFoundCacheError}
      */
-    getOrFail(key: OneOrMore<string>): LazyPromise<TType>;
+    getOrFail(key: string): LazyPromise<TType>;
 
     /**
      * The `getAndRemove` method returns the value when `key` is found otherwise null will be returned.
@@ -81,7 +77,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      */
-    getAndRemove(key: OneOrMore<string>): LazyPromise<TType | null>;
+    getAndRemove(key: string): LazyPromise<TType | null>;
 
     /**
      * The `getOr` method will retrieve the given `key` if found otherwise `defaultValue` will be returned.
@@ -93,7 +89,7 @@ export type ICacheBase<TType = unknown> = {
      * @param defaultValue - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link LazyPromise| `LazyPromise`} value.
      */
     getOr(
-        key: OneOrMore<string>,
+        key: string,
         defaultValue: AsyncLazyable<NoneFunc<TType>>,
     ): LazyPromise<TType>;
 
@@ -107,7 +103,7 @@ export type ICacheBase<TType = unknown> = {
      * @param valueToAdd - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link LazyPromise| `LazyPromise`} value.
      */
     getOrAdd(
-        key: OneOrMore<string>,
+        key: string,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,
         ttl?: ITimeSpan | null,
     ): LazyPromise<TType>;
@@ -124,7 +120,7 @@ export type ICacheBase<TType = unknown> = {
      * @returns Returns true when key doesn't exists otherwise false will be returned.
      */
     add(
-        key: OneOrMore<string>,
+        key: string,
         value: TType,
         ttl?: ITimeSpan | null,
     ): LazyPromise<boolean>;
@@ -142,7 +138,7 @@ export type ICacheBase<TType = unknown> = {
      * @returns Returns true if the `key` where replaced otherwise false is returned.
      */
     put(
-        key: OneOrMore<string>,
+        key: string,
         value: TType,
         ttl?: ITimeSpan | null,
     ): LazyPromise<boolean>;
@@ -156,7 +152,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns Returns true if the `key` where updated otherwise false will be returned.
      */
-    update(key: OneOrMore<string>, value: TType): LazyPromise<boolean>;
+    update(key: string, value: TType): LazyPromise<boolean>;
 
     /**
      * The `increment` method increments the given `key` with given `value`.
@@ -173,7 +169,7 @@ export type ICacheBase<TType = unknown> = {
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
     increment(
-        key: OneOrMore<string>,
+        key: string,
         value?: Extract<TType, number>,
     ): LazyPromise<boolean>;
 
@@ -192,7 +188,7 @@ export type ICacheBase<TType = unknown> = {
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
     decrement(
-        key: OneOrMore<string>,
+        key: string,
         value?: Extract<TType, number>,
     ): LazyPromise<boolean>;
 
@@ -205,7 +201,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns Returns true if the key is found otherwise false is returned.
      */
-    remove(key: OneOrMore<string>): LazyPromise<boolean>;
+    remove(key: string): LazyPromise<boolean>;
 
     /**
      * The `removeMany` method removes many keys.
@@ -216,7 +212,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns Returns true if one of the keys where deleted otherwise false is returned.
      */
-    removeMany(keys: Iterable<OneOrMore<string>>): LazyPromise<boolean>;
+    removeMany(keys: Iterable<string>): LazyPromise<boolean>;
 
     /**
      * The `clear` method removes all the keys in the cache. If a cache is in a group then only the keys part of the group will be removed.
