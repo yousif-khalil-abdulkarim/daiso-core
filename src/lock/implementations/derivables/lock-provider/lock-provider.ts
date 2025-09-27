@@ -12,7 +12,7 @@ import {
     type Invokable,
     callInvokable,
 } from "@/utilities/_module-exports.js";
-import { Namespace, type OneOrMore } from "@/utilities/_module-exports.js";
+import { type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IDatabaseLockAdapter,
@@ -43,6 +43,7 @@ import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-pro
 import { resolveDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-database-lock-adapter.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -339,7 +340,7 @@ export class LockProvider implements ILockProvider {
             lockId = callInvokable(this.creatLockId),
         } = settings;
 
-        const keyObj = this.namespace._internal_get().create(key);
+        const keyObj = this.namespace.create(key);
 
         return new Lock({
             namespace: this.namespace,

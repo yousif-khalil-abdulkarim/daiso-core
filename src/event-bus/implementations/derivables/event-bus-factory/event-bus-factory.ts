@@ -14,11 +14,8 @@ import {
     type EventBusSettingsBase,
     type EventMapSchema,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
-import type {
-    AsyncLazy,
-    Factory,
-    Namespace,
-} from "@/utilities/_module-exports.js";
+import type { Namespace } from "@/namespace/_module-exports.js";
+import type { AsyncLazy, Factory } from "@/utilities/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,

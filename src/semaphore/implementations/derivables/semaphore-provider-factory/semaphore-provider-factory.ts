@@ -9,8 +9,6 @@ import type {
 } from "@/semaphore/contracts/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
-    Namespace,
-    resolveOneOrMore,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
 import type { AsyncLazy, Factory } from "@/utilities/_module-exports.js";
@@ -20,6 +18,7 @@ import {
 } from "@/semaphore/implementations/derivables/semaphore-provider/_module.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -128,10 +127,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
         return new SemaphoreProvider({
             ...this.settings,
             adapter,
-            namespace: new Namespace([
-                ...resolveOneOrMore(namespace._internal_get().original),
-                adapterName,
-            ]),
+            namespace: namespace.appendRoot(adapterName),
             serdeTransformerName: adapterName,
         });
     }

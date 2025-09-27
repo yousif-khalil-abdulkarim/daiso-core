@@ -2,11 +2,7 @@
  * @module Lock
  */
 
-import type { Key } from "@/utilities/_module-exports.js";
-import {
-    type InvokableFn,
-    type Namespace,
-} from "@/utilities/_module-exports.js";
+import { type InvokableFn } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazy,
     type Result,
@@ -46,6 +42,7 @@ import {
 import { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { Key, Namespace } from "@/namespace/_module-exports.js";
 
 /**
  * @internal
@@ -85,7 +82,7 @@ export class Lock implements ILock {
      */
     static _internal_serialize(deserializedValue: Lock): ISerializedLock {
         return {
-            key: deserializedValue._key.resolved,
+            key: deserializedValue._key.get(),
             lockId: deserializedValue.lockId,
             ttlInMs: deserializedValue._ttl?.toMilliseconds() ?? null,
         };
@@ -157,7 +154,7 @@ export class Lock implements ILock {
                     if (!hasAquired) {
                         return resultFailure(
                             new FailedAcquireLockError(
-                                `Key "${this._key.resolved}" already acquired`,
+                                `Key "${this._key.get()}" already acquired`,
                             ),
                         );
                     }
@@ -192,7 +189,7 @@ export class Lock implements ILock {
                     if (!hasAquired) {
                         return resultFailure(
                             new FailedAcquireLockError(
-                                `Key "${this._key.resolved}" already acquired`,
+                                `Key "${this._key.get()}" already acquired`,
                             ),
                         );
                     }
@@ -245,7 +242,7 @@ export class Lock implements ILock {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquire(
-                    this._key.namespaced,
+                    this._key.toString(),
                     this.lockId,
                     this._ttl,
                 );
@@ -277,7 +274,7 @@ export class Lock implements ILock {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
                 throw new FailedAcquireLockError(
-                    `Key "${this._key.resolved}" already acquired`,
+                    `Key "${this._key.get()}" already acquired`,
                 );
             }
         });
@@ -313,7 +310,7 @@ export class Lock implements ILock {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
                 throw new FailedAcquireLockError(
-                    `Key "${this._key.resolved}" already acquired`,
+                    `Key "${this._key.get()}" already acquired`,
                 );
             }
         });
@@ -323,7 +320,7 @@ export class Lock implements ILock {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.release(
-                    this._key.namespaced,
+                    this._key.toString(),
                     this.lockId,
                 );
 
@@ -354,7 +351,7 @@ export class Lock implements ILock {
             const hasRelased = await this.release();
             if (!hasRelased) {
                 throw new FailedReleaseLockError(
-                    `Unonwed release on key "${this._key.resolved}" by owner "${this.lockId}"`,
+                    `Unonwed release on key "${this._key.get()}" by owner "${this.lockId}"`,
                 );
             }
         });
@@ -364,7 +361,7 @@ export class Lock implements ILock {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceRelease(
-                    this._key.namespaced,
+                    this._key.toString(),
                 );
                 const event: ForceReleasedLockEvent = {
                     lock: this,
@@ -382,7 +379,7 @@ export class Lock implements ILock {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refresh(
-                    this._key.namespaced,
+                    this._key.toString(),
                     this.lockId,
                     ttl,
                 );
@@ -414,14 +411,14 @@ export class Lock implements ILock {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshLockError(
-                    `Unonwed refresh on key "${this._key.resolved}" by owner "${this.lockId}"`,
+                    `Unonwed refresh on key "${this._key.get()}" by owner "${this.lockId}"`,
                 );
             }
         });
     }
 
     get key(): string {
-        return this._key.resolved;
+        return this._key.get();
     }
 
     get id(): string {
@@ -434,7 +431,7 @@ export class Lock implements ILock {
 
     getState(): LazyPromise<ILockState> {
         return this.createLazyPromise(async () => {
-            const state = await this.adapter.getState(this._key.namespaced);
+            const state = await this.adapter.getState(this._key.toString());
             if (state === null) {
                 return {
                     type: LOCK_STATE.EXPIRED,

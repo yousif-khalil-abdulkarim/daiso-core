@@ -7,7 +7,7 @@ import {
     Lock,
     type ISerializedLock,
 } from "@/lock/implementations/derivables/lock-provider/lock.js";
-import type { OneOrMore, Namespace } from "@/utilities/_module-exports.js";
+import type { OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     ILockAdapter,
     LockAdapterVariants,
@@ -17,6 +17,7 @@ import { getConstructorName } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  * @internal
@@ -81,7 +82,7 @@ export class LockSerdeTransformer
             "lock",
             this.serdeTransformerName,
             getConstructorName(this.originalAdapter),
-            this.namespace._internal_get().namespaced,
+            this.namespace.toString(),
         ].filter((str) => str !== "");
     }
 
@@ -97,8 +98,8 @@ export class LockSerdeTransformer
             value._internal_getSerdeTransformerName();
 
         const isNamespaceMatching =
-            this.namespace._internal_get().namespaced ===
-            value._internal_getNamespace()._internal_get().namespaced;
+            this.namespace.toString() ===
+            value._internal_getNamespace().toString();
 
         const isAdapterMatching =
             getConstructorName(this.originalAdapter) ===
@@ -113,7 +114,7 @@ export class LockSerdeTransformer
 
     deserialize(serializedValue: ISerializedLock): Lock {
         const { key, ttlInMs, lockId } = serializedValue;
-        const keyObj = this.namespace._internal_get().create(key);
+        const keyObj = this.namespace.create(key);
 
         return new Lock({
             createLazyPromise: this.createLazyPromise,
