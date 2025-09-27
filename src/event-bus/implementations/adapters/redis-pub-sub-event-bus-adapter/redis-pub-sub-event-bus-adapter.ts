@@ -22,8 +22,7 @@ import { EventEmitter } from "node:events";
  * @group Adapters
  */
 export type RedisPubSubEventBusAdapterSettings = {
-    dispatcherClient: Redis;
-    listenerClient: Redis;
+    client: Redis;
     serde: ISerde<string>;
 };
 
@@ -47,20 +46,18 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";
      *
-     * const dispatcherClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
-     * const listenerClient = new Redis("YOUR_REDIS_CONNECTION_STRING");
+     * const client = new Redis("YOUR_REDIS_CONNECTION_STRING");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const eventBusAdapter = new RedisPubSubEventBusAdapter({
-     *   dispatcherClient,
-     *   listenerClient,
+     *   client,
      *   serde,
      * });
      * ```
      */
     constructor(settings: RedisPubSubEventBusAdapterSettings) {
-        const { dispatcherClient, listenerClient, serde } = settings;
-        this.dispatcherClient = dispatcherClient;
-        this.listenerClient = listenerClient;
+        const { client, serde } = settings;
+        this.dispatcherClient = client;
+        this.listenerClient = client.duplicate();
         this.serde = new RedisSerde(serde);
     }
 
