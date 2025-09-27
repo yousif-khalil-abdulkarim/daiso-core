@@ -15,7 +15,9 @@ import {
 } from "@/utilities/_module-exports.js";
 import { Namespace, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IDatabaseLockAdapter,
+    LockAdapterVariants,
     LockEventMap,
 } from "@/lock/contracts/_module-exports.js";
 import {
@@ -38,9 +40,8 @@ import { EventBus } from "@/event-bus/implementations/derivables/_module-exports
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { v4 } from "uuid";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
-import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
-import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter.js";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
+import { resolveDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-database-lock-adapter.js";
 
 /**
  *
@@ -135,15 +136,8 @@ export type LockProviderSettingsBase = {
  * IMPORT_PATH: `"@daiso-tech/core/lock"`
  * @group Derivables
  */
-export type LockAdapter = ILockAdapter | IDatabaseLockAdapter;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock"`
- * @group Derivables
- */
 export type LockProviderSettings = LockProviderSettingsBase & {
-    adapter: LockAdapter;
+    adapter: LockAdapterVariants;
 };
 
 /**
@@ -158,7 +152,7 @@ export type LockProviderSettings = LockProviderSettingsBase & {
  */
 export class LockProvider implements ILockProvider {
     private readonly eventBus: IEventBus<LockEventMap>;
-    private readonly originalAdapter: ILockAdapter | IDatabaseLockAdapter;
+    private readonly originalAdapter: LockAdapterVariants;
     private readonly adapter: ILockAdapter;
     private readonly namespace: Namespace;
     private readonly creatLockId: Invokable<[], string>;
@@ -225,12 +219,7 @@ export class LockProvider implements ILockProvider {
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
-        if (isDatabaseLockAdapter(adapter)) {
-            this.adapter = new DatabaseLockAdapter(adapter);
-        } else {
-            this.adapter = adapter;
-        }
-
+        this.adapter = resolveDatabaseLockAdapter(adapter);
         this.registerToSerde();
     }
 
@@ -340,19 +329,13 @@ export class LockProvider implements ILockProvider {
      * const lock = lockProvider.create("a");
      * ```
      */
-    create(
-        key: OneOrMore<string>,
-        settings: LockProviderCreateSettings = {},
-    ): ILock {
+    create(key: string, settings: LockProviderCreateSettings = {}): ILock {
         const {
             ttl = this.defaultTtl,
             lockId = callInvokable(this.creatLockId),
         } = settings;
 
         const keyObj = this.namespace._getInternal().create(key);
-        const lockIdAsStr = this.namespace
-            ._getInternal()
-            .create(lockId).resolved;
 
         return new Lock({
             namespace: this.namespace,
@@ -361,7 +344,7 @@ export class LockProvider implements ILockProvider {
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
             eventDispatcher: this.eventBus,
             key: keyObj,
-            lockId: lockIdAsStr,
+            lockId,
             ttl,
             serdeTransformerName: this.serdeTransformerName,
             defaultBlockingInterval: this.defaultBlockingInterval,

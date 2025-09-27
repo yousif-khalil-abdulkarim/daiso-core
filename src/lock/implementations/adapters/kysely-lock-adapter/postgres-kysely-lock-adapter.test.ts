@@ -22,25 +22,20 @@ describe("postgres class: KyselyLockAdapter", () => {
     let kysely: Kysely<KyselyLockTables>;
 
     beforeEach(async () => {
-        try {
-            container = await new PostgreSqlContainer("postgres:17.5").start();
-            database = new Pool({
-                database: container.getDatabase(),
-                host: container.getHost(),
-                user: container.getUsername(),
-                port: container.getPort(),
-                password: container.getPassword(),
-                max: 10,
-            });
-            kysely = new Kysely({
-                dialect: new PostgresDialect({
-                    pool: database,
-                }),
-            });
-        } catch (error: unknown) {
-            console.log("ERROR:", error);
-            throw error;
-        }
+        container = await new PostgreSqlContainer("postgres:17.5").start();
+        database = new Pool({
+            database: container.getDatabase(),
+            host: container.getHost(),
+            user: container.getUsername(),
+            port: container.getPort(),
+            password: container.getPassword(),
+            max: 10,
+        });
+        kysely = new Kysely({
+            dialect: new PostgresDialect({
+                pool: database,
+            }),
+        });
     }, timeout.toMilliseconds());
     afterEach(async () => {
         await database.end();

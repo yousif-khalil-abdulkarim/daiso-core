@@ -1,15 +1,13 @@
-import type {
-    IDatabaseLockAdapter,
-    IDatabaseLockTransaction,
-    ILockData,
-    ILockExpirationData,
-} from "@/lock/contracts/database-lock-adapter.contract.js";
 import { describe, expect, test } from "vitest";
 import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
 import type {
     ILockAdapter,
     ILockAdapterState,
-} from "@/lock/contracts/lock-adapter.contract.js";
+    IDatabaseLockAdapter,
+    IDatabaseLockTransaction,
+    ILockData,
+    ILockExpirationData,
+} from "@/lock/contracts/_module-exports.js";
 import type { InvokableFn, TimeSpan } from "@/utilities/_module-exports.js";
 
 describe("function: isDatabaseLockAdapter", () => {

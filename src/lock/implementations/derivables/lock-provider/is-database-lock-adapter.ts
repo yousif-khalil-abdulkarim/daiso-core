@@ -2,13 +2,13 @@
  * @module Lock
  */
 import type { IDatabaseLockAdapter } from "@/lock/contracts/_module-exports.js";
-import type { ILockAdapter } from "@/lock/contracts/_module-exports.js";
+import type { LockAdapterVariants } from "@/lock/contracts/_module-exports.js";
 
 /**
  * @internal
  */
 export function isDatabaseLockAdapter(
-    adapter: ILockAdapter | IDatabaseLockAdapter,
+    adapter: LockAdapterVariants,
 ): adapter is IDatabaseLockAdapter {
     const adapter_ = adapter as Partial<
         Record<string, (...args_: unknown[]) => unknown>

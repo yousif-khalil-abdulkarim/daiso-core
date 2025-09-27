@@ -7,17 +7,13 @@ import {
     Lock,
     type ISerializedLock,
 } from "@/lock/implementations/derivables/lock-provider/lock.js";
-import type { OneOrMore } from "@/utilities/_module-exports.js";
+import type { OneOrMore, Namespace } from "@/utilities/_module-exports.js";
 import type {
-    IDatabaseLockAdapter,
     ILockAdapter,
+    LockAdapterVariants,
     LockEventMap,
 } from "@/lock/contracts/_module-exports.js";
-import {
-    getConstructorName,
-    TimeSpan,
-    type Namespace,
-} from "@/utilities/_module-exports.js";
+import { getConstructorName, TimeSpan } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 
@@ -26,7 +22,7 @@ import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
  */
 export type LockSerdeTransformerSettings = {
     adapter: ILockAdapter;
-    originalAdapter: ILockAdapter | IDatabaseLockAdapter;
+    originalAdapter: LockAdapterVariants;
     namespace: Namespace;
     createLazyPromise: <TValue = void>(
         asyncFn: () => Promise<TValue>,
@@ -45,7 +41,7 @@ export class LockSerdeTransformer
     implements ISerdeTransformer<Lock, ISerializedLock>
 {
     private readonly adapter: ILockAdapter;
-    private readonly originalAdapter: ILockAdapter | IDatabaseLockAdapter;
+    private readonly originalAdapter: LockAdapterVariants;
     private readonly namespace: Namespace;
     private readonly createLazyPromise: <TValue = void>(
         asyncFn: () => Promise<TValue>,
@@ -96,8 +92,8 @@ export class LockSerdeTransformer
         }
 
         const isSerdTransformerNameMathcing =
-            value._internal_getSerdeTransformerName() ===
-            this.serdeTransformerName;
+            this.serdeTransformerName ===
+            value._internal_getSerdeTransformerName();
 
         const isNamespaceMatching =
             this.namespace._getInternal().namespaced ===
@@ -127,7 +123,7 @@ export class LockSerdeTransformer
             key: keyObj,
             lockId,
             serdeTransformerName: this.serdeTransformerName,
-            ttl: ttlInMs !== null ? TimeSpan.fromMilliseconds(ttlInMs) : null,
+            ttl: ttlInMs === null ? null : TimeSpan.fromMilliseconds(ttlInMs),
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
