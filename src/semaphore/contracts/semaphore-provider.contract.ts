@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import type { OneOrMore, TimeSpan } from "@/utilities/_module-exports.js";
+import type { TimeSpan } from "@/utilities/_module-exports.js";
 import type { ISemaphore } from "@/semaphore/contracts/semaphore.contract.js";
 import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 import type { SemaphoreEventMap } from "@/semaphore/contracts/semaphore.events.js";
@@ -28,7 +28,7 @@ export type SemaphoreProviderCreateSettings = {
      */
     ttl?: TimeSpan | null;
 
-    slotId?: OneOrMore<string>;
+    slotId?: string;
 };
 
 /**
@@ -44,10 +44,7 @@ export type ISemaphoreProviderBase = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      */
-    create(
-        key: OneOrMore<string>,
-        settings: SemaphoreProviderCreateSettings,
-    ): ISemaphore;
+    create(key: string, settings: SemaphoreProviderCreateSettings): ISemaphore;
 };
 
 /**

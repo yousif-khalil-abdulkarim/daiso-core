@@ -14,6 +14,7 @@ import type {
     IDatabaseSemaphoreAdapter,
     ISemaphore,
     ISemaphoreAdapter,
+    SemaphoreAdapterVariants,
     SemaphoreEventMap,
     SemaphoreProviderCreateSettings,
 } from "@/semaphore/contracts/_module-exports.js";
@@ -36,8 +37,7 @@ import {
 import { Semaphore } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore.js";
 import { v4 } from "uuid";
 import { SemaphoreSerdeTransformer } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore-serde-transformer.js";
-import { isDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/is-database-semaphore-adapter.js";
-import { DatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/database-semaphore-adapter.js";
+import { resolveDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/resolve-database-semaphore-adapter.js";
 
 /**
  *
@@ -132,15 +132,8 @@ export type SemaphoreProviderSettingsBase = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore"`
  * @group Derivables
  */
-export type SemaphoreAdapter = ISemaphoreAdapter | IDatabaseSemaphoreAdapter;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore"`
- * @group Derivables
- */
 export type SemaphoreProviderSettings = SemaphoreProviderSettingsBase & {
-    adapter: SemaphoreAdapter;
+    adapter: SemaphoreAdapterVariants;
 };
 
 /**
@@ -201,11 +194,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
-        if (isDatabaseSemaphoreAdapter(adapter)) {
-            this.adapter = new DatabaseSemaphoreAdapter(adapter);
-        } else {
-            this.adapter = adapter;
-        }
+        this.adapter = resolveDatabaseSemaphoreAdapter(adapter);
 
         this.registerToSerde();
     }
@@ -298,10 +287,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         return this.lazyPromiseFactory(asyncFn);
     }
 
-    create(
-        key: OneOrMore<string>,
-        settings: SemaphoreProviderCreateSettings,
-    ): ISemaphore {
+    create(key: string, settings: SemaphoreProviderCreateSettings): ISemaphore {
         const {
             ttl = this.defaultTtl,
             limit,

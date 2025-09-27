@@ -11,6 +11,7 @@ import { TimeSpan, type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     IDatabaseSemaphoreAdapter,
     ISemaphoreAdapter,
+    SemaphoreAdapterVariants,
     SemaphoreEventMap,
 } from "@/semaphore/contracts/_module-exports.js";
 import {
@@ -25,7 +26,7 @@ import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
  */
 export type SemaphoreSerdeTransformerSettings = {
     adapter: ISemaphoreAdapter;
-    originalAdapter: ISemaphoreAdapter | IDatabaseSemaphoreAdapter;
+    originalAdapter: SemaphoreAdapterVariants;
     namespace: Namespace;
     createLazyPromise: <TValue = void>(
         asyncFn: () => Promise<TValue>,
