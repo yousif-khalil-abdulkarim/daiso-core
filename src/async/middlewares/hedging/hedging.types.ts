@@ -2,11 +2,8 @@
  * @module Async
  */
 
-import {
-    type AsyncMiddleware,
-    type HookContext,
-    type OneOrMore,
-} from "@/utilities/_module-exports.js";
+import type { AsyncMiddleware, HookContext } from "@/hooks/_module-exports.js";
+import { type OneOrMore } from "@/utilities/_module-exports.js";
 import type {
     ErrorPolicySettings,
     InferResultError,

@@ -1,5 +1,4 @@
 import {
-    AsyncHooks,
     RESULT,
     resultFailure,
     resultSuccess,
@@ -9,6 +8,7 @@ import {
 import { describe, expect, test } from "vitest";
 import { type OnFallbackData } from "@/async/middlewares/fallback/fallback.types.js";
 import { fallback } from "@/async/middlewares/fallback/fallback.middleware.js";
+import { AsyncHooks } from "@/hooks/_module-exports.js";
 
 describe("function: fallback", () => {
     describe("With result:", () => {

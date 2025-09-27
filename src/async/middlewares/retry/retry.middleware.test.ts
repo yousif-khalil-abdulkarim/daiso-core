@@ -1,5 +1,4 @@
 import {
-    AsyncHooks,
     RESULT,
     resultFailure,
     resultSuccess,
@@ -15,6 +14,7 @@ import type {
 } from "@/async/middlewares/retry/retry.types.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { TO_MILLISECONDS } from "@/time-span/contracts/_module-exports.js";
+import { AsyncHooks } from "@/hooks/_module-exports.js";
 
 describe("function: retry", () => {
     describe("With result:", () => {

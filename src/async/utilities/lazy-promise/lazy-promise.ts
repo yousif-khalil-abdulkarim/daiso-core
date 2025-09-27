@@ -2,9 +2,7 @@
  * @module Async
  */
 import {
-    AsyncHooks,
     type AsyncLazy,
-    type AsyncMiddleware,
     type Invokable,
     type InvokableFn,
     type OneOrMore,
@@ -15,6 +13,7 @@ import {
 import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { AsyncHooks, type AsyncMiddleware } from "@/hooks/_module-exports.js";
 
 /**
  *

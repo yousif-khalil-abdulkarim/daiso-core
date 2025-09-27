@@ -2,19 +2,15 @@
  * @module Async
  */
 
-import {
-    type AsyncMiddlewareFn,
-    type HookContext,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type AbortSignalBinder,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type AsyncHooks,
-} from "@/utilities/_module-exports.js";
 import { callInvokable } from "@/utilities/_module-exports.js";
 import { TimeoutAsyncError } from "@/async/async.errors.js";
 import { timeoutAndFail } from "@/async/utilities/timeout-and-fail/_module.js";
 import type { TimeoutSettings } from "@/async/middlewares/timeout/timeout.type.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type {
+    AsyncMiddlewareFn,
+    HookContext,
+} from "@/hooks/_module-exports.js";
 
 /**
  * The `timeout` middleware automatically cancels functions after a specified time period, throwing an error when aborted.

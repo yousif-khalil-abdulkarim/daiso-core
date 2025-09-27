@@ -1,5 +1,4 @@
 import {
-    AsyncHooks,
     resultFailure,
     resultSuccess,
     type Result,
@@ -13,6 +12,7 @@ import {
 } from "@/async/middlewares/observe/observe.types.js";
 import { observe } from "@/async/middlewares/observe/observe.middleware.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { AsyncHooks } from "@/hooks/_module-exports.js";
 
 describe("function: observe", () => {
     test("Should call onStart callback when no error is thrown", async () => {

@@ -3,7 +3,6 @@
  */
 
 import {
-    AsyncHooks,
     callErrorPolicyOnThrow,
     callErrorPolicyOnValue,
     callInvokable,
@@ -12,10 +11,6 @@ import {
     optionSome,
     resolveOneOrMore,
     UnexpectedError,
-    type AbortSignalBinder,
-    type AsyncMiddleware,
-    type AsyncMiddlewareFn,
-    type HookContext,
     type OneOrMore,
     type Option,
     type ResultFailure,
@@ -25,6 +20,13 @@ import {
     type HedgingSettings,
     type NamedFallback,
 } from "@/async/middlewares/hedging/hedging.types.js";
+import {
+    AsyncHooks,
+    type AbortSignalBinder,
+    type AsyncMiddleware,
+    type AsyncMiddlewareFn,
+    type HookContext,
+} from "@/hooks/_module-exports.js";
 
 /**
  * @internal
