@@ -15,8 +15,7 @@ import type { OneOrMore } from "@/utilities/functions/_module.js";
 type KeySettings = {
     prefixArr: Array<string>;
     key: OneOrMore<string>;
-    identifierDelimeter: string;
-    keyDelimeter: string;
+    delimeter: string;
 };
 
 /**
@@ -25,19 +24,17 @@ type KeySettings = {
 export class Key {
     private readonly prefixArr: Array<string>;
     private readonly key: OneOrMore<string>;
-    private readonly identifierDelimeter: string;
-    private readonly keyDelimeter: string;
+    private readonly delimeter: string;
 
     /**
      *
      * @internal
      */
     constructor(settings: KeySettings) {
-        const { prefixArr, key, identifierDelimeter, keyDelimeter } = settings;
+        const { prefixArr, key, delimeter } = settings;
         this.prefixArr = prefixArr;
         this.key = key;
-        this.identifierDelimeter = identifierDelimeter;
-        this.keyDelimeter = keyDelimeter;
+        this.delimeter = delimeter;
     }
 
     get original(): OneOrMore<string> {
@@ -50,11 +47,8 @@ export class Key {
 
     get namespaced(): string {
         return resolveOneOrMoreStr(
-            [
-                ...this.prefixArr,
-                resolveOneOrMoreStr(this.key, this.keyDelimeter),
-            ],
-            this.identifierDelimeter,
+            [...this.prefixArr, resolveOneOrMoreStr(this.key, this.delimeter)],
+            this.delimeter,
         );
     }
 }
@@ -68,12 +62,7 @@ export type NamespaceSettings = {
     /**
      * @default ":"
      */
-    identifierDelimeter?: string;
-
-    /**
-     * @default "/"
-     */
-    keyDelimeter?: string;
+    delimeter?: string;
 
     /**
      * @default "_rt"
@@ -85,22 +74,16 @@ export type NamespaceSettings = {
  * @internal
  */
 class InternalNamespace {
-    private readonly identifierDelimeter: string;
-    private readonly keyDelimeter: string;
+    private readonly delimeter: string;
     private readonly rootIdentifier: string;
 
     constructor(
         private readonly _rootPrefix: OneOrMore<string>,
         settings: NamespaceSettings = {},
     ) {
-        const {
-            identifierDelimeter = ":",
-            keyDelimeter = "/",
-            rootIdentifier = "_rt",
-        } = settings;
+        const { delimeter = "/", rootIdentifier = "_rt" } = settings;
         this.rootIdentifier = rootIdentifier;
-        this.identifierDelimeter = identifierDelimeter;
-        this.keyDelimeter = keyDelimeter;
+        this.delimeter = delimeter;
         this.validate(this._rootPrefix);
     }
 
@@ -123,24 +106,20 @@ class InternalNamespace {
 
     private getKeyPrefixArray(): Array<string> {
         return [
-            resolveOneOrMoreStr(this._rootPrefix, this.keyDelimeter),
+            resolveOneOrMoreStr(this._rootPrefix, this.delimeter),
             this.rootIdentifier,
         ];
     }
 
     get namespaced(): string {
-        return resolveOneOrMoreStr(
-            this.getKeyPrefixArray(),
-            this.identifierDelimeter,
-        );
+        return resolveOneOrMoreStr(this.getKeyPrefixArray(), this.delimeter);
     }
 
-    create(key: OneOrMore<string>): Key {
+    create(key: string): Key {
         this.validate(key);
         return new Key({
             key,
-            keyDelimeter: this.keyDelimeter,
-            identifierDelimeter: this.identifierDelimeter,
+            delimeter: this.delimeter,
             prefixArr: this.getKeyPrefixArray(),
         });
     }
@@ -158,17 +137,10 @@ export class Namespace {
         private readonly settings: NamespaceSettings = {},
     ) {}
 
-    setIdentifierDelimeter(delimeter: string): Namespace {
+    setDelimeter(delimeter: string): Namespace {
         return new Namespace(this.root, {
             ...this.settings,
-            identifierDelimeter: delimeter,
-        });
-    }
-
-    setKeyDelimeter(delimeter: string): Namespace {
-        return new Namespace(this.root, {
-            ...this.settings,
-            keyDelimeter: delimeter,
+            delimeter,
         });
     }
 
@@ -186,10 +158,17 @@ export class Namespace {
         );
     }
 
+    prependRoot(str: OneOrMore<string>): Namespace {
+        return new Namespace(
+            [...resolveOneOrMore(str), ...resolveOneOrMore(this.root)],
+            this.settings,
+        );
+    }
+
     /**
      * @internal
      */
-    _getInternal(): InternalNamespace {
+    _internal_get(): InternalNamespace {
         return new InternalNamespace(this.root, this.settings);
     }
 }

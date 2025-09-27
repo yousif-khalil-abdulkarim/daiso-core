@@ -81,7 +81,7 @@ export class LockSerdeTransformer
             "lock",
             this.serdeTransformerName,
             getConstructorName(this.originalAdapter),
-            this.namespace._getInternal().namespaced,
+            this.namespace._internal_get().namespaced,
         ].filter((str) => str !== "");
     }
 
@@ -97,8 +97,8 @@ export class LockSerdeTransformer
             value._internal_getSerdeTransformerName();
 
         const isNamespaceMatching =
-            this.namespace._getInternal().namespaced ===
-            value._internal_getNamespace()._getInternal().namespaced;
+            this.namespace._internal_get().namespaced ===
+            value._internal_getNamespace()._internal_get().namespaced;
 
         const isAdapterMatching =
             getConstructorName(this.originalAdapter) ===
@@ -113,7 +113,7 @@ export class LockSerdeTransformer
 
     deserialize(serializedValue: ISerializedLock): Lock {
         const { key, ttlInMs, lockId } = serializedValue;
-        const keyObj = this.namespace._getInternal().create(key);
+        const keyObj = this.namespace._internal_get().create(key);
 
         return new Lock({
             createLazyPromise: this.createLazyPromise,

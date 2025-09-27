@@ -182,7 +182,7 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
             ...this.settings,
             adapter,
             namespace: new Namespace([
-                ...resolveOneOrMore(namespace._getInternal().original),
+                ...resolveOneOrMore(namespace._internal_get().original),
                 adapterName,
             ]),
         });

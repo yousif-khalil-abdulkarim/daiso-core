@@ -339,7 +339,7 @@ export class LockProvider implements ILockProvider {
             lockId = callInvokable(this.creatLockId),
         } = settings;
 
-        const keyObj = this.namespace._getInternal().create(key);
+        const keyObj = this.namespace._internal_get().create(key);
 
         return new Lock({
             namespace: this.namespace,
