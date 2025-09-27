@@ -5,15 +5,15 @@
 import {
     isResult,
     RESULT,
-    type HookContext,
     type InferResultSuccess,
 } from "@/utilities/_module-exports.js";
-import {
-    callInvokable,
-    type AsyncMiddlewareFn,
-} from "@/utilities/_module-exports.js";
+import { callInvokable } from "@/utilities/_module-exports.js";
 import type { ObserveCallbacks } from "@/async/middlewares/observe/observe.types.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type {
+    AsyncMiddlewareFn,
+    HookContext,
+} from "@/hooks/_module-exports.js";
 
 /**
  * The `observe` middleware tracks an async function's state and runs callbacks when it fails with an error or succeeds.

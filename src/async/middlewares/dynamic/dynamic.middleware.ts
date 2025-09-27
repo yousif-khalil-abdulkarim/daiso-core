@@ -3,14 +3,11 @@
  */
 
 import type {
-    HookContext,
     AsyncMiddleware,
-} from "@/utilities/_module-exports.js";
-import {
-    callInvokable,
-    type AsyncMiddlewareFn,
-    type Invokable,
-} from "@/utilities/_module-exports.js";
+    AsyncMiddlewareFn,
+    HookContext,
+} from "@/hooks/_module-exports.js";
+import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
 
 /**
  * The `dynamic` is wrapper middleware that allows configuration of other middlewares dynamically based on the function arguments and context.

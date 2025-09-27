@@ -2,8 +2,8 @@
  * @module Async
  */
 
+import type { HookContext } from "@/hooks/_module-exports.js";
 import type {
-    HookContext,
     AsyncLazyable,
     InferResultSuccess,
     InferResultError,

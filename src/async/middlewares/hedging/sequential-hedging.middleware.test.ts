@@ -1,6 +1,5 @@
 import { LazyPromise } from "@/async/utilities/_module.js";
 import {
-    AsyncHooks,
     resultFailure,
     type Result,
     resultSuccess,
@@ -9,6 +8,7 @@ import { describe, expect, test } from "vitest";
 import { sequentialHedging } from "@/async/middlewares/hedging/sequential-hedging.middleware.js";
 import { z } from "zod";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { AsyncHooks } from "@/hooks/_module-exports.js";
 
 function createDelayedFn<TParameters extends unknown[], TReturn>(
     time: TimeSpan,

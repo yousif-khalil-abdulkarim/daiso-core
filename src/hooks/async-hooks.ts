@@ -1,5 +1,5 @@
 /**
- * @module Utilities
+ * @module Hooks
  */
 
 import {
@@ -11,14 +11,13 @@ import {
     type Invokable,
     type InvokableFn,
     type OneOrMore,
-} from "@/utilities/functions/_module.js";
-import { type Promisable } from "@/utilities/types/_module.js";
-import type { HookContext } from "@/utilities/classes/hooks/types.js";
+    type Promisable,
+} from "@/utilities/_module-exports.js";
+import type { HookContext } from "@/hooks/types.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type GetSignal<TParameters extends unknown[] = unknown[]> = Invokable<
     [arguments_: TParameters],
@@ -27,8 +26,7 @@ export type GetSignal<TParameters extends unknown[] = unknown[]> = Invokable<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type ForwardSignal<TParameters> = Invokable<
     [arguments_: TParameters, signal: AbortSignal],
@@ -39,8 +37,7 @@ export type ForwardSignal<TParameters> = Invokable<
  * With {@link AbortSignalBinder | `AbortSignalBinder`}, you can bind an {@link AbortSignal | `AbortSignal`} to the middleware, enabling two-way abortion control.
  * This means the middleware can abort the function, or the function can abort the middleware if the input function supports an {@link AbortSignal | `AbortSignal`}.
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  *
  * @example
  * ```ts
@@ -82,8 +79,7 @@ export type AbortSignalBinder<TParameters extends unknown[] = unknown[]> = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncNextFunc<
     TParameters extends unknown[] = unknown[],
@@ -92,8 +88,7 @@ export type AsyncNextFunc<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncContext<
     TParameters extends unknown[] = unknown[],
@@ -108,8 +103,7 @@ export type AsyncContext<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncMiddlewareFn<
     TParameters extends unknown[] = unknown[],
@@ -126,8 +120,7 @@ export type AsyncMiddlewareFn<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type IAsyncMiddlewareObject<
     TParameters extends unknown[] = unknown[],
@@ -144,8 +137,7 @@ export type IAsyncMiddlewareObject<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncMiddleware<
     TParameters extends unknown[] = unknown[],
@@ -157,8 +149,7 @@ export type AsyncMiddleware<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncHooksSettings<
     TParameters extends unknown[] = unknown[],
@@ -188,8 +179,7 @@ export type AsyncHooksSettings<
  *
  * Middlewares apply left to right: each wraps the next, with the leftmost being the outermost layer and the rightmost wrapping the original function.
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export class AsyncHooks<
     TParameters extends unknown[] = unknown[],

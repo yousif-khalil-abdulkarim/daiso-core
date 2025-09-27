@@ -1,5 +1,5 @@
 /**
- * @module Utilities
+ * @module Hooks
  */
 
 import {
@@ -10,13 +10,12 @@ import {
     type Invokable,
     type InvokableFn,
     type OneOrMore,
-} from "@/utilities/functions/_module.js";
-import type { HookContext } from "@/utilities/classes/hooks/types.js";
+} from "@/utilities/_module-exports.js";
+import type { HookContext } from "@/hooks/types.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type NextFunc<
     TParameters extends unknown[] = unknown[],
@@ -25,8 +24,7 @@ export type NextFunc<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type Context<TContext extends HookContext = HookContext> = {
     name: string;
@@ -35,8 +33,7 @@ export type Context<TContext extends HookContext = HookContext> = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type MiddlewareFn<
     TParameters extends unknown[] = unknown[],
@@ -53,8 +50,7 @@ export type MiddlewareFn<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type IMiddlewareObject<
     TParameters extends unknown[] = unknown[],
@@ -71,8 +67,7 @@ export type IMiddlewareObject<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type Middleware<
     TParameters extends unknown[] = unknown[],
@@ -84,8 +79,7 @@ export type Middleware<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type HooksSettings<TContext extends HookContext = HookContext> = {
     /**
@@ -106,8 +100,7 @@ export type HooksSettings<TContext extends HookContext = HookContext> = {
  *
  * Middlewares apply left to right: each wraps the next, with the leftmost being the outermost layer and the rightmost wrapping the original function.
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Hooks
+ * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export class Hooks<
     TParameters extends unknown[] = unknown[],

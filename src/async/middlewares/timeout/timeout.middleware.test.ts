@@ -2,9 +2,9 @@ import { describe, expect, test } from "vitest";
 import { timeout } from "@/async/middlewares/timeout/timeout.middleware.js";
 import { type OnTimeoutData } from "@/async/middlewares/timeout/timeout.type.js";
 import { AsyncError, TimeoutAsyncError } from "@/async/async.errors.js";
-import { AsyncHooks } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { AsyncHooks } from "@/hooks/_module-exports.js";
 
 function createDelayedFn<TParameters extends unknown[], TReturn>(
     time: TimeSpan,

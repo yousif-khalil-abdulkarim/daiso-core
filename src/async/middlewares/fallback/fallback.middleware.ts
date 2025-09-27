@@ -5,16 +5,18 @@
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type Result,
-    type HookContext,
     resolveAsyncLazyable,
     callInvokable,
     resultSuccess,
     callErrorPolicyOnValue,
     isResultFailure,
 } from "@/utilities/_module-exports.js";
-import type { AsyncMiddlewareFn } from "@/utilities/_module-exports.js";
 import type { FallbackSettings } from "@/async/middlewares/fallback/fallback.types.js";
 import { callErrorPolicyOnThrow } from "@/utilities/_module-exports.js";
+import type {
+    AsyncMiddlewareFn,
+    HookContext,
+} from "@/hooks/_module-exports.js";
 
 /**
  * The `fallback` middleware adds fallback value when an error occurs.

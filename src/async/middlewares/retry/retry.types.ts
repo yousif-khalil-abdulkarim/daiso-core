@@ -3,13 +3,11 @@
  */
 
 import type { InferResultError } from "@/utilities/_module-exports.js";
-import {
-    type Invokable,
-    type HookContext,
-} from "@/utilities/_module-exports.js";
+import { type Invokable } from "@/utilities/_module-exports.js";
 import { type BackoffPolicy } from "@/async/backof-policies/_module.js";
 import { type ErrorPolicySettings } from "@/utilities/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import type { HookContext } from "@/hooks/_module-exports.js";
 
 /**
  *

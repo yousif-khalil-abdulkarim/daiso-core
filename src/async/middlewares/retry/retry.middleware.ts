@@ -4,8 +4,6 @@
 
 import type { Option, ResultFailure } from "@/utilities/_module-exports.js";
 import {
-    type HookContext,
-    type AsyncMiddlewareFn,
     callInvokable,
     optionNone,
     optionSome,
@@ -19,6 +17,10 @@ import {
     callErrorPolicyOnValue,
 } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
+import type {
+    AsyncMiddlewareFn,
+    HookContext,
+} from "@/hooks/_module-exports.js";
 
 /**
  * The `retry` middleware enables automatic retries for all errors or specific errors, with configurable backoff policies.

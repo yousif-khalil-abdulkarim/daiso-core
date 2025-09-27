@@ -4,9 +4,9 @@ import {
 } from "@/async/middlewares/bulkhead/bulkhead.middleware.js";
 import { LazyPromise } from "@/async/utilities/lazy-promise/_module.js";
 import { CapacityFullAsyncError } from "@/async/async.errors.js";
-import { AsyncHooks } from "@/utilities/_module-exports.js";
 import { describe, expect, test } from "vitest";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { AsyncHooks } from "@/hooks/_module-exports.js";
 
 describe("function: bulkhead", () => {
     test("Should throw CapacityFullAsyncError when capacity execded", async () => {
