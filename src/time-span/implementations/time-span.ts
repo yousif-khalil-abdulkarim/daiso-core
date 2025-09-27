@@ -1,3 +1,7 @@
+/**
+ * @module TimeSpan
+ */
+
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 import {
     TO_MILLISECONDS,
@@ -9,8 +13,8 @@ import type { IComparable } from "@/utilities/_module-exports.js";
  * The `TimeSpan` class is used for representing time interval.
  * `TimeSpan` cannot be negative.
  *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group TimeSpan
+ * IMPORT_PATH: `"@daiso-tech/core/time-span"`
+ * @group Implementations
  */
 export class TimeSpan
     implements ITimeSpan, ISerializable<number>, IComparable<ITimeSpan>
