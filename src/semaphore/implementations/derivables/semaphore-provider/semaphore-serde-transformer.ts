@@ -14,13 +14,11 @@ import type {
     SemaphoreAdapterVariants,
     SemaphoreEventMap,
 } from "@/semaphore/contracts/_module-exports.js";
-import {
-    getConstructorName,
-    type Namespace,
-} from "@/utilities/_module-exports.js";
+import { getConstructorName } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  * @internal
@@ -87,7 +85,7 @@ export class SemaphoreSerdeTransformer
             "semaphore",
             this.serdeTransformerName,
             getConstructorName(this.originalAdapter),
-            this.namespace._internal_get().namespaced,
+            this.namespace.toString(),
         ].filter((str) => str !== "");
     }
 
@@ -104,8 +102,8 @@ export class SemaphoreSerdeTransformer
             this.serdeTransformerName;
 
         const isNamespaceMatching =
-            this.namespace._internal_get().namespaced ===
-            value._internal_getNamespace()._internal_get().namespaced;
+            this.namespace.toString() ===
+            value._internal_getNamespace().toString();
 
         const isAdapterMatching =
             getConstructorName(this.originalAdapter) ===
@@ -120,7 +118,7 @@ export class SemaphoreSerdeTransformer
 
     deserialize(serializedValue: ISerializedSemaphore): Semaphore {
         const { key, slotId, limit, ttlInMs } = serializedValue;
-        const keyObj = this.namespace._internal_get().create(key);
+        const keyObj = this.namespace.create(key);
         return new Semaphore({
             slotId,
             createLazyPromise: this.createLazyPromise,

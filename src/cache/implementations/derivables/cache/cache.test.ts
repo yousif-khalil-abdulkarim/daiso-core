@@ -2,10 +2,11 @@ import { beforeEach, describe, expect, test } from "vitest";
 import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
 import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
 import { Cache } from "@/cache/implementations/derivables/_module-exports.js";
-import { Namespace, ValidationError } from "@/utilities/_module-exports.js";
+import { ValidationError } from "@/utilities/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { z } from "zod";
+import { Namespace } from "@/namespace/_module-exports.js";
 
 describe("class: Cache", () => {
     cacheTestSuite({
@@ -63,47 +64,27 @@ describe("class: Cache", () => {
         });
         describe("output validation:", () => {
             test("method: get", async () => {
-                await adapter.add(
-                    namespace._internal_get().create("a").namespaced,
-                    1,
-                    null,
-                );
+                await adapter.add(namespace.create("a").toString(), 1, null);
                 const promise = cache.get("a");
                 await expect(promise).rejects.toBeInstanceOf(ValidationError);
             });
             test("method: getOrFail", async () => {
-                await adapter.add(
-                    namespace._internal_get().create("a").namespaced,
-                    1,
-                    null,
-                );
+                await adapter.add(namespace.create("a").toString(), 1, null);
                 const promise = cache.getOrFail("a");
                 await expect(promise).rejects.toBeInstanceOf(ValidationError);
             });
             test("method: getAndRemove", async () => {
-                await adapter.add(
-                    namespace._internal_get().create("a").namespaced,
-                    1,
-                    null,
-                );
+                await adapter.add(namespace.create("a").toString(), 1, null);
                 const promise = cache.getAndRemove("a");
                 await expect(promise).rejects.toBeInstanceOf(ValidationError);
             });
             test("method: getOr", async () => {
-                await adapter.add(
-                    namespace._internal_get().create("a").namespaced,
-                    1,
-                    null,
-                );
+                await adapter.add(namespace.create("a").toString(), 1, null);
                 const promise = cache.getOr("a", "1");
                 await expect(promise).rejects.toBeInstanceOf(ValidationError);
             });
             test("method: getOrAdd", async () => {
-                await adapter.add(
-                    namespace._internal_get().create("a").namespaced,
-                    1,
-                    null,
-                );
+                await adapter.add(namespace.create("a").toString(), 1, null);
                 const promise = cache.getOrAdd("a", "1");
                 await expect(promise).rejects.toBeInstanceOf(ValidationError);
             });

@@ -3,11 +3,12 @@ import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memo
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus.js";
 import { eventBusTestSuite } from "@/event-bus/implementations/test-utilities/_module-exports.js";
 import { EventEmitter } from "node:events";
-import { Namespace, ValidationError } from "@/utilities/_module-exports.js";
+import { ValidationError } from "@/utilities/_module-exports.js";
 import { z } from "zod";
 import type { EventListenerFn } from "@/event-bus/contracts/event-bus-adapter.contract.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { Namespace } from "@/namespace/_module-exports.js";
 
 describe("class: EventBus", () => {
     let eventEmitter: EventEmitter;
@@ -66,7 +67,7 @@ describe("class: EventBus", () => {
 
                 await eventBus.addListener("add", listener);
                 await adapter.dispatch(
-                    namespace._internal_get().create("add").namespaced,
+                    namespace.create("add").toString(),
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -90,7 +91,7 @@ describe("class: EventBus", () => {
 
                 await eventBus.listenOnce("add", listener);
                 await adapter.dispatch(
-                    namespace._internal_get().create("add").namespaced,
+                    namespace.create("add").toString(),
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -112,7 +113,7 @@ describe("class: EventBus", () => {
 
                 eventBus.asPromise("add").defer();
                 await adapter.dispatch(
-                    namespace._internal_get().create("add").namespaced,
+                    namespace.create("add").toString(),
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -138,7 +139,7 @@ describe("class: EventBus", () => {
                     listener,
                 );
                 await adapter.dispatch(
-                    namespace._internal_get().create("add").namespaced,
+                    namespace.create("add").toString(),
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
@@ -162,7 +163,7 @@ describe("class: EventBus", () => {
 
                 const unsubscribe = await eventBus.subscribe("add", listener);
                 await adapter.dispatch(
-                    namespace._internal_get().create("add").namespaced,
+                    namespace.create("add").toString(),
                     invalidInput,
                 );
                 await LazyPromise.delay(TimeSpan.fromMilliseconds(10));

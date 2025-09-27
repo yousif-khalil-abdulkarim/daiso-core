@@ -24,7 +24,7 @@ import {
     validate,
 } from "@/utilities/_module-exports.js";
 import type { AsyncLazyable } from "@/utilities/_module-exports.js";
-import { type NoneFunc, Namespace } from "@/utilities/_module-exports.js";
+import { type NoneFunc } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
     IEventBus,
@@ -45,6 +45,7 @@ import type {
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -279,9 +280,9 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     get(key: string): LazyPromise<TType | null> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace._internal_get().create(key);
+            const keyObj = this.namespace.create(key);
             try {
-                const value = await this.adapter.get(keyObj.namespaced);
+                const value = await this.adapter.get(keyObj.toString());
                 if (this.shouldValidateOutput && value !== null) {
                     await validate(this.schema, value);
                 }
@@ -289,13 +290,13 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 if (value === null) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                         })
                         .defer();
                 } else {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.FOUND, {
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                             value,
                         })
                         .defer();
@@ -305,7 +306,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
-                        keys: [keyObj.resolved],
+                        keys: [keyObj.get()],
                         method: this.get.name,
                         error,
                     })
@@ -320,7 +321,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             const value = await this.get(key);
             if (value === null) {
                 throw new KeyNotFoundCacheError(
-                    `Key "${this.namespace._internal_get().create(key).resolved}" is not found`,
+                    `Key "${this.namespace.create(key).get()}" is not found`,
                 );
             }
             return value;
@@ -329,10 +330,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     getAndRemove(key: string): LazyPromise<TType | null> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace._internal_get().create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 const value = await this.adapter.getAndRemove(
-                    keyObj.namespaced,
+                    keyObj.toString(),
                 );
                 if (this.shouldValidateOutput && value !== null) {
                     await validate(this.schema, value);
@@ -341,20 +342,20 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 if (value === null) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                         })
                         .defer();
                 } else {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.FOUND, {
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                             value,
                         })
                         .defer();
                     this.eventBus
                         .dispatch(CACHE_EVENTS.WRITTEN, {
                             type: "removed",
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                         })
                         .defer();
                 }
@@ -362,7 +363,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
-                        keys: [keyObj.resolved],
+                        keys: [keyObj.get()],
                         method: this.get.name,
                         error,
                     })
@@ -412,11 +413,11 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return this.createLazyPromise(async () => {
             const ttlAsTimeSpan =
                 ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
-            const keyObj = this.namespace._internal_get().create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 await validate(this.schema, value);
                 const hasAdded = await this.adapter.add(
-                    keyObj.namespaced,
+                    keyObj.toString(),
                     value,
                     ttlAsTimeSpan,
                 );
@@ -424,7 +425,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.WRITTEN, {
                             type: "added",
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                             value,
                             ttl: ttlAsTimeSpan,
                         })
@@ -434,7 +435,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
-                        keys: [keyObj.resolved],
+                        keys: [keyObj.get()],
                         value,
                         method: this.add.name,
                         error,
@@ -453,11 +454,11 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return this.createLazyPromise(async () => {
             const ttlAsTimeSpan =
                 ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
-            const keyObj = this.namespace._internal_get().create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 await validate(this.schema, value);
                 const hasUpdated = await this.adapter.put(
-                    keyObj.namespaced,
+                    keyObj.toString(),
                     value,
                     ttlAsTimeSpan,
                 );
@@ -465,7 +466,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.WRITTEN, {
                             type: "updated",
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                             value,
                         })
                         .defer();
@@ -473,7 +474,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.WRITTEN, {
                             type: "added",
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                             value,
                             ttl: ttlAsTimeSpan,
                         })
@@ -483,7 +484,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
-                        keys: [keyObj.resolved],
+                        keys: [keyObj.get()],
                         value,
                         method: this.put.name,
                         error,
@@ -496,25 +497,25 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     update(key: string, value: TType): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace._internal_get().create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 await validate(this.schema, value);
                 const hasUpdated = await this.adapter.update(
-                    keyObj.namespaced,
+                    keyObj.toString(),
                     value,
                 );
                 if (hasUpdated) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.WRITTEN, {
                             type: "updated",
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                             value,
                         })
                         .defer();
                 } else {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                         })
                         .defer();
                 }
@@ -522,7 +523,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
-                        keys: [keyObj.resolved],
+                        keys: [keyObj.get()],
                         value,
                         method: this.update.name,
                         error,
@@ -538,17 +539,17 @@ export class Cache<TType = unknown> implements ICache<TType> {
         value = 0 as Extract<TType, number>,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace._internal_get().create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 const hasUpdated = await this.adapter.increment(
-                    keyObj.namespaced,
+                    keyObj.toString(),
                     value,
                 );
                 if (hasUpdated && value > 0) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.WRITTEN, {
                             type: "incremented",
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                             value,
                         })
                         .defer();
@@ -557,7 +558,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.WRITTEN, {
                             type: "decremented",
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                             value: -value,
                         })
                         .defer();
@@ -565,7 +566,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 if (!hasUpdated) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                         })
                         .defer();
                 }
@@ -573,14 +574,14 @@ export class Cache<TType = unknown> implements ICache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
-                        keys: [keyObj.resolved],
+                        keys: [keyObj.get()],
                         value,
                         method: this.increment.name,
                         error,
                     })
                     .defer();
                 throw new TypeCacheError(
-                    `Unable to increment or decrement none number type key "${keyObj.resolved}"`,
+                    `Unable to increment or decrement none number type key "${keyObj.get()}"`,
                     error,
                 );
             }
@@ -598,22 +599,22 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     remove(key: string): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
-            const keyObj = this.namespace._internal_get().create(key);
+            const keyObj = this.namespace.create(key);
             try {
                 const hasRemoved = await this.adapter.removeMany([
-                    keyObj.namespaced,
+                    keyObj.toString(),
                 ]);
                 if (hasRemoved) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.WRITTEN, {
                             type: "removed",
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                         })
                         .defer();
                 } else {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.resolved,
+                            key: keyObj.get(),
                         })
                         .defer();
                 }
@@ -621,7 +622,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
-                        keys: [keyObj.resolved],
+                        keys: [keyObj.get()],
                         method: this.remove.name,
                         error,
                     })
@@ -637,12 +638,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
             if (keysArr.length === 0) {
                 return true;
             }
-            const keyObjArr = keysArr.map((key) =>
-                this.namespace._internal_get().create(key),
-            );
+            const keyObjArr = keysArr.map((key) => this.namespace.create(key));
             try {
                 const hasRemovedAtLeastOne = await this.adapter.removeMany(
-                    keyObjArr.map((keyObj) => keyObj.namespaced),
+                    keyObjArr.map((keyObj) => keyObj.toString()),
                 );
                 if (hasRemovedAtLeastOne) {
                     const events = keyObjArr.map(
@@ -653,7 +652,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                                 CACHE_EVENTS.WRITTEN,
                                 {
                                     type: "removed",
-                                    key: keyObj.resolved,
+                                    key: keyObj.get(),
                                 },
                             ] as const,
                     );
@@ -671,7 +670,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                             [
                                 CACHE_EVENTS.NOT_FOUND,
                                 {
-                                    key: keyObj.resolved,
+                                    key: keyObj.get(),
                                 },
                             ] as const,
                     );
@@ -683,7 +682,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             } catch (error: unknown) {
                 this.eventBus
                     .dispatch(CACHE_EVENTS.UNEXPECTED_ERROR, {
-                        keys: keyObjArr.map((keyObj) => keyObj.resolved),
+                        keys: keyObjArr.map((keyObj) => keyObj.get()),
                         method: this.remove.name,
                         error,
                     })
@@ -700,9 +699,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     CACHE_EVENTS.CLEARED,
                     {},
                 );
-                await this.adapter.removeByKeyPrefix(
-                    this.namespace._internal_get().namespaced,
-                );
+                await this.adapter.removeByKeyPrefix(this.namespace.toString());
                 promise.defer();
             } catch (error: unknown) {
                 this.eventBus

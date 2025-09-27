@@ -9,8 +9,6 @@ import type {
 } from "@/lock/contracts/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
-    Namespace,
-    resolveOneOrMore,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
 import type {
@@ -24,6 +22,7 @@ import {
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -190,10 +189,7 @@ export class LockProviderFactory<TAdapters extends string>
         return new LockProvider({
             ...this.settings,
             adapter,
-            namespace: new Namespace([
-                ...resolveOneOrMore(namespace._internal_get().original),
-                adapterName,
-            ]),
+            namespace: namespace.appendRoot(adapterName),
             serdeTransformerName: adapterName,
         });
     }

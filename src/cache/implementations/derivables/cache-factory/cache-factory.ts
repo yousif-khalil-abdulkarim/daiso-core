@@ -4,7 +4,6 @@
 
 import {
     DefaultAdapterNotDefinedError,
-    resolveOneOrMore,
     UnregisteredAdapterError,
     type AsyncLazy,
     type Factory,
@@ -19,10 +18,10 @@ import {
     type CacheSettingsBase,
     type CacheAdapterVariants,
 } from "@/cache/implementations/derivables/cache/_module.js";
-import { Namespace } from "@/utilities/_module-exports.js";
 import type { LazyPromise } from "@/async/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -181,10 +180,7 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
         return new Cache({
             ...this.settings,
             adapter,
-            namespace: new Namespace([
-                ...resolveOneOrMore(namespace._internal_get().original),
-                adapterName,
-            ]),
+            namespace: namespace.appendRoot(adapterName),
         });
     }
 }

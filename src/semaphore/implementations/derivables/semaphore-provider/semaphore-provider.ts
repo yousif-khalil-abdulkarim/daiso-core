@@ -24,7 +24,6 @@ import {
     callInvokable,
     CORE,
     isPositiveNbr,
-    Namespace,
     resolveInvokable,
     resolveOneOrMore,
     type AsyncLazy,
@@ -39,6 +38,7 @@ import { SemaphoreSerdeTransformer } from "@/semaphore/implementations/derivable
 import { resolveDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/resolve-database-semaphore-adapter.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -299,18 +299,14 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         } = settings;
         isPositiveNbr(limit);
 
-        const keyObj = this.namespace._internal_get().create(key);
-        const slotIdAsStr = this.namespace
-            ._internal_get()
-            .create(slotId).resolved;
         return new Semaphore({
-            slotId: slotIdAsStr,
+            slotId,
             limit,
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
             eventDispatcher: this.eventBus,
-            key: keyObj,
+            key: this.namespace.create(key),
             ttl: ttl === null ? null : TimeSpan.fromTimeSpan(ttl),
             serdeTransformerName: this.serdeTransformerName,
             defaultBlockingInterval: this.defaultBlockingInterval,

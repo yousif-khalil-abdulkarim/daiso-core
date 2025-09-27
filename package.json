@@ -144,6 +144,10 @@
             "types": "./dist/lock/implementations/test-utilities/_module-exports.d.ts",
             "import": "./dist/lock/implementations/test-utilities/_module-exports.js"
         },
+        "./namespace": {
+            "types": "./dist/namespace/_module-exports.d.ts",
+            "import": "./dist/namespace/_module-exports.js"
+        },
         "./semaphore": {
             "types": "./dist/semaphore/implementations/derivables/_module-exports.d.ts",
             "import": "./dist/semaphore/implementations/derivables/_module-exports.js"

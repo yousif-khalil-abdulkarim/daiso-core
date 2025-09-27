@@ -4,6 +4,7 @@
 
 import { LazyPromise } from "@/async/_module-exports.js";
 import { type IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
+import type { Key, Namespace } from "@/namespace/_module-exports.js";
 import type {
     IDatabaseSemaphoreAdapter,
     ISemaphoreAdapter,
@@ -22,11 +23,7 @@ import {
 } from "@/semaphore/contracts/_module-exports.js";
 import type { ISemaphoreState } from "@/semaphore/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import {
-    type InvokableFn,
-    type Namespace,
-} from "@/utilities/_module-exports.js";
-import type { Key } from "@/utilities/_module-exports.js";
+import { type InvokableFn } from "@/utilities/_module-exports.js";
 import {
     resolveLazyable,
     resultFailure,
@@ -77,7 +74,7 @@ export class Semaphore implements ISemaphore {
         deserializedValue: Semaphore,
     ): ISerializedSemaphore {
         return {
-            key: deserializedValue._key.resolved,
+            key: deserializedValue._key.get(),
             limit: deserializedValue.limit,
             slotId: deserializedValue.slotId,
             ttlInMs: deserializedValue._ttl?.toMilliseconds() ?? null,
@@ -155,7 +152,7 @@ export class Semaphore implements ISemaphore {
                     if (!hasAquired) {
                         return resultFailure(
                             new LimitReachedSemaphoreError(
-                                `Key "${this._key.resolved}" has reached the limit ${String(this.limit)}`,
+                                `Key "${this._key.get()}" has reached the limit ${String(this.limit)}`,
                             ),
                         );
                     }
@@ -190,7 +187,7 @@ export class Semaphore implements ISemaphore {
                     if (!hasAquired) {
                         return resultFailure(
                             new LimitReachedSemaphoreError(
-                                `Key "${this._key.resolved}" has reached the limit ${String(this.limit)}`,
+                                `Key "${this._key.get()}" has reached the limit ${String(this.limit)}`,
                             ),
                         );
                     }
@@ -241,7 +238,7 @@ export class Semaphore implements ISemaphore {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquire({
-                    key: this._key.namespaced,
+                    key: this._key.toString(),
                     slotId: this.slotId,
                     limit: this.limit,
                     ttl: this._ttl,
@@ -271,7 +268,7 @@ export class Semaphore implements ISemaphore {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
                 throw new LimitReachedSemaphoreError(
-                    `Key "${this._key.resolved}" has reached the limit`,
+                    `Key "${this._key.get()}" has reached the limit`,
                 );
             }
         });
@@ -306,7 +303,7 @@ export class Semaphore implements ISemaphore {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
                 throw new LimitReachedSemaphoreError(
-                    `Key "${this._key.resolved}" has reached the limit`,
+                    `Key "${this._key.get()}" has reached the limit`,
                 );
             }
         });
@@ -316,7 +313,7 @@ export class Semaphore implements ISemaphore {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.release(
-                    this._key.namespaced,
+                    this._key.toString(),
                     this.slotId,
                 );
 
@@ -344,7 +341,7 @@ export class Semaphore implements ISemaphore {
             const hasReleased = await this.release();
             if (!hasReleased) {
                 throw new FailedReleaseSemaphoreError(
-                    `Failed to release slot "${this.slotId}" of key "${this._key.resolved}"`,
+                    `Failed to release slot "${this.slotId}" of key "${this._key.get()}"`,
                 );
             }
         });
@@ -354,7 +351,7 @@ export class Semaphore implements ISemaphore {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceReleaseAll(
-                    this._key.namespaced,
+                    this._key.toString(),
                 );
 
                 this.eventDispatcher
@@ -373,7 +370,7 @@ export class Semaphore implements ISemaphore {
         return this.createLazyPromise(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refresh(
-                    this._key.namespaced,
+                    this._key.toString(),
                     this.slotId,
                     ttl,
                 );
@@ -403,7 +400,7 @@ export class Semaphore implements ISemaphore {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshSemaphoreError(
-                    `Failed to refresh slot "${this.slotId}" of key "${this._key.resolved}"`,
+                    `Failed to refresh slot "${this.slotId}" of key "${this._key.get()}"`,
                 );
             }
         });
@@ -418,7 +415,7 @@ export class Semaphore implements ISemaphore {
     }
 
     get key(): string {
-        return this._key.resolved;
+        return this._key.get();
     }
 
     getState(): LazyPromise<ISemaphoreState> {
@@ -426,7 +423,7 @@ export class Semaphore implements ISemaphore {
             return await this.handleUnexpectedError(
                 async (): Promise<ISemaphoreState> => {
                     const state = await this.adapter.getState(
-                        this._key.namespaced,
+                        this._key.toString(),
                     );
                     if (state === null) {
                         return {

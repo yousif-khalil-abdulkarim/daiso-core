@@ -15,11 +15,7 @@ import {
     type IEventBusAdapter,
 } from "@/event-bus/contracts/_module-exports.js";
 
-import {
-    getInvokableName,
-    Namespace,
-    validate,
-} from "@/utilities/_module-exports.js";
+import { getInvokableName, validate } from "@/utilities/_module-exports.js";
 import {
     type Factory,
     type AsyncLazy,
@@ -28,6 +24,7 @@ import {
 import { resolveInvokable } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -182,21 +179,19 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.namespace
-                ._internal_get()
-                .create(String(eventName));
+            const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
-                key.namespaced,
+                key.toString(),
                 listener,
                 this.createWrappedListener(eventName, listener),
             );
             try {
                 await this.adapter.addListener(
-                    key.namespaced,
+                    key.toString(),
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getAndRemove(key.namespaced, listener);
+                this.store.getAndRemove(key.toString(), listener);
                 throw error;
             }
         });
@@ -207,11 +202,9 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         listener: EventListener<TEventMap[TEventName]>,
     ): LazyPromise<void> {
         return this.createLazyPromise(async () => {
-            const key = this.namespace
-                ._internal_get()
-                .create(String(eventName));
+            const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getAndRemove(
-                key.namespaced,
+                key.toString(),
                 listener,
             );
             if (resolvedListener === null) {
@@ -219,11 +212,11 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
             }
             try {
                 await this.adapter.removeListener(
-                    key.namespaced,
+                    key.toString(),
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getOrAdd(key.namespaced, listener, resolvedListener);
+                this.store.getOrAdd(key.toString(), listener, resolvedListener);
                 throw error;
             }
         });
@@ -259,21 +252,19 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
                 }
             };
 
-            const key = this.namespace
-                ._internal_get()
-                .create(String(eventName));
+            const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
-                key.namespaced,
+                key.toString(),
                 listener,
                 wrappedListener,
             );
             try {
                 await this.adapter.addListener(
-                    key.namespaced,
+                    key.toString(),
                     resolvedListener as EventListenerFn<BaseEvent>,
                 );
             } catch (error: unknown) {
-                this.store.getAndRemove(key.namespaced, listener);
+                this.store.getAndRemove(key.toString(), listener);
                 throw error;
             }
         });
@@ -324,8 +315,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         return this.createLazyPromise(async () => {
             await validate(this.eventMapSchema?.[eventName], event);
             await this.adapter.dispatch(
-                this.namespace._internal_get().create(String(eventName))
-                    .namespaced,
+                this.namespace.create(String(eventName)).toString(),
                 event,
             );
         });
