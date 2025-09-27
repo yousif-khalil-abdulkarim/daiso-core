@@ -29,8 +29,9 @@ import {
 } from "@/utilities/_module-exports.js";
 import {
     type NoneFunc,
-    type TimeSpan,
+    type ITimeSpan,
     Namespace,
+    TimeSpan,
 } from "@/utilities/_module-exports.js";
 import { LazyPromise } from "@/async/_module-exports.js";
 import type {
@@ -106,7 +107,7 @@ export type CacheSettingsBase<TType = unknown> = {
      * You can decide the default ttl value. If null is passed then no ttl will be used by default.
      * @default null
      */
-    defaultTtl?: TimeSpan | null;
+    defaultTtl?: ITimeSpan | null;
 };
 
 /**
@@ -185,7 +186,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
         this.shouldValidateOutput = shouldValidateOutput;
         this.schema = schema;
         this.namespace = namespace;
-        this.defaultTtl = defaultTtl;
+        this.defaultTtl =
+            defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.eventBus = eventBus;
 
@@ -394,7 +396,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     getOrAdd(
         key: OneOrMore<string>,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,
-        ttl?: TimeSpan | null,
+        ttl?: ITimeSpan | null,
     ): LazyPromise<TType> {
         return this.createLazyPromise<TType>(async () => {
             const value = await this.get(key);
@@ -411,16 +413,18 @@ export class Cache<TType = unknown> implements ICache<TType> {
     add(
         key: OneOrMore<string>,
         value: TType,
-        ttl: TimeSpan | null = this.defaultTtl,
+        ttl: ITimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
+            const ttlAsTimeSpan =
+                ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
             const keyObj = this.namespace._getInternal().create(key);
             try {
                 await validate(this.schema, value);
                 const hasAdded = await this.adapter.add(
                     keyObj.namespaced,
                     value,
-                    ttl,
+                    ttlAsTimeSpan,
                 );
                 if (hasAdded) {
                     this.eventBus
@@ -428,7 +432,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                             type: "added",
                             key: keyObj.resolved,
                             value,
-                            ttl,
+                            ttl: ttlAsTimeSpan,
                         })
                         .defer();
                 }
@@ -450,16 +454,18 @@ export class Cache<TType = unknown> implements ICache<TType> {
     put(
         key: OneOrMore<string>,
         value: TType,
-        ttl: TimeSpan | null = this.defaultTtl,
+        ttl: ITimeSpan | null = this.defaultTtl,
     ): LazyPromise<boolean> {
         return this.createLazyPromise(async () => {
+            const ttlAsTimeSpan =
+                ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
             const keyObj = this.namespace._getInternal().create(key);
             try {
                 await validate(this.schema, value);
                 const hasUpdated = await this.adapter.put(
                     keyObj.namespaced,
                     value,
-                    ttl,
+                    ttlAsTimeSpan,
                 );
                 if (hasUpdated) {
                     this.eventBus
@@ -475,7 +481,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                             type: "added",
                             key: keyObj.resolved,
                             value,
-                            ttl,
+                            ttl: ttlAsTimeSpan,
                         })
                         .defer();
                 }

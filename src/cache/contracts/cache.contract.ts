@@ -6,7 +6,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
-    TimeSpan,
+    ITimeSpan,
 } from "@/utilities/_module-exports.js";
 import type {
     AsyncLazyable,
@@ -109,7 +109,7 @@ export type ICacheBase<TType = unknown> = {
     getOrAdd(
         key: OneOrMore<string>,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,
-        ttl?: TimeSpan | null,
+        ttl?: ITimeSpan | null,
     ): LazyPromise<TType>;
 
     /**
@@ -126,7 +126,7 @@ export type ICacheBase<TType = unknown> = {
     add(
         key: OneOrMore<string>,
         value: TType,
-        ttl?: TimeSpan | null,
+        ttl?: ITimeSpan | null,
     ): LazyPromise<boolean>;
 
     /**
@@ -144,7 +144,7 @@ export type ICacheBase<TType = unknown> = {
     put(
         key: OneOrMore<string>,
         value: TType,
-        ttl?: TimeSpan | null,
+        ttl?: ITimeSpan | null,
     ): LazyPromise<boolean>;
 
     /**
