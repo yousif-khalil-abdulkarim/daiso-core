@@ -24,6 +24,15 @@ export class SuperJsonSerdeAdapter implements IFlexibleSerdeAdapter<string> {
             TCustomDeserialized
         >,
     ): void {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const customTransformer =
+            this.superJson.customTransformerRegistry.findByName(
+                transformer.name,
+            ) as any;
+        const hasAlreadyCustomTransformer = customTransformer !== undefined;
+        if (hasAlreadyCustomTransformer) {
+            return;
+        }
         this.superJson.registerCustom<TCustomSerialized, any>(
             {
                 isApplicable(value) {
