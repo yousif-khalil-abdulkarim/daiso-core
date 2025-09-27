@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { AsyncHooks } from "@/utilities/classes/hooks/async-hooks.js";
+import { AsyncHooks } from "@/hooks/async-hooks.js";
 
 describe("class: AsyncHooks", () => {
     test("Should call original function", async () => {

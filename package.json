@@ -124,6 +124,10 @@
             "types": "./dist/event-bus/implementations/test-utilities/_module-exports.d.ts",
             "import": "./dist/event-bus/implementations/test-utilities/_module-exports.js"
         },
+        "./hooks": {
+            "types": "./dist/hooks/_module-exports.d.ts",
+            "import": "./dist/hooks/_module-exports.js"
+        },
         "./lock": {
             "types": "./dist/lock/implementations/derivables/_module-exports.d.ts",
             "import": "./dist/lock/implementations/derivables/_module-exports.js"

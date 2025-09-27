@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { Hooks } from "@/utilities/classes/hooks/hooks.js";
+import { Hooks } from "@/hooks/hooks.js";
 
 describe("class: Hooks", () => {
     test("Should call original function", () => {
