@@ -4,7 +4,7 @@
 
 import type {
     InferResultError,
-    TimeSpan,
+    ITimeSpan,
 } from "@/utilities/_module-exports.js";
 import {
     type Invokable,
@@ -48,7 +48,7 @@ export type OnRetryDelayData<
 > = {
     error: unknown;
     attempt: number;
-    waitTime: TimeSpan;
+    waitTime: ITimeSpan;
     args: TParameters;
     context: TContext;
 };

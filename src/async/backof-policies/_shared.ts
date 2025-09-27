@@ -2,7 +2,7 @@
  * @module Async
  */
 
-import type { Invokable, TimeSpan } from "@/utilities/_module-exports.js";
+import type { Invokable, ITimeSpan } from "@/utilities/_module-exports.js";
 
 /**
  * @returns Amount milliseconds to wait
@@ -12,7 +12,7 @@ import type { Invokable, TimeSpan } from "@/utilities/_module-exports.js";
  */
 export type BackoffPolicy = Invokable<
     [attempt: number, error: unknown],
-    TimeSpan
+    ITimeSpan
 >;
 
 /**

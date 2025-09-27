@@ -6,6 +6,7 @@ import {
     callInvokable,
     isInvokable,
     TimeSpan,
+    type ITimeSpan,
 } from "@/utilities/_module-exports.js";
 import type {
     BackoffPolicy,
@@ -22,11 +23,11 @@ export type LinearBackoffPolicySettings = {
     /**
      * @default 6000 milliseconds
      */
-    maxDelay?: TimeSpan;
+    maxDelay?: ITimeSpan;
     /**
      * @default 1_000 milliseconds
      */
-    minDelay?: TimeSpan;
+    minDelay?: ITimeSpan;
     /**
      * @default 0.5
      */
@@ -56,15 +57,15 @@ export function linearBackoffPolicy(
                 settings = dynamicSettings;
             }
         }
-        let { maxDelay = 6000, minDelay = 1_000 } = settings;
-        if (maxDelay instanceof TimeSpan) {
-            maxDelay = maxDelay.toMilliseconds();
-        }
-        if (minDelay instanceof TimeSpan) {
-            minDelay = minDelay.toMilliseconds();
-        }
+        const {
+            maxDelay = TimeSpan.fromMilliseconds(6000),
+            minDelay = TimeSpan.fromMilliseconds(1_000),
+        } = settings;
         const { jitter = 0.5, _mathRandom = Math.random } = settings;
-        const linear = Math.min(maxDelay, minDelay * attempt);
+        const linear = Math.min(
+            maxDelay.toMilliseconds(),
+            minDelay.toMilliseconds() * attempt,
+        );
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, linear, _mathRandom),
         );

@@ -5,6 +5,7 @@
 import {
     callInvokable,
     isInvokable,
+    type ITimeSpan,
     TimeSpan,
 } from "@/utilities/_module-exports.js";
 import type {
@@ -22,11 +23,11 @@ export type ExponentialBackoffPolicySettings = {
     /**
      * @default 60_000 milliseconds
      */
-    maxDelay?: TimeSpan;
+    maxDelay?: ITimeSpan;
     /**
      * @default 1_000 milliseconds
      */
-    minDelay?: TimeSpan;
+    minDelay?: ITimeSpan;
     /**
      * @default 2
      */
@@ -60,21 +61,19 @@ export function exponentialBackoffPolicy(
                 settings = dynamicSettings;
             }
         }
-        let { maxDelay = 60_000, minDelay = 1_000 } = settings;
-        if (maxDelay instanceof TimeSpan) {
-            maxDelay = maxDelay.toMilliseconds();
-        }
-        if (minDelay instanceof TimeSpan) {
-            minDelay = minDelay.toMilliseconds();
-        }
+        const {
+            maxDelay = TimeSpan.fromMilliseconds(60_000),
+            minDelay = TimeSpan.fromMilliseconds(1_000),
+        } = settings;
+
         const {
             multiplier = 2,
             jitter = 0.5,
             _mathRandom = Math.random,
         } = settings;
         const exponential = Math.min(
-            maxDelay,
-            minDelay * Math.pow(multiplier, attempt),
+            maxDelay.toMilliseconds(),
+            minDelay.toMilliseconds() * Math.pow(multiplier, attempt),
         );
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, exponential, _mathRandom),

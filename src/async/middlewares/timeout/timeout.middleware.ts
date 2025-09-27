@@ -73,7 +73,7 @@ export function timeout<
                 callInvokable(onTimeout, {
                     args,
                     context,
-                    waitTime,
+                    waitTime: TimeSpan.fromTimeSpan(waitTime),
                 });
             }
             throw error;

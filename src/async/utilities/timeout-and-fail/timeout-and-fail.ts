@@ -2,7 +2,7 @@
  * @module Async
  */
 import { TimeoutAsyncError } from "@/async/async.errors.js";
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { ITimeSpan } from "@/utilities/_module-exports.js";
 import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
 
 /**
@@ -12,7 +12,7 @@ import { abortAndFail } from "@/async/utilities/abort-and-fail/_module.js";
  */
 export async function timeoutAndFail<TValue>(
     promise: PromiseLike<TValue>,
-    time: TimeSpan,
+    time: ITimeSpan,
     abort: (rejection: unknown) => void,
     signal: AbortSignal,
 ): Promise<TValue> {

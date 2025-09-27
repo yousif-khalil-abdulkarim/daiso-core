@@ -5,6 +5,7 @@
 import {
     callInvokable,
     TimeSpan,
+    type ITimeSpan,
     type AsyncMiddlewareFn,
     type HookContext,
     type Invokable,
@@ -80,7 +81,7 @@ export type BulkheadSettings<
      * TimeSpan.fromMilliseconds(0)
      * ```
      */
-    interval?: TimeSpan;
+    interval?: ITimeSpan;
 };
 
 /**

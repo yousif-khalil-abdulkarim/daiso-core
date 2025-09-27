@@ -6,6 +6,7 @@ import {
     callInvokable,
     isInvokable,
     TimeSpan,
+    type ITimeSpan,
 } from "@/utilities/_module-exports.js";
 import type {
     BackoffPolicy,
@@ -22,11 +23,11 @@ export type PolynomialBackoffPolicySettings = {
     /**
      * @default 60_000 milliseconds
      */
-    maxDelay?: TimeSpan;
+    maxDelay?: ITimeSpan;
     /**
      * @default 1_000 milliseconds
      */
-    minDelay?: TimeSpan;
+    minDelay?: ITimeSpan;
     /**
      * @default 2
      */
@@ -60,21 +61,18 @@ export function polynomialBackoffPolicy(
                 settings = dynamicSettings;
             }
         }
-        let { maxDelay = 6000, minDelay = 1_000 } = settings;
-        if (maxDelay instanceof TimeSpan) {
-            maxDelay = maxDelay.toMilliseconds();
-        }
-        if (minDelay instanceof TimeSpan) {
-            minDelay = minDelay.toMilliseconds();
-        }
+        const {
+            maxDelay = TimeSpan.fromMilliseconds(6000),
+            minDelay = TimeSpan.fromMilliseconds(1_000),
+        } = settings;
         const {
             degree = 2,
             jitter = 0.5,
             _mathRandom = Math.random,
         } = settings;
         const polynomial = Math.min(
-            maxDelay,
-            minDelay * Math.pow(attempt, degree),
+            maxDelay.toMilliseconds(),
+            minDelay.toMilliseconds() * Math.pow(attempt, degree),
         );
         return TimeSpan.fromMilliseconds(
             withJitter(jitter, polynomial, _mathRandom),

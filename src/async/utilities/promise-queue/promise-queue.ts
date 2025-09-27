@@ -2,7 +2,7 @@
  * @module Async
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { ITimeSpan } from "@/utilities/_module-exports.js";
 import {
     type InvokableFn,
     type Promisable,
@@ -51,7 +51,7 @@ type PromiseQueueListener<TValue> = InvokableFn<[result: Result<TValue>]>;
 export type PromiseQueueSettings = {
     maxConcurrency: number;
     maxCapacity: number | null;
-    interval: TimeSpan;
+    interval: ITimeSpan;
 };
 
 /**

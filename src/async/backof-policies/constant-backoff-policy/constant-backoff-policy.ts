@@ -2,6 +2,7 @@
  * @module Async
  */
 
+import type { ITimeSpan } from "@/utilities/_module-exports.js";
 import {
     callInvokable,
     isInvokable,
@@ -22,7 +23,7 @@ export type ConstantBackoffPolicySettings = {
     /**
      * @default 1000 milliseconds
      */
-    delay?: TimeSpan;
+    delay?: ITimeSpan;
     /**
      * @default 0.5
      */
@@ -52,14 +53,11 @@ export function constantBackoffPolicy(
                 settings = dynamicSettings;
             }
         }
-        let { delay = 1000 } = settings;
-        if (delay instanceof TimeSpan) {
-            delay = delay.toMilliseconds();
-        }
+        const { delay = TimeSpan.fromMilliseconds(100) } = settings;
 
         const { jitter = 0.5, _mathRandom = Math.random } = settings;
         return TimeSpan.fromMilliseconds(
-            withJitter(jitter, delay, _mathRandom),
+            withJitter(jitter, delay.toMilliseconds(), _mathRandom),
         );
     };
 }

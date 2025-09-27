@@ -5,11 +5,12 @@ import {
     AsyncHooks,
     type AsyncLazy,
     type AsyncMiddleware,
+    type ITimeSpan,
     type Invokable,
     type InvokableFn,
     type OneOrMore,
     type Promisable,
-    type TimeSpan,
+    TimeSpan,
     callInvokable,
     resolveAsyncLazyable,
 } from "@/utilities/_module-exports.js";
@@ -88,7 +89,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * ```
      */
     static delay(
-        time: TimeSpan,
+        time: ITimeSpan,
         abortSignal: AbortSignal = new AbortController().signal,
     ): LazyPromise<void> {
         return new LazyPromise(async () => {
@@ -98,7 +99,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
                     new Promise<void>((resolve) => {
                         timeoutId = setTimeout(() => {
                             resolve();
-                        }, time.toMilliseconds());
+                        }, TimeSpan.fromTimeSpan(time).toMilliseconds());
                     }),
                     abortSignal,
                 );
