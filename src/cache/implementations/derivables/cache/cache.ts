@@ -114,7 +114,7 @@ export type CacheSettingsBase<TType = unknown> = {
  * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
-export type CacheAdapter<TType> =
+export type CacheAdapterVariants<TType> =
     | ICacheAdapter<TType>
     | IDatabaseCacheAdapter<TType>;
 
@@ -124,7 +124,7 @@ export type CacheAdapter<TType> =
  * @group Derivables
  */
 export type CacheSettings<TType = unknown> = CacheSettingsBase<TType> & {
-    adapter: CacheAdapter<any>;
+    adapter: CacheAdapterVariants<any>;
 };
 
 /**
