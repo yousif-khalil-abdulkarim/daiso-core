@@ -285,13 +285,15 @@ export class Semaphore implements ISemaphore {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
             } = settings;
-            const endDate = time.toEndDate();
+            const timeAsTimeSpan = TimeSpan.fromTimeSpan(time);
+            const intervalAsTimeSpan = TimeSpan.fromTimeSpan(interval);
+            const endDate = timeAsTimeSpan.toEndDate();
             while (endDate.getTime() > new Date().getTime()) {
                 const hasAquired = await this.acquire();
                 if (hasAquired) {
                     return true;
                 }
-                await LazyPromise.delay(interval);
+                await LazyPromise.delay(intervalAsTimeSpan);
             }
             return false;
         });

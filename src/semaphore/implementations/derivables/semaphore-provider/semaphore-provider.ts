@@ -28,6 +28,7 @@ import {
     resolveInvokable,
     resolveOneOrMore,
     TimeSpan,
+    type ITimeSpan,
     type AsyncLazy,
     type Factory,
     type FactoryFn,
@@ -98,7 +99,7 @@ export type SemaphoreProviderSettingsBase = {
      * TimeSpan.fromMinutes(5);
      * ```
      */
-    defaultTtl?: TimeSpan | null;
+    defaultTtl?: ITimeSpan | null;
 
     /**
      * The default refresh time used in the {@link ISemaphore | `ISemaphore`} `acquireBlocking` and `runBlocking` methods.
@@ -107,7 +108,7 @@ export type SemaphoreProviderSettingsBase = {
      * TimeSpan.fromSeconds(1);
      * ```
      */
-    defaultBlockingInterval?: TimeSpan;
+    defaultBlockingInterval?: ITimeSpan;
 
     /**
      * The default refresh time used in the {@link ISemaphore | `ISemaphore`} `acquireBlocking` and `runBlocking` methods.
@@ -116,7 +117,7 @@ export type SemaphoreProviderSettingsBase = {
      * TimeSpan.fromMinutes(1);
      * ```
      */
-    defaultBlockingTime?: TimeSpan;
+    defaultBlockingTime?: ITimeSpan;
 
     /**
      * The default refresh time used in the {@link ISemaphore | `ISemaphore`} `referesh` method.
@@ -124,7 +125,7 @@ export type SemaphoreProviderSettingsBase = {
      * TimeSpan.fromMinutes(5);
      * ```
      */
-    defaultRefreshTime?: TimeSpan;
+    defaultRefreshTime?: ITimeSpan;
 };
 
 /**
@@ -184,11 +185,14 @@ export class SemaphoreProvider implements ISemaphoreProvider {
 
         this.createSlotId = createSlotId;
         this.serde = serde;
-        this.defaultBlockingInterval = defaultBlockingInterval;
-        this.defaultBlockingTime = defaultBlockingTime;
-        this.defaultRefreshTime = defaultRefreshTime;
+        this.defaultBlockingInterval = TimeSpan.fromTimeSpan(
+            defaultBlockingInterval,
+        );
+        this.defaultBlockingTime = TimeSpan.fromTimeSpan(defaultBlockingTime);
+        this.defaultRefreshTime = TimeSpan.fromTimeSpan(defaultRefreshTime);
         this.namespace = namespace;
-        this.defaultTtl = defaultTtl;
+        this.defaultTtl =
+            defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
         this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
         this.serdeTransformerName = serdeTransformerName;
@@ -307,7 +311,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
             createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
             eventDispatcher: this.eventBus,
             key: keyObj,
-            ttl,
+            ttl: ttl === null ? null : TimeSpan.fromTimeSpan(ttl),
             serdeTransformerName: this.serdeTransformerName,
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,

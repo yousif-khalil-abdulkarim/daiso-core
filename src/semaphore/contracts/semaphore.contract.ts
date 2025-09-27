@@ -6,7 +6,7 @@ import type { LazyPromise } from "@/async/_module-exports.js";
 import type {
     AsyncLazy,
     Result,
-    TimeSpan,
+    ITimeSpan,
 } from "@/utilities/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -39,7 +39,7 @@ export type ISemaphoreStateMethods = {
     /**
      * The `ttl` of `ISemaphore` instance.
      */
-    readonly ttl: TimeSpan | null;
+    readonly ttl: ITimeSpan | null;
 };
 
 /**
@@ -48,8 +48,8 @@ export type ISemaphoreStateMethods = {
  * @group Contracts
  */
 export type SemaphoreAquireBlockingSettings = {
-    time?: TimeSpan;
-    interval?: TimeSpan;
+    time?: ITimeSpan;
+    interval?: ITimeSpan;
 };
 
 /**
@@ -151,14 +151,14 @@ export type ISemaphoreBase = {
      *
      * @returns Returns true if the slot is refreshed otherwise false is returned.
      */
-    refresh(ttl?: TimeSpan): LazyPromise<boolean>;
+    refresh(ttl?: ITimeSpan): LazyPromise<boolean>;
 
     /**
      * The `refreshOrFail` method updates the `ttl` of the slot when acquired.
      * Throws an error if the slot is not acquired.
      * @throws {FailedRefreshSemaphoreError} {@link FailedRefreshSemaphoreError}
      */
-    refreshOrFail(ttl?: TimeSpan): LazyPromise<void>;
+    refreshOrFail(ttl?: ITimeSpan): LazyPromise<void>;
 };
 
 /**

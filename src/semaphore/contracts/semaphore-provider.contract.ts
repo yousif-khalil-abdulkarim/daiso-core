@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import type { TimeSpan } from "@/utilities/_module-exports.js";
+import type { ITimeSpan } from "@/utilities/_module-exports.js";
 import type { ISemaphore } from "@/semaphore/contracts/semaphore.contract.js";
 import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
 import type { SemaphoreEventMap } from "@/semaphore/contracts/semaphore.events.js";
@@ -26,7 +26,7 @@ export type SemaphoreProviderCreateSettings = {
     /**
      * You can also provide a `settings.ttl` value using. If not specified it defaults to null, meaning no TTL is applied.
      */
-    ttl?: TimeSpan | null;
+    ttl?: ITimeSpan | null;
 
     slotId?: string;
 };
