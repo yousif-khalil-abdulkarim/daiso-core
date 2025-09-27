@@ -13,6 +13,7 @@ import type {
     ISerdeTransformer,
     ISerializable,
     SerializableClass,
+    SerializedValueBase,
 } from "@/serde/contracts/_module-exports.js";
 import {
     ArrayBufferSerdeTransformer,
@@ -154,6 +155,16 @@ export type SerdeSettings = {
      * @default true
      */
     shouldHandleURLSearchParams?: boolean;
+};
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/serde/deriavables"`
+ * @group Derivables
+ */
+export type SerializedClass = {
+    version: "1";
+    class_: unknown;
 };
 
 /**
@@ -368,7 +379,7 @@ export class Serde<TSerializedValue>
     ): this {
         return this.registerCustom<
             ISerializable<TSerializedClassInstance>,
-            unknown
+            SerializedClass
         >(
             {
                 isApplicable(
@@ -381,11 +392,14 @@ export class Serde<TSerializedValue>
                 },
                 deserialize(serializedValue) {
                     return class_.deserialize(
-                        serializedValue as TSerializedClassInstance,
+                        serializedValue.class_ as TSerializedClassInstance,
                     );
                 },
                 serialize(deserializedValue) {
-                    return deserializedValue.serialize();
+                    return {
+                        version: "1",
+                        class_: deserializedValue.serialize(),
+                    };
                 },
                 name: class_.name,
             },
@@ -454,8 +468,11 @@ export class Serde<TSerializedValue>
      * console.log(user === deserializedUser);
      * ```
      */
-    registerCustom<TCustomSerialized, TCustomDeserialized>(
-        transformer: ISerdeTransformer<TCustomSerialized, TCustomDeserialized>,
+    registerCustom<
+        TCustomDeserialized,
+        TCustomSerialized extends SerializedValueBase,
+    >(
+        transformer: ISerdeTransformer<TCustomDeserialized, TCustomSerialized>,
         prefix?: OneOrMore<string>,
     ): this {
         let name = resolveOneOrMoreStr(transformer.name);

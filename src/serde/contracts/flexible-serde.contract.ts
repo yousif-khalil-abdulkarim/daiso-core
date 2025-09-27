@@ -24,7 +24,19 @@ export type SerializableClass<TSerializedValue> = {
  * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
  * @group Contracts
  */
-export type ISerdeTransformer<TDeserializedValue, TSerializedValue> = {
+export type SerializedValueBase = {
+    version: string | number;
+};
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
+ * @group Contracts
+ */
+export type ISerdeTransformer<
+    TDeserializedValue,
+    TSerializedValue extends SerializedValueBase,
+> = {
     name: OneOrMore<string>;
 
     isApplicable(value: unknown): value is TDeserializedValue;
@@ -53,7 +65,10 @@ export interface ISerderRegister {
     /**
      * The `registerCustom` method is used for registering custom values for serialization and deserialization.
      */
-    registerCustom<TCustomDeserialized, TCustomSerialized>(
+    registerCustom<
+        TCustomDeserialized,
+        TCustomSerialized extends SerializedValueBase,
+    >(
         transformer: ISerdeTransformer<TCustomDeserialized, TCustomSerialized>,
         prefix?: OneOrMore<string>,
     ): this;

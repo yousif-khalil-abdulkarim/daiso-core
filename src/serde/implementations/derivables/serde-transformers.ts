@@ -11,6 +11,7 @@ import {
  * @internal
  */
 type JSONBuffer = {
+    version: "1";
     buffer: string;
 };
 
@@ -37,6 +38,7 @@ export class ArrayBufferSerdeTransformer
 
     serialize(deserializedValue: ArrayBuffer): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue).toString("base64"),
         };
     }
@@ -64,6 +66,7 @@ export class BufferSerdeTransformer
 
     serialize(deserializedValue: Buffer): JSONBuffer {
         return {
+            version: "1",
             buffer: deserializedValue.toString("base64"),
         };
     }
@@ -92,6 +95,7 @@ export class Uint8ArraySerdeTransformer
 
     serialize(deserializedValue: Uint8Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue).toString("base64"),
         };
     }
@@ -120,6 +124,7 @@ export class Int8ArraySerdeTransformer
 
     serialize(deserializedValue: Int8Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue).toString("base64"),
         };
     }
@@ -148,6 +153,7 @@ export class Uint16ArraySerdeTransformer
 
     serialize(deserializedValue: Uint16Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue).toString("base64"),
         };
     }
@@ -176,6 +182,7 @@ export class Int16ArraySerdeTransformer
 
     serialize(deserializedValue: Int16Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue).toString("base64"),
         };
     }
@@ -204,6 +211,7 @@ export class Uint32ArraySerdeTransformer
 
     serialize(deserializedValue: Uint32Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue).toString("base64"),
         };
     }
@@ -232,6 +240,7 @@ export class Int32ArraySerdeTransformer
 
     serialize(deserializedValue: Int32Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue).toString("base64"),
         };
     }
@@ -262,6 +271,7 @@ export class BigUint64ArraySerdeTransformer
 
     serialize(deserializedValue: BigUint64Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue.buffer).toString("base64"),
         };
     }
@@ -292,6 +302,7 @@ export class BigInt64ArraySerdeTransformer
 
     serialize(deserializedValue: BigInt64Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue.buffer).toString("base64"),
         };
     }
@@ -320,6 +331,7 @@ export class Float32ArraySerdeTransformer
 
     serialize(deserializedValue: Float32Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue).toString("base64"),
         };
     }
@@ -348,6 +360,7 @@ export class Float64ArraySerdeTransformer
 
     serialize(deserializedValue: Float64Array): JSONBuffer {
         return {
+            version: "1",
             buffer: Buffer.from(deserializedValue).toString("base64"),
         };
     }
@@ -356,9 +369,20 @@ export class Float64ArraySerdeTransformer
 /**
  * @internal
  */
+type SerializedValue<TValue> = {
+    version: "1";
+    value: TValue;
+};
+
+/**
+ * @internal
+ */
 export class MapSerdeTransformer
     implements
-        ISerdeTransformer<Map<unknown, unknown>, Array<[unknown, unknown]>>
+        ISerdeTransformer<
+            Map<unknown, unknown>,
+            SerializedValue<Array<[unknown, unknown]>>
+        >
 {
     get name(): OneOrMore<string> {
         return Map.name;
@@ -369,15 +393,18 @@ export class MapSerdeTransformer
     }
 
     deserialize(
-        serializedValue: Array<[unknown, unknown]>,
+        serializedValue: SerializedValue<Array<[unknown, unknown]>>,
     ): Map<unknown, unknown> {
-        return new Map(serializedValue);
+        return new Map(serializedValue.value);
     }
 
     serialize(
         deserializedValue: Map<unknown, unknown>,
-    ): Array<[unknown, unknown]> {
-        return [...deserializedValue.entries()];
+    ): SerializedValue<Array<[unknown, unknown]>> {
+        return {
+            version: "1",
+            value: [...deserializedValue.entries()],
+        };
     }
 }
 
@@ -385,7 +412,7 @@ export class MapSerdeTransformer
  * @internal
  */
 export class SetSerdeTransformer
-    implements ISerdeTransformer<Set<unknown>, Array<unknown>>
+    implements ISerdeTransformer<Set<unknown>, SerializedValue<Array<unknown>>>
 {
     get name(): OneOrMore<string> {
         return Set.name;
@@ -395,12 +422,19 @@ export class SetSerdeTransformer
         return value instanceof Set && getConstructorName(value) === Set.name;
     }
 
-    deserialize(serializedValue: Array<unknown>): Set<unknown> {
-        return new Set(serializedValue);
+    deserialize(
+        serializedValue: SerializedValue<Array<unknown>>,
+    ): Set<unknown> {
+        return new Set(serializedValue.value);
     }
 
-    serialize(deserializedValue: Set<unknown>): Array<unknown> {
-        return [...deserializedValue.values()];
+    serialize(
+        deserializedValue: Set<unknown>,
+    ): SerializedValue<Array<unknown>> {
+        return {
+            version: "1",
+            value: [...deserializedValue.values()],
+        };
     }
 }
 
@@ -408,7 +442,7 @@ export class SetSerdeTransformer
  * @internal
  */
 export class BigIntSerdeTransformer
-    implements ISerdeTransformer<bigint, string>
+    implements ISerdeTransformer<bigint, SerializedValue<string>>
 {
     get name(): OneOrMore<string> {
         return BigInt.name;
@@ -418,19 +452,24 @@ export class BigIntSerdeTransformer
         return typeof value === "bigint";
     }
 
-    deserialize(serializedValue: string): bigint {
-        return BigInt(serializedValue);
+    deserialize(serializedValue: SerializedValue<string>): bigint {
+        return BigInt(serializedValue.value);
     }
 
-    serialize(deserializedValue: bigint): string {
-        return deserializedValue.toString();
+    serialize(deserializedValue: bigint): SerializedValue<string> {
+        return {
+            version: "1",
+            value: deserializedValue.toString(),
+        };
     }
 }
 
 /**
  * @internal
  */
-export class NaNSerdeTransformer implements ISerdeTransformer<number, string> {
+export class NaNSerdeTransformer
+    implements ISerdeTransformer<number, SerializedValue<string>>
+{
     get name(): OneOrMore<string> {
         return NaN.toString();
     }
@@ -439,12 +478,15 @@ export class NaNSerdeTransformer implements ISerdeTransformer<number, string> {
         return typeof value === "number" && Number.isNaN(value);
     }
 
-    deserialize(serializedValue: string): number {
-        return Number(serializedValue);
+    deserialize(serializedValue: SerializedValue<string>): number {
+        return Number(serializedValue.value);
     }
 
-    serialize(deserializedValue: number): string {
-        return deserializedValue.toString();
+    serialize(deserializedValue: number): SerializedValue<string> {
+        return {
+            version: "1",
+            value: deserializedValue.toString(),
+        };
     }
 }
 
@@ -452,7 +494,7 @@ export class NaNSerdeTransformer implements ISerdeTransformer<number, string> {
  * @internal
  */
 export class InfinitySerdeTransformer
-    implements ISerdeTransformer<number, string>
+    implements ISerdeTransformer<number, SerializedValue<string>>
 {
     get name(): OneOrMore<string> {
         return Infinity.toString();
@@ -462,12 +504,15 @@ export class InfinitySerdeTransformer
         return typeof value === "number" && !Number.isFinite(value);
     }
 
-    deserialize(serializedValue: string): number {
-        return Number(serializedValue);
+    deserialize(serializedValue: SerializedValue<string>): number {
+        return Number(serializedValue.value);
     }
 
-    serialize(deserializedValue: number): string {
-        return deserializedValue.toString();
+    serialize(deserializedValue: number): SerializedValue<string> {
+        return {
+            version: "1",
+            value: deserializedValue.toString(),
+        };
     }
 }
 
@@ -475,7 +520,7 @@ export class InfinitySerdeTransformer
  * @internal
  */
 export class UndefinedSerdeTransformer
-    implements ISerdeTransformer<undefined, string>
+    implements ISerdeTransformer<undefined, SerializedValue<string>>
 {
     get name(): OneOrMore<string> {
         return "undefined";
@@ -485,12 +530,15 @@ export class UndefinedSerdeTransformer
         return value === undefined;
     }
 
-    deserialize(_serializedValue: string): undefined {
+    deserialize(_serializedValue: SerializedValue<string>): undefined {
         return undefined;
     }
 
-    serialize(deserializedValue: undefined): string {
-        return String(deserializedValue);
+    serialize(deserializedValue: undefined): SerializedValue<string> {
+        return {
+            version: "1",
+            value: String(deserializedValue),
+        };
     }
 }
 
@@ -498,7 +546,7 @@ export class UndefinedSerdeTransformer
  * @internal
  */
 export class RegExpSerdeTransformer
-    implements ISerdeTransformer<RegExp, string>
+    implements ISerdeTransformer<RegExp, SerializedValue<string>>
 {
     get name(): OneOrMore<string> {
         return RegExp.name;
@@ -510,23 +558,31 @@ export class RegExpSerdeTransformer
         );
     }
 
-    deserialize(serializedValue: string): RegExp {
-        const body = serializedValue.slice(1, serializedValue.lastIndexOf("/"));
-        const flags = serializedValue.slice(
-            serializedValue.lastIndexOf("/") + 1,
+    deserialize(serializedValue: SerializedValue<string>): RegExp {
+        const body = serializedValue.value.slice(
+            1,
+            serializedValue.value.lastIndexOf("/"),
+        );
+        const flags = serializedValue.value.slice(
+            serializedValue.value.lastIndexOf("/") + 1,
         );
         return new RegExp(body, flags);
     }
 
-    serialize(deserializedValue: RegExp): string {
-        return deserializedValue.toString();
+    serialize(deserializedValue: RegExp): SerializedValue<string> {
+        return {
+            version: "1",
+            value: deserializedValue.toString(),
+        };
     }
 }
 
 /**
  * @internal
  */
-export class DateSerdeTransformer implements ISerdeTransformer<Date, number> {
+export class DateSerdeTransformer
+    implements ISerdeTransformer<Date, SerializedValue<number>>
+{
     get name(): OneOrMore<string> {
         return Date.name;
     }
@@ -535,19 +591,24 @@ export class DateSerdeTransformer implements ISerdeTransformer<Date, number> {
         return value instanceof Date && getConstructorName(value) === Date.name;
     }
 
-    deserialize(serializedValue: number): Date {
-        return new Date(serializedValue);
+    deserialize(serializedValue: SerializedValue<number>): Date {
+        return new Date(serializedValue.value);
     }
 
-    serialize(deserializedValue: Date): number {
-        return deserializedValue.getTime();
+    serialize(deserializedValue: Date): SerializedValue<number> {
+        return {
+            version: "1",
+            value: deserializedValue.getTime(),
+        };
     }
 }
 
 /**
  * @internal
  */
-export class URLSerdeTransformer implements ISerdeTransformer<URL, string> {
+export class URLSerdeTransformer
+    implements ISerdeTransformer<URL, SerializedValue<string>>
+{
     get name(): OneOrMore<string> {
         return URL.name;
     }
@@ -556,12 +617,15 @@ export class URLSerdeTransformer implements ISerdeTransformer<URL, string> {
         return value instanceof URL && getConstructorName(value) === URL.name;
     }
 
-    deserialize(serializedValue: string): URL {
-        return new URL(serializedValue);
+    deserialize(serializedValue: SerializedValue<string>): URL {
+        return new URL(serializedValue.value);
     }
 
-    serialize(deserializedValue: URL): string {
-        return deserializedValue.toString();
+    serialize(deserializedValue: URL): SerializedValue<string> {
+        return {
+            version: "1",
+            value: deserializedValue.toString(),
+        };
     }
 }
 
@@ -569,7 +633,11 @@ export class URLSerdeTransformer implements ISerdeTransformer<URL, string> {
  * @internal
  */
 export class URLSearchParamsSerdeTransformer
-    implements ISerdeTransformer<URLSearchParams, Array<[string, string]>>
+    implements
+        ISerdeTransformer<
+            URLSearchParams,
+            SerializedValue<Array<[string, string]>>
+        >
 {
     get name(): OneOrMore<string> {
         return URLSearchParams.name;
@@ -582,11 +650,18 @@ export class URLSearchParamsSerdeTransformer
         );
     }
 
-    deserialize(serializedValue: Array<[string, string]>): URLSearchParams {
-        return new URLSearchParams(serializedValue);
+    deserialize(
+        serializedValue: SerializedValue<Array<[string, string]>>,
+    ): URLSearchParams {
+        return new URLSearchParams(serializedValue.value);
     }
 
-    serialize(deserializedValue: URLSearchParams): Array<[string, string]> {
-        return [...deserializedValue.entries()];
+    serialize(
+        deserializedValue: URLSearchParams,
+    ): SerializedValue<Array<[string, string]>> {
+        return {
+            version: "1",
+            value: [...deserializedValue.entries()],
+        };
     }
 }

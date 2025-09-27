@@ -48,6 +48,7 @@ import type { Key, Namespace } from "@/namespace/_module-exports.js";
  * @internal
  */
 export type ISerializedLock = {
+    version: "1";
     key: string;
     lockId: string;
     ttlInMs: number | null;
@@ -82,6 +83,7 @@ export class Lock implements ILock {
      */
     static _internal_serialize(deserializedValue: Lock): ISerializedLock {
         return {
+            version: "1",
             key: deserializedValue._key.get(),
             lockId: deserializedValue.lockId,
             ttlInMs: deserializedValue._ttl?.toMilliseconds() ?? null,
