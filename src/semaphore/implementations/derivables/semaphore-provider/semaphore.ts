@@ -36,6 +36,7 @@ import {
  * @internal
  */
 export type ISerializedSemaphore = {
+    version: "1";
     key: string;
     slotId: string;
     limit: number;
@@ -74,6 +75,7 @@ export class Semaphore implements ISemaphore {
         deserializedValue: Semaphore,
     ): ISerializedSemaphore {
         return {
+            version: "1",
             key: deserializedValue._key.get(),
             limit: deserializedValue.limit,
             slotId: deserializedValue.slotId,

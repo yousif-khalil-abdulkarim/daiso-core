@@ -47,6 +47,7 @@ export function flexibleSerdeTestSuite(
     let flexibleSerde: IFlexibleSerde;
 
     type SerializedUser = {
+        version: "1";
         name: string;
         age: number;
     };
@@ -62,6 +63,7 @@ export function flexibleSerdeTestSuite(
 
         serialize(): SerializedUser {
             return {
+                version: "1",
                 name: this.name,
                 age: this.age,
             };
