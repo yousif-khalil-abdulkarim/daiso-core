@@ -4,7 +4,6 @@
 
 import { type ISerde } from "@/serde/contracts/_module-exports.js";
 import {
-    RedisSerde,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     SuperJsonSerdeAdapter,
 } from "@/serde/implementations/adapters/_module-exports.js";
@@ -58,7 +57,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
         const { client, serde } = settings;
         this.dispatcherClient = client;
         this.listenerClient = client.duplicate();
-        this.serde = new RedisSerde(serde);
+        this.serde = serde;
     }
 
     private redisListener = (channel: string, message: string): void => {
