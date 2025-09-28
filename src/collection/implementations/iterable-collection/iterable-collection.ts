@@ -5,6 +5,7 @@
 import type {
     EnsureMap,
     EnsureRecord,
+    SerializedCollection,
 } from "@/collection/contracts/_module-exports.js";
 import {
     type Collapse,
@@ -193,8 +194,10 @@ export class IterableCollection<TInput = unknown>
         return new IterableCollection(iterableA).zip(iterableB);
     }
 
-    static deserialize<TInput>(serializedValue: TInput[]): ICollection<TInput> {
-        return new IterableCollection(serializedValue);
+    static deserialize<TInput>(
+        serializedValue: SerializedCollection<TInput>,
+    ): ICollection<TInput> {
+        return new IterableCollection(serializedValue.items);
     }
 
     private static DEFAULT_CHUNK_SIZE = 1024;
@@ -257,8 +260,11 @@ export class IterableCollection<TInput = unknown>
      */
     constructor(private readonly iterable: Iterable<TInput>) {}
 
-    serialize(): TInput[] {
-        return this.toArray();
+    serialize(): SerializedCollection<TInput> {
+        return {
+            version: "1",
+            items: this.toArray(),
+        };
     }
 
     *[Symbol.iterator](): Iterator<TInput> {

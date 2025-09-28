@@ -373,7 +373,7 @@ export class Serde<TSerializedValue>
      * console.log(user === deserializedUser);
      * ```
      */
-    registerClass<TSerializedClassInstance>(
+    registerClass<TSerializedClassInstance extends SerializedValueBase>(
         class_: SerializableClass<TSerializedClassInstance>,
         prefix?: OneOrMore<string>,
     ): this {

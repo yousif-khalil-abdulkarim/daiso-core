@@ -6,6 +6,7 @@ import { isIterable } from "@/collection/implementations/_shared.js";
 import type {
     EnsureMap,
     EnsureRecord,
+    SerializedCollection,
 } from "@/collection/contracts/_module-exports.js";
 import {
     type Collapse,
@@ -159,8 +160,10 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return new ListCollection(iterableA).zip(iterableB);
     }
 
-    static deserialize<TInput>(serializedValue: TInput[]): ICollection<TInput> {
-        return new ListCollection(serializedValue);
+    static deserialize<TInput>(
+        serializedValue: SerializedCollection<TInput>,
+    ): ICollection<TInput> {
+        return new ListCollection(serializedValue.items);
     }
 
     private array: TInput[];
@@ -219,8 +222,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         this.array = [...iterable];
     }
 
-    serialize(): TInput[] {
-        return this.toArray();
+    serialize(): SerializedCollection<TInput> {
+        return {
+            version: "1",
+            items: this.toArray(),
+        };
     }
 
     *[Symbol.iterator](): Iterator<TInput> {
