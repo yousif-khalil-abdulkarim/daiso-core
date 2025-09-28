@@ -10,6 +10,16 @@ import {
 import type { IComparable } from "@/utilities/_module-exports.js";
 
 /**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/time-span"`
+ * @group Implementations
+ */
+export type SerializedTimeSpan = {
+    version: "1";
+    timeInMs: number;
+};
+
+/**
  * The `TimeSpan` class is used for representing time interval.
  * `TimeSpan` cannot be negative.
  *
@@ -17,15 +27,18 @@ import type { IComparable } from "@/utilities/_module-exports.js";
  * @group Implementations
  */
 export class TimeSpan
-    implements ITimeSpan, ISerializable<number>, IComparable<ITimeSpan>
+    implements
+        ITimeSpan,
+        ISerializable<SerializedTimeSpan>,
+        IComparable<ITimeSpan>
 {
     private static secondInMilliseconds = 1000;
     private static minuteInMilliseconds = 60 * TimeSpan.secondInMilliseconds;
     private static hourInMilliseconds = 60 * TimeSpan.minuteInMilliseconds;
     private static dayInMilliseconds = 24 * TimeSpan.hourInMilliseconds;
 
-    static deserialize(timeInMs: number): TimeSpan {
-        return new TimeSpan(timeInMs);
+    static deserialize(serializedValue: SerializedTimeSpan): TimeSpan {
+        return new TimeSpan(serializedValue.timeInMs);
     }
 
     private constructor(private readonly milliseconds: number = 0) {
@@ -52,8 +65,11 @@ export class TimeSpan
         return value[TO_MILLISECONDS]() >= this.toMilliseconds();
     }
 
-    serialize(): number {
-        return this.toMilliseconds();
+    serialize(): SerializedTimeSpan {
+        return {
+            version: "1",
+            timeInMs: this.toMilliseconds(),
+        };
     }
 
     static fromMilliseconds(milliseconds: number): TimeSpan {

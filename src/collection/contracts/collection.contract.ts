@@ -28,17 +28,28 @@ import type {
 import type { ISerializable } from "@/serde/contracts/_module-exports.js";
 import type { Lazyable } from "@/utilities/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    UnexpectedError,
-} from "@/utilities/_module-exports.js";
 
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
+ * @group Contracts
+ */
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
     | Iterable<infer TItem>
     | ICollection<infer TItem>
     ? TItem
     : TValue;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
+ * @group Contracts
+ */
+export type SerializedCollection<TInput = unknown> = {
+    version: "1";
+    items: TInput[];
+};
 
 /**
  * The `ICollection` contract offers a fluent and efficient approach to working with {@link Iterable | `Iterable`} objects.
@@ -48,7 +59,7 @@ export type Collapse<TValue> = TValue extends
  * @group Contracts
  */
 export type ICollection<TInput = unknown> = Iterable<TInput> &
-    ISerializable<TInput[]> & {
+    ISerializable<SerializedCollection<TInput>> & {
         /**
          * The `toIterator` method converts the collection to a new iterator.
          */

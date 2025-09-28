@@ -2,22 +2,8 @@
  * @module Serde
  */
 
-import type { ISerializable } from "@/serde/contracts/serializable.contract.js";
 import type { ISerde } from "@/serde/contracts/serde.contract.js";
 import type { OneOrMore } from "@/utilities/_module-exports.js";
-
-/**
- * The `SerializableClass` contract defines standard way to make a class instance serializable and deserializable.
- *
- * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
- * @group Contracts
- */
-export type SerializableClass<TSerializedValue> = {
-    new (...arguments_: any[]): ISerializable<TSerializedValue>;
-    deserialize(
-        serializedValue: TSerializedValue,
-    ): ISerializable<TSerializedValue>;
-};
 
 /**
  *
@@ -26,6 +12,29 @@ export type SerializableClass<TSerializedValue> = {
  */
 export type SerializedValueBase = {
     version: string | number;
+};
+
+/**
+ * The `SerializableClass` contract defines standard way to make a class instance serializable and deserializable.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
+ * @group Contracts
+ */
+export type SerializableClass<TSerializedValue extends SerializedValueBase> = {
+    new (...arguments_: any[]): ISerializable<TSerializedValue>;
+    deserialize(
+        serializedValue: TSerializedValue,
+    ): ISerializable<TSerializedValue>;
+};
+
+/**
+ * The `ISerializable` contract defines standard way to make a class instance serializable.
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/serde/contracts"`
+ * @group Contracts
+ */
+export type ISerializable<TSerializedValue extends SerializedValueBase> = {
+    serialize(): TSerializedValue;
 };
 
 /**
@@ -57,7 +66,7 @@ export interface ISerderRegister {
      * The `registerClass` method is used for registering custom class for serialization and deserialization.
      * The `class_` parameter must be of type {@link SerializableClass | `SerializableClass`}.
      */
-    registerClass<TSerializedClassInstance>(
+    registerClass<TSerializedClassInstance extends SerializedValueBase>(
         class_: SerializableClass<TSerializedClassInstance>,
         prefix?: OneOrMore<string>,
     ): this;
