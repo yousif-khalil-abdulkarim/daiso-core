@@ -67,7 +67,7 @@ export type CacheSettingsBase<TType = unknown> = {
     /**
      * @default
      * ```ts
-     * import { Namespace } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/namespace";
      *
      * new Namespace(["@", "cache"])
      * ```
@@ -149,7 +149,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache";
-     * import { Namespace } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/namespace";
      *
      * const database = new Sqlite("local.db");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
