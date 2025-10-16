@@ -142,7 +142,7 @@ export class Hooks<
     /**
      * @example
      * ```ts
-     * import { Hooks, type MiddlewareFn } from "@daiso-tech/core/utilities";
+     * import { Hooks, type MiddlewareFn } from "@daiso-tech/core/hooks";
      *
      * function log<TParameters extends unknown[], TReturn>(): MiddlewareFn<TParameters, TReturn, { funcName: string; }> {
      *   return (args, next, { name: funcName }) => {
