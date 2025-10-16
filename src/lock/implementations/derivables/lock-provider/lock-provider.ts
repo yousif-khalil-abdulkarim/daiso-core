@@ -54,7 +54,7 @@ export type LockProviderSettingsBase = {
     /**
      * @default
      * ```ts
-     * import { Namespace } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/namespace";
      *
      * new Namespace(["@", "lock"])
      * ```
@@ -321,7 +321,7 @@ export class LockProvider implements ILockProvider {
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
-     * import { Namespace } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/namespace";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      *

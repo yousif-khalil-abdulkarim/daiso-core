@@ -35,8 +35,14 @@ export type ILockData = ILockExpirationData & {
  * @group Contracts
  */
 export type IDatabaseLockTransaction = {
+    /**
+     * The `find` returns the lock if it exists otherwise `null` is returned.
+     */
     find(key: string): Promise<ILockData | null>;
 
+    /**
+     * The `upsert` inserts a lock if it doesnt exist otherwise it will be updated.
+     */
     upsert(key: string, lockId: string, expiration: Date | null): Promise<void>;
 };
 
@@ -48,6 +54,12 @@ export type IDatabaseLockTransaction = {
  * @group Contracts
  */
 export type IDatabaseLockAdapter = {
+    /**
+     * The `transaction` method runs the `fn` function inside a transaction.
+     * The `fn` function is given a {@link IDatabaseLockTransaction | `IDatabaseLockTransaction`} object.
+     *
+     * Note when implementing this method use the strictest transaction level mode.
+     */
     transaction<TReturn>(
         fn: InvokableFn<
             [transaction: IDatabaseLockTransaction],

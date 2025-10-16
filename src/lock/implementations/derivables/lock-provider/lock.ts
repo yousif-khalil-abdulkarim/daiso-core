@@ -433,28 +433,30 @@ export class Lock implements ILock {
 
     getState(): LazyPromise<ILockState> {
         return this.createLazyPromise(async () => {
-            const state = await this.adapter.getState(this._key.toString());
-            if (state === null) {
+            return await this.handleUnexpectedError(async () => {
+                const state = await this.adapter.getState(this._key.toString());
+                if (state === null) {
+                    return {
+                        type: LOCK_STATE.EXPIRED,
+                    } satisfies ILockExpiredState;
+                }
+                if (state.owner === this.lockId) {
+                    return {
+                        type: LOCK_STATE.ACQUIRED,
+                        remainingTime:
+                            state.expiration === null
+                                ? null
+                                : TimeSpan.fromDateRange(
+                                      new Date(),
+                                      state.expiration,
+                                  ),
+                    } satisfies ILockAcquiredState;
+                }
                 return {
-                    type: LOCK_STATE.EXPIRED,
-                } satisfies ILockExpiredState;
-            }
-            if (state.owner === this.lockId) {
-                return {
-                    type: LOCK_STATE.ACQUIRED,
-                    remainingTime:
-                        state.expiration === null
-                            ? null
-                            : TimeSpan.fromDateRange(
-                                  new Date(),
-                                  state.expiration,
-                              ),
-                } satisfies ILockAcquiredState;
-            }
-            return {
-                type: LOCK_STATE.UNAVAILABLE,
-                owner: state.owner,
-            } satisfies ILockUnavailableState;
+                    type: LOCK_STATE.UNAVAILABLE,
+                    owner: state.owner,
+                } satisfies ILockUnavailableState;
+            });
         });
     }
 }

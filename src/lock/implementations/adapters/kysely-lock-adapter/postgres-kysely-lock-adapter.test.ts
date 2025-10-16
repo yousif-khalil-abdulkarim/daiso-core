@@ -109,13 +109,13 @@ describe("postgres class: KyselyLockAdapter", () => {
                             isNullable: false,
                             hasDefaultValue: false,
                         }),
-                        expect.objectContaining({
+                        expect.objectContaining<Partial<ColumnMetadata>>({
                             name: "owner",
                             dataType: "varchar",
                             isNullable: false,
                             hasDefaultValue: false,
                         }),
-                        expect.objectContaining({
+                        expect.objectContaining<Partial<ColumnMetadata>>({
                             name: "expiration",
                             dataType: "int8",
                             isNullable: true,

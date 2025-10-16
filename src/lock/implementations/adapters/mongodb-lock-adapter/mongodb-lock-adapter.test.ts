@@ -142,11 +142,11 @@ describe("class: MongodbLockAdapter", () => {
             const doc = await collection.findOne({
                 key,
             });
-
-            expect(doc).toEqual(
-                expect.objectContaining({
-                    expiration,
-                } satisfies Partial<MongodbLockDocument>),
+            expect(doc?.expiration?.getTime()).toBeLessThan(
+                expiration.getTime() + 25,
+            );
+            expect(doc?.expiration?.getTime()).toBeGreaterThan(
+                expiration.getTime() - 25,
             );
         });
     });

@@ -96,13 +96,13 @@ describe("sqlite class: KyselyLockAdapter", () => {
                             isNullable: false,
                             hasDefaultValue: false,
                         }),
-                        expect.objectContaining({
+                        expect.objectContaining<Partial<ColumnMetadata>>({
                             name: "owner",
                             dataType: "varchar(255)",
                             isNullable: false,
                             hasDefaultValue: false,
                         }),
-                        expect.objectContaining({
+                        expect.objectContaining<Partial<ColumnMetadata>>({
                             name: "expiration",
                             dataType: "bigint",
                             isNullable: true,
