@@ -75,7 +75,7 @@ export type BulkheadSettings<
     /**
      * @default
      * ```ts
-     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";
      *
      * TimeSpan.fromMilliseconds(0)
      * ```
@@ -92,7 +92,7 @@ export type BulkheadSettings<
  * @throws {CapacityFullAsyncError} {@link CapacityFullAsyncError}
  * ```ts
  * import { bulkhead } from "@daiso-tech/core/async";
- * import { AsyncHooks } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *
  * const fetchData = new AsyncHooks(async (url: string): Promise<unknown> => {
  *   const response = await fetch(url);

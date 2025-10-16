@@ -60,7 +60,7 @@ export type TimeoutSettings<
      *
      * @default
      * ```ts
-     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";
      *
      * TimeSpan.fromSeconds(2)
      * ```

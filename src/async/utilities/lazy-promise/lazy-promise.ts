@@ -59,7 +59,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * @example
      * ```ts
      * import { LazyPromise, retry } from "@daiso-tech/core/async";
-     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";
      * import { readFile as readFileNodeJs } from "node:fs/promises";
      *
      * const readFile = LazyPromise.wrapFn(readFileNodeJs);
@@ -80,7 +80,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * @example
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
-     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";
      *
      * console.log("a");
      * await LazyPromise.delay(TimeSpan.fromSeconds(2));
@@ -179,7 +179,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
     /**
      * @example
      * ```ts
-     * import { LazyPromise, retryMiddleware } from "@daiso-tech/core/async";
+     * import { LazyPromise, retry } from "@daiso-tech/core/async";
      *
      * const promise = new LazyPromise(async () => {
      *   console.log("I am lazy");
@@ -241,7 +241,7 @@ export class LazyPromise<TValue> implements PromiseLike<TValue> {
      * @example
      * ```ts
      * import { LazyPromise } from "@daiso-tech/core/async";
-     * import { TimeSpan } from "@daiso-tech/core/utilities";
+     * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";
      *
      * const promise =
      *   new LazyPromise(async () => {

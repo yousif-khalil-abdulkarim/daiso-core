@@ -27,7 +27,7 @@ import type {
  * @example
  * ```ts
  * import { fallback } from "@daiso-tech/core/async";
- * import { AsyncHooks } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *
  * const fetchData = new AsyncHooks(async (url: string): Promise<unknown> => {
  *   const response = await fetch(url);
@@ -48,7 +48,8 @@ import type {
  * @example
  * ```ts
  * import { fallback } from "@daiso-tech/core/async";
- * import { AsyncHooks, Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
+ * import { Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
  *
  * const fetchData = new AsyncHooks(async (url: string): Promise<Result> => {
  *   const response = await fetch(url);

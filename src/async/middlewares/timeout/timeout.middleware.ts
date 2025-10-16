@@ -25,7 +25,9 @@ import type {
  * @example
  * ```ts
  * import { timeout } from "@daiso-tech/core/async";
- * import { AsyncHooks, TimeSpan } from "@daiso-tech/core/utilities";
+ * import { TimeSpan } from "@daiso-tech/core/time-span";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
+ *
  *
  * const data = await new AsyncHooks(
  *   async (url: string, signal?: AbortSignal): Promise<unknown> => {
