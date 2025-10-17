@@ -1,5 +1,5 @@
 /**
- * @module Async
+ * @module Resilience
  */
 
 import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";

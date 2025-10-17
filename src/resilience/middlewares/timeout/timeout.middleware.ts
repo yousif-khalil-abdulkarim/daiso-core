@@ -1,5 +1,5 @@
 /**
- * @module Async
+ * @module Resilience
  */
 
 import { callInvokable } from "@/utilities/_module-exports.js";
@@ -8,6 +8,10 @@ import { timeoutAndFail } from "@/resilience/utilities/timeout-and-fail/_module.
 import type { TimeoutSettings } from "@/resilience/middlewares/timeout/timeout.type.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    AsyncHooks,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    AbortSignalBinder,
     AsyncMiddlewareFn,
     HookContext,
 } from "@/hooks/_module-exports.js";

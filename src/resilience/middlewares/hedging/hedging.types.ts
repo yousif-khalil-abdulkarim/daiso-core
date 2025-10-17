@@ -1,5 +1,5 @@
 /**
- * @module Async
+ * @module Resilience
  */
 
 import type { AsyncMiddleware, HookContext } from "@/hooks/_module-exports.js";

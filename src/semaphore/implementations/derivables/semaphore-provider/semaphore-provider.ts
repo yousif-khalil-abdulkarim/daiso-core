@@ -7,6 +7,8 @@ import type {
     EventListener,
     IEventBus,
     Unsubscribe,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";

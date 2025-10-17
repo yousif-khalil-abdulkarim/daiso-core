@@ -1,8 +1,10 @@
 /**
- * @module Async
+ * @module Resilience
  */
 
 import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type Result,
     isResult,
     RESULT,
     type InferResultSuccess,

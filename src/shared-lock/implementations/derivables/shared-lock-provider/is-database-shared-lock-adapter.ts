@@ -1,5 +1,5 @@
 /**
- * @moudle SharedLock
+ * @module SharedLock
  */
 
 import type {

@@ -1,3 +1,7 @@
+/**
+ * @module Utilities
+ */
+
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 export class ValidationError extends Error {
@@ -11,6 +15,8 @@ export class ValidationError extends Error {
 }
 
 /**
+ * @internal
+ *
  * @throws {ValidationError} {@link ValidationError}
  */
 export async function validate<TValue>(

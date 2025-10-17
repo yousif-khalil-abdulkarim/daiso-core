@@ -1,5 +1,5 @@
 /**
- * @module Async
+ * @module Resilience
  */
 import { TimeoutResilienceError } from "@/resilience/async.errors.js";
 import { abortAndFail } from "@/resilience/utilities/abort-and-fail/_module.js";

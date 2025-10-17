@@ -79,7 +79,7 @@ export type IDatabaseWriterLockTransaction = {
      *
      * @param key The unique identifier for the lock.
      * @param owner The identifier of the expected owner.
-     * @returns Returns {@link ILockExpirationData |`ILockExpirationData | null`}. The {@link ILockExpirationData |`ILockExpirationData`} data if successfully removed, otherwise `null` if the lock wasn't found or the owner didn't match.
+     * @returns Returns {@link IWriterLockData |`IWriterLockData | null`}. The {@link IWriterLockData |`IWriterLockData`} data if successfully removed, otherwise `null` if the lock wasn't found or the owner didn't match.
      */
     removeIfOwner(key: string, lockId: string): Promise<IWriterLockData | null>;
 

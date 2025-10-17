@@ -1,6 +1,12 @@
+/**
+ * @module Collection
+ */
 import { isPromiseLike } from "@/utilities/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
+/**
+ * @internal
+ */
 export class ValidateIterable<TInput, TOutput> implements Iterable<TOutput> {
     constructor(
         private readonly iterable: Iterable<TInput>,

@@ -1,5 +1,5 @@
 /**
- * @module Async
+ * @module Resilience
  */
 
 import type { InferResultError } from "@/utilities/_module-exports.js";

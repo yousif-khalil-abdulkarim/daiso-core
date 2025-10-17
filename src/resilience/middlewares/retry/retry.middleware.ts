@@ -1,8 +1,13 @@
 /**
- * @module Async
+ * @module Resilience
  */
 
-import type { Option, ResultFailure } from "@/utilities/_module-exports.js";
+import type {
+    Option,
+    ResultFailure,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Result,
+} from "@/utilities/_module-exports.js";
 import {
     callInvokable,
     optionNone,

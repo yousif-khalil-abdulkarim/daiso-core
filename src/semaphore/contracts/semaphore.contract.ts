@@ -3,7 +3,12 @@
  */
 
 import type { Task } from "@/task/_module-exports.js";
-import type { AsyncLazy, Result } from "@/utilities/_module-exports.js";
+import type {
+    AsyncLazy,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Invokable,
+    Result,
+} from "@/utilities/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     LimitReachedSemaphoreError,

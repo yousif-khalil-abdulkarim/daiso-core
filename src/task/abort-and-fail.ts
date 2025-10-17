@@ -1,5 +1,5 @@
 /**
- * @module Async
+ * @module Task
  */
 
 /**
