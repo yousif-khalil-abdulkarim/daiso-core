@@ -18,7 +18,7 @@ import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
  * @example
  * ```ts
  * import { dynamic, fallback  } from "@daiso-tech/core/async";
- * import { AsyncHooks } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *
  * await new AsyncHooks(
  *   (a: number, b: number) => a / b,

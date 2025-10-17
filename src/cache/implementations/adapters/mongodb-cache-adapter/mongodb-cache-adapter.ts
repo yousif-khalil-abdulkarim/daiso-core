@@ -149,7 +149,7 @@ export class MongodbCacheAdapter<TType = unknown>
 
     /**
      * Creates all related indexes.
-     * Note the `init` method needs to be called before using the adapter.
+     * Note the `init` method needs to be called once before using the adapter.
      */
     async init(): Promise<void> {
         try {

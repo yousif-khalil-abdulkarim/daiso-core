@@ -82,7 +82,7 @@ export class MongodbLockAdapter
 
     /**
      * Creates all related indexes.
-     * Note the `init` method needs to be called before using the adapter.
+     * Note the `init` method needs to be called once before using the adapter.
      */
     async init(): Promise<void> {
         // Should throw if the index already exists thats why the try catch is used.

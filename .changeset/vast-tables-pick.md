@@ -2,4 +2,4 @@
 "@daiso-tech/core": minor
 ---
 
-Added semaphore component
+Added semaphore component.

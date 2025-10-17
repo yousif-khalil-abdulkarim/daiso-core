@@ -20,22 +20,34 @@ type IRedisJsonLockState = {
 
 declare module "ioredis" {
     interface RedisCommander<Context> {
+        /**
+         *
+         * @param key
+         * @param lockId
+         * @param expiration As unix timestamp in miliseconds
+         */
         daiso_lock_acquire(
             key: string,
             lockId: string,
-            expiration: string,
+            expiration: number | null,
         ): Result<1 | 0, Context>;
 
         daiso_lock_release(key: string, lockId: string): Result<1 | 0, Context>;
 
+        /**
+         *
+         * @param key
+         * @param lockId
+         * @param expiration As unix timestamp in miliseconds
+         */
         daiso_lock_refresh(
             key: string,
             lockId: string,
-            expiration: string,
+            expiration: number,
         ): Result<1 | 0, Context>;
 
         /**
-         * Returns {@link IRedisJsonLockState | `IRedisJsonLockState | null`} as json string.
+         * @returns {string} {@link IRedisJsonLockState | `IRedisJsonLockState | null`} as json string.
          */
         daiso_lock_get_state(key: string): Result<string, Context>;
     }
@@ -76,6 +88,8 @@ export class RedisLockAdapter implements ILockAdapter {
             lua: `
                 local key = KEYS[1];
                 local lockId = ARGV[1];
+
+                -- Expiration time as unix timestamp in ms
                 local expiration = tonumber(ARGV[2]);
 
                 if redis.call("exists", key) == 1 then
@@ -85,7 +99,7 @@ export class RedisLockAdapter implements ILockAdapter {
                 if expiration == nil then
                     redis.call("set", key, lockId, "nx");
                 else
-                    redis.call("set", key, lockId, "px", expiration, "nx");
+                    redis.call("set", key, lockId, "pxat", expiration, "nx");
                 end
                 
                 return 1;
@@ -131,7 +145,9 @@ export class RedisLockAdapter implements ILockAdapter {
                 -- Arguments
                 local key = KEYS[1];
                 local lockId = ARGV[1];
-                local expiration = ARGV[2]
+
+                -- Expiration time as unix timestamp in ms
+                local expiration = tonumber(ARGV[2]);
 
                 if redis.call("exists", key) == 0 then
                     return 0
@@ -148,7 +164,7 @@ export class RedisLockAdapter implements ILockAdapter {
                     return 0
                 end
 
-                redis.call("pexpire", key, expiration)
+                redis.call("pexpireat", key, expiration)
                 return 1
             `,
         });
@@ -187,7 +203,7 @@ export class RedisLockAdapter implements ILockAdapter {
         const result = await this.database.daiso_lock_acquire(
             key,
             lockId,
-            String(ttl?.toMilliseconds() ?? null),
+            ttl?.toEndDate().getTime() ?? null,
         );
         return result === 1;
     }
@@ -210,7 +226,7 @@ export class RedisLockAdapter implements ILockAdapter {
         const result = await this.database.daiso_lock_refresh(
             key,
             lockId,
-            ttl.toMilliseconds().toString(),
+            ttl.toEndDate().getTime(),
         );
         return result === 1;
     }
@@ -222,15 +238,10 @@ export class RedisLockAdapter implements ILockAdapter {
         if (json === null) {
             return null;
         }
-        if (json.expiration === -1) {
-            return {
-                owner: json.owner,
-                expiration: null,
-            };
-        }
         return {
             owner: json.owner,
-            expiration: new Date(json.expiration),
+            expiration:
+                json.expiration === -1 ? null : new Date(json.expiration),
         };
     }
 }

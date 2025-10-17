@@ -428,8 +428,8 @@ export function databaseLockAdapterTestSuite(
                     TimeSpan.fromMilliseconds(100).toEndDate();
                 await adapter.updateExpiration(key, owner, newExpiration);
 
-                const slot = await adapter.find(key);
-                expect(slot).toEqual({
+                const lockData = await adapter.find(key);
+                expect(lockData).toEqual({
                     owner,
                     expiration,
                 } satisfies ILockData);
@@ -447,8 +447,8 @@ export function databaseLockAdapterTestSuite(
                     TimeSpan.fromMilliseconds(100).toEndDate();
                 await adapter.updateExpiration(key, owner, newExpiration);
 
-                const slot = await adapter.find(key);
-                expect(slot).toEqual({
+                const lockData = await adapter.find(key);
+                expect(lockData).toEqual({
                     owner,
                     expiration: newExpiration,
                 } satisfies ILockData);

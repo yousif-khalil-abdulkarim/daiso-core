@@ -41,7 +41,7 @@ export type ForwardSignal<TParameters> = Invokable<
  *
  * @example
  * ```ts
- * import { AsyncHooks } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *
  * const abortController = new AbortController();
  *
@@ -263,7 +263,7 @@ export class AsyncHooks<
     /**
      * @example
      * ```ts
-     * import { AsyncHooks, type AsyncMiddlewareFn } from "@daiso-tech/core/utilities";
+     * import { AsyncHooks, type AsyncMiddlewareFn } from "@daiso-tech/core/hooks";
      *
      * function log<TParameters extends unknown[], TReturn>(): AsyncMiddlewareFn<TParameters, TReturn> {
      *   return async (args, next, { name: funcName }) => {

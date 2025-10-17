@@ -32,7 +32,8 @@ import type {
  * @example
  * ```ts
  * import { retry } from "@daiso-tech/core/async";
- * import { AsyncHooks, TimeSpan } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
+ * import { TimeSpan } from "@daiso-tech/core/time-span";
  *
  * const data = await new AsyncHooks(
  *   async (url: string, signal?: AbortSignal): Promise<unknown> => {
@@ -60,7 +61,9 @@ import type {
  * @example
  * ```ts
  * import { retry } from "@daiso-tech/core/async";
- * import { AsyncHooks, TimeSpan, Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
+ * import { Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
+ * import { TimeSpan } from "@daiso-tech/core/time-span";
  *
  * const data = await new AsyncHooks(
  *   async (url: string, signal?: AbortSignal): Promise<Result> => {

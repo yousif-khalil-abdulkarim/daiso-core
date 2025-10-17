@@ -59,12 +59,12 @@ export type LockProviderTestSuiteSettings = {
     /**
      * @default true
      */
-    includeSerdeTests?: boolean;
+    excludeSerdeTests?: boolean;
 
     /**
      * @default true
      */
-    includeEventTests?: boolean;
+    excludeEventTests?: boolean;
 };
 
 /**
@@ -112,8 +112,8 @@ export function lockProviderTestSuite(
         createLockProvider,
         describe,
         beforeEach,
-        includeEventTests = true,
-        includeSerdeTests = true,
+        excludeEventTests = false,
+        excludeSerdeTests = false,
     } = settings;
 
     let lockProvider: ILockProvider;
@@ -244,20 +244,26 @@ export function lockProviderTestSuite(
 
                     expect(handlerFn).toHaveBeenCalledTimes(1);
                 });
-                test("Should call handler function when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should call handler function when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const handlerFn = vi.fn(() => {
-                        return Promise.resolve(RETURN_VALUE);
-                    });
-                    await lockProvider.create(key, { ttl }).run(handlerFn);
+                        const handlerFn = vi.fn(() => {
+                            return Promise.resolve(RETURN_VALUE);
+                        });
+                        await lockProvider.create(key, { ttl }).run(handlerFn);
 
-                    expect(handlerFn).toHaveBeenCalledTimes(1);
-                });
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                    },
+                );
                 test("Should call handler function when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -324,21 +330,27 @@ export function lockProviderTestSuite(
 
                     expect(result).toEqual(resultSuccess(RETURN_VALUE));
                 });
-                test("Should return ResultSuccess<string> when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should return ResultSuccess<string> when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const result = await lockProvider
-                        .create(key, { ttl })
-                        .run(() => {
-                            return Promise.resolve(RETURN_VALUE);
-                        });
+                        const result = await lockProvider
+                            .create(key, { ttl })
+                            .run(() => {
+                                return Promise.resolve(RETURN_VALUE);
+                            });
 
-                    expect(result).toEqual(resultSuccess(RETURN_VALUE));
-                });
+                        expect(result).toEqual(resultSuccess(RETURN_VALUE));
+                    },
+                );
                 test("Should return ResultSuccess<string> when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -518,22 +530,28 @@ export function lockProviderTestSuite(
 
                     expect(handlerFn).toHaveBeenCalledTimes(1);
                 });
-                test("Should call handler function when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should call handler function when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const handlerFn = vi.fn(() => {
-                        return Promise.resolve(RETURN_VALUE);
-                    });
-                    await lockProvider
-                        .create(key, { ttl })
-                        .runOrFail(handlerFn);
+                        const handlerFn = vi.fn(() => {
+                            return Promise.resolve(RETURN_VALUE);
+                        });
+                        await lockProvider
+                            .create(key, { ttl })
+                            .runOrFail(handlerFn);
 
-                    expect(handlerFn).toHaveBeenCalledTimes(1);
-                });
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                    },
+                );
                 test("Should call handler function when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -620,21 +638,27 @@ export function lockProviderTestSuite(
 
                     expect(result).toBe(RETURN_VALUE);
                 });
-                test("Should return value when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should return value when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const result = await lockProvider
-                        .create(key, { ttl })
-                        .runOrFail(() => {
-                            return Promise.resolve(RETURN_VALUE);
-                        });
+                        const result = await lockProvider
+                            .create(key, { ttl })
+                            .runOrFail(() => {
+                                return Promise.resolve(RETURN_VALUE);
+                            });
 
-                    expect(result).toBe(RETURN_VALUE);
-                });
+                        expect(result).toBe(RETURN_VALUE);
+                    },
+                );
                 test("Should not throw error when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -843,25 +867,31 @@ export function lockProviderTestSuite(
 
                     expect(handlerFn).toHaveBeenCalledTimes(1);
                 });
-                test("Should call handler function when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should call handler function when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const handlerFn = vi.fn(() => {
-                        return Promise.resolve(RETURN_VALUE);
-                    });
-                    await lockProvider
-                        .create(key, { ttl })
-                        .runBlocking(handlerFn, {
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
+                        const handlerFn = vi.fn(() => {
+                            return Promise.resolve(RETURN_VALUE);
                         });
+                        await lockProvider
+                            .create(key, { ttl })
+                            .runBlocking(handlerFn, {
+                                time: TimeSpan.fromMilliseconds(5),
+                                interval: TimeSpan.fromMilliseconds(5),
+                            });
 
-                    expect(handlerFn).toHaveBeenCalledTimes(1);
-                });
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                    },
+                );
                 test("Should call handler function when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -950,27 +980,33 @@ export function lockProviderTestSuite(
 
                     expect(result).toEqual(resultSuccess(RETURN_VALUE));
                 });
-                test("Should return ResultSuccess<string> when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should return ResultSuccess<string> when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const result = await lockProvider
-                        .create(key, { ttl })
-                        .runBlocking(
-                            () => {
-                                return Promise.resolve(RETURN_VALUE);
-                            },
-                            {
-                                time: TimeSpan.fromMilliseconds(5),
-                                interval: TimeSpan.fromMilliseconds(5),
-                            },
-                        );
+                        const result = await lockProvider
+                            .create(key, { ttl })
+                            .runBlocking(
+                                () => {
+                                    return Promise.resolve(RETURN_VALUE);
+                                },
+                                {
+                                    time: TimeSpan.fromMilliseconds(5),
+                                    interval: TimeSpan.fromMilliseconds(5),
+                                },
+                            );
 
-                    expect(result).toEqual(resultSuccess(RETURN_VALUE));
-                });
+                        expect(result).toEqual(resultSuccess(RETURN_VALUE));
+                    },
+                );
                 test("Should return ResultSuccess<string> when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -1069,12 +1105,10 @@ export function lockProviderTestSuite(
                     });
 
                     await lock1.acquire();
-                    let index = 0;
+                    const handlerFn = vi.fn(() => {});
                     await lockProvider.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
-                        (_event) => {
-                            index++;
-                        },
+                        handlerFn,
                     );
                     const lock2 = lockProvider.create(key, {
                         ttl,
@@ -1089,7 +1123,7 @@ export function lockProviderTestSuite(
                         },
                     );
 
-                    expect(index).toBeGreaterThan(1);
+                    expect(handlerFn.mock.calls.length).toBeGreaterThan(1);
                 });
             });
             describe("method: runBlockingOrFail", () => {
@@ -1243,25 +1277,31 @@ export function lockProviderTestSuite(
 
                     expect(handlerFn).toHaveBeenCalledTimes(1);
                 });
-                test("Should call handler function when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should call handler function when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const handlerFn = vi.fn(() => {
-                        return Promise.resolve(RETURN_VALUE);
-                    });
-                    await lockProvider
-                        .create(key, { ttl })
-                        .runBlockingOrFail(handlerFn, {
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
+                        const handlerFn = vi.fn(() => {
+                            return Promise.resolve(RETURN_VALUE);
                         });
+                        await lockProvider
+                            .create(key, { ttl })
+                            .runBlockingOrFail(handlerFn, {
+                                time: TimeSpan.fromMilliseconds(5),
+                                interval: TimeSpan.fromMilliseconds(5),
+                            });
 
-                    expect(handlerFn).toHaveBeenCalledTimes(1);
-                });
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                    },
+                );
                 test("Should call handler function when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -1475,12 +1515,10 @@ export function lockProviderTestSuite(
                     });
 
                     await lock1.acquire();
-                    let index = 0;
+                    const handlerFn = vi.fn(() => {});
                     await lockProvider.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
-                        (_event) => {
-                            index++;
-                        },
+                        handlerFn,
                     );
                     const lock2 = lockProvider.create(key, {
                         ttl,
@@ -1499,7 +1537,7 @@ export function lockProviderTestSuite(
                         /* EMPTY */
                     }
 
-                    expect(index).toBeGreaterThan(1);
+                    expect(handlerFn.mock.calls.length).toBeGreaterThan(1);
                 });
             });
             describe("method: acquire", () => {
@@ -1515,18 +1553,24 @@ export function lockProviderTestSuite(
 
                     expect(result).toBe(true);
                 });
-                test("Should return true when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should return true when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const result = await lockProvider
-                        .create(key, { ttl })
-                        .acquire();
-                    expect(result).toBe(true);
-                });
+                        const result = await lockProvider
+                            .create(key, { ttl })
+                            .acquire();
+                        expect(result).toBe(true);
+                    },
+                );
                 test("Should return true when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -1585,25 +1629,31 @@ export function lockProviderTestSuite(
 
                     await expect(result).resolves.toBeUndefined();
                 });
-                test("Should not throw error when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should not throw error when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquireOrFail();
+                        await delay(ttl);
 
-                    const result = lockProvider
-                        .create(key, { ttl })
-                        .acquireOrFail();
+                        const result = lockProvider
+                            .create(key, { ttl })
+                            .acquireOrFail();
 
-                    await expect(result).resolves.toBeUndefined();
-                });
+                        await expect(result).resolves.toBeUndefined();
+                    },
+                );
                 test("Should not throw error when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
 
                     const lock = lockProvider.create(key, { ttl });
-                    await lock.acquire();
+                    await lock.acquireOrFail();
                     const result = lock.acquireOrFail();
 
                     await expect(result).resolves.toBeUndefined();
@@ -1615,7 +1665,7 @@ export function lockProviderTestSuite(
                     const lock = lockProvider.create(key, {
                         ttl,
                     });
-                    await lock.acquire();
+                    await lock.acquireOrFail();
                     const result = lock.acquireOrFail();
 
                     await expect(result).resolves.toBeUndefined();
@@ -1624,7 +1674,7 @@ export function lockProviderTestSuite(
                     const key = "a";
                     const ttl = null;
 
-                    await lockProvider.create(key, { ttl }).acquire();
+                    await lockProvider.create(key, { ttl }).acquireOrFail();
                     const result = lockProvider
                         .create(key, { ttl })
                         .acquireOrFail();
@@ -1637,7 +1687,7 @@ export function lockProviderTestSuite(
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
+                    await lockProvider.create(key, { ttl }).acquireOrFail();
                     const result = lockProvider
                         .create(key, { ttl })
                         .acquireOrFail();
@@ -1663,21 +1713,27 @@ export function lockProviderTestSuite(
 
                     expect(result).toBe(true);
                 });
-                test("Should return true when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should return true when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const result = await lockProvider
-                        .create(key, { ttl })
-                        .acquireBlocking({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-                    expect(result).toBe(true);
-                });
+                        const result = await lockProvider
+                            .create(key, { ttl })
+                            .acquireBlocking({
+                                time: TimeSpan.fromMilliseconds(5),
+                                interval: TimeSpan.fromMilliseconds(5),
+                            });
+                        expect(result).toBe(true);
+                    },
+                );
                 test("Should return true when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -1742,12 +1798,10 @@ export function lockProviderTestSuite(
                     });
 
                     await lock1.acquire();
-                    let index = 0;
+                    const handlerFn = vi.fn(() => {});
                     await lockProvider.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
-                        (_event) => {
-                            index++;
-                        },
+                        handlerFn,
                     );
                     const lock2 = lockProvider.create(key, {
                         ttl,
@@ -1757,7 +1811,7 @@ export function lockProviderTestSuite(
                         interval: TimeSpan.fromMilliseconds(5),
                     });
 
-                    expect(index).toBeGreaterThan(1);
+                    expect(handlerFn.mock.calls.length).toBeGreaterThan(1);
                 });
             });
             describe("method: acquireBlockingOrFail", () => {
@@ -1776,22 +1830,28 @@ export function lockProviderTestSuite(
 
                     await expect(result).resolves.toBeUndefined();
                 });
-                test("Should not throw error when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should not throw error when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    await lockProvider.create(key, { ttl }).acquire();
-                    await delay(ttl);
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
 
-                    const result = lockProvider
-                        .create(key, { ttl })
-                        .acquireBlockingOrFail({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
+                        const result = lockProvider
+                            .create(key, { ttl })
+                            .acquireBlockingOrFail({
+                                time: TimeSpan.fromMilliseconds(5),
+                                interval: TimeSpan.fromMilliseconds(5),
+                            });
 
-                    await expect(result).resolves.toBeUndefined();
-                });
+                        await expect(result).resolves.toBeUndefined();
+                    },
+                );
                 test("Should not throw error when key is unexpireable and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -1860,12 +1920,10 @@ export function lockProviderTestSuite(
                     });
 
                     await lock1.acquire();
-                    let index = 0;
+                    const handlerFn = vi.fn(() => {});
                     await lockProvider.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
-                        (_event) => {
-                            index++;
-                        },
+                        handlerFn,
                     );
                     const lock2 = lockProvider.create(key, {
                         ttl,
@@ -1879,14 +1937,19 @@ export function lockProviderTestSuite(
                         /* EMPTY */
                     }
 
-                    expect(index).toBeGreaterThan(1);
+                    expect(handlerFn.mock.calls.length).toBeGreaterThan(1);
                 });
             });
             describe("method: release", () => {
                 test("Should return false when key doesnt exists", async () => {
                     const key = "a";
+                    const ttl = null;
 
-                    const result = await lockProvider.create(key).release();
+                    const result = await lockProvider
+                        .create(key, {
+                            ttl,
+                        })
+                        .release();
 
                     expect(result).toBe(false);
                 });
@@ -1912,29 +1975,41 @@ export function lockProviderTestSuite(
 
                     expect(result).toBe(false);
                 });
-                test("Should return false when key is expired and released by different lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    await lockProvider.create(key, { ttl }).acquire();
+                test(
+                    "Should return false when key is expired and released by different lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        await lockProvider.create(key, { ttl }).acquire();
 
-                    const result = await lockProvider
-                        .create(key, { ttl })
-                        .release();
-                    await delay(ttl);
+                        const result = await lockProvider
+                            .create(key, { ttl })
+                            .release();
+                        await delay(ttl);
 
-                    expect(result).toBe(false);
-                });
-                test("Should return false when key is expired and released by same lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock = lockProvider.create(key, { ttl });
-                    await lock.acquire();
-                    await delay(ttl);
+                        expect(result).toBe(false);
+                    },
+                );
+                test(
+                    "Should return false when key is expired and released by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock = lockProvider.create(key, { ttl });
+                        await lock.acquire();
+                        await delay(ttl);
 
-                    const result = await lock.release();
+                        const result = await lock.release();
 
-                    expect(result).toBe(false);
-                });
+                        expect(result).toBe(false);
+                    },
+                );
                 test("Should return true when key is unexpireable and released by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -2007,8 +2082,13 @@ export function lockProviderTestSuite(
             describe("method: releaseOrFail", () => {
                 test("Should throw FailedReleaseLockError when key doesnt exists", async () => {
                     const key = "a";
+                    const ttl = null;
 
-                    const result = lockProvider.create(key).releaseOrFail();
+                    const result = lockProvider
+                        .create(key, {
+                            ttl,
+                        })
+                        .releaseOrFail();
 
                     await expect(result).rejects.toBeInstanceOf(
                         FailedReleaseLockError,
@@ -2040,33 +2120,45 @@ export function lockProviderTestSuite(
                         FailedReleaseLockError,
                     );
                 });
-                test("Should throw FailedReleaseLockError when key is expired and released by different lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    await lockProvider.create(key, { ttl }).acquire();
+                test(
+                    "Should throw FailedReleaseLockError when key is expired and released by different lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        await lockProvider.create(key, { ttl }).acquire();
 
-                    const result = lockProvider
-                        .create(key, { ttl })
-                        .releaseOrFail();
-                    await delay(ttl);
+                        const result = lockProvider
+                            .create(key, { ttl })
+                            .releaseOrFail();
+                        await delay(ttl);
 
-                    await expect(result).rejects.toBeInstanceOf(
-                        FailedReleaseLockError,
-                    );
-                });
-                test("Should throw FailedReleaseLockError when key is expired and released by same lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock = lockProvider.create(key, { ttl });
-                    await lock.acquire();
-                    await delay(ttl);
+                        await expect(result).rejects.toBeInstanceOf(
+                            FailedReleaseLockError,
+                        );
+                    },
+                );
+                test(
+                    "Should throw FailedReleaseLockError when key is expired and released by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock = lockProvider.create(key, { ttl });
+                        await lock.acquire();
+                        await delay(ttl);
 
-                    const result = lock.releaseOrFail();
+                        const result = lock.releaseOrFail();
 
-                    await expect(result).rejects.toBeInstanceOf(
-                        FailedReleaseLockError,
-                    );
-                });
+                        await expect(result).rejects.toBeInstanceOf(
+                            FailedReleaseLockError,
+                        );
+                    },
+                );
                 test("Should not throw error when key is unexpireable and released by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -2147,26 +2239,35 @@ export function lockProviderTestSuite(
             describe("method: forceRelease", () => {
                 test("Should return false when key doesnt exists", async () => {
                     const key = "a";
+                    const ttl = null;
 
                     const result = await lockProvider
-                        .create(key)
+                        .create(key, {
+                            ttl,
+                        })
                         .forceRelease();
 
                     expect(result).toBe(false);
                 });
-                test("Should return false when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should return false when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-                    await delay(ttl);
+                        const lock = lockProvider.create(key, {
+                            ttl,
+                        });
+                        await lock.acquire();
+                        await delay(ttl);
 
-                    const result = await lock.forceRelease();
-                    expect(result).toBe(false);
-                });
+                        const result = await lock.forceRelease();
+                        expect(result).toBe(false);
+                    },
+                );
                 test("Should return true when key is unexpired", async () => {
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
@@ -2213,10 +2314,13 @@ export function lockProviderTestSuite(
             describe("method: refresh", () => {
                 test("Should return false when key doesnt exists", async () => {
                     const key = "a";
+                    const ttl = null;
 
                     const newTtl = TimeSpan.fromMinutes(1);
                     const result = await lockProvider
-                        .create(key)
+                        .create(key, {
+                            ttl,
+                        })
                         .refresh(newTtl);
 
                     expect(result).toBe(false);
@@ -2245,33 +2349,45 @@ export function lockProviderTestSuite(
 
                     expect(result).toBe(false);
                 });
-                test("Should return false when key is expired and refreshed by different lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock1 = lockProvider.create(key, { ttl });
-                    await lock1.acquire();
-                    await delay(ttl);
+                test(
+                    "Should return false when key is expired and refreshed by different lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock1 = lockProvider.create(key, { ttl });
+                        await lock1.acquire();
+                        await delay(ttl);
 
-                    const newTtl = TimeSpan.fromMinutes(1);
-                    const lock2 = lockProvider.create(key, { ttl });
-                    const result = await lock2.refresh(newTtl);
+                        const newTtl = TimeSpan.fromMinutes(1);
+                        const lock2 = lockProvider.create(key, { ttl });
+                        const result = await lock2.refresh(newTtl);
 
-                    expect(result).toBe(false);
-                });
-                test("Should return false when key is expired and refreshed by same lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-                    await delay(ttl);
+                        expect(result).toBe(false);
+                    },
+                );
+                test(
+                    "Should return false when key is expired and refreshed by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock = lockProvider.create(key, {
+                            ttl,
+                        });
+                        await lock.acquire();
+                        await delay(ttl);
 
-                    const newTtl = TimeSpan.fromMinutes(1);
-                    const result = await lock.refresh(newTtl);
+                        const newTtl = TimeSpan.fromMinutes(1);
+                        const result = await lock.refresh(newTtl);
 
-                    expect(result).toBe(false);
-                });
+                        expect(result).toBe(false);
+                    },
+                );
                 test("Should return false when key is unexpireable and refreshed by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -2294,46 +2410,61 @@ export function lockProviderTestSuite(
 
                     expect(result).toBe(true);
                 });
-                test("Should not update expiration when key is unexpireable and refreshed by same lockId", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock1 = lockProvider.create(key, { ttl });
-                    await lock1.acquire();
+                test(
+                    "Should not update expiration when key is unexpireable and refreshed by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = null;
+                        const lock1 = lockProvider.create(key, { ttl });
+                        await lock1.acquire();
 
-                    const newTtl = TimeSpan.fromMilliseconds(50);
-                    await lock1.refresh(newTtl);
-                    await delay(newTtl);
-                    const lock2 = lockProvider.create(key, { ttl });
-                    const result = await lock2.acquire();
+                        const newTtl = TimeSpan.fromMilliseconds(50);
+                        await lock1.refresh(newTtl);
+                        await delay(newTtl);
+                        const lock2 = lockProvider.create(key, { ttl });
+                        const result = await lock2.acquire();
 
-                    expect(result).toBe(false);
-                });
-                test("Should update expiration when key is unexpired and refreshed by same lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock1 = lockProvider.create(key, { ttl });
-                    await lock1.acquire();
+                        expect(result).toBe(false);
+                    },
+                );
+                test(
+                    "Should update expiration when key is unexpired and refreshed by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock1 = lockProvider.create(key, { ttl });
+                        await lock1.acquire();
 
-                    const newTtl = TimeSpan.fromMilliseconds(100);
-                    await lock1.refresh(newTtl);
-                    await delay(newTtl.divide(2));
+                        const newTtl = TimeSpan.fromMilliseconds(100);
+                        await lock1.refresh(newTtl);
+                        await delay(newTtl.divide(2));
 
-                    const lock2 = lockProvider.create(key, { ttl });
-                    const result1 = await lock2.acquire();
-                    expect(result1).toBe(false);
+                        const lock2 = lockProvider.create(key, { ttl });
+                        const result1 = await lock2.acquire();
+                        expect(result1).toBe(false);
 
-                    await delay(newTtl.divide(2));
-                    const result2 = await lock2.acquire();
-                    expect(result2).toBe(true);
-                });
+                        await delay(newTtl.divide(2));
+                        const result2 = await lock2.acquire();
+                        expect(result2).toBe(true);
+                    },
+                );
             });
             describe("method: refreshOrFail", () => {
                 test("Should throw FailedRefreshLockError when key doesnt exists", async () => {
                     const key = "a";
+                    const ttl = null;
 
                     const newTtl = TimeSpan.fromMinutes(1);
                     const result = lockProvider
-                        .create(key)
+                        .create(key, {
+                            ttl,
+                        })
                         .refreshOrFail(newTtl);
 
                     await expect(result).rejects.toBeInstanceOf(
@@ -2368,37 +2499,49 @@ export function lockProviderTestSuite(
                         FailedRefreshLockError,
                     );
                 });
-                test("Should throw FailedRefreshLockError when key is expired and refreshed by different lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock1 = lockProvider.create(key, { ttl });
-                    await lock1.acquire();
-                    await delay(ttl);
+                test(
+                    "Should throw FailedRefreshLockError when key is expired and refreshed by different lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock1 = lockProvider.create(key, { ttl });
+                        await lock1.acquire();
+                        await delay(ttl);
 
-                    const newTtl = TimeSpan.fromMinutes(1);
-                    const lock2 = lockProvider.create(key, { ttl });
-                    const result = lock2.refreshOrFail(newTtl);
+                        const newTtl = TimeSpan.fromMinutes(1);
+                        const lock2 = lockProvider.create(key, { ttl });
+                        const result = lock2.refreshOrFail(newTtl);
 
-                    await expect(result).rejects.toBeInstanceOf(
-                        FailedRefreshLockError,
-                    );
-                });
-                test("Should throw FailedRefreshLockError when key is expired and refreshed by same lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-                    await delay(ttl);
+                        await expect(result).rejects.toBeInstanceOf(
+                            FailedRefreshLockError,
+                        );
+                    },
+                );
+                test(
+                    "Should throw FailedRefreshLockError when key is expired and refreshed by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock = lockProvider.create(key, {
+                            ttl,
+                        });
+                        await lock.acquire();
+                        await delay(ttl);
 
-                    const newTtl = TimeSpan.fromMinutes(1);
-                    const result = lock.refreshOrFail(newTtl);
+                        const newTtl = TimeSpan.fromMinutes(1);
+                        const result = lock.refreshOrFail(newTtl);
 
-                    await expect(result).rejects.toBeInstanceOf(
-                        FailedRefreshLockError,
-                    );
-                });
+                        await expect(result).rejects.toBeInstanceOf(
+                            FailedRefreshLockError,
+                        );
+                    },
+                );
                 test("Should throw FailedRefreshLockError when key is unexpireable and refreshed by same lockId", async () => {
                     const key = "a";
                     const ttl = null;
@@ -2423,42 +2566,54 @@ export function lockProviderTestSuite(
 
                     await expect(result).resolves.toBeUndefined();
                 });
-                test("Should not update expiration when key is unexpireable and refreshed by same lockId", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock1 = lockProvider.create(key, { ttl });
-                    await lock1.acquire();
+                test(
+                    "Should not update expiration when key is unexpireable and refreshed by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = null;
+                        const lock1 = lockProvider.create(key, { ttl });
+                        await lock1.acquire();
 
-                    const newTtl = TimeSpan.fromMilliseconds(50);
-                    try {
+                        const newTtl = TimeSpan.fromMilliseconds(50);
+                        try {
+                            await lock1.refreshOrFail(newTtl);
+                        } catch {
+                            /* EMPTY */
+                        }
+                        await delay(newTtl);
+                        const lock2 = lockProvider.create(key, { ttl });
+                        const result = await lock2.acquire();
+
+                        expect(result).toBe(false);
+                    },
+                );
+                test(
+                    "Should update expiration when key is unexpired and refreshed by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock1 = lockProvider.create(key, { ttl });
+                        await lock1.acquire();
+
+                        const newTtl = TimeSpan.fromMilliseconds(100);
                         await lock1.refreshOrFail(newTtl);
-                    } catch {
-                        /* EMPTY */
-                    }
-                    await delay(newTtl);
-                    const lock2 = lockProvider.create(key, { ttl });
-                    const result = await lock2.acquire();
+                        await delay(newTtl.divide(2));
 
-                    expect(result).toBe(false);
-                });
-                test("Should update expiration when key is unexpired and refreshed by same lockId", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock1 = lockProvider.create(key, { ttl });
-                    await lock1.acquire();
+                        const lock2 = lockProvider.create(key, { ttl });
+                        const result1 = await lock2.acquire();
+                        expect(result1).toBe(false);
 
-                    const newTtl = TimeSpan.fromMilliseconds(100);
-                    await lock1.refreshOrFail(newTtl);
-                    await delay(newTtl.divide(2));
-
-                    const lock2 = lockProvider.create(key, { ttl });
-                    const result1 = await lock2.acquire();
-                    expect(result1).toBe(false);
-
-                    await delay(newTtl.divide(2));
-                    const result2 = await lock2.acquire();
-                    expect(result2).toBe(true);
-                });
+                        await delay(newTtl.divide(2));
+                        const result2 = await lock2.acquire();
+                        expect(result2).toBe(true);
+                    },
+                );
             });
             describe("method: id", () => {
                 test("Should return lock id of ILock instance", () => {
@@ -2473,8 +2628,11 @@ export function lockProviderTestSuite(
                 });
                 test("Should return lock id of ILock instance implicitly", () => {
                     const key = "a";
+                    const ttl = null;
 
-                    const lock = lockProvider.create(key);
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
 
                     expect(lock.id).toBeTypeOf("string");
                     expect(lock.id.length).toBeGreaterThan(0);
@@ -2505,7 +2663,7 @@ export function lockProviderTestSuite(
                     );
                 });
             });
-            describe("method: state", () => {
+            describe("method: getState", () => {
                 test("Should return ILockExpiredState when key doesnt exists", async () => {
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
@@ -2520,23 +2678,29 @@ export function lockProviderTestSuite(
                         type: LOCK_STATE.EXPIRED,
                     } satisfies ILockExpiredState);
                 });
-                test("Should return ILockExpiredState when key is expired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
+                test(
+                    "Should return ILockExpiredState when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
 
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-                    await delay(ttl);
+                        const lock = lockProvider.create(key, {
+                            ttl,
+                        });
+                        await lock.acquire();
+                        await delay(ttl);
 
-                    const result = await lock.getState();
+                        const result = await lock.getState();
 
-                    expect(result).toEqual({
-                        type: LOCK_STATE.EXPIRED,
-                    } satisfies ILockExpiredState);
-                });
-                test("Should return ILockExpiredState when all key is released with forceRelease method", async () => {
+                        expect(result).toEqual({
+                            type: LOCK_STATE.EXPIRED,
+                        } satisfies ILockExpiredState);
+                    },
+                );
+                test("Should return ILockExpiredState when key is released with forceRelease method", async () => {
                     const key = "a";
 
                     const ttl1 = null;
@@ -2559,7 +2723,7 @@ export function lockProviderTestSuite(
                         type: LOCK_STATE.EXPIRED,
                     } satisfies ILockExpiredState);
                 });
-                test("Should return ILockExpiredState when all key is released with release method", async () => {
+                test("Should return ILockExpiredState when key is released with release method", async () => {
                     const key = "a";
 
                     const ttl1 = null;
@@ -2633,223 +2797,42 @@ export function lockProviderTestSuite(
                 });
             });
         });
-        if (includeEventTests) {
-            describe("Event tests:", () => {
-                describe("method: acquire", () => {
-                    test("Should dispatch AcquiredLockEvent when key doesnt exists", async () => {
-                        const key = "a";
-                        const ttl = null;
+        describe.skipIf(excludeEventTests)("Event tests:", () => {
+            describe("method: acquire", () => {
+                test("Should dispatch AcquiredLockEvent when key doesnt exists", async () => {
+                    const key = "a";
+                    const ttl = null;
 
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
+                    const lock = lockProvider.create(key, {
+                        ttl,
                     });
-                    test("Should dispatch AcquiredLockEvent when key is expired", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquire();
 
-                        await lockProvider.create(key, { ttl }).acquire();
-                        await delay(ttl);
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is unexpireable and acquired by same lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        const lock = lockProvider.create(key, { ttl });
-                        await lock.acquire();
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is unexpired and acquired by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch UnavailableLockEvent when key is unexpireable and acquired by different lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        const handlerFn = vi.fn(
-                            (_event: UnavailableLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.UNAVAILABLE,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies UnavailableLockEvent),
-                        );
-                    });
-                    test("Should dispatch UnavailableLockEvent when key is unexpired and acquired by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: UnavailableLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.UNAVAILABLE,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies UnavailableLockEvent),
-                        );
-                    });
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
                 });
-                describe("method: acquireOrFail", () => {
-                    test("Should dispatch AcquiredLockEvent when key doesnt exists", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireOrFail();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is expired", async () => {
+                test(
+                    "Should dispatch AcquiredLockEvent when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
                         const key = "a";
                         const ttl = TimeSpan.fromMilliseconds(50);
 
@@ -2864,36 +2847,7 @@ export function lockProviderTestSuite(
                             LOCK_EVENTS.ACQUIRED,
                             handlerFn,
                         );
-                        await lock.acquireOrFail();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is unexpireable and acquired by same lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        const lock = lockProvider.create(key, { ttl });
                         await lock.acquire();
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireOrFail();
 
                         expect(handlerFn).toHaveBeenCalledTimes(1);
                         expect(handlerFn).toHaveBeenCalledWith(
@@ -2908,1517 +2862,1780 @@ export function lockProviderTestSuite(
                                 } satisfies ILockStateMethods) as ILockStateMethods,
                             } satisfies AcquiredLockEvent),
                         );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is unexpired and acquired by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
+                    },
+                );
+                test("Should dispatch AcquiredLockEvent when key is unexpireable and acquired by same lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
 
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireOrFail();
+                    const lock = lockProvider.create(key, { ttl });
+                    await lock.acquire();
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquire();
 
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch UnavailableLockEvent when key is unexpireable and acquired by different lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        const handlerFn = vi.fn(
-                            (_event: UnavailableLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.UNAVAILABLE,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.acquireOrFail();
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies UnavailableLockEvent),
-                        );
-                    });
-                    test("Should dispatch UnavailableLockEvent when key is unexpired and acquired by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: UnavailableLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.UNAVAILABLE,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.acquireOrFail();
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies UnavailableLockEvent),
-                        );
-                    });
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
                 });
-                describe("method: acquireBlocking", () => {
-                    test("Should dispatch AcquiredLockEvent when key doesnt exists", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireBlocking({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is expired", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        await delay(ttl);
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireBlocking({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is unexpireable and acquired by same lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        const lock = lockProvider.create(key, { ttl });
-                        await lock.acquire();
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireBlocking({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is unexpired and acquired by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireBlocking({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch UnavailableLockEvent when key is unexpireable and acquired by different lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        const handlerFn = vi.fn(
-                            (_event: UnavailableLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.UNAVAILABLE,
-                            handlerFn,
-                        );
-                        await lock.acquireBlocking({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies UnavailableLockEvent),
-                        );
-                    });
-                    test("Should dispatch UnavailableLockEvent when key is unexpired and acquired by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: UnavailableLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.UNAVAILABLE,
-                            handlerFn,
-                        );
-                        await lock.acquireBlocking({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies UnavailableLockEvent),
-                        );
-                    });
-                });
-                describe("method: acquireBlockingOrFail", () => {
-                    test("Should dispatch AcquiredLockEvent when key doesnt exists", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireBlockingOrFail({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is expired", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        await delay(ttl);
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireBlockingOrFail({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is unexpireable and acquired by same lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        const lock = lockProvider.create(key, { ttl });
-                        await lock.acquire();
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireBlockingOrFail({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch AcquiredLockEvent when key is unexpired and acquired by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
-                        const handlerFn = vi.fn(
-                            (_event: AcquiredLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.ACQUIRED,
-                            handlerFn,
-                        );
-                        await lock.acquireBlockingOrFail({
-                            time: TimeSpan.fromMilliseconds(5),
-                            interval: TimeSpan.fromMilliseconds(5),
-                        });
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies AcquiredLockEvent),
-                        );
-                    });
-                    test("Should dispatch UnavailableLockEvent when key is unexpireable and acquired by different lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        const handlerFn = vi.fn(
-                            (_event: UnavailableLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.UNAVAILABLE,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.acquireBlockingOrFail({
-                                time: TimeSpan.fromMilliseconds(5),
-                                interval: TimeSpan.fromMilliseconds(5),
-                            });
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies UnavailableLockEvent),
-                        );
-                    });
-                    test("Should dispatch UnavailableLockEvent when key is unexpired and acquired by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        await lockProvider.create(key, { ttl }).acquire();
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: UnavailableLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.UNAVAILABLE,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.acquireBlockingOrFail({
-                                time: TimeSpan.fromMilliseconds(5),
-                                interval: TimeSpan.fromMilliseconds(5),
-                            });
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies UnavailableLockEvent),
-                        );
-                    });
-                });
-                describe("method: forceRelease", () => {
-                    test("Should dispatch ForceReleasedLockEvent when key doesnt exists", async () => {
-                        const key = "a";
-
-                        const lock = lockProvider.create(key);
-                        const handlerFn = vi.fn(
-                            (_event: ForceReleasedLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FORCE_RELEASED,
-                            handlerFn,
-                        );
-                        await lock.forceRelease();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                hasReleased: false,
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies ForceReleasedLockEvent),
-                        );
-                    });
-                    test("Should dispatch ForceReleasedLockEvent when key is expired", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: ForceReleasedLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FORCE_RELEASED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-                        await delay(ttl);
-                        await lock.forceRelease();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                hasReleased: false,
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies ForceReleasedLockEvent),
-                        );
-                    });
-                    test("Should dispatch ForceReleasedLockEvent when key exists and is acquired", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: ForceReleasedLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FORCE_RELEASED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-                        await lock.forceRelease();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                hasReleased: true,
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies ForceReleasedLockEvent),
-                        );
-                    });
-                });
-                describe("method: release", () => {
-                    test("Should dispatch FailedReleaseLockEvent when key doesnt exists", async () => {
-                        const key = "a";
-
-                        const lock = lockProvider.create(key);
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        await lock.release();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedReleaseLockEvent when key is unexpireable and released by different lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        await lockProvider.create(key, { ttl }).acquire();
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        await lock.release();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedReleaseLockEvent when key is unexpired and released by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        await lockProvider.create(key, { ttl }).acquire();
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        await lock.release();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedReleaseLockEvent when key is expired and released by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        await lockProvider.create(key, { ttl }).acquire();
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        await lock.release();
-                        await delay(ttl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedReleaseLockEvent when key is expired and released by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-                        await delay(ttl);
-
-                        await lock.release();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch ReleasedLockEvent when key is unexpireable and released by same lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: ReleasedLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.RELEASED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        await lock.release();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies ReleasedLockEvent),
-                        );
-                    });
-                    test("Should dispatch ReleasedLockEvent when key is unexpired and released by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: ReleasedLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.RELEASED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        await lock.release();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies ReleasedLockEvent),
-                        );
-                    });
-                });
-                describe("method: releaseOrFail", () => {
-                    test("Should dispatch FailedReleaseLockEvent when key doesnt exists", async () => {
-                        const key = "a";
-
-                        const lock = lockProvider.create(key);
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.release();
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedReleaseLockEvent when key is unexpireable and released by different lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        await lockProvider.create(key, { ttl }).acquire();
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.release();
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedReleaseLockEvent when key is unexpired and released by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        await lockProvider.create(key, { ttl }).acquire();
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.release();
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedReleaseLockEvent when key is expired and released by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        await lockProvider.create(key, { ttl }).acquire();
-
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.release();
-                        } catch {
-                            /* EMPTY */
-                        }
-                        await delay(ttl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedReleaseLockEvent when key is expired and released by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedReleaseLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_RELEASE,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-                        await delay(ttl);
-
-                        try {
-                            await lock.release();
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedReleaseLockEvent),
-                        );
-                    });
-                    test("Should dispatch ReleasedLockEvent when key is unexpireable and released by same lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: ReleasedLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.RELEASED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        await lock.releaseOrFail();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies ReleasedLockEvent),
-                        );
-                    });
-                    test("Should dispatch ReleasedLockEvent when key is unexpired and released by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: ReleasedLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.RELEASED,
-                            handlerFn,
-                        );
-                        await lock.acquire();
-
-                        await lock.releaseOrFail();
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies ReleasedLockEvent),
-                        );
-                    });
-                });
-                describe("method: refresh", () => {
-                    test("Should dispatch FailedRefreshLockEvent when key doesnt exists", async () => {
-                        const key = "a";
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const lock = lockProvider.create(key);
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        await lock.refresh(newTtl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is unexpireable and refreshed by different lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock1 = lockProvider.create(key, { ttl });
-                        await lock1.acquire();
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const lock2 = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        await lock2.refresh(newTtl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock2.key,
-                                    id: lock2.id,
-                                    ttl: lock2.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is unexpired and refreshed by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock1 = lockProvider.create(key, { ttl });
-                        await lock1.acquire();
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const lock2 = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        await lock2.refresh(newTtl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock2.key,
-                                    id: lock2.id,
-                                    ttl: lock2.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is expired and refreshed by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock1 = lockProvider.create(key, { ttl });
-                        await lock1.acquire();
-                        await delay(ttl);
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const lock2 = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        await lock2.refresh(newTtl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock2.key,
-                                    id: lock2.id,
-                                    ttl: lock2.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is expired and refreshed by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
-                        await delay(ttl);
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        await lock.refresh(newTtl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is unexpireable and refreshed by same lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock = lockProvider.create(key, { ttl });
-                        await lock.acquire();
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        await lock.refresh(newTtl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch RefreshedLockEvent when key is unexpired and refreshed by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, { ttl });
-                        await lock.acquire();
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const handlerFn = vi.fn(
-                            (_event: RefreshedLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.REFRESHED,
-                            handlerFn,
-                        );
-                        await lock.refresh(newTtl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: newTtl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies RefreshedLockEvent),
-                        );
-                    });
-                });
-                describe("method: refreshOrFail", () => {
-                    test("Should dispatch FailedRefreshLockEvent when key doesnt exists", async () => {
-                        const key = "a";
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const lock = lockProvider.create(key);
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.refreshOrFail(newTtl);
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is unexpireable and refreshed by different lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock1 = lockProvider.create(key, { ttl });
-                        await lock1.acquire();
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const lock2 = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        try {
-                            await lock2.refreshOrFail(newTtl);
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock2.key,
-                                    id: lock2.id,
-                                    ttl: lock2.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is unexpired and refreshed by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock1 = lockProvider.create(key, { ttl });
-                        await lock1.acquire();
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const lock2 = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        try {
-                            await lock2.refreshOrFail(newTtl);
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock2.key,
-                                    id: lock2.id,
-                                    ttl: lock2.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is expired and refreshed by different lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock1 = lockProvider.create(key, { ttl });
-                        await lock1.acquire();
-                        await delay(ttl);
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const lock2 = lockProvider.create(key, { ttl });
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        try {
-                            await lock2.refreshOrFail(newTtl);
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock2.key,
-                                    id: lock2.id,
-                                    ttl: lock2.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is expired and refreshed by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, {
-                            ttl,
-                        });
-                        await lock.acquire();
-                        await delay(ttl);
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.refreshOrFail(newTtl);
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch FailedRefreshLockEvent when key is unexpireable and refreshed by same lockId", async () => {
-                        const key = "a";
-                        const ttl = null;
-                        const lock = lockProvider.create(key, { ttl });
-                        await lock.acquire();
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const handlerFn = vi.fn(
-                            (_event: FailedRefreshLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.FAILED_REFRESH,
-                            handlerFn,
-                        );
-                        try {
-                            await lock.refreshOrFail(newTtl);
-                        } catch {
-                            /* EMPTY */
-                        }
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: lock.ttl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies FailedRefreshLockEvent),
-                        );
-                    });
-                    test("Should dispatch RefreshedLockEvent when key is unexpired and refreshed by same lockId", async () => {
-                        const key = "a";
-                        const ttl = TimeSpan.fromMilliseconds(50);
-                        const lock = lockProvider.create(key, { ttl });
-                        await lock.acquire();
-
-                        const newTtl = TimeSpan.fromMinutes(1);
-                        const handlerFn = vi.fn(
-                            (_event: RefreshedLockEvent) => {},
-                        );
-                        await lockProvider.addListener(
-                            LOCK_EVENTS.REFRESHED,
-                            handlerFn,
-                        );
-                        await lock.refreshOrFail(newTtl);
-
-                        expect(handlerFn).toHaveBeenCalledTimes(1);
-                        expect(handlerFn).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                lock: expect.objectContaining({
-                                    getState: expect.any(
-                                        Function,
-                                    ) as ILockStateMethods["getState"],
-                                    key: lock.key,
-                                    id: lock.id,
-                                    ttl: newTtl,
-                                } satisfies ILockStateMethods) as ILockStateMethods,
-                            } satisfies RefreshedLockEvent),
-                        );
-                    });
-                });
-            });
-        }
-        if (includeSerdeTests) {
-            describe("Serde tests:", () => {
-                test("Should return ILockExpiredState when is derserialized and key doesnt exists", async () => {
+                test("Should dispatch AcquiredLockEvent when key is unexpired and acquired by same lockId", async () => {
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
 
                     const lock = lockProvider.create(key, {
                         ttl,
                     });
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
+                    await lock.acquire();
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
                     );
-                    const result = await deserializedLock.getState();
+                    await lock.acquire();
 
-                    expect(result).toEqual({
-                        type: LOCK_STATE.EXPIRED,
-                    } satisfies ILockExpiredState);
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
                 });
-                test("Should return ILockExpiredState when is derserialized and key is expired", async () => {
+                test("Should dispatch UnavailableLockEvent when key is unexpireable and acquired by different lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    await lockProvider.create(key, { ttl }).acquire();
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn(
+                        (_event: UnavailableLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.UNAVAILABLE,
+                        handlerFn,
+                    );
+                    await lock.acquire();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies UnavailableLockEvent),
+                    );
+                });
+                test("Should dispatch UnavailableLockEvent when key is unexpired and acquired by different lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+
+                    await lockProvider.create(key, { ttl }).acquire();
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: UnavailableLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.UNAVAILABLE,
+                        handlerFn,
+                    );
+                    await lock.acquire();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies UnavailableLockEvent),
+                    );
+                });
+            });
+            describe("method: acquireOrFail", () => {
+                test("Should dispatch AcquiredLockEvent when key doesnt exists", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquireOrFail();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
+                });
+                test(
+                    "Should dispatch AcquiredLockEvent when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
+
+                        const lock = lockProvider.create(key, { ttl });
+                        const handlerFn = vi.fn(
+                            (_event: AcquiredLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.ACQUIRED,
+                            handlerFn,
+                        );
+                        await lock.acquireOrFail();
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock.key,
+                                    id: lock.id,
+                                    ttl: lock.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies AcquiredLockEvent),
+                        );
+                    },
+                );
+                test("Should dispatch AcquiredLockEvent when key is unexpireable and acquired by same lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const lock = lockProvider.create(key, { ttl });
+                    await lock.acquire();
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquireOrFail();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
+                });
+                test("Should dispatch AcquiredLockEvent when key is unexpired and acquired by same lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    await lock.acquire();
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquireOrFail();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
+                });
+                test("Should dispatch UnavailableLockEvent when key is unexpireable and acquired by different lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    await lockProvider.create(key, { ttl }).acquire();
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn(
+                        (_event: UnavailableLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.UNAVAILABLE,
+                        handlerFn,
+                    );
+                    try {
+                        await lock.acquireOrFail();
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies UnavailableLockEvent),
+                    );
+                });
+                test("Should dispatch UnavailableLockEvent when key is unexpired and acquired by different lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+
+                    await lockProvider.create(key, { ttl }).acquire();
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: UnavailableLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.UNAVAILABLE,
+                        handlerFn,
+                    );
+                    try {
+                        await lock.acquireOrFail();
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies UnavailableLockEvent),
+                    );
+                });
+            });
+            describe("method: acquireBlocking", () => {
+                test("Should dispatch AcquiredLockEvent when key doesnt exists", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquireBlocking({
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    });
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
+                });
+                test(
+                    "Should dispatch AcquiredLockEvent when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
+
+                        const lock = lockProvider.create(key, { ttl });
+                        const handlerFn = vi.fn(
+                            (_event: AcquiredLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.ACQUIRED,
+                            handlerFn,
+                        );
+                        await lock.acquireBlocking({
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
+                        });
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock.key,
+                                    id: lock.id,
+                                    ttl: lock.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies AcquiredLockEvent),
+                        );
+                    },
+                );
+                test("Should dispatch AcquiredLockEvent when key is unexpireable and acquired by same lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const lock = lockProvider.create(key, { ttl });
+                    await lock.acquire();
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquireBlocking({
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    });
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
+                });
+                test("Should dispatch AcquiredLockEvent when key is unexpired and acquired by same lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    await lock.acquire();
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquireBlocking({
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    });
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
+                });
+                test("Should dispatch UnavailableLockEvent when key is unexpireable and acquired by different lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    await lockProvider.create(key, { ttl }).acquire();
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn(
+                        (_event: UnavailableLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.UNAVAILABLE,
+                        handlerFn,
+                    );
+                    await lock.acquireBlocking({
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    });
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies UnavailableLockEvent),
+                    );
+                });
+                test("Should dispatch UnavailableLockEvent when key is unexpired and acquired by different lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+
+                    await lockProvider.create(key, { ttl }).acquire();
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: UnavailableLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.UNAVAILABLE,
+                        handlerFn,
+                    );
+                    await lock.acquireBlocking({
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    });
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies UnavailableLockEvent),
+                    );
+                });
+            });
+            describe("method: acquireBlockingOrFail", () => {
+                test("Should dispatch AcquiredLockEvent when key doesnt exists", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquireBlockingOrFail({
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    });
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
+                });
+                test(
+                    "Should dispatch AcquiredLockEvent when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+
+                        await lockProvider.create(key, { ttl }).acquire();
+                        await delay(ttl);
+
+                        const lock = lockProvider.create(key, { ttl });
+                        const handlerFn = vi.fn(
+                            (_event: AcquiredLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.ACQUIRED,
+                            handlerFn,
+                        );
+                        await lock.acquireBlockingOrFail({
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
+                        });
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock.key,
+                                    id: lock.id,
+                                    ttl: lock.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies AcquiredLockEvent),
+                        );
+                    },
+                );
+                test("Should dispatch AcquiredLockEvent when key is unexpireable and acquired by same lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const lock = lockProvider.create(key, { ttl });
+                    await lock.acquire();
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquireBlockingOrFail({
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    });
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
+                });
+                test("Should dispatch AcquiredLockEvent when key is unexpired and acquired by same lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    await lock.acquire();
+                    const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.ACQUIRED,
+                        handlerFn,
+                    );
+                    await lock.acquireBlockingOrFail({
+                        time: TimeSpan.fromMilliseconds(5),
+                        interval: TimeSpan.fromMilliseconds(5),
+                    });
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies AcquiredLockEvent),
+                    );
+                });
+                test("Should dispatch UnavailableLockEvent when key is unexpireable and acquired by different lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    await lockProvider.create(key, { ttl }).acquire();
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn(
+                        (_event: UnavailableLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.UNAVAILABLE,
+                        handlerFn,
+                    );
+                    try {
+                        await lock.acquireBlockingOrFail({
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
+                        });
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies UnavailableLockEvent),
+                    );
+                });
+                test("Should dispatch UnavailableLockEvent when key is unexpired and acquired by different lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+
+                    await lockProvider.create(key, { ttl }).acquire();
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: UnavailableLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.UNAVAILABLE,
+                        handlerFn,
+                    );
+                    try {
+                        await lock.acquireBlockingOrFail({
+                            time: TimeSpan.fromMilliseconds(5),
+                            interval: TimeSpan.fromMilliseconds(5),
+                        });
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies UnavailableLockEvent),
+                    );
+                });
+            });
+            describe("method: forceRelease", () => {
+                test("Should dispatch ForceReleasedLockEvent when key doesnt exists", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn(
+                        (_event: ForceReleasedLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FORCE_RELEASED,
+                        handlerFn,
+                    );
+                    await lock.forceRelease();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            hasReleased: false,
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies ForceReleasedLockEvent),
+                    );
+                });
+                test(
+                    "Should dispatch ForceReleasedLockEvent when key is expired",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+
+                        const lock = lockProvider.create(key, { ttl });
+                        const handlerFn = vi.fn(
+                            (_event: ForceReleasedLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.FORCE_RELEASED,
+                            handlerFn,
+                        );
+                        await lock.acquire();
+                        await delay(ttl);
+                        await lock.forceRelease();
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                hasReleased: false,
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock.key,
+                                    id: lock.id,
+                                    ttl: lock.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies ForceReleasedLockEvent),
+                        );
+                    },
+                );
+                test("Should dispatch ForceReleasedLockEvent when key exists and is acquired", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: ForceReleasedLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FORCE_RELEASED,
+                        handlerFn,
+                    );
+                    await lock.acquire();
+                    await lock.forceRelease();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            hasReleased: true,
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies ForceReleasedLockEvent),
+                    );
+                });
+            });
+            describe("method: release", () => {
+                test("Should dispatch FailedReleaseLockEvent when key doesnt exists", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn(
+                        (_event: FailedReleaseLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_RELEASE,
+                        handlerFn,
+                    );
+                    await lock.release();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedReleaseLockEvent),
+                    );
+                });
+                test("Should dispatch FailedReleaseLockEvent when key is unexpireable and released by different lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    await lockProvider.create(key, { ttl }).acquire();
+
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: FailedReleaseLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_RELEASE,
+                        handlerFn,
+                    );
+                    await lock.release();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedReleaseLockEvent),
+                    );
+                });
+                test("Should dispatch FailedReleaseLockEvent when key is unexpired and released by different lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    await lockProvider.create(key, { ttl }).acquire();
+
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: FailedReleaseLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_RELEASE,
+                        handlerFn,
+                    );
+                    await lock.release();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedReleaseLockEvent),
+                    );
+                });
+                test(
+                    "Should dispatch FailedReleaseLockEvent when key is expired and released by different lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        await lockProvider.create(key, { ttl }).acquire();
+
+                        const lock = lockProvider.create(key, { ttl });
+                        const handlerFn = vi.fn(
+                            (_event: FailedReleaseLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.FAILED_RELEASE,
+                            handlerFn,
+                        );
+                        await lock.release();
+                        await delay(ttl);
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock.key,
+                                    id: lock.id,
+                                    ttl: lock.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies FailedReleaseLockEvent),
+                        );
+                    },
+                );
+                test("Should dispatch FailedReleaseLockEvent when key is expired and released by same lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: FailedReleaseLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_RELEASE,
+                        handlerFn,
+                    );
+                    await lock.acquire();
+                    await delay(ttl);
+
+                    await lock.release();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedReleaseLockEvent),
+                    );
+                });
+                test("Should dispatch ReleasedLockEvent when key is unexpireable and released by same lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn((_event: ReleasedLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.RELEASED,
+                        handlerFn,
+                    );
+                    await lock.acquire();
+
+                    await lock.release();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies ReleasedLockEvent),
+                    );
+                });
+                test("Should dispatch ReleasedLockEvent when key is unexpired and released by same lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn((_event: ReleasedLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.RELEASED,
+                        handlerFn,
+                    );
+                    await lock.acquire();
+
+                    await lock.release();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies ReleasedLockEvent),
+                    );
+                });
+            });
+            describe("method: releaseOrFail", () => {
+                test("Should dispatch FailedReleaseLockEvent when key doesnt exists", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn(
+                        (_event: FailedReleaseLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_RELEASE,
+                        handlerFn,
+                    );
+                    try {
+                        await lock.release();
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedReleaseLockEvent),
+                    );
+                });
+                test("Should dispatch FailedReleaseLockEvent when key is unexpireable and released by different lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    await lockProvider.create(key, { ttl }).acquire();
+
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: FailedReleaseLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_RELEASE,
+                        handlerFn,
+                    );
+                    try {
+                        await lock.release();
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedReleaseLockEvent),
+                    );
+                });
+                test("Should dispatch FailedReleaseLockEvent when key is unexpired and released by different lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    await lockProvider.create(key, { ttl }).acquire();
+
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: FailedReleaseLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_RELEASE,
+                        handlerFn,
+                    );
+                    try {
+                        await lock.release();
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedReleaseLockEvent),
+                    );
+                });
+                test(
+                    "Should dispatch FailedReleaseLockEvent when key is expired and released by different lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        await lockProvider.create(key, { ttl }).acquire();
+
+                        const lock = lockProvider.create(key, { ttl });
+                        const handlerFn = vi.fn(
+                            (_event: FailedReleaseLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.FAILED_RELEASE,
+                            handlerFn,
+                        );
+                        try {
+                            await lock.release();
+                        } catch {
+                            /* EMPTY */
+                        }
+                        await delay(ttl);
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock.key,
+                                    id: lock.id,
+                                    ttl: lock.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies FailedReleaseLockEvent),
+                        );
+                    },
+                );
+                test(
+                    "Should dispatch FailedReleaseLockEvent when key is expired and released by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock = lockProvider.create(key, { ttl });
+                        const handlerFn = vi.fn(
+                            (_event: FailedReleaseLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.FAILED_RELEASE,
+                            handlerFn,
+                        );
+                        await lock.acquire();
+                        await delay(ttl);
+
+                        try {
+                            await lock.release();
+                        } catch {
+                            /* EMPTY */
+                        }
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock.key,
+                                    id: lock.id,
+                                    ttl: lock.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies FailedReleaseLockEvent),
+                        );
+                    },
+                );
+                test("Should dispatch ReleasedLockEvent when key is unexpireable and released by same lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn((_event: ReleasedLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.RELEASED,
+                        handlerFn,
+                    );
+                    await lock.acquire();
+
+                    await lock.releaseOrFail();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies ReleasedLockEvent),
+                    );
+                });
+                test("Should dispatch ReleasedLockEvent when key is unexpired and released by same lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    const lock = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn((_event: ReleasedLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.RELEASED,
+                        handlerFn,
+                    );
+                    await lock.acquire();
+
+                    await lock.releaseOrFail();
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies ReleasedLockEvent),
+                    );
+                });
+            });
+            describe("method: refresh", () => {
+                test("Should dispatch FailedRefreshLockEvent when key doesnt exists", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn(
+                        (_event: FailedRefreshLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_REFRESH,
+                        handlerFn,
+                    );
+                    await lock.refresh(newTtl);
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedRefreshLockEvent),
+                    );
+                });
+                test("Should dispatch FailedRefreshLockEvent when key is unexpireable and refreshed by different lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    const lock1 = lockProvider.create(key, { ttl });
+                    await lock1.acquire();
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const lock2 = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: FailedRefreshLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_REFRESH,
+                        handlerFn,
+                    );
+                    await lock2.refresh(newTtl);
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock2.key,
+                                id: lock2.id,
+                                ttl: lock2.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedRefreshLockEvent),
+                    );
+                });
+                test("Should dispatch FailedRefreshLockEvent when key is unexpired and refreshed by different lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    const lock1 = lockProvider.create(key, { ttl });
+                    await lock1.acquire();
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const lock2 = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: FailedRefreshLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_REFRESH,
+                        handlerFn,
+                    );
+                    await lock2.refresh(newTtl);
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock2.key,
+                                id: lock2.id,
+                                ttl: lock2.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedRefreshLockEvent),
+                    );
+                });
+                test(
+                    "Should dispatch FailedRefreshLockEvent when key is expired and refreshed by different lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock1 = lockProvider.create(key, { ttl });
+                        await lock1.acquire();
+                        await delay(ttl);
+
+                        const newTtl = TimeSpan.fromMinutes(1);
+                        const lock2 = lockProvider.create(key, { ttl });
+                        const handlerFn = vi.fn(
+                            (_event: FailedRefreshLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.FAILED_REFRESH,
+                            handlerFn,
+                        );
+                        await lock2.refresh(newTtl);
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock2.key,
+                                    id: lock2.id,
+                                    ttl: lock2.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies FailedRefreshLockEvent),
+                        );
+                    },
+                );
+                test(
+                    "Should dispatch FailedRefreshLockEvent when key is expired and refreshed by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock = lockProvider.create(key, {
+                            ttl,
+                        });
+                        await lock.acquire();
+                        await delay(ttl);
+
+                        const newTtl = TimeSpan.fromMinutes(1);
+                        const handlerFn = vi.fn(
+                            (_event: FailedRefreshLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.FAILED_REFRESH,
+                            handlerFn,
+                        );
+                        await lock.refresh(newTtl);
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock.key,
+                                    id: lock.id,
+                                    ttl: lock.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies FailedRefreshLockEvent),
+                        );
+                    },
+                );
+                test("Should dispatch FailedRefreshLockEvent when key is unexpireable and refreshed by same lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    const lock = lockProvider.create(key, { ttl });
+                    await lock.acquire();
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const handlerFn = vi.fn(
+                        (_event: FailedRefreshLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_REFRESH,
+                        handlerFn,
+                    );
+                    await lock.refresh(newTtl);
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedRefreshLockEvent),
+                    );
+                });
+                test("Should dispatch RefreshedLockEvent when key is unexpired and refreshed by same lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    const lock = lockProvider.create(key, { ttl });
+                    await lock.acquire();
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const handlerFn = vi.fn((_event: RefreshedLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.REFRESHED,
+                        handlerFn,
+                    );
+                    await lock.refresh(newTtl);
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: newTtl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies RefreshedLockEvent),
+                    );
+                });
+            });
+            describe("method: refreshOrFail", () => {
+                test("Should dispatch FailedRefreshLockEvent when key doesnt exists", async () => {
+                    const key = "a";
+                    const ttl = null;
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const lock = lockProvider.create(key, {
+                        ttl,
+                    });
+                    const handlerFn = vi.fn(
+                        (_event: FailedRefreshLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_REFRESH,
+                        handlerFn,
+                    );
+                    try {
+                        await lock.refreshOrFail(newTtl);
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedRefreshLockEvent),
+                    );
+                });
+                test("Should dispatch FailedRefreshLockEvent when key is unexpireable and refreshed by different lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    const lock1 = lockProvider.create(key, { ttl });
+                    await lock1.acquire();
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const lock2 = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: FailedRefreshLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_REFRESH,
+                        handlerFn,
+                    );
+                    try {
+                        await lock2.refreshOrFail(newTtl);
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock2.key,
+                                id: lock2.id,
+                                ttl: lock2.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedRefreshLockEvent),
+                    );
+                });
+                test("Should dispatch FailedRefreshLockEvent when key is unexpired and refreshed by different lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    const lock1 = lockProvider.create(key, { ttl });
+                    await lock1.acquire();
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const lock2 = lockProvider.create(key, { ttl });
+                    const handlerFn = vi.fn(
+                        (_event: FailedRefreshLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_REFRESH,
+                        handlerFn,
+                    );
+                    try {
+                        await lock2.refreshOrFail(newTtl);
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock2.key,
+                                id: lock2.id,
+                                ttl: lock2.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedRefreshLockEvent),
+                    );
+                });
+                test(
+                    "Should dispatch FailedRefreshLockEvent when key is expired and refreshed by different lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock1 = lockProvider.create(key, { ttl });
+                        await lock1.acquire();
+                        await delay(ttl);
+
+                        const newTtl = TimeSpan.fromMinutes(1);
+                        const lock2 = lockProvider.create(key, { ttl });
+                        const handlerFn = vi.fn(
+                            (_event: FailedRefreshLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.FAILED_REFRESH,
+                            handlerFn,
+                        );
+                        try {
+                            await lock2.refreshOrFail(newTtl);
+                        } catch {
+                            /* EMPTY */
+                        }
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock2.key,
+                                    id: lock2.id,
+                                    ttl: lock2.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies FailedRefreshLockEvent),
+                        );
+                    },
+                );
+                test(
+                    "Should dispatch FailedRefreshLockEvent when key is expired and refreshed by same lockId",
+                    {
+                        retry: 10,
+                    },
+                    async () => {
+                        const key = "a";
+                        const ttl = TimeSpan.fromMilliseconds(50);
+                        const lock = lockProvider.create(key, {
+                            ttl,
+                        });
+                        await lock.acquire();
+                        await delay(ttl);
+
+                        const newTtl = TimeSpan.fromMinutes(1);
+                        const handlerFn = vi.fn(
+                            (_event: FailedRefreshLockEvent) => {},
+                        );
+                        await lockProvider.addListener(
+                            LOCK_EVENTS.FAILED_REFRESH,
+                            handlerFn,
+                        );
+                        try {
+                            await lock.refreshOrFail(newTtl);
+                        } catch {
+                            /* EMPTY */
+                        }
+
+                        expect(handlerFn).toHaveBeenCalledTimes(1);
+                        expect(handlerFn).toHaveBeenCalledWith(
+                            expect.objectContaining({
+                                lock: expect.objectContaining({
+                                    getState: expect.any(
+                                        Function,
+                                    ) as ILockStateMethods["getState"],
+                                    key: lock.key,
+                                    id: lock.id,
+                                    ttl: lock.ttl,
+                                } satisfies ILockStateMethods) as ILockStateMethods,
+                            } satisfies FailedRefreshLockEvent),
+                        );
+                    },
+                );
+                test("Should dispatch FailedRefreshLockEvent when key is unexpireable and refreshed by same lockId", async () => {
+                    const key = "a";
+                    const ttl = null;
+                    const lock = lockProvider.create(key, { ttl });
+                    await lock.acquire();
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const handlerFn = vi.fn(
+                        (_event: FailedRefreshLockEvent) => {},
+                    );
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.FAILED_REFRESH,
+                        handlerFn,
+                    );
+                    try {
+                        await lock.refreshOrFail(newTtl);
+                    } catch {
+                        /* EMPTY */
+                    }
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: lock.ttl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies FailedRefreshLockEvent),
+                    );
+                });
+                test("Should dispatch RefreshedLockEvent when key is unexpired and refreshed by same lockId", async () => {
+                    const key = "a";
+                    const ttl = TimeSpan.fromMilliseconds(50);
+                    const lock = lockProvider.create(key, { ttl });
+                    await lock.acquire();
+
+                    const newTtl = TimeSpan.fromMinutes(1);
+                    const handlerFn = vi.fn((_event: RefreshedLockEvent) => {});
+                    await lockProvider.addListener(
+                        LOCK_EVENTS.REFRESHED,
+                        handlerFn,
+                    );
+                    await lock.refreshOrFail(newTtl);
+
+                    expect(handlerFn).toHaveBeenCalledTimes(1);
+                    expect(handlerFn).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            lock: expect.objectContaining({
+                                getState: expect.any(
+                                    Function,
+                                ) as ILockStateMethods["getState"],
+                                key: lock.key,
+                                id: lock.id,
+                                ttl: newTtl,
+                            } satisfies ILockStateMethods) as ILockStateMethods,
+                        } satisfies RefreshedLockEvent),
+                    );
+                });
+            });
+        });
+        describe.skipIf(excludeSerdeTests)("Serde tests:", () => {
+            test("Should return ILockExpiredState when is derserialized and key doesnt exists", async () => {
+                const key = "a";
+                const ttl = TimeSpan.fromMilliseconds(50);
+
+                const lock = lockProvider.create(key, {
+                    ttl,
+                });
+                const deserializedLock = serde.deserialize<ILock>(
+                    serde.serialize(lock),
+                );
+                const result = await deserializedLock.getState();
+
+                expect(result).toEqual({
+                    type: LOCK_STATE.EXPIRED,
+                } satisfies ILockExpiredState);
+            });
+            test(
+                "Should return ILockExpiredState when is derserialized and key is expired",
+                {
+                    retry: 10,
+                },
+                async () => {
                     const key = "a";
                     const ttl = TimeSpan.fromMilliseconds(50);
 
@@ -4436,129 +4653,129 @@ export function lockProviderTestSuite(
                     expect(result).toEqual({
                         type: LOCK_STATE.EXPIRED,
                     } satisfies ILockExpiredState);
+                },
+            );
+            test("Should return ILockExpiredState when is derserialized and all key is released with forceRelease method", async () => {
+                const key = "a";
+
+                const ttl1 = null;
+                const lock1 = lockProvider.create(key, {
+                    ttl: ttl1,
                 });
-                test("Should return ILockExpiredState when is derserialized and all key is released with forceRelease method", async () => {
-                    const key = "a";
+                await lock1.acquire();
 
-                    const ttl1 = null;
-                    const lock1 = lockProvider.create(key, {
-                        ttl: ttl1,
-                    });
-                    await lock1.acquire();
-
-                    const ttl2 = null;
-                    const lock2 = lockProvider.create(key, {
-                        ttl: ttl2,
-                    });
-                    await lock2.acquire();
-
-                    await lock2.forceRelease();
-
-                    const deserializedLock1 = serde.deserialize<ILock>(
-                        serde.serialize(lock1),
-                    );
-                    const result = await deserializedLock1.getState();
-
-                    expect(result).toEqual({
-                        type: LOCK_STATE.EXPIRED,
-                    } satisfies ILockExpiredState);
+                const ttl2 = null;
+                const lock2 = lockProvider.create(key, {
+                    ttl: ttl2,
                 });
-                test("Should return ILockExpiredState when is derserialized and all key is released with release method", async () => {
-                    const key = "a";
+                await lock2.acquire();
 
-                    const ttl1 = null;
-                    const lock1 = lockProvider.create(key, {
-                        ttl: ttl1,
-                    });
-                    await lock1.acquire();
+                await lock2.forceRelease();
 
-                    const ttl2 = null;
-                    const lock2 = lockProvider.create(key, {
-                        ttl: ttl2,
-                    });
-                    await lock2.acquire();
+                const deserializedLock1 = serde.deserialize<ILock>(
+                    serde.serialize(lock1),
+                );
+                const result = await deserializedLock1.getState();
 
-                    await lock1.release();
-                    await lock2.release();
-
-                    const deserializedLock2 = serde.deserialize<ILock>(
-                        serde.serialize(lock2),
-                    );
-                    const result = await deserializedLock2.getState();
-
-                    expect(result).toEqual({
-                        type: LOCK_STATE.EXPIRED,
-                    } satisfies ILockExpiredState);
-                });
-                test("Should return ILockAcquiredState when is derserialized and key is unexpireable", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await deserializedLock.getState();
-
-                    expect(state).toEqual({
-                        type: LOCK_STATE.ACQUIRED,
-                        remainingTime: ttl,
-                    } satisfies ILockAcquiredState);
-                });
-                test("Should return ILockAcquiredState when is derserialized and key is unexpired", async () => {
-                    const key = "a";
-                    const ttl = TimeSpan.fromMilliseconds(50);
-                    const lock = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock.acquire();
-
-                    const deserializedLock = serde.deserialize<ILock>(
-                        serde.serialize(lock),
-                    );
-                    const state = await deserializedLock.getState();
-
-                    const lockAcquiredState = state as ILockAcquiredState;
-
-                    expect(state.type).toBe(LOCK_STATE.ACQUIRED);
-                    expect(
-                        lockAcquiredState.remainingTime?.toMilliseconds(),
-                    ).toBeLessThan(
-                        (lockAcquiredState.remainingTime?.toMilliseconds() ??
-                            0) + 10,
-                    );
-                    expect(
-                        lockAcquiredState.remainingTime?.toMilliseconds(),
-                    ).toBeGreaterThan(
-                        (lockAcquiredState.remainingTime?.toMilliseconds() ??
-                            0) - 10,
-                    );
-                });
-                test("Should return ILockUnavailableState when is derserialized and key is acquired by different owner", async () => {
-                    const key = "a";
-                    const ttl = null;
-                    const lock1 = lockProvider.create(key, {
-                        ttl,
-                    });
-                    await lock1.acquire();
-
-                    const lock2 = lockProvider.create(key, {
-                        ttl,
-                    });
-                    const deserializedLock2 = serde.deserialize<ILock>(
-                        serde.serialize(lock2),
-                    );
-                    const state = await deserializedLock2.getState();
-
-                    expect(state).toEqual({
-                        type: LOCK_STATE.UNAVAILABLE,
-                        owner: lock1.id,
-                    } satisfies ILockUnavailableState);
-                });
+                expect(result).toEqual({
+                    type: LOCK_STATE.EXPIRED,
+                } satisfies ILockExpiredState);
             });
-        }
+            test("Should return ILockExpiredState when is derserialized and all key is released with release method", async () => {
+                const key = "a";
+
+                const ttl1 = null;
+                const lock1 = lockProvider.create(key, {
+                    ttl: ttl1,
+                });
+                await lock1.acquire();
+
+                const ttl2 = null;
+                const lock2 = lockProvider.create(key, {
+                    ttl: ttl2,
+                });
+                await lock2.acquire();
+
+                await lock1.release();
+                await lock2.release();
+
+                const deserializedLock2 = serde.deserialize<ILock>(
+                    serde.serialize(lock2),
+                );
+                const result = await deserializedLock2.getState();
+
+                expect(result).toEqual({
+                    type: LOCK_STATE.EXPIRED,
+                } satisfies ILockExpiredState);
+            });
+            test("Should return ILockAcquiredState when is derserialized and key is unexpireable", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock = lockProvider.create(key, {
+                    ttl,
+                });
+                await lock.acquire();
+
+                const deserializedLock = serde.deserialize<ILock>(
+                    serde.serialize(lock),
+                );
+                const state = await deserializedLock.getState();
+
+                expect(state).toEqual({
+                    type: LOCK_STATE.ACQUIRED,
+                    remainingTime: ttl,
+                } satisfies ILockAcquiredState);
+            });
+            test("Should return ILockAcquiredState when is derserialized and key is unexpired", async () => {
+                const key = "a";
+                const ttl = TimeSpan.fromMilliseconds(50);
+                const lock = lockProvider.create(key, {
+                    ttl,
+                });
+                await lock.acquire();
+
+                const deserializedLock = serde.deserialize<ILock>(
+                    serde.serialize(lock),
+                );
+                const state = await deserializedLock.getState();
+
+                const lockAcquiredState = state as ILockAcquiredState;
+
+                expect(state.type).toBe(LOCK_STATE.ACQUIRED);
+                expect(
+                    lockAcquiredState.remainingTime?.toMilliseconds(),
+                ).toBeLessThan(
+                    (lockAcquiredState.remainingTime?.toMilliseconds() ?? 0) +
+                        10,
+                );
+                expect(
+                    lockAcquiredState.remainingTime?.toMilliseconds(),
+                ).toBeGreaterThan(
+                    (lockAcquiredState.remainingTime?.toMilliseconds() ?? 0) -
+                        10,
+                );
+            });
+            test("Should return ILockUnavailableState when is derserialized and key is acquired by different owner", async () => {
+                const key = "a";
+                const ttl = null;
+                const lock1 = lockProvider.create(key, {
+                    ttl,
+                });
+                await lock1.acquire();
+
+                const lock2 = lockProvider.create(key, {
+                    ttl,
+                });
+                const deserializedLock2 = serde.deserialize<ILock>(
+                    serde.serialize(lock2),
+                );
+                const state = await deserializedLock2.getState();
+
+                expect(state).toEqual({
+                    type: LOCK_STATE.UNAVAILABLE,
+                    owner: lock1.id,
+                } satisfies ILockUnavailableState);
+            });
+        });
     });
 }

@@ -68,14 +68,6 @@ export type KyselyLockAdapterSettings = {
      * ```
      */
     currentDate?: () => Date;
-
-    /**
-     * @default
-     * ```ts
-     * globalThis.setInterval
-     * ```
-     */
-    setInterval?: typeof setInterval;
 };
 
 async function find(
@@ -165,10 +157,9 @@ export class KyselyLockAdapter
     private readonly kysely: Kysely<KyselyLockTables>;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;
-    private timeoutId: string | number | NodeJS.Timeout | undefined | null =
+    private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
     private readonly currentDate: () => Date;
-    private readonly setInterval: typeof setInterval;
     private readonly isMysql: boolean;
 
     /**
@@ -194,7 +185,6 @@ export class KyselyLockAdapter
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
             currentDate = () => new Date(),
-            setInterval = globalThis.setInterval,
         } = settings;
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
@@ -202,12 +192,15 @@ export class KyselyLockAdapter
         this.isMysql =
             this.kysely.getExecutor().adapter instanceof MysqlAdapter;
         this.currentDate = currentDate;
-        this.setInterval = setInterval;
     }
 
+    /**
+     * Removes all related lock tables and their rows.
+     * Note all lock data will be removed.
+     */
     async deInit(): Promise<void> {
-        if (this.shouldRemoveExpiredKeys && this.timeoutId !== null) {
-            clearInterval(this.timeoutId);
+        if (this.shouldRemoveExpiredKeys && this.intervalId !== null) {
+            clearInterval(this.intervalId);
         }
 
         // Should throw if the index does not exists thats why the try catch is used.
@@ -228,6 +221,10 @@ export class KyselyLockAdapter
         }
     }
 
+    /**
+     * Creates all related tables and indexes.
+     * Note the `init` method needs to be called once before using the adapter.
+     */
     async init(): Promise<void> {
         // Should throw if the table already exists thats why the try catch is used.
         try {
@@ -255,7 +252,7 @@ export class KyselyLockAdapter
         }
 
         if (this.shouldRemoveExpiredKeys) {
-            this.timeoutId = this.setInterval(() => {
+            this.intervalId = setInterval(() => {
                 void this.removeAllExpired();
             }, this.expiredKeysRemovalInterval.toMilliseconds());
         }

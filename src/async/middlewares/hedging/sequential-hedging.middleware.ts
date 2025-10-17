@@ -76,7 +76,7 @@ function resolveFunctions<TParameters extends unknown[], TReturn>(
  * @example
  * ```ts
  * import { sequentialHedging } from "@daiso-tech/core/async";
- * import { AsyncHooks } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *
  * async function fn1(signal?: AbortSignal): Promise<unknown> {
  *   const response = await fetch("ENDPOINT-1", { signal });

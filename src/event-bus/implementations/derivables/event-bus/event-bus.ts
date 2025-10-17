@@ -57,7 +57,7 @@ export type EventBusSettingsBase<
     /**
      * @default
      * ```ts
-     * import { Namespace } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/namespace";
      *
      * new Namespace(["@", "event-bus"])
      * ```

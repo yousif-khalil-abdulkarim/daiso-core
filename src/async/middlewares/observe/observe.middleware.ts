@@ -24,7 +24,8 @@ import type {
  * @example
  * ```ts
  * import { observe, LazyPromise } from "@daiso-tech/core/async";
- * import { AsyncHooks, TimeSpan } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
+ * import { TimeSpan } from "@daiso-tech/core/time-span";
  *
  * await new AsyncHooks(
  *   // Lets pretend this function can throw and takes time to execute.
@@ -58,7 +59,9 @@ import type {
  * @example
  * ```ts
  * import { observe, LazyPromise } from "@daiso-tech/core/async";
- * import { AsyncHooks, TimeSpan, Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
+ * import { AsyncHooks } from "@daiso-tech/core/hooks";
+ * import { TimeSpan } from "@daiso-tech/core/time-span";
+ * import { Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
  *
  * await new AsyncHooks(
  *   // Lets pretend this function can throw and takes time to execute.
