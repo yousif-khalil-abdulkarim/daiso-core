@@ -7,7 +7,7 @@ import {
     MultipleItemsFoundCollectionError,
 } from "@/collection/contracts/_module-exports.js";
 import { AsyncIterableCollection } from "@/collection/implementations/async-iterable-collection/_module.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 
 describe("class: AsyncIterableCollection", () => {
     describe("method: filter", () => {
@@ -2340,7 +2340,7 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe("a");
             });
-            test("LazyPromise", async () => {
+            test("Task", async () => {
                 const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                     item = await collection.firstOr("a", (item) => item === 6);
                 expect(item).toBe("a");
@@ -2421,7 +2421,7 @@ describe("class: AsyncIterableCollection", () => {
                 );
             expect(item).toEqual(persons[0]);
         });
-        test("Should work with LazyPromise function", async () => {
+        test("Should work with Task function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2691,11 +2691,11 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe("a");
             });
-            test("LazyPromise", async () => {
+            test("Task", async () => {
                 const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                     item = await collection.lastOr(
                         // eslint-disable-next-line @typescript-eslint/require-await
-                        new LazyPromise(async () => "a"),
+                        new Task(async () => "a"),
                         (item) => item === 6,
                     );
                 expect(item).toBe("a");
@@ -2922,11 +2922,11 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe(-1);
             });
-            test("LazyPromise", async () => {
+            test("Task", async () => {
                 const collection = new AsyncIterableCollection(["a", "b", "c"]),
                     item = await collection.beforeOr(
                         // eslint-disable-next-line @typescript-eslint/require-await
-                        new LazyPromise(async () => -1),
+                        new Task(async () => -1),
                         (item) => item === "a",
                     );
                 expect(item).toBe(-1);
@@ -2958,11 +2958,11 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe(-1);
             });
-            test("LazyPromise", async () => {
+            test("Task", async () => {
                 const collection = new AsyncIterableCollection(["a", "b", "c"]),
                     item = await collection.beforeOr(
                         // eslint-disable-next-line @typescript-eslint/require-await
-                        new LazyPromise(async () => -1),
+                        new Task(async () => -1),
                         (item) => item === "d",
                     );
                 expect(item).toBe(-1);
@@ -3126,11 +3126,11 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe(-1);
             });
-            test("LazyPromise", async () => {
+            test("Task", async () => {
                 const collection = new AsyncIterableCollection(["a", "b", "c"]),
                     item = await collection.afterOr(
                         // eslint-disable-next-line @typescript-eslint/require-await
-                        new LazyPromise(async () => -1),
+                        new Task(async () => -1),
                         (item) => item === "c",
                     );
                 expect(item).toBe(-1);
@@ -3159,11 +3159,11 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe(-1);
             });
-            test("LazyPromise", async () => {
+            test("Task", async () => {
                 const collection = new AsyncIterableCollection(["a", "b", "c"]),
                     item = await collection.afterOr(
                         // eslint-disable-next-line @typescript-eslint/require-await
-                        new LazyPromise(async () => -1),
+                        new Task(async () => -1),
                         (item) => item === "d",
                     );
                 expect(item).toBe(-1);

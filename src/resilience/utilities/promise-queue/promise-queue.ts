@@ -7,7 +7,7 @@ import {
     type Promisable,
     type Result,
 } from "@/utilities/_module-exports.js";
-import { LazyPromise } from "@/resilience/utilities/lazy-promise/_module.js";
+import { Task } from "@/task/_module-exports.js";
 import { v4 } from "uuid";
 import { CapacityFullAsyncError } from "@/resilience/async.errors.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
@@ -73,7 +73,7 @@ export class PromiseQueue {
             await Promise.all(
                 this.getItems().map((item) => this.process(item)),
             );
-            await LazyPromise.delay(this.settings.interval);
+            await Task.delay(this.settings.interval);
         }
     }
 

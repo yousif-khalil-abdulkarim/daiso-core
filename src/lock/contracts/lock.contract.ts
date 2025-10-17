@@ -8,7 +8,7 @@ import type {
     Invokable,
     Result,
 } from "@/utilities/_module-exports.js";
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     FailedAcquireLockError,
@@ -36,7 +36,7 @@ export type LockAquireBlockingSettings = {
  * @group Contracts
  */
 export type ILockStateMethods = {
-    getState(): LazyPromise<ILockState>;
+    getState(): Task<ILockState>;
 
     /**
      * The `key` of the `ILock` instance.
@@ -61,41 +61,41 @@ export type ILockStateMethods = {
  */
 export type ILockBase = {
     /**
-     * The `run` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquire` and `release` method.
+     * The `run` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquire` and `release` method.
      */
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, FailedAcquireLockError>>;
+    ): Task<Result<TValue, FailedAcquireLockError>>;
 
     /**
-     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireOrFail` and `release` method.
+     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireOrFail` and `release` method.
      * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue>;
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
 
     /**
-     * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlocking` and `release` method.
+     * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireBlocking` and `release` method.
      */
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, FailedAcquireLockError>>;
+    ): Task<Result<TValue, FailedAcquireLockError>>;
 
     /**
-     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
-    ): LazyPromise<TValue>;
+    ): Task<TValue>;
 
     /**
      * The `acquire` method acquires a lock only if the key is not already acquired by different owner.
      *
      * @returns Returns true if the lock is not already acquired otherwise false is returned.
      */
-    acquire(): LazyPromise<boolean>;
+    acquire(): Task<boolean>;
 
     /**
      * The `acquireOrFail` method acquires a lock only if the key is not already acquired by different owner.
@@ -103,7 +103,7 @@ export type ILockBase = {
      *
      * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
-    acquireOrFail(): LazyPromise<void>;
+    acquireOrFail(): Task<void>;
 
     /**
      * The `acquireBlocking` method acquires a lock only if the key is not already acquired by different owner.
@@ -113,7 +113,7 @@ export type ILockBase = {
      */
     acquireBlocking(
         settings?: LockAquireBlockingSettings,
-    ): LazyPromise<boolean>;
+    ): Task<boolean>;
 
     /**
      * The `acquireBlockingOrFail` method acquires a lock only if the key is not already acquired by different owner.
@@ -124,14 +124,14 @@ export type ILockBase = {
      */
     acquireBlockingOrFail(
         settings?: LockAquireBlockingSettings,
-    ): LazyPromise<void>;
+    ): Task<void>;
 
     /**
      * The `release` method releases a lock if owned by the same owner.
      *
      * @returns Returns true if the lock is released otherwise false is returned.
      */
-    release(): LazyPromise<boolean>;
+    release(): Task<boolean>;
 
     /**
      * The `releaseOrFail` method releases a lock if owned by the same owner.
@@ -139,21 +139,21 @@ export type ILockBase = {
      *
      * @throws {FailedReleaseLockError} {@link FailedReleaseLockError}
      */
-    releaseOrFail(): LazyPromise<void>;
+    releaseOrFail(): Task<void>;
 
     /**
      * The `forceRelease` method releases a lock regardless of the owner.
      *
      * @returns Returns true if the lock exists or false if the lock doesnt exists.
      */
-    forceRelease(): LazyPromise<boolean>;
+    forceRelease(): Task<boolean>;
 
     /**
      * The `refresh` method updates the `ttl` of the lock if expireable and owned by the same owner.
      *
      * @returns Returns true if the lock is refreshed otherwise false is returned.
      */
-    refresh(ttl?: ITimeSpan): LazyPromise<boolean>;
+    refresh(ttl?: ITimeSpan): Task<boolean>;
 
     /**
      * The `refreshOrFail` method updates the `ttl` of the lock if expireable and owned by the same owner.
@@ -162,7 +162,7 @@ export type ILockBase = {
      *
      * @throws {FailedRefreshLockError} {@link FailedRefreshLockError}
      */
-    refreshOrFail(ttl?: ITimeSpan): LazyPromise<void>;
+    refreshOrFail(ttl?: ITimeSpan): Task<void>;
 };
 
 /**

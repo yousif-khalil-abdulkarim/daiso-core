@@ -1,4 +1,4 @@
-import { LazyPromise } from "@/resilience/utilities/_module.js";
+import { Task } from "@/task/_module-exports.js";
 import {
     resultFailure,
     type Result,
@@ -26,7 +26,7 @@ function createDelayedFn<TParameters extends unknown[], TReturn>(
                 throw abortSignal.reason;
             }
             const end = performance.now();
-            await LazyPromise.delay(TimeSpan.fromMilliseconds(1));
+            await Task.delay(TimeSpan.fromMilliseconds(1));
 
             const time_ = end - start;
 
@@ -187,7 +187,7 @@ describe("function: sequentialHedging", () => {
                     },
                 },
             ).invoke("URL");
-            await LazyPromise.delay(TimeSpan.fromMilliseconds(60));
+            await Task.delay(TimeSpan.fromMilliseconds(60));
 
             expect(i).toBe(1);
         });
@@ -230,7 +230,7 @@ describe("function: sequentialHedging", () => {
                     },
                 },
             ).invoke("URL");
-            await LazyPromise.delay(TimeSpan.fromMilliseconds(60));
+            await Task.delay(TimeSpan.fromMilliseconds(60));
 
             expect(i).toBe(1);
         });
@@ -528,7 +528,7 @@ describe("function: sequentialHedging", () => {
                     },
                 },
             ).invoke("URL");
-            await LazyPromise.delay(TimeSpan.fromMilliseconds(60));
+            await Task.delay(TimeSpan.fromMilliseconds(60));
 
             expect(i).toBe(1);
         });
@@ -571,7 +571,7 @@ describe("function: sequentialHedging", () => {
                     },
                 },
             ).invoke("URL");
-            await LazyPromise.delay(TimeSpan.fromMilliseconds(60));
+            await Task.delay(TimeSpan.fromMilliseconds(60));
 
             expect(i).toBe(1);
         });

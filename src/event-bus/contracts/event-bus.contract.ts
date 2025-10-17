@@ -3,7 +3,7 @@
  */
 
 import type { IInvokableObject } from "@/utilities/_module-exports.js";
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import type {
     BaseEvent,
     EventListenerFn,
@@ -21,7 +21,7 @@ export type BaseEventMap = Record<string, BaseEvent>;
  * IMPORT_PATH: `"@daiso-tech/core/event-bus/contracts"`
  * @group Contracts
  */
-export type Unsubscribe = () => LazyPromise<void>;
+export type Unsubscribe = () => Task<void>;
 
 /**
  *
@@ -53,7 +53,7 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
     addListener<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<void>;
+    ): Task<void>;
 
     /**
      * The `removeListener` method is used for stop listening to a {@link BaseEvent | `BaseEvent`}.
@@ -62,7 +62,7 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
     removeListener<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<void>;
+    ): Task<void>;
 
     /**
      * The `listenOnce` method is used for listening to a {@link BaseEvent | `BaseEvent`} once.
@@ -70,14 +70,14 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
     listenOnce<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<void>;
+    ): Task<void>;
 
     /**
-     * The `asPromise` method returns {@link LazyPromise| `LazyPromise`} objecet that resolves once the {@link BaseEvent | `BaseEvent`} is dispatched.
+     * The `asPromise` method returns {@link Task| `Task`} objecet that resolves once the {@link BaseEvent | `BaseEvent`} is dispatched.
      */
     asPromise<TEventName extends keyof TEventMap>(
         eventName: TEventName,
-    ): LazyPromise<TEventMap[TEventName]>;
+    ): Task<TEventMap[TEventName]>;
 
     /**
      * The `subscribeOnce` method is used for listening to a {@link BaseEvent | `BaseEvent`} once and it returns a cleanup function that removes listener when called.
@@ -86,7 +86,7 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
     subscribeOnce<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe>;
+    ): Task<Unsubscribe>;
 
     /**
      * The `subscribe` method is used for listening to a {@link BaseEvent | `BaseEvent`} and it returns a cleanup function that removes listener when called.
@@ -95,7 +95,7 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
     subscribe<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe>;
+    ): Task<Unsubscribe>;
 };
 
 /**
@@ -111,7 +111,7 @@ export type IEventDispatcher<TEventMap extends BaseEventMap = BaseEventMap> = {
     dispatch<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         event: TEventMap[TEventName],
-    ): LazyPromise<void>;
+    ): Task<void>;
 };
 
 /**

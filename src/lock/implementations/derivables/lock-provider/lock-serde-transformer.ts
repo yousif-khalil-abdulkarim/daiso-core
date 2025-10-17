@@ -14,7 +14,7 @@ import type {
     LockEventMap,
 } from "@/lock/contracts/_module-exports.js";
 import { getConstructorName } from "@/utilities/_module-exports.js";
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { Namespace } from "@/namespace/_module-exports.js";
@@ -26,9 +26,9 @@ export type LockSerdeTransformerSettings = {
     adapter: ILockAdapter;
     originalAdapter: LockAdapterVariants;
     namespace: Namespace;
-    createLazyPromise: <TValue = void>(
+    createTask: <TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    ) => Task<TValue>;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
@@ -45,9 +45,9 @@ export class LockSerdeTransformer
     private readonly adapter: ILockAdapter;
     private readonly originalAdapter: LockAdapterVariants;
     private readonly namespace: Namespace;
-    private readonly createLazyPromise: <TValue = void>(
+    private readonly createTask: <TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    ) => Task<TValue>;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
@@ -59,7 +59,7 @@ export class LockSerdeTransformer
             adapter,
             originalAdapter,
             namespace,
-            createLazyPromise,
+            createTask,
             defaultBlockingInterval,
             defaultBlockingTime,
             defaultRefreshTime,
@@ -70,7 +70,7 @@ export class LockSerdeTransformer
         this.adapter = adapter;
         this.originalAdapter = originalAdapter;
         this.namespace = namespace;
-        this.createLazyPromise = createLazyPromise;
+        this.createTask = createTask;
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
@@ -117,7 +117,7 @@ export class LockSerdeTransformer
         const keyObj = this.namespace.create(key);
 
         return new Lock({
-            createLazyPromise: this.createLazyPromise,
+            createTask: this.createTask,
             namespace: this.namespace,
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,

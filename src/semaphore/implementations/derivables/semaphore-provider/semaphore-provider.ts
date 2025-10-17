@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import type {
     EventListener,
     IEventBus,
@@ -57,15 +57,15 @@ export type SemaphoreProviderSettingsBase = {
     namespace?: Namespace;
 
     /**
-     * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `SemaphoreProvider` class.
+     * You can pass a {@link Factory | `Factory`} of {@link Task| `Task`} to configure default settings for all {@link Task| `Task`} instances used in the `SemaphoreProvider` class.
      * @default
      * ```ts
-     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { Task } from "@daiso-tech/core/async";
      *
-     * (invokable) => new LazyPromise(invokable)
+     * (invokable) => new Task(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
+    lazyPromiseFactory?: Factory<AsyncLazy<any>, Task<any>>;
 
     serde: OneOrMore<ISerderRegister>;
 
@@ -161,7 +161,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     private readonly serde: OneOrMore<ISerderRegister>;
     private readonly lazyPromiseFactory: FactoryFn<
         AsyncLazy<any>,
-        LazyPromise<any>
+        Task<any>
     >;
     private readonly serdeTransformerName: string;
     private readonly createSlotId: Invokable<[], string>;
@@ -180,7 +180,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
-            lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
+            lazyPromiseFactory = (invokable) => new Task(invokable),
         } = settings;
 
         this.createSlotId = createSlotId;
@@ -207,7 +207,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         const transformer = new SemaphoreSerdeTransformer({
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,
-            createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
+            createTask: (asyncFn) => this.createTask(asyncFn),
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
@@ -227,7 +227,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     addListener<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): LazyPromise<void> {
+    ): Task<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
@@ -238,7 +238,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     removeListener<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): LazyPromise<void> {
+    ): Task<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
@@ -249,7 +249,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     listenOnce<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): LazyPromise<void> {
+    ): Task<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
@@ -259,7 +259,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
      */
     asPromise<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
-    ): LazyPromise<SemaphoreEventMap[TEventName]> {
+    ): Task<SemaphoreEventMap[TEventName]> {
         return this.eventBus.asPromise(eventName);
     }
 
@@ -270,7 +270,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     subscribeOnce<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe> {
+    ): Task<Unsubscribe> {
         return this.eventBus.subscribeOnce(eventName, listener);
     }
 
@@ -281,13 +281,13 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     subscribe<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe> {
+    ): Task<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 
-    private createLazyPromise<TValue = void>(
+    private createTask<TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ): LazyPromise<TValue> {
+    ): Task<TValue> {
         return this.lazyPromiseFactory(asyncFn);
     }
 
@@ -304,7 +304,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
             limit,
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,
-            createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
+            createTask: (asyncFn) => this.createTask(asyncFn),
             eventDispatcher: this.eventBus,
             key: this.namespace.create(key),
             ttl: ttl === null ? null : TimeSpan.fromTimeSpan(ttl),

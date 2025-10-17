@@ -23,7 +23,7 @@ import type {
  *
  * @example
  * ```ts
- * import { observe, LazyPromise } from "@daiso-tech/core/async";
+ * import { observe, Task } from "@daiso-tech/core/async";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  * import { TimeSpan } from "@daiso-tech/core/time-span";
  *
@@ -34,7 +34,7 @@ import type {
  *      if (shouldThrow1 > 50) {
  *        throw new Error("Unexpected error occured");
  *      }
- *      await LazyPromise.delay(TimeSpan.fromMilliseconds(Math.random() * 1000));
+ *      await Task.delay(TimeSpan.fromMilliseconds(Math.random() * 1000));
  *      const shouldThrow2 = Math.round(Math.random() * 100);
  *      if (shouldThrow2 > 50) {
  *        throw new Error("Unexpected error occured");
@@ -58,7 +58,7 @@ import type {
  * The middleware works also when the function returns a {@link Result | `Result`} type.
  * @example
  * ```ts
- * import { observe, LazyPromise } from "@daiso-tech/core/async";
+ * import { observe, Task } from "@daiso-tech/core/async";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  * import { TimeSpan } from "@daiso-tech/core/time-span";
  * import { Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
@@ -70,7 +70,7 @@ import type {
  *      if (shouldThrow1 > 50) {
  *        return resultFailure(new Error("Unexpected error occured"));
  *      }
- *      await LazyPromise.delay(TimeSpan.fromMilliseconds(Math.random() * 1000));
+ *      await Task.delay(TimeSpan.fromMilliseconds(Math.random() * 1000));
  *      const shouldThrow2 = Math.round(Math.random() * 100);
  *      if (shouldThrow2 > 50) {
  *        return resultFailure(new Error("Unexpected error occured"));

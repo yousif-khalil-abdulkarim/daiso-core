@@ -10,7 +10,7 @@ import {
 } from "vitest";
 import { type ISemaphoreAdapter } from "@/semaphore/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
@@ -73,7 +73,7 @@ export function semaphoreAdapterTestSuite(
     let adapter: ISemaphoreAdapter;
 
     async function delay(time: TimeSpan): Promise<void> {
-        await LazyPromise.delay(time.addMilliseconds(10));
+        await Task.delay(time.addMilliseconds(10));
     }
 
     describe("Reusable tests:", () => {

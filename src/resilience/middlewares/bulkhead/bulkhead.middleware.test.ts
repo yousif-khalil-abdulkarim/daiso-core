@@ -2,7 +2,7 @@ import {
     bulkhead,
     type OnProcessingData,
 } from "@/resilience/middlewares/bulkhead/bulkhead.middleware.js";
-import { LazyPromise } from "@/resilience/utilities/lazy-promise/_module.js";
+import { Task } from "@/task/_module-exports.js";
 import { CapacityFullAsyncError } from "@/resilience/async.errors.js";
 import { describe, expect, test } from "vitest";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
@@ -12,7 +12,7 @@ describe("function: bulkhead", () => {
     test("Should throw CapacityFullAsyncError when capacity execded", async () => {
         const fetchData = new AsyncHooks(
             async (_url: string): Promise<string> => {
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                await Task.delay(TimeSpan.fromMilliseconds(10));
                 return "data";
             },
             [
@@ -36,7 +36,7 @@ describe("function: bulkhead", () => {
     test("Should return value when capacity is not execded", async () => {
         const fetchData = new AsyncHooks(
             async (_url: string): Promise<string> => {
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                await Task.delay(TimeSpan.fromMilliseconds(10));
                 return "data";
             },
             [
@@ -61,7 +61,7 @@ describe("function: bulkhead", () => {
         let data = null as OnProcessingData | null;
         await new AsyncHooks(
             async (_url: string): Promise<string> => {
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                await Task.delay(TimeSpan.fromMilliseconds(10));
                 return "data";
             },
             [

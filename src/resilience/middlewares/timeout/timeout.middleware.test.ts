@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { timeout } from "@/resilience/middlewares/timeout/timeout.middleware.js";
 import { type OnTimeoutData } from "@/resilience/middlewares/timeout/timeout.type.js";
 import { AsyncError, TimeoutAsyncError } from "@/resilience/async.errors.js";
-import { LazyPromise } from "@/resilience/utilities/lazy-promise/_module.js";
+import { Task } from "@/task/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { AsyncHooks } from "@/hooks/_module-exports.js";
 
@@ -22,7 +22,7 @@ function createDelayedFn<TParameters extends unknown[], TReturn>(
                 throw abortSignal.reason;
             }
             const end = performance.now();
-            await LazyPromise.delay(TimeSpan.fromMilliseconds(1));
+            await Task.delay(TimeSpan.fromMilliseconds(1));
 
             const time_ = end - start;
 

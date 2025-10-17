@@ -11,7 +11,7 @@ import {
 } from "vitest";
 import { type IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
@@ -51,7 +51,7 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
         });
 
         async function delay(time: TimeSpan): Promise<void> {
-            await LazyPromise.delay(time);
+            await Task.delay(time);
         }
 
         describe("method: addListener, removeListener, dispatch", () => {

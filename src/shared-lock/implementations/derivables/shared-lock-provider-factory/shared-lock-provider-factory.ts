@@ -20,7 +20,7 @@ import {
     SharedLockProvider,
     type SharedLockProviderSettingsBase,
 } from "@/shared-lock/implementations/derivables/shared-lock-provider/_module.js";
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
@@ -136,8 +136,8 @@ export class SharedLockProviderFactory<TAdapters extends string>
         });
     }
 
-    setLazyPromiseFactory(
-        factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
+    setTaskFactory(
+        factory: Factory<AsyncLazy<any>, Task<any>>,
     ): SharedLockProviderFactory<TAdapters> {
         return new SharedLockProviderFactory({
             ...this.settings,

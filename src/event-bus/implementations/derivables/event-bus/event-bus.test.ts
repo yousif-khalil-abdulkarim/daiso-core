@@ -6,7 +6,7 @@ import { EventEmitter } from "node:events";
 import { ValidationError } from "@/utilities/_module-exports.js";
 import { z } from "zod";
 import type { EventListenerFn } from "@/event-bus/contracts/event-bus-adapter.contract.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
 
@@ -70,7 +70,7 @@ describe("class: EventBus", () => {
                     namespace.create("add").toString(),
                     invalidInput,
                 );
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                await Task.delay(TimeSpan.fromMilliseconds(10));
 
                 expect(error).toBeInstanceOf(ValidationError);
                 eventBus.removeListener("add", listener);
@@ -94,7 +94,7 @@ describe("class: EventBus", () => {
                     namespace.create("add").toString(),
                     invalidInput,
                 );
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                await Task.delay(TimeSpan.fromMilliseconds(10));
 
                 expect(error).toBeInstanceOf(ValidationError);
                 eventBus.removeListener("add", listener);
@@ -111,12 +111,12 @@ describe("class: EventBus", () => {
                     },
                 });
 
-                eventBus.asPromise("add").defer();
+                eventBus.asPromise("add").detach();
                 await adapter.dispatch(
                     namespace.create("add").toString(),
                     invalidInput,
                 );
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                await Task.delay(TimeSpan.fromMilliseconds(10));
 
                 expect(error).toBeInstanceOf(ValidationError);
             });
@@ -142,7 +142,7 @@ describe("class: EventBus", () => {
                     namespace.create("add").toString(),
                     invalidInput,
                 );
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                await Task.delay(TimeSpan.fromMilliseconds(10));
 
                 expect(error).toBeInstanceOf(ValidationError);
                 await unsubscribe();
@@ -166,7 +166,7 @@ describe("class: EventBus", () => {
                     namespace.create("add").toString(),
                     invalidInput,
                 );
-                await LazyPromise.delay(TimeSpan.fromMilliseconds(10));
+                await Task.delay(TimeSpan.fromMilliseconds(10));
 
                 expect(error).toBeInstanceOf(ValidationError);
                 await unsubscribe();

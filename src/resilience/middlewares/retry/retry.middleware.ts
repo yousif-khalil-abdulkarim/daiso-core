@@ -16,7 +16,7 @@ import {
     callErrorPolicyOnThrow,
     callErrorPolicyOnValue,
 } from "@/utilities/_module-exports.js";
-import { LazyPromise } from "@/resilience/utilities/lazy-promise/_module.js";
+import { Task } from "@/task/_module-exports.js";
 import type {
     AsyncMiddlewareFn,
     HookContext,
@@ -134,7 +134,7 @@ export function retry<
                     args,
                     context,
                 });
-                await LazyPromise.delay(waitTime, signal);
+                await Task.delay(waitTime, signal);
 
                 // Handle retrying if an error is thrown
             } catch (error: unknown) {
@@ -157,7 +157,7 @@ export function retry<
                     args,
                     context,
                 });
-                await LazyPromise.delay(waitTime, signal);
+                await Task.delay(waitTime, signal);
             }
         }
 
