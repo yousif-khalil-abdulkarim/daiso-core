@@ -7,10 +7,10 @@
  * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
-export class AsyncError extends Error {
+export class ResilienceError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
-        this.name = AsyncError.name;
+        this.name = ResilienceError.name;
     }
 }
 
@@ -19,10 +19,10 @@ export class AsyncError extends Error {
  * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
-export class TimeoutAsyncError extends AsyncError {
+export class TimeoutResilienceError extends ResilienceError {
     constructor(message: string, cause?: unknown) {
         super(message, cause);
-        this.name = TimeoutAsyncError.name;
+        this.name = TimeoutResilienceError.name;
     }
 }
 
@@ -31,13 +31,13 @@ export class TimeoutAsyncError extends AsyncError {
  * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
-export class HedgingAsyncError extends AsyncError {
+export class HedgingResilienceError extends ResilienceError {
     constructor(
         message: string,
         public readonly errors: unknown[],
     ) {
         super(message, errors);
-        this.name = HedgingAsyncError.name;
+        this.name = HedgingResilienceError.name;
     }
 }
 
@@ -46,10 +46,10 @@ export class HedgingAsyncError extends AsyncError {
  * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
-export class CapacityFullAsyncError extends AsyncError {
+export class CapacityFullResilienceError extends ResilienceError {
     constructor(message: string, cause?: unknown) {
         super(message, cause);
-        this.name = CapacityFullAsyncError.name;
+        this.name = CapacityFullResilienceError.name;
     }
 }
 /**
@@ -58,8 +58,8 @@ export class CapacityFullAsyncError extends AsyncError {
  * @group Errors
  */
 export const ASYNC_ERRORS = {
-    Base: AsyncError,
-    Timeout: TimeoutAsyncError,
-    Hedging: HedgingAsyncError,
-    CapacityFull: CapacityFullAsyncError,
+    Base: ResilienceError,
+    Timeout: TimeoutResilienceError,
+    Hedging: HedgingResilienceError,
+    CapacityFull: CapacityFullResilienceError,
 } as const;

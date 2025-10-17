@@ -1,7 +1,7 @@
 /**
  * @module Async
  */
-import { TimeoutAsyncError } from "@/resilience/async.errors.js";
+import { TimeoutResilienceError } from "@/resilience/async.errors.js";
 import { abortAndFail } from "@/resilience/utilities/abort-and-fail/_module.js";
 import {
     TO_MILLISECONDS,
@@ -9,7 +9,7 @@ import {
 } from "@/time-span/contracts/_module-exports.js";
 
 /**
- * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}
+ * @throws {TimeoutResilienceError} {@link TimeoutResilienceError}
  *
  * @internal
  */
@@ -20,7 +20,7 @@ export async function timeoutAndFail<TValue>(
     signal: AbortSignal,
 ): Promise<TValue> {
     const timeoutId = setTimeout(() => {
-        abort(new TimeoutAsyncError("The promise exceded time"));
+        abort(new TimeoutResilienceError("The promise exceded time"));
     }, time[TO_MILLISECONDS]());
     try {
         return await abortAndFail(promise, signal);

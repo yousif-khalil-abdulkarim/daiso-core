@@ -3,13 +3,13 @@ import {
     type OnProcessingData,
 } from "@/resilience/middlewares/bulkhead/bulkhead.middleware.js";
 import { Task } from "@/task/_module-exports.js";
-import { CapacityFullAsyncError } from "@/resilience/async.errors.js";
+import { CapacityFullResilienceError } from "@/resilience/async.errors.js";
 import { describe, expect, test } from "vitest";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { AsyncHooks } from "@/hooks/_module-exports.js";
 
 describe("function: bulkhead", () => {
-    test("Should throw CapacityFullAsyncError when capacity execded", async () => {
+    test("Should throw CapacityFullResilienceError when capacity execded", async () => {
         const fetchData = new AsyncHooks(
             async (_url: string): Promise<string> => {
                 await Task.delay(TimeSpan.fromMilliseconds(10));
@@ -31,7 +31,9 @@ describe("function: bulkhead", () => {
         } catch {
             /* Empty */
         }
-        await expect(promise3).rejects.toBeInstanceOf(CapacityFullAsyncError);
+        await expect(promise3).rejects.toBeInstanceOf(
+            CapacityFullResilienceError,
+        );
     });
     test("Should return value when capacity is not execded", async () => {
         const fetchData = new AsyncHooks(

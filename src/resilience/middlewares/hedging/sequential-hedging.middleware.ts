@@ -71,7 +71,7 @@ function resolveFunctions<TParameters extends unknown[], TReturn>(
  *
  * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
- * @throws {HedgingAsyncError} {@link HedgingAsyncError}
+ * @throws {HedgingResilienceError} {@link HedgingResilienceError}
  *
  * @example
  * ```ts

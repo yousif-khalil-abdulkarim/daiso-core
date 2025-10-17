@@ -4,7 +4,7 @@
 
 import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { CapacityFullAsyncError } from "@/resilience/async.errors.js";
+import type { CapacityFullResilienceError } from "@/resilience/async.errors.js";
 import { PromiseQueue } from "@/resilience/utilities/promise-queue/_module.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
@@ -89,7 +89,7 @@ export type BulkheadSettings<
  *
  * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
- * @throws {CapacityFullAsyncError} {@link CapacityFullAsyncError}
+ * @throws {CapacityFullResilienceError} {@link CapacityFullResilienceError}
  * ```ts
  * import { bulkhead } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";

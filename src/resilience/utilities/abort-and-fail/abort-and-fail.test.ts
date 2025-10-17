@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
 import { abortAndFail } from "@/resilience/utilities/abort-and-fail/abort-and-fail.js";
-import { AsyncError } from "@/resilience/async.errors.js";
+import { ResilienceError } from "@/resilience/async.errors.js";
 
 describe("function: abortAndFail", () => {
-    test("should throw AsyncError when aborted", async () => {
+    test("should throw ResilienceError when aborted", async () => {
         const inputPromise = new Promise((resolve) => {
             setTimeout(() => {
                 resolve("a");
@@ -11,13 +11,13 @@ describe("function: abortAndFail", () => {
         });
         const abortController = new AbortController();
         setTimeout(() => {
-            abortController.abort(new AsyncError("Promise was aborted"));
+            abortController.abort(new ResilienceError("Promise was aborted"));
         }, 25);
         const outputPromise = abortAndFail(
             inputPromise,
             abortController.signal,
         );
-        await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
+        await expect(outputPromise).rejects.toBeInstanceOf(ResilienceError);
     });
     test("should return value when not aborted", async () => {
         const inputPromise = new Promise((resolve) => {

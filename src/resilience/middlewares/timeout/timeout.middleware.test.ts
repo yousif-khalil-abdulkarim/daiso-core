@@ -1,7 +1,10 @@
 import { describe, expect, test } from "vitest";
 import { timeout } from "@/resilience/middlewares/timeout/timeout.middleware.js";
 import { type OnTimeoutData } from "@/resilience/middlewares/timeout/timeout.type.js";
-import { AsyncError, TimeoutAsyncError } from "@/resilience/async.errors.js";
+import {
+    ResilienceError,
+    TimeoutResilienceError,
+} from "@/resilience/async.errors.js";
 import { Task } from "@/task/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { AsyncHooks } from "@/hooks/_module-exports.js";
@@ -35,7 +38,7 @@ function createDelayedFn<TParameters extends unknown[], TReturn>(
 }
 
 describe("function: timeout", () => {
-    test("should throw AsyncError when timed out", async () => {
+    test("should throw ResilienceError when timed out", async () => {
         const outputPromise = new AsyncHooks(
             createDelayedFn<[], string>(
                 TimeSpan.fromMilliseconds(50),
@@ -44,9 +47,9 @@ describe("function: timeout", () => {
             timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
-        await expect(outputPromise).rejects.toBeInstanceOf(AsyncError);
+        await expect(outputPromise).rejects.toBeInstanceOf(ResilienceError);
     });
-    test("should throw TimeoutAsyncError when timed out", async () => {
+    test("should throw TimeoutResilienceError when timed out", async () => {
         const outputPromise = new AsyncHooks(
             createDelayedFn<[], string>(
                 TimeSpan.fromMilliseconds(100),
@@ -55,7 +58,9 @@ describe("function: timeout", () => {
             timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
         ).invoke();
 
-        await expect(outputPromise).rejects.toBeInstanceOf(TimeoutAsyncError);
+        await expect(outputPromise).rejects.toBeInstanceOf(
+            TimeoutResilienceError,
+        );
     });
     test("should return value when not timed out", async () => {
         const outputPromise = new AsyncHooks(

@@ -9,7 +9,7 @@ import {
 } from "@/utilities/_module-exports.js";
 import { Task } from "@/task/_module-exports.js";
 import { v4 } from "uuid";
-import { CapacityFullAsyncError } from "@/resilience/async.errors.js";
+import { CapacityFullResilienceError } from "@/resilience/async.errors.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
@@ -132,7 +132,7 @@ export class PromiseQueue {
         } else if (this.queue.size() <= this.settings.maxCapacity) {
             this.queue.enqueue({ id, func, signal });
         } else {
-            throw new CapacityFullAsyncError(
+            throw new CapacityFullResilienceError(
                 `Max capacity reached, ${String(this.settings.maxCapacity)} items allowed.`,
             );
         }
@@ -161,7 +161,7 @@ export class PromiseQueue {
     }
 
     /**
-     * @throws {CapacityFullAsyncError} {@link CapacityFullAsyncError}
+     * @throws {CapacityFullResilienceError} {@link CapacityFullResilienceError}
      */
     add<TValue>(
         func: InvokableFn<[signal: AbortSignal], Promisable<TValue>>,
