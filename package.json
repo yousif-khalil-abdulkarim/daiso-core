@@ -80,9 +80,9 @@
         "./dist"
     ],
     "exports": {
-        "./async": {
-            "types": "./dist/async/_module-exports.d.ts",
-            "import": "./dist/async/_module-exports.js"
+        "./backoff-policies": {
+            "types": "./dist/backoff-policies/_module-exports.d.ts",
+            "import": "./dist/backoff-policies/_module-exports.js"
         },
         "./cache": {
             "types": "./dist/cache/implementations/derivables/_module-exports.d.ts",
@@ -147,6 +147,10 @@
         "./namespace": {
             "types": "./dist/namespace/_module-exports.d.ts",
             "import": "./dist/namespace/_module-exports.js"
+        },
+        "./resilience": {
+            "types": "./dist/resilience/_module-exports.d.ts",
+            "import": "./dist/resilience/_module-exports.js"
         },
         "./semaphore": {
             "types": "./dist/semaphore/implementations/derivables/_module-exports.d.ts",

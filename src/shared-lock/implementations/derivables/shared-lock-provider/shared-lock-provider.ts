@@ -21,7 +21,7 @@ import type {
     ISharedLockProvider,
     SharedLockAdapterVariants,
 } from "@/shared-lock/contracts/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import type {
     EventListener,
     IEventBus,
@@ -58,15 +58,15 @@ export type SharedLockProviderSettingsBase = {
     namespace?: Namespace;
 
     /**
-     * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `SharedLockProvider` class.
+     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `SharedLockProvider` class.
      * @default
      * ```ts
-     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { Task } from "@daiso-tech/core/task";
      *
-     * (invokable) => new LazyPromise(invokable)
+     * (invokable) => new Task(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
+    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 
     serde: OneOrMore<ISerderRegister>;
 
@@ -159,10 +159,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<ISerderRegister>;
-    private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
-        LazyPromise<any>
-    >;
+    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly serdeTransformerName: string;
 
     /**
@@ -202,7 +199,7 @@ export class SharedLockProvider implements ISharedLockProvider {
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
-            lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
+            taskFactory = (invokable) => new Task(invokable),
         } = settings;
 
         this.serde = serde;
@@ -216,7 +213,7 @@ export class SharedLockProvider implements ISharedLockProvider {
         this.defaultTtl =
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
-        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
+        this.taskFactory = resolveInvokable(taskFactory);
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
@@ -228,7 +225,7 @@ export class SharedLockProvider implements ISharedLockProvider {
         const transformer = new SharedLockSerdeTransformer({
             originalAdapter: this.originalAdapter,
             adapter: this.adapter,
-            createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
+            createTask: (asyncFn) => this.createTask(asyncFn),
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
@@ -248,7 +245,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     addListener<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): LazyPromise<void> {
+    ): Task<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
@@ -259,7 +256,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     removeListener<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): LazyPromise<void> {
+    ): Task<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
@@ -270,7 +267,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     listenOnce<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): LazyPromise<void> {
+    ): Task<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
@@ -280,7 +277,7 @@ export class SharedLockProvider implements ISharedLockProvider {
      */
     asPromise<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
-    ): LazyPromise<SharedLockEventMap[TEventName]> {
+    ): Task<SharedLockEventMap[TEventName]> {
         return this.eventBus.asPromise(eventName);
     }
 
@@ -291,7 +288,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     subscribeOnce<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe> {
+    ): Task<Unsubscribe> {
         return this.eventBus.subscribeOnce(eventName, listener);
     }
 
@@ -302,14 +299,14 @@ export class SharedLockProvider implements ISharedLockProvider {
     subscribe<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe> {
+    ): Task<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 
-    private createLazyPromise<TValue = void>(
+    private createTask<TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ): LazyPromise<TValue> {
-        return this.lazyPromiseFactory(asyncFn);
+    ): Task<TValue> {
+        return this.taskFactory(asyncFn);
     }
 
     /**
@@ -347,7 +344,7 @@ export class SharedLockProvider implements ISharedLockProvider {
             namespace: this.namespace,
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,
-            createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
+            createTask: (asyncFn) => this.createTask(asyncFn),
             eventDispatcher: this.eventBus,
             key: keyObj,
             lockId,

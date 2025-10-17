@@ -25,7 +25,7 @@ import {
     type ILockProvider,
     type ILockAdapter,
 } from "@/lock/contracts/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import type {
     EventListener,
     IEventBus,
@@ -62,15 +62,15 @@ export type LockProviderSettingsBase = {
     namespace?: Namespace;
 
     /**
-     * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `LockProvider` class.
+     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `LockProvider` class.
      * @default
      * ```ts
-     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { Task } from "@daiso-tech/core/task";
      *
-     * (invokable) => new LazyPromise(invokable)
+     * (invokable) => new Task(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
+    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 
     serde: OneOrMore<ISerderRegister>;
 
@@ -163,10 +163,7 @@ export class LockProvider implements ILockProvider {
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<ISerderRegister>;
-    private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
-        LazyPromise<any>
-    >;
+    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly serdeTransformerName: string;
 
     /**
@@ -206,7 +203,7 @@ export class LockProvider implements ILockProvider {
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
-            lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
+            taskFactory = (invokable) => new Task(invokable),
         } = settings;
 
         this.serde = serde;
@@ -220,7 +217,7 @@ export class LockProvider implements ILockProvider {
         this.defaultTtl =
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
-        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
+        this.taskFactory = resolveInvokable(taskFactory);
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
@@ -232,7 +229,7 @@ export class LockProvider implements ILockProvider {
         const transformer = new LockSerdeTransformer({
             originalAdapter: this.originalAdapter,
             adapter: this.adapter,
-            createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
+            createTask: (asyncFn) => this.createTask(asyncFn),
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
@@ -252,7 +249,7 @@ export class LockProvider implements ILockProvider {
     addListener<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): LazyPromise<void> {
+    ): Task<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
@@ -263,7 +260,7 @@ export class LockProvider implements ILockProvider {
     removeListener<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): LazyPromise<void> {
+    ): Task<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
@@ -274,7 +271,7 @@ export class LockProvider implements ILockProvider {
     listenOnce<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): LazyPromise<void> {
+    ): Task<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
@@ -284,7 +281,7 @@ export class LockProvider implements ILockProvider {
      */
     asPromise<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
-    ): LazyPromise<LockEventMap[TEventName]> {
+    ): Task<LockEventMap[TEventName]> {
         return this.eventBus.asPromise(eventName);
     }
 
@@ -295,7 +292,7 @@ export class LockProvider implements ILockProvider {
     subscribeOnce<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe> {
+    ): Task<Unsubscribe> {
         return this.eventBus.subscribeOnce(eventName, listener);
     }
 
@@ -306,14 +303,14 @@ export class LockProvider implements ILockProvider {
     subscribe<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe> {
+    ): Task<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 
-    private createLazyPromise<TValue = void>(
+    private createTask<TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ): LazyPromise<TValue> {
-        return this.lazyPromiseFactory(asyncFn);
+    ): Task<TValue> {
+        return this.taskFactory(asyncFn);
     }
 
     /**
@@ -346,7 +343,7 @@ export class LockProvider implements ILockProvider {
             namespace: this.namespace,
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,
-            createLazyPromise: (asyncFn) => this.createLazyPromise(asyncFn),
+            createTask: (asyncFn) => this.createTask(asyncFn),
             eventDispatcher: this.eventBus,
             key: keyObj,
             lockId,

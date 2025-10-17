@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import type { AsyncLazy, Result } from "@/utilities/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,7 +21,7 @@ import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
  * @group Contracts
  */
 export type ISemaphoreStateMethods = {
-    getState(): LazyPromise<ISemaphoreState>;
+    getState(): Task<ISemaphoreState>;
 
     /**
      * The `key` of the `ISemaphore` instance.
@@ -56,42 +56,42 @@ export type SemaphoreAquireBlockingSettings = {
  */
 export type ISemaphoreBase = {
     /**
-     * The `run` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquire` and `release` method.
+     * The `run` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquire` and `release` method.
      *
      */
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, LimitReachedSemaphoreError>>;
+    ): Task<Result<TValue, LimitReachedSemaphoreError>>;
 
     /**
-     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireOrFail` and `release` method.
+     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue>;
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
 
     /**
-     * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlocking` and `release` method.
+     * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlocking` and `release` method.
      */
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SemaphoreAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, LimitReachedSemaphoreError>>;
+    ): Task<Result<TValue, LimitReachedSemaphoreError>>;
 
     /**
-     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SemaphoreAquireBlockingSettings,
-    ): LazyPromise<TValue>;
+    ): Task<TValue>;
 
     /**
      * The `acquire` method acquires an slots only if the slot limit is not reached.
      *
      * @returns Returns true if the slot limit is not reached otherwise false is returned.
      */
-    acquire(): LazyPromise<boolean>;
+    acquire(): Task<boolean>;
 
     /**
      * The `acquireOrFail` method acquires an slots only if the slot limit is not reached.
@@ -99,7 +99,7 @@ export type ISemaphoreBase = {
      *
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
-    acquireOrFail(): LazyPromise<void>;
+    acquireOrFail(): Task<void>;
 
     /**
      * The `acquireBlocking` method acquires an slots only if the slot limit is not reached.
@@ -107,9 +107,7 @@ export type ISemaphoreBase = {
      *
      * @returns Returns true if the slot limit is not reached otherwise false is returned.
      */
-    acquireBlocking(
-        settings?: SemaphoreAquireBlockingSettings,
-    ): LazyPromise<boolean>;
+    acquireBlocking(settings?: SemaphoreAquireBlockingSettings): Task<boolean>;
 
     /**
      * The `acquireBlockingOrFail` method acquires an slots only if the slot limit is not reached.
@@ -120,42 +118,42 @@ export type ISemaphoreBase = {
      */
     acquireBlockingOrFail(
         settings?: SemaphoreAquireBlockingSettings,
-    ): LazyPromise<void>;
+    ): Task<void>;
 
     /**
      * The `release` method releases the current slot.
      *
      * @returns Returns true if the semaphore exists and has at least one busy slot or false.
      */
-    release(): LazyPromise<boolean>;
+    release(): Task<boolean>;
 
     /**
      * The `releaseOrFail` method releases the current slot.
      * Throws an error if the slot is not acquired.
      * @throws {FailedReleaseSemaphoreError} {@link FailedReleaseSemaphoreError}
      */
-    releaseOrFail(): LazyPromise<void>;
+    releaseOrFail(): Task<void>;
 
     /**
      * The `forceReleaseAll` method releases the all slots.
      *
      * @returns Returns true if the semaphore exists and has at least one unavailable slot or false if all slots are available.
      */
-    forceReleaseAll(): LazyPromise<boolean>;
+    forceReleaseAll(): Task<boolean>;
 
     /**
      * The `refresh` method updates the `ttl` of the slot when acquired.
      *
      * @returns Returns true if the slot is refreshed otherwise false is returned.
      */
-    refresh(ttl?: ITimeSpan): LazyPromise<boolean>;
+    refresh(ttl?: ITimeSpan): Task<boolean>;
 
     /**
      * The `refreshOrFail` method updates the `ttl` of the slot when acquired.
      * Throws an error if the slot is not acquired.
      * @throws {FailedRefreshSemaphoreError} {@link FailedRefreshSemaphoreError}
      */
-    refreshOrFail(ttl?: ITimeSpan): LazyPromise<void>;
+    refreshOrFail(ttl?: ITimeSpan): Task<void>;
 };
 
 /**

@@ -49,7 +49,7 @@ import {
     type ResultFailure,
 } from "@/utilities/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
@@ -130,7 +130,7 @@ export function sharedLockProviderTestSuite(
     let sharedLockProvider: ISharedLockProvider;
     let serde: ISerde;
     async function delay(time: TimeSpan): Promise<void> {
-        await LazyPromise.delay(time.addMilliseconds(10));
+        await Task.delay(time.addMilliseconds(10));
     }
     const RETURN_VALUE = "RETURN_VALUE";
 

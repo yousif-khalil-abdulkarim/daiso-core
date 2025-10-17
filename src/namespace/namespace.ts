@@ -39,12 +39,12 @@ export class Key {
     }
 
     get(): string {
-        return resolveOneOrMoreStr(this.key);
+        return this.key;
     }
 
     toString(): string {
         return resolveOneOrMoreStr(
-            [...this.prefixArr, resolveOneOrMoreStr(this.key, this.delimeter)],
+            [...this.prefixArr, this.key],
             this.delimeter,
         );
     }
@@ -70,6 +70,31 @@ export type NamespaceSettings = {
  * The `Namespace` class adds prefixes/suffixes to keys to avoid conflicts and group related items.
  *
  * IMPORT_PATH: `"@daiso-tech/core/namespace"`
+ *
+ * @example
+ * ```ts
+ * import { Namespace } from "@daiso-tech/core/namspace";
+ *
+ * const namespace = new Namespace("@my-namespace");
+ *
+ * // Logs "@my-namespace:_rt"
+ * console.log(namespace.toString());
+ *
+ * const key = namespace.create("my-key");
+ *
+ * // Logs "my-key"
+ * console.log(key.get())
+ *
+ * // Logs "@my-namespace:_rt:my-key"
+ * console.log(key.toString())
+ *
+ * // You can extend the root
+ * const newNamespace = namespace.appendRoot("sub");
+ *
+ * // Logs "@my-namespace:sub:_rt"
+ * console.log(newNamespace.toString());
+ *
+ * ```
  */
 export class Namespace {
     private readonly delimeter: string;

@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import {
     type IEventBus,
     type IEventBusFactory,
@@ -97,12 +97,12 @@ export class EventBusFactory<
         });
     }
 
-    setLazyPromiseFactory(
-        factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
+    setTaskFactory(
+        factory: Factory<AsyncLazy<any>, Task<any>>,
     ): EventBusFactory<TAdapters, TEventMap> {
         return new EventBusFactory({
             ...this.settings,
-            lazyPromiseFactory: factory,
+            taskFactory: factory,
         });
     }
 

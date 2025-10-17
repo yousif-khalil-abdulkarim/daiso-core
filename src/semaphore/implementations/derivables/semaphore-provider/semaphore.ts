@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import { type IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
 import type { Key, Namespace } from "@/namespace/_module-exports.js";
 import type {
@@ -49,9 +49,7 @@ export type ISerializedSemaphore = {
 export type SemaphoreSettings = {
     slotId: string;
     limit: number;
-    createLazyPromise: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     serdeTransformerName: string;
     adapter: ISemaphoreAdapter;
     originalAdapter: SemaphoreAdapterVariants;
@@ -85,9 +83,9 @@ export class Semaphore implements ISemaphore {
 
     private readonly slotId: string;
     private readonly limit: number;
-    private readonly createLazyPromise: <TValue = void>(
+    private readonly createTask: <TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    ) => Task<TValue>;
     private readonly adapter: ISemaphoreAdapter;
     private readonly originalAdapter:
         | ISemaphoreAdapter
@@ -105,7 +103,7 @@ export class Semaphore implements ISemaphore {
         const {
             slotId,
             limit,
-            createLazyPromise,
+            createTask,
             adapter,
             originalAdapter,
             eventDispatcher,
@@ -121,7 +119,7 @@ export class Semaphore implements ISemaphore {
         this.slotId = slotId;
         this.limit = limit;
         this.serdeTransformerName = serdeTransformerName;
-        this.createLazyPromise = createLazyPromise;
+        this.createTask = createTask;
         this.adapter = adapter;
         this.eventDispatcher = eventDispatcher;
         this._key = key;
@@ -146,8 +144,8 @@ export class Semaphore implements ISemaphore {
 
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, LimitReachedSemaphoreError>> {
-        return this.createLazyPromise(
+    ): Task<Result<TValue, LimitReachedSemaphoreError>> {
+        return this.createTask(
             async (): Promise<Result<TValue, LimitReachedSemaphoreError>> => {
                 try {
                     const hasAquired = await this.acquire();
@@ -167,8 +165,8 @@ export class Semaphore implements ISemaphore {
         );
     }
 
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue> {
-        return this.createLazyPromise(async () => {
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+        return this.createTask(async () => {
             try {
                 await this.acquireOrFail();
                 return await resolveLazyable(asyncFn);
@@ -181,8 +179,8 @@ export class Semaphore implements ISemaphore {
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SemaphoreAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, LimitReachedSemaphoreError>> {
-        return this.createLazyPromise(
+    ): Task<Result<TValue, LimitReachedSemaphoreError>> {
+        return this.createTask(
             async (): Promise<Result<TValue, LimitReachedSemaphoreError>> => {
                 try {
                     const hasAquired = await this.acquireBlocking(settings);
@@ -205,8 +203,8 @@ export class Semaphore implements ISemaphore {
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SemaphoreAquireBlockingSettings,
-    ): LazyPromise<TValue> {
-        return this.createLazyPromise(async () => {
+    ): Task<TValue> {
+        return this.createTask(async () => {
             try {
                 await this.acquireBlockingOrFail(settings);
 
@@ -231,13 +229,13 @@ export class Semaphore implements ISemaphore {
                     error,
                     semaphore: this,
                 })
-                .defer();
+                .detach();
             throw error;
         }
     }
 
-    acquire(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    acquire(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquire({
                     key: this._key.toString(),
@@ -251,13 +249,13 @@ export class Semaphore implements ISemaphore {
                         .dispatch(SEMAPHORE_EVENTS.ACQUIRED, {
                             semaphore: this,
                         })
-                        .defer();
+                        .detach();
                 } else {
                     this.eventDispatcher
                         .dispatch(SEMAPHORE_EVENTS.LIMIT_REACHED, {
                             semaphore: this,
                         })
-                        .defer();
+                        .detach();
                 }
 
                 return hasAquired;
@@ -265,8 +263,8 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    acquireOrFail(): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    acquireOrFail(): Task<void> {
+        return this.createTask(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
                 throw new LimitReachedSemaphoreError(
@@ -278,8 +276,8 @@ export class Semaphore implements ISemaphore {
 
     acquireBlocking(
         settings: SemaphoreAquireBlockingSettings = {},
-    ): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    ): Task<boolean> {
+        return this.createTask(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -292,7 +290,7 @@ export class Semaphore implements ISemaphore {
                 if (hasAquired) {
                     return true;
                 }
-                await LazyPromise.delay(intervalAsTimeSpan);
+                await Task.delay(intervalAsTimeSpan);
             }
             return false;
         });
@@ -300,8 +298,8 @@ export class Semaphore implements ISemaphore {
 
     acquireBlockingOrFail(
         settings?: SemaphoreAquireBlockingSettings,
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    ): Task<void> {
+        return this.createTask(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
                 throw new LimitReachedSemaphoreError(
@@ -311,8 +309,8 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    release(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    release(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.release(
                     this._key.toString(),
@@ -324,13 +322,13 @@ export class Semaphore implements ISemaphore {
                         .dispatch(SEMAPHORE_EVENTS.RELEASED, {
                             semaphore: this,
                         })
-                        .defer();
+                        .detach();
                 } else {
                     this.eventDispatcher
                         .dispatch(SEMAPHORE_EVENTS.FAILED_RELEASE, {
                             semaphore: this,
                         })
-                        .defer();
+                        .detach();
                 }
 
                 return hasReleased;
@@ -338,8 +336,8 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    releaseOrFail(): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    releaseOrFail(): Task<void> {
+        return this.createTask(async () => {
             const hasReleased = await this.release();
             if (!hasReleased) {
                 throw new FailedReleaseSemaphoreError(
@@ -349,8 +347,8 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    forceReleaseAll(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    forceReleaseAll(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceReleaseAll(
                     this._key.toString(),
@@ -361,15 +359,15 @@ export class Semaphore implements ISemaphore {
                         semaphore: this,
                         hasReleased,
                     })
-                    .defer();
+                    .detach();
 
                 return hasReleased;
             });
         });
     }
 
-    refresh(ttl: TimeSpan = this.defaultRefreshTime): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    refresh(ttl: TimeSpan = this.defaultRefreshTime): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refresh(
                     this._key.toString(),
@@ -383,13 +381,13 @@ export class Semaphore implements ISemaphore {
                         .dispatch(SEMAPHORE_EVENTS.REFRESHED, {
                             semaphore: this,
                         })
-                        .defer();
+                        .detach();
                 } else {
                     this.eventDispatcher
                         .dispatch(SEMAPHORE_EVENTS.FAILED_REFRESH, {
                             semaphore: this,
                         })
-                        .defer();
+                        .detach();
                 }
 
                 return hasRefreshed;
@@ -397,8 +395,8 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    refreshOrFail(ttl?: TimeSpan): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    refreshOrFail(ttl?: TimeSpan): Task<void> {
+        return this.createTask(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshSemaphoreError(
@@ -420,8 +418,8 @@ export class Semaphore implements ISemaphore {
         return this._key.get();
     }
 
-    getState(): LazyPromise<ISemaphoreState> {
-        return this.createLazyPromise(async () => {
+    getState(): Task<ISemaphoreState> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(
                 async (): Promise<ISemaphoreState> => {
                     const state = await this.adapter.getState(

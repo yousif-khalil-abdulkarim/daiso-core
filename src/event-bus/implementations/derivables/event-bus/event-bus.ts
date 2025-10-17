@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import type {
     BaseEvent,
     BaseEventMap,
@@ -65,15 +65,15 @@ export type EventBusSettingsBase<
     namespace?: Namespace;
 
     /**
-     * You can pass a {@link Factory | `Factory`} of {@link LazyPromise| `LazyPromise`} to configure default settings for all {@link LazyPromise| `LazyPromise`} instances used in the `EventBus` class.
+     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `EventBus` class.
      * @default
      * ```ts
-     * import { LazyPromise } from "@daiso-tech/core/async";
+     * import { Task } from "@daiso-tech/core/task";
      *
-     * (invokable) => new LazyPromise(invokable)
+     * (invokable) => new Task(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, LazyPromise<any>>;
+    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 };
 
 /**
@@ -104,10 +104,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     private readonly shouldValidateOutput: boolean;
     private readonly store = new ListenerStore();
     private readonly adapter: IEventBusAdapter;
-    private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
-        LazyPromise<any>
-    >;
+    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly namespace: Namespace;
     private readonly eventMapSchema: EventMapSchema<TEventMap> | undefined;
 
@@ -134,20 +131,20 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
             eventMapSchema,
             namespace = new Namespace(["@", "event-bus"]),
             adapter,
-            lazyPromiseFactory = (invokable) => new LazyPromise(invokable),
+            taskFactory = (invokable) => new Task(invokable),
         } = settings;
         this.shouldValidateOutput = shouldValidateOutput;
         this.eventMapSchema = eventMapSchema;
-        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
+        this.taskFactory = resolveInvokable(taskFactory);
         this.adapter = adapter;
         this.namespace = namespace;
         this.__onUncaughtRejection = __onUncaughtRejection;
     }
 
-    private createLazyPromise<TValue = void>(
+    private createTask<TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ): LazyPromise<TValue> {
-        return this.lazyPromiseFactory(asyncFn);
+    ): Task<TValue> {
+        return this.taskFactory(asyncFn);
     }
 
     private createWrappedListener<TEventName extends keyof TEventMap>(
@@ -177,8 +174,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     addListener<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    ): Task<void> {
+        return this.createTask(async () => {
             const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
                 key.toString(),
@@ -200,8 +197,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     removeListener<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    ): Task<void> {
+        return this.createTask(async () => {
             const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getAndRemove(
                 key.toString(),
@@ -225,8 +222,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     listenOnce<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    ): Task<void> {
+        return this.createTask(async () => {
             const wrappedListener = async (event_: TEventMap[TEventName]) => {
                 try {
                     if (this.shouldValidateOutput) {
@@ -272,8 +269,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
 
     asPromise<TEventName extends keyof TEventMap>(
         eventName: TEventName,
-    ): LazyPromise<TEventMap[TEventName]> {
-        return LazyPromise.fromCallback((resolve, reject) => {
+    ): Task<TEventMap[TEventName]> {
+        return Task.fromCallback((resolve, reject) => {
             this.listenOnce(eventName, resolve).then(() => {}, reject);
         });
     }
@@ -281,11 +278,11 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     subscribeOnce<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe> {
-        return this.createLazyPromise(async () => {
+    ): Task<Unsubscribe> {
+        return this.createTask(async () => {
             await this.listenOnce(eventName, listener);
             const unsubscribe = () => {
-                return this.createLazyPromise(async () => {
+                return this.createTask(async () => {
                     await this.removeListener(eventName, listener);
                 });
             };
@@ -296,11 +293,11 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     subscribe<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): LazyPromise<Unsubscribe> {
-        return this.createLazyPromise(async () => {
+    ): Task<Unsubscribe> {
+        return this.createTask(async () => {
             await this.addListener(eventName, listener);
             const unsubscribe = () => {
-                return this.createLazyPromise(async () => {
+                return this.createTask(async () => {
                     await this.removeListener(eventName, listener);
                 });
             };
@@ -311,8 +308,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     dispatch<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         event: TEventMap[TEventName],
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    ): Task<void> {
+        return this.createTask(async () => {
             await validate(this.eventMapSchema?.[eventName], event);
             await this.adapter.dispatch(
                 this.namespace.create(String(eventName)).toString(),

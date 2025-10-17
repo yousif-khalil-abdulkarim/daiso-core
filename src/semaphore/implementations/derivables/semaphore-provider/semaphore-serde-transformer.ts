@@ -15,7 +15,7 @@ import type {
     SemaphoreEventMap,
 } from "@/semaphore/contracts/_module-exports.js";
 import { getConstructorName } from "@/utilities/_module-exports.js";
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { Namespace } from "@/namespace/_module-exports.js";
@@ -27,9 +27,7 @@ export type SemaphoreSerdeTransformerSettings = {
     adapter: ISemaphoreAdapter;
     originalAdapter: SemaphoreAdapterVariants;
     namespace: Namespace;
-    createLazyPromise: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
@@ -48,9 +46,9 @@ export class SemaphoreSerdeTransformer
         | ISemaphoreAdapter
         | IDatabaseSemaphoreAdapter;
     private readonly namespace: Namespace;
-    private readonly createLazyPromise: <TValue = void>(
+    private readonly createTask: <TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    ) => Task<TValue>;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
@@ -62,7 +60,7 @@ export class SemaphoreSerdeTransformer
             adapter,
             originalAdapter,
             namespace,
-            createLazyPromise,
+            createTask,
             defaultBlockingInterval,
             defaultBlockingTime,
             defaultRefreshTime,
@@ -73,7 +71,7 @@ export class SemaphoreSerdeTransformer
         this.adapter = adapter;
         this.originalAdapter = originalAdapter;
         this.namespace = namespace;
-        this.createLazyPromise = createLazyPromise;
+        this.createTask = createTask;
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
@@ -121,7 +119,7 @@ export class SemaphoreSerdeTransformer
         const keyObj = this.namespace.create(key);
         return new Semaphore({
             slotId,
-            createLazyPromise: this.createLazyPromise,
+            createTask: this.createTask,
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,
             eventDispatcher: this.eventBus,

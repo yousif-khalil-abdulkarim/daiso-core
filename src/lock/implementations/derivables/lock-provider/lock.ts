@@ -39,7 +39,7 @@ import {
     type ILock,
     type ILockAdapter,
 } from "@/lock/contracts/_module-exports.js";
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { Key, Namespace } from "@/namespace/_module-exports.js";
@@ -58,9 +58,7 @@ export type ISerializedLock = {
  * @internal
  */
 export type LockSettings = {
-    createLazyPromise: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     serdeTransformerName: string;
     namespace: Namespace;
     adapter: ILockAdapter;
@@ -90,9 +88,9 @@ export class Lock implements ILock {
         };
     }
 
-    private readonly createLazyPromise: <TValue = void>(
+    private readonly createTask: <TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    ) => Task<TValue>;
     private readonly namespace: Namespace;
     private readonly adapter: ILockAdapter;
     private readonly originalAdapter: IDatabaseLockAdapter | ILockAdapter;
@@ -107,7 +105,7 @@ export class Lock implements ILock {
 
     constructor(settings: LockSettings) {
         const {
-            createLazyPromise,
+            createTask,
             namespace,
             adapter,
             originalAdapter,
@@ -123,7 +121,7 @@ export class Lock implements ILock {
         this.namespace = namespace;
         this.originalAdapter = originalAdapter;
         this.serdeTransformerName = serdeTransformerName;
-        this.createLazyPromise = createLazyPromise;
+        this.createTask = createTask;
         this.adapter = adapter;
         this.eventDispatcher = eventDispatcher;
         this._key = key;
@@ -148,8 +146,8 @@ export class Lock implements ILock {
 
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, FailedAcquireLockError>> {
-        return this.createLazyPromise(
+    ): Task<Result<TValue, FailedAcquireLockError>> {
+        return this.createTask(
             async (): Promise<Result<TValue, FailedAcquireLockError>> => {
                 try {
                     const hasAquired = await this.acquire();
@@ -169,8 +167,8 @@ export class Lock implements ILock {
         );
     }
 
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): LazyPromise<TValue> {
-        return this.createLazyPromise(async () => {
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+        return this.createTask(async () => {
             try {
                 await this.acquireOrFail();
                 return await resolveLazyable(asyncFn);
@@ -183,8 +181,8 @@ export class Lock implements ILock {
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, FailedAcquireLockError>> {
-        return this.createLazyPromise(
+    ): Task<Result<TValue, FailedAcquireLockError>> {
+        return this.createTask(
             async (): Promise<Result<TValue, FailedAcquireLockError>> => {
                 try {
                     const hasAquired = await this.acquireBlocking(settings);
@@ -207,8 +205,8 @@ export class Lock implements ILock {
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
-    ): LazyPromise<TValue> {
-        return this.createLazyPromise(async () => {
+    ): Task<TValue> {
+        return this.createTask(async () => {
             try {
                 await this.acquireBlockingOrFail(settings);
 
@@ -234,14 +232,14 @@ export class Lock implements ILock {
             };
             this.eventDispatcher
                 .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
-                .defer();
+                .detach();
 
             throw error;
         }
     }
 
-    acquire(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    acquire(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquire(
                     this._key.toString(),
@@ -255,7 +253,7 @@ export class Lock implements ILock {
                     };
                     this.eventDispatcher
                         .dispatch(LOCK_EVENTS.ACQUIRED, event)
-                        .defer();
+                        .detach();
                     return hasAquired;
                 }
 
@@ -264,15 +262,15 @@ export class Lock implements ILock {
                 };
                 this.eventDispatcher
                     .dispatch(LOCK_EVENTS.UNAVAILABLE, event)
-                    .defer();
+                    .detach();
 
                 return hasAquired;
             });
         });
     }
 
-    acquireOrFail(): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    acquireOrFail(): Task<void> {
+        return this.createTask(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
                 throw new FailedAcquireLockError(
@@ -282,10 +280,8 @@ export class Lock implements ILock {
         });
     }
 
-    acquireBlocking(
-        settings: LockAquireBlockingSettings = {},
-    ): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    acquireBlocking(settings: LockAquireBlockingSettings = {}): Task<boolean> {
+        return this.createTask(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -299,16 +295,14 @@ export class Lock implements ILock {
                 if (hasAquired) {
                     return true;
                 }
-                await LazyPromise.delay(intervalAsTimeSpan);
+                await Task.delay(intervalAsTimeSpan);
             }
             return false;
         });
     }
 
-    acquireBlockingOrFail(
-        settings?: LockAquireBlockingSettings,
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    acquireBlockingOrFail(settings?: LockAquireBlockingSettings): Task<void> {
+        return this.createTask(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
                 throw new FailedAcquireLockError(
@@ -318,8 +312,8 @@ export class Lock implements ILock {
         });
     }
 
-    release(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    release(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.release(
                     this._key.toString(),
@@ -332,7 +326,7 @@ export class Lock implements ILock {
                     };
                     this.eventDispatcher
                         .dispatch(LOCK_EVENTS.RELEASED, event)
-                        .defer();
+                        .detach();
                     return hasReleased;
                 }
 
@@ -341,15 +335,15 @@ export class Lock implements ILock {
                 };
                 this.eventDispatcher
                     .dispatch(LOCK_EVENTS.FAILED_RELEASE, event)
-                    .defer();
+                    .detach();
 
                 return hasReleased;
             });
         });
     }
 
-    releaseOrFail(): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    releaseOrFail(): Task<void> {
+        return this.createTask(async () => {
             const hasRelased = await this.release();
             if (!hasRelased) {
                 throw new FailedReleaseLockError(
@@ -359,8 +353,8 @@ export class Lock implements ILock {
         });
     }
 
-    forceRelease(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    forceRelease(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceRelease(
                     this._key.toString(),
@@ -371,14 +365,14 @@ export class Lock implements ILock {
                 };
                 this.eventDispatcher
                     .dispatch(LOCK_EVENTS.FORCE_RELEASED, event)
-                    .defer();
+                    .detach();
                 return hasReleased;
             });
         });
     }
 
-    refresh(ttl: TimeSpan = this.defaultRefreshTime): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    refresh(ttl: TimeSpan = this.defaultRefreshTime): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refresh(
                     this._key.toString(),
@@ -393,14 +387,14 @@ export class Lock implements ILock {
                     };
                     this.eventDispatcher
                         .dispatch(LOCK_EVENTS.REFRESHED, event)
-                        .defer();
+                        .detach();
                 } else {
                     const event: FailedRefreshLockEvent = {
                         lock: this,
                     };
                     this.eventDispatcher
                         .dispatch(LOCK_EVENTS.FAILED_REFRESH, event)
-                        .defer();
+                        .detach();
                 }
 
                 return hasRefreshed;
@@ -408,8 +402,8 @@ export class Lock implements ILock {
         });
     }
 
-    refreshOrFail(ttl?: TimeSpan): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    refreshOrFail(ttl?: TimeSpan): Task<void> {
+        return this.createTask(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshLockError(
@@ -431,8 +425,8 @@ export class Lock implements ILock {
         return this._ttl;
     }
 
-    getState(): LazyPromise<ILockState> {
-        return this.createLazyPromise(async () => {
+    getState(): Task<ILockState> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const state = await this.adapter.getState(this._key.toString());
                 if (state === null) {

@@ -2,7 +2,7 @@
  * @module SharedLock
  */
 
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import type { AsyncLazy, Result } from "@/utilities/_module-exports.js";
 import type {
     LimitReachedReaderSemaphoreError,
@@ -39,44 +39,42 @@ export type SharedLockAquireBlockingSettings = {
  */
 export type IReaderSemaphore = {
     /**
-     * The `runReader` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquire` and `release` method.
+     * The `runReader` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquire` and `release` method.
      *
      */
     runReader<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, LimitReachedReaderSemaphoreError>>;
+    ): Task<Result<TValue, LimitReachedReaderSemaphoreError>>;
 
     /**
-     * The `runReaderOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireOrFail` and `release` method.
+     * The `runReaderOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
      * @throws {LimitReachedReaderSemaphoreError} {@link LimitReachedReaderSemaphoreError}
      */
-    runReaderOrFail<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<TValue>;
+    runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
 
     /**
-     * The `runReaderBlocking` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlocking` and `release` method.
+     * The `runReaderBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlocking` and `release` method.
      */
     runReaderBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, LimitReachedReaderSemaphoreError>>;
+    ): Task<Result<TValue, LimitReachedReaderSemaphoreError>>;
 
     /**
-     * The `runReaderBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runReaderBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {LimitReachedReaderSemaphoreError} {@link LimitReachedReaderSemaphoreError}
      */
     runReaderBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<TValue>;
+    ): Task<TValue>;
 
     /**
      * The `acquireReader` method acquires an slots only if the slot limit is not reached.
      *
      * @returns Returns true if the slot limit is not reached otherwise false is returned.
      */
-    acquireReader(): LazyPromise<boolean>;
+    acquireReader(): Task<boolean>;
 
     /**
      * The `acquireReaderOrFail` method acquires an slots only if the slot limit is not reached.
@@ -84,7 +82,7 @@ export type IReaderSemaphore = {
      *
      * @throws {LimitReachedReaderSemaphoreError} {@link LimitReachedReaderSemaphoreError}
      */
-    acquireReaderOrFail(): LazyPromise<void>;
+    acquireReaderOrFail(): Task<void>;
 
     /**
      * The `acquireReaderBlocking` method acquires an slots only if the slot limit is not reached.
@@ -94,7 +92,7 @@ export type IReaderSemaphore = {
      */
     acquireReaderBlocking(
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<boolean>;
+    ): Task<boolean>;
 
     /**
      * The `acquireReaderBlockingOrFail` method acquires an slots only if the slot limit is not reached.
@@ -105,42 +103,42 @@ export type IReaderSemaphore = {
      */
     acquireReaderBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<void>;
+    ): Task<void>;
 
     /**
      * The `releaseReader` method releases the current slot.
      *
      * @returns Returns true if the semaphore exists and has at least one busy slot or false.
      */
-    releaseReader(): LazyPromise<boolean>;
+    releaseReader(): Task<boolean>;
 
     /**
      * The `releaseReaderOrFail` method releases the current slot.
      * Throws an error if the slot is not acquired.
      * @throws {FailedReleaseReaderSemaphoreError} {@link FailedReleaseReaderSemaphoreError}
      */
-    releaseReaderOrFail(): LazyPromise<void>;
+    releaseReaderOrFail(): Task<void>;
 
     /**
      * The `forceReleaseAllReaders` method releases the all slots.
      *
      * @returns Returns true if the semaphore exists and has at least one unavailable slot or false if all slots are available.
      */
-    forceReleaseAllReaders(): LazyPromise<boolean>;
+    forceReleaseAllReaders(): Task<boolean>;
 
     /**
      * The `refreshReader` method updates the `ttl` of the slot when acquired.
      *
      * @returns Returns true if the slot is refreshed otherwise false is returned.
      */
-    refreshReader(ttl?: ITimeSpan): LazyPromise<boolean>;
+    refreshReader(ttl?: ITimeSpan): Task<boolean>;
 
     /**
      * The `refreshReaderOrFail` method updates the `ttl` of the slot when acquired.
      * Throws an error if the slot is not acquired.
      * @throws {FailedRefreshReaderSemaphoreError} {@link FailedRefreshReaderSemaphoreError}
      */
-    refreshReaderOrFail(ttl?: ITimeSpan): LazyPromise<void>;
+    refreshReaderOrFail(ttl?: ITimeSpan): Task<void>;
 };
 
 /**
@@ -150,43 +148,41 @@ export type IReaderSemaphore = {
  */
 export type IWriterLock = {
     /**
-     * The `runWriter` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquire` and `release` method.
+     * The `runWriter` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquire` and `release` method.
      */
     runWriter<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, FailedAcquireWriterLockError>>;
+    ): Task<Result<TValue, FailedAcquireWriterLockError>>;
 
     /**
-     * The `runWriterOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireOrFail` and `release` method.
+     * The `runWriterOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
      * @throws {FailedAcquireWriterLockError} {@link FailedAcquireWriterLockError}
      */
-    runWriterOrFail<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<TValue>;
+    runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
 
     /**
-     * The `runWriterBlocking` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlocking` and `release` method.
+     * The `runWriterBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlocking` and `release` method.
      */
     runWriterBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, FailedAcquireWriterLockError>>;
+    ): Task<Result<TValue, FailedAcquireWriterLockError>>;
 
     /**
-     * The `runWriterBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link LazyPromise| `LazyPromise`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runWriterBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {FailedAcquireWriterLockError} {@link FailedAcquireWriterLockError}
      */
     runWriterBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<TValue>;
+    ): Task<TValue>;
 
     /**
      * The `acquireWriter` method acquires a lock only if the key is not already acquired by different owner.
      *
      * @returns Returns true if the lock is not already acquired otherwise false is returned.
      */
-    acquireWriter(): LazyPromise<boolean>;
+    acquireWriter(): Task<boolean>;
 
     /**
      * The `acquireWriterOrFail` method acquires a lock only if the key is not already acquired by different owner.
@@ -194,7 +190,7 @@ export type IWriterLock = {
      *
      * @throws {FailedAcquireWriterLockError} {@link FailedAcquireWriterLockError}
      */
-    acquireWriterOrFail(): LazyPromise<void>;
+    acquireWriterOrFail(): Task<void>;
 
     /**
      * The `acquireWriterBlocking` method acquires a lock only if the key is not already acquired by different owner.
@@ -204,7 +200,7 @@ export type IWriterLock = {
      */
     acquireWriterBlocking(
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<boolean>;
+    ): Task<boolean>;
 
     /**
      * The `acquireWriterBlockingOrFail` method acquires a lock only if the key is not already acquired by different owner.
@@ -215,14 +211,14 @@ export type IWriterLock = {
      */
     acquireWriterBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<void>;
+    ): Task<void>;
 
     /**
      * The `releaseWriter` method releases a lock if owned by the same owner.
      *
      * @returns Returns true if the lock is released otherwise false is returned.
      */
-    releaseWriter(): LazyPromise<boolean>;
+    releaseWriter(): Task<boolean>;
 
     /**
      * The `releaseWriterOrFail` method releases a lock if owned by the same owner.
@@ -230,21 +226,21 @@ export type IWriterLock = {
      *
      * @throws {FailedReleaseWriterLockError} {@link FailedReleaseWriterLockError}
      */
-    releaseWriterOrFail(): LazyPromise<void>;
+    releaseWriterOrFail(): Task<void>;
 
     /**
      * The `forceReleaseWriter` method releases a lock regardless of the owner.
      *
      * @returns Returns true if the lock exists or false if the lock doesnt exists.
      */
-    forceReleaseWriter(): LazyPromise<boolean>;
+    forceReleaseWriter(): Task<boolean>;
 
     /**
      * The `refreshWriter` method updates the `ttl` of the lock if expireable and owned by the same owner.
      *
      * @returns Returns true if the lock is refreshed otherwise false is returned.
      */
-    refreshWriter(ttl?: ITimeSpan): LazyPromise<boolean>;
+    refreshWriter(ttl?: ITimeSpan): Task<boolean>;
 
     /**
      * The `refreshWriterOrFail` method updates the `ttl` of the lock if expireable and owned by the same owner.
@@ -253,7 +249,7 @@ export type IWriterLock = {
      *
      * @throws {FailedRefreshWriterLockError} {@link FailedRefreshWriterLockError}
      */
-    refreshWriterOrFail(ttl?: ITimeSpan): LazyPromise<void>;
+    refreshWriterOrFail(ttl?: ITimeSpan): Task<void>;
 };
 
 /**
@@ -262,7 +258,7 @@ export type IWriterLock = {
  * @group Contracts
  */
 export type ISharedLockStateMethods = {
-    getState(): LazyPromise<ISharedLockState>;
+    getState(): Task<ISharedLockState>;
 
     /**
      * The `key` of the `ISharedLock` instance.
@@ -287,7 +283,7 @@ export type ISharedLockStateMethods = {
  */
 export type ISharedLockBase = IReaderSemaphore &
     IWriterLock & {
-        forceRelease(): LazyPromise<boolean>;
+        forceRelease(): Task<boolean>;
     };
 
 /**

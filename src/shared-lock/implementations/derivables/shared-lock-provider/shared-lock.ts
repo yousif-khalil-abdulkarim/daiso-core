@@ -2,7 +2,7 @@
  * @module SharedLock
  */
 
-import { LazyPromise } from "@/async/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/event-bus.contract.js";
 import type { Key, Namespace } from "@/namespace/_module-exports.js";
 import {
@@ -62,9 +62,7 @@ export type ISerializedSharedLock = {
  * @internal
  */
 export type SharedLockSettings = {
-    createLazyPromise: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     serdeTransformerName: string;
     namespace: Namespace;
     adapter: ISharedLockAdapter;
@@ -98,9 +96,9 @@ export class SharedLock implements ISharedLock {
         };
     }
 
-    private readonly createLazyPromise: <TValue = void>(
+    private readonly createTask: <TValue = void>(
         asyncFn: () => Promise<TValue>,
-    ) => LazyPromise<TValue>;
+    ) => Task<TValue>;
     private readonly namespace: Namespace;
     private readonly adapter: ISharedLockAdapter;
     private readonly originalAdapter:
@@ -118,7 +116,7 @@ export class SharedLock implements ISharedLock {
 
     constructor(settings: SharedLockSettings) {
         const {
-            createLazyPromise,
+            createTask,
             namespace,
             adapter,
             originalAdapter,
@@ -136,7 +134,7 @@ export class SharedLock implements ISharedLock {
         this.namespace = namespace;
         this.originalAdapter = originalAdapter;
         this.serdeTransformerName = serdeTransformerName;
-        this.createLazyPromise = createLazyPromise;
+        this.createTask = createTask;
         this.adapter = adapter;
         this.eventDispatcher = eventDispatcher;
         this._key = key;
@@ -161,8 +159,8 @@ export class SharedLock implements ISharedLock {
 
     runReader<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, LimitReachedReaderSemaphoreError>> {
-        return this.createLazyPromise(
+    ): Task<Result<TValue, LimitReachedReaderSemaphoreError>> {
+        return this.createTask(
             async (): Promise<
                 Result<TValue, LimitReachedReaderSemaphoreError>
             > => {
@@ -184,10 +182,8 @@ export class SharedLock implements ISharedLock {
         );
     }
 
-    runReaderOrFail<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<TValue> {
-        return this.createLazyPromise(async () => {
+    runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+        return this.createTask(async () => {
             try {
                 await this.acquireReaderOrFail();
                 return await resolveLazyable(asyncFn);
@@ -200,8 +196,8 @@ export class SharedLock implements ISharedLock {
     runReaderBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, LimitReachedReaderSemaphoreError>> {
-        return this.createLazyPromise(
+    ): Task<Result<TValue, LimitReachedReaderSemaphoreError>> {
+        return this.createTask(
             async (): Promise<
                 Result<TValue, LimitReachedReaderSemaphoreError>
             > => {
@@ -227,8 +223,8 @@ export class SharedLock implements ISharedLock {
     runReaderBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<TValue> {
-        return this.createLazyPromise(async () => {
+    ): Task<TValue> {
+        return this.createTask(async () => {
             try {
                 await this.acquireReaderBlockingOrFail(settings);
 
@@ -253,13 +249,13 @@ export class SharedLock implements ISharedLock {
                     error,
                     sharedLock: this,
                 })
-                .defer();
+                .detach();
             throw error;
         }
     }
 
-    acquireReader(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    acquireReader(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquireReader({
                     key: this._key.get(),
@@ -273,13 +269,13 @@ export class SharedLock implements ISharedLock {
                         .dispatch(SHARED_LOCK_EVENTS.READER_ACQUIRED, {
                             sharedLock: this,
                         })
-                        .defer();
+                        .detach();
                 } else {
                     this.eventDispatcher
                         .dispatch(SHARED_LOCK_EVENTS.UNAVAILABLE, {
                             sharedLock: this,
                         })
-                        .defer();
+                        .detach();
                 }
 
                 return hasAquired;
@@ -287,8 +283,8 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    acquireReaderOrFail(): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    acquireReaderOrFail(): Task<void> {
+        return this.createTask(async () => {
             const hasAquired = await this.acquireReader();
             if (!hasAquired) {
                 throw new LimitReachedReaderSemaphoreError(
@@ -300,8 +296,8 @@ export class SharedLock implements ISharedLock {
 
     acquireReaderBlocking(
         settings: SharedLockAquireBlockingSettings = {},
-    ): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    ): Task<boolean> {
+        return this.createTask(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -313,7 +309,7 @@ export class SharedLock implements ISharedLock {
                 if (hasAquired) {
                     return true;
                 }
-                await LazyPromise.delay(interval);
+                await Task.delay(interval);
             }
             return false;
         });
@@ -321,8 +317,8 @@ export class SharedLock implements ISharedLock {
 
     acquireReaderBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    ): Task<void> {
+        return this.createTask(async () => {
             const hasAquired = await this.acquireReaderBlocking(settings);
             if (!hasAquired) {
                 throw new LimitReachedReaderSemaphoreError(
@@ -332,8 +328,8 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    releaseReader(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    releaseReader(): Task<boolean> {
+        return this.createTask(async () => {
             const hasReleased = await this.adapter.releaseReader(
                 this._key.get(),
                 this.lockId,
@@ -343,20 +339,20 @@ export class SharedLock implements ISharedLock {
                     .dispatch(SHARED_LOCK_EVENTS.READER_RELEASED, {
                         sharedLock: this,
                     })
-                    .defer();
+                    .detach();
             } else {
                 this.eventDispatcher
                     .dispatch(SHARED_LOCK_EVENTS.READER_FAILED_RELEASE, {
                         sharedLock: this,
                     })
-                    .defer();
+                    .detach();
             }
             return hasReleased;
         });
     }
 
-    releaseReaderOrFail(): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    releaseReaderOrFail(): Task<void> {
+        return this.createTask(async () => {
             const hasReleased = await this.releaseReader();
             if (!hasReleased) {
                 throw new FailedReleaseReaderSemaphoreError(
@@ -366,8 +362,8 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    forceReleaseAllReaders(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    forceReleaseAllReaders(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceReleaseAllReaders(
                     this._key.get(),
@@ -378,17 +374,15 @@ export class SharedLock implements ISharedLock {
                         sharedLock: this,
                         hasReleased,
                     })
-                    .defer();
+                    .detach();
 
                 return hasReleased;
             });
         });
     }
 
-    refreshReader(
-        ttl: ITimeSpan = this.defaultRefreshTime,
-    ): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    refreshReader(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refreshReader(
                     this._key.get(),
@@ -402,13 +396,13 @@ export class SharedLock implements ISharedLock {
                         .dispatch(SHARED_LOCK_EVENTS.READER_REFRESHED, {
                             sharedLock: this,
                         })
-                        .defer();
+                        .detach();
                 } else {
                     this.eventDispatcher
                         .dispatch(SHARED_LOCK_EVENTS.READER_FAILED_REFRESH, {
                             sharedLock: this,
                         })
-                        .defer();
+                        .detach();
                 }
 
                 return hasRefreshed;
@@ -416,8 +410,8 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    refreshReaderOrFail(ttl?: TimeSpan): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    refreshReaderOrFail(ttl?: TimeSpan): Task<void> {
+        return this.createTask(async () => {
             const hasRefreshed = await this.refreshReader(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshReaderSemaphoreError(
@@ -429,8 +423,8 @@ export class SharedLock implements ISharedLock {
 
     runWriter<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<Result<TValue, FailedAcquireWriterLockError>> {
-        return this.createLazyPromise(
+    ): Task<Result<TValue, FailedAcquireWriterLockError>> {
+        return this.createTask(
             async (): Promise<Result<TValue, FailedAcquireWriterLockError>> => {
                 try {
                     const hasAquired = await this.acquireWriter();
@@ -450,10 +444,8 @@ export class SharedLock implements ISharedLock {
         );
     }
 
-    runWriterOrFail<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): LazyPromise<TValue> {
-        return this.createLazyPromise(async () => {
+    runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+        return this.createTask(async () => {
             try {
                 await this.acquireWriterOrFail();
                 return await resolveLazyable(asyncFn);
@@ -466,8 +458,8 @@ export class SharedLock implements ISharedLock {
     runWriterBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<Result<TValue, FailedAcquireWriterLockError>> {
-        return this.createLazyPromise(
+    ): Task<Result<TValue, FailedAcquireWriterLockError>> {
+        return this.createTask(
             async (): Promise<Result<TValue, FailedAcquireWriterLockError>> => {
                 try {
                     const hasAquired =
@@ -491,8 +483,8 @@ export class SharedLock implements ISharedLock {
     runWriterBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<TValue> {
-        return this.createLazyPromise(async () => {
+    ): Task<TValue> {
+        return this.createTask(async () => {
             try {
                 await this.acquireWriterBlockingOrFail(settings);
 
@@ -503,8 +495,8 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    acquireWriter(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    acquireWriter(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquireWriter(
                     this._key.get(),
@@ -518,7 +510,7 @@ export class SharedLock implements ISharedLock {
                     };
                     this.eventDispatcher
                         .dispatch(SHARED_LOCK_EVENTS.WRITER_ACQUIRED, event)
-                        .defer();
+                        .detach();
                     return hasAquired;
                 }
 
@@ -527,15 +519,15 @@ export class SharedLock implements ISharedLock {
                 };
                 this.eventDispatcher
                     .dispatch(SHARED_LOCK_EVENTS.UNAVAILABLE, event)
-                    .defer();
+                    .detach();
 
                 return hasAquired;
             });
         });
     }
 
-    acquireWriterOrFail(): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    acquireWriterOrFail(): Task<void> {
+        return this.createTask(async () => {
             const hasAquired = await this.acquireWriter();
             if (!hasAquired) {
                 throw new FailedAcquireWriterLockError(
@@ -547,8 +539,8 @@ export class SharedLock implements ISharedLock {
 
     acquireWriterBlocking(
         settings: SharedLockAquireBlockingSettings = {},
-    ): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    ): Task<boolean> {
+        return this.createTask(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -560,7 +552,7 @@ export class SharedLock implements ISharedLock {
                 if (hasAquired) {
                     return true;
                 }
-                await LazyPromise.delay(interval);
+                await Task.delay(interval);
             }
             return false;
         });
@@ -568,8 +560,8 @@ export class SharedLock implements ISharedLock {
 
     acquireWriterBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
-    ): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    ): Task<void> {
+        return this.createTask(async () => {
             const hasAquired = await this.acquireWriterBlocking(settings);
             if (!hasAquired) {
                 throw new FailedAcquireWriterLockError(
@@ -579,8 +571,8 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    releaseWriter(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    releaseWriter(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.releaseWriter(
                     this._key.get(),
@@ -593,7 +585,7 @@ export class SharedLock implements ISharedLock {
                     };
                     this.eventDispatcher
                         .dispatch(SHARED_LOCK_EVENTS.WRITER_RELEASED, event)
-                        .defer();
+                        .detach();
                     return hasReleased;
                 }
 
@@ -602,15 +594,15 @@ export class SharedLock implements ISharedLock {
                 };
                 this.eventDispatcher
                     .dispatch(SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE, event)
-                    .defer();
+                    .detach();
 
                 return hasReleased;
             });
         });
     }
 
-    releaseWriterOrFail(): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    releaseWriterOrFail(): Task<void> {
+        return this.createTask(async () => {
             const hasRelased = await this.releaseWriter();
             if (!hasRelased) {
                 throw new FailedReleaseWriterLockError(
@@ -620,8 +612,8 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    forceReleaseWriter(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    forceReleaseWriter(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceReleaseWriter(
                     this._key.get(),
@@ -632,16 +624,14 @@ export class SharedLock implements ISharedLock {
                 };
                 this.eventDispatcher
                     .dispatch(SHARED_LOCK_EVENTS.WRITER_FORCE_RELEASED, event)
-                    .defer();
+                    .detach();
                 return hasReleased;
             });
         });
     }
 
-    refreshWriter(
-        ttl: ITimeSpan = this.defaultRefreshTime,
-    ): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    refreshWriter(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refreshWriter(
                     this._key.get(),
@@ -656,7 +646,7 @@ export class SharedLock implements ISharedLock {
                     };
                     this.eventDispatcher
                         .dispatch(SHARED_LOCK_EVENTS.WRITER_REFRESHED, event)
-                        .defer();
+                        .detach();
                 } else {
                     const event: FailedRefreshWriterLockEvent = {
                         sharedLock: this,
@@ -666,7 +656,7 @@ export class SharedLock implements ISharedLock {
                             SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                             event,
                         )
-                        .defer();
+                        .detach();
                 }
 
                 return hasRefreshed;
@@ -674,8 +664,8 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    refreshWriterOrFail(ttl?: TimeSpan): LazyPromise<void> {
-        return this.createLazyPromise(async () => {
+    refreshWriterOrFail(ttl?: TimeSpan): Task<void> {
+        return this.createTask(async () => {
             const hasRefreshed = await this.refreshWriter(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshWriterLockError(
@@ -697,16 +687,16 @@ export class SharedLock implements ISharedLock {
         return this._ttl;
     }
 
-    forceRelease(): LazyPromise<boolean> {
-        return this.createLazyPromise(async () => {
+    forceRelease(): Task<boolean> {
+        return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 return await this.adapter.forceRelease(this._key.get());
             });
         });
     }
 
-    getState(): LazyPromise<ISharedLockState> {
-        return this.createLazyPromise<ISharedLockState>(async () => {
+    getState(): Task<ISharedLockState> {
+        return this.createTask<ISharedLockState>(async () => {
             return await this.handleUnexpectedError(async () => {
                 const state = await this.adapter.getState(this._key.get());
                 if (state === null) {

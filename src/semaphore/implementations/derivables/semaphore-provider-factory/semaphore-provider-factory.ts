@@ -16,7 +16,7 @@ import {
     SemaphoreProvider,
     type SemaphoreProviderSettingsBase,
 } from "@/semaphore/implementations/derivables/semaphore-provider/_module.js";
-import type { LazyPromise } from "@/async/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
 
@@ -102,12 +102,12 @@ export class SemaphoreProviderFactory<TAdapters extends string>
         });
     }
 
-    setLazyPromiseFactory(
-        factory: Factory<AsyncLazy<any>, LazyPromise<any>>,
+    setTaskFactory(
+        factory: Factory<AsyncLazy<any>, Task<any>>,
     ): SemaphoreProviderFactory<TAdapters> {
         return new SemaphoreProviderFactory({
             ...this.settings,
-            lazyPromiseFactory: factory,
+            taskFactory: factory,
         });
     }
 
