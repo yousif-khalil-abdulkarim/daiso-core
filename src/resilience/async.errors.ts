@@ -4,7 +4,7 @@
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
 export class AsyncError extends Error {
@@ -16,7 +16,7 @@ export class AsyncError extends Error {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
 export class TimeoutAsyncError extends AsyncError {
@@ -28,7 +28,7 @@ export class TimeoutAsyncError extends AsyncError {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
 export class HedgingAsyncError extends AsyncError {
@@ -43,7 +43,7 @@ export class HedgingAsyncError extends AsyncError {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
 export class CapacityFullAsyncError extends AsyncError {
@@ -54,7 +54,7 @@ export class CapacityFullAsyncError extends AsyncError {
 }
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
 export const ASYNC_ERRORS = {

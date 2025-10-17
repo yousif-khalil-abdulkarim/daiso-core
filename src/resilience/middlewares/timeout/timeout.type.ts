@@ -9,7 +9,7 @@ import { type Invokable } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnTimeoutData<
@@ -23,7 +23,7 @@ export type OnTimeoutData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnTimeout<
@@ -33,7 +33,7 @@ export type OnTimeout<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type TimeoutCallbacks<
@@ -48,7 +48,7 @@ export type TimeoutCallbacks<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type TimeoutSettings<

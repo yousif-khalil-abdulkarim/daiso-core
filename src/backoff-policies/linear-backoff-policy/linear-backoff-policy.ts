@@ -16,7 +16,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
  * @group BackoffPolicies
  */
 export type LinearBackoffPolicySettings = {
@@ -42,7 +42,7 @@ export type LinearBackoffPolicySettings = {
 /**
  * Linear backoff policy with jitter
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
  * @group BackoffPolicies
  */
 export function linearBackoffPolicy(

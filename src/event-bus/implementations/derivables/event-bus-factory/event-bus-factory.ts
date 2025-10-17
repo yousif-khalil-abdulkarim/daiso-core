@@ -102,7 +102,7 @@ export class EventBusFactory<
     ): EventBusFactory<TAdapters, TEventMap> {
         return new EventBusFactory({
             ...this.settings,
-            lazyPromiseFactory: factory,
+            taskFactory: factory,
         });
     }
 

@@ -15,7 +15,7 @@ import type {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnProcessingData<
@@ -28,7 +28,7 @@ export type OnProcessingData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnProcessing<
@@ -38,7 +38,7 @@ export type OnProcessing<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type BulkheadCallbacks<
@@ -50,7 +50,7 @@ export type BulkheadCallbacks<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type BulkheadSettings<
@@ -87,11 +87,11 @@ export type BulkheadSettings<
  * The `bulkhead` middlewares ensures that a given amount of {@link Promiselike | `PromiseLike`} objects run at the same time concurrently and the rest will be queued up.
  * You can provide {@link BulkheadSettings | `settings.maxCapacity`}
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  * @throws {CapacityFullAsyncError} {@link CapacityFullAsyncError}
  * ```ts
- * import { bulkhead } from "@daiso-tech/core/async";
+ * import { bulkhead } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *
  * const fetchData = new AsyncHooks(async (url: string): Promise<unknown> => {

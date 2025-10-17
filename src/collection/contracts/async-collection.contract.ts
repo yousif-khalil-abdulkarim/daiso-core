@@ -1723,7 +1723,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a {@link Task| `Task`} as default value.
+     * You can pass a {@link Task | `Task`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core/collection/contracts";
@@ -1884,7 +1884,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a {@link Task| `Task`} as default value.
+     * You can pass a {@link Task | `Task`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core/collection/contracts";
@@ -2021,7 +2021,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a {@link Task| `Task`} as default value.
+     * You can pass a {@link Task | `Task`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core/collection/contracts";
@@ -2146,7 +2146,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a {@link Task| `Task`} as default value.
+     * You can pass a {@link Task | `Task`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core/collection/contracts";

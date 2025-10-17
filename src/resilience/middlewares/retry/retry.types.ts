@@ -11,7 +11,7 @@ import type { HookContext } from "@/hooks/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnRetryAttemptData<
@@ -25,7 +25,7 @@ export type OnRetryAttemptData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnExecutionAttempt<
@@ -35,7 +35,7 @@ export type OnExecutionAttempt<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnRetryDelayData<
@@ -51,7 +51,7 @@ export type OnRetryDelayData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnRetryDelay<
@@ -61,7 +61,7 @@ export type OnRetryDelay<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type RetryCallbacks<
@@ -81,7 +81,7 @@ export type RetryCallbacks<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type RetrySettings<
@@ -99,7 +99,7 @@ export type RetrySettings<
         /**
          * @default
          * ```ts
-         * import { exponentialBackoffPolicy } from "@daiso-tech/core/async";
+         * import { exponentialBackoffPolicy } from "@daiso-tech/core/resilience";
          *
          * exponentialBackoffPolicy();
          * ```

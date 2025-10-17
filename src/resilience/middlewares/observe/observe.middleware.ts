@@ -18,12 +18,12 @@ import type {
 /**
  * The `observe` middleware tracks an async function's state and runs callbacks when it fails with an error or succeeds.
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  *
  * @example
  * ```ts
- * import { observe, Task } from "@daiso-tech/core/async";
+ * import { observe, Task } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  * import { TimeSpan } from "@daiso-tech/core/time-span";
  *
@@ -58,7 +58,7 @@ import type {
  * The middleware works also when the function returns a {@link Result | `Result`} type.
  * @example
  * ```ts
- * import { observe, Task } from "@daiso-tech/core/async";
+ * import { observe, Task } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  * import { TimeSpan } from "@daiso-tech/core/time-span";
  * import { Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";

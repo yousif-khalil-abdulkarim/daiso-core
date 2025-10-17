@@ -12,12 +12,12 @@ import { callInvokable, type Invokable } from "@/utilities/_module-exports.js";
 /**
  * The `dynamic` is wrapper middleware that allows configuration of other middlewares dynamically based on the function arguments and context.
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  *
  * @example
  * ```ts
- * import { dynamic, fallback  } from "@daiso-tech/core/async";
+ * import { dynamic, fallback  } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *
  * await new AsyncHooks(

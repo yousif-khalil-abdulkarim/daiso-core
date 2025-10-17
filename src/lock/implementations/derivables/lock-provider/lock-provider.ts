@@ -62,15 +62,15 @@ export type LockProviderSettingsBase = {
     namespace?: Namespace;
 
     /**
-     * You can pass a {@link Factory | `Factory`} of {@link Task| `Task`} to configure default settings for all {@link Task| `Task`} instances used in the `LockProvider` class.
+     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `LockProvider` class.
      * @default
      * ```ts
-     * import { Task } from "@daiso-tech/core/async";
+     * import { Task } from "@daiso-tech/core/task";
      *
      * (invokable) => new Task(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, Task<any>>;
+    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 
     serde: OneOrMore<ISerderRegister>;
 
@@ -163,10 +163,7 @@ export class LockProvider implements ILockProvider {
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<ISerderRegister>;
-    private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
-        Task<any>
-    >;
+    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly serdeTransformerName: string;
 
     /**
@@ -206,7 +203,7 @@ export class LockProvider implements ILockProvider {
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
-            lazyPromiseFactory = (invokable) => new Task(invokable),
+            taskFactory = (invokable) => new Task(invokable),
         } = settings;
 
         this.serde = serde;
@@ -220,7 +217,7 @@ export class LockProvider implements ILockProvider {
         this.defaultTtl =
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
-        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
+        this.taskFactory = resolveInvokable(taskFactory);
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
@@ -313,7 +310,7 @@ export class LockProvider implements ILockProvider {
     private createTask<TValue = void>(
         asyncFn: () => Promise<TValue>,
     ): Task<TValue> {
-        return this.lazyPromiseFactory(asyncFn);
+        return this.taskFactory(asyncFn);
     }
 
     /**

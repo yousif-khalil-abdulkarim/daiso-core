@@ -13,7 +13,7 @@ import { type ErrorPolicySettings } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnFallbackData<
@@ -29,7 +29,7 @@ export type OnFallbackData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnFallback<
@@ -40,7 +40,7 @@ export type OnFallback<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type FallbackCallbacks<
@@ -56,7 +56,7 @@ export type FallbackCallbacks<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type FallbackSettings<

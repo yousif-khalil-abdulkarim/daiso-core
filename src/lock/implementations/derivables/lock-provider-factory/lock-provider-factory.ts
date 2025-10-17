@@ -137,7 +137,7 @@ export class LockProviderFactory<TAdapters extends string>
     ): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
-            lazyPromiseFactory: factory,
+            taskFactory: factory,
         });
     }
 

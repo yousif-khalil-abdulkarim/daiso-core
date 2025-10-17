@@ -49,9 +49,7 @@ export type ISerializedSemaphore = {
 export type SemaphoreSettings = {
     slotId: string;
     limit: number;
-    createTask: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => Task<TValue>;
+    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     serdeTransformerName: string;
     adapter: ISemaphoreAdapter;
     originalAdapter: SemaphoreAdapterVariants;

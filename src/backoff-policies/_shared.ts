@@ -8,7 +8,7 @@ import type { Invokable } from "@/utilities/_module-exports.js";
 /**
  * @returns Amount milliseconds to wait
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
  * @group BackoffPolicies
  */
 export type BackoffPolicy = Invokable<
@@ -18,7 +18,7 @@ export type BackoffPolicy = Invokable<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
  * @group BackoffPolicies
  */
 export type DynamicBackoffPolicy<TSettings> =

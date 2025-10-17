@@ -21,12 +21,12 @@ import type {
 /**
  * The `fallback` middleware adds fallback value when an error occurs.
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  *
  * @example
  * ```ts
- * import { fallback } from "@daiso-tech/core/async";
+ * import { fallback } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *
  * const fetchData = new AsyncHooks(async (url: string): Promise<unknown> => {
@@ -47,7 +47,7 @@ import type {
  * The middleware works also when the function returns a {@link Result | `Result`} type.
  * @example
  * ```ts
- * import { fallback } from "@daiso-tech/core/async";
+ * import { fallback } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  * import { Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
  *

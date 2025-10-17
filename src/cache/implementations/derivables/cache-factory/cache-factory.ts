@@ -107,7 +107,7 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
     ): CacheFactory<TAdapters, TType> {
         return new CacheFactory({
             ...this.settings,
-            lazyPromiseFactory: factory,
+            taskFactory: factory,
         });
     }
 

@@ -83,7 +83,7 @@ import {
  * @group Adapters
  */
 export type AsyncIterableCollectionSettings = {
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, Task<any>>;
+    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 };
 
 /**
@@ -226,10 +226,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return new AsyncIterableCollection<TInput>(iterable);
     };
 
-    private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
-        Task<any>
-    >;
+    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
 
     /**
      * The `constructor` takes an {@link Iterable | `Iterable`} or {@link AsyncIterable | `AsyncIterable`}.
@@ -300,16 +297,12 @@ export class AsyncIterableCollection<TInput = unknown>
         private readonly iterable: AsyncIterableValue<TInput> = [],
         settings: AsyncIterableCollectionSettings = {},
     ) {
-        const {
-            lazyPromiseFactory = (invokable) => new Task(invokable),
-        } = settings;
-        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
+        const { taskFactory = (invokable) => new Task(invokable) } = settings;
+        this.taskFactory = resolveInvokable(taskFactory);
     }
 
-    private createTask<TValue = void>(
-        asyncFn: () => PromiseLike<TValue>,
-    ) {
-        return this.lazyPromiseFactory(asyncFn);
+    private createTask<TValue = void>(asyncFn: () => PromiseLike<TValue>) {
+        return this.taskFactory(asyncFn);
     }
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {

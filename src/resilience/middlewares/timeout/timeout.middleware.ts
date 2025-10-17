@@ -18,13 +18,13 @@ import type {
  * Note when a timeout occurs, the function call continues executing in the background and only the `Promise` will be aborted.
  * To ensure correct abortion behavior, provide an {@link AbortSignalBinder | `AbortSignalBinder`} to {@link AsyncHooks | `AsyncHooks`}.
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  * @throws {TimeoutAsyncError} {@link TimeoutAsyncError}
  *
  * @example
  * ```ts
- * import { timeout } from "@daiso-tech/core/async";
+ * import { timeout } from "@daiso-tech/core/resilience";
  * import { TimeSpan } from "@daiso-tech/core/time-span";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *

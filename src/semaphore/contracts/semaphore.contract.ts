@@ -56,7 +56,7 @@ export type SemaphoreAquireBlockingSettings = {
  */
 export type ISemaphoreBase = {
     /**
-     * The `run` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquire` and `release` method.
+     * The `run` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquire` and `release` method.
      *
      */
     run<TValue = void>(
@@ -64,13 +64,13 @@ export type ISemaphoreBase = {
     ): Task<Result<TValue, LimitReachedSemaphoreError>>;
 
     /**
-     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireOrFail` and `release` method.
+     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
 
     /**
-     * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireBlocking` and `release` method.
+     * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlocking` and `release` method.
      */
     runBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
@@ -78,7 +78,7 @@ export type ISemaphoreBase = {
     ): Task<Result<TValue, LimitReachedSemaphoreError>>;
 
     /**
-     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
     runBlockingOrFail<TValue = void>(
@@ -107,9 +107,7 @@ export type ISemaphoreBase = {
      *
      * @returns Returns true if the slot limit is not reached otherwise false is returned.
      */
-    acquireBlocking(
-        settings?: SemaphoreAquireBlockingSettings,
-    ): Task<boolean>;
+    acquireBlocking(settings?: SemaphoreAquireBlockingSettings): Task<boolean>;
 
     /**
      * The `acquireBlockingOrFail` method acquires an slots only if the slot limit is not reached.

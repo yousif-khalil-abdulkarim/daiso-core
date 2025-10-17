@@ -62,9 +62,7 @@ export type ISerializedSharedLock = {
  * @internal
  */
 export type SharedLockSettings = {
-    createTask: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => Task<TValue>;
+    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     serdeTransformerName: string;
     namespace: Namespace;
     adapter: ISharedLockAdapter;
@@ -184,9 +182,7 @@ export class SharedLock implements ISharedLock {
         );
     }
 
-    runReaderOrFail<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<TValue> {
+    runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
         return this.createTask(async () => {
             try {
                 await this.acquireReaderOrFail();
@@ -385,9 +381,7 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    refreshReader(
-        ttl: ITimeSpan = this.defaultRefreshTime,
-    ): Task<boolean> {
+    refreshReader(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
         return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refreshReader(
@@ -450,9 +444,7 @@ export class SharedLock implements ISharedLock {
         );
     }
 
-    runWriterOrFail<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<TValue> {
+    runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
         return this.createTask(async () => {
             try {
                 await this.acquireWriterOrFail();
@@ -638,9 +630,7 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    refreshWriter(
-        ttl: ITimeSpan = this.defaultRefreshTime,
-    ): Task<boolean> {
+    refreshWriter(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
         return this.createTask(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refreshWriter(

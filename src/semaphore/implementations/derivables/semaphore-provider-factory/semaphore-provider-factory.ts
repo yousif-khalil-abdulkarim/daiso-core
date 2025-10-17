@@ -107,7 +107,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
     ): SemaphoreProviderFactory<TAdapters> {
         return new SemaphoreProviderFactory({
             ...this.settings,
-            lazyPromiseFactory: factory,
+            taskFactory: factory,
         });
     }
 

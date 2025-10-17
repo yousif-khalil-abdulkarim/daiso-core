@@ -15,7 +15,7 @@ import {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnHedgeAttemptData<
@@ -29,7 +29,7 @@ export type OnHedgeAttemptData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnHedgeAttempt<
@@ -39,7 +39,7 @@ export type OnHedgeAttempt<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnHedgeErrorData<
@@ -54,7 +54,7 @@ export type OnHedgeErrorData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnHedgeError<
@@ -64,7 +64,7 @@ export type OnHedgeError<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type HedgingCallbacks<
@@ -84,7 +84,7 @@ export type HedgingCallbacks<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type Fallback<
@@ -94,7 +94,7 @@ export type Fallback<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type NamedFallback<
@@ -110,7 +110,7 @@ export type NamedFallback<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type HedgingSettings<
@@ -124,8 +124,8 @@ export type HedgingSettings<
          *
          * @default
          * ```ts
-         * import { retry } from "@daiso-tech/core/async";
-         * import { timeout } from "@daiso-tech/core/async";
+         * import { retry } from "@daiso-tech/core/resilience";
+         * import { timeout } from "@daiso-tech/core/resilience";
          *
          * [timeout(), retry()]
          * ```
@@ -140,7 +140,7 @@ export type HedgingSettings<
          * You can wrap primary and fallback functions with for example `retry` and `timeout` middlewares.
          * @example
          * ```ts
-         * import { retry, timeout, sequentialHedging } from "@daiso-tech/core/async";
+         * import { retry, timeout, sequentialHedging } from "@daiso-tech/core/resilience";
          *
          * new AsyncHooks(fn, [
          *   sequentialHedging({

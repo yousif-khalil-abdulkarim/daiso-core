@@ -86,7 +86,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      *
-     * @param defaultValue - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link Task| `Task`} value.
+     * @param defaultValue - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link Task | `Task`} value.
      */
     getOr(
         key: string,
@@ -100,7 +100,7 @@ export type ICacheBase<TType = unknown> = {
      * If it's an `Iterable`, it will be joined into a single string.
      * Think of an `Iterable` as representing a path.
      *
-     * @param valueToAdd - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link Task| `Task`} value.
+     * @param valueToAdd - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link Task | `Task`} value.
      */
     getOrAdd(
         key: string,
@@ -119,11 +119,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns Returns true when key doesn't exists otherwise false will be returned.
      */
-    add(
-        key: string,
-        value: TType,
-        ttl?: ITimeSpan | null,
-    ): Task<boolean>;
+    add(key: string, value: TType, ttl?: ITimeSpan | null): Task<boolean>;
 
     /**
      * The `put` method replaces th given `key` with the given `value` and `ttl` if the `key` exists
@@ -137,11 +133,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns Returns true if the `key` where replaced otherwise false is returned.
      */
-    put(
-        key: string,
-        value: TType,
-        ttl?: ITimeSpan | null,
-    ): Task<boolean>;
+    put(key: string, value: TType, ttl?: ITimeSpan | null): Task<boolean>;
 
     /**
      * The `update` method updates the given `key` with given `value`.
@@ -168,10 +160,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
-    increment(
-        key: string,
-        value?: Extract<TType, number>,
-    ): Task<boolean>;
+    increment(key: string, value?: Extract<TType, number>): Task<boolean>;
 
     /**
      * The `decrement` method decrements the given `key` with given `value`.
@@ -187,10 +176,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @throws {TypeCacheError} {@link TypeCacheError}
      */
-    decrement(
-        key: string,
-        value?: Extract<TType, number>,
-    ): Task<boolean>;
+    decrement(key: string, value?: Extract<TType, number>): Task<boolean>;
 
     /**
      * The `remove` method removes the given `key`.

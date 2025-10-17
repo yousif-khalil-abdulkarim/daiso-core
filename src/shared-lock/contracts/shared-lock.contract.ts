@@ -39,7 +39,7 @@ export type SharedLockAquireBlockingSettings = {
  */
 export type IReaderSemaphore = {
     /**
-     * The `runReader` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquire` and `release` method.
+     * The `runReader` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquire` and `release` method.
      *
      */
     runReader<TValue = void>(
@@ -47,15 +47,13 @@ export type IReaderSemaphore = {
     ): Task<Result<TValue, LimitReachedReaderSemaphoreError>>;
 
     /**
-     * The `runReaderOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireOrFail` and `release` method.
+     * The `runReaderOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
      * @throws {LimitReachedReaderSemaphoreError} {@link LimitReachedReaderSemaphoreError}
      */
-    runReaderOrFail<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<TValue>;
+    runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
 
     /**
-     * The `runReaderBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireBlocking` and `release` method.
+     * The `runReaderBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlocking` and `release` method.
      */
     runReaderBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
@@ -63,7 +61,7 @@ export type IReaderSemaphore = {
     ): Task<Result<TValue, LimitReachedReaderSemaphoreError>>;
 
     /**
-     * The `runReaderBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runReaderBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {LimitReachedReaderSemaphoreError} {@link LimitReachedReaderSemaphoreError}
      */
     runReaderBlockingOrFail<TValue = void>(
@@ -150,22 +148,20 @@ export type IReaderSemaphore = {
  */
 export type IWriterLock = {
     /**
-     * The `runWriter` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquire` and `release` method.
+     * The `runWriter` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquire` and `release` method.
      */
     runWriter<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
     ): Task<Result<TValue, FailedAcquireWriterLockError>>;
 
     /**
-     * The `runWriterOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireOrFail` and `release` method.
+     * The `runWriterOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
      * @throws {FailedAcquireWriterLockError} {@link FailedAcquireWriterLockError}
      */
-    runWriterOrFail<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<TValue>;
+    runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
 
     /**
-     * The `runWriterBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireBlocking` and `release` method.
+     * The `runWriterBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlocking` and `release` method.
      */
     runWriterBlocking<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
@@ -173,7 +169,7 @@ export type IWriterLock = {
     ): Task<Result<TValue, FailedAcquireWriterLockError>>;
 
     /**
-     * The `runWriterBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task| `Task`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runWriterBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {FailedAcquireWriterLockError} {@link FailedAcquireWriterLockError}
      */
     runWriterBlockingOrFail<TValue = void>(

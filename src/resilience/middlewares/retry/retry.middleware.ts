@@ -26,12 +26,12 @@ import type {
  * The `retry` middleware enables automatic retries for all errors or specific errors, with configurable backoff policies.
  * An error will be thrown when all retry attempts fail.
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middleware
  *
  * @example
  * ```ts
- * import { retry } from "@daiso-tech/core/async";
+ * import { retry } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  * import { TimeSpan } from "@daiso-tech/core/time-span";
  *
@@ -60,7 +60,7 @@ import type {
  * The middleware works also when the function returns a {@link Result | `Result`} type.
  * @example
  * ```ts
- * import { retry } from "@daiso-tech/core/async";
+ * import { retry } from "@daiso-tech/core/resilience";
  * import { Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  * import { TimeSpan } from "@daiso-tech/core/time-span";

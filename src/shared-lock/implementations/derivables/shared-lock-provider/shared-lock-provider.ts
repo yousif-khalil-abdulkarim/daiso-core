@@ -58,15 +58,15 @@ export type SharedLockProviderSettingsBase = {
     namespace?: Namespace;
 
     /**
-     * You can pass a {@link Factory | `Factory`} of {@link Task| `Task`} to configure default settings for all {@link Task| `Task`} instances used in the `SharedLockProvider` class.
+     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `SharedLockProvider` class.
      * @default
      * ```ts
-     * import { Task } from "@daiso-tech/core/async";
+     * import { Task } from "@daiso-tech/core/task";
      *
      * (invokable) => new Task(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, Task<any>>;
+    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 
     serde: OneOrMore<ISerderRegister>;
 
@@ -159,10 +159,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<ISerderRegister>;
-    private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
-        Task<any>
-    >;
+    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly serdeTransformerName: string;
 
     /**
@@ -202,7 +199,7 @@ export class SharedLockProvider implements ISharedLockProvider {
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
-            lazyPromiseFactory = (invokable) => new Task(invokable),
+            taskFactory = (invokable) => new Task(invokable),
         } = settings;
 
         this.serde = serde;
@@ -216,7 +213,7 @@ export class SharedLockProvider implements ISharedLockProvider {
         this.defaultTtl =
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
-        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
+        this.taskFactory = resolveInvokable(taskFactory);
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
@@ -309,7 +306,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     private createTask<TValue = void>(
         asyncFn: () => Promise<TValue>,
     ): Task<TValue> {
-        return this.lazyPromiseFactory(asyncFn);
+        return this.taskFactory(asyncFn);
     }
 
     /**

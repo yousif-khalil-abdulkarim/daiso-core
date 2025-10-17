@@ -9,7 +9,7 @@ import { type Invokable } from "@/utilities/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnObserveStartData<
@@ -22,7 +22,7 @@ export type OnObserveStartData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnObserveStart<
@@ -32,7 +32,7 @@ export type OnObserveStart<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnObserveSuccessData<
@@ -47,7 +47,7 @@ export type OnObserveSuccessData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnObserveSuccess<
@@ -58,7 +58,7 @@ export type OnObserveSuccess<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnObserveErrorData<
@@ -72,7 +72,7 @@ export type OnObserveErrorData<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnObserveFinallyData<TContext extends HookContext = HookContext> = {
@@ -82,7 +82,7 @@ export type OnObserveFinallyData<TContext extends HookContext = HookContext> = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnObserveError<
@@ -92,7 +92,7 @@ export type OnObserveError<
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type OnObserveFinally<TContext extends HookContext = HookContext> =
@@ -100,7 +100,7 @@ export type OnObserveFinally<TContext extends HookContext = HookContext> =
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  */
 export type ObserveCallbacks<

@@ -75,15 +75,15 @@ export type CacheSettingsBase<TType = unknown> = {
     namespace?: Namespace;
 
     /**
-     * You can pass a {@link Factory | `Factory`} of {@link Task| `Task`} to configure default settings for all {@link Task| `Task`} instances used in the `Cache` class.
+     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `Cache` class.
      * @default
      * ```ts
-     * import { Task } from "@daiso-tech/core/async";
+     * import { Task } from "@daiso-tech/core/task";
      *
      * (invokable) => new Task(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, Task<any>>;
+    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 
     /**
      * @default
@@ -133,10 +133,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     private readonly adapter: ICacheAdapter<TType>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly namespace: Namespace;
-    private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
-        Task<any>
-    >;
+    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly schema: StandardSchemaV1<TType> | undefined;
     private readonly shouldValidateOutput: boolean;
 
@@ -175,7 +172,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,
-            lazyPromiseFactory = (invokable) => new Task(invokable),
+            taskFactory = (invokable) => new Task(invokable),
         } = settings;
 
         this.shouldValidateOutput = shouldValidateOutput;
@@ -183,7 +180,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         this.namespace = namespace;
         this.defaultTtl =
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
-        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
+        this.taskFactory = resolveInvokable(taskFactory);
         this.eventBus = eventBus;
 
         if (isDatabaseCacheAdapter(adapter)) {
@@ -261,11 +258,11 @@ export class Cache<TType = unknown> implements ICache<TType> {
     private createTask<TValue = void>(
         asyncFn: () => Promise<TValue>,
     ): Task<TValue> {
-        return this.lazyPromiseFactory(asyncFn);
+        return this.taskFactory(asyncFn);
     }
 
     exists(key: string): Task<boolean> {
-        return this.lazyPromiseFactory(async () => {
+        return this.taskFactory(async () => {
             const value = await this.get(key);
             return value !== null;
         });
@@ -534,10 +531,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    increment(
-        key: string,
-        value = 0 as Extract<TType, number>,
-    ): Task<boolean> {
+    increment(key: string, value = 0 as Extract<TType, number>): Task<boolean> {
         return this.createTask(async () => {
             const keyObj = this.namespace.create(key);
             try {
@@ -588,10 +582,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    decrement(
-        key: string,
-        value = 0 as Extract<TType, number>,
-    ): Task<boolean> {
+    decrement(key: string, value = 0 as Extract<TType, number>): Task<boolean> {
         return this.createTask(async () => {
             return await this.increment(key, -value as Extract<TType, number>);
         });

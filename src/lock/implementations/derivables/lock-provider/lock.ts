@@ -58,9 +58,7 @@ export type ISerializedLock = {
  * @internal
  */
 export type LockSettings = {
-    createTask: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => Task<TValue>;
+    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     serdeTransformerName: string;
     namespace: Namespace;
     adapter: ILockAdapter;
@@ -282,9 +280,7 @@ export class Lock implements ILock {
         });
     }
 
-    acquireBlocking(
-        settings: LockAquireBlockingSettings = {},
-    ): Task<boolean> {
+    acquireBlocking(settings: LockAquireBlockingSettings = {}): Task<boolean> {
         return this.createTask(async () => {
             const {
                 time = this.defaultBlockingTime,
@@ -305,9 +301,7 @@ export class Lock implements ILock {
         });
     }
 
-    acquireBlockingOrFail(
-        settings?: LockAquireBlockingSettings,
-    ): Task<void> {
+    acquireBlockingOrFail(settings?: LockAquireBlockingSettings): Task<void> {
         return this.createTask(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {

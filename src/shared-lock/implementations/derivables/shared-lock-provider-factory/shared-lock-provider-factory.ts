@@ -141,7 +141,7 @@ export class SharedLockProviderFactory<TAdapters extends string>
     ): SharedLockProviderFactory<TAdapters> {
         return new SharedLockProviderFactory({
             ...this.settings,
-            lazyPromiseFactory: factory,
+            taskFactory: factory,
         });
     }
 

@@ -26,9 +26,7 @@ export type LockSerdeTransformerSettings = {
     adapter: ILockAdapter;
     originalAdapter: LockAdapterVariants;
     namespace: Namespace;
-    createTask: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => Task<TValue>;
+    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;

@@ -57,15 +57,15 @@ export type SemaphoreProviderSettingsBase = {
     namespace?: Namespace;
 
     /**
-     * You can pass a {@link Factory | `Factory`} of {@link Task| `Task`} to configure default settings for all {@link Task| `Task`} instances used in the `SemaphoreProvider` class.
+     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `SemaphoreProvider` class.
      * @default
      * ```ts
-     * import { Task } from "@daiso-tech/core/async";
+     * import { Task } from "@daiso-tech/core/task";
      *
      * (invokable) => new Task(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, Task<any>>;
+    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 
     serde: OneOrMore<ISerderRegister>;
 
@@ -159,10 +159,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<ISerderRegister>;
-    private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
-        Task<any>
-    >;
+    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly serdeTransformerName: string;
     private readonly createSlotId: Invokable<[], string>;
 
@@ -180,7 +177,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
-            lazyPromiseFactory = (invokable) => new Task(invokable),
+            taskFactory = (invokable) => new Task(invokable),
         } = settings;
 
         this.createSlotId = createSlotId;
@@ -194,7 +191,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         this.defaultTtl =
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
-        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
+        this.taskFactory = resolveInvokable(taskFactory);
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
@@ -288,7 +285,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     private createTask<TValue = void>(
         asyncFn: () => Promise<TValue>,
     ): Task<TValue> {
-        return this.lazyPromiseFactory(asyncFn);
+        return this.taskFactory(asyncFn);
     }
 
     create(key: string, settings: SemaphoreProviderCreateSettings): ISemaphore {

@@ -69,13 +69,13 @@ function resolveFunctions<TParameters extends unknown[], TReturn>(
  * It returns the result of the first successful function and automatically cancels all remaining functions.
  * If all function fail than last error is thrown.
  *
- * IMPORT_PATH: `"@daiso-tech/core/async"`
+ * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Middlewares
  * @throws {HedgingAsyncError} {@link HedgingAsyncError}
  *
  * @example
  * ```ts
- * import { sequentialHedging } from "@daiso-tech/core/async";
+ * import { sequentialHedging } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  *
  * async function fn1(signal?: AbortSignal): Promise<unknown> {

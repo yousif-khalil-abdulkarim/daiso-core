@@ -27,9 +27,7 @@ export type SharedLockSerdeTransformerSettings = {
     adapter: ISharedLockAdapter;
     originalAdapter: SharedLockAdapterVariants;
     namespace: Namespace;
-    createTask: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => Task<TValue>;
+    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;

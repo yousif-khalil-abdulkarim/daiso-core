@@ -65,15 +65,15 @@ export type EventBusSettingsBase<
     namespace?: Namespace;
 
     /**
-     * You can pass a {@link Factory | `Factory`} of {@link Task| `Task`} to configure default settings for all {@link Task| `Task`} instances used in the `EventBus` class.
+     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `EventBus` class.
      * @default
      * ```ts
-     * import { Task } from "@daiso-tech/core/async";
+     * import { Task } from "@daiso-tech/core/task";
      *
      * (invokable) => new Task(invokable)
      * ```
      */
-    lazyPromiseFactory?: Factory<AsyncLazy<any>, Task<any>>;
+    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 };
 
 /**
@@ -104,10 +104,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     private readonly shouldValidateOutput: boolean;
     private readonly store = new ListenerStore();
     private readonly adapter: IEventBusAdapter;
-    private readonly lazyPromiseFactory: FactoryFn<
-        AsyncLazy<any>,
-        Task<any>
-    >;
+    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly namespace: Namespace;
     private readonly eventMapSchema: EventMapSchema<TEventMap> | undefined;
 
@@ -134,11 +131,11 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
             eventMapSchema,
             namespace = new Namespace(["@", "event-bus"]),
             adapter,
-            lazyPromiseFactory = (invokable) => new Task(invokable),
+            taskFactory = (invokable) => new Task(invokable),
         } = settings;
         this.shouldValidateOutput = shouldValidateOutput;
         this.eventMapSchema = eventMapSchema;
-        this.lazyPromiseFactory = resolveInvokable(lazyPromiseFactory);
+        this.taskFactory = resolveInvokable(taskFactory);
         this.adapter = adapter;
         this.namespace = namespace;
         this.__onUncaughtRejection = __onUncaughtRejection;
@@ -147,7 +144,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     private createTask<TValue = void>(
         asyncFn: () => Promise<TValue>,
     ): Task<TValue> {
-        return this.lazyPromiseFactory(asyncFn);
+        return this.taskFactory(asyncFn);
     }
 
     private createWrappedListener<TEventName extends keyof TEventMap>(
