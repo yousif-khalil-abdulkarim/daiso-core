@@ -80,9 +80,9 @@
         "./dist"
     ],
     "exports": {
-        "./backof-policies": {
-            "types": "./dist/backof-policies/_module-exports.d.ts",
-            "import": "./dist/backof-policies/_module-exports.js"
+        "./backoff-policies": {
+            "types": "./dist/backoff-policies/_module-exports.d.ts",
+            "import": "./dist/backoff-policies/_module-exports.js"
         },
         "./cache": {
             "types": "./dist/cache/implementations/derivables/_module-exports.d.ts",
