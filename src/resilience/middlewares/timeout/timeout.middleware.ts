@@ -3,7 +3,7 @@
  */
 
 import { callInvokable } from "@/utilities/_module-exports.js";
-import { TimeoutResilienceError } from "@/resilience/async.errors.js";
+import { TimeoutResilienceError } from "@/resilience/resilience.errors.js";
 import { timeoutAndFail } from "@/resilience/utilities/timeout-and-fail/_module.js";
 import type { TimeoutSettings } from "@/resilience/middlewares/timeout/timeout.type.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";

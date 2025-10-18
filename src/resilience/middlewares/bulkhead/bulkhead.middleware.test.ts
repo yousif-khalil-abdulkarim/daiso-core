@@ -3,7 +3,7 @@ import {
     type OnProcessingData,
 } from "@/resilience/middlewares/bulkhead/bulkhead.middleware.js";
 import { Task } from "@/task/_module-exports.js";
-import { CapacityFullResilienceError } from "@/resilience/async.errors.js";
+import { CapacityFullResilienceError } from "@/resilience/resilience.errors.js";
 import { describe, expect, test } from "vitest";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { AsyncHooks } from "@/hooks/_module-exports.js";

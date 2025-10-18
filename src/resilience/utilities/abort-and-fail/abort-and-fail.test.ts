@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { abortAndFail } from "@/resilience/utilities/abort-and-fail/abort-and-fail.js";
-import { ResilienceError } from "@/resilience/async.errors.js";
+import { ResilienceError } from "@/resilience/resilience.errors.js";
 
 describe("function: abortAndFail", () => {
     test("should throw ResilienceError when aborted", async () => {

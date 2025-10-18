@@ -57,7 +57,7 @@ export class CapacityFullResilienceError extends ResilienceError {
  * IMPORT_PATH: `"@daiso-tech/core/resilience"`
  * @group Errors
  */
-export const ASYNC_ERRORS = {
+export const RESILIENCE_ERRORS = {
     Base: ResilienceError,
     Timeout: TimeoutResilienceError,
     Hedging: HedgingResilienceError,

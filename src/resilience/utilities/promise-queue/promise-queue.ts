@@ -9,7 +9,7 @@ import {
 } from "@/utilities/_module-exports.js";
 import { Task } from "@/task/_module-exports.js";
 import { v4 } from "uuid";
-import { CapacityFullResilienceError } from "@/resilience/async.errors.js";
+import { CapacityFullResilienceError } from "@/resilience/resilience.errors.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**

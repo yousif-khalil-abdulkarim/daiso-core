@@ -4,7 +4,7 @@ import { type OnTimeoutData } from "@/resilience/middlewares/timeout/timeout.typ
 import {
     ResilienceError,
     TimeoutResilienceError,
-} from "@/resilience/async.errors.js";
+} from "@/resilience/resilience.errors.js";
 import { Task } from "@/task/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { AsyncHooks } from "@/hooks/_module-exports.js";
