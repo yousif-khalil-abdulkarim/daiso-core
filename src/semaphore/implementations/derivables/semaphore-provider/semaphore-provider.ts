@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import { Task } from "@/task/_module-exports.js";
+import type { Task } from "@/task/_module-exports.js";
 import type {
     EventListener,
     IEventBus,
@@ -24,11 +24,7 @@ import {
     callInvokable,
     CORE,
     isPositiveNbr,
-    resolveInvokable,
     resolveOneOrMore,
-    type AsyncLazy,
-    type Factory,
-    type FactoryFn,
     type Invokable,
     type OneOrMore,
 } from "@/utilities/_module-exports.js";
@@ -55,17 +51,6 @@ export type SemaphoreProviderSettingsBase = {
      * ```
      */
     namespace?: Namespace;
-
-    /**
-     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `SemaphoreProvider` class.
-     * @default
-     * ```ts
-     * import { Task } from "@daiso-tech/core/task";
-     *
-     * (invokable) => new Task(invokable)
-     * ```
-     */
-    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 
     serde: OneOrMore<ISerderRegister>;
 
@@ -159,7 +144,6 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serde: OneOrMore<ISerderRegister>;
-    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly serdeTransformerName: string;
     private readonly createSlotId: Invokable<[], string>;
 
@@ -177,7 +161,6 @@ export class SemaphoreProvider implements ISemaphoreProvider {
                 adapter: new MemoryEventBusAdapter(),
             }),
             serdeTransformerName = "",
-            taskFactory = (invokable) => new Task(invokable),
         } = settings;
 
         this.createSlotId = createSlotId;
@@ -191,7 +174,6 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         this.defaultTtl =
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
-        this.taskFactory = resolveInvokable(taskFactory);
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
@@ -204,7 +186,6 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         const transformer = new SemaphoreSerdeTransformer({
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,
-            createTask: (asyncFn) => this.createTask(asyncFn),
             defaultBlockingInterval: this.defaultBlockingInterval,
             defaultBlockingTime: this.defaultBlockingTime,
             defaultRefreshTime: this.defaultRefreshTime,
@@ -282,12 +263,6 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         return this.eventBus.subscribe(eventName, listener);
     }
 
-    private createTask<TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ): Task<TValue> {
-        return this.taskFactory(asyncFn);
-    }
-
     create(key: string, settings: SemaphoreProviderCreateSettings): ISemaphore {
         const {
             ttl = this.defaultTtl,
@@ -301,7 +276,6 @@ export class SemaphoreProvider implements ISemaphoreProvider {
             limit,
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,
-            createTask: (asyncFn) => this.createTask(asyncFn),
             eventDispatcher: this.eventBus,
             key: this.namespace.create(key),
             ttl: ttl === null ? null : TimeSpan.fromTimeSpan(ttl),

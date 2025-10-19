@@ -15,7 +15,6 @@ import type {
     SharedLockEventMap,
 } from "@/shared-lock/contracts/_module-exports.js";
 import { getConstructorName } from "@/utilities/_module-exports.js";
-import type { Task } from "@/task/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { Namespace } from "@/namespace/_module-exports.js";
@@ -27,7 +26,6 @@ export type SharedLockSerdeTransformerSettings = {
     adapter: ISharedLockAdapter;
     originalAdapter: SharedLockAdapterVariants;
     namespace: Namespace;
-    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
@@ -46,9 +44,6 @@ export class SharedLockSerdeTransformer
         | ISharedLockAdapter
         | IDatabaseSharedLockAdapter;
     private readonly namespace: Namespace;
-    private readonly createTask: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => Task<TValue>;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
@@ -60,7 +55,6 @@ export class SharedLockSerdeTransformer
             adapter,
             originalAdapter,
             namespace,
-            createTask,
             defaultBlockingInterval,
             defaultBlockingTime,
             defaultRefreshTime,
@@ -71,7 +65,6 @@ export class SharedLockSerdeTransformer
         this.adapter = adapter;
         this.originalAdapter = originalAdapter;
         this.namespace = namespace;
-        this.createTask = createTask;
         this.defaultBlockingInterval = defaultBlockingInterval;
         this.defaultBlockingTime = defaultBlockingTime;
         this.defaultRefreshTime = defaultRefreshTime;
@@ -119,7 +112,6 @@ export class SharedLockSerdeTransformer
         const keyObj = this.namespace.create(key);
         return new SharedLock({
             lockId,
-            createTask: this.createTask,
             adapter: this.adapter,
             originalAdapter: this.originalAdapter,
             eventDispatcher: this.eventBus,

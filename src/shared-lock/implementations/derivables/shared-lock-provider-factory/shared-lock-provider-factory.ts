@@ -11,16 +11,11 @@ import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
-import type {
-    AsyncLazy,
-    Factory,
-    Invokable,
-} from "@/utilities/_module-exports.js";
+import type { Invokable } from "@/utilities/_module-exports.js";
 import {
     SharedLockProvider,
     type SharedLockProviderSettingsBase,
 } from "@/shared-lock/implementations/derivables/shared-lock-provider/_module.js";
-import type { Task } from "@/task/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
@@ -133,15 +128,6 @@ export class SharedLockProviderFactory<TAdapters extends string>
         return new SharedLockProviderFactory({
             ...this.settings,
             defaultRefreshTime: time,
-        });
-    }
-
-    setTaskFactory(
-        factory: Factory<AsyncLazy<any>, Task<any>>,
-    ): SharedLockProviderFactory<TAdapters> {
-        return new SharedLockProviderFactory({
-            ...this.settings,
-            taskFactory: factory,
         });
     }
 

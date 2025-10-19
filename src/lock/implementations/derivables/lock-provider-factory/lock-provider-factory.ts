@@ -11,16 +11,11 @@ import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
-import type {
-    AsyncLazy,
-    Factory,
-    Invokable,
-} from "@/utilities/_module-exports.js";
+import type { Invokable } from "@/utilities/_module-exports.js";
 import {
     LockProvider,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
-import type { Task } from "@/task/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
 
@@ -129,15 +124,6 @@ export class LockProviderFactory<TAdapters extends string>
         return new LockProviderFactory({
             ...this.settings,
             defaultRefreshTime: time,
-        });
-    }
-
-    setTaskFactory(
-        factory: Factory<AsyncLazy<any>, Task<any>>,
-    ): LockProviderFactory<TAdapters> {
-        return new LockProviderFactory({
-            ...this.settings,
-            taskFactory: factory,
         });
     }
 

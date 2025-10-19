@@ -62,7 +62,6 @@ export type ISerializedSharedLock = {
  * @internal
  */
 export type SharedLockSettings = {
-    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     serdeTransformerName: string;
     namespace: Namespace;
     adapter: ISharedLockAdapter;
@@ -96,9 +95,6 @@ export class SharedLock implements ISharedLock {
         };
     }
 
-    private readonly createTask: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => Task<TValue>;
     private readonly namespace: Namespace;
     private readonly adapter: ISharedLockAdapter;
     private readonly originalAdapter:
@@ -116,7 +112,6 @@ export class SharedLock implements ISharedLock {
 
     constructor(settings: SharedLockSettings) {
         const {
-            createTask,
             namespace,
             adapter,
             originalAdapter,
@@ -134,7 +129,6 @@ export class SharedLock implements ISharedLock {
         this.namespace = namespace;
         this.originalAdapter = originalAdapter;
         this.serdeTransformerName = serdeTransformerName;
-        this.createTask = createTask;
         this.adapter = adapter;
         this.eventDispatcher = eventDispatcher;
         this._key = key;
@@ -160,7 +154,7 @@ export class SharedLock implements ISharedLock {
     runReader<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
     ): Task<Result<TValue, LimitReachedReaderSemaphoreError>> {
-        return this.createTask(
+        return new Task(
             async (): Promise<
                 Result<TValue, LimitReachedReaderSemaphoreError>
             > => {
@@ -183,7 +177,7 @@ export class SharedLock implements ISharedLock {
     }
 
     runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             try {
                 await this.acquireReaderOrFail();
                 return await resolveLazyable(asyncFn);
@@ -197,7 +191,7 @@ export class SharedLock implements ISharedLock {
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
     ): Task<Result<TValue, LimitReachedReaderSemaphoreError>> {
-        return this.createTask(
+        return new Task(
             async (): Promise<
                 Result<TValue, LimitReachedReaderSemaphoreError>
             > => {
@@ -224,7 +218,7 @@ export class SharedLock implements ISharedLock {
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
     ): Task<TValue> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             try {
                 await this.acquireReaderBlockingOrFail(settings);
 
@@ -255,7 +249,7 @@ export class SharedLock implements ISharedLock {
     }
 
     acquireReader(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquireReader({
                     key: this._key.get(),
@@ -284,7 +278,7 @@ export class SharedLock implements ISharedLock {
     }
 
     acquireReaderOrFail(): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasAquired = await this.acquireReader();
             if (!hasAquired) {
                 throw new LimitReachedReaderSemaphoreError(
@@ -297,7 +291,7 @@ export class SharedLock implements ISharedLock {
     acquireReaderBlocking(
         settings: SharedLockAquireBlockingSettings = {},
     ): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -318,7 +312,7 @@ export class SharedLock implements ISharedLock {
     acquireReaderBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
     ): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasAquired = await this.acquireReaderBlocking(settings);
             if (!hasAquired) {
                 throw new LimitReachedReaderSemaphoreError(
@@ -329,7 +323,7 @@ export class SharedLock implements ISharedLock {
     }
 
     releaseReader(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasReleased = await this.adapter.releaseReader(
                 this._key.get(),
                 this.lockId,
@@ -352,7 +346,7 @@ export class SharedLock implements ISharedLock {
     }
 
     releaseReaderOrFail(): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasReleased = await this.releaseReader();
             if (!hasReleased) {
                 throw new FailedReleaseReaderSemaphoreError(
@@ -363,7 +357,7 @@ export class SharedLock implements ISharedLock {
     }
 
     forceReleaseAllReaders(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceReleaseAllReaders(
                     this._key.get(),
@@ -382,7 +376,7 @@ export class SharedLock implements ISharedLock {
     }
 
     refreshReader(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refreshReader(
                     this._key.get(),
@@ -411,7 +405,7 @@ export class SharedLock implements ISharedLock {
     }
 
     refreshReaderOrFail(ttl?: TimeSpan): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasRefreshed = await this.refreshReader(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshReaderSemaphoreError(
@@ -424,7 +418,7 @@ export class SharedLock implements ISharedLock {
     runWriter<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
     ): Task<Result<TValue, FailedAcquireWriterLockError>> {
-        return this.createTask(
+        return new Task(
             async (): Promise<Result<TValue, FailedAcquireWriterLockError>> => {
                 try {
                     const hasAquired = await this.acquireWriter();
@@ -445,7 +439,7 @@ export class SharedLock implements ISharedLock {
     }
 
     runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             try {
                 await this.acquireWriterOrFail();
                 return await resolveLazyable(asyncFn);
@@ -459,7 +453,7 @@ export class SharedLock implements ISharedLock {
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
     ): Task<Result<TValue, FailedAcquireWriterLockError>> {
-        return this.createTask(
+        return new Task(
             async (): Promise<Result<TValue, FailedAcquireWriterLockError>> => {
                 try {
                     const hasAquired =
@@ -484,7 +478,7 @@ export class SharedLock implements ISharedLock {
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
     ): Task<TValue> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             try {
                 await this.acquireWriterBlockingOrFail(settings);
 
@@ -496,7 +490,7 @@ export class SharedLock implements ISharedLock {
     }
 
     acquireWriter(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquireWriter(
                     this._key.get(),
@@ -527,7 +521,7 @@ export class SharedLock implements ISharedLock {
     }
 
     acquireWriterOrFail(): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasAquired = await this.acquireWriter();
             if (!hasAquired) {
                 throw new FailedAcquireWriterLockError(
@@ -540,7 +534,7 @@ export class SharedLock implements ISharedLock {
     acquireWriterBlocking(
         settings: SharedLockAquireBlockingSettings = {},
     ): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -561,7 +555,7 @@ export class SharedLock implements ISharedLock {
     acquireWriterBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
     ): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasAquired = await this.acquireWriterBlocking(settings);
             if (!hasAquired) {
                 throw new FailedAcquireWriterLockError(
@@ -572,7 +566,7 @@ export class SharedLock implements ISharedLock {
     }
 
     releaseWriter(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.releaseWriter(
                     this._key.get(),
@@ -602,7 +596,7 @@ export class SharedLock implements ISharedLock {
     }
 
     releaseWriterOrFail(): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasRelased = await this.releaseWriter();
             if (!hasRelased) {
                 throw new FailedReleaseWriterLockError(
@@ -613,7 +607,7 @@ export class SharedLock implements ISharedLock {
     }
 
     forceReleaseWriter(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceReleaseWriter(
                     this._key.get(),
@@ -631,7 +625,7 @@ export class SharedLock implements ISharedLock {
     }
 
     refreshWriter(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refreshWriter(
                     this._key.get(),
@@ -665,7 +659,7 @@ export class SharedLock implements ISharedLock {
     }
 
     refreshWriterOrFail(ttl?: TimeSpan): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasRefreshed = await this.refreshWriter(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshWriterLockError(
@@ -688,7 +682,7 @@ export class SharedLock implements ISharedLock {
     }
 
     forceRelease(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 return await this.adapter.forceRelease(this._key.get());
             });
@@ -696,7 +690,7 @@ export class SharedLock implements ISharedLock {
     }
 
     getState(): Task<ISharedLockState> {
-        return this.createTask<ISharedLockState>(async () => {
+        return new Task<ISharedLockState>(async () => {
             return await this.handleUnexpectedError(async () => {
                 const state = await this.adapter.getState(this._key.get());
                 if (state === null) {
