@@ -2,7 +2,6 @@
  * @module EventBus
  */
 
-import type { Task } from "@/task/_module-exports.js";
 import {
     type IEventBus,
     type IEventBusFactory,
@@ -15,7 +14,6 @@ import {
     type EventMapSchema,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
 import type { Namespace } from "@/namespace/_module-exports.js";
-import type { AsyncLazy, Factory } from "@/utilities/_module-exports.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
@@ -94,15 +92,6 @@ export class EventBusFactory<
         return new EventBusFactory({
             ...this.settings,
             namespace,
-        });
-    }
-
-    setTaskFactory(
-        factory: Factory<AsyncLazy<any>, Task<any>>,
-    ): EventBusFactory<TAdapters, TEventMap> {
-        return new EventBusFactory({
-            ...this.settings,
-            taskFactory: factory,
         });
     }
 

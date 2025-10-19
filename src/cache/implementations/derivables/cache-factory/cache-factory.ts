@@ -5,8 +5,6 @@
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
-    type AsyncLazy,
-    type Factory,
 } from "@/utilities/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type {
@@ -18,7 +16,6 @@ import {
     type CacheSettingsBase,
     type CacheAdapterVariants,
 } from "@/cache/implementations/derivables/cache/_module.js";
-import type { Task } from "@/task/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
@@ -99,15 +96,6 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
         return new CacheFactory({
             ...this.settings,
             eventBus,
-        });
-    }
-
-    setTaskFactory(
-        factory: Factory<AsyncLazy<any>, Task<any>>,
-    ): CacheFactory<TAdapters, TType> {
-        return new CacheFactory({
-            ...this.settings,
-            taskFactory: factory,
         });
     }
 

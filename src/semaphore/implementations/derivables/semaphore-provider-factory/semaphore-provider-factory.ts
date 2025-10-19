@@ -11,12 +11,10 @@ import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
-import type { AsyncLazy, Factory } from "@/utilities/_module-exports.js";
 import {
     SemaphoreProvider,
     type SemaphoreProviderSettingsBase,
 } from "@/semaphore/implementations/derivables/semaphore-provider/_module.js";
-import type { Task } from "@/task/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
 
@@ -99,15 +97,6 @@ export class SemaphoreProviderFactory<TAdapters extends string>
         return new SemaphoreProviderFactory({
             ...this.settings,
             defaultRefreshTime: time,
-        });
-    }
-
-    setTaskFactory(
-        factory: Factory<AsyncLazy<any>, Task<any>>,
-    ): SemaphoreProviderFactory<TAdapters> {
-        return new SemaphoreProviderFactory({
-            ...this.settings,
-            taskFactory: factory,
         });
     }
 

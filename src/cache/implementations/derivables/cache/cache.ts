@@ -18,11 +18,7 @@ import {
     KeyNotFoundCacheError,
     TypeCacheError,
 } from "@/cache/contracts/_module-exports.js";
-import {
-    resolveAsyncLazyable,
-    resolveInvokable,
-    validate,
-} from "@/utilities/_module-exports.js";
+import { resolveAsyncLazyable, validate } from "@/utilities/_module-exports.js";
 import type { AsyncLazyable } from "@/utilities/_module-exports.js";
 import { type NoneFunc } from "@/utilities/_module-exports.js";
 import { Task } from "@/task/_module-exports.js";
@@ -37,11 +33,6 @@ import { EventBus } from "@/event-bus/implementations/derivables/_module-exports
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
 import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/database-cache-adapter.js";
-import type {
-    AsyncLazy,
-    Factory,
-    FactoryFn,
-} from "@/utilities/_module-exports.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
@@ -73,17 +64,6 @@ export type CacheSettingsBase<TType = unknown> = {
      * ```
      */
     namespace?: Namespace;
-
-    /**
-     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `Cache` class.
-     * @default
-     * ```ts
-     * import { Task } from "@daiso-tech/core/task";
-     *
-     * (invokable) => new Task(invokable)
-     * ```
-     */
-    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 
     /**
      * @default
@@ -133,7 +113,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
     private readonly adapter: ICacheAdapter<TType>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly namespace: Namespace;
-    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly schema: StandardSchemaV1<TType> | undefined;
     private readonly shouldValidateOutput: boolean;
 
@@ -172,7 +151,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 adapter: new MemoryEventBusAdapter(),
             }),
             defaultTtl = null,
-            taskFactory = (invokable) => new Task(invokable),
         } = settings;
 
         this.shouldValidateOutput = shouldValidateOutput;
@@ -180,7 +158,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
         this.namespace = namespace;
         this.defaultTtl =
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
-        this.taskFactory = resolveInvokable(taskFactory);
         this.eventBus = eventBus;
 
         if (isDatabaseCacheAdapter(adapter)) {
@@ -255,28 +232,22 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return this.eventBus.subscribe(eventName, listener);
     }
 
-    private createTask<TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ): Task<TValue> {
-        return this.taskFactory(asyncFn);
-    }
-
     exists(key: string): Task<boolean> {
-        return this.taskFactory(async () => {
+        return new Task(async () => {
             const value = await this.get(key);
             return value !== null;
         });
     }
 
     missing(key: string): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasKey = await this.exists(key);
             return !hasKey;
         });
     }
 
     get(key: string): Task<TType | null> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
                 const value = await this.adapter.get(keyObj.toString());
@@ -314,7 +285,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     getOrFail(key: string): Task<TType> {
-        return this.createTask<TType>(async () => {
+        return new Task<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
                 throw new KeyNotFoundCacheError(
@@ -326,7 +297,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     getAndRemove(key: string): Task<TType | null> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
                 const value = await this.adapter.getAndRemove(
@@ -374,7 +345,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         key: string,
         defaultValue: AsyncLazyable<NoneFunc<TType>>,
     ): Task<TType> {
-        return this.createTask<TType>(async () => {
+        return new Task<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
                 const simplifiedValueToAdd =
@@ -390,7 +361,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,
         ttl?: ITimeSpan | null,
     ): Task<TType> {
-        return this.createTask<TType>(async () => {
+        return new Task<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
                 const simplifiedValueToAdd =
@@ -407,7 +378,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         value: TType,
         ttl: ITimeSpan | null = this.defaultTtl,
     ): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const ttlAsTimeSpan =
                 ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
             const keyObj = this.namespace.create(key);
@@ -448,7 +419,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         value: TType,
         ttl: ITimeSpan | null = this.defaultTtl,
     ): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const ttlAsTimeSpan =
                 ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
             const keyObj = this.namespace.create(key);
@@ -493,7 +464,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     update(key: string, value: TType): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
                 await validate(this.schema, value);
@@ -532,7 +503,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     increment(key: string, value = 0 as Extract<TType, number>): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
                 const hasUpdated = await this.adapter.increment(
@@ -583,13 +554,13 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     decrement(key: string, value = 0 as Extract<TType, number>): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.increment(key, -value as Extract<TType, number>);
         });
     }
 
     remove(key: string): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
                 const hasRemoved = await this.adapter.removeMany([
@@ -624,7 +595,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     removeMany(keys: Iterable<string>): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const keysArr = [...keys];
             if (keysArr.length === 0) {
                 return true;
@@ -684,7 +655,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     }
 
     clear(): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             try {
                 const promise = this.eventBus.dispatch(
                     CACHE_EVENTS.CLEARED,

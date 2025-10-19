@@ -49,7 +49,6 @@ export type ISerializedSemaphore = {
 export type SemaphoreSettings = {
     slotId: string;
     limit: number;
-    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     serdeTransformerName: string;
     adapter: ISemaphoreAdapter;
     originalAdapter: SemaphoreAdapterVariants;
@@ -83,9 +82,6 @@ export class Semaphore implements ISemaphore {
 
     private readonly slotId: string;
     private readonly limit: number;
-    private readonly createTask: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => Task<TValue>;
     private readonly adapter: ISemaphoreAdapter;
     private readonly originalAdapter:
         | ISemaphoreAdapter
@@ -103,7 +99,6 @@ export class Semaphore implements ISemaphore {
         const {
             slotId,
             limit,
-            createTask,
             adapter,
             originalAdapter,
             eventDispatcher,
@@ -119,7 +114,6 @@ export class Semaphore implements ISemaphore {
         this.slotId = slotId;
         this.limit = limit;
         this.serdeTransformerName = serdeTransformerName;
-        this.createTask = createTask;
         this.adapter = adapter;
         this.eventDispatcher = eventDispatcher;
         this._key = key;
@@ -145,7 +139,7 @@ export class Semaphore implements ISemaphore {
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
     ): Task<Result<TValue, LimitReachedSemaphoreError>> {
-        return this.createTask(
+        return new Task(
             async (): Promise<Result<TValue, LimitReachedSemaphoreError>> => {
                 try {
                     const hasAquired = await this.acquire();
@@ -166,7 +160,7 @@ export class Semaphore implements ISemaphore {
     }
 
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             try {
                 await this.acquireOrFail();
                 return await resolveLazyable(asyncFn);
@@ -180,7 +174,7 @@ export class Semaphore implements ISemaphore {
         asyncFn: AsyncLazy<TValue>,
         settings?: SemaphoreAquireBlockingSettings,
     ): Task<Result<TValue, LimitReachedSemaphoreError>> {
-        return this.createTask(
+        return new Task(
             async (): Promise<Result<TValue, LimitReachedSemaphoreError>> => {
                 try {
                     const hasAquired = await this.acquireBlocking(settings);
@@ -204,7 +198,7 @@ export class Semaphore implements ISemaphore {
         asyncFn: AsyncLazy<TValue>,
         settings?: SemaphoreAquireBlockingSettings,
     ): Task<TValue> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             try {
                 await this.acquireBlockingOrFail(settings);
 
@@ -235,7 +229,7 @@ export class Semaphore implements ISemaphore {
     }
 
     acquire(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquire({
                     key: this._key.toString(),
@@ -264,7 +258,7 @@ export class Semaphore implements ISemaphore {
     }
 
     acquireOrFail(): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
                 throw new LimitReachedSemaphoreError(
@@ -277,7 +271,7 @@ export class Semaphore implements ISemaphore {
     acquireBlocking(
         settings: SemaphoreAquireBlockingSettings = {},
     ): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -299,7 +293,7 @@ export class Semaphore implements ISemaphore {
     acquireBlockingOrFail(
         settings?: SemaphoreAquireBlockingSettings,
     ): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
                 throw new LimitReachedSemaphoreError(
@@ -310,7 +304,7 @@ export class Semaphore implements ISemaphore {
     }
 
     release(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.release(
                     this._key.toString(),
@@ -337,7 +331,7 @@ export class Semaphore implements ISemaphore {
     }
 
     releaseOrFail(): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasReleased = await this.release();
             if (!hasReleased) {
                 throw new FailedReleaseSemaphoreError(
@@ -348,7 +342,7 @@ export class Semaphore implements ISemaphore {
     }
 
     forceReleaseAll(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceReleaseAll(
                     this._key.toString(),
@@ -367,7 +361,7 @@ export class Semaphore implements ISemaphore {
     }
 
     refresh(ttl: TimeSpan = this.defaultRefreshTime): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refresh(
                     this._key.toString(),
@@ -396,7 +390,7 @@ export class Semaphore implements ISemaphore {
     }
 
     refreshOrFail(ttl?: TimeSpan): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshSemaphoreError(
@@ -419,7 +413,7 @@ export class Semaphore implements ISemaphore {
     }
 
     getState(): Task<ISemaphoreState> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(
                 async (): Promise<ISemaphoreState> => {
                     const state = await this.adapter.getState(

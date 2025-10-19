@@ -16,11 +16,6 @@ import {
 } from "@/event-bus/contracts/_module-exports.js";
 
 import { getInvokableName, validate } from "@/utilities/_module-exports.js";
-import {
-    type Factory,
-    type AsyncLazy,
-    type FactoryFn,
-} from "@/utilities/_module-exports.js";
 import { resolveInvokable } from "@/utilities/_module-exports.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
@@ -63,17 +58,6 @@ export type EventBusSettingsBase<
      * ```
      */
     namespace?: Namespace;
-
-    /**
-     * You can pass a {@link Factory | `Factory`} of {@link Task | `Task`} to configure default settings for all {@link Task | `Task`} instances used in the `EventBus` class.
-     * @default
-     * ```ts
-     * import { Task } from "@daiso-tech/core/task";
-     *
-     * (invokable) => new Task(invokable)
-     * ```
-     */
-    taskFactory?: Factory<AsyncLazy<any>, Task<any>>;
 };
 
 /**
@@ -104,7 +88,6 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     private readonly shouldValidateOutput: boolean;
     private readonly store = new ListenerStore();
     private readonly adapter: IEventBusAdapter;
-    private readonly taskFactory: FactoryFn<AsyncLazy<any>, Task<any>>;
     private readonly namespace: Namespace;
     private readonly eventMapSchema: EventMapSchema<TEventMap> | undefined;
 
@@ -131,20 +114,12 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
             eventMapSchema,
             namespace = new Namespace(["@", "event-bus"]),
             adapter,
-            taskFactory = (invokable) => new Task(invokable),
         } = settings;
         this.shouldValidateOutput = shouldValidateOutput;
         this.eventMapSchema = eventMapSchema;
-        this.taskFactory = resolveInvokable(taskFactory);
         this.adapter = adapter;
         this.namespace = namespace;
         this.__onUncaughtRejection = __onUncaughtRejection;
-    }
-
-    private createTask<TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ): Task<TValue> {
-        return this.taskFactory(asyncFn);
     }
 
     private createWrappedListener<TEventName extends keyof TEventMap>(
@@ -175,7 +150,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
     ): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
                 key.toString(),
@@ -198,7 +173,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
     ): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getAndRemove(
                 key.toString(),
@@ -223,7 +198,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
     ): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const wrappedListener = async (event_: TEventMap[TEventName]) => {
                 try {
                     if (this.shouldValidateOutput) {
@@ -279,10 +254,10 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
     ): Task<Unsubscribe> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             await this.listenOnce(eventName, listener);
             const unsubscribe = () => {
-                return this.createTask(async () => {
+                return new Task(async () => {
                     await this.removeListener(eventName, listener);
                 });
             };
@@ -294,10 +269,10 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
     ): Task<Unsubscribe> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             await this.addListener(eventName, listener);
             const unsubscribe = () => {
-                return this.createTask(async () => {
+                return new Task(async () => {
                     await this.removeListener(eventName, listener);
                 });
             };
@@ -309,7 +284,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         eventName: TEventName,
         event: TEventMap[TEventName],
     ): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             await validate(this.eventMapSchema?.[eventName], event);
             await this.adapter.dispatch(
                 this.namespace.create(String(eventName)).toString(),

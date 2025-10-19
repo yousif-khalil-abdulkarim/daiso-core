@@ -58,7 +58,6 @@ export type ISerializedLock = {
  * @internal
  */
 export type LockSettings = {
-    createTask: <TValue = void>(asyncFn: () => Promise<TValue>) => Task<TValue>;
     serdeTransformerName: string;
     namespace: Namespace;
     adapter: ILockAdapter;
@@ -88,9 +87,6 @@ export class Lock implements ILock {
         };
     }
 
-    private readonly createTask: <TValue = void>(
-        asyncFn: () => Promise<TValue>,
-    ) => Task<TValue>;
     private readonly namespace: Namespace;
     private readonly adapter: ILockAdapter;
     private readonly originalAdapter: IDatabaseLockAdapter | ILockAdapter;
@@ -105,7 +101,6 @@ export class Lock implements ILock {
 
     constructor(settings: LockSettings) {
         const {
-            createTask,
             namespace,
             adapter,
             originalAdapter,
@@ -121,7 +116,6 @@ export class Lock implements ILock {
         this.namespace = namespace;
         this.originalAdapter = originalAdapter;
         this.serdeTransformerName = serdeTransformerName;
-        this.createTask = createTask;
         this.adapter = adapter;
         this.eventDispatcher = eventDispatcher;
         this._key = key;
@@ -147,7 +141,7 @@ export class Lock implements ILock {
     run<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
     ): Task<Result<TValue, FailedAcquireLockError>> {
-        return this.createTask(
+        return new Task(
             async (): Promise<Result<TValue, FailedAcquireLockError>> => {
                 try {
                     const hasAquired = await this.acquire();
@@ -168,7 +162,7 @@ export class Lock implements ILock {
     }
 
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             try {
                 await this.acquireOrFail();
                 return await resolveLazyable(asyncFn);
@@ -182,7 +176,7 @@ export class Lock implements ILock {
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
     ): Task<Result<TValue, FailedAcquireLockError>> {
-        return this.createTask(
+        return new Task(
             async (): Promise<Result<TValue, FailedAcquireLockError>> => {
                 try {
                     const hasAquired = await this.acquireBlocking(settings);
@@ -206,7 +200,7 @@ export class Lock implements ILock {
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
     ): Task<TValue> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             try {
                 await this.acquireBlockingOrFail(settings);
 
@@ -239,7 +233,7 @@ export class Lock implements ILock {
     }
 
     acquire(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasAquired = await this.adapter.acquire(
                     this._key.toString(),
@@ -270,7 +264,7 @@ export class Lock implements ILock {
     }
 
     acquireOrFail(): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
                 throw new FailedAcquireLockError(
@@ -281,7 +275,7 @@ export class Lock implements ILock {
     }
 
     acquireBlocking(settings: LockAquireBlockingSettings = {}): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const {
                 time = this.defaultBlockingTime,
                 interval = this.defaultBlockingInterval,
@@ -302,7 +296,7 @@ export class Lock implements ILock {
     }
 
     acquireBlockingOrFail(settings?: LockAquireBlockingSettings): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
                 throw new FailedAcquireLockError(
@@ -313,7 +307,7 @@ export class Lock implements ILock {
     }
 
     release(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.release(
                     this._key.toString(),
@@ -343,7 +337,7 @@ export class Lock implements ILock {
     }
 
     releaseOrFail(): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasRelased = await this.release();
             if (!hasRelased) {
                 throw new FailedReleaseLockError(
@@ -354,7 +348,7 @@ export class Lock implements ILock {
     }
 
     forceRelease(): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasReleased = await this.adapter.forceRelease(
                     this._key.toString(),
@@ -372,7 +366,7 @@ export class Lock implements ILock {
     }
 
     refresh(ttl: TimeSpan = this.defaultRefreshTime): Task<boolean> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const hasRefreshed = await this.adapter.refresh(
                     this._key.toString(),
@@ -403,7 +397,7 @@ export class Lock implements ILock {
     }
 
     refreshOrFail(ttl?: TimeSpan): Task<void> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
                 throw new FailedRefreshLockError(
@@ -426,7 +420,7 @@ export class Lock implements ILock {
     }
 
     getState(): Task<ILockState> {
-        return this.createTask(async () => {
+        return new Task(async () => {
             return await this.handleUnexpectedError(async () => {
                 const state = await this.adapter.getState(this._key.toString());
                 if (state === null) {
