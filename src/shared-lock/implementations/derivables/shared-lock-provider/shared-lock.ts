@@ -715,10 +715,10 @@ export class SharedLock implements ISharedLock {
                     remainingTime:
                         state.writer.expiration === null
                             ? null
-                            : TimeSpan.fromDateRange(
-                                  new Date(),
-                                  state.writer.expiration,
-                              ),
+                            : TimeSpan.fromDateRange({
+                                  start: new Date(),
+                                  end: state.writer.expiration,
+                              }),
                 } satisfies ISharedLockWriterAcquiredState;
             }
 
@@ -763,10 +763,10 @@ export class SharedLock implements ISharedLock {
                     remainingTime:
                         slotExpiration === null
                             ? null
-                            : TimeSpan.fromDateRange(
-                                  new Date(),
-                                  slotExpiration,
-                              ),
+                            : TimeSpan.fromDateRange({
+                                  start: new Date(),
+                                  end: slotExpiration,
+                              }),
                 } satisfies ISharedLockReaderAcquiredState;
             }
 

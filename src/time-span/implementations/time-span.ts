@@ -20,6 +20,29 @@ export type SerializedTimeSpan = {
 };
 
 /**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/time-span"`
+ * @group Implementations
+ */
+export type TimeSpanFromDateRangeSettings = {
+    /**
+     * @default
+     * ```ts
+     * new Date()
+     * ```
+     */
+    start?: Date;
+
+    /**
+     * @default
+     * ```ts
+     * new Date()
+     * ```
+     */
+    end?: Date;
+};
+
+/**
  * The `TimeSpan` class is used for representing time interval.
  * `TimeSpan` cannot be negative.
  *
@@ -96,8 +119,11 @@ export class TimeSpan
         return new TimeSpan().addTimeSpan(timeSpan);
     }
 
-    static fromDateRange(from: Date, to: Date): TimeSpan {
-        return new TimeSpan().addMilliseconds(to.getTime() - from.getTime());
+    static fromDateRange({
+        start = new Date(),
+        end = new Date(),
+    }: TimeSpanFromDateRangeSettings = {}): TimeSpan {
+        return new TimeSpan().addMilliseconds(start.getTime() - end.getTime());
     }
 
     addMilliseconds(milliseconds: number): TimeSpan {

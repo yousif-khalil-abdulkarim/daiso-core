@@ -10,8 +10,4 @@ Removed `lazyPromiseFactory` setting field from following types:
 - `EventBusFactorySettings`
 - `LockProviderSettingsBase`
 - `LockProviderFactorySettings`
-- `SemahporeProviderSettingsBase`
-- `SemahporeProviderFactorySettings`
-- `SharedLockSettingsBase`
-- `SharedLockFactorySettings`
 - `AsyncIterableCollectionSettings`
