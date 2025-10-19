@@ -479,7 +479,10 @@ export class Semaphore implements ISemaphore {
                 remainingTime:
                     slot === null
                         ? null
-                        : TimeSpan.fromDateRange(new Date(), slot),
+                        : TimeSpan.fromDateRange({
+                              start: new Date(),
+                              end: slot,
+                          }),
             };
         }).pipe(this.handleUnexpectedError());
     }

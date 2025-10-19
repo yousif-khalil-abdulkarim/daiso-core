@@ -446,10 +446,10 @@ export class Lock implements ILock {
                     remainingTime:
                         state.expiration === null
                             ? null
-                            : TimeSpan.fromDateRange(
-                                  new Date(),
-                                  state.expiration,
-                              ),
+                            : TimeSpan.fromDateRange({
+                                  start: new Date(),
+                                  end: state.expiration,
+                              }),
                 } satisfies ILockAcquiredState;
             }
             return {
