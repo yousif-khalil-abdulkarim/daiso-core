@@ -14,10 +14,7 @@ import {
     type ICache,
     type ICacheAdapter,
 } from "@/cache/contracts/_module-exports.js";
-import {
-    KeyNotFoundCacheError,
-    TypeCacheError,
-} from "@/cache/contracts/_module-exports.js";
+import { KeyNotFoundCacheError } from "@/cache/contracts/_module-exports.js";
 import { resolveAsyncLazyable, validate } from "@/utilities/_module-exports.js";
 import type { AsyncLazyable } from "@/utilities/_module-exports.js";
 import { type NoneFunc } from "@/utilities/_module-exports.js";
@@ -545,9 +542,9 @@ export class Cache<TType = unknown> implements ICache<TType> {
                         error,
                     })
                     .detach();
-                throw new TypeCacheError(
+                throw new TypeError(
                     `Unable to increment or decrement none number type key "${keyObj.get()}"`,
-                    error,
+                    { cause: error },
                 );
             }
         });

@@ -2,10 +2,7 @@
  * @module Cache
  */
 
-import {
-    TypeCacheError,
-    type ICacheAdapter,
-} from "@/cache/contracts/_module-exports.js";
+import { type ICacheAdapter } from "@/cache/contracts/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { MongodbCacheAdapterSerde } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter-serde.js";
 import {
@@ -360,7 +357,7 @@ export class MongodbCacheAdapter<TType = unknown>
             return updateResult.modifiedCount > 0;
         } catch (error: unknown) {
             if (MongodbCacheAdapter.isMongodbIncrementError(error)) {
-                throw new TypeCacheError(
+                throw new TypeError(
                     `Unable to increment or decrement none number type key "${key}"`,
                 );
             }

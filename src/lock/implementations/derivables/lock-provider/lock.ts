@@ -32,8 +32,8 @@ import {
     FailedRefreshLockError,
     type LockAquireBlockingSettings,
     type LockEventMap,
-    LockError,
     LOCK_STATE,
+    isLockError,
 } from "@/lock/contracts/_module-exports.js";
 import {
     type ILock,
@@ -217,7 +217,7 @@ export class Lock implements ILock {
         try {
             return await fn();
         } catch (error: unknown) {
-            if (error instanceof LockError) {
+            if (isLockError(error)) {
                 throw error;
             }
             const event: UnexpectedErrorLockEvent = {

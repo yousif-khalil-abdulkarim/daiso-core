@@ -3,24 +3,12 @@
  */
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
- * @group Errors
- */
-export class CollectionError extends Error {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = CollectionError.name;
-    }
-}
-
-/**
  * The error is thrown when the item is not found.
  *
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
-export class ItemNotFoundCollectionError extends CollectionError {
+export class ItemNotFoundCollectionError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = ItemNotFoundCollectionError.name;
@@ -33,7 +21,7 @@ export class ItemNotFoundCollectionError extends CollectionError {
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
-export class MultipleItemsFoundCollectionError extends CollectionError {
+export class MultipleItemsFoundCollectionError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = MultipleItemsFoundCollectionError.name;
@@ -46,7 +34,7 @@ export class MultipleItemsFoundCollectionError extends CollectionError {
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
-export class TypeCollectionError extends CollectionError {
+export class TypeCollectionError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = TypeCollectionError.name;
@@ -59,7 +47,7 @@ export class TypeCollectionError extends CollectionError {
  * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
  * @group Errors
  */
-export class EmptyCollectionError extends CollectionError {
+export class EmptyCollectionError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = EmptyCollectionError.name;
@@ -72,7 +60,6 @@ export class EmptyCollectionError extends CollectionError {
  * @group Errors
  */
 export const COLLECTION_ERRORS = {
-    Base: CollectionError,
     ItemNotFound: ItemNotFoundCollectionError,
     MultipleItemsFound: MultipleItemsFoundCollectionError,
     Type: TypeCollectionError,

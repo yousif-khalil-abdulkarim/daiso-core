@@ -5,7 +5,6 @@
 import {
     type IDatabaseCacheAdapter,
     type ICacheAdapter,
-    TypeCacheError,
 } from "@/cache/contracts/_module-exports.js";
 import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
@@ -101,12 +100,12 @@ export class DatabaseCacheAdapter<TType = unknown>
             });
             return result > 0;
         } catch (error: unknown) {
-            if (error instanceof TypeCacheError) {
+            if (error instanceof TypeError) {
                 throw error;
             }
-            throw new TypeCacheError(
+            throw new TypeError(
                 `Unable to increment or decrement none number type key "${key}"`,
-                error,
+                { cause: error },
             );
         }
     }

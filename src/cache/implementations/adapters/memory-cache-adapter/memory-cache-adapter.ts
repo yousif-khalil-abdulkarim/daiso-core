@@ -3,10 +3,7 @@
  * @module Cache
  */
 
-import {
-    TypeCacheError,
-    type ICacheAdapter,
-} from "@/cache/contracts/_module-exports.js";
+import { type ICacheAdapter } from "@/cache/contracts/_module-exports.js";
 import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
@@ -89,7 +86,7 @@ export class MemoryCacheAdapter<TType = unknown>
         const hasKey = prevValue !== undefined;
         if (hasKey) {
             if (typeof prevValue !== "number") {
-                throw new TypeCacheError(
+                throw new TypeError(
                     `Unable to increment or decrement none number type key "${key}"`,
                 );
             }

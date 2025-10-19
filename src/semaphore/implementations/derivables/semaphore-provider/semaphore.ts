@@ -17,9 +17,9 @@ import {
     FailedRefreshSemaphoreError,
     LimitReachedSemaphoreError,
     FailedReleaseSemaphoreError,
-    SemaphoreError,
     SEMAPHORE_EVENTS,
     SEMAPHORE_STATE,
+    isSemaphoreError,
 } from "@/semaphore/contracts/_module-exports.js";
 import type { ISemaphoreState } from "@/semaphore/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
@@ -215,7 +215,7 @@ export class Semaphore implements ISemaphore {
         try {
             return await fn();
         } catch (error: unknown) {
-            if (error instanceof SemaphoreError) {
+            if (isSemaphoreError(error)) {
                 throw error;
             }
             this.eventDispatcher

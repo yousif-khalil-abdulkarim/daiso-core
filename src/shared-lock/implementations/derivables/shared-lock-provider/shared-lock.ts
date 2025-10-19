@@ -11,10 +11,10 @@ import {
     FailedRefreshWriterLockError,
     FailedReleaseReaderSemaphoreError,
     FailedReleaseWriterLockError,
+    isSharedLockError,
     LimitReachedReaderSemaphoreError,
     SHARED_LOCK_EVENTS,
     SHARED_LOCK_STATE,
-    SharedLockError,
     type AcquiredWriterLockEvent,
     type FailedRefreshWriterLockEvent,
     type FailedReleaseWriterLockEvent,
@@ -235,7 +235,7 @@ export class SharedLock implements ISharedLock {
         try {
             return await fn();
         } catch (error: unknown) {
-            if (error instanceof SharedLockError) {
+            if (isSharedLockError(error)) {
                 throw error;
             }
             this.eventDispatcher

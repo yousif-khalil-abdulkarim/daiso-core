@@ -10,7 +10,6 @@ import {
 } from "vitest";
 import {
     KeyNotFoundCacheError,
-    TypeCacheError,
     type ICache,
     type NotFoundCacheEvent,
     type AddedCacheEvent,
@@ -417,11 +416,11 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.increment("a", 1);
                 expect(await cache.get("a")).toBeNull();
             });
-            test("Should throw TypeCacheError key value is not number type", async () => {
+            test("Should throw TypeError key value is not number type", async () => {
                 await cache.add("a", "str", null);
                 await Task.delay(TTL.divide(4));
                 await expect(cache.increment("a", 1)).rejects.toBeInstanceOf(
-                    TypeCacheError,
+                    TypeError,
                 );
             });
         });
@@ -457,11 +456,11 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                 await cache.decrement("a", 1);
                 expect(await cache.get("a")).toBeNull();
             });
-            test("Should throw TypeCacheError key value is not number type", async () => {
+            test("Should throw TypeError key value is not number type", async () => {
                 await cache.add("a", "str", null);
                 await Task.delay(TTL.divide(4));
                 await expect(cache.decrement("a", 1)).rejects.toBeInstanceOf(
-                    TypeCacheError,
+                    TypeError,
                 );
             });
         });
