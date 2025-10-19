@@ -3,7 +3,6 @@
  */
 
 import {
-    TypeCacheError,
     type ICacheData,
     type ICacheInsert,
     type ICacheUpdate,
@@ -335,7 +334,7 @@ export class KyselyCacheAdapter<TType = unknown>
             const { value: serializedValue } = row;
             const value = this.serde.deserialize(serializedValue);
             if (typeof value !== "number") {
-                throw new TypeCacheError(
+                throw new TypeError(
                     `Unable to increment or decrement none number type key "${data.key}"`,
                 );
             }

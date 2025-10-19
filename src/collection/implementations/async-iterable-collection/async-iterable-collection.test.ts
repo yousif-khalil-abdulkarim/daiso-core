@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
 
 import {
-    CollectionError,
     TypeCollectionError,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
+    EmptyCollectionError,
 } from "@/collection/contracts/_module-exports.js";
 import { AsyncIterableCollection } from "@/collection/implementations/async-iterable-collection/_module.js";
 import { Task } from "@/task/_module-exports.js";
@@ -531,15 +531,10 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.sum()).toBe(10);
             expect(await collection.sum()).toBe(10);
         });
-        test("Should throw CollectionError when collection is empty", async () => {
-            const collection = new AsyncIterableCollection([]);
-            const promise = collection.sum();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", async () => {
             const collection = new AsyncIterableCollection([]);
             const promise = collection.sum();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+            await expect(promise).rejects.toBeInstanceOf(EmptyCollectionError);
         });
     });
     describe("method: average", () => {
@@ -558,15 +553,10 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.average()).toBe(2.5);
             expect(await collection.average()).toBe(2.5);
         });
-        test("Should throw CollectionError when collection is empty", async () => {
-            const collection = new AsyncIterableCollection([]);
-            const promise = collection.average();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", async () => {
             const collection = new AsyncIterableCollection([]);
             const promise = collection.average();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+            await expect(promise).rejects.toBeInstanceOf(EmptyCollectionError);
         });
     });
     describe("method: median", () => {
@@ -589,15 +579,10 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.median()).toBe(3);
             expect(await collection.median()).toBe(3);
         });
-        test("Should throw CollectionError when collection is empty", async () => {
-            const collection = new AsyncIterableCollection([]);
-            const promise = collection.median();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", async () => {
             const collection = new AsyncIterableCollection([]);
             const promise = collection.median();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+            await expect(promise).rejects.toBeInstanceOf(EmptyCollectionError);
         });
     });
     describe("method: min", () => {
@@ -623,15 +608,10 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.min()).toBe(-2);
             expect(await collection.min()).toBe(-2);
         });
-        test("Should throw CollectionError when collection is empty", async () => {
-            const collection = new AsyncIterableCollection([]);
-            const promise = collection.min();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", async () => {
             const collection = new AsyncIterableCollection([]);
             const promise = collection.min();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+            await expect(promise).rejects.toBeInstanceOf(EmptyCollectionError);
         });
     });
     describe("method: max", () => {
@@ -657,15 +637,10 @@ describe("class: AsyncIterableCollection", () => {
             expect(await collection.max()).toBe(4);
             expect(await collection.max()).toBe(4);
         });
-        test("Should throw CollectionError when collection is empty", async () => {
-            const collection = new AsyncIterableCollection([]);
-            const promise = collection.max();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", async () => {
             const collection = new AsyncIterableCollection([]);
             const promise = collection.max();
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+            await expect(promise).rejects.toBeInstanceOf(EmptyCollectionError);
         });
     });
     describe("method: percentage", () => {
@@ -723,15 +698,10 @@ describe("class: AsyncIterableCollection", () => {
                 await collection.percentage(async (item) => item === "a"),
             ).toBe(50);
         });
-        test("Should throw CollectionError when collection is empty", async () => {
-            const collection = new AsyncIterableCollection([]);
-            const promise = collection.percentage((item) => item === "a");
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", async () => {
             const collection = new AsyncIterableCollection([]);
             const promise = collection.percentage((item) => item === "a");
-            await expect(promise).rejects.toBeInstanceOf(CollectionError);
+            await expect(promise).rejects.toBeInstanceOf(EmptyCollectionError);
         });
     });
     describe("method: some", () => {
@@ -2488,12 +2458,6 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.firstOrFail();
             expect(item).toBe(1);
         });
-        test("Should throw CollectionError when item not found", async () => {
-            const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-            await expect(async () => {
-                await collection.firstOrFail((item) => item === 6);
-            }).rejects.toThrowError(CollectionError);
-        });
         test("Should throw ItemNotFoundError when item not found", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
             await expect(async () => {
@@ -2782,12 +2746,6 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.lastOrFail();
             expect(item).toBe(5);
         });
-        test("Should throw CollectionError when item not found", async () => {
-            const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
-            await expect(async () => {
-                await collection.lastOrFail((item) => item === 6);
-            }).rejects.toThrowError(CollectionError);
-        });
         test("Should throw ItemNotFoundError when item not found", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]);
             await expect(async () => {
@@ -3007,12 +2965,6 @@ describe("class: AsyncIterableCollection", () => {
                 item = await collection.beforeOrFail((item) => item === "c");
             expect(item).toBe("b");
         });
-        test(`Should throw CollectionError when searching for string "a" of ["a", "b", "c"]`, async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]);
-            await expect(async () => {
-                await collection.beforeOrFail((item) => item === "a");
-            }).rejects.toThrowError(CollectionError);
-        });
         test(`Should throw ItemNotFoundError when searching for string "d" of ["a", "b", "c"]`, async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]);
             await expect(async () => {
@@ -3207,12 +3159,6 @@ describe("class: AsyncIterableCollection", () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
                 item = await collection.afterOrFail((item) => item === "a");
             expect(item).toBe("b");
-        });
-        test(`Should throw CollectionError when searching for string "c" of ["a", "b", "c"]`, async () => {
-            const collection = new AsyncIterableCollection(["a", "b", "c"]);
-            await expect(async () => {
-                await collection.afterOrFail((item) => item === "c");
-            }).rejects.toThrowError(CollectionError);
         });
         test(`Should throw ItemNotFoundError when searching for string "d" of ["a", "b", "c"]`, async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]);

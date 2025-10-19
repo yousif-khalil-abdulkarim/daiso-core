@@ -3,25 +3,15 @@
  */
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
- * @group Errors
- */
-export class LockError extends Error {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-    }
-}
-
-/**
  * The error is thrown when trying to acquire a lock that is owned by a different owner.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Errors
  */
-export class FailedAcquireLockError extends LockError {
+export class FailedAcquireLockError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
+        this.name = FailedAcquireLockError.name;
     }
 }
 
@@ -31,9 +21,10 @@ export class FailedAcquireLockError extends LockError {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Errors
  */
-export class FailedReleaseLockError extends LockError {
+export class FailedReleaseLockError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
+        this.name = FailedReleaseLockError.name;
     }
 }
 
@@ -43,9 +34,10 @@ export class FailedReleaseLockError extends LockError {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Errors
  */
-export class FailedRefreshLockError extends LockError {
+export class FailedRefreshLockError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
+        this.name = FailedRefreshLockError.name;
     }
 }
 
@@ -55,8 +47,31 @@ export class FailedRefreshLockError extends LockError {
  * @group Errors
  */
 export const LOCK_ERRORS = {
-    Base: LockError,
     FailedAcquire: FailedAcquireLockError,
     FailedRelease: FailedReleaseLockError,
     FailedRefresh: FailedRefreshLockError,
 } as const;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Errors
+ */
+export type AllLockErrors =
+    | FailedAcquireLockError
+    | FailedReleaseLockError
+    | FailedRefreshLockError;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * @group Errors
+ */
+export function isLockError(value: unknown): value is AllLockErrors {
+    for (const ErrorClass of Object.values(LOCK_ERRORS)) {
+        if (!(value instanceof ErrorClass)) {
+            return false;
+        }
+    }
+    return true;
+}

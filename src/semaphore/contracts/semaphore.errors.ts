@@ -3,24 +3,12 @@
  */
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
- * @group Errors
- */
-export class SemaphoreError extends Error {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = SemaphoreError.name;
-    }
-}
-
-/**
  * The error is thrown when trying to acquire a semaphore slot, but all slots are already taken.
  *
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Errors
  */
-export class LimitReachedSemaphoreError extends SemaphoreError {
+export class LimitReachedSemaphoreError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = LimitReachedSemaphoreError.name;
@@ -33,7 +21,7 @@ export class LimitReachedSemaphoreError extends SemaphoreError {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Errors
  */
-export class FailedRefreshSemaphoreError extends SemaphoreError {
+export class FailedRefreshSemaphoreError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedRefreshSemaphoreError.name;
@@ -46,7 +34,7 @@ export class FailedRefreshSemaphoreError extends SemaphoreError {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Errors
  */
-export class FailedReleaseSemaphoreError extends SemaphoreError {
+export class FailedReleaseSemaphoreError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedReleaseSemaphoreError.name;
@@ -59,8 +47,31 @@ export class FailedReleaseSemaphoreError extends SemaphoreError {
  * @group Errors
  */
 export const SEMAPHORE_ERRORS = {
-    Base: SemaphoreError,
     ReachedLimit: LimitReachedSemaphoreError,
     FailedRefresh: FailedRefreshSemaphoreError,
     FailedRelease: FailedReleaseSemaphoreError,
 } as const;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Errors
+ */
+export type AllSemaphoreErrors =
+    | LimitReachedSemaphoreError
+    | FailedRefreshSemaphoreError
+    | FailedReleaseSemaphoreError;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
+ * @group Errors
+ */
+export function isSemaphoreError(value: unknown): value is AllSemaphoreErrors {
+    for (const ErrorClass of Object.values(SEMAPHORE_ERRORS)) {
+        if (!(value instanceof ErrorClass)) {
+            return false;
+        }
+    }
+    return true;
+}

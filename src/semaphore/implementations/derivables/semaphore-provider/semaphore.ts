@@ -17,13 +17,12 @@ import {
     FailedRefreshSemaphoreError,
     LimitReachedSemaphoreError,
     FailedReleaseSemaphoreError,
-    SemaphoreError,
     SEMAPHORE_EVENTS,
     SEMAPHORE_STATE,
+    isSemaphoreError,
 } from "@/semaphore/contracts/_module-exports.js";
 import type { ISemaphoreState } from "@/semaphore/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { type InvokableFn } from "@/utilities/_module-exports.js";
 import {
     resolveLazyable,
     resultFailure,
@@ -31,6 +30,8 @@ import {
     type AsyncLazy,
     type Result,
 } from "@/utilities/_module-exports.js";
+import type { AsyncMiddlewareFn } from "@/hooks/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  * @internal
@@ -209,52 +210,80 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    private async handleUnexpectedError<TReturn>(
-        fn: InvokableFn<[], Promise<TReturn>>,
-    ): Promise<TReturn> {
-        try {
-            return await fn();
-        } catch (error: unknown) {
-            if (error instanceof SemaphoreError) {
+    private handleUnexpectedError = <
+        TParameters extends unknown[],
+        TReturn,
+    >(): AsyncMiddlewareFn<TParameters, TReturn> => {
+        return async (args, next) => {
+            try {
+                return await next(...args);
+            } catch (error: unknown) {
+                if (isSemaphoreError(error)) {
+                    throw error;
+                }
+
+                this.eventDispatcher
+                    .dispatch(SEMAPHORE_EVENTS.UNEXPECTED_ERROR, {
+                        error,
+                        semaphore: this,
+                    })
+                    .detach();
+
                 throw error;
             }
-            this.eventDispatcher
-                .dispatch(SEMAPHORE_EVENTS.UNEXPECTED_ERROR, {
-                    error,
-                    semaphore: this,
-                })
-                .detach();
-            throw error;
-        }
-    }
+        };
+    };
+
+    private handleDispatch = <
+        TParameters extends unknown[],
+        TEventName extends keyof SemaphoreEventMap,
+        TEvent extends SemaphoreEventMap[TEventName],
+    >(settings: {
+        on: "true" | "false";
+        eventName: TEventName;
+        eventData: TEvent;
+    }): AsyncMiddlewareFn<TParameters, boolean> => {
+        return async (args, next) => {
+            const result = await next(...args);
+            if (result && settings.on === "true") {
+                this.eventDispatcher
+                    .dispatch(settings.eventName, settings.eventData)
+                    .detach();
+            }
+            if (!result && settings.on === "false") {
+                this.eventDispatcher
+                    .dispatch(settings.eventName, settings.eventData)
+                    .detach();
+            }
+            return result;
+        };
+    };
 
     acquire(): Task<boolean> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(async () => {
-                const hasAquired = await this.adapter.acquire({
-                    key: this._key.toString(),
-                    slotId: this.slotId,
-                    limit: this.limit,
-                    ttl: this._ttl,
-                });
-
-                if (hasAquired) {
-                    this.eventDispatcher
-                        .dispatch(SEMAPHORE_EVENTS.ACQUIRED, {
-                            semaphore: this,
-                        })
-                        .detach();
-                } else {
-                    this.eventDispatcher
-                        .dispatch(SEMAPHORE_EVENTS.LIMIT_REACHED, {
-                            semaphore: this,
-                        })
-                        .detach();
-                }
-
-                return hasAquired;
+            return await this.adapter.acquire({
+                key: this._key.toString(),
+                slotId: this.slotId,
+                limit: this.limit,
+                ttl: this._ttl,
             });
-        });
+        }).pipe([
+            this.handleUnexpectedError(),
+            this.handleDispatch({
+                on: "true",
+                eventName: SEMAPHORE_EVENTS.ACQUIRED,
+                eventData: {
+                    semaphore: this,
+                },
+            }),
+            this.handleDispatch({
+                on: "false",
+                eventName: SEMAPHORE_EVENTS.LIMIT_REACHED,
+                eventData: {
+                    semaphore: this,
+                },
+            }),
+        ]);
     }
 
     acquireOrFail(): Task<void> {
@@ -305,29 +334,27 @@ export class Semaphore implements ISemaphore {
 
     release(): Task<boolean> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(async () => {
-                const hasReleased = await this.adapter.release(
-                    this._key.toString(),
-                    this.slotId,
-                );
-
-                if (hasReleased) {
-                    this.eventDispatcher
-                        .dispatch(SEMAPHORE_EVENTS.RELEASED, {
-                            semaphore: this,
-                        })
-                        .detach();
-                } else {
-                    this.eventDispatcher
-                        .dispatch(SEMAPHORE_EVENTS.FAILED_RELEASE, {
-                            semaphore: this,
-                        })
-                        .detach();
-                }
-
-                return hasReleased;
-            });
-        });
+            return await this.adapter.release(
+                this._key.toString(),
+                this.slotId,
+            );
+        }).pipe([
+            this.handleUnexpectedError(),
+            this.handleDispatch({
+                on: "true",
+                eventName: SEMAPHORE_EVENTS.RELEASED,
+                eventData: {
+                    semaphore: this,
+                },
+            }),
+            this.handleDispatch({
+                on: "false",
+                eventName: SEMAPHORE_EVENTS.FAILED_RELEASE,
+                eventData: {
+                    semaphore: this,
+                },
+            }),
+        ]);
     }
 
     releaseOrFail(): Task<void> {
@@ -343,53 +370,56 @@ export class Semaphore implements ISemaphore {
 
     forceReleaseAll(): Task<boolean> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(async () => {
-                const hasReleased = await this.adapter.forceReleaseAll(
-                    this._key.toString(),
-                );
-
+            return await this.adapter.forceReleaseAll(this._key.toString());
+        }).pipe([
+            this.handleUnexpectedError(),
+            async (args, next) => {
+                const hasReleased = await next(...args);
                 this.eventDispatcher
                     .dispatch(SEMAPHORE_EVENTS.ALL_FORCE_RELEASED, {
                         semaphore: this,
                         hasReleased,
                     })
                     .detach();
-
                 return hasReleased;
-            });
-        });
+            },
+        ]);
     }
 
-    refresh(ttl: TimeSpan = this.defaultRefreshTime): Task<boolean> {
+    refresh(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(async () => {
-                const hasRefreshed = await this.adapter.refresh(
-                    this._key.toString(),
-                    this.slotId,
-                    ttl,
-                );
-
+            return await this.adapter.refresh(
+                this._key.toString(),
+                this.slotId,
+                TimeSpan.fromTimeSpan(ttl),
+            );
+        }).pipe([
+            this.handleUnexpectedError(),
+            this.handleDispatch({
+                on: "true",
+                eventName: SEMAPHORE_EVENTS.REFRESHED,
+                eventData: {
+                    semaphore: this,
+                },
+            }),
+            this.handleDispatch({
+                on: "false",
+                eventName: SEMAPHORE_EVENTS.FAILED_REFRESH,
+                eventData: {
+                    semaphore: this,
+                },
+            }),
+            async (args, next) => {
+                const hasRefreshed = await next(...args);
                 if (hasRefreshed) {
-                    this._ttl = ttl;
-                    this.eventDispatcher
-                        .dispatch(SEMAPHORE_EVENTS.REFRESHED, {
-                            semaphore: this,
-                        })
-                        .detach();
-                } else {
-                    this.eventDispatcher
-                        .dispatch(SEMAPHORE_EVENTS.FAILED_REFRESH, {
-                            semaphore: this,
-                        })
-                        .detach();
+                    this._ttl = TimeSpan.fromTimeSpan(ttl);
                 }
-
                 return hasRefreshed;
-            });
-        });
+            },
+        ]);
     }
 
-    refreshOrFail(ttl?: TimeSpan): Task<void> {
+    refreshOrFail(ttl?: ITimeSpan): Task<void> {
         return new Task(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
@@ -414,50 +444,43 @@ export class Semaphore implements ISemaphore {
 
     getState(): Task<ISemaphoreState> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(
-                async (): Promise<ISemaphoreState> => {
-                    const state = await this.adapter.getState(
-                        this._key.toString(),
-                    );
-                    if (state === null) {
-                        return {
-                            type: SEMAPHORE_STATE.EXPIRED,
-                        };
-                    }
+            const state = await this.adapter.getState(this._key.toString());
+            if (state === null) {
+                return {
+                    type: SEMAPHORE_STATE.EXPIRED,
+                };
+            }
 
-                    if (state.acquiredSlots.size >= state.limit) {
-                        return {
-                            type: SEMAPHORE_STATE.LIMIT_REACHED,
-                            limit: state.limit,
-                            acquiredSlots: [...state.acquiredSlots.keys()],
-                        };
-                    }
+            if (state.acquiredSlots.size >= state.limit) {
+                return {
+                    type: SEMAPHORE_STATE.LIMIT_REACHED,
+                    limit: state.limit,
+                    acquiredSlots: [...state.acquiredSlots.keys()],
+                };
+            }
 
-                    const slot = state.acquiredSlots.get(this.slotId);
-                    if (slot === undefined) {
-                        return {
-                            type: SEMAPHORE_STATE.UNACQUIRED,
-                            acquiredSlots: [...state.acquiredSlots.keys()],
-                            acquiredSlotsCount: state.acquiredSlots.size,
-                            freeSlotsCount:
-                                state.limit - state.acquiredSlots.size,
-                            limit: state.limit,
-                        };
-                    }
+            const slot = state.acquiredSlots.get(this.slotId);
+            if (slot === undefined) {
+                return {
+                    type: SEMAPHORE_STATE.UNACQUIRED,
+                    acquiredSlots: [...state.acquiredSlots.keys()],
+                    acquiredSlotsCount: state.acquiredSlots.size,
+                    freeSlotsCount: state.limit - state.acquiredSlots.size,
+                    limit: state.limit,
+                };
+            }
 
-                    return {
-                        type: SEMAPHORE_STATE.ACQUIRED,
-                        acquiredSlots: [...state.acquiredSlots.keys()],
-                        acquiredSlotsCount: state.acquiredSlots.size,
-                        freeSlotsCount: state.limit - state.acquiredSlots.size,
-                        limit: state.limit,
-                        remainingTime:
-                            slot === null
-                                ? null
-                                : TimeSpan.fromDateRange(new Date(), slot),
-                    };
-                },
-            );
-        });
+            return {
+                type: SEMAPHORE_STATE.ACQUIRED,
+                acquiredSlots: [...state.acquiredSlots.keys()],
+                acquiredSlotsCount: state.acquiredSlots.size,
+                freeSlotsCount: state.limit - state.acquiredSlots.size,
+                limit: state.limit,
+                remainingTime:
+                    slot === null
+                        ? null
+                        : TimeSpan.fromDateRange(new Date(), slot),
+            };
+        }).pipe(this.handleUnexpectedError());
     }
 }

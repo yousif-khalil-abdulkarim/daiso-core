@@ -2,7 +2,6 @@
  * @module Lock
  */
 
-import { type InvokableFn } from "@/utilities/_module-exports.js";
 import {
     type AsyncLazy,
     type Result,
@@ -11,14 +10,6 @@ import {
     resultFailure,
 } from "@/utilities/_module-exports.js";
 import type {
-    AcquiredLockEvent,
-    UnavailableLockEvent,
-    ReleasedLockEvent,
-    FailedReleaseLockEvent,
-    ForceReleasedLockEvent,
-    RefreshedLockEvent,
-    FailedRefreshLockEvent,
-    UnexpectedErrorLockEvent,
     ILockState,
     IDatabaseLockAdapter,
     ILockExpiredState,
@@ -32,8 +23,8 @@ import {
     FailedRefreshLockError,
     type LockAquireBlockingSettings,
     type LockEventMap,
-    LockError,
     LOCK_STATE,
+    isLockError,
 } from "@/lock/contracts/_module-exports.js";
 import {
     type ILock,
@@ -43,6 +34,8 @@ import { Task } from "@/task/_module-exports.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { Key, Namespace } from "@/namespace/_module-exports.js";
+import type { AsyncMiddlewareFn } from "@/hooks/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  * @internal
@@ -211,56 +204,79 @@ export class Lock implements ILock {
         });
     }
 
-    private async handleUnexpectedError<TReturn>(
-        fn: InvokableFn<[], Promise<TReturn>>,
-    ): Promise<TReturn> {
-        try {
-            return await fn();
-        } catch (error: unknown) {
-            if (error instanceof LockError) {
+    private handleUnexpectedError = <
+        TParameters extends unknown[],
+        TReturn,
+    >(): AsyncMiddlewareFn<TParameters, TReturn> => {
+        return async (args, next) => {
+            try {
+                return await next(...args);
+            } catch (error: unknown) {
+                if (isLockError(error)) {
+                    throw error;
+                }
+
+                this.eventDispatcher
+                    .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, {
+                        error,
+                        lock: this,
+                    })
+                    .detach();
+
                 throw error;
             }
-            const event: UnexpectedErrorLockEvent = {
-                error,
-                lock: this,
-            };
-            this.eventDispatcher
-                .dispatch(LOCK_EVENTS.UNEXPECTED_ERROR, event)
-                .detach();
+        };
+    };
 
-            throw error;
-        }
-    }
+    private handleDispatch = <
+        TParameters extends unknown[],
+        TEventName extends keyof LockEventMap,
+        TEvent extends LockEventMap[TEventName],
+    >(settings: {
+        on: "true" | "false";
+        eventName: TEventName;
+        eventData: TEvent;
+    }): AsyncMiddlewareFn<TParameters, boolean> => {
+        return async (args, next) => {
+            const result = await next(...args);
+            if (result && settings.on === "true") {
+                this.eventDispatcher
+                    .dispatch(settings.eventName, settings.eventData)
+                    .detach();
+            }
+            if (!result && settings.on === "false") {
+                this.eventDispatcher
+                    .dispatch(settings.eventName, settings.eventData)
+                    .detach();
+            }
+            return result;
+        };
+    };
 
     acquire(): Task<boolean> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(async () => {
-                const hasAquired = await this.adapter.acquire(
-                    this._key.toString(),
-                    this.lockId,
-                    this._ttl,
-                );
-
-                if (hasAquired) {
-                    const event: AcquiredLockEvent = {
-                        lock: this,
-                    };
-                    this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.ACQUIRED, event)
-                        .detach();
-                    return hasAquired;
-                }
-
-                const event: UnavailableLockEvent = {
+            return await this.adapter.acquire(
+                this._key.toString(),
+                this.lockId,
+                this._ttl,
+            );
+        }).pipe([
+            this.handleUnexpectedError(),
+            this.handleDispatch({
+                on: "true",
+                eventName: LOCK_EVENTS.ACQUIRED,
+                eventData: {
                     lock: this,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.UNAVAILABLE, event)
-                    .detach();
-
-                return hasAquired;
-            });
-        });
+                },
+            }),
+            this.handleDispatch({
+                on: "false",
+                eventName: LOCK_EVENTS.UNAVAILABLE,
+                eventData: {
+                    lock: this,
+                },
+            }),
+        ]);
     }
 
     acquireOrFail(): Task<void> {
@@ -308,32 +324,27 @@ export class Lock implements ILock {
 
     release(): Task<boolean> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(async () => {
-                const hasReleased = await this.adapter.release(
-                    this._key.toString(),
-                    this.lockId,
-                );
-
-                if (hasReleased) {
-                    const event: ReleasedLockEvent = {
-                        lock: this,
-                    };
-                    this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.RELEASED, event)
-                        .detach();
-                    return hasReleased;
-                }
-
-                const event: FailedReleaseLockEvent = {
+            return await this.adapter.release(
+                this._key.toString(),
+                this.lockId,
+            );
+        }).pipe([
+            this.handleUnexpectedError(),
+            this.handleDispatch({
+                on: "true",
+                eventName: LOCK_EVENTS.RELEASED,
+                eventData: {
                     lock: this,
-                };
-                this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.FAILED_RELEASE, event)
-                    .detach();
-
-                return hasReleased;
-            });
-        });
+                },
+            }),
+            this.handleDispatch({
+                on: "false",
+                eventName: LOCK_EVENTS.FAILED_RELEASE,
+                eventData: {
+                    lock: this,
+                },
+            }),
+        ]);
     }
 
     releaseOrFail(): Task<void> {
@@ -349,54 +360,56 @@ export class Lock implements ILock {
 
     forceRelease(): Task<boolean> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(async () => {
-                const hasReleased = await this.adapter.forceRelease(
-                    this._key.toString(),
-                );
-                const event: ForceReleasedLockEvent = {
-                    lock: this,
-                    hasReleased,
-                };
+            return await this.adapter.forceRelease(this._key.toString());
+        }).pipe([
+            this.handleUnexpectedError(),
+            async (args, next) => {
+                const hasReleased = await next(...args);
                 this.eventDispatcher
-                    .dispatch(LOCK_EVENTS.FORCE_RELEASED, event)
+                    .dispatch(LOCK_EVENTS.FORCE_RELEASED, {
+                        lock: this,
+                        hasReleased,
+                    })
                     .detach();
                 return hasReleased;
-            });
-        });
+            },
+        ]);
     }
 
-    refresh(ttl: TimeSpan = this.defaultRefreshTime): Task<boolean> {
+    refresh(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(async () => {
-                const hasRefreshed = await this.adapter.refresh(
-                    this._key.toString(),
-                    this.lockId,
-                    ttl,
-                );
-
+            return await this.adapter.refresh(
+                this._key.toString(),
+                this.lockId,
+                TimeSpan.fromTimeSpan(ttl),
+            );
+        }).pipe([
+            this.handleUnexpectedError(),
+            this.handleDispatch({
+                on: "true",
+                eventName: LOCK_EVENTS.REFRESHED,
+                eventData: {
+                    lock: this,
+                },
+            }),
+            this.handleDispatch({
+                on: "false",
+                eventName: LOCK_EVENTS.FAILED_REFRESH,
+                eventData: {
+                    lock: this,
+                },
+            }),
+            async (args, next) => {
+                const hasRefreshed = await next(...args);
                 if (hasRefreshed) {
-                    this._ttl = ttl;
-                    const event: RefreshedLockEvent = {
-                        lock: this,
-                    };
-                    this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.REFRESHED, event)
-                        .detach();
-                } else {
-                    const event: FailedRefreshLockEvent = {
-                        lock: this,
-                    };
-                    this.eventDispatcher
-                        .dispatch(LOCK_EVENTS.FAILED_REFRESH, event)
-                        .detach();
+                    this._ttl = TimeSpan.fromTimeSpan(ttl);
                 }
-
                 return hasRefreshed;
-            });
-        });
+            },
+        ]);
     }
 
-    refreshOrFail(ttl?: TimeSpan): Task<void> {
+    refreshOrFail(ttl?: ITimeSpan): Task<void> {
         return new Task(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
@@ -421,30 +434,28 @@ export class Lock implements ILock {
 
     getState(): Task<ILockState> {
         return new Task(async () => {
-            return await this.handleUnexpectedError(async () => {
-                const state = await this.adapter.getState(this._key.toString());
-                if (state === null) {
-                    return {
-                        type: LOCK_STATE.EXPIRED,
-                    } satisfies ILockExpiredState;
-                }
-                if (state.owner === this.lockId) {
-                    return {
-                        type: LOCK_STATE.ACQUIRED,
-                        remainingTime:
-                            state.expiration === null
-                                ? null
-                                : TimeSpan.fromDateRange(
-                                      new Date(),
-                                      state.expiration,
-                                  ),
-                    } satisfies ILockAcquiredState;
-                }
+            const state = await this.adapter.getState(this._key.toString());
+            if (state === null) {
                 return {
-                    type: LOCK_STATE.UNAVAILABLE,
-                    owner: state.owner,
-                } satisfies ILockUnavailableState;
-            });
-        });
+                    type: LOCK_STATE.EXPIRED,
+                } satisfies ILockExpiredState;
+            }
+            if (state.owner === this.lockId) {
+                return {
+                    type: LOCK_STATE.ACQUIRED,
+                    remainingTime:
+                        state.expiration === null
+                            ? null
+                            : TimeSpan.fromDateRange(
+                                  new Date(),
+                                  state.expiration,
+                              ),
+                } satisfies ILockAcquiredState;
+            }
+            return {
+                type: LOCK_STATE.UNAVAILABLE,
+                owner: state.owner,
+            } satisfies ILockUnavailableState;
+        }).pipe(this.handleUnexpectedError());
     }
 }

@@ -2,10 +2,7 @@
  * @module Cache
  */
 
-import {
-    TypeCacheError,
-    type ICacheAdapter,
-} from "@/cache/contracts/_module-exports.js";
+import { type ICacheAdapter } from "@/cache/contracts/_module-exports.js";
 import type { ISerde } from "@/serde/contracts/_module-exports.js";
 import { ReplyError, type Redis, type Result } from "ioredis";
 import { ClearIterable } from "@/cache/implementations/adapters/redis-cache-adapter/utilities.js";
@@ -182,7 +179,7 @@ export class RedisCacheAdapter<TType = unknown>
             if (!RedisCacheAdapter.isRedisTypeError(error)) {
                 throw error;
             }
-            throw new TypeCacheError(
+            throw new TypeError(
                 `Unable to increment or decrement none number type key "${key}"`,
             );
         }

@@ -10,8 +10,6 @@ import type {
 import type { AsyncLazyable, NoneFunc } from "@/utilities/_module-exports.js";
 import type { CacheEventMap } from "@/cache/contracts/cache.events.js";
 import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { TypeCacheError } from "@/cache/contracts/cache.errors.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
@@ -158,7 +156,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns Returns true if the `key` where incremented otherwise false will be returned.
      *
-     * @throws {TypeCacheError} {@link TypeCacheError}
+     * @throws {TypeError} {@link TypeError}
      */
     increment(key: string, value?: Extract<TType, number>): Task<boolean>;
 
@@ -174,7 +172,7 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns Returns true if the `key` where decremented otherwise false will be returned.
      *
-     * @throws {TypeCacheError} {@link TypeCacheError}
+     * @throws {TypeError} {@link TypeError}
      */
     decrement(key: string, value?: Extract<TType, number>): Task<boolean>;
 

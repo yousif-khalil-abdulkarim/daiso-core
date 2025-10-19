@@ -3,36 +3,12 @@
  */
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
- * @group Errors
- */
-export class SharedLockError extends Error {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = SharedLockError.name;
-    }
-}
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
- * @group Errors
- */
-export class ReaderSemaphoreError extends SharedLockError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = ReaderSemaphoreError.name;
-    }
-}
-
-/**
  * The error is thrown when trying to acquire a semaphore slot, but all slots are already taken.
  *
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Errors
  */
-export class LimitReachedReaderSemaphoreError extends ReaderSemaphoreError {
+export class LimitReachedReaderSemaphoreError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = LimitReachedReaderSemaphoreError.name;
@@ -45,7 +21,7 @@ export class LimitReachedReaderSemaphoreError extends ReaderSemaphoreError {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Errors
  */
-export class FailedRefreshReaderSemaphoreError extends ReaderSemaphoreError {
+export class FailedRefreshReaderSemaphoreError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedRefreshReaderSemaphoreError.name;
@@ -58,7 +34,7 @@ export class FailedRefreshReaderSemaphoreError extends ReaderSemaphoreError {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Errors
  */
-export class FailedReleaseReaderSemaphoreError extends ReaderSemaphoreError {
+export class FailedReleaseReaderSemaphoreError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedReleaseReaderSemaphoreError.name;
@@ -71,7 +47,6 @@ export class FailedReleaseReaderSemaphoreError extends ReaderSemaphoreError {
  * @group Errors
  */
 export const READER_SEMAPHORE_ERRORS = {
-    READER: ReaderSemaphoreError,
     ReachedLimit: LimitReachedReaderSemaphoreError,
     FailedRefresh: FailedRefreshReaderSemaphoreError,
     FailedRelease: FailedReleaseReaderSemaphoreError,
@@ -82,10 +57,25 @@ export const READER_SEMAPHORE_ERRORS = {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Errors
  */
-export class WriterLockError extends SharedLockError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
+export type AllReaderSemaphoreErrors =
+    | LimitReachedReaderSemaphoreError
+    | FailedRefreshReaderSemaphoreError
+    | FailedReleaseReaderSemaphoreError;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
+ * @group Errors
+ */
+export function isReaderSemaphoreError(
+    value: unknown,
+): value is AllReaderSemaphoreErrors {
+    for (const ErrorClass of Object.values(READER_SEMAPHORE_ERRORS)) {
+        if (!(value instanceof ErrorClass)) {
+            return false;
+        }
     }
+    return true;
 }
 
 /**
@@ -94,7 +84,7 @@ export class WriterLockError extends SharedLockError {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Errors
  */
-export class FailedAcquireWriterLockError extends WriterLockError {
+export class FailedAcquireWriterLockError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
     }
@@ -106,7 +96,7 @@ export class FailedAcquireWriterLockError extends WriterLockError {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Errors
  */
-export class FailedReleaseWriterLockError extends WriterLockError {
+export class FailedReleaseWriterLockError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
     }
@@ -118,7 +108,7 @@ export class FailedReleaseWriterLockError extends WriterLockError {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Errors
  */
-export class FailedRefreshWriterLockError extends WriterLockError {
+export class FailedRefreshWriterLockError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
     }
@@ -130,7 +120,6 @@ export class FailedRefreshWriterLockError extends WriterLockError {
  * @group Errors
  */
 export const WRITER_LOCK_ERRORS = {
-    WRITER: WriterLockError,
     FailedAcquire: FailedAcquireWriterLockError,
     FailedRelease: FailedReleaseWriterLockError,
     FailedRefresh: FailedRefreshWriterLockError,
@@ -141,7 +130,53 @@ export const WRITER_LOCK_ERRORS = {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Errors
  */
+export type AllWriterLockErrors =
+    | FailedAcquireWriterLockError
+    | FailedReleaseWriterLockError
+    | FailedRefreshWriterLockError;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
+ * @group Errors
+ */
+export function isWriterLockError(
+    value: unknown,
+): value is AllWriterLockErrors {
+    for (const ErrorClass of Object.values(WRITER_LOCK_ERRORS)) {
+        if (!(value instanceof ErrorClass)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
+ * @group Errors
+ */
 export const SHARED_LOCK_ERRORS = {
     ...READER_SEMAPHORE_ERRORS,
     ...WRITER_LOCK_ERRORS,
 } as const;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
+ * @group Errors
+ */
+export type AllSharedLockErrors =
+    | AllWriterLockErrors
+    | AllReaderSemaphoreErrors;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
+ * @group Errors
+ */
+export function isSharedLockError(
+    value: unknown,
+): value is AllSharedLockErrors {
+    return isReaderSemaphoreError(value) || isWriterLockError(value);
+}

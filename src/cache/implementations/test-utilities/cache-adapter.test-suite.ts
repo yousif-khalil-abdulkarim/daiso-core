@@ -8,10 +8,7 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import {
-    TypeCacheError,
-    type ICacheAdapter,
-} from "@/cache/contracts/_module-exports.js";
+import { type ICacheAdapter } from "@/cache/contracts/_module-exports.js";
 import { type Promisable } from "@/utilities/_module-exports.js";
 import { Task } from "@/task/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
@@ -264,11 +261,11 @@ export function cacheAdapterTestSuite(
             await adapter.increment("a", 1);
             expect(await adapter.get("a")).toBeNull();
         });
-        test("Should throw TypeCacheError key value is not number type", async () => {
+        test("Should throw TypeError key value is not number type", async () => {
             await adapter.add("a", "str", null);
             await Task.delay(TTL.divide(4));
             await expect(adapter.increment("a", 1)).rejects.toBeInstanceOf(
-                TypeCacheError,
+                TypeError,
             );
         });
     });

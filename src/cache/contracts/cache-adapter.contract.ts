@@ -1,8 +1,6 @@
 /**
  * @module Cache
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { TypeCacheError } from "@/cache/contracts/cache.errors.js";
 import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
@@ -44,7 +42,7 @@ export type ICacheAdapter<TType = unknown> = {
      * The `increment` method increments the given `key` with given `value`. Returns true if the `key` where incremented otherwise false will be returned.
      * If `values` is not defined then it will increment the key with 1.
      * An error will thrown if the key is not a number.
-     * @throws {TypeCacheError} {@link TypeCacheError}
+     * @throws {TypeError} {@link TypeError}
      */
     increment(key: string, value: number): Promise<boolean>;
 

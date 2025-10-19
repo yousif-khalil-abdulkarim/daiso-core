@@ -3,37 +3,12 @@
  */
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
- * @group Errors
- */
-export class CacheError extends Error {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = CacheError.name;
-    }
-}
-
-/**
- * The error is thrown when attempting to increment or decrement a key that is not of number type.
- *
- * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
- * @group Errors
- */
-export class TypeCacheError extends CacheError {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = TypeCacheError.name;
-    }
-}
-
-/**
  * The error is thrown when a key is not found
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Errors
  */
-export class KeyNotFoundCacheError extends CacheError {
+export class KeyNotFoundCacheError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = KeyNotFoundCacheError.name;
@@ -46,7 +21,26 @@ export class KeyNotFoundCacheError extends CacheError {
  * @group Errors
  */
 export const CACHE_ERRORS = {
-    Base: CacheError,
-    Type: TypeCacheError,
     KeyNotFound: KeyNotFoundCacheError,
 } as const;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
+ * @group Errors
+ */
+export type AllCacheErrors = KeyNotFoundCacheError;
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
+ * @group Errors
+ */
+export function isCacheError(value: unknown): value is AllCacheErrors {
+    for (const ErrorClass of Object.values(CACHE_ERRORS)) {
+        if (!(value instanceof ErrorClass)) {
+            return false;
+        }
+    }
+    return true;
+}

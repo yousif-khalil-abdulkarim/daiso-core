@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
 
 import {
-    CollectionError,
     TypeCollectionError,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
+    EmptyCollectionError,
 } from "@/collection/contracts/_module-exports.js";
 import { ListCollection } from "@/collection/implementations/list-collection/_module.js";
 
@@ -385,17 +385,11 @@ describe("class: ListCollection", () => {
             expect(collection.sum()).toBe(10);
             expect(collection.sum()).toBe(10);
         });
-        test("Should throw CollectionError when collection is empty", () => {
-            const collection = new ListCollection([]);
-            expect(() => {
-                collection.sum();
-            }).toThrowError(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", () => {
             const collection = new ListCollection([]);
             expect(() => {
                 collection.sum();
-            }).toThrowError(CollectionError);
+            }).toThrowError(EmptyCollectionError);
         });
     });
     describe("method: average", () => {
@@ -414,17 +408,11 @@ describe("class: ListCollection", () => {
             expect(collection.average()).toBe(2.5);
             expect(collection.average()).toBe(2.5);
         });
-        test("Should throw CollectionError when collection is empty", () => {
-            const collection = new ListCollection([]);
-            expect(() => {
-                collection.average();
-            }).toThrowError(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", () => {
             const collection = new ListCollection([]);
             expect(() => {
                 collection.average();
-            }).toThrowError(CollectionError);
+            }).toThrowError(EmptyCollectionError);
         });
     });
     describe("method: median", () => {
@@ -447,17 +435,11 @@ describe("class: ListCollection", () => {
             expect(collection.median()).toBe(3);
             expect(collection.median()).toBe(3);
         });
-        test("Should throw CollectionError when collection is empty", () => {
-            const collection = new ListCollection([]);
-            expect(() => {
-                collection.median();
-            }).toThrowError(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", () => {
             const collection = new ListCollection([]);
             expect(() => {
                 collection.median();
-            }).toThrowError(CollectionError);
+            }).toThrowError(EmptyCollectionError);
         });
     });
     describe("method: min", () => {
@@ -476,17 +458,11 @@ describe("class: ListCollection", () => {
             expect(collection.min()).toBe(-2);
             expect(collection.min()).toBe(-2);
         });
-        test("Should throw CollectionError when collection is empty", () => {
-            const collection = new ListCollection([]);
-            expect(() => {
-                collection.min();
-            }).toThrowError(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", () => {
             const collection = new ListCollection([]);
             expect(() => {
                 collection.min();
-            }).toThrowError(CollectionError);
+            }).toThrowError(EmptyCollectionError);
         });
     });
     describe("method: max", () => {
@@ -505,17 +481,11 @@ describe("class: ListCollection", () => {
             expect(collection.max()).toBe(4);
             expect(collection.max()).toBe(4);
         });
-        test("Should throw CollectionError when collection is empty", () => {
-            const collection = new ListCollection([]);
-            expect(() => {
-                collection.max();
-            }).toThrowError(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", () => {
             const collection = new ListCollection([]);
             expect(() => {
                 collection.max();
-            }).toThrowError(CollectionError);
+            }).toThrowError(EmptyCollectionError);
         });
     });
     describe("method: percentage", () => {
@@ -545,17 +515,11 @@ describe("class: ListCollection", () => {
             expect(collection.percentage((item) => item === "a")).toBe(50);
             expect(collection.percentage((item) => item === "a")).toBe(50);
         });
-        test("Should throw CollectionError when collection is empty", () => {
-            const collection = new ListCollection([]);
-            expect(() => {
-                collection.percentage((item) => item === "a");
-            }).toThrowError(CollectionError);
-        });
         test("Should throw EmptyCollectionError when collection is empty", () => {
             const collection = new ListCollection([]);
             expect(() => {
                 collection.percentage((item) => item === "a");
-            }).toThrowError(CollectionError);
+            }).toThrowError(EmptyCollectionError);
         });
     });
     describe("method: some", () => {
@@ -1763,12 +1727,6 @@ describe("class: ListCollection", () => {
                 item = collection.firstOrFail();
             expect(item).toBe(1);
         });
-        test("Should throw CollectionError when item not found", () => {
-            const collection = new ListCollection([1, 2, 3, 4, 5]);
-            expect(() => {
-                collection.firstOrFail((item) => item === 6);
-            }).toThrowError(CollectionError);
-        });
         test("Should throw ItemNotFoundError when item not found", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]);
             expect(() => {
@@ -1956,12 +1914,6 @@ describe("class: ListCollection", () => {
                 item = collection.lastOrFail();
             expect(item).toBe(5);
         });
-        test("Should throw CollectionError when item not found", () => {
-            const collection = new ListCollection([1, 2, 3, 4, 5]);
-            expect(() => {
-                collection.lastOrFail((item) => item === 6);
-            }).toThrowError(CollectionError);
-        });
         test("Should throw ItemNotFoundError when item not found", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]);
             expect(() => {
@@ -2090,12 +2042,6 @@ describe("class: ListCollection", () => {
                 item = collection.beforeOrFail((item) => item === "c");
             expect(item).toBe("b");
         });
-        test(`Should throw CollectionError when searching for string "a" of ["a", "b", "c"]`, () => {
-            const collection = new ListCollection(["a", "b", "c"]);
-            expect(() => {
-                collection.beforeOrFail((item) => item === "a");
-            }).toThrowError(CollectionError);
-        });
         test(`Should throw ItemNotFoundError when searching for string "d" of ["a", "b", "c"]`, () => {
             const collection = new ListCollection(["a", "b", "c"]);
             expect(() => {
@@ -2223,12 +2169,6 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection(["a", "b", "c"]),
                 item = collection.afterOrFail((item) => item === "a");
             expect(item).toBe("b");
-        });
-        test(`Should throw CollectionError when searching for string "c" of ["a", "b", "c"]`, () => {
-            const collection = new ListCollection(["a", "b", "c"]);
-            expect(() => {
-                collection.afterOrFail((item) => item === "c");
-            }).toThrowError(CollectionError);
         });
         test(`Should throw ItemNotFoundError when searching for string "d" of ["a", "b", "c"]`, () => {
             const collection = new ListCollection(["a", "b", "c"]);
