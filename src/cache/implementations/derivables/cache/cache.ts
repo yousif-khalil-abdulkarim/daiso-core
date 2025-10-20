@@ -57,7 +57,7 @@ export type CacheSettingsBase<TType = unknown> = {
      * ```ts
      * import { Namespace } from "@daiso-tech/core/namespace";
      *
-     * new Namespace(["@", "cache"])
+     * new Namespace("@cache")
      * ```
      */
     namespace?: Namespace;
@@ -105,6 +105,13 @@ export type CacheSettings<TType = unknown> = CacheSettingsBase<TType> & {
  * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
+export const DEFAULT_CACHE_NAMESPACE = new Namespace("@cache");
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache"`
+ * @group Derivables
+ */
 export class Cache<TType = unknown> implements ICache<TType> {
     private readonly eventBus: IEventBus<CacheEventMap<TType>>;
     private readonly adapter: ICacheAdapter<TType>;
@@ -142,7 +149,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         const {
             shouldValidateOutput = true,
             schema,
-            namespace = new Namespace(["@", "cache"]),
+            namespace = DEFAULT_CACHE_NAMESPACE,
             adapter,
             eventBus = new EventBus<any>({
                 adapter: new MemoryEventBusAdapter(),

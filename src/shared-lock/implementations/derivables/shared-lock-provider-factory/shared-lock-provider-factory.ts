@@ -13,10 +13,11 @@ import {
 } from "@/utilities/_module-exports.js";
 import type { Invokable } from "@/utilities/_module-exports.js";
 import {
+    DEFAULT_SHARED_LOCK_NAMESPACE,
     SharedLockProvider,
     type SharedLockProviderSettingsBase,
 } from "@/shared-lock/implementations/derivables/shared-lock-provider/_module.js";
-import { Namespace } from "@/namespace/_module-exports.js";
+import type { Namespace } from "@/namespace/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
@@ -177,8 +178,7 @@ export class SharedLockProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = new Namespace(["@", "shared_lock"]) } =
-            this.settings;
+        const { namespace = DEFAULT_SHARED_LOCK_NAMESPACE } = this.settings;
         return new SharedLockProvider({
             ...this.settings,
             adapter,

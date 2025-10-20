@@ -47,7 +47,7 @@ export type SemaphoreProviderSettingsBase = {
      * ```ts
      * import { Namespace } from "@daiso-tech/core/utilities";
      *
-     * new Namespace(["@", "semaphore"])
+     * new Namespace("@semaphore")
      * ```
      */
     namespace?: Namespace;
@@ -123,6 +123,13 @@ export type SemaphoreProviderSettings = SemaphoreProviderSettingsBase & {
 };
 
 /**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore"`
+ * @group Derivables
+ */
+export const DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE = new Namespace("@semaphore");
+
+/**
  * `SemaphoreProvider` class can be derived from any {@link ISemaphoreAdapter | `ISemaphoreAdapter`} or {@link IDatabaseSemaphoreAdapter | `IDatabaseSemaphoreAdapter`}.
  *
  * Note the {@link ISemaphore | `ISemaphore`} instances created by the `SemaphoreProvider` class are serializable and deserializable,
@@ -155,7 +162,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
             defaultBlockingTime = TimeSpan.fromMinutes(1),
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             serde,
-            namespace = new Namespace(["@", "lock"]),
+            namespace = DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE,
             adapter,
             eventBus = new EventBus<any>({
                 adapter: new MemoryEventBusAdapter(),

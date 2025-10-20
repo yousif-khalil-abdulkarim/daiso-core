@@ -12,11 +12,12 @@ import {
     UnregisteredAdapterError,
 } from "@/utilities/_module-exports.js";
 import {
+    DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE,
     SemaphoreProvider,
     type SemaphoreProviderSettingsBase,
 } from "@/semaphore/implementations/derivables/semaphore-provider/_module.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { Namespace } from "@/namespace/_module-exports.js";
+import type { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -112,7 +113,8 @@ export class SemaphoreProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = new Namespace(["@", "lock"]) } = this.settings;
+        const { namespace = DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE } =
+            this.settings;
         return new SemaphoreProvider({
             ...this.settings,
             adapter,

@@ -52,7 +52,7 @@ export type LockProviderSettingsBase = {
      * ```ts
      * import { Namespace } from "@daiso-tech/core/namespace";
      *
-     * new Namespace(["@", "lock"])
+     * new Namespace("@lock")
      * ```
      */
     namespace?: Namespace;
@@ -128,6 +128,13 @@ export type LockProviderSettings = LockProviderSettingsBase & {
 };
 
 /**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/lock"`
+ * @group Derivables
+ */
+export const DEFAULT_LOCK_PROVIDER_NAMESPACE = new Namespace("@lock");
+
+/**
  * `LockProvider` class can be derived from any {@link ILockAdapter | `ILockAdapter`} or {@link IDatabaseLockAdapter | `IDatabaseLockAdapter`}.
  *
  * Note the {@link ILock | `ILock`} instances created by the `LockProvider` class are serializable and deserializable,
@@ -181,7 +188,7 @@ export class LockProvider implements ILockProvider {
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             createLockId = () => v4(),
             serde,
-            namespace = new Namespace(["@", "lock"]),
+            namespace = DEFAULT_LOCK_PROVIDER_NAMESPACE,
             adapter,
             eventBus = new EventBus<any>({
                 adapter: new MemoryEventBusAdapter(),
