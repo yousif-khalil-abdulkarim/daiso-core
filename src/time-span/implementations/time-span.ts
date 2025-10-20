@@ -122,7 +122,7 @@ export class TimeSpan
     static fromDateRange({
         start = new Date(),
         end = new Date(),
-    }: TimeSpanFromDateRangeSettings = {}): TimeSpan {
+    }: TimeSpanFromDateRangeSettings): TimeSpan {
         return new TimeSpan().addMilliseconds(start.getTime() - end.getTime());
     }
 

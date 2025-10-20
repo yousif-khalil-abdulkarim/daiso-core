@@ -266,7 +266,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
      * import { Task } from "@daiso-tech/core/task";
      * import { readFile } from "node:fs";
      *
-     * const lazyPromise = Task.fromCallback<Buffer  | string>((resolve, reject) => {
+     * const task = Task.fromCallback<Buffer  | string>((resolve, reject) => {
      *   readFile("FILE_PATH", (err, data) => {
      *     if (err !== null) {
      *       reject(err);
@@ -275,7 +275,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
      *     resolve(data);
      *   });
      * });
-     * const file = await lazyPromise;
+     * const file = await task;
      * console.log(file);
      * ```
      */

@@ -1,5 +1,5 @@
 /**
- * @module Async
+ * @module BackoffPolicy
  */
 
 import { callInvokable, isInvokable } from "@/utilities/_module-exports.js";
@@ -17,7 +17,6 @@ import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
- * @group BackoffPolicies
  */
 export type ExponentialBackoffPolicySettings = {
     /**
@@ -47,7 +46,6 @@ export type ExponentialBackoffPolicySettings = {
  * Exponential backoff policy with jitter
  *
  * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
- * @group BackoffPolicies
  */
 export function exponentialBackoffPolicy(
     settings: DynamicBackoffPolicy<ExponentialBackoffPolicySettings> = {},

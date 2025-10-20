@@ -1,5 +1,11 @@
+/**
+ * @module Collection
+ */
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
+/**
+ * @internal
+ */
 export class AsyncValidateIterable<TInput, TOutput>
     implements AsyncIterable<TOutput>
 {
