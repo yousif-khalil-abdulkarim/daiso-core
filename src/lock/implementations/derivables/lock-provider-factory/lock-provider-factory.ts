@@ -13,11 +13,12 @@ import {
 } from "@/utilities/_module-exports.js";
 import type { Invokable } from "@/utilities/_module-exports.js";
 import {
+    DEFAULT_LOCK_PROVIDER_NAMESPACE,
     LockProvider,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { Namespace } from "@/namespace/_module-exports.js";
+import type { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -171,7 +172,7 @@ export class LockProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = new Namespace(["@", "lock"]) } = this.settings;
+        const { namespace = DEFAULT_LOCK_PROVIDER_NAMESPACE } = this.settings;
         return new LockProvider({
             ...this.settings,
             adapter,

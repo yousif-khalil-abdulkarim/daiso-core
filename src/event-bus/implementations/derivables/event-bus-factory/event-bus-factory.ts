@@ -9,6 +9,7 @@ import {
     type IEventBusAdapter,
 } from "@/event-bus/contracts/_module-exports.js";
 import {
+    DEFAULT_EVENT_BUS_NAMESPACE,
     EventBus,
     type EventBusSettingsBase,
     type EventMapSchema,
@@ -166,9 +167,11 @@ export class EventBusFactory<
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
+        const { namespace = DEFAULT_EVENT_BUS_NAMESPACE } = this.settings;
         return new EventBus({
-            adapter,
             ...this.settings,
+            adapter,
+            namespace: namespace.appendRoot(adapterName),
         });
     }
 }

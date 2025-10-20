@@ -54,7 +54,7 @@ export type EventBusSettingsBase<
      * ```ts
      * import { Namespace } from "@daiso-tech/core/namespace";
      *
-     * new Namespace(["@", "event-bus"])
+     * new Namespace("@event-bus")
      * ```
      */
     namespace?: Namespace;
@@ -75,6 +75,13 @@ export type EventBusSettings<TEventMap extends BaseEventMap = BaseEventMap> =
          */
         __onUncaughtRejection?: (error: unknown) => void;
     };
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
+ * @group Derivables
+ */
+export const DEFAULT_EVENT_BUS_NAMESPACE = new Namespace("@event-bus");
 
 /**
  * `EventBus` class can be derived from any {@link IEventBusAdapter | `IEventBusAdapter`}.
@@ -112,7 +119,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
             __onUncaughtRejection,
             shouldValidateOutput = true,
             eventMapSchema,
-            namespace = new Namespace(["@", "event-bus"]),
+            namespace = DEFAULT_EVENT_BUS_NAMESPACE,
             adapter,
         } = settings;
         this.shouldValidateOutput = shouldValidateOutput;

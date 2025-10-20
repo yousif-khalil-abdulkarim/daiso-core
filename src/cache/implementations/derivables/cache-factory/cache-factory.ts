@@ -15,10 +15,11 @@ import {
     Cache,
     type CacheSettingsBase,
     type CacheAdapterVariants,
+    DEFAULT_CACHE_NAMESPACE,
 } from "@/cache/implementations/derivables/cache/_module.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { Namespace } from "@/namespace/_module-exports.js";
+import type { Namespace } from "@/namespace/_module-exports.js";
 
 /**
  *
@@ -164,7 +165,7 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = new Namespace(["@", "cache"]) } = this.settings;
+        const { namespace = DEFAULT_CACHE_NAMESPACE } = this.settings;
         return new Cache({
             ...this.settings,
             adapter,

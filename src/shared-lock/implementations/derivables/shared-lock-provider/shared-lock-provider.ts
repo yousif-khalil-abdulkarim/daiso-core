@@ -48,7 +48,7 @@ export type SharedLockProviderSettingsBase = {
      * ```ts
      * import { Namespace } from "@daiso-tech/core/namespace";
      *
-     * new Namespace(["@", "shared_lock"])
+     * new Namespace("@shared-lock")
      * ```
      */
     namespace?: Namespace;
@@ -124,6 +124,13 @@ export type SharedLockProviderSettings = SharedLockProviderSettingsBase & {
 };
 
 /**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock"`
+ * @group Derivables
+ */
+export const DEFAULT_SHARED_LOCK_NAMESPACE = new Namespace("@shared-lock");
+
+/**
  * `SharedLockProvider` class can be derived from any {@link ISharedLockAdapter | `ISharedLockAdapter`} or {@link IDatabaseSharedLockAdapter | `IDatabaseSharedLockAdapter`}.
  *
  * Note the {@link ISharedLock | `ISharedLock`} instances created by the `SharedLockProvider` class are serializable and deserializable,
@@ -177,7 +184,7 @@ export class SharedLockProvider implements ISharedLockProvider {
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             createLockId = () => v4(),
             serde,
-            namespace = new Namespace(["@", "shared-lock"]),
+            namespace = DEFAULT_SHARED_LOCK_NAMESPACE,
             adapter,
             eventBus = new EventBus<any>({
                 adapter: new MemoryEventBusAdapter(),
