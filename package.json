@@ -184,6 +184,18 @@
             "types": "./dist/serde/implementations/test-utilities/_module-exports.d.ts",
             "import": "./dist/serde/implementations/test-utilities/_module-exports.js"
         },
+        "./shared-lock/contracts": {
+            "types": "./dist/shared-lock/contracts/_module-exports.d.ts",
+            "import": "./dist/shared-lock/contracts/_module-exports.js"
+        },
+        "./shared-lock/adapters": {
+            "types": "./dist/shared-lock/implementations/adapters/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/adapters/_module-exports.js"
+        },
+        "./shared-lock/test-utilities": {
+            "types": "./dist/shared-lock/implementations/test-utilities/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/test-utilities/_module-exports.js"
+        },
         "./time-span": {
             "types": "./dist/time-span/implementations/_module-exports.d.ts",
             "import": "./dist/time-span/implementations/_module-exports.js"
