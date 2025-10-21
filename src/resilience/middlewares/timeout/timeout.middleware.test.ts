@@ -1,10 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { timeout } from "@/resilience/middlewares/timeout/timeout.middleware.js";
 import { type OnTimeoutData } from "@/resilience/middlewares/timeout/timeout.type.js";
-import {
-    ResilienceError,
-    TimeoutResilienceError,
-} from "@/resilience/async.errors.js";
+import { TimeoutResilienceError } from "@/resilience/resilience.errors.js";
 import { Task } from "@/task/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { AsyncHooks } from "@/hooks/_module-exports.js";
@@ -38,17 +35,6 @@ function createDelayedFn<TParameters extends unknown[], TReturn>(
 }
 
 describe("function: timeout", () => {
-    test("should throw ResilienceError when timed out", async () => {
-        const outputPromise = new AsyncHooks(
-            createDelayedFn<[], string>(
-                TimeSpan.fromMilliseconds(50),
-                () => "a",
-            ),
-            timeout({ waitTime: TimeSpan.fromMilliseconds(25) }),
-        ).invoke();
-
-        await expect(outputPromise).rejects.toBeInstanceOf(ResilienceError);
-    });
     test("should throw TimeoutResilienceError when timed out", async () => {
         const outputPromise = new AsyncHooks(
             createDelayedFn<[], string>(
