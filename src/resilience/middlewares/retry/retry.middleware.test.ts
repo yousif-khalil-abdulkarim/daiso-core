@@ -15,6 +15,7 @@ import type {
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { TO_MILLISECONDS } from "@/time-span/contracts/_module-exports.js";
 import { AsyncHooks } from "@/hooks/_module-exports.js";
+import { RetryResilienceError } from "@/resilience/resilience.errors.js";
 
 describe("function: retry", () => {
     describe("With result:", () => {
@@ -245,7 +246,7 @@ describe("function: retry", () => {
         });
     });
     describe("With throw error:", () => {
-        test("Should throw Error when all atempts fail", async () => {
+        test("Should throw RetryResilienceError when all atempts fail", async () => {
             const promise = new AsyncHooks(
                 () => {
                     throw new Error("My own error");
@@ -256,7 +257,7 @@ describe("function: retry", () => {
                 }),
             ).invoke();
 
-            await expect(promise).rejects.toBeInstanceOf(Error);
+            await expect(promise).rejects.toBeInstanceOf(RetryResilienceError);
         });
         test("Should retry until given maxAttempts", async () => {
             let repetition = 0;
