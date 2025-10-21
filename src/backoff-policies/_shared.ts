@@ -1,5 +1,5 @@
 /**
- * @module Async
+ * @module BackoffPolicy
  */
 
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
@@ -9,7 +9,6 @@ import type { Invokable } from "@/utilities/_module-exports.js";
  * @returns Amount milliseconds to wait
  *
  * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
- * @group BackoffPolicies
  */
 export type BackoffPolicy = Invokable<
     [attempt: number, error: unknown],
@@ -19,7 +18,6 @@ export type BackoffPolicy = Invokable<
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
- * @group BackoffPolicies
  */
 export type DynamicBackoffPolicy<TSettings> =
     | TSettings

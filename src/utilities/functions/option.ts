@@ -1,4 +1,8 @@
 /**
+ * @module Utilities
+ */
+
+/**
  * @internal
  */
 export const OPTION = {

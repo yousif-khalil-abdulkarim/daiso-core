@@ -2,7 +2,7 @@
 "@daiso-tech/core": minor
 ---
 
-Update `TimeSpan` class `fromDateRange` method arguments. Now it only takes on optional argument which an object of type `TimeSpanFromDateRangeSettings`.
+Update `TimeSpan` class `fromDateRange` method arguments. Now it only takes on required argument which is an object of type `TimeSpanFromDateRangeSettings`.
 
 ```ts
 export type TimeSpanFromDateRangeSettings = {

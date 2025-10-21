@@ -1,29 +1,20 @@
----
-sidebar_position: 2
----
+# Cache
 
-# Cache usage
-
-:::info
-Please note `Cache` module
-:::
+The `@daiso-tech/core/cache` component provides a way for storing key-value pairs with expiration independent of data storage
 
 ## Initial configuration
 
-To begin using the [`Cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.Cache.html) class, you'll need to create and configure an instance:
+To begin using the `Cache` class, you'll need to create and configure an instance:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
 import { Cache } from "@daiso-tech/core/cache";
-import { Namespace } from "@daiso-tech/core/utilities";
 
 const cache = new Cache({
     // You can provide default TTL value
     // If you set it to null it means keys will be stored forever.
     defaultTtl: TimeSpan.fromSeconds(2),
-
-    namespace: new Namespace("cache"),
 
     // You can choose the adapter to use
     adapter: new MemoryCacheAdapter(),
@@ -31,7 +22,7 @@ const cache = new Cache({
 ```
 
 :::info
-Here is a complete list of configuration settings for the [Cache](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.CacheSettingsBase.html) class.
+Here is a complete list of settings for the `Cache` class.
 :::
 
 ## Cache basics
@@ -45,7 +36,8 @@ await cache.add("a", "value", TimeSpan.fromSeconds("1"));
 ```
 
 :::danger
-Note [`cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.ICache.html) class instance uses [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) instead of a regular `Promise`. This means you must either await the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) or call its `defer` method to run it. Refer to the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) documentation for further information.
+Note `Cache` class instance uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `defer` method to run it.
+Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
 :::
 
 ### Retrieving keys
@@ -119,28 +111,6 @@ await cache.clear();
 
 ## Patterns
 
-### Iterable as key
-
-You can use an `Iterable<string>` as a key. The elements will be joined into a single string, and the delimiter used for joining is configurable in the [`Namespace`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Namespace.html) class:
-
-```ts
-const cache = new cache({
-    namespace: new Namespace("lock"),
-    // rest of the settings ....
-});
-
-await cache.add(["user", "1"]);
-
-await cache.removeMany([
-    ["user", "1"],
-    ["user", "1"],
-]);
-```
-
-:::info
-Note this works also with following methods, `exists`, `missing`, `get`, `getOrFail`, `getAndRemove`, `getOr`, `getOrAdd`, `put`, `update`, `increment`, `decrement` and `remove`.
-:::
-
 ### Compile time type safety
 
 You can enforce compile time type safety by setting the cache value type:
@@ -148,7 +118,6 @@ You can enforce compile time type safety by setting the cache value type:
 ```ts
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
 import { Cache } from "@daiso-tech/core/cache";
-import { Namespace } from "@daiso-tech/core/utilities";
 
 type IUser = {
     name: string;
@@ -157,12 +126,11 @@ type IUser = {
 };
 
 const cache = new Cache<IUser>({
-    namespace: new Namespace("cache"),
     adapter: new MemoryCacheAdapter(),
 });
 
 // A typescript error will occur because the type is not mathcing.
-await cache.add("a", "asd")
+await cache.add("a", "asd");
 ```
 
 If you have multiple types you can use algeberical enums:
@@ -170,7 +138,6 @@ If you have multiple types you can use algeberical enums:
 ```ts
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
 import { Cache } from "@daiso-tech/core/cache";
-import { Namespace } from "@daiso-tech/core/utilities";
 
 type IUser = {
     type: "USER";
@@ -186,7 +153,6 @@ type IProduct = {
 type CacheValue = IUser | IProduct;
 
 const cache = new Cache<CacheValue>({
-    namespace: new Namespace("cache"),
     adapter: new MemoryCacheAdapter(),
 });
 
@@ -201,12 +167,11 @@ if (cacheValue.type === "PRODUCT") {
 }
 ```
 
-Alternatively you can use different [`Cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.Cache.html) classes with different namespaces:
+Alternatively you can use different `Cache` classes with different namespaces:
 
 ```ts
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
 import { Cache } from "@daiso-tech/core/cache";
-import { Namespace } from "@daiso-tech/core/utilities";
 
 const cacheAdapter = new MemoryCacheAdapter();
 
@@ -216,7 +181,6 @@ type IUser = {
     age: number;
 };
 const userCache = new Cache<IUser>({
-    namespace: new Namespace(["cache", "user"]),
     adapter: cacheAdapter,
 });
 
@@ -225,7 +189,6 @@ type IProduct = {
     price: number;
 };
 const productCache = new Cache<IProduct>({
-    namespace: new Namespace(["cache", "product"]),
     adapter: cacheAdapter,
 });
 ```
@@ -276,7 +239,7 @@ await cache.getOrAdd("ab", 1);
 ```
 
 :::info
-You can provide [`LazyPromise`](/docs/8_Async/1_lazy_promise.md), synchronous and asynchronous [`Invokable`](../7_Utilities/3_invokable.md) as default values for both `getOr` and `getOrAdd` methods.
+You can provide `Task`, synchronous and asynchronous `Invokable` as default values for both `getOr` and `getOrAdd` methods.
 :::
 
 You can retrieve the key and afterwards remove it and will return true if the value was found:
@@ -285,9 +248,61 @@ You can retrieve the key and afterwards remove it and will return true if the va
 await cache.getAndRemove("ab");
 ```
 
+### Namespacing
+
+You can use the `Namespace` class to group related data without conflicts.
+
+:::info
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
+:::
+
+```ts
+import { Namespace } from "@daiso-tech/core/namespace";
+import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { Cache } from "@daiso-tech/core/cache";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import Redis from "ioredis";
+
+const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
+const serde = new Serde(new SuperJsonSerdeAdapter());
+
+const cacheA = new Cache({
+    namespace: new Namespace("@cache-a"),
+    adapter: new RedisCacheAdapter({
+        database,
+        serde,
+    }),
+});
+const cacheB = new Cache({
+    namespace: new Namespace("@cache-b"),
+    adapter: new RedisCacheAdapter({
+        database,
+        serde,
+    }),
+});
+
+await cacheA.add("key", 1);
+
+// cacheA Logs 1
+console.log(await cacheA.get("key"));
+
+// cacheB Logs null
+console.log(await cacheB.get("key"));
+
+await cacheB.add("key", "tests");
+
+// cacheB Logs "test"
+console.log(await cacheB.get("key"));
+
+// cacheA still Logs 1
+console.log(await cacheA.get("key"));
+```
+
 ### Cache events
 
-You can listen to different cache events ([`CacheEventMap`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.CacheEventMap.html)) that are triggered by the [`Cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.Cache.html). Refer to the [`EventBus`](../2_Event%20bus/2_event_bus_usage.md) documentation to learn how to use events.
+You can listen to different [cache events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) that are triggered by the `Cache` class.
+Refer to the [`@daiso-tech/core/event-bus`](../EventBus/index.md) documentation to learn how to use events.
 
 ```ts
 import { CACHE_EVENTS } from "@daiso-tech/core/cache/contracts";
@@ -304,14 +319,13 @@ await cache.remove("a");
 ```
 
 :::info
-Note the [`Cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.Cache.html) class uses [`MemoryEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.MemoryEventBusAdapter.html) by default. You can choose what event bus adapter to use:
+Note the `Cache` class uses `MemoryEventBusAdapter` by default. You can choose what event bus adapter to use:
 
 ```ts
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
 import { Cache } from "@daiso-tech/core/cache";
 import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { Namespace } from "@daiso-tech/core/utilities";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
@@ -326,10 +340,8 @@ const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
 });
 
 const cache = new Cache({
-    namespace: new Namespace("cache"),
     adapter: new MemoryCacheAdapter(),
     eventBus: new EventBus({
-        namespace: new Namespace("event-bus"),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -338,7 +350,7 @@ const cache = new Cache({
 :::
 
 :::info
-Note you can disable dispatching [`Cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.Cache.html) events by passing an [`EventBus`](../2_Event%20bus/2_event_bus_usage.md) that uses [`NoOpEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.NoOpEventBusAdapter.html)
+Note you can disable dispatching `Cache` events by passing an `EventBus` that uses `NoOpEventBusAdapter`.
 :::
 
 :::warning
@@ -348,7 +360,7 @@ If multiple cache adapters (e.g., `RedisCacheAdapter` and `MemoryCacheAdapter`) 
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
 import { Cache } from "@daiso-tech/core/cache";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { Namespace } from "@daiso-tech/core/utilities";
+import { Namespace } from "@daiso-tech/core/namespace";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
@@ -364,7 +376,6 @@ const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
 
 const memoryCacheAdapter = new MemoryCacheAdapter();
 const memoryCache = new Cache({
-    namespace: new Namespace("cache"),
     adapter: memoryCacheAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryCacheAdapter and RedisCacheAdapter to isolate their events.
@@ -378,7 +389,6 @@ const redisCacheAdapter = new RedisCacheAdapter({
     database: new Redis("YOUR_REDIS_CONNECTION_STRING"),
 });
 const redisCache = new Cache({
-    namespace: new Namespace("cache"),
     adapter: redisCacheAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryCacheAdapter and RedisCacheAdapter to isolate their events.
@@ -394,9 +404,9 @@ const redisCache = new Cache({
 
 The library includes two additional contracts:
 
--   [`ICacheBase`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.ICacheBase.html) - Allows only manipulate the cache.
+- `ICacheBase` - Allows only manipulate the cache.
 
--   [`ICacheListenable`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.ICacheListenable.html) – Allows only listening to cache events.
+- `ICacheListenable` – Allows only listening to cache events.
 
 This seperation makes it easy to visually distinguish the two contracts, making it immediately obvious that they serve different purposes.
 
@@ -426,3 +436,7 @@ function listenerFunc(cacheListenable: ICacheListenable): Promise<void> {
 await listenerFunc(cache);
 await manipulatingFunc(cache);
 ```
+
+## Further information
+
+For further information refer to [`@daiso-tech/core/cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) API docs.

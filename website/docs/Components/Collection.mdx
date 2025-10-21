@@ -1,16 +1,12 @@
----
-sidebar_position: 1
----
+# Collection
 
-# Collection usage
-
-The [`collection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Collection.html) module provides a fluent, convenient wrapper for working with [`Arrays`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array), [`Iterables`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) and [`AsyncIterables`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols).
+The `@daiso-tech/core/collection` component provides a fluent, convenient wrapper for working with a `Array`, `Iterable` and `AsyncIterable`.
 
 ## Creating a collection
 
-You can create a collection from an any object thats implements the [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) contract.
+You can create a collection from an any object thats implements the `Iterable` contract.
 
-Create a collection from an [`Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array):
+Create a collection from an `Array`:
 
 ```ts
 import { ICollection, ListCollection } from "@daiso-tech/core/collection";
@@ -29,7 +25,7 @@ const fromString = new ListCollection("abc");
 console.log(fromString.toArray());
 ```
 
-Create a collection from a [`Set`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set):
+Create a collection from a `Set`:
 
 ```ts
 const fromSet = new ListCollection(new Set([1, 2, 2 4]));
@@ -37,7 +33,7 @@ const fromSet = new ListCollection(new Set([1, 2, 2 4]));
 console.log(fromSet.toArray());
 ```
 
-Create a collection from a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map):
+Create a collection from a `Map`:
 
 ```ts
 const fromMap = new ListCollection(
@@ -50,7 +46,7 @@ const fromMap = new ListCollection(
 console.log(fromMap.toArray());
 ```
 
-Create collection from your own object that implements [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) contract:
+Create collection from your own object that implements `Iterable` contract:
 
 ```ts
 class MyIterable implements Iterable<number> {
@@ -139,7 +135,7 @@ All methods that ends with `OrFail` it will return the item if it exists or thro
 
 ## Iterating over a collection
 
-Since it is [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) you can also use the `for of` loop to iterate over a collection.
+Since it is `Iterable` you can also use the `for of` loop to iterate over a collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
@@ -213,27 +209,27 @@ collection.toArray();
 
 The library includes 3 types of collections:
 
-- [`ListCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.ListCollection.html) implements the [`ICollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Collection.ICollection.html) contract and uses [`Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) internally.
+- `ListCollection` implements the `ICollection` contract and uses `Array` internally.
 
-- [`IterableCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.IterableCollection.html) implements the [`ICollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Collection.ICollection.html) contract and uses [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) internally.
+- `IterableCollection` implements the `ICollection` contract and uses `Iterable` internally.
   It only filters and transforms items when you loop through or access its items.
 
-- [`AsyncIterableCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.AsyncIterableCollection.html) implements the [`IAsyncCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Collection.IAsyncCollection.html) contract and uses [`AsyncIterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols) internally.
+- `AsyncIterableCollection` implements the `IAsyncCollection` contract and uses `AsyncIterable` internally.
   It only filters and transforms items when you loop through or access its items.
 
     :::danger
-    Note [`AsyncIterableCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.AsyncIterableCollection.html) uses [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) instead of a regular `Promise`.
-    This means you must either `await` the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) or call its `defer` method to run it. Refer to the [`LazyPromise documentation`](/docs/8_Async/1_lazy_promise.md) for further information.
+    Note `AsyncIterableCollection` uses `Task` instead of a regular `Promise`.
+    This means you must either `await` the `Task` or call its `detach` method to run it. 
+    Refer to the [`@daiso-tech/core/task`](./Task.md) documentation for further information.
     :::
 
 ## Serialization and deserialization
 
-The [`ListCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.ListCollection.html) and [`IterableCollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Collection.IterableCollection.html) classes supports serialization and deserialization, allowing you to easily convert instances to and from serialized formats. However, registration is required first:
+The `ListCollection` and `IterableCollection` classes supports serialization and deserialization, allowing you to easily convert instances to and from serialized formats. However, registration is required first:
 
 ```ts
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-import { TimeSpan } from "@daiso-tech/core/utilities";
 import {
     ListCollection,
     IteralbeCollection,
@@ -245,8 +241,8 @@ serde.registerClass(ListCollection);
 serde.registerClass(IteralbeCollection);
 
 const listCollection = new ListCollection([1, 2, 3, 4, 5]);
-const serializedListCollection = serde.serialize(timeSpan);
-const deserializedListCollection = serde.deserialize(serializedTimeSpan);
+const serializedListCollection = serde.serialize(listCollection);
+const deserializedListCollection = serde.deserialize(serializedListCollection);
 
 // Logs false
 console.log(serializedListCollection === deserializedListCollection);
@@ -254,8 +250,8 @@ console.log(serializedListCollection === deserializedListCollection);
 console.log(listCollection.toArray(), deserializedListCollection.toArray());
 
 const iterableCollection = new IteralbeCollection([1, 2, 3, 4, 5]);
-const serializedIteralbeCollection = serde.serialize(timeSpan);
-const deserializedIteralbeCollection = serde.deserialize(serializedTimeSpan);
+const serializedIteralbeCollection = serde.serialize(iterableCollection);
+const deserializedIteralbeCollection = serde.deserialize(serializedIteralbeCollection);
 
 // Logs false
 console.log(serializedIteralbeCollection === deserializedIteralbeCollection);
@@ -268,7 +264,7 @@ console.log(
 
 ## Available Methods
 
-For the remaining of the documentation, we'll discuss each method available on the [`ICollection`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Collection.ICollection.html) contract.
+For the remaining of the documentation, we'll discuss each method available on the `ICollection` contract.
 
 ### Instance methods
 
@@ -484,7 +480,7 @@ new ListCollection([1, 2, 3, 4]).afterOrFail((item) => item === 4);
 
 ### append
 
-The `append` method adds [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) to the end of the collection.
+The `append` method adds `Iterable` to the end of the collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
@@ -791,7 +787,7 @@ new ListCollection(["a", "a", "a", "b", "b", "c"])
 
 ### insertAfter
 
-The `insertAfter` method adds [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) after the first item that matches `predicateFn`.
+The `insertAfter` method adds `Iterable` after the first item that matches `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
@@ -804,7 +800,7 @@ new ListCollection([1, 2, 2, 3, 4, 5])
 
 ### insertBefore
 
-The `insertBefore` method adds [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) before the first item that matches `predicateFn`.
+The `insertBefore` method adds `Iterable` before the first item that matches `predicateFn`.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
@@ -1035,7 +1031,7 @@ new ListCollection([1, "2", "a", 1, 3, {}])
 
 ### prepend
 
-The `prepend` method adds [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) to the beginning of the collection.
+The `prepend` method adds `Iterable` to the beginning of the collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
@@ -1332,7 +1328,7 @@ new ListCollection([1, 2, 3]).toArray();
 
 ### toIterator
 
-The `toIterator` method converts the collection to a [`Iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterator_protocol).
+The `toIterator` method converts the collection to a `Iterator`.
 
 ```ts
 const iterator = new ListCollection([1, 2, 3, 4, 5]).toIterator();
@@ -1492,7 +1488,7 @@ new ListCollection([1]).whenNotEmpty((c) => c.append([-3])).toArray();
 
 ### concat
 
-The `concat` method concatenates multiple [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol)'s and returns a new collection.
+The `concat` method concatenates multiple `Iterable`'s and returns a new collection.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
@@ -1502,7 +1498,7 @@ ListCollection.concat([1, 2, 3], [4, 5, 6]).toArray();
 
 ### difference
 
-The `difference` method will return the values in the original collection that are not present in [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol).
+The `difference` method will return the values in the original collection that are not present in `Iterable`.
 By default the equality check occurs on the item.
 
 ```ts
@@ -1544,7 +1540,7 @@ ListCollection.difference([1, 2, 2, 3, 4, 5], [2, 4, 6, 8]).toArray();
 
 ### zip
 
-The `zip` method merges together the values of [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) with the values of the collection at their corresponding index.
+The `zip` method merges together the values of `Iterable` with the values of the collection at their corresponding index.
 The returned collection has size of the shortest collection. The `zip` method is also available as a static method.
 
 ```ts

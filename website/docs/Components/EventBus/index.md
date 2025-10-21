@@ -1,30 +1,24 @@
----
-sidebar_position: 2
----
+# EventBus
 
-# Event bus usage
+The `@daiso-tech/core/event-bus` component provides a way for dispatching and listening to events independent of underlying technology.
 
 ## Initial configuration
 
-To begin using the [`EventBus`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.EventBus.html) class, you'll need to create and configure an instance:
+To begin using the `EventBus` class, you'll need to create and configure an instance:
 
 ```ts
 import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import type { IEventBus } from "@daiso-tech/core/event-bus/contracts";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { Namespace } from "@daiso-tech/core/utilities";
 
 const eventBus: IEventBus = new EventBus({
-    // You can group events with a namespace class for automatic prefixing.
-    namespace: new Namespace("event-bus"),
-
     // You can choose the adapter to use
     adapter: new MemoryEventBusAdapter(),
 });
 ```
 
 :::info
-Here is a complete list of configuration settings for the [EventBus](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/EventBus.EventBusSettingsBase.html) class.
+Here is a complete list of settings for the [`EventBus`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/EventBus.EventBusSettingsBase.html) class.
 :::
 
 ## Event handling basics
@@ -45,7 +39,8 @@ await eventBus.dispatch("add", {
 ```
 
 :::danger
-Note [`eventBus`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/EventBus.IEventBus.html) class instance uses [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) instead of a regular `Promise`. This means you must either await the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) or call its `defer` method to run it. Refer to the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) documentation for further information.
+Note `EventBus` class instance uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `defer` method to run it.
+Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
 :::
 
 ### Listener management
@@ -80,7 +75,6 @@ An event map can be used to strictly type the events:
 import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import type { IEventBus } from "@daiso-tech/core/event-bus/contracts";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { Namespace } from "@daiso-tech/core/utilities";
 
 type AddEvent = {
     a: number;
@@ -92,7 +86,6 @@ type EventMap = {
 };
 
 const eventBus = new EventBus<EventMap>({
-    namespace: new Namespace("event-bus"),
     adapter: new MemoryEventBusAdapter(),
 });
 
@@ -127,13 +120,13 @@ const eventMapSchema = {
     add: z.object({
         a: z.number(),
         b: z.number(),
-    })
-}
+    }),
+};
 
 // The event type will be infered
 const eventBus = new EventBus({
     adapter: new MemoryEventBusAdapter(),
-    eventMapSchema
+    eventMapSchema,
 });
 
 // A typescript and runtime error will show up because the event fields doesnt match
@@ -220,13 +213,13 @@ await eventBus.dispatch("add", {
 Wait for events using promises:
 
 ```ts
-import { LazyPromise } from "@daiso-tech/core/async";
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { Task } from "@daiso-tech/core/task";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 
 // This code block will run concurrently
 (async () => {
     // We wait on second and thereafter dispatch the event.
-    await LazyPromise.delay(TimeSpan.fromSeconds(1));
+    await Task.delay(TimeSpan.fromSeconds(1));
     await eventBus.dispatch("add", {
         a: 30,
         b: 20,
@@ -242,9 +235,9 @@ console.log(event);
 
 The library includes two additional contracts:
 
--   [`IEventDispatcher`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/EventBus.IEventDispatcher.html) – Allows only event dispatching.
+- `IEventDispatcher` – Allows only event dispatching.
 
--   [`IEventListenable`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/EventBus.IEventListenable.html) – Allows only event listening.
+- `IEventListenable` – Allows only event listening.
 
 This seperation makes it easy to visually distinguish the two contracts, making it immediately obvious that they serve different purposes.
 
@@ -256,12 +249,8 @@ import type {
 } from "@daiso-tech/core/event-bus/contracts";
 import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { Namespace } from "@daiso-tech/core/utilities";
 
 const eventBus: IEventBus = new EventBus({
-    // You can group events with a namespace class for automatic prefixing.
-    namespace: new Namespace("event-bus"),
-
     // You can choose the adapter to use
     adapter: new MemoryEventBusAdapter(),
 });
@@ -303,7 +292,11 @@ await dispatchingFunc(eventBus);
 
 ### Invokable listeners
 
-An event listener are [`Invokable`](../7_Utilities/3_invokable.md) meaning you can also pass in an object (class instance or object literal) as listener:
+An event listener are `Invokable` meaning you can also pass in an object (class instance or object literal) as listener:
+
+:::info
+For further information refer the [`Invokable`](../../Utilities/Invokable.md) docs.
+:::
 
 ```ts
 type AddEvent = {
@@ -331,6 +324,58 @@ await eventBus.dispatch("add", {
 });
 ```
 
+### Namespacing
+
+You can use the `Namespace` class to group related without conflicts.
+
 :::info
-For further information refer the [`Invokable`](../7_Utilities/3_invokable.md) docs.
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
 :::
+
+```ts
+import { Namespace } from "@daiso-tech/core/namespace";
+import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import Redis from "ioredis";
+
+const client = new Redis("YOUR_REDIS_CONNECTION_STRING");
+const serde = new Serde(new SuperJsonSerdeAdapter());
+
+const eventBusA = new EventBus({
+    namespace: new Namespace("@eventBus-a"),
+    adapter: new RedisPubSubEventBus({
+        client,
+        serde,
+    }),
+});
+const eventBusB = new EventBus({
+    namespace: new Namespace("@eventBus-b"),
+    adapter: new RedisPubSubEventBus({
+        client,
+        serde,
+    }),
+});
+
+await eventBusA.addListener("test", (event) => {
+    console.log("TEST_A:", event);
+});
+await eventBusB.addListener("test", () => {
+    console.log("TEST_B", event);
+});
+
+// Will only log "TEST_A" { testA: true }
+await eventBusA.dispatch("test", {
+    testA: true,
+});
+
+// Will only log "TEST_B" { testB: true }
+await eventBusB.dispatch("test", {
+    testB: true,
+});
+```
+
+## Further information
+
+For further information refer to [`@daiso-tech/core/event-bus`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/EventBus.html) API docs.

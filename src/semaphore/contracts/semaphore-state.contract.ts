@@ -1,3 +1,7 @@
+/**
+ * @module Semaphore
+ */
+
 import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**

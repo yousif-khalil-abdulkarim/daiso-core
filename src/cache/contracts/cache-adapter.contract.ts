@@ -4,7 +4,7 @@
 import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
- * The `ICacheAdapter` contract defines a way for key-value pairs independent of data storage.
+ * The `ICacheAdapter` contract defines a way for storing key-value pairs with expiration independent of data storage.
  *
  * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Contracts

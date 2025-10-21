@@ -1,5 +1,5 @@
 /**
- * @module Utilities
+ * @module Namespace
  */
 
 import {

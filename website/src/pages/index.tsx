@@ -168,17 +168,34 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         icon: <CalendarCheck size="2.5rem" />,
         title: "EventBus",
         description: (
-            <>Easily send events accross different applications or in-memory.</>
+            <>Easily send events accross different server applications or in-memory.</>
         ),
     },
     {
         icon: <Lock size="2.5rem" />,
-        title: "Atomic lock",
+        title: "Lock",
         description: (
             <>
-                Synchronize the access to a shared resource to prevent several
-                processes, or concurrent code, from executing a section of code
-                at the same time.
+               A lock ensures mutual exclusion for a shared resource across multiple process, allowing only one process to access it at a time to prevent race conditions.
+            </>
+        ),
+    },
+    {
+        icon: <Lock size="2.5rem" />,
+        title: "Semaphore",
+        description: (
+            <>
+                A semaphore is a concurrency control primitive used to limit the number of processes or 
+                systems that can access a shared resource of code concurrently.
+            </>
+        ),
+    },
+    {
+        icon: <Lock size="2.5rem" />,
+        title: "Shared lock",
+        description: (
+            <>
+               A shared lock (a.k.a reader writer lock) is a concurrency primitive offering better concurrency than a lock by coordinating a reader semaphore for concurrent access and an writer lock for mutual exclusion, strictly preventing conflicting simultaneous access and maintaining data consistency.
             </>
         ),
     },

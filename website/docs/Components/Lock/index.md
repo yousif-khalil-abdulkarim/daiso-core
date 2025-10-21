@@ -1,18 +1,15 @@
----
-sidebar_position: 2
----
+# Lock
 
-# Lock usage
+The `@daiso-tech/core/lock` component provides a way for managing locks independent of underlying platform.
 
 ## Initial configuration
 
-To begin using the [`LockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.LockProvider.html) class, you'll need to create and configure an instance:
+To begin using the `LockProvider` class, you'll need to create and configure an instance:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
 import { LockProvider } from "@daiso-tech/core/lock";
-import { Namespace } from "@daiso-tech/core/utilities";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
 
@@ -20,12 +17,10 @@ const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const lockProvider = new LockProvider({
     // You can provide default TTL value
-    // If you set it to null it means locks will not expire and most be released manually.
+    // If you set it to null it means locks will not expire and most be released manually by default.
     defaultTtl: TimeSpan.fromSeconds(2),
 
     serde,
-
-    namespace: new Namespace("lock"),
 
     // You can choose the adapter to use
     adapter: new MemoryLockAdapter(),
@@ -33,7 +28,7 @@ const lockProvider = new LockProvider({
 ```
 
 :::info
-Here is a complete list of configuration settings for the [`LockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.LockProviderSettingsBase.html) class.
+Here is a complete list of settings for the [`LockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.LockProviderSettingsBase.html) class.
 :::
 
 ## Lock basics
@@ -74,20 +69,8 @@ You need always to wrap the critical section with `try-finally` so the lock get 
 :::
 
 :::danger
-Note [`lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILock.html) object uses [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) instead of a regular `Promise`. This means you must either await the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) or call its `defer` method to run it. Refer to the [`LazyPromise`](/docs/8_Async/1_lazy_promise.md) documentation for further information.
-:::
-
-:::info
-Note If the same owner acquires the lock multiple times, the subsequent calls will throw error.
-
-```ts
-// First acquisition by the owner
-await lock.aquireOrFail();
-
-// Subsequent acquisitions by the same owner will throw an error
-await lock.aquireOrFail();
-```
-
+Note `Lock` class uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `defer` method to run it.
+Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
 :::
 
 ### Locks with custom TTL
@@ -104,27 +87,26 @@ const lock = lockProvider.create("shared-resource", {
 
 ### Checking lock state
 
-You can check whether the lock has expired. If it has, the lock is available for acquisition:
+You can get the lock state by using the `getState` method, it returns [`ILockState`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockState.html).
 
 ```ts
-await lock.isExpired();
+import { LOCK_STATE } from "@daiso-tech/core/lock/contracts";
+
+const lock = lockProvider.create("shared-resource");
+const state = await lock.getState();
+
+if (state.type === LOCK_STATE.EXPIRED) {
+    console.log("The lock doesnt exists");
+}
+
+if (state.type === LOCK_STATE.UNAVAILABLE) {
+    console.log("Lock is acquired by different owner");
+}
+
+if (state.type === LOCK_STATE.ACQUIRED) {
+    console.log("The lock is acquired");
+}
 ```
-
-You can check whether the lock is in use, in other words acquired:
-
-```ts
-await lock.isLocked();
-```
-
-You can also get reamining expiration time:
-
-```ts
-await lock.getRemainingTime();
-```
-
-:::info
-Null is returned if the key has no expiration, the key doesnt exist or the key has expired.
-:::
 
 ## Patterns
 
@@ -175,7 +157,7 @@ if (hasAcquired) {
             if (hasFinished) {
                 break;
             }
-            await LazyPromise.delay(TimeSpan.fromSeconds(1));
+            await Task.delay(TimeSpan.fromSeconds(1));
         }
     } finally {
         await lock.release();
@@ -198,78 +180,10 @@ const hasRefreshed = await lock.refresh();
 // This will log 'false' because the lock cannot be refreshed
 console.log(hasRefreshed);
 ```
-:::
 
-### Lock owners
-
-Each lock has a unique owner to identify its holder. For example, if User-A owns the lock, User-B cannot acquire or release it. Only the current owner (User-A) can. User-B may acquire the lock only after it is either explicitly released by User-A or has expired:
-
-```ts
-const lockA = lockProvider.create("resource");
-const lockB = lockProvider.create("resource");
-
-const promiseA = (async () => {
-    const hasAquired = await lockA.acquire();
-    if (hasAquired) {
-        console.log("A acquired resource");
-        // Auto generated
-        console.log("Owner", await lockA.getOwner());
-        await LazyPromise.delay(TimeSpan.fromSeconds(2));
-        await lockA.release();
-        console.log("A released resource");
-    } else {
-        console.log("A failed to acquire resource");
-    }
-})();
-const promiseB = (async () => {
-    const hasAquired = await lockB.acquire();
-    if (hasAquired) {
-        console.log("B acquired resource");
-        // Auto generated
-        console.log("Owner", await lockB.getOwner());
-        await LazyPromise.delay(TimeSpan.fromSeconds(2));
-        await lockB.release();
-        console.log("B released resource");
-    } else {
-        console.log("B failed to acquire resource");
-    }
-})();
-
-// Only one of locks can acquire the resource at a time.
-await Promise.all([promiseA, promiseB]);
-```
-
-:::info
-Note the owner name can be manually specified, primarily for debugging or implementing manual resource locking by the end user.
-
-```ts
-const lockA = lockProvider.create("resource", {
-    owner: "A",
-});
-console.log("Owner", await lockA.getOwner());
-
-const lockB = lockProvider.create("resource", {
-    owner: "B",
-});
-console.log("Owner", await lockB.getOwner());
-```
-
-Manual end user resource locking is useful in scenarios like a CMS supporting multi-user collaboration, documents should be locked during editing to prevent data corruption. When a user opens a document for editing, the system should automatically set the lock owner name to that user's unique ID. This ensures exclusive access - only the lock owner can modify the document until they release the lock.
-:::
-
-:::warning
-In most cases, setting a custom owner is unnecessary. Misusing this feature could result in different locks sharing the same owner while modifying the same resource simultaneously, which may lead to race conditions.
 :::
 
 ### Additional methods
-
-You can get the owner of the lock:
-
-```ts
-const lock = lockProvider.create("resource");
-
-await lock.getOwner();
-```
 
 The `acquireBlockingOrFail` method is the same as `acquireBlocking` method but it throws an error when not enable to acquire the lock:
 
@@ -317,7 +231,7 @@ await lock.run(async () => {
 ```
 
 :::info
-Note the method returns a [`Result`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.Result.html) type that can be inspected to determine the operation's success or failure.
+Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
 :::
 
 The `runOrFail` method automatically manages lock acquisition and release around function execution.
@@ -352,7 +266,7 @@ await lock.runBlocking(
 ```
 
 :::info
-Note the method returns a [`Result`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.Result.html) type that can be inspected to determine the operation's success or failure.
+Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
 :::
 
 The `runBlocking` method automatically manages lock acquisition and release around function execution.
@@ -376,18 +290,113 @@ Note the method throws an error when the lock cannot be acquired.
 :::
 
 :::info
-You can provide [`LazyPromise`](/docs/8_Async/1_lazy_promise.md), synchronous and asynchronous [`Invokable`](../7_Utilities/3_invokable.md) as default values for `run`, `runOrFail`, `runBlocking` and `runBlockingOrFail` methods.
+You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as default values for `run`, `runOrFail`, `runBlocking` and `runBlockingOrFail` methods.
 :::
+
+### Lock instance variables
+
+The `Lock` class exposes instance variables such as:
+
+```ts
+const lock = lockProvider.create("resource");
+
+// Will return the key of the lock which is "resource"
+console.log(lock.key);
+
+// Will return the id of the lock
+console.log(lock.id);
+
+// Will return the ttl of the lock
+console.log(lock.ttl);
+```
+
+### Lock id
+
+By default the lock id is autogenerated but it can also manually defined.
+
+```ts
+const lock = lockProvider.create("lock", {
+    lockId: "my-lock-id",
+});
+
+const hasAcquire = await lock.acquire();
+if (hasAcquired) {
+    console.log("Shared resource");
+    await lock.release();
+}
+```
+
+:::info
+Manually defining lock id is primarily useful for debugging or implementing manual resource locking by the end user.
+
+An example of manual resource locking by the end user can be found in a multi-user CMS, the end user manually locks a document during editing, this resource lock prevents simultaneous edits and data corruption.
+:::
+
+:::warning
+In most cases, setting a custom owner is unnecessary. Misusing this feature could result in different locks sharing the same owner while modifying the same resource simultaneously, which may lead to race conditions.
+:::
+
+### Namespacing
+
+You can use the `Namespace` class to group related locks without conflicts.
+
+:::info
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
+:::
+
+```ts
+import { Namespace } from "@daiso-tech/core/namespace";
+import { RedisLockAdapter } from "@daiso-tech/core/lock/adapters";
+import { LockProvider } from "@daiso-tech/core/lock";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import Redis from "ioredis";
+
+const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
+const serde = new Serde(new SuperJsonSerdeAdapter());
+
+const lockProviderA = new LockProvider({
+    namespace: new Namespace("@lock-a"),
+    adapter: new RedisLockAdapter(database),
+    serde,
+});
+const lockProviderB = new LockProvider({
+    namespace: new Namespace("@lock-b"),
+    adapter: new RedisLockAdapter(database),
+    serde,
+});
+
+const lockA = await lockProviderA.create("key", { ttl: null });
+const lockB = await lockProviderB.create("key", { ttl: null });
+
+const hasAquiredA = await lockA.acquire();
+// Will log true
+console.log(hasAquiredA);
+
+const hasAquiredB = await lockB.acquire();
+// Will log true
+console.log(hasAquiredB);
+
+const hasReleasedB = await lockB.release();
+// Will log true
+console.log(hasReleasedB);
+
+// Will log { type: "ACQUIRED", remainingTime: null }
+console.log(await lockA.getState());
+
+// Will log { type: "EXPIRED" }
+console.log(await lockB.getState());
+```
 
 ### Retrying acquiring lock
 
-To retry acquiring lock you can use the [`retry`](/docs/Async/resilience_middlewares#retry) middleware with [`LazyPromise.pipe`](/docs/Async/lazy_promise#adding-middlewares) method.
+To retry acquiring lock you can use the [`retry`](../Resilience.md) middleware with [`Task.pipe`](../Task.md) method.
 
 Retrying acquiring lock with `aquireOrFail` method:
 
 ```ts
-import { retry } from "@daiso-tech/core/async";
-import { KeyAlreadyAcquiredLockError } from "@daiso-tech/core/lock/contracts";
+import { retry } from "@daiso-tech/core/resilience";
+import { FailedAcquireLockError } from "@daiso-tech/core/lock/contracts";
 
 const lock = lockProvider.create("lock");
 
@@ -395,7 +404,7 @@ try {
     await lock.acquireOrFail().pipe(
         retry({
             maxAttempts: 4,
-            errorPolicy: KeyAlreadyAcquiredLockError,
+            errorPolicy: FailedAcquireLockError,
         }),
     );
     // The critical section
@@ -407,7 +416,7 @@ try {
 Retrying acquiring lock with `acquire` method:
 
 ```ts
-import { retry } from "@daiso-tech/core/async";
+import { retry } from "@daiso-tech/core/resilience";
 
 const lock = lockProvider.create("lock");
 
@@ -431,8 +440,8 @@ if (hasAquired) {
 Retrying acquiring lock with `runOrFail` method:
 
 ```ts
-import { retry } from "@daiso-tech/core/async";
-import { KeyAlreadyAcquiredLockError } from "@daiso-tech/core/lock/contracts";
+import { retry } from "@daiso-tech/core/resilience";
+import { FailedAcquireLockError } from "@daiso-tech/core/lock/contracts";
 
 const lock = lockProvider.create("lock");
 
@@ -443,7 +452,7 @@ await lock
     .pipe(
         retry({
             maxAttempts: 4,
-            errorPolicy: KeyAlreadyAcquiredLockError,
+            errorPolicy: FailedAcquireLockError,
         }),
     );
 ```
@@ -451,7 +460,8 @@ await lock
 Retrying acquiring lock with `run` method:
 
 ```ts
-import { retry } from "@daiso-tech/core/async";
+import { retry } from "@daiso-tech/core/resilience";
+import { FailedAcquireLockError } from "@daiso-tech/core/lock/contracts";
 
 const lock = lockProvider.create("lock");
 
@@ -462,26 +472,9 @@ await lock
     .pipe(
         retry({
             maxAttempts: 4,
-            errorPolicy: {
-                treatFalseAsError: true,
-            },
+            errorPolicy: FailedAcquireLockError,
         }),
     );
-```
-
-### Iterable as key name and owner name
-
-You can use an `Iterable<string>` as a key. The elements will be joined into a single string, and the delimiter used for joining is configurable in the [`Namespace`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Namespace.html) class:
-
-```ts
-const lockProvider = new LockProvider({
-    namespace: new Namespace("lock"),
-    // rest of the settings ....
-});
-
-const lock = lockProvider.create(["resource", "1"], {
-    owner: ["user", "1"],
-});
 ```
 
 ### Serialization and deserialization of lock
@@ -494,7 +487,6 @@ Manually serializing and deserializing the lock:
 ```ts
 import { RedisLockAdapter } from "@daiso-tech/core/lock/adapters";
 import { LockProvider } from "@daiso-tech/core/lock";
-import { Namespace } from "@daiso-tech/core/utilities";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
 
@@ -505,7 +497,6 @@ const redisClient = new Redis("YOUR_REDIS_CONNECTION");
 const lockProvider = new LockProvider({
     // You can laso pass in an array of Serde class instances
     serde,
-    namespace: new Namespace("lock"),
     adapter: new RedisLockAdapter(redisClient),
 });
 
@@ -515,14 +506,14 @@ const deserializedLock = serde.deserialize(lock);
 ```
 
 :::danger
-When serializing or deserializing a lock, you must use the same [`Serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/interfaces/Serde.IFlexibleSerde.html) (Serializer/Deserializer) instances that were provided to the [`LockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.LockProvider.html). This is required because the [`LockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.LockProvider.html) injects custom serialization logic for [`ILock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILock.html) instance into [`Serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/interfaces/Serde.IFlexibleSerde.html) instances.
+When serializing or deserializing a lock, you must use the same `Serde` instances that were provided to the `LockProvider`. This is required because the `LockProvider` injects custom serialization logic for `ILock` instance into `Serde` instances.
 :::
 
 :::info
 Note you only need manuall serialization and deserialization when integrating with external libraries.
 :::
 
-As long you pass the same [`Serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/interfaces/Serde.IFlexibleSerde.html) instances with all other components you dont need to serialize and deserialize the lock manually.
+As long you pass the same `Serde` instances with all other components you dont need to serialize and deserialize the lock manually.
 
 ```ts
 import { RedisLockAdapter } from "@daiso-tech/core/lock/adapters";
@@ -530,7 +521,6 @@ import type { ILock } from "@daiso-tech/core/lock/contracts";
 import { LockProvider } from "@daiso-tech/core/lock";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { Namespace } from "@daiso-tech/core/utilities";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
 
@@ -544,7 +534,6 @@ type EventMap = {
     };
 };
 const eventBus = new EventBus<EventMap>({
-    namespace: new Namespace("event-bus"),
     adapter: new RedisPubSubEventBusAdapter({
         listenerClient,
         dispatcherClient: mainRedisClient,
@@ -554,7 +543,6 @@ const eventBus = new EventBus<EventMap>({
 
 const lockProvider = new LockProvider({
     serde,
-    namespace: new Namespace("lock"),
     adapter: new RedisLockAdapter(mainRedisClient),
     eventBus,
 });
@@ -574,7 +562,8 @@ await eventBus.addListener("sending-lock-over-network", ({ lock }) => {
 
 ### Lock events
 
-You can listen to different lock events ([`LockEventMap`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.LockEventMap.html)) that are triggered by the [`Lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.Lock.html). Refer to the [`EventBus`](../2_Event%20bus/2_event_bus_usage.md) documentation to learn how to use events.
+You can listen to different [lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) that are triggered by the `Lock`.
+Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events.
 
 ```ts
 import { LOCK_EVENTS } from "@daiso-tech/core/lock/contracts";
@@ -591,14 +580,13 @@ await lock.release();
 ```
 
 :::info
-Note the [`Lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.Lock.html) class uses [`MemoryEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.MemoryEventBusAdapter.html) by default. You can choose what event bus adapter to use:
+Note the `Lock` class uses [`MemoryEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.MemoryEventBusAdapter.html) by default. You can choose what event bus adapter to use:
 
 ```ts
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
 import { LockProvider } from "@daiso-tech/core/lock";
 import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { Namespace } from "@daiso-tech/core/utilities";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
@@ -613,10 +601,8 @@ const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
 });
 
 const lock = new LockProvider({
-    namespace: new Namespace("lock"),
     adapter: new MemoryLockAdapter(),
     eventBus: new EventBus({
-        namespace: new Namespace("event-bus"),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -625,7 +611,7 @@ const lock = new LockProvider({
 :::
 
 :::info
-Note you can disable dispatching [`Lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.Lock.html) events by passing an [`EventBus`](../2_Event%20bus/2_event_bus_usage.md) that uses [`NoOpEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.NoOpEventBusAdapter.html)
+Note you can disable dispatching `Lock` events by passing an `EventBus` that uses `NoOpEventBusAdapter`.
 :::
 
 :::warning
@@ -635,11 +621,11 @@ If multiple lock adapters (e.g., `RedisLockAdapter` and `MemoryLockAdapter`) are
 import { MemoryLockAdapter } from "@daiso-tech/core/cache/adapters";
 import { Lock } from "@daiso-tech/core/cache";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { Namespace } from "@daiso-tech/core/utilities";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
 import Redis from "ioredis";
+import { Namespace } from "@daiso-tech/core/namespace";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
@@ -651,7 +637,6 @@ const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
 
 const memoryLockAdapter = new MemoryLockAdapter();
 const memoryLockProvider = new LockProvider({
-    namespace: new Namespace("cache"),
     adapter: memoryLockAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryLockAdapter and RedisLockAdapter to isolate their events.
@@ -665,7 +650,6 @@ const redisLockAdapter = new RedisLockAdapter({
     database: new Redis("YOUR_REDIS_CONNECTION_STRING"),
 });
 const redisLockProvider = new LockProvider({
-    namespace: new Namespace("cache"),
     adapter: redisLockAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryLockAdapter and RedisLockAdapter to isolate their events.
@@ -681,11 +665,11 @@ const redisLockProvider = new LockProvider({
 
 The library includes 3 additional contracts:
 
-- [`ILock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILock.html) - Allows only manipulation of locks.
+- `ILock` - Allows only manipulation of locks.
 
-- [`ILockProviderBase`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockProviderBase.html) - Allows only creation of locks.
+- `ILockProviderBase` - Allows only creation of locks.
 
-- [`ILockListenable`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockListenable.html) – Allows only to listening to lock events.
+- `ILockListenable` – Allows only to listening to lock events.
 
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 
@@ -729,3 +713,7 @@ async function lockListenableFunc(
 await lockListenableFunc(lockProvider);
 await lockProviderFunc(lockProvider);
 ```
+
+## Further information
+
+For further information refer to [`@daiso-tech/core/lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) API docs.

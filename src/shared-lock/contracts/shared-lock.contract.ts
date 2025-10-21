@@ -3,7 +3,12 @@
  */
 
 import type { Task } from "@/task/_module-exports.js";
-import type { AsyncLazy, Result } from "@/utilities/_module-exports.js";
+import type {
+    AsyncLazy,
+    Result,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Invokable,
+} from "@/utilities/_module-exports.js";
 import type {
     LimitReachedReaderSemaphoreError,
     FailedAcquireWriterLockError,

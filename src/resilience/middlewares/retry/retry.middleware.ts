@@ -1,5 +1,5 @@
 /**
- * @module Async
+ * @module Resilience
  */
 
 import type { Option, ResultFailure } from "@/utilities/_module-exports.js";

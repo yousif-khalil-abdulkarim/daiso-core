@@ -1,19 +1,15 @@
----
-sidebar_position: 3
----
-
 # Invokable
 
 An [`Invokable`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.Invokable.html) represents a callable entity, which can be either:
 
-1. A function [`InvokableFn`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.InvokableFn.html)
-2. An object with a specific invocation signature ([`IInvokableObject`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.IInvokableObject.html))
+1. A function `InvokableFn`
+2. An object with a specific invocation signature (`IInvokableObject`)
 
 ## Types
 
--   [`Invokable`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.Invokable.html) - Union type of [`InvokableFn`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.InvokableFn.html) and [`IInvokableObject`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.IInvokableObject.html)
--   [`InvokableFn`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.InvokableFn.html) - Function signature
--   [`IInvokableObject`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.IInvokableObject.html) - Object with `invoke` method
+- `Invokable` - Union type of `InvokableFn` and `IInvokableObject`
+- `InvokableFn` - Function signature
+- `IInvokableObject` - Object with `invoke` method
 
 ## Function Invokable (`InvokableFn`)
 
@@ -51,3 +47,7 @@ const invokableObject: IInvokableObject<[arg1: number, arg2: number], number> =
         },
     };
 ```
+
+## Further information
+
+For further information refer to [`@daiso-tech/core/utilities`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.Invokable.html) API docs.
