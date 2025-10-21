@@ -19,6 +19,7 @@ import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 const lockProvider = new LockProviderFactory({
+    serde,
     adapters: {
         memory: new MemoryLockAdapter(),
         redis: new RedisLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),

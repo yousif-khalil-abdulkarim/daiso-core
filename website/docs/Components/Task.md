@@ -3,7 +3,7 @@
 The `@daiso-tech/core/task` component provides a better alternative to `Promise`.
 
 :::info
-In the future the `@daiso-tech/core/task` will provide support for structured concurrency.
+In the future the `@daiso-tech/core/task` component will provide support for structured concurrency.
 :::
 
 ## Basic usage
@@ -148,4 +148,4 @@ The are additional static method, `delay` and `fromCallback`.
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Task.html) API docs.
+For further information refer to [`@daiso-tech/core/task`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Task.html) API docs.

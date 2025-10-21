@@ -26,14 +26,55 @@ const serializedValue = serde.serialize({
 const deserializedValue = serde.deserialize(serializedValue);
 ```
 
+### Custom serialization and deserialization logic
+
+The `registerCustom` method offers control over serialization and deserialization behavior.
+
+```ts
+import type { ISerdeTransformer } from "@daiso-tech/core/serde/contracts";
+
+type ISerializedUser = {
+    version: "1";
+    name: string;
+    age: number;
+};
+
+const userSerdeTransformer: ISerdeTransformer<User, ISerializedUser> = {
+    name: User.name,
+
+    isApplicable(value: unknown): value is User {
+        return value instanceof User;
+    }
+
+    deserialize(serializedValue: TSerializedValue): User {
+        return new User(serializedValue.name, serializedValue.age);
+    }
+
+    serialize(deserializedValue: User): TSerializedValue {
+        return {
+            version: "1",
+            name: user.name,
+            age: user.age,
+        };
+    }
+}
+
+serde.registerCustom(userSerdeTransformer);
+```
+
+:::info
+Note the `ISerdeTranformer` object can be dynamically created.
+:::
+
 ### Custom serialization and deserialization logic of classes
 
-Serializing and deserializing a class:
+The `registerClass` method provides a simplified abstraction over `registerCustom` method for serialization and deserialization classes.
 
 ```ts
 import type { ISerializable } from "@daiso-tech/core/serde/contracts";
 
 type ISerializedUser = {
+    version: "1";
     name: string;
     age: number;
 };
@@ -50,6 +91,7 @@ class User implements ISerializable<ISerializedUser> {
 
     serialize(): ISerializedUser {
         return {
+            version: "1",
             name: this.name,
             age: this.age,
         };
@@ -64,7 +106,7 @@ serde.registerClass(User);
 
 const user = new User("Carl", 50);
 const serializedUser = serde.serialize(user);
-const deserializedUser = serde.deserialize(serializedUser);
+const deserializedUser = serde.deserialize<User>(serializedUser);
 
 // The instances will not be the same because deserializedUser is recreated.
 console.log(user === deserializedUser);
@@ -84,44 +126,6 @@ To ensure correct serialization and deserialization, class names must be unique.
 ```ts
 serde.registerClass(User, "my-library");
 ```
-
-:::
-
-### Custom serialization and deserialization logic
-
-The `registerClass` method provides a simplified abstraction over `registerCustom` method, which offers finer-grained control over serialization and deserialization behavior.
-
-```ts
-import type { ISerdeTransformer } from "@daiso-tech/core/serde/contracts";
-
-type ISerializedUser = {
-    name: string;
-    age: number;
-};
-const userSerdeTransformer: ISerdeTransformer<User, ISerializedUser> = {
-    name: User.name,
-
-    isApplicable(value: unknown): value is User {
-        return value instanceof User;
-    }
-
-    deserialize(serializedValue: TSerializedValue): User {
-        return new User(serializedValue.name, serializedValue.age);
-    }
-
-    serialize(deserializedValue: User): TSerializedValue {
-        return {
-            name: user.name,
-            age: user.age,
-        };
-    }
-}
-
-serde.registerCustom(userSerdeTransformer);
-```
-
-:::info
-Note the `ISerdeTranformer` object can be dynamically created.
 :::
 
 ## Patterns
@@ -173,7 +177,6 @@ The library includes 4 additional contracts:
 
 -   `ISerde` - Allows for both serialization and deserialization.
 
-
 -   `ISerderRegister` - Allows only for regestering custom serialization and deserialization logic.
 
 -   `IFlexibleSerde` – Allows for both serialization and deserialization. Allows also for customizable serialization/deserialization logic.
@@ -183,4 +186,4 @@ This seperation makes it easy to visually distinguish the 4 contracts, making it
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html) API docs.
+For further information refer to [`@daiso-tech/core/serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html) API docs.

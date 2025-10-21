@@ -111,7 +111,7 @@ const fn = new AsyncHooks(unstableFn, [
 
 ### Custom BackoffPolicy
 
-You can use custom `BackoffPolicy`:
+You can use custom [`BackoffPolicy`](./backoff-policies.md):
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/time-span";
@@ -294,4 +294,4 @@ await fn.invoke();
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Resilience.html) API docs.
+For further information refer to [`@daiso-tech/core/resilience`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Resilience.html) API docs.

@@ -1,6 +1,6 @@
 # Lock
 
-The `@daiso-tech/core/lock` component provides a way for managing locks independent of underlying platform.
+The `@daiso-tech/core/lock` component provides a way for managing locks independent of underlying platform or storage.
 
 ## Initial configuration
 
@@ -39,10 +39,10 @@ Here is a complete list of settings for the [`LockProvider`](https://yousif-khal
 const lock = lockProvider.create("shared-resource");
 ```
 
-### Acquiring and releasing the lock the lock
+### Acquiring and releasing the lock
 
 ```ts
-const hasAquired = await lock.aquire();
+const hasAquired = await lock.acquire();
 if (hasAquired) {
     try {
         // The critical section
@@ -57,7 +57,7 @@ Alternatively you could write it as follows:
 ```ts
 try {
     // This method will throw if the lock is not acquired
-    await lock.aquireOrFail();
+    await lock.acquireOrFail();
     // The critical section
 } finally {
     await lock.release();
@@ -69,13 +69,13 @@ You need always to wrap the critical section with `try-finally` so the lock get 
 :::
 
 :::danger
-Note `Lock` class uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `defer` method to run it.
+Note `Lock` class uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
 Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
 :::
 
 ### Locks with custom TTL
 
-You can provide a custom TTL for the key.
+You can provide a custom TTL for the lock.
 
 ```ts
 const lock = lockProvider.create("shared-resource", {
@@ -148,7 +148,7 @@ const lock = lockProvider.create("resource", {
     ttl: TimeSpan.fromMinutes(1),
 });
 
-const hasAcquired = await lock.aquire();
+const hasAcquired = await lock.acquire();
 if (hasAcquired) {
     try {
         while (true) {
@@ -203,7 +203,7 @@ const lock = lockProvider.create("resource");
 await lock.releaseOrFail();
 ```
 
-You can force release the lock regardless of its current owner:
+The `forceRelease` method releases the lock regardless of the owner:
 
 ```ts
 const lock = lockProvider.create("resource");
@@ -269,7 +269,7 @@ await lock.runBlocking(
 Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
 :::
 
-The `runBlocking` method automatically manages lock acquisition and release around function execution.
+The `runBlockingOrFail` method automatically manages lock acquisition and release around function execution.
 It calls `acquireBlockingOrFail` before invoking the function and calls `release` in a finally block, ensuring the lock is always freed, even if an error occurs during execution.
 
 ```ts
@@ -290,7 +290,7 @@ Note the method throws an error when the lock cannot be acquired.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as default values for `run`, `runOrFail`, `runBlocking` and `runBlockingOrFail` methods.
+You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `run`, `runOrFail`, `runBlocking` and `runBlockingOrFail` methods.
 :::
 
 ### Lock instance variables
@@ -333,7 +333,7 @@ An example of manual resource locking by the end user can be found in a multi-us
 :::
 
 :::warning
-In most cases, setting a custom owner is unnecessary. Misusing this feature could result in different locks sharing the same owner while modifying the same resource simultaneously, which may lead to race conditions.
+In most cases, setting a custom lock id is unnecessary. Misusing this feature could result in different locks sharing the same lock id while modifying the same resource simultaneously, which may lead to race conditions.
 :::
 
 ### Namespacing
@@ -392,7 +392,7 @@ console.log(await lockB.getState());
 
 To retry acquiring lock you can use the [`retry`](../Resilience.md) middleware with [`Task.pipe`](../Task.md) method.
 
-Retrying acquiring lock with `aquireOrFail` method:
+Retrying acquiring lock with `acquireOrFail` method:
 
 ```ts
 import { retry } from "@daiso-tech/core/resilience";
@@ -575,8 +575,6 @@ await lockProvider.subscribe(LOCK_EVENTS.ACQUIRED, (event) => {
 
 const lock = lockProvider.create("resource");
 await lock.acquire();
-console.log("");
-await lock.release();
 ```
 
 :::info
@@ -661,11 +659,11 @@ const redisLockProvider = new LockProvider({
 
 :::
 
-### Seperating creating locks, listening to locks and manipulating locks
+### Seperating creating, listening to and manipulating locks
 
 The library includes 3 additional contracts:
 
-- `ILock` - Allows only manipulation of locks.
+- `ILock` - Allows only manipulation of the lock.
 
 - `ILockProviderBase` - Allows only creation of locks.
 
