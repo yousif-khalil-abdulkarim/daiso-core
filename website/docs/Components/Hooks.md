@@ -1,20 +1,18 @@
----
-sidebar_position: 2
----
-
 # Hooks
+
+The `@daiso-tech/core/hooks` component provides seamleas way to add middlewares/hooks to any sync and async functions without any hassle.
 
 ## Synchronous hooks
 
-The [`Hooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Hooks.html) class provides a convenient way to change and inspect arguments and return value of synchronous functions.
+The `Hooks` class provides a convenient way to change and inspect arguments and return value of synchronous functions.
 
 ### Creating middlewares
 
-In order to use the [`Hooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Hooks.html) class we need to create [`middlewares`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.Middleware.html):
+In order to use the `Hooks` class we need to create `middlewares`:
 
 ```ts
 // file: middlewares.ts
-import type { MiddlewareFn } from "@daiso-tech/core/utilities";
+import type { MiddlewareFn } from "@daiso-tech/core/hooks";
 
 // Creating function that returns a middleware that will log the arguments and return value.
 export function log<TParameters extends unknown[], TReturn>(): MiddlewareFn<
@@ -57,7 +55,7 @@ Now we need to apply the middlewares to a function:
 
 ```ts
 // file: main.ts
-import { Hooks } from "@daiso-tech/core/utilities";
+import { Hooks } from "@daiso-tech/core/hooks";
 import { log, time } from "./middlewares.js";
 
 function add(a: number, b: number): number {
@@ -83,7 +81,7 @@ Note the middlewares are reusable and can be applied to other functions:
 
 ```ts
 // file: main.ts
-import { Hooks } from "@daiso-tech/core/utilities";
+import { Hooks } from "@daiso-tech/core/hooks";
 import { log, time } from "./middlewares.js";
 
 function average(...nbrs: number[]): number {
@@ -104,7 +102,7 @@ const enhancedAverage = new Hooks(average, [log(), time()]);
 If you use an anonymous function, you must set its name manually; otherwise, it will default to 'func'.
 
 ```ts
-import { Hook } from "@daiso-tech/core/utilities";
+import { Hook } from "@daiso-tech/core/hooks";
 
 const enhancedAdd = new Hooks(
     (a: number, b: number): number => a + b,
@@ -125,7 +123,7 @@ const enhancedAdd = new Hooks(
 The middleware supports custom context, allowing you to pass any relevant information.
 
 ```ts
-import { Hook, type MiddlewareFn } from "@daiso-tech/core/utilities";
+import { Hook, type MiddlewareFn } from "@daiso-tech/core/hooks";
 
 function add(a: number, b: number): number {
     return a + b;
@@ -160,10 +158,10 @@ const enhancedAdd = new Hooks(add, [createMiddleware()], {
 
 ### Converting to a function
 
-You can convert [`Hooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Hooks.html) to a reguler function.
+You can convert `Hooks` to a reguler function.
 
 ```ts
-import { Hook } from "@daiso-tech/core/utilities";
+import { Hook } from "@daiso-tech/core/hooks";
 
 // add is now a function and not Hook instance
 const add = new Hooks(
@@ -182,10 +180,10 @@ const add = new Hooks(
 
 ### Deriving Hook instances
 
-You can derive a new [`Hooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Hooks.html) instance from another instance.
+You can derive a new `Hooks` instance from another instance.
 
 ```ts
-import { Hook } from "@daiso-tech/core/utilities";
+import { Hook } from "@daiso-tech/core/hooks";
 
 const addA = new Hooks(
     (a: number, b: number): number => a + b,
@@ -216,17 +214,17 @@ const addC = addA.pipeWhen(false, (args, next) => {
 ```
 
 :::info
-Note that the [`Hooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Hooks.html) is immutable, meaning any configuration override returns a new instance rather than modifying the existing one.
+Note that the `Hooks` class is immutable, meaning any configuration override returns a new instance rather than modifying the existing one.
 :::
 
 ## Asynchronous hooks
 
-The [`AsyncHooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.AsyncHooks.html) class is similar to Hooks, but it works with both asynchronous and synchronous functions. Unlike [`Hooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Utilities.Hooks.html), this class always returns a Promise.
+The `AsyncHooks` class is similar to Hooks, but it works with both asynchronous and synchronous functions. Unlike `Hooks`, this class always returns a `Promise`.
 
 ### Usage
 
 ```ts
-import { AsyncHooks } from "@daiso-tech/core/utilities";
+import { AsyncHooks } from "@daiso-tech/core/hooks";
 
 // Works with synchronous function
 const add1 = new AsyncHooks(
@@ -259,10 +257,10 @@ const add2 = new AsyncHooks(
 
 ### Binding AbortSignal
 
-By binding an `AbortSignal` via [`AbortSignalBinder`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.AbortSignalBinder.html), both the middleware and the function gain mutual cancellation control, provided the function handles `AbortSignal`.
+By binding an `AbortSignal` via `AbortSignalBinder`, both the middleware and the function gain mutual cancellation control, provided the function handles `AbortSignal`.
 
 ```ts
-import { AsyncHooks, type AsyncMiddlewareFn } from "@daiso-tech/core/utilities";
+import { AsyncHooks, type AsyncMiddlewareFn } from "@daiso-tech/core/hooks";
 
 async function fetchData(url: string, signal?: AbortSignal): Promise<unknown> {
     const response = await fetch(url, { signal });
@@ -313,3 +311,8 @@ const fetchDataEnhanced = new AsyncHooks(fetchData, [timeout()], {
     signalBinder: fetchDataSignalBinder,
 });
 ```
+
+
+## Further information
+
+For further information refer to [`@daiso-tech/core/cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Hooks.html) API docs.

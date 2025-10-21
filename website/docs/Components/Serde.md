@@ -1,8 +1,6 @@
----
-sidebar_position: 2
----
+# Serde
 
-# Serde usage
+The `@daiso-tech/core/serde` component provides seamless way to serialize/deserialize data and adding custom serialization/deserialization logic for custom data types.
 
 ## Initial configuration
 
@@ -130,11 +128,10 @@ Note the `ISerdeTranformer` object can be dynamically created.
 
 ### Usage with other components
 
-When using [`Serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html) class instance there is no need to call `serialize` and `deserialize` manually. Because components like [`Cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) handle it automatically through their adapter.
+When using `Serde` class instance there is no need to call `serialize` and `deserialize` manually. Because components like `Cache` handle it automatically through their adapter.
 
 ```ts
 import { Serde } from "@daiso-tech/core/serde";
-import { Namespace } from "@daiso-tech/core/utilities";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
 import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
 import { Cache } from "@daiso-tech/core/cache";
@@ -145,7 +142,6 @@ const serde = new Serde(new SuperJsonSerdeAdapter());
 serde.registerClass(ListCollection);
 
 const cache = new Cache({
-    namespace: new Namespace("cache"),
     adapter: new RedisCacheAdapter({
         database: new Redis("YOUR_REDIS_CONNECTION_STRING"),
         serde,
@@ -164,21 +160,27 @@ if (deserializedListCollection) {
 ```
 
 :::info
-Note you should use one [`Serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html) class instance accross all components and register all serializable objects before component usage.
+Note you should use one `Serde` class instance accross all components and register all serializable objects before component usage.
 :::
 
 ## Seperating serialization, deserialization and registering custom serialization/deserialization logic
 
 The library includes 4 additional contracts:
 
--   [`ISerializer`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Serde.ISerializer.html) - Allows only for serialization.
+-   `ISerializer` - Allows only for serialization.
 
--   [`IDeserializer`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Serde.IDeserializer.html) - Allows only for deserialization.
+-   `IDeserializer` - Allows only for deserialization.
 
--   [`ISerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Serde.ISerde.html) - Allows for both serialization and deserialization.
+-   `ISerde` - Allows for both serialization and deserialization.
 
--   [`IFlexibleSerde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/interfaces/Serde.IFlexibleSerde.html) – Allows for both serialization and deserialization. Allows also for customizable serialization/deserialization logic.
 
--   [`ISerderRegister`](https://yousif-khalil-abdulkarim.github.io/daiso-core/interfaces/Serde.ISerderRegister.html) - Allows only for regestering custom serialization and deserialization logic.
+-   `ISerderRegister` - Allows only for regestering custom serialization and deserialization logic.
+
+-   `IFlexibleSerde` – Allows for both serialization and deserialization. Allows also for customizable serialization/deserialization logic.
 
 This seperation makes it easy to visually distinguish the 4 contracts, making it immediately obvious that they serve different purposes.
+
+
+## Further information
+
+For further information refer to [`@daiso-tech/core/cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html) API docs.

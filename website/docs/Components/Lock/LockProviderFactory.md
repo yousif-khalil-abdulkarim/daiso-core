@@ -1,12 +1,10 @@
----
-sidebar_position: 3
----
+# LockProviderFactory
 
-# LockProvider factory
+The `LockProviderFactory` class provides a flexible way to configure and switch between different lock adapters at runtime.
 
 ## Initial configuration
 
-To begin using the [`ILockProviderFactory`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockProviderFactory.html), You will need to register all required adapters during initialization.
+To begin using the `ILockProviderFactory`, You will need to register all required adapters during initialization.
 
 ```ts
 import { LockProviderFactory } from "@daiso-tech/core/lock";
@@ -17,13 +15,10 @@ import {
 import { Serde } from "@daiso-tech/core/serde";
 import type { ISerde } from "@daiso-tech/core/serde/contracts";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-import { Namespace } from "@daiso-tech/core/utilities";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 const lockProvider = new LockProviderFactory({
-    // The LockProviderFactory takes the same settings as LockProvider class
-    namespace: new Namespace("lock"),
     adapters: {
         memory: new MemoryLockAdapter(),
         redis: new RedisLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),
@@ -78,5 +73,9 @@ await lockProvider
 ```
 
 :::info
-Note that the [`LockProviderFactory`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.LockProviderFactory.html) is immutable, meaning any configuration override returns a new instance rather than modifying the existing one.
+Note that the `LockProviderFactory` is immutable, meaning any configuration override returns a new instance rather than modifying the existing one.
 :::
+
+## Further information
+
+For further information refer to [`@daiso-tech/core/lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) API docs.
