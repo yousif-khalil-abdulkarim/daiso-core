@@ -1,7 +1,7 @@
 /**
  * @module Resilience
  */
-import { TimeoutResilienceError } from "@/resilience/async.errors.js";
+import { TimeoutResilienceError } from "@/resilience/resilience.errors.js";
 import { abortAndFail } from "@/resilience/utilities/abort-and-fail/_module.js";
 import {
     TO_MILLISECONDS,

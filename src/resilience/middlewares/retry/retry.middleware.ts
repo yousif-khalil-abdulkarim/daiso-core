@@ -21,6 +21,7 @@ import type {
     AsyncMiddlewareFn,
     HookContext,
 } from "@/hooks/_module-exports.js";
+import { RetryResilienceError } from "@/resilience/resilience.errors.js";
 
 /**
  * The `retry` middleware enables automatic retries for all errors or specific errors, with configurable backoff policies.
@@ -103,7 +104,7 @@ export function retry<
     } = settings;
     return async (args, next, { context, signal }) => {
         let result: Option<TReturn> = optionNone();
-        let error_: Option = optionNone();
+        const allErrors: unknown[] = [];
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
                 callInvokable(onExecutionAttempt, { attempt, args, context });
@@ -143,7 +144,7 @@ export function retry<
                 }
 
                 if (await callErrorPolicyOnThrow<any>(errorPolicy, error)) {
-                    error_ = optionSome(error);
+                    allErrors.push(error);
                 } else {
                     throw error;
                 }
@@ -161,8 +162,8 @@ export function retry<
             }
         }
 
-        if (error_.type === OPTION.SOME) {
-            throw error_.value;
+        if (allErrors.length !== 0) {
+            throw new RetryResilienceError(allErrors, "!!__MESSAGE__!!");
         }
         if (result.type === OPTION.SOME) {
             return result.value;
