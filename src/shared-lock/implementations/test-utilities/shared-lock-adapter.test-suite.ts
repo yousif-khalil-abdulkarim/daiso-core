@@ -38,7 +38,7 @@ export type SharedLockAdapterTestSuiteSettings = {
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import { sharedLockAdapterTestSuite } from "@daiso-tech/core/shared-lock/test-utilities";
- * import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+ * import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
  * import { Redis } from "ioredis";
  * import {
  *     RedisContainer,

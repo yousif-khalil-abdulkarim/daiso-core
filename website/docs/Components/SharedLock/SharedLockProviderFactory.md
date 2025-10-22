@@ -8,10 +8,8 @@ To begin using the `ISharedLockProviderFactory`, You will need to register all r
 
 ```ts
 import { SharedLockProviderFactory } from "@daiso-tech/core/shared-lock";
-import {
-    MemorySharedLockAdapter,
-    RedisSharedLockAdapter,
-} from "@daiso-tech/core/shared-lock/adapters";
+import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
+import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import type { ISerde } from "@daiso-tech/core/serde/contracts";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";

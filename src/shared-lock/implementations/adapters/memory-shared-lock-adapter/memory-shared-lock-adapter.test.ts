@@ -3,7 +3,7 @@ import { sharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-u
 import {
     MemorySharedLockAdapter,
     type MemorySharedLockData,
-} from "@/shared-lock/implementations/adapters/memory-shared-lock-adapter/_module.js";
+} from "@/shared-lock/implementations/adapters/memory-shared-lock-adapter/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 describe("class: MemorySharedLockAdapter", () => {

@@ -24,7 +24,7 @@ import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/kysely-shared-lock-adapter"`
  * @group Adapters
  */
 export type KyselyWriterLockTable = {
@@ -38,7 +38,7 @@ export type KyselyWriterLockTable = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/kysely-shared-lock-adapter"`
  * @group Adapters
  */
 export type KyselyReaderSemaphoreTable = {
@@ -48,7 +48,7 @@ export type KyselyReaderSemaphoreTable = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/kysely-shared-lock-adapter"`
  * @group Adapters
  */
 export type KyselyReaderSemaphoreSlotTable = {
@@ -61,7 +61,7 @@ export type KyselyReaderSemaphoreSlotTable = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/kysely-shared-lock-adapter"`
  * @group Adapters
  */
 export type KyselySharedLockTables = {
@@ -72,7 +72,7 @@ export type KyselySharedLockTables = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/kysely-shared-lock-adapter"`
  * @group Adapters
  */
 export type KyselySharedLockAdapterSettings = {
@@ -470,7 +470,7 @@ class DatabaseWriterLockTransaction implements IDatabaseWriterLockTransaction {
  * Note in order to use `KyselySharedLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/kysely-shared-lock-adapter"`
  * @group Adapters
  */
 export class KyselySharedLockAdapter
@@ -486,10 +486,10 @@ export class KyselySharedLockAdapter
     /**
      * @example
      * ```ts
-     * import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
      * import Sqlite from "better-sqlite3";
      *
-     * const lockAdapter = new KyselySharedLockAdapter({
+     * const sharedLockAdapter = new KyselySharedLockAdapter({
      *   kysely: new Kysely({
      *     dialect: new SqliteDialect({
      *       database: new Sqlite("local.db"),
@@ -497,7 +497,7 @@ export class KyselySharedLockAdapter
      *   }),
      * });
      * // You need initialize the adapter once before using it.
-     * await lockAdapter.init();
+     * await sharedLockAdapter.init();
      * ```
      */
     constructor(settings: KyselySharedLockAdapterSettings) {

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "vitest";
 import {
     KyselySharedLockAdapter,
     MemorySharedLockAdapter,
-} from "@/shared-lock/implementations/adapters/_module-exports.js";
+} from "@/shared-lock/implementations/adapters/_module.js";
 import { SharedLockProvider } from "@/shared-lock/implementations/derivables/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";

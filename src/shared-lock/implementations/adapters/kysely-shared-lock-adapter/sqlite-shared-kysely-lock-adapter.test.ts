@@ -3,7 +3,7 @@ import { databaseSharedLockAdapterTestSuite } from "@/shared-lock/implementation
 import {
     KyselySharedLockAdapter,
     type KyselySharedLockTables,
-} from "@/shared-lock/implementations/adapters/kysely-shared-lock-adapter/_module.js";
+} from "@/shared-lock/implementations/adapters/kysely-shared-lock-adapter/_module-exports.js";
 import Sqlite, { type Database } from "better-sqlite3";
 import {
     Kysely,

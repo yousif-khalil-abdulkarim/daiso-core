@@ -156,23 +156,27 @@ export class SharedLockProvider implements ISharedLockProvider {
     /**
      * @example
      * ```ts
-     * import { SqliteSharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
      * import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import Sqlite from "better-sqlite3";
+     * import { Kysely, SqliteDialect } from "kysely";
      *
-     * const database = new Sqlite("local.db");
-     * const lockAdapter = new SqliteSharedLockAdapter({
-     *   database,
+     * const sharedLockAdapter = new KyselySharedLockAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database: new Sqlite("local.db"),
+     *     }),
+     *   });
      * });
      * // You need initialize the adapter once before using it.
-     * await lockAdapter.init();
+     * await sharedLockAdapter.init();
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter())
      * const lockProvider = new SharedLockProvider({
      *   serde,
-     *   adapter: lockAdapter,
+     *   adapter: sharedLockAdapter,
      * });
      * ```
      */
@@ -295,7 +299,7 @@ export class SharedLockProvider implements ISharedLockProvider {
      * @example
      * ```ts
      * import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
-     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
      * import { Namespace } from "@daiso-tech/core/namespace";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
@@ -306,7 +310,7 @@ export class SharedLockProvider implements ISharedLockProvider {
      *   serde: new Serde(new SuperJsonSerdeAdapter())
      * });
      *
-     * const lock = lockProvider.create("a");
+     * const sharedLock = lockProvider.create("a");
      * ```
      */
     create(

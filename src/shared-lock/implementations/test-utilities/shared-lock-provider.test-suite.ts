@@ -86,7 +86,7 @@ export type SharedLockProviderTestSuiteSettings = {
  * @example
  * ```ts
  * import { describe, expect, test, beforeEach } from "vitest";
- * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+ * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
  * import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
  * import { EventBus } from "@daiso-tech/core/event-bus";
  * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
