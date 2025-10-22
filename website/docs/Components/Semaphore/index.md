@@ -8,7 +8,7 @@ To begin using the `SemaphoreProvider` class, you'll need to create and configur
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/time-span";
-import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
 import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
@@ -417,7 +417,7 @@ For further information about namespacing refer to [`@daiso-tech/core/namespace`
 
 ```ts
 import { Namespace } from "@daiso-tech/core/namespace";
-import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
 import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
@@ -570,7 +570,7 @@ This means you can, for example, acquire the semaphore on the main server, trans
 Manually serializing and deserializing the semaphore:
 
 ```ts
-import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
 import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
@@ -603,7 +603,7 @@ Note you only need manuall serialization and deserialization when integrating wi
 As long you pass the same `Serde` instances with all other components you dont need to serialize and deserialize the semaphore manually.
 
 ```ts
-import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
 import type { ISemaphore } from "@daiso-tech/core/semaphore/contracts";
 import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
@@ -672,7 +672,7 @@ await semaphore.acquire();
 Note the `Semaphore` class uses [`MemoryEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.MemoryEventBusAdapter.html) by default. You can choose what event bus adapter to use:
 
 ```ts
-import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
 import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
 import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
@@ -707,8 +707,7 @@ Note you can disable dispatching `Semaphore` events by passing an `EventBus` tha
 If multiple semaphore adapters (e.g., `RedisSemaphoreAdapter` and `MemorySemaphoreAdapter`) are used at the same time, isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
-import { MemorySemaphoreAdapter } from "@daiso-tech/core/cache/adapters";
-import { Semaphore } from "@daiso-tech/core/cache";
+import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
@@ -763,7 +762,7 @@ The library includes 3 additional contracts:
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 
 ```ts
-import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
 import {
     type ISemaphore,
     type ISemaphoreProvider,

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { semaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module-exports.js";
-import { RedisSemaphoreAdapter } from "@/semaphore/implementations/adapters/redis-semaphore-adapter/_module.js";
+import { RedisSemaphoreAdapter } from "@/semaphore/implementations/adapters/redis-semaphore-adapter/_module-exports.js";
 import { Redis } from "ioredis";
 import {
     RedisContainer,

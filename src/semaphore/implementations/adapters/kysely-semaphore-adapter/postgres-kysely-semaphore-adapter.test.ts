@@ -3,7 +3,7 @@ import { databaseSemaphoreAdapterTestSuite } from "@/semaphore/implementations/t
 import {
     KyselySemaphoreAdapter,
     type KyselySemaphoreTables,
-} from "@/semaphore/implementations/adapters/kysely-semaphore-adapter/_module.js";
+} from "@/semaphore/implementations/adapters/kysely-semaphore-adapter/_module-exports.js";
 import {
     Kysely,
     PostgresDialect,

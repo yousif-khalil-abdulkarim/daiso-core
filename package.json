@@ -160,9 +160,25 @@
             "types": "./dist/semaphore/contracts/_module-exports.d.ts",
             "import": "./dist/semaphore/contracts/_module-exports.js"
         },
-        "./semaphore/adapters": {
-            "types": "./dist/semaphore/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/semaphore/implementations/adapters/_module-exports.js"
+        "./semaphore/kysely-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/kysely-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/kysely-semaphore-adapter/_module-exports.js"
+        },
+        "./semaphore/memory-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/memory-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/memory-semaphore-adapter/_module-exports.js"
+        },
+        "./semaphore/mongodb-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/mongodb-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/mongodb-semaphore-adapter/_module-exports.js"
+        },
+        "./semaphore/no-op-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/no-op-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/no-op-semaphore-adapter/_module-exports.js"
+        },
+        "./semaphore/redis-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/redis-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/redis-semaphore-adapter/_module-exports.js"
         },
         "./semaphore/test-utilities": {
             "types": "./dist/semaphore/implementations/test-utilities/_module-exports.d.ts",

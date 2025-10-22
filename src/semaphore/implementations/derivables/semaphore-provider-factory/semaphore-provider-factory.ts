@@ -49,6 +49,27 @@ export type SemaphoreProviderFactorySettings<TAdapters extends string> =
 export class SemaphoreProviderFactory<TAdapters extends string>
     implements ISemaphoreProviderFactory<TAdapters>
 {
+    /**
+     * @example
+     * ```ts
+     * import { SemaphoreProviderFactory } from "@daiso-tech/core/semaphore";
+     * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
+     * import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import Redis from "ioredis"
+     *
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const semaphoreProviderFactory = new SemaphoreProviderFactory({
+     *   serde,
+     *   adapters: {
+     *     memory: new MemorySemaphoreAdapter(),
+     *     redis: new RedisSemaphoreAdapter(new Redis("YOUR_REDIS_CONNECTION")),
+     *   },
+     *   defaultAdapter: "memory",
+     * });
+     * ```
+     */
     constructor(
         private readonly settings: SemaphoreProviderFactorySettings<TAdapters>,
     ) {}
@@ -100,7 +121,40 @@ export class SemaphoreProviderFactory<TAdapters extends string>
             defaultRefreshTime: time,
         });
     }
-
+    /**
+     * @example
+     * ```ts
+     * import { SemaphoreProviderFactory } from "@daiso-tech/core/semaphore";
+     * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
+     * import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";
+     * import Redis from "ioredis";
+     *
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const semaphoreProviderFactory = new SemaphoreProviderFactory({
+     *   serde,
+     *   adapters: {
+     *     memory: new MemorySemaphoreAdapter(),
+     *     redis: new RedisSemaphoreAdapter(new Redis("YOUR_REDIS_CONNECTION")),
+     *   },
+     *   defaultAdapter: "memory",
+     * });
+     *
+     * // Will acquire key using the default adapter which is MemorySemaphoreAdapter
+     * await semaphoreProviderFactory
+     *   .use()
+     *   .create("a")
+     *   .acquire();
+     *
+     * // Will acquire key using the redis adapter which is RedisSemaphoreAdapter
+     * await semaphoreProviderFactory
+     *   .use("redis")
+     *   .create("a")
+     *   .acquire();
+     * ```
+     */
     use(
         adapterName: TAdapters | undefined = this.settings.defaultAdapter,
     ): ISemaphoreProvider {

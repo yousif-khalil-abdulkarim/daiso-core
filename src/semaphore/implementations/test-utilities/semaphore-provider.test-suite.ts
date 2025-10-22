@@ -75,7 +75,7 @@ export type SemaphoreProviderTestSuiteSettings = {
  * @example
  * ```ts
  * import { describe, expect, test, beforeEach } from "vitest";
- * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+ * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
  * import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
  * import { EventBus } from "@daiso-tech/core/event-bus";
  * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
@@ -3717,7 +3717,7 @@ export function semaphoreProviderTestSuite(
                 });
             });
             describe("method: getId", () => {
-                test("Should return semaphore id of ILock instance when given explicitly", () => {
+                test("Should return semaphore id of ISemaphore instance when given explicitly", () => {
                     const key = "a";
                     const limit = 2;
                     const slotId = "1";
@@ -3729,7 +3729,7 @@ export function semaphoreProviderTestSuite(
 
                     expect(semaphore.id).toBe(slotId);
                 });
-                test("Should return semaphore id of ILock instance when given explicitly", () => {
+                test("Should return semaphore id of ISemaphore instance when given explicitly", () => {
                     const key = "a";
                     const limit = 2;
 

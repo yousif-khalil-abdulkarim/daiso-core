@@ -11,7 +11,7 @@ import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/memory-semaphore-adapter"`
  * @group Adapters
  */
 export type MemorySemaphoreAdapterData = {
@@ -29,21 +29,21 @@ export type MemorySemaphoreAdapterData = {
  * Note the `MemorySemaphoreAdapter` is limited to single process usage and cannot be shared across multiple servers or different processes.
  * This adapter is meant to be used for testing.
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/memory-semaphore-adapter"`
  * @group Adapters
  */
 export class MemorySemaphoreAdapter implements ISemaphoreAdapter {
     /**
      *  @example
      * ```ts
-     * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+     * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
      *
      * const semaphoreAdapter = new MemorySemaphoreAdapter();
      * ```
      * You can also provide an `Map`.
      * @example
      * ```ts
-     * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+     * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
      *
      * const map = new Map<any, any>();
      * const semaphoreAdapter = new MemorySemaphoreAdapter(map);

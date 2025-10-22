@@ -156,6 +156,33 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     private readonly serdeTransformerName: string;
     private readonly createSlotId: Invokable<[], string>;
 
+    /**
+     * @example
+     * ```ts
+     * import { KyselySemaphoreAdapter } from "@daiso-tech/core/semaphore/kysely-semaphore-adapter";
+     * import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import Sqlite from "better-sqlite3";
+     * import { Kysely, SqliteDialect } from "kysely";
+     *
+     * const semaphoreAdapter = new KyselySemaphoreAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database: new Sqlite("local.db"),
+     *     }),
+     *   });
+     * });
+     * // You need initialize the adapter once before using it.
+     * await semaphoreAdapter.init();
+     *
+     * const serde = new Serde(new SuperJsonSerdeAdapter())
+     * const lockProvider = new SemaphoreProvider({
+     *   serde,
+     *   adapter: semaphoreAdapter,
+     * });
+     * ```
+     */
     constructor(settings: SemaphoreProviderSettings) {
         const {
             createSlotId = () => v4(),
