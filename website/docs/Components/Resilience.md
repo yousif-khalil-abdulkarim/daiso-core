@@ -111,7 +111,7 @@ const fn = new AsyncHooks(unstableFn, [
 
 ### Custom BackoffPolicy
 
-You can use custom [`BackoffPolicy`](./backoff-policies.md):
+You can use custom [`BackoffPolicy`](./BackoffPolicies.md):
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/time-span";
