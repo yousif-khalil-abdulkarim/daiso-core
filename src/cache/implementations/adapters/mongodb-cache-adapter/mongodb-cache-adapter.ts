@@ -24,7 +24,7 @@ import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/cache/mongodb-cache-adapter"`
  * @group Adapters
  */
 export type MongodbCacheAdapterSettings = {
@@ -39,7 +39,7 @@ export type MongodbCacheAdapterSettings = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/cache/mongodb-cache-adapter"`
  * @group Adapters
  */
 export type MongodbCacheDocument = {
@@ -52,7 +52,7 @@ export type MongodbCacheDocument = {
 /**
  * To utilize the `MongodbCacheAdapter`, you must install the [`"mongodb"`](https://www.npmjs.com/package/mongodb) package and supply a {@link ISerde | `ISerde<string>`}, with an adapter like {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
  *
- * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/cache/mongodb-cache-adapter"`
  * @group Adapters
  */
 export class MongodbCacheAdapter<TType = unknown>
@@ -114,7 +114,7 @@ export class MongodbCacheAdapter<TType = unknown>
     /**
      * @example
      * ```ts
-     * import { MongodbCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { MongodbCacheAdapter } from "@daiso-tech/core/cache/mongodb-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import { MongoClient } from "mongodb";

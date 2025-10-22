@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
-import { RedisCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
+import { RedisCacheAdapter } from "@/cache/implementations/adapters/_module.js";
 import { Redis } from "ioredis";
 import {
     RedisContainer,

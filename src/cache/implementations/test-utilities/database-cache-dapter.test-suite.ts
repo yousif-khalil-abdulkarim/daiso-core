@@ -41,23 +41,30 @@ export type DatabaseCacheAdapterTestSuiteSettings = {
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import Sqlite, { type Database } from "better-sqlite3";
  * import { databaseCacheAdapterTestSuite } from "@daiso-tech/core/cache/test-utilities";
- * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+ * import { KyselyCacheAdapter, type KyselyCacheAdapterTables } from "@daiso-tech/core/cache/kysely-cache-adapter";
  * import { Serde } from "@daiso-tech/core/serde";
  * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+ * import { Kysely, SqliteDialect } from "kysely";
  *
- * describe("class: SqliteCacheAdapter", () => {
- *     let database: Database;
+ * describe("class: KyselyCacheAdapter", () => {
+ *   let database: Database;
+ *   let kysely: Kysely<KyselyCacheAdapterTables>;
+ *
  *   beforeEach(() => {
  *       database = new Sqlite(":memory:");
+ *       kysely = new Kysely({
+ *          dialect: new SqliteDialect({
+ *              database,
+ *          }),
+ *       });
  *   });
  *   afterEach(() => {
  *       database.close();
  *   });
  *   databaseCacheAdapterTestSuite({
  *       createAdapter: async () => {
- *           const adapter = new SqliteCacheAdapter({
- *               database: database,
- *               tableName: "custom_table",
+ *           const adapter = new KyselyCacheAdapter({
+ *               kysely,
  *               shouldRemoveExpiredKeys: false,
  *               serde: new Serde(new SuperJsonSerdeAdapter()),
  *           });

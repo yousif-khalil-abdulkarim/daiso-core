@@ -124,17 +124,22 @@ export class Cache<TType = unknown> implements ICache<TType> {
      *
      * @example
      * ```ts
-     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache";
      * import { Namespace } from "@daiso-tech/core/namespace";
+     * import { Kysely, SqliteDialect } from "kysely";
      *
      * const database = new Sqlite("local.db");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const cacheAdapter = new SqliteCacheAdapter({
-     *   database,
+     * const cacheAdapter = new KyselyCacheAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database,
+     *     }),
+     *   }),
      *   serde,
      * });
      * // You need initialize the adapter once before using it.

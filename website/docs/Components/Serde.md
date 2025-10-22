@@ -137,7 +137,7 @@ When using `Serde` class instance there is no need to call `serialize` and `dese
 ```ts
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
-import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 import { ListCollection } from "@daiso-tech/core/collection";
 import Redis from "ioredis";

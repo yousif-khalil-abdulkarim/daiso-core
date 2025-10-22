@@ -22,7 +22,7 @@ declare module "ioredis" {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/cache/redis-cache-adapter"`
  * @group Adapters
  */
 export type RedisCacheAdapterSettings = {
@@ -33,7 +33,7 @@ export type RedisCacheAdapterSettings = {
 /**
  * To utilize the `RedisCacheAdapter`, you must install the [`"ioredis"`](https://www.npmjs.com/package/ioredis) package and supply a {@link ISerde | `ISerde<string>`}, with adapter like {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
  *
- * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/cache/redis-cache-adapter"`
  * @group Adapters
  */
 export class RedisCacheAdapter<TType = unknown>
@@ -57,7 +57,7 @@ export class RedisCacheAdapter<TType = unknown>
     /**
      * @example
      * ```ts
-     * import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
      * import Redis from "ioredis";

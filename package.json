@@ -92,9 +92,25 @@
             "types": "./dist/cache/contracts/_module-exports.d.ts",
             "import": "./dist/cache/contracts/_module-exports.js"
         },
-        "./cache/adapters": {
-            "types": "./dist/cache/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/cache/implementations/adapters/_module-exports.js"
+        "./cache/kysely-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/kysely-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/kysely-cache-adapter/_module-exports.js"
+        },
+        "./cache/memory-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/memory-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/memory-cache-adapter/_module-exports.js"
+        },
+        "./cache/mongodb-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/mongodb-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/mongodb-cache-adapter/_module-exports.js"
+        },
+        "./cache/no-op-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/no-op-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/no-op-cache-adapter/_module-exports.js"
+        },
+        "./cache/redis-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/redis-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/redis-cache-adapter/_module-exports.js"
         },
         "./cache/test-utilities": {
             "types": "./dist/cache/implementations/test-utilities/_module-exports.d.ts",

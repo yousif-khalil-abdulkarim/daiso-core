@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from "vitest";
 import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
-import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module-exports.js";
+import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module.js";
 import { Cache } from "@/cache/implementations/derivables/_module-exports.js";
 import { ValidationError } from "@/utilities/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";

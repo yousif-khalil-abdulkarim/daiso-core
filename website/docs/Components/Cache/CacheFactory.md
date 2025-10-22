@@ -8,10 +8,8 @@ To begin using the `CacheFactory`, You will need to register all required adapte
 
 ```ts
 import { CacheFactory } from "@daiso-tech/core/cache";
-import {
-    MemoryCacheAdapter,
-    RedisCacheAdapter,
-} from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
+import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import type { ISerde } from "@daiso-tech/core/serde/contracts";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
