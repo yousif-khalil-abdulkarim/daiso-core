@@ -36,7 +36,7 @@ await cache.add("a", "value", TimeSpan.fromSeconds("1"));
 ```
 
 :::danger
-Note `Cache` class instance uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `defer` method to run it.
+Note `Cache` class instance uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
 Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
 :::
 

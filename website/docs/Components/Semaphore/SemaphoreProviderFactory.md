@@ -1,28 +1,28 @@
-# LockProviderFactory
+# SemaphoreProviderFactory
 
-The `LockProviderFactory` class provides a flexible way to configure and switch between different lock adapters at runtime.
+The `SemaphoreProviderFactory` class provides a flexible way to configure and switch between different semaphore adapters at runtime.
 
 ## Initial configuration
 
-To begin using the `ILockProviderFactory`, You will need to register all required adapters during initialization.
+To begin using the `ISemaphoreProviderFactory`, You will need to register all required adapters during initialization.
 
 ```ts
-import { LockProviderFactory } from "@daiso-tech/core/lock";
+import { SemaphoreProviderFactory } from "@daiso-tech/core/semaphore";
 import {
-    MemoryLockAdapter,
-    RedisLockAdapter,
-} from "@daiso-tech/core/lock/adapters";
+    MemorySemaphoreAdapter,
+    RedisSemaphoreAdapter,
+} from "@daiso-tech/core/semaphore/adapters";
 import { Serde } from "@daiso-tech/core/serde";
 import type { ISerde } from "@daiso-tech/core/serde/contracts";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
-const lockProvider = new LockProviderFactory({
+const semaphoreProvider = new SemaphoreProviderFactory({
     serde,
     adapters: {
-        memory: new MemoryLockAdapter(),
-        redis: new RedisLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),
+        memory: new MemorySemaphoreAdapter(),
+        redis: new RedisSemaphoreAdapter(new Redis("YOUR_REDIS_CONNECTION")),
     },
     // You can set an optional default adapter
     defaultAdapter: "memory",
@@ -34,7 +34,7 @@ const lockProvider = new LockProviderFactory({
 ### 1. Using the default adapter
 
 ```ts
-await lockProvider
+await semaphoreProvider
     .use()
     .create("shared-resource")
     .run(async () => {
@@ -49,7 +49,7 @@ Note that if you dont set a default adapter, an error will be thrown.
 ### 2. Specifying an adapter explicitly
 
 ```ts
-await lockProvider
+await semaphoreProvider
     .use("redis")
     .create("shared-resource")
     .run(async () => {
@@ -64,7 +64,7 @@ Note that if you specify a non-existent adapter, an error will be thrown.
 ### 3. Overriding default settings
 
 ```ts
-await lockProvider
+await semaphoreProvider
     .setNamespace(new Namespace("@my-namespace"))
     .use("redis")
     .create("shared-resource")
@@ -74,9 +74,9 @@ await lockProvider
 ```
 
 :::info
-Note that the `LockProviderFactory` is immutable, meaning any configuration override returns a new instance rather than modifying the existing one.
+Note that the `SemaphoreProviderFactory` is immutable, meaning any configuration override returns a new instance rather than modifying the existing one.
 :::
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) API docs.
+For further information refer to [`@daiso-tech/core/semaphore`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Semaphore.html) API docs.

@@ -28,7 +28,7 @@ import { RetryResilienceError } from "@/resilience/resilience.errors.js";
  * An error will be thrown when all retry attempts fail.
  *
  * IMPORT_PATH: `"@daiso-tech/core/resilience"`
- * @group Middleware
+ * @group Middlewares
  *
  * @example
  * ```ts
