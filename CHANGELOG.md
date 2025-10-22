@@ -1,5 +1,406 @@
 # @daiso-tech/core
 
+## 0.41.0
+
+### Minor Changes
+
+- fcbfd0c: Updated `RedisPubSubEventBusAdapterSettings` type. The previous fields, `dispatcherClient` and `listenerClient`, have been removed. You'll now use a single field, client, which handles both dispatching and listening.
+- 3e47a49: Moved `Hooks` and `AsyncHooks` classes to their own module.
+  Now you import `Hooks` and `AsyncHooks` class from `"@daiso-tech/core/hooks"`.
+- d4cd60b: Update the `IDatabaseLockAdapter` contract.
+
+    before:
+
+    ```ts
+    export type IDatabaseLockAdapter = {
+        insert(
+            key: string,
+            owner: string,
+            expiration: Date | null,
+        ): Promise<void>;
+
+        updateIfExpired(
+            key: string,
+            owner: string,
+            expiration: Date | null,
+        ): Promise<number>;
+
+        remove(key: string): Promise<ILockExpirationData | null>;
+
+        removeIfOwner(key: string, owner: string): Promise<ILockData | null>;
+
+        updateExpirationIfOwner(
+            key: string,
+            owner: string,
+            expiration: Date,
+        ): Promise<number>;
+
+        find(key: string): Promise<ILockData | null>;
+    };
+    ```
+
+    after:
+
+    ```ts
+    export type IDatabaseLockAdapter = {
+        transaction<TReturn>(
+            fn: InvokableFn<
+                [transaction: IDatabaseLockTransaction],
+                Promise<TReturn>
+            >,
+        ): Promise<TReturn>;
+
+        remove(key: string): Promise<ILockExpirationData | null>;
+
+        removeIfOwner(key: string, lockId: string): Promise<ILockData | null>;
+
+        updateExpiration(
+            key: string,
+            lockId: string,
+            expiration: Date,
+        ): Promise<number>;
+
+        find(key: string): Promise<ILockData | null>;
+    };
+    ```
+
+- 974f5e3: ## Feature: Introducing `ITimeSpan` Contract for Flexible Time Handling ⏱️
+
+    A new contract, `ITimeSpan`, has been introduced:
+
+    ```ts
+    export const TO_MILLISECONDS = Symbol("TO_MILLISECONDS");
+
+    export type ITimeSpan = {
+        /**
+         * Converts the time span to its total duration in milliseconds.
+         */
+        [TO_MILLISECONDS](): number;
+    };
+    ```
+
+    By replacing the concrete `TimeSpan` class with this interface, we achieve greater flexibility and interoperability. This makes it easy for developers to use external time libraries (e.g., `Luxon`) by simply implementing `ITimeSpan` on their duration objects.
+
+- d4cd60b: Updated `LockProviderCreateSettings` type.
+
+    before:
+
+    ```ts
+    export type LockProviderCreateSettings = {
+        ttl?: TimeSpan | null;
+
+        owner?: OneOrMore<string>;
+    };
+    ```
+
+    after:
+
+    ```ts
+    export type LockProviderCreateSettings = {
+        ttl?: TimeSpan | null;
+
+        lockId?: string;
+    };
+    ```
+
+- d4cd60b: Updated `ILock` contract.
+
+    - Removed the method `getRemainingTime`.
+    - Removed the method `getOwner`.
+    - Removed the method `isExpired`.
+    - Removed the method `isLocked`.
+    - Added `getState` method that replaces the following methods `getRemainingTime`, `getOwner`, `isExpired` and `isLocked`.
+    - Added `key` readonly field that returns the lock instance key.
+    - Added `id` readonly field that returns the lock instance id.
+    - Added `ttl` readonly field that returns the lock instance ttl.
+    - The `refreshOrFail` now only throws one error, it throws `FailedRefreshLockError`
+
+- 9d85f6c: - Renamed constant variable `ASYNC_ERRORS` to `RESILIENCE_ERRORS`.
+
+    - Removed base `ResilienceError` class.
+    - Removed `bulkhead` middleware.
+    - Removed `sequentialHedging` and `concurrentHedging` middlewares.
+    - Removed resilience error hierarchy.
+
+- eb98bd2: - Added new contract `IComparable`, `IGreaterThan`, `IGreaterThanOrEquals`, `ILessThan` and `ILessThanOrEquals` which are used for comparing objects.
+
+    - Updated `TimeSpan` class so it implements the `IComparable` contract.
+
+- 93c3c3a: Added new default namespaces for the following components:
+
+    - `Cache`
+    - `CacheFactory`
+    - `EventBus`
+    - `EventBusFactory`
+    - `LockProvider`
+    - `LockFactory`
+
+    Now you can use following constant variables:
+
+    - ```ts
+      const DEFAULT_CACHE_NAMESPACE = new Namespace("@cache");
+      ```
+    - ```ts
+      const DEFAULT_EVENT_BUS_NAMESPACE = new Namespace("@event-bus");
+      ```
+    - ```ts
+      const DEFAULT_LOCK_PROVIDER_NAMESPACE = new Namespace("@lock-provider");
+      ```
+
+- d4cd60b: Updated LockProviderFactory class.
+
+    - Renamed `setCreateOwnerId` to `setCreateLockId`.
+
+- d4cd60b: Updated and removed some lock events.
+
+    - Renamed error `KeyAlreadyAcquiredLockError` to `FailedAcquireLockError`.
+    - Renamed error `UnownedReleaseLockError` to `FailedReleaseLockError`.
+    - Renamed error `UnownedRefreshLockError` to `FailedRefreshLockError`.
+
+- eb98bd2: Update `TimeSpan` class `fromDateRange` method arguments. Now it only takes on required argument which is an object of type `TimeSpanFromDateRangeSettings`.
+
+    ````ts
+    export type TimeSpanFromDateRangeSettings = {
+        /**
+         * @default
+         * ```ts
+         * new Date()
+         * ```
+         */
+        start?: Date;
+
+        /**
+         * @default
+         * ```ts
+         * new Date()
+         * ```
+         */
+        end?: Date;
+    };
+    ````
+
+- d4cd60b: Renamed, updated and removed some lock events.
+
+    - Renamed event `UnownedReleaseTryLockEvent` to `FailedReleaseLockEvent`.
+    - Renamed event `UnownedRefreshTryLockEvent` to `FailedRefreshLockEvent`.
+    - Removed event `UnexpireableKeyRefreshTryLockEvent`.
+    - Renamed `owner` field to `lockId`.
+    - Now in all events you can access the lock state.
+
+- 9cfd9ea: Changed the `NamespaceSettings` type:
+
+    before:
+
+    ```ts
+    export type NamespaceSettings = {
+        identifierDelimeter?: string;
+
+        keyDelimeter?: string;
+
+        rootIdentifier?: string;
+    };
+    ```
+
+    after:
+
+    ```ts
+    /**
+     *
+     * IMPORT_PATH: `"@daiso-tech/core/utilities"`
+     * @group Namespace
+     */
+    export type NamespaceSettings = {
+        delimeter?: string;
+
+        rootIdentifier?: string;
+    };
+    ```
+
+- d4cd60b: Update the `ILockAdapter` contract.
+
+    before:
+
+    ```ts
+    export type ILockAdapter = {
+        acquire(
+            key: string,
+            owner: string,
+            ttl: TimeSpan | null,
+        ): Promise<boolean>;
+
+        release(key: string, owner: string): Promise<boolean>;
+
+        forceRelease(key: string): Promise<boolean>;
+
+        refresh(
+            key: string,
+            owner: string,
+            ttl: TimeSpan,
+        ): Promise<LockRefreshResult>;
+    };
+    ```
+
+    after:
+
+    ```ts
+    export type ILockAdapter = {
+        acquire(
+            key: string,
+            lockId: string,
+            ttl: TimeSpan | null,
+        ): Promise<boolean>;
+
+        release(key: string, lockId: string): Promise<boolean>;
+
+        forceRelease(key: string): Promise<boolean>;
+
+        refresh(key: string, lockId: string, ttl: TimeSpan): Promise<boolean>;
+
+        getState(key: string): Promise<ILockAdapterState | null>;
+    };
+    ```
+
+- 24228e2: Added shared lock component (a.k.a reader writer lock).
+- 48df7f5: Moved `Namespace` class to it's own module. The `Namespace` class have been simplified to be used publicly.
+  Now you import `Namespace` class from `"@daiso-tech/core/namespace"`.
+- 974f5e3: Moved `TimeSpan` class and `ITimeSpan` contract to their own module.
+  Now you import `TimeSpan` class from `"@daiso-tech/core/time-span"`.
+  Now you import `ITimeSpan` contract from `"@daiso-tech/core/time-span/contracts"`.
+- 2ce4a7b: Enforced versioning in `IFlexibleSerde` contract and `Serde` class to support future format changes in serialized data.
+- 4ce80a4: Updated `ICacheBase` contract to not use `OneOrMore` types as keys meaning you cannot pass in an iterable of string as a key.
+
+    `ICacheBase` contract before:
+
+    ```ts
+    export type ICacheBase<TType = unknown> = {
+        exists(key: OneOrMore<string>): LazyPromise<boolean>;
+
+        missing(key: OneOrMore<string>): LazyPromise<boolean>;
+
+        get(key: OneOrMore<string>): LazyPromise<TType | null>;
+
+        getOrFail(key: OneOrMore<string>): LazyPromise<TType>;
+
+        getAndRemove(key: OneOrMore<string>): LazyPromise<TType | null>;
+
+        getOr(
+            key: OneOrMore<string>,
+            defaultValue: AsyncLazyable<NoneFunc<TType>>,
+        ): LazyPromise<TType>;
+
+        getOrAdd(
+            key: OneOrMore<string>,
+            valueToAdd: AsyncLazyable<NoneFunc<TType>>,
+            ttl?: ITimeSpan | null,
+        ): LazyPromise<TType>;
+
+        add(
+            key: OneOrMore<string>,
+            value: TType,
+            ttl?: ITimeSpan | null,
+        ): LazyPromise<boolean>;
+
+        put(
+            key: OneOrMore<string>,
+            value: TType,
+            ttl?: ITimeSpan | null,
+        ): LazyPromise<boolean>;
+
+        update(key: OneOrMore<string>, value: TType): LazyPromise<boolean>;
+
+        increment(
+            key: OneOrMore<string>,
+            value?: Extract<TType, number>,
+        ): LazyPromise<boolean>;
+
+        decrement(
+            key: OneOrMore<string>,
+            value?: Extract<TType, number>,
+        ): LazyPromise<boolean>;
+
+        remove(key: OneOrMore<string>): LazyPromise<boolean>;
+
+        removeMany(keys: Iterable<OneOrMore<string>>): LazyPromise<boolean>;
+
+        clear(): LazyPromise<void>;
+    };
+    ```
+
+    `ICacheBase` contract after:
+
+    ```ts
+    export type ICacheBase<TType = unknown> = {
+        exists(key: string): LazyPromise<boolean>;
+
+        missing(key: string): LazyPromise<boolean>;
+
+        get(key: string): LazyPromise<TType | null>;
+
+        getOrFail(key: string): LazyPromise<TType>;
+
+        getAndRemove(key: string): LazyPromise<TType | null>;
+
+        getOr(
+            key: string,
+            defaultValue: AsyncLazyable<NoneFunc<TType>>,
+        ): LazyPromise<TType>;
+
+        getOrAdd(
+            key: string,
+            valueToAdd: AsyncLazyable<NoneFunc<TType>>,
+            ttl?: ITimeSpan | null,
+        ): LazyPromise<TType>;
+
+        add(
+            key: string,
+            value: TType,
+            ttl?: ITimeSpan | null,
+        ): LazyPromise<boolean>;
+
+        put(
+            key: string,
+            value: TType,
+            ttl?: ITimeSpan | null,
+        ): LazyPromise<boolean>;
+
+        update(key: string, value: TType): LazyPromise<boolean>;
+
+        increment(
+            key: string,
+            value?: Extract<TType, number>,
+        ): LazyPromise<boolean>;
+
+        decrement(
+            key: string,
+            value?: Extract<TType, number>,
+        ): LazyPromise<boolean>;
+
+        remove(key: string): LazyPromise<boolean>;
+
+        removeMany(keys: Iterable<string>): LazyPromise<boolean>;
+
+        clear(): LazyPromise<void>;
+    };
+    ```
+
+- 3cb44fb: Removed `lazyPromiseFactory` setting field from following types:
+
+    - `CacheSettingsBase`
+    - `CacheFactorySettings`
+    - `EventBusSettingsBase`
+    - `EventBusFactorySettings`
+    - `LockProviderSettingsBase`
+    - `LockProviderFactorySettings`
+    - `AsyncIterableCollectionSettings`
+
+- 69ab9fc: Added semaphore component.
+
+### Patch Changes
+
+- 69ab9fc: Updated bug with `KyselyCacheAdapter`, now when the `detInit` method is called it will remove the interval timer.
+- 69ab9fc: Updated bug with `KyselyLockAdapter`, now when the `detInit` method is called it will remove the interval timer.
+- 4a83f7e: Fixed: `SuperJsonSerdeAdapter` no longer replaces an existing `ISerdeTransformerAdapter` when registerCustom is called with a duplicate name.
+
 ## 0.40.0
 
 ### Minor Changes
@@ -171,8 +572,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                      - `AsyncFactoryable`
-                      - `Factoryable`
+                        - `AsyncFactoryable`
+                        - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
