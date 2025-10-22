@@ -3,7 +3,7 @@ import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilit
 import {
     KyselyLockAdapter,
     type KyselyLockTables,
-} from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
+} from "@/lock/implementations/adapters/kysely-lock-adapter/_module-exports.js";
 import {
     Kysely,
     PostgresDialect,

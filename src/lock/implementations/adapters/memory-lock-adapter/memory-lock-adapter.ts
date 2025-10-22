@@ -11,7 +11,7 @@ import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/memory-lock-adapter"`
  * @group Adapters
  */
 export type MemoryLockData =
@@ -30,21 +30,21 @@ export type MemoryLockData =
  * Note the `MemoryLockAdapter` is limited to single process usage and cannot be shared across multiple servers or different processes.
  * This adapter is meant to be used for testing.
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/memory-lock-adapter"`
  * @group Adapters
  */
 export class MemoryLockAdapter implements ILockAdapter, IDeinitizable {
     /**
      *  @example
      * ```ts
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
      *
      * const lockAdapter = new MemoryLockAdapter();
      * ```
      * You can also provide an `Map`.
      * @example
      * ```ts
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
      *
      * const map = new Map<any, any>();
      * const lockAdapter = new MemoryLockAdapter(map);

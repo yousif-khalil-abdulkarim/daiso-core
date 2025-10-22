@@ -54,8 +54,8 @@ export class LockProviderFactory<TAdapters extends string>
      * @example
      * ```ts
      * import { LockProviderFactory } from "@daiso-tech/core/lock";
-     * import type { IDatabaseLockAdapter } from "@daiso-tech/core/lock/contracts";
-     * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
+     * import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import Redis from "ioredis"
@@ -132,8 +132,8 @@ export class LockProviderFactory<TAdapters extends string>
      * @example
      * ```ts
      * import { LockProviderFactory } from "@daiso-tech/core/lock";
-     * import type { IDatabaseLockAdapter } from "@daiso-tech/core/lock/contracts";
-     * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
+     * import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";

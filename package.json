@@ -136,9 +136,25 @@
             "types": "./dist/lock/contracts/_module-exports.d.ts",
             "import": "./dist/lock/contracts/_module-exports.js"
         },
-        "./lock/adapters": {
-            "types": "./dist/lock/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/lock/implementations/adapters/_module-exports.js"
+        "./lock/kysely-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/kysely-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/kysely-lock-adapter/_module-exports.js"
+        },
+        "./lock/memory-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/memory-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/memory-lock-adapter/_module-exports.js"
+        },
+        "./lock/mongodb-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/mongodb-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/mongodb-lock-adapter/_module-exports.js"
+        },
+        "./lock/no-op-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/no-op-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/no-op-lock-adapter/_module-exports.js"
+        },
+        "./lock/redis-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/redis-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/redis-lock-adapter/_module-exports.js"
         },
         "./lock/test-utilities": {
             "types": "./dist/lock/implementations/test-utilities/_module-exports.d.ts",

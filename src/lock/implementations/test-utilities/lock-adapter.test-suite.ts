@@ -38,7 +38,7 @@ export type LockAdapterTestSuiteSettings = {
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import { lockAdapterTestSuite } from "@daiso-tech/core/lock/test-utilities";
- * import { RedisLockAdapter } from "@daiso-tech/core/lock/adapters";
+ * import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
  * import { Redis } from "ioredis";
  * import {
  *     RedisContainer,

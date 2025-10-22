@@ -160,15 +160,19 @@ export class LockProvider implements ILockProvider {
     /**
      * @example
      * ```ts
-     * import { SqliteLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KyselyLockAdapter } from "@daiso-tech/core/lock/kysely-lock-adapter";
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
      * import Sqlite from "better-sqlite3";
+     * import { Kysely, SqliteDialect } from "kysely";
      *
-     * const database = new Sqlite("local.db");
-     * const lockAdapter = new SqliteLockAdapter({
-     *   database,
+     * const lockAdapter = new KyselyLockAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database: new Sqlite("local.db"),
+     *     }),
+     *   });
      * });
      * // You need initialize the adapter once before using it.
      * await lockAdapter.init();
@@ -299,7 +303,7 @@ export class LockProvider implements ILockProvider {
      * @example
      * ```ts
      * import { LockProvider } from "@daiso-tech/core/lock";
-     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
      * import { Namespace } from "@daiso-tech/core/namespace";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";

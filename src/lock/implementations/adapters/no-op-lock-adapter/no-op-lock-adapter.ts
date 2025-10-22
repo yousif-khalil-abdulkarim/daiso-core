@@ -13,7 +13,7 @@ import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 /**
  * This `NoOpLockAdapter` will do nothing and is used for easily mocking {@link ILockProvider | `ILockProvider`} for testing.
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/no-op-lock-adapter"`
  * @group Adapters
  */
 export class NoOpLockAdapter implements ILockAdapter {

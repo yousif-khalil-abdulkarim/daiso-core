@@ -8,10 +8,8 @@ To begin using the `ILockProviderFactory`, You will need to register all require
 
 ```ts
 import { LockProviderFactory } from "@daiso-tech/core/lock";
-import {
-    MemoryLockAdapter,
-    RedisLockAdapter,
-} from "@daiso-tech/core/lock/adapters";
+import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
+import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import type { ISerde } from "@daiso-tech/core/serde/contracts";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
