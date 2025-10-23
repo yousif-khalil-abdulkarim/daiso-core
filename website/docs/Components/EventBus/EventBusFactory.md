@@ -18,7 +18,7 @@ import {
 } from "@daiso-tech/core/event-bus/adapters";
 import { type FactoryFn } from "@daiso-tech/core/utilities";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());

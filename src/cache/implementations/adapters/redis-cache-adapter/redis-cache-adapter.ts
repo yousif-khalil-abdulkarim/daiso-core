@@ -8,7 +8,7 @@ import { ReplyError, type Redis, type Result } from "ioredis";
 import { ClearIterable } from "@/cache/implementations/adapters/redis-cache-adapter/utilities.js";
 import { RedisCacheAdapterSerde } from "@/cache/implementations/adapters/redis-cache-adapter/redis-cache-adapter-serde.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 declare module "ioredis" {
@@ -59,7 +59,7 @@ export class RedisCacheAdapter<TType = unknown>
      * ```ts
      * import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter"
      * import Redis from "ioredis";
      *
      * const database = new Redis("YOUR_REDIS_CONNECTION_STRING");

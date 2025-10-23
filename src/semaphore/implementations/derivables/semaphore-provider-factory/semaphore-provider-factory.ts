@@ -56,7 +56,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
      * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
      * import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      * import Redis from "ioredis"
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
@@ -128,7 +128,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
      * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
      * import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";
      * import Redis from "ioredis";
      *

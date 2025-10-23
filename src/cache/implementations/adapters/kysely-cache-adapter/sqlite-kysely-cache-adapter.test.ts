@@ -3,7 +3,7 @@ import { databaseCacheAdapterTestSuite } from "@/cache/implementations/test-util
 import { KyselyCacheAdapter } from "@/cache/implementations/adapters/kysely-cache-adapter/_module-exports.js";
 import Sqlite, { type Database } from "better-sqlite3";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Kysely, SqliteDialect } from "kysely";
 
 describe("sqlite class: KyselyCacheAdapter", () => {

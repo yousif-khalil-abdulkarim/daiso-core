@@ -224,9 +224,13 @@
             "types": "./dist/serde/contracts/_module-exports.d.ts",
             "import": "./dist/serde/contracts/_module-exports.js"
         },
-        "./serde/adapters": {
-            "types": "./dist/serde/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/serde/implementations/adapters/_module-exports.js"
+        "./serde/no-op-serde-adapter": {
+            "types": "./dist/serde/implementations/adapters/no-op-serde-adapter/_module-exports.d.ts",
+            "import": "./dist/serde/implementations/adapters/no-op-serde-adapter/_module-exports.js"
+        },
+        "./serde/super-json-serde-adapter": {
+            "types": "./dist/serde/implementations/adapters/super-json-serde-adapter/_module-exports.d.ts",
+            "import": "./dist/serde/implementations/adapters/super-json-serde-adapter/_module-exports.js"
         },
         "./serde/test-utilities": {
             "types": "./dist/serde/implementations/test-utilities/_module-exports.d.ts",

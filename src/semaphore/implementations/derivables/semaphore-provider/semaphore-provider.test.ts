@@ -8,7 +8,7 @@ import { EventBus } from "@/event-bus/implementations/derivables/_module-exports
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
 import { semaphoreProviderTestSuite } from "@/semaphore/implementations/test-utilities/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import type { ISemaphore } from "@/semaphore/contracts/_module-exports.js";
 import { Kysely, SqliteDialect } from "kysely";
 import Sqlite from "better-sqlite3";

@@ -6,7 +6,7 @@ import { type ISerde } from "@/serde/contracts/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     SuperJsonSerdeAdapter,
-} from "@/serde/implementations/adapters/_module-exports.js";
+} from "@/serde/implementations/adapters/_module.js";
 import type {
     BaseEvent,
     EventListenerFn,
@@ -42,7 +42,7 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
      * ```ts
      * import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter"
      * import Redis from "ioredis";
      *
      * const client = new Redis("YOUR_REDIS_CONNECTION_STRING");

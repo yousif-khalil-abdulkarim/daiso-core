@@ -19,7 +19,7 @@ import {
 } from "mongodb";
 import escapeStringRegexp from "escape-string-regexp";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
@@ -116,7 +116,7 @@ export class MongodbCacheAdapter<TType = unknown>
      * ```ts
      * import { MongodbCacheAdapter } from "@daiso-tech/core/cache/mongodb-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter"
      * import { MongoClient } from "mongodb";
      *
      * const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");

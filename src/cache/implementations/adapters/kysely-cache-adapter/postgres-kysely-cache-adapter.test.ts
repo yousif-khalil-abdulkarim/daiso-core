@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { databaseCacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
 import { KyselyCacheAdapter } from "@/cache/implementations/adapters/kysely-cache-adapter/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Kysely, PostgresDialect } from "kysely";
 import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";

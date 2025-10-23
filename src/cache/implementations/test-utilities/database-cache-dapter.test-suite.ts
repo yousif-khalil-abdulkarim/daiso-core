@@ -43,7 +43,7 @@ export type DatabaseCacheAdapterTestSuiteSettings = {
  * import { databaseCacheAdapterTestSuite } from "@daiso-tech/core/cache/test-utilities";
  * import { KyselyCacheAdapter, type KyselyCacheAdapterTables } from "@daiso-tech/core/cache/kysely-cache-adapter";
  * import { Serde } from "@daiso-tech/core/serde";
- * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
  * import { Kysely, SqliteDialect } from "kysely";
  *
  * describe("class: KyselyCacheAdapter", () => {

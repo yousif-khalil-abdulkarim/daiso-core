@@ -37,7 +37,7 @@ To use the `MongodbCacheAdapter`, you'll need to:
 ```ts
 import { MongodbCacheAdapter } from "@daiso-tech/core/cache/mongodb-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import { MongoClient } from "mongodb";
 
 const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
@@ -100,7 +100,7 @@ To use the `RedisCacheAdapter`, you'll need to:
 ```ts
 import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
@@ -128,7 +128,7 @@ You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better
 import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
 
@@ -157,7 +157,7 @@ You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
 
@@ -194,7 +194,7 @@ You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) packag
 import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import { createPool } from "mysql2";
 import { Kysely, MysqlDialect } from "kysely";
 
@@ -231,7 +231,7 @@ You will need to install [`@libsql/kysely-libsql`](https://www.npmjs.com/package
 import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import { LibsqlDialect }  from "@libsql/kysely-libsql";
 import { Kysely } from "kysely";
 

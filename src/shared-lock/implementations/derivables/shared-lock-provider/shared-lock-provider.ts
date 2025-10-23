@@ -159,7 +159,7 @@ export class SharedLockProvider implements ISharedLockProvider {
      * import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
      * import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      * import Sqlite from "better-sqlite3";
      * import { Kysely, SqliteDialect } from "kysely";
      *
@@ -302,7 +302,7 @@ export class SharedLockProvider implements ISharedLockProvider {
      * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
      * import { Namespace } from "@daiso-tech/core/namespace";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      *
      * const lockProvider = new SharedLockProvider({
      *   adapter: new MemorySharedLockAdapter(),

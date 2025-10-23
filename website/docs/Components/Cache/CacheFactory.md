@@ -12,7 +12,7 @@ import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter"
 import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import type { ISerde } from "@daiso-tech/core/serde/contracts";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());

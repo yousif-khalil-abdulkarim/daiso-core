@@ -12,7 +12,7 @@ import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaph
 import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import type { ISerde } from "@daiso-tech/core/serde/contracts";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());

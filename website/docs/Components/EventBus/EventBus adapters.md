@@ -38,7 +38,7 @@ To use the `RedisPubSubEventBusAdapter`, you'll need to:
 ```ts
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const client = new Redis("YOUR_REDIS_CONNECTION_STRING");

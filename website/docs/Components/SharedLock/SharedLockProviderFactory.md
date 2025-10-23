@@ -12,7 +12,7 @@ import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-sha
 import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import type { ISerde } from "@daiso-tech/core/serde/contracts";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());

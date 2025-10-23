@@ -81,7 +81,7 @@ export type LockProviderTestSuiteSettings = {
  * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
  * import { lockProviderTestSuite } from "@daiso-tech/core/lock/test-utilities";
  * import { Serde } from "@daiso-tech/core/serde";
- * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
  * import type { ILockData } from "@daiso-tech/core/lock/contracts";
  *
  * describe("class: LockProvider", () => {

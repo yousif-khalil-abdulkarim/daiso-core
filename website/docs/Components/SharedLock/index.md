@@ -11,7 +11,7 @@ import { TimeSpan } from "@daiso-tech/core/time-span";
 import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
 import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
@@ -647,7 +647,7 @@ import { Namespace } from "@daiso-tech/core/namespace";
 import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
 import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
@@ -896,7 +896,7 @@ Manually serializing and deserializing the shared-lock:
 import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
 import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
@@ -932,7 +932,7 @@ import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 const mainRedisClient = new Redis("YOUR_REDIS_CONNECTION");
@@ -1001,7 +1001,7 @@ import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
@@ -1033,7 +1033,7 @@ import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-sha
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 import { Namespace } from "@daiso-tech/core/namespace";
 

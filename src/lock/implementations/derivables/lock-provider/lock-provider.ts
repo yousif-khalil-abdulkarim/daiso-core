@@ -163,7 +163,7 @@ export class LockProvider implements ILockProvider {
      * import { KyselyLockAdapter } from "@daiso-tech/core/lock/kysely-lock-adapter";
      * import { LockProvider } from "@daiso-tech/core/lock";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      * import Sqlite from "better-sqlite3";
      * import { Kysely, SqliteDialect } from "kysely";
      *
@@ -306,7 +306,7 @@ export class LockProvider implements ILockProvider {
      * import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
      * import { Namespace } from "@daiso-tech/core/namespace";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      *
      * const lockProvider = new LockProvider({
      *   adapter: new MemoryLockAdapter(),

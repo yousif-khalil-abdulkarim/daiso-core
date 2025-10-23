@@ -234,7 +234,7 @@ The `TimeSpan` class supports serialization and deserialization, allowing you to
 
 ```ts
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import { TimeSpan } from "@daiso-tech/core/time-span";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());

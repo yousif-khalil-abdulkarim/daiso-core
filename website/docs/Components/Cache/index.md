@@ -261,7 +261,7 @@ import { Namespace } from "@daiso-tech/core/namespace";
 import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
@@ -328,7 +328,7 @@ import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
@@ -363,7 +363,7 @@ import { EventBus } from "@daiso-tech/core/event-bus";
 import { Namespace } from "@daiso-tech/core/namespace";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
