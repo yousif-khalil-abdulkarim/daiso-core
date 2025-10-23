@@ -58,14 +58,14 @@ declare module "ioredis" {
  *
  * Note in order to use `RedisLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/redis-lock-adapter"`
  * @group Adapters
  */
 export class RedisLockAdapter implements ILockAdapter {
     /**
      * @example
      * ```ts
-     * import { RedisLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
      * import Redis from "ioredis";
      *
      * const database = new Redis("YOUR_REDIS_CONNECTION_STRING");

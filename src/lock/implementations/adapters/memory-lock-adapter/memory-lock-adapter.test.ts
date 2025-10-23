@@ -3,7 +3,7 @@ import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_mod
 import {
     MemoryLockAdapter,
     type MemoryLockData,
-} from "@/lock/implementations/adapters/memory-lock-adapter/_module.js";
+} from "@/lock/implementations/adapters/memory-lock-adapter/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 describe("class: MemoryLockAdapter", () => {

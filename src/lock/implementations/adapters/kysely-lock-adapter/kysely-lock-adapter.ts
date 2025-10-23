@@ -19,7 +19,7 @@ import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/kysely-lock-adapter"`
  * @group Adapters
  */
 export type KyselyLockTable = {
@@ -33,7 +33,7 @@ export type KyselyLockTable = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/kysely-lock-adapter"`
  * @group Adapters
  */
 export type KyselyLockTables = {
@@ -42,7 +42,7 @@ export type KyselyLockTables = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/kysely-lock-adapter"`
  * @group Adapters
  */
 export type KyselyLockAdapterSettings = {
@@ -148,7 +148,7 @@ class DatabaseLockTransaction implements IDatabaseLockTransaction {
  * Note in order to use `KyselyLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/kysely-lock-adapter"`
  * @group Adapters
  */
 export class KyselyLockAdapter
@@ -165,7 +165,7 @@ export class KyselyLockAdapter
     /**
      * @example
      * ```ts
-     * import { KyselyLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { KyselyLockAdapter } from "@daiso-tech/core/lock/kysely-lock-adapter";
      * import Sqlite from "better-sqlite3";
      *
      * const lockAdapter = new KyselyLockAdapter({

@@ -8,7 +8,7 @@ To begin using the `Cache` class, you'll need to create and configure an instanc
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/time-span";
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 
 const cache = new Cache({
@@ -116,7 +116,7 @@ await cache.clear();
 You can enforce compile time type safety by setting the cache value type:
 
 ```ts
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 
 type IUser = {
@@ -136,7 +136,7 @@ await cache.add("a", "asd");
 If you have multiple types you can use algeberical enums:
 
 ```ts
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 
 type IUser = {
@@ -170,7 +170,7 @@ if (cacheValue.type === "PRODUCT") {
 Alternatively you can use different `Cache` classes with different namespaces:
 
 ```ts
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 
 const cacheAdapter = new MemoryCacheAdapter();
@@ -198,7 +198,7 @@ const productCache = new Cache<IProduct>({
 You can enforce runtime and compiletime type safety by passing [standard schema](https://standardschema.dev/) to the cache:
 
 ```ts
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 import { z } from "zod";
 
@@ -258,10 +258,10 @@ For further information about namespacing refer to [`@daiso-tech/core/namespace`
 
 ```ts
 import { Namespace } from "@daiso-tech/core/namespace";
-import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
@@ -322,13 +322,12 @@ await cache.remove("a");
 Note the `Cache` class uses `MemoryEventBusAdapter` by default. You can choose what event bus adapter to use:
 
 ```ts
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
-import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
@@ -357,13 +356,13 @@ Note you can disable dispatching `Cache` events by passing an `EventBus` that us
 If multiple cache adapters (e.g., `RedisCacheAdapter` and `MemoryCacheAdapter`) are used at the same time, isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { Namespace } from "@daiso-tech/core/namespace";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());

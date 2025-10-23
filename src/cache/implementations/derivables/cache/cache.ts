@@ -27,7 +27,7 @@ import type {
     EventListener,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
 import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/database-cache-adapter.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
@@ -66,7 +66,7 @@ export type CacheSettingsBase<TType = unknown> = {
      * @default
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
      *
      * new EventBus({
      *   adapter: new MemoryEventBusAdapter()
@@ -124,17 +124,22 @@ export class Cache<TType = unknown> implements ICache<TType> {
      *
      * @example
      * ```ts
-     * import { SqliteCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache";
      * import { Namespace } from "@daiso-tech/core/namespace";
+     * import { Kysely, SqliteDialect } from "kysely";
      *
      * const database = new Sqlite("local.db");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const cacheAdapter = new SqliteCacheAdapter({
-     *   database,
+     * const cacheAdapter = new KyselyCacheAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database,
+     *     }),
+     *   }),
      *   serde,
      * });
      * // You need initialize the adapter once before using it.

@@ -15,7 +15,7 @@ import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/memory-shared-lock-adapter"`
  * @group Adapters
  */
 export type MemorySharedWriterLockData =
@@ -32,7 +32,7 @@ export type MemorySharedWriterLockData =
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/memory-shared-lock-adapter"`
  * @group Adapters
  */
 export type MemorySharedReaderSemaphoreData = {
@@ -48,7 +48,7 @@ export type MemorySharedReaderSemaphoreData = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/memory-shared-lock-adapter"`
  * @group Adapters
  */
 export type MemorySharedLockData = {
@@ -60,7 +60,7 @@ export type MemorySharedLockData = {
  * Note the `MemorySharedLockAdapter` is limited to single process usage and cannot be shared across multiple servers or different processes.
  * This adapter is meant to be used for testing.
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/memory-shared-lock-adapter"`
  * @group Adapters
  */
 export class MemorySharedLockAdapter
@@ -69,17 +69,17 @@ export class MemorySharedLockAdapter
     /**
      *  @example
      * ```ts
-     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
      *
-     * const lockAdapter = new MemorySharedLockAdapter();
+     * const sharedLockAdapter = new MemorySharedLockAdapter();
      * ```
      * You can also provide an `Map`.
      * @example
      * ```ts
-     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
      *
      * const map = new Map<any, any>();
-     * const lockAdapter = new MemorySharedLockAdapter(map);
+     * const sharedLockAdapter = new MemorySharedLockAdapter(map);
      * ```
      */
     constructor(

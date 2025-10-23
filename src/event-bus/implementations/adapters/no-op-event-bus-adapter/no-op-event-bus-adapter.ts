@@ -15,7 +15,7 @@ import type {
 /**
  * This `NoOpEventBusAdapter` will do nothing and is used for easily mocking {@link IEventBus | `IEventBus`} for testing.
  *
- * IMPORT_PATH: `"@daiso-tech/core/event-bus/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/no-op-event-bus-adapter"`
  * @group Adapters
  */
 export class NoOpEventBusAdapter implements IEventBusAdapter {

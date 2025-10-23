@@ -28,7 +28,7 @@ export type FlexibleSerdeAdapterSuiteSettings = {
  * @example
  * ```ts
  * import { describe, expect, test } from "vitest";
- * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
  * import { flexibleSerdeAdapterTestSuite } from "@daiso-tech/core/serde/test-utilities";
  *
  * describe("class: SuperJsonSerdeAdapter", () => {

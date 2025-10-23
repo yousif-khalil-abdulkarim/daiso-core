@@ -37,24 +37,29 @@ export type DatabaseLockAdapterTestSuiteSettings = {
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import { databaseLockAdapterTestSuite } from "@daiso-tech/core/lock/test-utilities";
- * import { LibsqlLockAdapter } from "@daiso-tech/core/lock/adapters";
- * import { type Client, createClient } from "@libsql/client";
+ * import { kyselyLockAdapter, type KyselyLockTables } from "@daiso-tech/core/lock/kysely-lock-adapter";
+ * import { Kysely, SqliteDialect } from "kysely";
+ * import Sqlite, { type Database } from "better-sqlite3";
  *
- * describe("class: LibsqlLockAdapter", () => {
- *     let client: Client;
+ * describe("class: kyselyLockAdapter", () => {
+ *     let database: Database;
+ *     let kysely: Kysely<KyselyLockTables>;
+ *
  *     beforeEach(() => {
- *         client = createClient({
- *             url: ":memory:",
+ *         database = new Sqlite(":memory:");
+ *         kysely = new Kysely({
+ *            dialect: new SqliteDialect({
+ *                database,
+ *            }),
  *         });
  *     });
  *     afterEach(() => {
- *         client.close();
+ *         database.close();
  *     });
  *     databaseLockAdapterTestSuite({
  *         createAdapter: async () => {
- *             const lockAdapter = new LibsqlLockAdapter({
- *                database: client,
- *                 tableName: "custom_table",
+ *             const lockAdapter = new kyselyLockAdapter({
+ *                 kysely,
  *                 shouldRemoveExpiredKeys: false,
  *             });
  *             await lockAdapter.init();
@@ -301,7 +306,7 @@ export function databaseLockAdapterTestSuite(
             });
         });
         describe("method: updateExpiration", () => {
-            test("Should return 0 when semaphore key doesnt exists", async () => {
+            test("Should return 0 when lock key doesnt exists", async () => {
                 const key = "a";
                 const owner = "1";
                 const expiration = TimeSpan.fromMilliseconds(50).toEndDate();

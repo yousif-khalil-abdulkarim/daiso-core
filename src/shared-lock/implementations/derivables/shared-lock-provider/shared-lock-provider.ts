@@ -28,7 +28,7 @@ import type {
 
 import type { ISerderRegister } from "@/serde/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { v4 } from "uuid";
 import { resolveDatabaseSharedLockAdapter } from "@/shared-lock/implementations/derivables/shared-lock-provider/resolve-database-shared-lock-adapter.js";
 import { SharedLockSerdeTransformer } from "@/shared-lock/implementations/derivables/shared-lock-provider/shared-lock-serde-transformer.js";
@@ -69,7 +69,7 @@ export type SharedLockProviderSettingsBase = {
      * @default
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
      *
      * new EventBus({
      *   adapter: new MemoryEventBusAdapter()
@@ -156,23 +156,27 @@ export class SharedLockProvider implements ISharedLockProvider {
     /**
      * @example
      * ```ts
-     * import { SqliteSharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
      * import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      * import Sqlite from "better-sqlite3";
+     * import { Kysely, SqliteDialect } from "kysely";
      *
-     * const database = new Sqlite("local.db");
-     * const lockAdapter = new SqliteSharedLockAdapter({
-     *   database,
+     * const sharedLockAdapter = new KyselySharedLockAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database: new Sqlite("local.db"),
+     *     }),
+     *   });
      * });
      * // You need initialize the adapter once before using it.
-     * await lockAdapter.init();
+     * await sharedLockAdapter.init();
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter())
      * const lockProvider = new SharedLockProvider({
      *   serde,
-     *   adapter: lockAdapter,
+     *   adapter: sharedLockAdapter,
      * });
      * ```
      */
@@ -295,10 +299,10 @@ export class SharedLockProvider implements ISharedLockProvider {
      * @example
      * ```ts
      * import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
-     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
      * import { Namespace } from "@daiso-tech/core/namespace";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      *
      * const lockProvider = new SharedLockProvider({
      *   adapter: new MemorySharedLockAdapter(),
@@ -306,7 +310,7 @@ export class SharedLockProvider implements ISharedLockProvider {
      *   serde: new Serde(new SuperJsonSerdeAdapter())
      * });
      *
-     * const lock = lockProvider.create("a");
+     * const sharedLock = lockProvider.create("a");
      * ```
      */
     create(

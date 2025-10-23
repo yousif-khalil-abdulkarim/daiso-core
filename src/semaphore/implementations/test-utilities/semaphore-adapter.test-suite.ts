@@ -35,7 +35,7 @@ export type SemaphoreAdapterTestSuiteSettings = {
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import { semaphoreAdapterTestSuite } from "@daiso-tech/core/semaphore/test-utilities";
- * import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+ * import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
  * import { Redis } from "ioredis";
  * import {
  *     RedisContainer,

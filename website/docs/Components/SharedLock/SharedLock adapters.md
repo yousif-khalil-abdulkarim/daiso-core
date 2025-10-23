@@ -7,7 +7,7 @@
 To use the `MemorySharedLockAdapter` you only need to create instance of it:
 
 ```ts
-import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
 
 const memorySharedLockAdapter = new MemorySharedLockAdapter();
 ```
@@ -15,7 +15,7 @@ const memorySharedLockAdapter = new MemorySharedLockAdapter();
 You can also provide an `Map` that will be used for storing the data in memory:
 
 ```ts
-import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
 
 const map = new Map<any, any>();
 const memorySharedLockAdapter = new MemorySharedLockAdapter(map);
@@ -36,7 +36,7 @@ To use the `MongodbSharedLockAdapter`, you'll need to:
 1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package
 
 ```ts
-import { MongodbSharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+import { MongodbSharedLockAdapter } from "@daiso-tech/core/shared-lock/mongodb-shared-lock-adapter";
 import { MongoClient } from "mongodb";
 
 const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
@@ -94,7 +94,7 @@ To use the `RedisSharedLockAdapter`, you'll need to:
 1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package
 
 ```ts
-import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
 import Redis from "ioredis";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
@@ -117,7 +117,7 @@ You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
-import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
 
@@ -146,7 +146,7 @@ You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
-import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
 
@@ -183,7 +183,7 @@ You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) packag
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
-import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
 import { createPool } from "mysql2";
 import { Kysely, MysqlDialect } from "kysely";
 
@@ -220,7 +220,7 @@ You will need to install `@libsql/kysely-libsql` package:
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/utilities";
-import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
 import { Kysely } from "kysely";
 
@@ -287,7 +287,7 @@ await kyselySharedLockAdapter.deInit();
 The `NoOpSharedLockAdapter` is a no-operation implementation, it performs no actions when called:
 
 ```ts
-import { NoOpSharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+import { NoOpSharedLockAdapter } from "@daiso-tech/core/shared-lock/no-op-shared-lock-adapter";
 
 const noOpSharedLockAdapter = new NoOpSharedLockAdapter();
 ```

@@ -6,7 +6,7 @@ import { type ISerde } from "@/serde/contracts/_module-exports.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     SuperJsonSerdeAdapter,
-} from "@/serde/implementations/adapters/_module-exports.js";
+} from "@/serde/implementations/adapters/_module.js";
 import type {
     BaseEvent,
     EventListenerFn,
@@ -17,7 +17,7 @@ import { EventEmitter } from "node:events";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/event-bus/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter"`
  * @group Adapters
  */
 export type RedisPubSubEventBusAdapterSettings = {
@@ -28,7 +28,7 @@ export type RedisPubSubEventBusAdapterSettings = {
 /**
  * To utilize the `RedisPubSubEventBusAdapter`, you must install the [`"ioredis"`](https://www.npmjs.com/package/ioredis) package and supply a {@link ISerde | `ISerde<string>`}, with a {@link SuperJsonSerdeAdapter | `SuperJsonSerdeAdapter `}.
  *
- * IMPORT_PATH: `"@daiso-tech/core/event-bus/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter"`
  * @group Adapters
  */
 export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
@@ -40,9 +40,9 @@ export class RedisPubSubEventBusAdapter implements IEventBusAdapter {
     /**
      *  @example
      * ```ts
-     * import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter"
      * import Redis from "ioredis";
      *
      * const client = new Redis("YOUR_REDIS_CONNECTION_STRING");

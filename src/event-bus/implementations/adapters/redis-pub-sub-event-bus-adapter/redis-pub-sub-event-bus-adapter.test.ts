@@ -5,7 +5,7 @@ import type { StartedRedisContainer } from "@testcontainers/redis";
 import { RedisContainer } from "@testcontainers/redis";
 import { Redis } from "ioredis";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module-exports.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 const timeout = TimeSpan.fromMinutes(2);

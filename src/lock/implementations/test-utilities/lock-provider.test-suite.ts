@@ -75,13 +75,13 @@ export type LockProviderTestSuiteSettings = {
  * @example
  * ```ts
  * import { describe, expect, test, beforeEach } from "vitest";
- * import { MemoryLockAdapter } from "@daiso-tech/core/lock/adapters";
+ * import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
  * import { LockProvider } from "@daiso-tech/core/lock";
  * import { EventBus } from "@daiso-tech/core/event-bus";
- * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+ * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
  * import { lockProviderTestSuite } from "@daiso-tech/core/lock/test-utilities";
  * import { Serde } from "@daiso-tech/core/serde";
- * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+ * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
  * import type { ILockData } from "@daiso-tech/core/lock/contracts";
  *
  * describe("class: LockProvider", () => {

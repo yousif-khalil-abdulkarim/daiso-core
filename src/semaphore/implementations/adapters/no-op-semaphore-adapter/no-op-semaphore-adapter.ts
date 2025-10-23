@@ -14,7 +14,7 @@ import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 /**
  * This `NoOpSemaphoreAdapter` will do nothing and is used for easily mocking {@link ISemaphoreProvider | `ISemaphoreProvider`} for testing.
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/no-op-semaphore-adapter"`
  * @group Adapters
  */
 export class NoOpSemaphoreAdapter implements ISemaphoreAdapter {

@@ -106,7 +106,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     /**
      * @example
      * ```ts
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
      * import { EventBus } from "@daiso-tech/core/event-bus";
      *
      * const eventBus = new EventBus({

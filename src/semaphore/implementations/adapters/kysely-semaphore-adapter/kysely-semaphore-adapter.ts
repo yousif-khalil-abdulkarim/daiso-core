@@ -20,7 +20,7 @@ import { MysqlAdapter, type Kysely } from "kysely";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/kysely-semaphore-adapter"`
  * @group Adapters
  */
 export type KyselySemaphoreTable = {
@@ -30,7 +30,7 @@ export type KyselySemaphoreTable = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/kysely-semaphore-adapter"`
  * @group Adapters
  */
 export type KyselySemaphoreSlotTable = {
@@ -43,7 +43,7 @@ export type KyselySemaphoreSlotTable = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/kysely-semaphore-adapter"`
  * @group Adapters
  */
 export type KyselySemaphoreTables = {
@@ -53,7 +53,7 @@ export type KyselySemaphoreTables = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/kysely-semaphore-adapter"`
  * @group Adapters
  */
 export type KyselySemaphoreAdapterSettings = {
@@ -176,7 +176,7 @@ class DatabaseSemaphoreTransaction implements IDatabaseSemaphoreTransaction {
  * Note in order to use `KyselySemaphoreAdapter` correctly, ensure you use a single, consistent database across all server instances.
  * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/kysely-semaphore-adapter"`
  * @group Adapters
  */
 export class KyselySemaphoreAdapter
@@ -192,7 +192,7 @@ export class KyselySemaphoreAdapter
     /**
      * @example
      * ```ts
-     * import { KyselySemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
+     * import { KyselySemaphoreAdapter } from "@daiso-tech/core/semaphore/kysely-semaphore-adapter";
      * import Sqlite from "better-sqlite3";
      *
      * const semaphoreAdapter = new KyselySemaphoreAdapter({

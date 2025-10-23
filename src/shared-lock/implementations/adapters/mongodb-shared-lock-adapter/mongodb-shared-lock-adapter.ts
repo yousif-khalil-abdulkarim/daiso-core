@@ -23,7 +23,7 @@ import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/mongodb-shared-lock-adapter"`
  * @group Adapters
  */
 export type MongodbSharedLockAdapterSettings = {
@@ -37,7 +37,7 @@ export type MongodbSharedLockAdapterSettings = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/mongodb-shared-lock"`
  * @group Adapters
  */
 export type MongodbWriterLockSubDocument = {
@@ -47,7 +47,7 @@ export type MongodbWriterLockSubDocument = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/mongodb-shared-lock"`
  * @group Adapters
  */
 export type MongodbReaderSemaphoreSlotSubDocument = {
@@ -57,7 +57,7 @@ export type MongodbReaderSemaphoreSlotSubDocument = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/semaphore/mongodb-shared-lock"`
  * @group Adapters
  */
 export type MongodbReaderSemaphoreDocument = {
@@ -67,7 +67,7 @@ export type MongodbReaderSemaphoreDocument = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/mongodb-shared-lock-adapter"`
  * @group Adapters
  */
 export type MongodbSharedLockDocument = {
@@ -83,7 +83,7 @@ export type MongodbSharedLockDocument = {
  *
  * Note in order to use `MongodbSharedLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/shared-lock/mongodb-shared-lock-adapter"`
  * @group Adapters
  */
 export class MongodbSharedLockAdapter
@@ -98,16 +98,16 @@ export class MongodbSharedLockAdapter
     /**
      * @example
      * ```ts
-     * import { MongodbSharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { MongodbSharedLockAdapter } from "@daiso-tech/core/shared-lock/mongodb-shared-lock-adapter";
      * import { MongoClient } from "mongodb";
      *
      * const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
      * const database = client.db("database");
-     * const lockAdapter = new MongodbSharedLockAdapter({
+     * const sharedLockAdapter = new MongodbSharedLockAdapter({
      *   database
      * });
      * // You need initialize the adapter once before using it.
-     * await lockAdapter.init()
+     * await sharedLockAdapter.init()
      * ```
      */
     constructor(settings: MongodbSharedLockAdapterSettings) {

@@ -57,10 +57,11 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
      * @example
      * ```ts
      * import { CacheFactory } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter, RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
+     * import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      * import Redis from "ioredis"
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
@@ -119,10 +120,11 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
      * @example
      * ```ts
      * import { CacheFactory } from "@daiso-tech/core/cache";
-     * import { MemoryCacheAdapter, RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
+     * import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
      * import type { ISerde } from "@daiso-tech/core/serde/contracts";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";
      * import Redis from "ioredis"
      *

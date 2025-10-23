@@ -92,9 +92,25 @@
             "types": "./dist/cache/contracts/_module-exports.d.ts",
             "import": "./dist/cache/contracts/_module-exports.js"
         },
-        "./cache/adapters": {
-            "types": "./dist/cache/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/cache/implementations/adapters/_module-exports.js"
+        "./cache/kysely-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/kysely-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/kysely-cache-adapter/_module-exports.js"
+        },
+        "./cache/memory-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/memory-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/memory-cache-adapter/_module-exports.js"
+        },
+        "./cache/mongodb-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/mongodb-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/mongodb-cache-adapter/_module-exports.js"
+        },
+        "./cache/no-op-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/no-op-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/no-op-cache-adapter/_module-exports.js"
+        },
+        "./cache/redis-cache-adapter": {
+            "types": "./dist/cache/implementations/adapters/redis-cache-adapter/_module-exports.d.ts",
+            "import": "./dist/cache/implementations/adapters/redis-cache-adapter/_module-exports.js"
         },
         "./cache/test-utilities": {
             "types": "./dist/cache/implementations/test-utilities/_module-exports.d.ts",
@@ -116,9 +132,17 @@
             "types": "./dist/event-bus/contracts/_module-exports.d.ts",
             "import": "./dist/event-bus/contracts/_module-exports.js"
         },
-        "./event-bus/adapters": {
-            "types": "./dist/event-bus/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/event-bus/implementations/adapters/_module-exports.js"
+        "./event-bus/memory-event-bus-adapter": {
+            "types": "./dist/event-bus/implementations/adapters/memory-event-bus-adapter/_module-exports.d.ts",
+            "import": "./dist/event-bus/implementations/adapters/memory-event-bus-adapter/_module-exports.js"
+        },
+        "./event-bus/no-op-event-bus-adapter": {
+            "types": "./dist/event-bus/implementations/adapters/no-op-event-bus-adapter/_module-exports.d.ts",
+            "import": "./dist/event-bus/implementations/adapters/no-op-event-bus-adapter/_module-exports.js"
+        },
+        "./event-bus/redis-pub-sub-event-bus-adapter": {
+            "types": "./dist/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/_module-exports.d.ts",
+            "import": "./dist/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/_module-exports.js"
         },
         "./event-bus/test-utilities": {
             "types": "./dist/event-bus/implementations/test-utilities/_module-exports.d.ts",
@@ -136,9 +160,25 @@
             "types": "./dist/lock/contracts/_module-exports.d.ts",
             "import": "./dist/lock/contracts/_module-exports.js"
         },
-        "./lock/adapters": {
-            "types": "./dist/lock/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/lock/implementations/adapters/_module-exports.js"
+        "./lock/kysely-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/kysely-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/kysely-lock-adapter/_module-exports.js"
+        },
+        "./lock/memory-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/memory-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/memory-lock-adapter/_module-exports.js"
+        },
+        "./lock/mongodb-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/mongodb-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/mongodb-lock-adapter/_module-exports.js"
+        },
+        "./lock/no-op-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/no-op-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/no-op-lock-adapter/_module-exports.js"
+        },
+        "./lock/redis-lock-adapter": {
+            "types": "./dist/lock/implementations/adapters/redis-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/lock/implementations/adapters/redis-lock-adapter/_module-exports.js"
         },
         "./lock/test-utilities": {
             "types": "./dist/lock/implementations/test-utilities/_module-exports.d.ts",
@@ -160,9 +200,25 @@
             "types": "./dist/semaphore/contracts/_module-exports.d.ts",
             "import": "./dist/semaphore/contracts/_module-exports.js"
         },
-        "./semaphore/adapters": {
-            "types": "./dist/semaphore/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/semaphore/implementations/adapters/_module-exports.js"
+        "./semaphore/kysely-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/kysely-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/kysely-semaphore-adapter/_module-exports.js"
+        },
+        "./semaphore/memory-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/memory-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/memory-semaphore-adapter/_module-exports.js"
+        },
+        "./semaphore/mongodb-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/mongodb-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/mongodb-semaphore-adapter/_module-exports.js"
+        },
+        "./semaphore/no-op-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/no-op-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/no-op-semaphore-adapter/_module-exports.js"
+        },
+        "./semaphore/redis-semaphore-adapter": {
+            "types": "./dist/semaphore/implementations/adapters/redis-semaphore-adapter/_module-exports.d.ts",
+            "import": "./dist/semaphore/implementations/adapters/redis-semaphore-adapter/_module-exports.js"
         },
         "./semaphore/test-utilities": {
             "types": "./dist/semaphore/implementations/test-utilities/_module-exports.d.ts",
@@ -176,9 +232,13 @@
             "types": "./dist/serde/contracts/_module-exports.d.ts",
             "import": "./dist/serde/contracts/_module-exports.js"
         },
-        "./serde/adapters": {
-            "types": "./dist/serde/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/serde/implementations/adapters/_module-exports.js"
+        "./serde/no-op-serde-adapter": {
+            "types": "./dist/serde/implementations/adapters/no-op-serde-adapter/_module-exports.d.ts",
+            "import": "./dist/serde/implementations/adapters/no-op-serde-adapter/_module-exports.js"
+        },
+        "./serde/super-json-serde-adapter": {
+            "types": "./dist/serde/implementations/adapters/super-json-serde-adapter/_module-exports.d.ts",
+            "import": "./dist/serde/implementations/adapters/super-json-serde-adapter/_module-exports.js"
         },
         "./serde/test-utilities": {
             "types": "./dist/serde/implementations/test-utilities/_module-exports.d.ts",
@@ -188,9 +248,25 @@
             "types": "./dist/shared-lock/contracts/_module-exports.d.ts",
             "import": "./dist/shared-lock/contracts/_module-exports.js"
         },
-        "./shared-lock/adapters": {
-            "types": "./dist/shared-lock/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/shared-lock/implementations/adapters/_module-exports.js"
+        "./shared-lock/kysely-shared-lock-adapter": {
+            "types": "./dist/shared-lock/implementations/adapters/kysely-shared-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/adapters/kysely-shared-lock-adapter/_module-exports.js"
+        },
+        "./shared-lock/memory-shared-lock-adapter": {
+            "types": "./dist/shared-lock/implementations/adapters/memory-shared-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/adapters/memory-shared-lock-adapter/_module-exports.js"
+        },
+        "./shared-lock/mongodb-shared-lock-adapter": {
+            "types": "./dist/shared-lock/implementations/adapters/mongodb-shared-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/adapters/mongodb-shared-lock-adapter/_module-exports.js"
+        },
+        "./shared-lock/no-op-shared-lock-adapter": {
+            "types": "./dist/shared-lock/implementations/adapters/no-op-shared-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/adapters/no-op-shared-lock-adapter/_module-exports.js"
+        },
+        "./shared-lock/redis-shared-lock-adapter": {
+            "types": "./dist/shared-lock/implementations/adapters/redis-shared-lock-adapter/_module-exports.d.ts",
+            "import": "./dist/shared-lock/implementations/adapters/redis-shared-lock-adapter/_module-exports.js"
         },
         "./shared-lock/test-utilities": {
             "types": "./dist/shared-lock/implementations/test-utilities/_module-exports.d.ts",

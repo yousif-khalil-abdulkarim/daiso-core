@@ -20,7 +20,7 @@ import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/cache/kysely-cache-adapter"`
  * @group Adapters
  */
 export type KyselyCacheAdapterTable = {
@@ -32,7 +32,7 @@ export type KyselyCacheAdapterTable = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/cache/kysely-cache-adapter"`
  * @group Adapters
  */
 export type KyselyCacheAdapterTables = {
@@ -41,7 +41,7 @@ export type KyselyCacheAdapterTables = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/cache/kysely-cache-adapter"`
  * @group Adapters
  */
 export type KyselyCacheAdapterSettings = {
@@ -67,7 +67,7 @@ export type KyselyCacheAdapterSettings = {
  * To utilize the `KyselyCacheAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
  * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
- * IMPORT_PATH: `"@daiso-tech/core/cache/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/cache/kysely-cache-adapter"`
  * @group Adapters
  */
 export class KyselyCacheAdapter<TType = unknown>
@@ -116,9 +116,9 @@ export class KyselyCacheAdapter<TType = unknown>
     /**
      * @example
      * ```ts
-     * import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
+     * import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters"
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter"
      * import Sqlite from "better-sqlite3";
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());

@@ -10,7 +10,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import type {
     IDatabaseSemaphoreAdapter,
@@ -70,7 +70,7 @@ export type SemaphoreProviderSettingsBase = {
      * @default
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
      *
      * new EventBus({
      *   adapter: new MemoryEventBusAdapter()
@@ -156,6 +156,33 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     private readonly serdeTransformerName: string;
     private readonly createSlotId: Invokable<[], string>;
 
+    /**
+     * @example
+     * ```ts
+     * import { KyselySemaphoreAdapter } from "@daiso-tech/core/semaphore/kysely-semaphore-adapter";
+     * import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
+     * import Sqlite from "better-sqlite3";
+     * import { Kysely, SqliteDialect } from "kysely";
+     *
+     * const semaphoreAdapter = new KyselySemaphoreAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database: new Sqlite("local.db"),
+     *     }),
+     *   });
+     * });
+     * // You need initialize the adapter once before using it.
+     * await semaphoreAdapter.init();
+     *
+     * const serde = new Serde(new SuperJsonSerdeAdapter())
+     * const lockProvider = new SemaphoreProvider({
+     *   serde,
+     *   adapter: semaphoreAdapter,
+     * });
+     * ```
+     */
     constructor(settings: SemaphoreProviderSettings) {
         const {
             createSlotId = () => v4(),

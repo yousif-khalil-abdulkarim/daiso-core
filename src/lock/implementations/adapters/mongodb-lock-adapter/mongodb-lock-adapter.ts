@@ -16,7 +16,7 @@ import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/mongodb-lock-adapter"`
  * @group Adapters
  */
 export type MongodbLockAdapterSettings = {
@@ -30,7 +30,7 @@ export type MongodbLockAdapterSettings = {
 
 /**
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/mongodb-lock-adapter"`
  * @group Adapters
  */
 export type MongodbLockDocument = {
@@ -45,7 +45,7 @@ export type MongodbLockDocument = {
  *
  * Note in order to use `MongodbLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
  *
- * IMPORT_PATH: `"@daiso-tech/core/lock/adapters"`
+ * IMPORT_PATH: `"@daiso-tech/core/lock/mongodb-lock-adapter"`
  * @group Adapters
  */
 export class MongodbLockAdapter
@@ -56,7 +56,7 @@ export class MongodbLockAdapter
     /**
      * @example
      * ```ts
-     * import { MongodbLockAdapter } from "@daiso-tech/core/lock/adapters";
+     * import { MongodbLockAdapter } from "@daiso-tech/core/lock/mongodb-lock-adapter";
      * import { MongoClient } from "mongodb";
      *
      * const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");

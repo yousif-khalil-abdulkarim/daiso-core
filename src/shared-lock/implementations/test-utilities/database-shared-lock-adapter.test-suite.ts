@@ -35,28 +35,33 @@ export type DatabaseSharedLockAdapterTestSuiteSettings = {
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import { databaseSharedLockAdapterTestSuite } from "@daiso-tech/core/shared-lock/test-utilities";
- * import { LibsqlSharedLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
- * import { type Client, createClient } from "@libsql/client";
+ * import { KyselySharedLockAdapter, type KyselySharedLockTables } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
+ * import { Kysely, SqliteDialect } from "kysely";
+ * import Sqlite, { type Database } from "better-sqlite3";
  *
- * describe("class: LibsqlSharedLockAdapter", () => {
- *     let client: Client;
+ * describe("class: KyselySharedLockAdapter", () => {
+ *     let database: Database;
+ *     let kysely: Kysely<KyselySharedLockTables>;
+ *
  *     beforeEach(() => {
- *         client = createClient({
- *             url: ":memory:",
+ *         database = new Sqlite(":memory:");
+ *         kysely = new Kysely({
+ *            dialect: new SqliteDialect({
+ *                database,
+ *            }),
  *         });
  *     });
  *     afterEach(() => {
- *         client.close();
+ *         database.close();
  *     });
  *     databaseSharedLockAdapterTestSuite({
  *         createAdapter: async () => {
- *             const lockAdapter = new LibsqlSharedLockAdapter({
- *                database: client,
- *                 tableName: "custom_table",
+ *             const sharedLockAdapter = new KyselySharedLockAdapter({
+ *                 kysely,
  *                 shouldRemoveExpiredKeys: false,
  *             });
- *             await lockAdapter.init();
- *             return lockAdapter;
+ *             await sharedLockAdapter.init();
+ *             return sharedLockAdapter;
  *         },
  *         test,
  *         beforeEach,

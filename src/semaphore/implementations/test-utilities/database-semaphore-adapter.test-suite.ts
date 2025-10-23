@@ -38,24 +38,29 @@ export type DatabaseSemaphoreAdapterTestSuiteSettings = {
  * ```ts
  * import { afterEach, beforeEach, describe, expect, test } from "vitest";
  * import { databaseSemaphoreAdapterTestSuite } from "@daiso-tech/core/semaphore/test-utilities";
- * import { LibsqlSemaphoreAdapter } from "@daiso-tech/core/semaphore/adapters";
- * import { type Client, createClient } from "@libsql/client";
+ * import { kyselySemaphoreAdapter, type KyselySemaphoreTables } from "@daiso-tech/core/semaphore/kysely-semaphore-adapter";
+ * import { Kysely, SqliteDialect } from "kysely";
+ * import Sqlite, { type Database } from "better-sqlite3";
  *
- * describe("class: LibsqlSemaphoreAdapter", () => {
- *     let client: Client;
+ * describe("class: kyselySemaphoreAdapter", () => {
+ *     let database: Database;
+ *     let kysely: Kysely<KyselySemaphoreTables>;
+ *
  *     beforeEach(() => {
- *         client = createClient({
- *             url: ":memory:",
+ *         database = new Sqlite(":memory:");
+ *         kysely = new Kysely({
+ *            dialect: new SqliteDialect({
+ *                database,
+ *            }),
  *         });
  *     });
  *     afterEach(() => {
- *         client.close();
+ *         database.close();
  *     });
  *     databaseSemaphoreAdapterTestSuite({
  *         createAdapter: async () => {
- *             const semaphoreAdapter = new LibsqlSemaphoreAdapter({
- *                database: client,
- *                 tableName: "custom_table",
+ *             const semaphoreAdapter = new kyselySemaphoreAdapter({
+ *                 kysely,
  *                 shouldRemoveExpiredKeys: false,
  *             });
  *             await semaphoreAdapter.init();

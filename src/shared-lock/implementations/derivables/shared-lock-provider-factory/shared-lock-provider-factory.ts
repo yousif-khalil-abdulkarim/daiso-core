@@ -54,18 +54,18 @@ export class SharedLockProviderFactory<TAdapters extends string>
      * @example
      * ```ts
      * import { SharedLockProviderFactory } from "@daiso-tech/core/shared-lock";
-     * import type { IDatabaseLockAdapter } from "@daiso-tech/core/shared-lock/contracts";
-     * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
+     * import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      * import Redis from "ioredis"
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const lockProviderFactory = new SharedLockProviderFactory({
      *   serde,
      *   adapters: {
-     *     memory: new MemoryLockAdapter(),
-     *     redis: new RedisLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),
+     *     memory: new MemorySharedLockAdapter(),
+     *     redis: new RedisSharedLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),
      *   },
      *   defaultAdapter: "memory",
      * });
@@ -136,10 +136,10 @@ export class SharedLockProviderFactory<TAdapters extends string>
      * @example
      * ```ts
      * import { SharedLockProviderFactory } from "@daiso-tech/core/shared-lock";
-     * import type { IDatabaseLockAdapter } from "@daiso-tech/core/shared-lock/contracts";
-     * import { MemoryLockAdapter, RedisLockAdapter, SqliteLockAdapter } from "@daiso-tech/core/shared-lock/adapters";
+     * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
+     * import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
-     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
      * import { TimeSpan } from "@daiso-tech/core/time-span" from "@daiso-tech/core/time-span";
      * import Redis from "ioredis";
      *
@@ -147,23 +147,23 @@ export class SharedLockProviderFactory<TAdapters extends string>
      * const lockProviderFactory = new SharedLockProviderFactory({
      *   serde,
      *   adapters: {
-     *     memory: new MemoryLockAdapter(),
-     *     redis: new RedisLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),
+     *     memory: new MemorySharedLockAdapter(),
+     *     redis: new RedisSharedLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),
      *   },
      *   defaultAdapter: "memory",
      * });
      *
-     * // Will acquire key using the default adapter which is MemoryLockAdapter
+     * // Will acquire key using the default adapter which is MemorySharedLockAdapter
      * await lockProviderFactory
      *   .use()
      *   .create("a")
-     *   .acquire();
+     *   .acquireWriter();
      *
-     * // Will acquire key using the redis adapter which is RedisLockAdapter
+     * // Will acquire key using the redis adapter which is RedisSharedLockAdapter
      * await lockProviderFactory
      *   .use("redis")
      *   .create("a")
-     *   .acquire();
+     *   .acquireWriter();
      * ```
      */
     use(

@@ -7,7 +7,7 @@
 To use the `MemoryCacheAdapter` you only need to create instance of it:
 
 ```ts
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 
 const memoryCacheAdapter = new MemoryCacheAdapter();
 ```
@@ -15,7 +15,7 @@ const memoryCacheAdapter = new MemoryCacheAdapter();
 You can also provide an `Map` that will be used for storing the data in memory:
 
 ```ts
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 
 const map = new Map<any, any>();
 const memoryCacheAdapter = new MemoryCacheAdapter(map);
@@ -35,9 +35,9 @@ To use the `MongodbCacheAdapter`, you'll need to:
 -   We recommend using `SuperJsonSerdeAdapter` for this purpose
 
 ```ts
-import { MongodbCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { MongodbCacheAdapter } from "@daiso-tech/core/cache/mongodb-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import { MongoClient } from "mongodb";
 
 const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
@@ -98,9 +98,9 @@ To use the `RedisCacheAdapter`, you'll need to:
 -   We recommend using `SuperJsonSerdeAdapter` for this purpose
 
 ```ts
-import { RedisCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
@@ -126,9 +126,9 @@ You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/time-span";
-import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
 
@@ -155,9 +155,9 @@ You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/time-span";
-import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
 
@@ -192,9 +192,9 @@ You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) packag
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/time-span";
-import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import { createPool } from "mysql2";
 import { Kysely, MysqlDialect } from "kysely";
 
@@ -229,9 +229,9 @@ You will need to install [`@libsql/kysely-libsql`](https://www.npmjs.com/package
 
 ```ts
 import { TimeSpan } from "@daiso-tech/core/time-span";
-import { KyselyCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import { LibsqlDialect }  from "@libsql/kysely-libsql";
 import { Kysely } from "kysely";
 
@@ -308,7 +308,7 @@ await kyselyCacheAdapter.deInit();
 The `NoOpCacheAdapter` is a no-operation implementation, it performs no actions when called:
 
 ```ts
-import { NoOpCacheAdapter } from "@daiso-tech/core/cache/adapters";
+import { NoOpCacheAdapter } from "@daiso-tech/core/cache/no-op-cache-adapter";
 
 const noOpCacheAdapter = new NoOpCacheAdapter();
 ```

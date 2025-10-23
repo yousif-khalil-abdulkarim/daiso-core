@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
-import { RedisLockAdapter } from "@/lock/implementations/adapters/redis-lock-adapter/_module.js";
+import { RedisLockAdapter } from "@/lock/implementations/adapters/redis-lock-adapter/_module-exports.js";
 import { Redis } from "ioredis";
 import {
     RedisContainer,

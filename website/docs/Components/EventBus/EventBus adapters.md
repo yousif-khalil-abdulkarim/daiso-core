@@ -7,7 +7,7 @@
 To use the `MemoryEventBusAdapter` you only need to create instance of it.
 
 ```ts
-import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 
 const eventBusAdapter = new MemoryEventBusAdapter();
 ```
@@ -15,7 +15,7 @@ const eventBusAdapter = new MemoryEventBusAdapter();
 You can also provide an `EventEmitter` that will be used for dispatching the events in memory:
 
 ```ts
-import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 import { EventEmitter } from "node:events";
 
 const eventEmitter = new EventEmitter<any>();
@@ -36,9 +36,9 @@ To use the `RedisPubSubEventBusAdapter`, you'll need to:
 - We recommend using `SuperJsonSerdeAdapter` for this purpose
 
 ```ts
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/adapters";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const client = new Redis("YOUR_REDIS_CONNECTION_STRING");
@@ -54,7 +54,7 @@ const eventBusAdapter = new RedisPubSubEventBusAdapter({
 The `NoOpEventBusAdapter` is a no-operation implementation, it performs no actions when called.
 
 ```ts
-import { NoOpEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { NoOpEventBusAdapter } from "@daiso-tech/core/event-bus/no-op-event-bus-adapter";
 
 const noEventBusAdapter = new NoOpEventBusAdapter();
 ```

@@ -47,7 +47,7 @@ export type CacheTestSuiteSettings = {
  * ```ts
  * import { beforeEach, describe, expect, test } from "vitest";
  * import { cacheTestSuite } from "@daiso-tech/core/cache/test-utilities";
- * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapters";
+ * import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
  * import { Cache } from "@daiso-tech/core/cache";
  *
  * describe("class: Cache", () => {
