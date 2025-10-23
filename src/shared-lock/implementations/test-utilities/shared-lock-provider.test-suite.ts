@@ -89,7 +89,7 @@ export type SharedLockProviderTestSuiteSettings = {
  * import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
  * import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
  * import { EventBus } from "@daiso-tech/core/event-bus";
- * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+ * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
  * import { sharedLockProviderTestSuite } from "@daiso-tech/core/shared-lock/test-utilities";
  * import { Serde } from "@daiso-tech/core/serde";
  * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";

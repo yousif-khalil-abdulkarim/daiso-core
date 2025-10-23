@@ -7,7 +7,7 @@ The `@daiso-tech/core/event-bus` component provides a way for dispatching and li
 To begin using the `EventBus` class, you'll need to create and configure an instance:
 
 ```ts
-import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 import type { IEventBus } from "@daiso-tech/core/event-bus/contracts";
 import { EventBus } from "@daiso-tech/core/event-bus";
 
@@ -72,7 +72,7 @@ await eventBus.dispatch("add", {
 An event map can be used to strictly type the events:
 
 ```ts
-import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 import type { IEventBus } from "@daiso-tech/core/event-bus/contracts";
 import { EventBus } from "@daiso-tech/core/event-bus";
 
@@ -112,7 +112,7 @@ await eventBus.addListener("addd", (event) => {
 You can enforce runtime and compiletime type safety by passing [standard schema](https://standardschema.dev/) to the cache:
 
 ```ts
-import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { z } from "zod";
 
@@ -247,7 +247,7 @@ import type {
     IEventListenable,
     IEventDispatcher,
 } from "@daiso-tech/core/event-bus/contracts";
-import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 
 const eventBus: IEventBus = new EventBus({
@@ -334,7 +334,7 @@ For further information about namespacing refer to [`@daiso-tech/core/namespace`
 
 ```ts
 import { Namespace } from "@daiso-tech/core/namespace";
-import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
@@ -345,14 +345,14 @@ const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const eventBusA = new EventBus({
     namespace: new Namespace("@eventBus-a"),
-    adapter: new RedisPubSubEventBus({
+    adapter: new RedisPubSubEventBusAdapter({
         client,
         serde,
     }),
 });
 const eventBusB = new EventBus({
     namespace: new Namespace("@eventBus-b"),
-    adapter: new RedisPubSubEventBus({
+    adapter: new RedisPubSubEventBusAdapter({
         client,
         serde,
     }),

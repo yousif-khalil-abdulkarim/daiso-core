@@ -10,7 +10,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import type {
     IDatabaseSemaphoreAdapter,
@@ -70,7 +70,7 @@ export type SemaphoreProviderSettingsBase = {
      * @default
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
      *
      * new EventBus({
      *   adapter: new MemoryEventBusAdapter()

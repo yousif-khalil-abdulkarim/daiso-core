@@ -929,7 +929,7 @@ As long you pass the same `Serde` instances with all other components you dont n
 import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
 import type { ISharedLock } from "@daiso-tech/core/shared-lock/contracts";
 import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
@@ -997,9 +997,8 @@ Note the `SharedLock` class uses [`MemoryEventBusAdapter`](https://yousif-khalil
 ```ts
 import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
 import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
-import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
@@ -1031,7 +1030,7 @@ If multiple shared-lock adapters (e.g., `RedisSharedLockAdapter` and `MemoryShar
 ```ts
 import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";

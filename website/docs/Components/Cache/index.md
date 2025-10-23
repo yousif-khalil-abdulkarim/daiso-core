@@ -324,9 +324,8 @@ Note the `Cache` class uses `MemoryEventBusAdapter` by default. You can choose w
 ```ts
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
-import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
@@ -361,7 +360,7 @@ import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter"
 import { Cache } from "@daiso-tech/core/cache";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { Namespace } from "@daiso-tech/core/namespace";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";

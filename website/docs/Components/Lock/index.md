@@ -519,7 +519,7 @@ As long you pass the same `Serde` instances with all other components you dont n
 import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
 import type { ILock } from "@daiso-tech/core/lock/contracts";
 import { LockProvider } from "@daiso-tech/core/lock";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
@@ -583,9 +583,8 @@ Note the `Lock` class uses [`MemoryEventBusAdapter`](https://yousif-khalil-abdul
 ```ts
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
 import { LockProvider } from "@daiso-tech/core/lock";
-import { RedisPubSubEventBus } from "@daiso-tech/core/event-bus/adapters";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
@@ -618,7 +617,7 @@ If multiple lock adapters (e.g., `RedisLockAdapter` and `MemoryLockAdapter`) are
 ```ts
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";

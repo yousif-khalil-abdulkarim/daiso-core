@@ -132,9 +132,17 @@
             "types": "./dist/event-bus/contracts/_module-exports.d.ts",
             "import": "./dist/event-bus/contracts/_module-exports.js"
         },
-        "./event-bus/adapters": {
-            "types": "./dist/event-bus/implementations/adapters/_module-exports.d.ts",
-            "import": "./dist/event-bus/implementations/adapters/_module-exports.js"
+        "./event-bus/memory-event-bus-adapter": {
+            "types": "./dist/event-bus/implementations/adapters/memory-event-bus-adapter/_module-exports.d.ts",
+            "import": "./dist/event-bus/implementations/adapters/memory-event-bus-adapter/_module-exports.js"
+        },
+        "./event-bus/no-op-event-bus-adapter": {
+            "types": "./dist/event-bus/implementations/adapters/no-op-event-bus-adapter/_module-exports.d.ts",
+            "import": "./dist/event-bus/implementations/adapters/no-op-event-bus-adapter/_module-exports.js"
+        },
+        "./event-bus/redis-pub-sub-event-bus-adapter": {
+            "types": "./dist/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/_module-exports.d.ts",
+            "import": "./dist/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/_module-exports.js"
         },
         "./event-bus/test-utilities": {
             "types": "./dist/event-bus/implementations/test-utilities/_module-exports.d.ts",

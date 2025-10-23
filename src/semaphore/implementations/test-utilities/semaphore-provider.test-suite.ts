@@ -78,7 +78,7 @@ export type SemaphoreProviderTestSuiteSettings = {
  * import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
  * import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
  * import { EventBus } from "@daiso-tech/core/event-bus";
- * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/adapters";
+ * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
  * import { semaphoreProviderTestSuite } from "@daiso-tech/core/semaphore/test-utilities";
  * import { Serde } from "@daiso-tech/core/serde";
  * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";

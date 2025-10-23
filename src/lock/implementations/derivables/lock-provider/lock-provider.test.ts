@@ -5,7 +5,7 @@ import {
 } from "@/lock/implementations/adapters/_module.js";
 import { LockProvider } from "@/lock/implementations/derivables/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { lockProviderTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
