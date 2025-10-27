@@ -50,7 +50,7 @@ describe("function: isDatabaseCacheAdapter", () => {
         };
         expect(isDatabaseCacheAdapter(adapter)).toBe(true);
     });
-    test("Should return false when is not IDatabaseCacheAdapter", () => {
+    test("Should return false when is ICacheAdapter", () => {
         const adapter: ICacheAdapter = {
             get: function (_key: string): Promise<unknown> {
                 throw new Error("Function not implemented.");

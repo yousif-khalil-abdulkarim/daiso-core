@@ -57,6 +57,12 @@ export type TaskAllSettledResult<T extends readonly unknown[]> = {
 };
 
 /**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/task"`
+ */
+export type Test<TValue> = Exclude<TValue, Promise<any>>;
+
+/**
  * The `Task` class is used for creating lazy {@link PromiseLike | `PromiseLike`} object that will only execute when awaited or when `then` method is called.
  * Note the class is immutable.
  *
@@ -137,6 +143,9 @@ export class Task<TValue> implements PromiseLike<TValue> {
             if (value === undefined) {
                 return;
             }
+            if (!(value instanceof Task)) {
+                throw new TypeError("You cant pass a Promise to Task.resolve");
+            }
             return await value;
         });
     }
@@ -148,6 +157,10 @@ export class Task<TValue> implements PromiseLike<TValue> {
         reason?: TError,
     ): Task<TValue> {
         return new Task<TValue>(async () => {
+            if (!(reason instanceof Task)) {
+                throw new TypeError("You cant pass a Promise to Task.reject");
+            }
+
             // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
             return Promise.reject(reason);
         });
@@ -155,6 +168,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
 
     private static toTasks<TValue>(
         promises: Iterable<TValue | PromiseLike<TValue>>,
+        errorMessage: string,
     ): Task<TValue>[] {
         const tasks: Task<TValue>[] = [];
         for (const promise of promises) {
@@ -164,7 +178,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
             if (!isPromiseLike(promise)) {
                 tasks.push(Task.resolve(promise));
             }
-            throw new TypeError("!!__MESSAGE__!!");
+            throw new TypeError(errorMessage);
         }
         return tasks;
     }
@@ -189,7 +203,11 @@ export class Task<TValue> implements PromiseLike<TValue> {
     static all<TValue>(
         tasks: Iterable<TValue | PromiseLike<TValue>>,
     ): Task<TValue[]> {
-        return new Task<TValue[]>(async () => Promise.all(Task.toTasks(tasks)));
+        return new Task<TValue[]>(async () =>
+            Promise.all(
+                Task.toTasks(tasks, "You cant pass in a Promise to Task.all"),
+            ),
+        );
     }
 
     /**
@@ -213,7 +231,12 @@ export class Task<TValue> implements PromiseLike<TValue> {
         tasks: Iterable<TValue | PromiseLike<TValue>>,
     ): Task<PromiseSettledResult<TValue>[]> {
         return new Task<PromiseSettledResult<TValue>[]>(async () =>
-            Promise.allSettled(Task.toTasks(tasks)),
+            Promise.allSettled(
+                Task.toTasks(
+                    tasks,
+                    "You cant pass in a Promise to Task.allSettled",
+                ),
+            ),
         );
     }
 
@@ -235,7 +258,11 @@ export class Task<TValue> implements PromiseLike<TValue> {
     static race<TValue>(
         tasks: Iterable<TValue | PromiseLike<TValue>>,
     ): Task<TValue> {
-        return new Task(async () => Promise.race(Task.toTasks(tasks)));
+        return new Task(async () =>
+            Promise.race(
+                Task.toTasks(tasks, "You cant pass in a Promise to Task.race"),
+            ),
+        );
     }
 
     /**
@@ -256,7 +283,11 @@ export class Task<TValue> implements PromiseLike<TValue> {
     static any<TValue>(
         tasks: Iterable<TValue | PromiseLike<TValue>>,
     ): Task<TValue> {
-        return new Task(async () => Promise.any(Task.toTasks(tasks)));
+        return new Task(async () =>
+            Promise.any(
+                Task.toTasks(tasks, "You cant pass in a Promise to Task.any"),
+            ),
+        );
     }
 
     /**

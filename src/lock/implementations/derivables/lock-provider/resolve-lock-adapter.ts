@@ -9,9 +9,7 @@ import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-prov
 /**
  * @internal
  */
-export function resolveDatabaseLockAdapter(
-    adapter: LockAdapterVariants,
-): ILockAdapter {
+export function resolveLockAdapter(adapter: LockAdapterVariants): ILockAdapter {
     if (isDatabaseLockAdapter(adapter)) {
         return new DatabaseLockAdapter(adapter);
     }

@@ -5,7 +5,6 @@
 
 import type {
     CacheEventMap,
-    IDatabaseCacheAdapter,
     NotFoundCacheEvent,
     RemovedCacheEvent,
 } from "@/cache/contracts/_module-exports.js";
@@ -28,12 +27,12 @@ import type {
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
-import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
-import { DatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/database-cache-adapter.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
+import type { CacheAdapterVariants } from "@/cache/contracts/types.js";
+import { resolveCacheAdapter } from "@/cache/implementations/derivables/cache/resolve-cache-adapter.js";
 
 /**
  *
@@ -81,15 +80,6 @@ export type CacheSettingsBase<TType = unknown> = {
      */
     defaultTtl?: ITimeSpan | null;
 };
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/cache"`
- * @group Derivables
- */
-export type CacheAdapterVariants<TType> =
-    | ICacheAdapter<TType>
-    | IDatabaseCacheAdapter<TType>;
 
 /**
  *
@@ -168,12 +158,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         this.defaultTtl =
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
-
-        if (isDatabaseCacheAdapter(adapter)) {
-            this.adapter = new DatabaseCacheAdapter(adapter);
-        } else {
-            this.adapter = adapter;
-        }
+        this.adapter = resolveCacheAdapter(adapter);
     }
 
     /**

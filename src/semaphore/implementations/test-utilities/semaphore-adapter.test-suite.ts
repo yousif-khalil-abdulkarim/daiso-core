@@ -41,7 +41,7 @@ export type SemaphoreAdapterTestSuiteSettings = {
  *     RedisContainer,
  *     type StartedRedisContainer,
  * } from "@testcontainers/redis";
- * import { TimeSpan } from "@daiso-tech/core/utilities";
+ * import { TimeSpan } from "@daiso-tech/core/time-span";
  *
  * const timeout = TimeSpan.fromMinutes(2);
  * describe("class: RedisSemaphoreAdapter", () => {
