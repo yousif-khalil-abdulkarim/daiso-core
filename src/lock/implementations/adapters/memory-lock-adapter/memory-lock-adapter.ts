@@ -28,7 +28,7 @@ export type MemoryLockData =
 
 /**
  * Note the `MemoryLockAdapter` is limited to single process usage and cannot be shared across multiple servers or different processes.
- * This adapter is meant to be used for testing.
+ * This adapter is meant for testing.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/memory-lock-adapter"`
  * @group Adapters
