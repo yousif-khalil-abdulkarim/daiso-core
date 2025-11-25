@@ -28,7 +28,7 @@ import type {
 
 import type { ISerderRegister } from "@/serde/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { v4 } from "uuid";
 import { resolveDatabaseSharedLockAdapter } from "@/shared-lock/implementations/derivables/shared-lock-provider/resolve-database-shared-lock-adapter.js";
 import { SharedLockSerdeTransformer } from "@/shared-lock/implementations/derivables/shared-lock-provider/shared-lock-serde-transformer.js";
@@ -36,6 +36,8 @@ import { SharedLock } from "@/shared-lock/implementations/derivables/shared-lock
 import { Namespace } from "@/namespace/namespace.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
+import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 
 /**
  *
@@ -53,7 +55,7 @@ export type SharedLockProviderSettingsBase = {
      */
     namespace?: Namespace;
 
-    serde: OneOrMore<ISerderRegister>;
+    serde?: OneOrMore<ISerderRegister>;
 
     /**
      * @default ""
@@ -69,10 +71,10 @@ export type SharedLockProviderSettingsBase = {
      * @default
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
+     * import { NoOpEventBusAdapter } from "@daiso-tech/core/event-bus/no-op-event-bus-adapter";
      *
      * new EventBus({
-     *   adapter: new MemoryEventBusAdapter()
+     *   adapter: new NoOpEventBusAdapter()
      * })
      * ```
      */
@@ -187,11 +189,11 @@ export class SharedLockProvider implements ISharedLockProvider {
             defaultBlockingTime = TimeSpan.fromMinutes(1),
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             createLockId = () => v4(),
-            serde,
+            serde = new Serde(new NoOpSerdeAdapter()),
             namespace = DEFAULT_SHARED_LOCK_NAMESPACE,
             adapter,
             eventBus = new EventBus<any>({
-                adapter: new MemoryEventBusAdapter(),
+                adapter: new NoOpEventBusAdapter(),
             }),
             serdeTransformerName = "",
         } = settings;
