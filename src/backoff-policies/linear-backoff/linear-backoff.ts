@@ -1,0 +1,147 @@
+/**
+ * @module BackoffPolicy
+ */
+
+import { callInvokable, isInvokable } from "@/utilities/_module-exports.js";
+import type {
+    BackoffPolicy,
+    DynamicBackoffPolicy,
+} from "@/backoff-policies/_shared.js";
+import { withJitter } from "@/backoff-policies/_shared.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import {
+    TO_MILLISECONDS,
+    type ITimeSpan,
+} from "@/time-span/contracts/_module-exports.js";
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
+ */
+export type LinearBackoffSettings = {
+    /**
+     * @default true
+     */
+    enableJitter?: boolean;
+
+    /**
+     * @default
+     * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
+     * TimeSpan.fromSeconds(6)
+     * ```
+     */
+    maxDelay?: ITimeSpan;
+
+    /**
+     * @default
+     * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
+     * TimeSpan.fromSeconds(1)
+     * ```
+     */
+    minDelay?: ITimeSpan;
+
+    /**
+     * @default 0.5
+     */
+    jitter?: number;
+
+    /**
+     * @internal
+     * Should only be used for testing
+     */
+    _mathRandom?: () => number;
+};
+
+/**
+ * @internal
+ */
+export function resolveLinearBackoffSettings(
+    settings: LinearBackoffSettings,
+): Required<LinearBackoffSettings> {
+    const {
+        enableJitter = true,
+        maxDelay = TimeSpan.fromMilliseconds(6000),
+        minDelay = TimeSpan.fromMilliseconds(1_000),
+        jitter = 0.5,
+        _mathRandom = Math.random,
+    } = settings;
+
+    return {
+        enableJitter,
+        maxDelay,
+        minDelay,
+        jitter,
+        _mathRandom,
+    };
+}
+
+/**
+ * Linear backoff policy with jitter
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
+ */
+export function linearBackoff(
+    settings: DynamicBackoffPolicy<LinearBackoffSettings> = {},
+): BackoffPolicy {
+    return (attempt, error) => {
+        if (isInvokable(settings)) {
+            const dynamicSettings = callInvokable(settings, error);
+            if (dynamicSettings === undefined) {
+                settings = {};
+            } else {
+                settings = dynamicSettings;
+            }
+        }
+        const { maxDelay, minDelay, jitter, enableJitter, _mathRandom } =
+            resolveLinearBackoffSettings(settings);
+        const linear = Math.min(
+            maxDelay[TO_MILLISECONDS](),
+            minDelay[TO_MILLISECONDS]() * attempt,
+        );
+        return TimeSpan.fromMilliseconds(
+            withJitter({
+                enable: enableJitter,
+                jitter,
+                value: linear,
+                mathRandom: _mathRandom,
+            }),
+        );
+    };
+}
+
+/**
+ * @internal
+ */
+export type SerializedLinearBackoffSettings = {
+    enableJitter?: boolean;
+
+    maxDelay?: number;
+
+    minDelay?: number;
+
+    jitter?: number;
+
+    _mathRandom?: number;
+};
+
+/**
+ * @internal
+ */
+export function serializeLinearBackoffSettings(
+    settings: LinearBackoffSettings,
+): Required<SerializedLinearBackoffSettings> {
+    const { enableJitter, maxDelay, minDelay, jitter, _mathRandom } =
+        resolveLinearBackoffSettings(settings);
+
+    return {
+        enableJitter,
+        maxDelay: maxDelay[TO_MILLISECONDS](),
+        minDelay: minDelay[TO_MILLISECONDS](),
+        jitter,
+        _mathRandom: _mathRandom(),
+    };
+}

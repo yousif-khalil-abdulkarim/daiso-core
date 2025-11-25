@@ -99,9 +99,9 @@ export type RetrySettings<
         /**
          * @default
          * ```ts
-         * import { exponentialBackoffPolicy } from "@daiso-tech/core/resilience";
+         * import { exponentialBackoff } from "@daiso-tech/core/backoff-policies";
          *
-         * exponentialBackoffPolicy();
+         * exponentialBackof();
          * ```
          */
         backoffPolicy?: BackoffPolicy;
