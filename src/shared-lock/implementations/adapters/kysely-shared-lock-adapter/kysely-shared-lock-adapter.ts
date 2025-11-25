@@ -467,7 +467,7 @@ class DatabaseWriterLockTransaction implements IDatabaseWriterLockTransaction {
 /**
  * To utilize the `KyselySharedLockAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
  *
- * Note in order to use `KyselySharedLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
+ * Note in order to use `KyselySharedLockAdapter` correctly, ensure you use a single, consistent database across all server instances and use a database that has support for transactions.
  * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/kysely-shared-lock-adapter"`
@@ -488,6 +488,7 @@ export class KyselySharedLockAdapter
      * ```ts
      * import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
      * import Sqlite from "better-sqlite3";
+     * import { Kysely, SqliteDialect } from "kysely";
      *
      * const sharedLockAdapter = new KyselySharedLockAdapter({
      *   kysely: new Kysely({
