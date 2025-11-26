@@ -1,0 +1,248 @@
+/**
+ * @module CircuitBreaker
+ */
+
+import {
+    type CircuitBreakerState,
+    type CircuitBreakerTrigger,
+    type ICircuitBreaker,
+    OpenCircuitBreakerError,
+    CIRCUIT_BREAKER_TRIGGER,
+    type ICircuitBreakerAdapter,
+    CIRCUIT_BREAKER_STATE,
+    type CircuitBreakerEventMap,
+    CIRCUIT_BREAKER_EVENTS,
+} from "@/circuit-breaker/contracts/_module-exports.js";
+import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
+import type { Key, Namespace } from "@/namespace/_module-exports.js";
+import { Task } from "@/task/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import {
+    callErrorPolicyOnThrow,
+    resolveAsyncLazyable,
+    type AsyncLazy,
+    type ErrorPolicy,
+    type InvokableFn,
+} from "@/utilities/_module-exports.js";
+
+/**
+ * @internal
+ */
+export type CircuitBreakerSettings = {
+    eventDispatcher: IEventDispatcher<CircuitBreakerEventMap>;
+    adapter: ICircuitBreakerAdapter;
+    key: Key;
+    slowCallTime: TimeSpan;
+    errorPolicy: ErrorPolicy;
+    trigger: CircuitBreakerTrigger;
+    serdeTransformerName: string;
+    namespace: Namespace;
+};
+
+/**
+ * @internal
+ */
+export type ISerializedCircuitBreaker = {
+    version: "1";
+    key: string;
+};
+
+/**
+ * @internal
+ */
+export class CircuitBreaker implements ICircuitBreaker {
+    /**
+     * @internal
+     */
+    static _internal_serialize(
+        deserializedValue: CircuitBreaker,
+    ): ISerializedCircuitBreaker {
+        return {
+            version: "1",
+            key: deserializedValue._key.get(),
+        };
+    }
+
+    private readonly _key: Key;
+    private readonly errorPolicy: ErrorPolicy;
+    private readonly trigger: CircuitBreakerTrigger;
+    private readonly slowCallTime: TimeSpan;
+    private readonly adapter: ICircuitBreakerAdapter;
+    private readonly eventDispatcher: IEventDispatcher<CircuitBreakerEventMap>;
+    private readonly serdeTransformerName: string;
+    private readonly namespace: Namespace;
+
+    constructor(settings: CircuitBreakerSettings) {
+        const {
+            eventDispatcher,
+            key,
+            errorPolicy,
+            trigger,
+            adapter,
+            slowCallTime,
+            serdeTransformerName,
+            namespace,
+        } = settings;
+        this.eventDispatcher = eventDispatcher;
+        this._key = key;
+        this.errorPolicy = errorPolicy;
+        this.trigger = trigger;
+        this.adapter = adapter;
+        this.slowCallTime = slowCallTime;
+        this.serdeTransformerName = serdeTransformerName;
+        this.namespace = namespace;
+    }
+
+    _internal_getNamespace(): Namespace {
+        return this.namespace;
+    }
+
+    _internal_getSerdeTransformerName(): string {
+        return this.serdeTransformerName;
+    }
+
+    _internal_getAdapter(): ICircuitBreakerAdapter {
+        return this.adapter;
+    }
+
+    get key(): string {
+        return this._key.get();
+    }
+
+    getState(): Task<CircuitBreakerState> {
+        return new Task(async () => {
+            return this.adapter.getState(this._key.toString());
+        });
+    }
+
+    private async trackError<TValue = void>(
+        fn: InvokableFn<[], Promise<TValue>>,
+    ): Promise<TValue> {
+        try {
+            return await fn();
+        } catch (error: unknown) {
+            const isErrorMatching = await callErrorPolicyOnThrow(
+                this.errorPolicy,
+                error,
+            );
+            const shouldRecordError =
+                this.trigger === CIRCUIT_BREAKER_TRIGGER.BOTH ||
+                this.trigger === CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR;
+
+            if (shouldRecordError && isErrorMatching) {
+                await this.adapter.trackFailure(this._key.toString());
+                this.eventDispatcher
+                    .dispatch(CIRCUIT_BREAKER_EVENTS.TRACKED_FAILURE, {
+                        circuitBreaker: this,
+                        error,
+                    })
+                    .detach();
+            } else if (shouldRecordError) {
+                this.eventDispatcher
+                    .dispatch(CIRCUIT_BREAKER_EVENTS.UNTRACKED_FAILURE, {
+                        circuitBreaker: this,
+                        error,
+                    })
+                    .detach();
+            }
+            throw error;
+        }
+    }
+
+    private async trackSlowCall<TValue = void>(
+        fn: InvokableFn<[], Promise<TValue>>,
+    ): Promise<TValue> {
+        const start = performance.now();
+
+        const value = await fn();
+
+        const end = performance.now();
+
+        const executionTime = TimeSpan.fromMilliseconds(end - start);
+
+        const shouldRecordSlowCall =
+            this.trigger === CIRCUIT_BREAKER_TRIGGER.BOTH ||
+            this.trigger === CIRCUIT_BREAKER_TRIGGER.ONLY_SLOW_CALL;
+        const isCallSlow = executionTime.gte(this.slowCallTime);
+
+        if (shouldRecordSlowCall && isCallSlow) {
+            await this.adapter.trackFailure(this._key.toString());
+            this.eventDispatcher
+                .dispatch(CIRCUIT_BREAKER_EVENTS.TRACKED_SLOW_CALL, {
+                    circuitBreaker: this,
+                })
+                .detach();
+        }
+        if (shouldRecordSlowCall && !isCallSlow) {
+            await this.adapter.trackSuccess(this._key.toString());
+            this.eventDispatcher
+                .dispatch(CIRCUIT_BREAKER_EVENTS.TRACKED_SUCCESS, {
+                    circuitBreaker: this,
+                })
+                .detach();
+        }
+        if (!shouldRecordSlowCall) {
+            await this.adapter.trackSuccess(this._key.toString());
+            this.eventDispatcher
+                .dispatch(CIRCUIT_BREAKER_EVENTS.TRACKED_SUCCESS, {
+                    circuitBreaker: this,
+                })
+                .detach();
+        }
+
+        return value;
+    }
+
+    private async guard(): Promise<void> {
+        const transition = await this.adapter.updateState(this._key.toString());
+        const hasStateChaned = transition.to !== transition.from;
+        if (hasStateChaned) {
+            this.eventDispatcher
+                .dispatch(CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED, {
+                    circuitBreaker: this,
+                    from: transition.from,
+                    to: transition.to,
+                })
+                .detach();
+        }
+
+        const isInOpenState = transition.to === CIRCUIT_BREAKER_STATE.OPEN;
+        if (isInOpenState) {
+            throw new OpenCircuitBreakerError("!!__MESSAGE__!!");
+        }
+    }
+
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+        return new Task(async () => {
+            await this.guard();
+
+            return await this.trackError(async () => {
+                return await this.trackSlowCall(async () => {
+                    return await resolveAsyncLazyable(asyncFn);
+                });
+            });
+        });
+    }
+
+    reset(): Task<void> {
+        return new Task(async () => {
+            await this.adapter.reset(this._key.toString());
+            this.eventDispatcher
+                .dispatch(CIRCUIT_BREAKER_EVENTS.RESETED, {
+                    circuitBreaker: this,
+                })
+                .detach();
+        });
+    }
+
+    isolate(): Task<void> {
+        return new Task(async () => {
+            await this.adapter.isolate(this.key);
+            this.eventDispatcher
+                .dispatch(CIRCUIT_BREAKER_EVENTS.ISOLATED, {
+                    circuitBreaker: this,
+                })
+                .detach();
+        });
+    }
+}
