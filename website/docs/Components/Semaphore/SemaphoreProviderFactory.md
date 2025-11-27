@@ -35,7 +35,7 @@ const semaphoreProvider = new SemaphoreProviderFactory({
 await semaphoreProvider
     .use()
     .create("shared-resource")
-    .run(async () => {
+    .runOrFail(async () => {
         // code to run
     });
 ```
@@ -50,7 +50,7 @@ Note that if you dont set a default adapter, an error will be thrown.
 await semaphoreProvider
     .use("redis")
     .create("shared-resource")
-    .run(async () => {
+    .runOrFail(async () => {
         // code to run
     });
 ```
@@ -66,7 +66,7 @@ await semaphoreProvider
     .setNamespace(new Namespace("@my-namespace"))
     .use("redis")
     .create("shared-resource")
-    .run(async () => {
+    .runOrFail(async () => {
         // code to run
     });
 ```
