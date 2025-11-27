@@ -173,7 +173,7 @@ class DatabaseSemaphoreTransaction implements IDatabaseSemaphoreTransaction {
 /**
  * To utilize the `KyselySemaphoreAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
  *
- * Note in order to use `KyselySemaphoreAdapter` correctly, ensure you use a single, consistent database across all server instances.
+ * Note in order to use `KyselySemaphoreAdapter` correctly, ensure you use a single, consistent database across all server instances and use a database that has support for transactions.
  * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/kysely-semaphore-adapter"`
@@ -194,6 +194,7 @@ export class KyselySemaphoreAdapter
      * ```ts
      * import { KyselySemaphoreAdapter } from "@daiso-tech/core/semaphore/kysely-semaphore-adapter";
      * import Sqlite from "better-sqlite3";
+     * import { Kysely, SqliteDialect } from "kysely";
      *
      * const semaphoreAdapter = new KyselySemaphoreAdapter({
      *   kysely: new Kysely({

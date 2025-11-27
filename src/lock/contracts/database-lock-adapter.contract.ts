@@ -36,12 +36,17 @@ export type ILockData = ILockExpirationData & {
  */
 export type IDatabaseLockTransaction = {
     /**
-     * The `find` returns the lock if it exists otherwise `null` is returned.
+     * The `find` method retrieves the current lock data for a given key.
+     *
+     * @param key The unique identifier for the lock.
+     * @returns Returns the lock's owner and expiration data if found, otherwise `null`.
      */
     find(key: string): Promise<ILockData | null>;
 
     /**
      * The `upsert` inserts a lock if it doesnt exist otherwise it will be updated.
+     *
+     * @param key The unique identifier for the lock.
      */
     upsert(key: string, lockId: string, expiration: Date | null): Promise<void>;
 };
@@ -98,7 +103,7 @@ export type IDatabaseLockAdapter = {
     ): Promise<number>;
 
     /**
-     * Retrieves the current lock data for a given key.
+     * The `find` method retrieves the current lock data for a given key.
      *
      * @param key The unique identifier for the lock.
      * @returns Returns the lock's owner and expiration data if found, otherwise `null`.

@@ -6,14 +6,14 @@ The `@daiso-tech/core/backoff-policies` component
 
 The library includes predefined backoff policies:
 
-- `constantBackoffPolicy` - Constant backoff policy with jitter
+- `constantBackoff` - Constant backoff policy with jitter
 
-- `exponentialBackoffPolicy` - Exponential backoff policy with jitter
+- `exponentialBackoff` - Exponential backoff policy with jitter
 
-- `linearBackoffPolicy` - Linear backoff policy with jitter
+- `linearBackoff` - Linear backoff policy with jitter
 
-- `polynomialBackoffPolicy` - Polynomial backoff policy with jitter
+- `polynomialBackoff` - Polynomial backoff policy with jitter
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/backoff-policies`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/BackoffPolicy.html) API docs.
+For further information refer to [`@daiso-tech/core/backoff-policies`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Backoff.html) API docs.

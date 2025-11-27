@@ -10,7 +10,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
 } from "@/event-bus/contracts/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import type {
     IDatabaseSemaphoreAdapter,
@@ -37,6 +37,8 @@ import { resolveDatabaseSemaphoreAdapter } from "@/semaphore/implementations/der
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
+import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 
 /**
  *
@@ -54,7 +56,7 @@ export type SemaphoreProviderSettingsBase = {
      */
     namespace?: Namespace;
 
-    serde: OneOrMore<ISerderRegister>;
+    serde?: OneOrMore<ISerderRegister>;
 
     /**
      * @default ""
@@ -70,10 +72,10 @@ export type SemaphoreProviderSettingsBase = {
      * @default
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
+     * import { NoOpEventBusAdapter } from "@daiso-tech/core/event-bus/no-op-event-bus-adapter";
      *
      * new EventBus({
-     *   adapter: new MemoryEventBusAdapter()
+     *   adapter: new NoOpEventBusAdapter()
      * })
      * ```
      */
@@ -190,11 +192,11 @@ export class SemaphoreProvider implements ISemaphoreProvider {
             defaultBlockingInterval = TimeSpan.fromSeconds(1),
             defaultBlockingTime = TimeSpan.fromMinutes(1),
             defaultRefreshTime = TimeSpan.fromMinutes(5),
-            serde,
+            serde = new Serde(new NoOpSerdeAdapter()),
             namespace = DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE,
             adapter,
             eventBus = new EventBus<any>({
-                adapter: new MemoryEventBusAdapter(),
+                adapter: new NoOpEventBusAdapter(),
             }),
             serdeTransformerName = "",
         } = settings;

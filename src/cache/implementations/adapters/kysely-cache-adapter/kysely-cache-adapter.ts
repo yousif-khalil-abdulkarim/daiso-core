@@ -119,7 +119,8 @@ export class KyselyCacheAdapter<TType = unknown>
      * import { KyselyCacheAdapter } from "@daiso-tech/core/cache/kysely-cache-adapter";
      * import { Serde } from "@daiso-tech/core/serde";
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter"
-     * import Sqlite from "better-sqlite3";
+     * import SQLite from 'better-sqlite3'
+     * import { Kysely, SqliteDialect } from 'kysely'
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const cacheAdapter = new KyselyCacheAdapter({

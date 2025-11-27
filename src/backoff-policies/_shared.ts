@@ -4,6 +4,27 @@
 
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import type { Invokable } from "@/utilities/_module-exports.js";
+import {
+    BACKOFFS,
+    type BackoffSettingsEnum,
+    type SerializedBackoffSettingsEnum,
+} from "@/backoff-policies/types.js";
+import {
+    resolveConstantBackoffSettings,
+    serializeConstantBackoffSettings,
+} from "@/backoff-policies/constant-backoff/_module.js";
+import {
+    resolveExponentialBackoffSettings,
+    serializeExponentialBackoffSettings,
+} from "@/backoff-policies/exponential-backoff/_module.js";
+import {
+    resolveLinearBackoffSettings,
+    serializeLinearBackoffSettings,
+} from "@/backoff-policies/linear-backoff/_module.js";
+import {
+    resolvePolynomialBackoffSettings,
+    serializePolynomialBackoffSettings,
+} from "@/backoff-policies/polynomial-backoff/_module.js";
 
 /**
  * @returns Amount milliseconds to wait
@@ -26,10 +47,80 @@ export type DynamicBackoffPolicy<TSettings> =
 /**
  * @internal
  */
-export function withJitter(
-    jitter: number,
-    value: number,
-    mathRandom: () => number,
-): number {
-    return (1 - jitter * mathRandom()) * value;
+export type WithJitterArgs = {
+    enable: boolean;
+    jitter: number;
+    value: number;
+    mathRandom: () => number;
+};
+
+/**
+ * @internal
+ */
+export function withJitter(args: WithJitterArgs): number {
+    const { enable, jitter, value, mathRandom } = args;
+    if (enable) {
+        return (1 - jitter * mathRandom()) * value;
+    }
+    return value;
+}
+
+/**
+ * @internal
+ */
+export function resolveBackoffSettingsEnum(
+    settings: BackoffSettingsEnum,
+): Required<BackoffSettingsEnum> {
+    if (settings.type === BACKOFFS.CONSTANT) {
+        return {
+            type: BACKOFFS.CONSTANT,
+            ...resolveConstantBackoffSettings(settings),
+        };
+    }
+    if (settings.type === BACKOFFS.EXPONENTIAL) {
+        return {
+            type: BACKOFFS.EXPONENTIAL,
+            ...resolveExponentialBackoffSettings(settings),
+        };
+    }
+    if (settings.type === BACKOFFS.LINEAR) {
+        return {
+            type: BACKOFFS.LINEAR,
+            ...resolveLinearBackoffSettings(settings),
+        };
+    }
+    return {
+        type: BACKOFFS.POLYNOMIAL,
+        ...resolvePolynomialBackoffSettings(settings),
+    };
+}
+
+/**
+ * @internal
+ */
+export function serializeBackoffSettingsEnum(
+    settings: BackoffSettingsEnum,
+): Required<SerializedBackoffSettingsEnum> {
+    if (settings.type === BACKOFFS.CONSTANT) {
+        return {
+            type: BACKOFFS.CONSTANT,
+            ...serializeConstantBackoffSettings(settings),
+        };
+    }
+    if (settings.type === BACKOFFS.EXPONENTIAL) {
+        return {
+            type: BACKOFFS.EXPONENTIAL,
+            ...serializeExponentialBackoffSettings(settings),
+        };
+    }
+    if (settings.type === BACKOFFS.LINEAR) {
+        return {
+            type: BACKOFFS.LINEAR,
+            ...serializeLinearBackoffSettings(settings),
+        };
+    }
+    return {
+        type: BACKOFFS.POLYNOMIAL,
+        ...serializePolynomialBackoffSettings(settings),
+    };
 }

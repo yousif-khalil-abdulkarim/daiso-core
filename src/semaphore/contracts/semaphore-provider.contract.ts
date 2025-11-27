@@ -39,10 +39,6 @@ export type SemaphoreProviderCreateSettings = {
 export type ISemaphoreProviderBase = {
     /**
      * The `create` method is used to create an instance of {@link ISemaphore | `ISemaphore`}.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      */
     create(key: string, settings: SemaphoreProviderCreateSettings): ISemaphore;
 };
