@@ -29,6 +29,8 @@ import type {
 } from "@/circuit-breaker/contracts/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/serde.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 
 describe("class: CircuitBreakerProvider", () => {
     const adapter: ICircuitBreakerAdapter = {
@@ -62,6 +64,9 @@ describe("class: CircuitBreakerProvider", () => {
             vi.resetAllMocks();
             circuitBreakerProvider = new CircuitBreakerProvider({
                 adapter,
+                eventBus: new EventBus({
+                    adapter: new MemoryEventBusAdapter(),
+                }),
                 serde: new Serde(new SuperJsonSerdeAdapter()),
                 slowCallTime,
             });
@@ -410,6 +415,9 @@ describe("class: CircuitBreakerProvider", () => {
             vi.resetAllMocks();
             circuitBreakerProvider = new CircuitBreakerProvider({
                 adapter,
+                eventBus: new EventBus({
+                    adapter: new MemoryEventBusAdapter(),
+                }),
                 slowCallTime,
                 serde: new Serde(new SuperJsonSerdeAdapter()),
             });
