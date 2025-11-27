@@ -7,7 +7,6 @@ import type {
     AsyncLazy,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
-    Result,
 } from "@/utilities/_module-exports.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -61,26 +60,10 @@ export type SemaphoreAquireBlockingSettings = {
  */
 export type ISemaphoreBase = {
     /**
-     * The `run` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquire` and `release` method.
-     *
-     */
-    run<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<Result<TValue, LimitReachedSemaphoreError>>;
-
-    /**
      * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
-
-    /**
-     * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlocking` and `release` method.
-     */
-    runBlocking<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-        settings?: SemaphoreAquireBlockingSettings,
-    ): Task<Result<TValue, LimitReachedSemaphoreError>>;
 
     /**
      * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.

@@ -25,10 +25,7 @@ import type { ISemaphoreState } from "@/semaphore/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import {
     resolveLazyable,
-    resultFailure,
-    resultSuccess,
     type AsyncLazy,
-    type Result,
 } from "@/utilities/_module-exports.js";
 import type { AsyncMiddlewareFn } from "@/hooks/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
@@ -137,29 +134,6 @@ export class Semaphore implements ISemaphore {
         return this.originalAdapter;
     }
 
-    run<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<Result<TValue, LimitReachedSemaphoreError>> {
-        return new Task(
-            async (): Promise<Result<TValue, LimitReachedSemaphoreError>> => {
-                try {
-                    const hasAquired = await this.acquire();
-                    if (!hasAquired) {
-                        return resultFailure(
-                            new LimitReachedSemaphoreError(
-                                `Key "${this._key.get()}" has reached the limit ${String(this.limit)}`,
-                            ),
-                        );
-                    }
-
-                    return resultSuccess(await resolveLazyable(asyncFn));
-                } finally {
-                    await this.release();
-                }
-            },
-        );
-    }
-
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
         return new Task(async () => {
             try {
@@ -169,30 +143,6 @@ export class Semaphore implements ISemaphore {
                 await this.release();
             }
         });
-    }
-
-    runBlocking<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-        settings?: SemaphoreAquireBlockingSettings,
-    ): Task<Result<TValue, LimitReachedSemaphoreError>> {
-        return new Task(
-            async (): Promise<Result<TValue, LimitReachedSemaphoreError>> => {
-                try {
-                    const hasAquired = await this.acquireBlocking(settings);
-                    if (!hasAquired) {
-                        return resultFailure(
-                            new LimitReachedSemaphoreError(
-                                `Key "${this._key.get()}" has reached the limit ${String(this.limit)}`,
-                            ),
-                        );
-                    }
-
-                    return resultSuccess(await resolveLazyable(asyncFn));
-                } finally {
-                    await this.release();
-                }
-            },
-        );
     }
 
     runBlockingOrFail<TValue = void>(
