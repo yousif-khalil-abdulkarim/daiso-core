@@ -2,7 +2,6 @@
  * @module Resilience
  */
 
-import type { InferResultError } from "@/utilities/_module-exports.js";
 import { type Invokable } from "@/utilities/_module-exports.js";
 import { type BackoffPolicy } from "@/backoff-policies/_module-exports.js";
 import { type ErrorPolicySettings } from "@/utilities/_module-exports.js";
@@ -87,9 +86,8 @@ export type RetryCallbacks<
 export type RetrySettings<
     TParameters extends unknown[] = unknown[],
     TContext extends HookContext = HookContext,
-    TReturn = unknown,
 > = RetryCallbacks<TParameters, TContext> &
-    ErrorPolicySettings<InferResultError<TReturn>> & {
+    ErrorPolicySettings & {
         /**
          * You can decide maximal times you can retry.
          * @default 4
