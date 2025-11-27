@@ -32,11 +32,8 @@ import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import {
     resolveLazyable,
-    resultFailure,
-    resultSuccess,
     UnexpectedError,
     type AsyncLazy,
-    type Result,
 } from "@/utilities/_module-exports.js";
 import type { AsyncMiddlewareFn } from "@/hooks/_module-exports.js";
 
@@ -144,31 +141,6 @@ export class SharedLock implements ISharedLock {
         return this.originalAdapter;
     }
 
-    runReader<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<Result<TValue, LimitReachedReaderSemaphoreError>> {
-        return new Task(
-            async (): Promise<
-                Result<TValue, LimitReachedReaderSemaphoreError>
-            > => {
-                try {
-                    const hasAquired = await this.acquireReader();
-                    if (!hasAquired) {
-                        return resultFailure(
-                            new LimitReachedReaderSemaphoreError(
-                                `Key "${this._key.toString()}" already acquired`,
-                            ),
-                        );
-                    }
-
-                    return resultSuccess(await resolveLazyable(asyncFn));
-                } finally {
-                    await this.releaseReader();
-                }
-            },
-        );
-    }
-
     runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
         return new Task(async () => {
             try {
@@ -178,33 +150,6 @@ export class SharedLock implements ISharedLock {
                 await this.releaseReader();
             }
         });
-    }
-
-    runReaderBlocking<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-        settings?: SharedLockAquireBlockingSettings,
-    ): Task<Result<TValue, LimitReachedReaderSemaphoreError>> {
-        return new Task(
-            async (): Promise<
-                Result<TValue, LimitReachedReaderSemaphoreError>
-            > => {
-                try {
-                    const hasAquired =
-                        await this.acquireReaderBlocking(settings);
-                    if (!hasAquired) {
-                        return resultFailure(
-                            new LimitReachedReaderSemaphoreError(
-                                `Key "${this._key.toString()}" has reached the limit ${String(this.limit)}`,
-                            ),
-                        );
-                    }
-
-                    return resultSuccess(await resolveLazyable(asyncFn));
-                } finally {
-                    await this.releaseReader();
-                }
-            },
-        );
     }
 
     runReaderBlockingOrFail<TValue = void>(
@@ -439,29 +384,6 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    runWriter<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<Result<TValue, FailedAcquireWriterLockError>> {
-        return new Task(
-            async (): Promise<Result<TValue, FailedAcquireWriterLockError>> => {
-                try {
-                    const hasAquired = await this.acquireWriter();
-                    if (!hasAquired) {
-                        return resultFailure(
-                            new FailedAcquireWriterLockError(
-                                `Key "${this._key.toString()}" already acquired`,
-                            ),
-                        );
-                    }
-
-                    return resultSuccess(await resolveLazyable(asyncFn));
-                } finally {
-                    await this.releaseWriter();
-                }
-            },
-        );
-    }
-
     runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
         return new Task(async () => {
             try {
@@ -471,31 +393,6 @@ export class SharedLock implements ISharedLock {
                 await this.releaseWriter();
             }
         });
-    }
-
-    runWriterBlocking<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-        settings?: SharedLockAquireBlockingSettings,
-    ): Task<Result<TValue, FailedAcquireWriterLockError>> {
-        return new Task(
-            async (): Promise<Result<TValue, FailedAcquireWriterLockError>> => {
-                try {
-                    const hasAquired =
-                        await this.acquireWriterBlocking(settings);
-                    if (!hasAquired) {
-                        return resultFailure(
-                            new FailedAcquireWriterLockError(
-                                `Key "${this._key.toString()}" already acquired`,
-                            ),
-                        );
-                    }
-
-                    return resultSuccess(await resolveLazyable(asyncFn));
-                } finally {
-                    await this.releaseWriter();
-                }
-            },
-        );
     }
 
     runWriterBlockingOrFail<TValue = void>(
