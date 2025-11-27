@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @module CircuitBreaker
  */
@@ -34,7 +35,13 @@ export type SamplingBreakerTestSuiteSettings = {
 /**
  * @group TestUtilities
  */
-const circuitBreakerPolicySettings: Required<SamplingBreakerSettings> = {};
+const circuitBreakerPolicySettings: Required<SamplingBreakerSettings> = {
+    failureThreshold: 0.2,
+    successThreshold: 0.8,
+    timeSpan: TimeSpan.fromMinutes(1),
+    sampleTimeSpan: TimeSpan.fromSeconds(10),
+    minimumRps: 5,
+};
 
 /**
  * @group TestUtilities

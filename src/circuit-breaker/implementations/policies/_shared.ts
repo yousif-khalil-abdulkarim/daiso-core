@@ -5,6 +5,7 @@
 import {
     BREAKER_POLICIES,
     type CircuitBreakerPolicySettingsEnum,
+    type SerializedCircuitBreakerPolicySettingsEnum,
 } from "@/circuit-breaker/implementations/policies/types.js";
 import { resolveCountBreakerSettings } from "@/circuit-breaker/implementations/policies/count-breaker/_module.js";
 import { resolveConsecutiveBreakerSettings } from "@/circuit-breaker/implementations/policies/consecutive-breaker/_module.js";
@@ -42,7 +43,7 @@ export function resolvePolicySettings(
  */
 export function serializePolicySettingsEnum(
     settings: CircuitBreakerPolicySettingsEnum,
-): Required<CircuitBreakerPolicySettingsEnum> {
+): Required<SerializedCircuitBreakerPolicySettingsEnum> {
     if (settings.type === BREAKER_POLICIES.CONSECUTIVE) {
         return {
             type: BREAKER_POLICIES.CONSECUTIVE,
