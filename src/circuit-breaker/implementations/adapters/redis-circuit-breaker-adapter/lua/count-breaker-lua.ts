@@ -46,7 +46,7 @@ local function CountBreaker(settings)
     -- @param currentMetrics CountBreakerState
     -- @return boolean
     local function isMinimumNotMet(currentMetrics)
-        return #currentMetrics.samples < settings.minimumNumberOfCalls
+        return #currentMetrics.samples <= settings.minimumNumberOfCalls
     end 
 
     -- @template TItem

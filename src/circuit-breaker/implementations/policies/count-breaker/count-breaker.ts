@@ -173,7 +173,7 @@ export class CountBreaker implements ICircuitBreakerPolicy<CountBreakerState> {
     }
 
     private isMinimumNotMet(currentMetrics: CountBreakerState): boolean {
-        return currentMetrics.samples.length < this.minimumNumberOfCalls;
+        return currentMetrics.samples.length <= this.minimumNumberOfCalls;
     }
 
     whenClosed(
