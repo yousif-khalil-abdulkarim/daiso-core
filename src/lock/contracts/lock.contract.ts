@@ -6,7 +6,6 @@ import type {
     AsyncLazy,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
-    Result,
 } from "@/utilities/_module-exports.js";
 import type { Task } from "@/task/_module-exports.js";
 import type {
@@ -61,25 +60,10 @@ export type ILockStateMethods = {
  */
 export type ILockBase = {
     /**
-     * The `run` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquire` and `release` method.
-     */
-    run<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<Result<TValue, FailedAcquireLockError>>;
-
-    /**
      * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
      * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
-
-    /**
-     * The `runBlocking` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlocking` and `release` method.
-     */
-    runBlocking<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-        settings?: LockAquireBlockingSettings,
-    ): Task<Result<TValue, FailedAcquireLockError>>;
 
     /**
      * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
