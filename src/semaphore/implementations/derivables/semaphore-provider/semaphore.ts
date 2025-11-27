@@ -470,6 +470,8 @@ export class Semaphore implements ISemaphore {
                 };
             }
 
+            console.log(slot);
+
             return {
                 type: SEMAPHORE_STATE.ACQUIRED,
                 acquiredSlots: [...state.acquiredSlots.keys()],

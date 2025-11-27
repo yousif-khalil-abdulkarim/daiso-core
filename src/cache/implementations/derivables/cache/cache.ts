@@ -26,7 +26,7 @@ import type {
     EventListener,
 } from "@/event-bus/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
@@ -65,10 +65,10 @@ export type CacheSettingsBase<TType = unknown> = {
      * @default
      * ```ts
      * import { EventBus } from "@daiso-tech/core/event-bus";
-     * import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
+     * import { NoOpEventBusAdapter } from "@daiso-tech/core/event-bus/no-op-event-bus-adapter";
      *
      * new EventBus({
-     *   adapter: new MemoryEventBusAdapter()
+     *   adapter: new NoOpEventBusAdapter()
      * })
      * ```
      */
@@ -119,7 +119,6 @@ export class Cache<TType = unknown> implements ICache<TType> {
      * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter"
      * import Sqlite from "better-sqlite3";
      * import { Cache } from "@daiso-tech/core/cache";
-     * import { Namespace } from "@daiso-tech/core/namespace";
      * import { Kysely, SqliteDialect } from "kysely";
      *
      * const database = new Sqlite("local.db");
@@ -147,7 +146,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             namespace = DEFAULT_CACHE_NAMESPACE,
             adapter,
             eventBus = new EventBus<any>({
-                adapter: new MemoryEventBusAdapter(),
+                adapter: new NoOpEventBusAdapter(),
             }),
             defaultTtl = null,
         } = settings;

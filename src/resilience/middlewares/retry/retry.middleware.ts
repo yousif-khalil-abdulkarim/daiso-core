@@ -10,7 +10,7 @@ import {
     OPTION,
     UnexpectedError,
 } from "@/utilities/_module-exports.js";
-import { exponentialBackoffPolicy } from "@/backoff-policies/_module-exports.js";
+import { exponentialBackoff } from "@/backoff-policies/_module-exports.js";
 import type { RetrySettings } from "@/resilience/middlewares/retry/retry.types.js";
 import {
     callErrorPolicyOnThrow,
@@ -97,7 +97,7 @@ export function retry<
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         maxAttempts = 4,
-        backoffPolicy = exponentialBackoffPolicy(),
+        backoffPolicy = exponentialBackoff(),
         errorPolicy,
         onRetryDelay = () => {},
         onExecutionAttempt = () => {},

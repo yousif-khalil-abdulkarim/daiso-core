@@ -40,10 +40,6 @@ export type LockProviderCreateSettings = {
 export type ILockProviderBase = {
     /**
      * The `create` method is used to create an instance of {@link ILock | `ILock`}.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      */
     create(key: string, settings?: LockProviderCreateSettings): ILock;
 };

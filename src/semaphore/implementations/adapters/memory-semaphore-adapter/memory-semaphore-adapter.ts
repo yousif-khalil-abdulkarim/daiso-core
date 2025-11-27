@@ -27,7 +27,7 @@ export type MemorySemaphoreAdapterData = {
 
 /**
  * Note the `MemorySemaphoreAdapter` is limited to single process usage and cannot be shared across multiple servers or different processes.
- * This adapter is meant to be used for testing.
+ * This adapter is meant for testing.
  *
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/memory-semaphore-adapter"`
  * @group Adapters

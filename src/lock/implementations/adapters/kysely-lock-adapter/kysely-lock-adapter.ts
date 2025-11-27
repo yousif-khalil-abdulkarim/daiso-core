@@ -137,7 +137,7 @@ class DatabaseLockTransaction implements IDatabaseLockTransaction {
 /**
  * To utilize the `KyselyLockAdapter`, you must install the [`"kysely"`](https://www.npmjs.com/package/kysely) package and configure a `Kysely` class instance.
  *
- * Note in order to use `KyselyLockAdapter` correctly, ensure you use a single, consistent database across all server instances.
+ * Note in order to use `KyselyLockAdapter` correctly, ensure you use a single, consistent database across all server instances and use a database that has support for transactions.
  * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
  * IMPORT_PATH: `"@daiso-tech/core/lock/kysely-lock-adapter"`
@@ -158,6 +158,7 @@ export class KyselyLockAdapter
      * ```ts
      * import { KyselyLockAdapter } from "@daiso-tech/core/lock/kysely-lock-adapter";
      * import Sqlite from "better-sqlite3";
+     * import { Kysely, SqliteDialect } from "kysely";
      *
      * const lockAdapter = new KyselyLockAdapter({
      *   kysely: new Kysely({

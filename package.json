@@ -36,6 +36,8 @@
         "Multi semaphore",
         "Database multi semaphore",
         "Distributed multi semaphore",
+        "CircuitBreaker",
+        "Circuit breaker",
         "Serialization",
         "Serializer",
         "Deserialization",
@@ -115,6 +117,46 @@
         "./cache/test-utilities": {
             "types": "./dist/cache/implementations/test-utilities/_module-exports.d.ts",
             "import": "./dist/cache/implementations/test-utilities/_module-exports.js"
+        },
+        "./circuit-breaker": {
+            "types": "./dist/circuit-breaker/implementations/derivables/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/implementations/derivables/_module-exports.js"
+        },
+        "./circuit-breaker/contracts": {
+            "types": "./dist/circuit-breaker/contracts/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/contracts/_module-exports.js"
+        },
+        "./circuit-breaker/policies": {
+            "types": "./dist/circuit-breaker/implementations/policies/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/implementations/policies/_module-exports.js"
+        },
+        "./circuit-breaker/database-circuit-breaker-adapter": {
+            "types": "./dist/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/_module-exports.js"
+        },
+        "./circuit-breaker/kysely-circuit-breaker-storage-adapter": {
+            "types": "./dist/circuit-breaker/implementations/adapters/kysely-circuit-breaker-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/implementations/adapters/kysely-circuit-breaker-storage-adapter/_module-exports.js"
+        },
+        "./circuit-breaker/memory-circuit-breaker-storage-adapter": {
+            "types": "./dist/circuit-breaker/implementations/adapters/memory-circuit-breaker-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/implementations/adapters/memory-circuit-breaker-storage-adapter/_module-exports.js"
+        },
+        "./circuit-breaker/mongodb-circuit-breaker-storage-adapter": {
+            "types": "./dist/circuit-breaker/implementations/adapters/mongodb-circuit-breaker-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/implementations/adapters/mongodb-circuit-breaker-storage-adapter/_module-exports.js"
+        },
+        "./circuit-breaker/no-op-circuit-breaker-adapter": {
+            "types": "./dist/circuit-breaker/implementations/adapters/no-op-circuit-breaker-adapter/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/implementations/adapters/no-op-circuit-breaker-adapter/_module-exports.js"
+        },
+        "./circuit-breaker/no-op-circuit-breaker-storage-adapter": {
+            "types": "./dist/circuit-breaker/implementations/adapters/no-op-circuit-breaker-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/implementations/adapters/no-op-circuit-breaker-storage-adapter/_module-exports.js"
+        },
+        "./circuit-breaker/test-utilities": {
+            "types": "./dist/circuit-breaker/implementations/test-utilities/_module-exports.d.ts",
+            "import": "./dist/circuit-breaker/implementations/test-utilities/_module-exports.js"
         },
         "./collection": {
             "types": "./dist/collection/implementations/_module-exports.d.ts",

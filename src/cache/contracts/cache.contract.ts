@@ -31,37 +31,21 @@ export type ICacheListenable<TType = unknown> = IEventListenable<
 export type ICacheBase<TType = unknown> = {
     /**
      * The `exists` method returns true when `key` is found otherwise false will be returned.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      */
     exists(key: string): Task<boolean>;
 
     /**
      * The `missing` method returns true when `key` is not found otherwise false will be returned.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      */
     missing(key: string): Task<boolean>;
 
     /**
      * The `get` method returns the value when `key` is found otherwise null will be returned.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      */
     get(key: string): Task<TType | null>;
 
     /**
      * The `getOrFail` method returns the value when `key` is found otherwise an error will be thrown.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      *
      * @throws {KeyNotFoundCacheError} {@link KeyNotFoundCacheError}
      */
@@ -70,19 +54,11 @@ export type ICacheBase<TType = unknown> = {
     /**
      * The `getAndRemove` method returns the value when `key` is found otherwise null will be returned.
      * The key will be removed after it is returned.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      */
     getAndRemove(key: string): Task<TType | null>;
 
     /**
      * The `getOr` method will retrieve the given `key` if found otherwise `defaultValue` will be returned.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      *
      * @param defaultValue - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link Task | `Task`} value.
      */
@@ -93,10 +69,6 @@ export type ICacheBase<TType = unknown> = {
 
     /**
      * The `getOrAdd` method will retrieve the given `key` if found otherwise `valueToAdd` will be added and returned.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      *
      * @param valueToAdd - can be regular value, sync or async {@link Invokable | `Invokable`} value and {@link Task | `Task`} value.
      */
@@ -109,10 +81,6 @@ export type ICacheBase<TType = unknown> = {
     /**
      * The `add` method adds a `key` with given `value` when key doesn't exists.
      *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
-     *
      * @param ttl - If null is passed, the item will not expire.
      *
      * @returns Returns true when key doesn't exists otherwise false will be returned.
@@ -123,10 +91,6 @@ export type ICacheBase<TType = unknown> = {
      * The `put` method replaces th given `key` with the given `value` and `ttl` if the `key` exists
      * othwerwise it will add the given `value` with the given `ttl`.
      *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
-     *
      * @param ttl - If null is passed, the item will not expire.
      *
      * @returns Returns true if the `key` where replaced otherwise false is returned.
@@ -136,10 +100,6 @@ export type ICacheBase<TType = unknown> = {
     /**
      * The `update` method updates the given `key` with given `value`.
      *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
-     *
      * @returns Returns true if the `key` where updated otherwise false will be returned.
      */
     update(key: string, value: TType): Task<boolean>;
@@ -147,10 +107,6 @@ export type ICacheBase<TType = unknown> = {
     /**
      * The `increment` method increments the given `key` with given `value`.
      * An error will thrown if the key is not a number.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      *
      * @param value - If not defined then it will be defaulted to 1.
      *
@@ -164,10 +120,6 @@ export type ICacheBase<TType = unknown> = {
      * The `decrement` method decrements the given `key` with given `value`.
      * An error will thrown if the key is not a number.
      *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
-     *
      * @param value - If not defined then it will be defaulted to 1.
      *
      * @returns Returns true if the `key` where decremented otherwise false will be returned.
@@ -178,10 +130,6 @@ export type ICacheBase<TType = unknown> = {
 
     /**
      * The `remove` method removes the given `key`.
-     *
-     * @param key - can be a string or an `Iterable` of strings.
-     * If it's an `Iterable`, it will be joined into a single string.
-     * Think of an `Iterable` as representing a path.
      *
      * @returns Returns true if the key is found otherwise false is returned.
      */
