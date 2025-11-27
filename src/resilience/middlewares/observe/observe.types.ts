@@ -4,7 +4,6 @@
 
 import type { HookContext } from "@/hooks/_module-exports.js";
 import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import type { InferResultSuccess } from "@/utilities/_module-exports.js";
 import { type Invokable } from "@/utilities/_module-exports.js";
 
 /**
@@ -40,7 +39,7 @@ export type OnObserveSuccessData<
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = {
-    returnValue: InferResultSuccess<TReturn>;
+    returnValue: TReturn;
     args: TParameters;
     context: TContext;
 };
