@@ -135,7 +135,7 @@ console.log("END");
 ```
 
 :::warning
-Note using `acquireBlocking` in a HTTP request handler is discouraged because it blocks the HTTP request handler causing the handler wait until the lock becomes available or the timeout is reached. This will delay HTTP request handler to generate response and will make frontend app slow because of HTTP request handler.
+Note using `acquireBlocking`, `acquireBlockingOrFail` or `runBlockingOrFail` in a HTTP request handler is discouraged because it blocks the HTTP request handler causing the handler wait until the lock becomes available or the timeout is reached. This will delay HTTP request handler to generate response and will make frontend app slow because of HTTP request handler.
 :::
 
 ### Refreshing locks
@@ -219,21 +219,6 @@ const lock = lockProvider.create("resource");
 await lock.refreshOrFail();
 ```
 
-The `run` method automatically manages lock acquisition and release around function execution.
-It calls `acquire` before invoking the function and calls `release` in a finally block, ensuring the lock is always freed, even if an error occurs during execution.
-
-```ts
-const lock = lockProvider.create("resource");
-
-await lock.run(async () => {
-    await doWork();
-});
-```
-
-:::info
-Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
-:::
-
 The `runOrFail` method automatically manages lock acquisition and release around function execution.
 It calls `acquireOrFail` before invoking the function and calls `release` in a finally block, ensuring the lock is always freed, even if an error occurs during execution.
 
@@ -247,26 +232,6 @@ await lock.runOrFail(async () => {
 
 :::info
 Note the method throws an error when the lock cannot be acquired.
-:::
-
-The `runBlocking` method automatically manages lock acquisition and release around function execution.
-It calls `acquireBlocking` before invoking the function and calls `release` in a finally block, ensuring the lock is always freed, even if an error occurs during execution.
-
-```ts
-const lock = lockProvider.create("resource");
-
-await lock.runBlocking(
-    async () => {
-        await doWork();
-    },
-    {
-        // You can provide the same configuration as in acquireBlocking method
-    },
-);
-```
-
-:::info
-Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
 :::
 
 The `runBlockingOrFail` method automatically manages lock acquisition and release around function execution.
@@ -290,7 +255,7 @@ Note the method throws an error when the lock cannot be acquired.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `run`, `runOrFail`, `runBlocking` and `runBlockingOrFail` methods.
+You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runOrFail`, and `runBlockingOrFail` methods.
 :::
 
 ### Lock instance variables
@@ -447,26 +412,6 @@ const lock = lockProvider.create("lock");
 
 await lock
     .runOrFail(async () => {
-        // The critical section
-    })
-    .pipe(
-        retry({
-            maxAttempts: 4,
-            errorPolicy: FailedAcquireLockError,
-        }),
-    );
-```
-
-Retrying acquiring lock with `run` method:
-
-```ts
-import { retry } from "@daiso-tech/core/resilience";
-import { FailedAcquireLockError } from "@daiso-tech/core/lock/contracts";
-
-const lock = lockProvider.create("lock");
-
-await lock
-    .run(async () => {
         // The critical section
     })
     .pipe(
@@ -679,7 +624,7 @@ import {
 } from "@daiso-tech/core/lock/contracts";
 
 async function lockFunc(lock: ILock): Promise<void> {
-    await lock.run(async () => {
+    await lock.runOrFail(async () => {
         await doWork();
     });
 }
