@@ -12,7 +12,7 @@ import { DatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables
 /**
  * @internal
  */
-export function resolveDatabaseSemaphoreAdapter(
+export function resolveSemaphoreAdapter(
     adapter: SemaphoreAdapterVariants,
 ): ISemaphoreAdapter {
     if (isDatabaseSemaphoreAdapter(adapter)) {

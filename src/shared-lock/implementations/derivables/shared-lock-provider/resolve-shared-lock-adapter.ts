@@ -12,7 +12,7 @@ import { DatabaseSharedLockAdapter } from "@/shared-lock/implementations/derivab
 /**
  * @internal
  */
-export function resolveDatabaseSharedLockAdapter(
+export function resolveSharedLockAdapter(
     adapter: SharedLockAdapterVariants,
 ): ISharedLockAdapter {
     if (isDatabaseSharedLockAdapter(adapter)) {

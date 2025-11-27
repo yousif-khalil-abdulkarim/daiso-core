@@ -33,7 +33,7 @@ import {
 import { Semaphore } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore.js";
 import { v4 } from "uuid";
 import { SemaphoreSerdeTransformer } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore-serde-transformer.js";
-import { resolveDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/resolve-database-semaphore-adapter.js";
+import { resolveSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/resolve-semaphore-adapter.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
@@ -49,7 +49,7 @@ export type SemaphoreProviderSettingsBase = {
     /**
      * @default
      * ```ts
-     * import { Namespace } from "@daiso-tech/core/utilities";
+     * import { Namespace } from "@daiso-tech/core/namespace";
      *
      * new Namespace("@semaphore")
      * ```
@@ -65,6 +65,11 @@ export type SemaphoreProviderSettingsBase = {
 
     /**
      * You can pass your slot id generator function.
+     * @default
+     * ```ts
+     * import { v4 } from "uuid";
+     *
+     * () => v4
      */
     createSlotId?: Invokable<[], string>;
 
@@ -215,7 +220,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
-        this.adapter = resolveDatabaseSemaphoreAdapter(adapter);
+        this.adapter = resolveSemaphoreAdapter(adapter);
 
         this.registerToSerde();
     }

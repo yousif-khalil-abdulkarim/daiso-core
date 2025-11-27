@@ -2,26 +2,34 @@
  * @module Cache
  */
 
-import type { ICacheAdapter } from "@/cache/contracts/_module-exports.js";
-import type { IDatabaseCacheAdapter } from "@/cache/contracts/_module-exports.js";
+import type {
+    CacheAdapterVariants,
+    IDatabaseCacheAdapter,
+} from "@/cache/contracts/_module-exports.js";
 
 /**
  * @internal
  */
 export function isDatabaseCacheAdapter<TType>(
-    adapter: ICacheAdapter<TType> | IDatabaseCacheAdapter<TType>,
+    adapter: CacheAdapterVariants<TType>,
 ): adapter is IDatabaseCacheAdapter<TType> {
     const adapter_ = adapter as Record<string, (...args: any[]) => any>;
     return (
         typeof adapter_["find"] === "function" &&
+        adapter_["find"].length === 1 &&
         typeof adapter_["insert"] === "function" &&
-        typeof adapter_["upsert"] === "function" &&
+        adapter_["insert"].length === 1 &&
         typeof adapter_["updateExpired"] === "function" &&
+        adapter_["updateExpired"].length === 1 &&
         typeof adapter_["updateUnexpired"] === "function" &&
+        adapter_["updateUnexpired"].length === 1 &&
         typeof adapter_["incrementUnexpired"] === "function" &&
+        adapter_["incrementUnexpired"].length === 1 &&
         typeof adapter_["removeExpiredMany"] === "function" &&
         typeof adapter_["removeUnexpiredMany"] === "function" &&
         typeof adapter_["removeAll"] === "function" &&
-        typeof adapter_["removeByKeyPrefix"] === "function"
+        adapter_["removeAll"].length === 0 &&
+        typeof adapter_["removeByKeyPrefix"] === "function" &&
+        adapter_["removeByKeyPrefix"].length === 1
     );
 }

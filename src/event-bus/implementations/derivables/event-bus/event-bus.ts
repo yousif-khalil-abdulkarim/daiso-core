@@ -68,7 +68,7 @@ export type EventBusSettingsBase<
 export type EventBusSettings<TEventMap extends BaseEventMap = BaseEventMap> =
     EventBusSettingsBase<TEventMap> & {
         adapter: IEventBusAdapter;
-    } & {
+
         /**
          * Thist settings is only used for testing, dont use it in your code !
          * @internal

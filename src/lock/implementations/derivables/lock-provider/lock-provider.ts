@@ -36,7 +36,7 @@ import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_modul
 import { v4 } from "uuid";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
-import { resolveDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-database-lock-adapter.js";
+import { resolveLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-lock-adapter.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
@@ -68,6 +68,11 @@ export type LockProviderSettingsBase = {
 
     /**
      * You can pass your lock id id generator function.
+     * @default
+     * ```ts
+     * import { v4 } from "uuid";
+     *
+     * () => v4
      */
     createLockId?: Invokable<[], string>;
 
@@ -216,7 +221,7 @@ export class LockProvider implements ILockProvider {
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
-        this.adapter = resolveDatabaseLockAdapter(adapter);
+        this.adapter = resolveLockAdapter(adapter);
         this.registerToSerde();
     }
 

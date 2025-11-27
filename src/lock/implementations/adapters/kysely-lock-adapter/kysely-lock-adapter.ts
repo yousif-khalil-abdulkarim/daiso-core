@@ -60,14 +60,6 @@ export type KyselyLockAdapterSettings = {
      * @default true
      */
     shouldRemoveExpiredKeys?: boolean;
-
-    /**
-     *  @default
-     * ```ts
-     * () => new Date()
-     * ```
-     */
-    currentDate?: () => Date;
 };
 
 async function find(
@@ -159,7 +151,6 @@ export class KyselyLockAdapter
     private readonly shouldRemoveExpiredKeys: boolean;
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
-    private readonly currentDate: () => Date;
     private readonly isMysql: boolean;
 
     /**
@@ -185,14 +176,12 @@ export class KyselyLockAdapter
             kysely,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
-            currentDate = () => new Date(),
         } = settings;
         this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.kysely = kysely;
         this.isMysql =
             this.kysely.getExecutor().adapter instanceof MysqlAdapter;
-        this.currentDate = currentDate;
     }
 
     /**
@@ -262,7 +251,7 @@ export class KyselyLockAdapter
     async removeAllExpired(): Promise<void> {
         await this.kysely
             .deleteFrom("lock")
-            .where("lock.expiration", "<=", this.currentDate().getTime())
+            .where("lock.expiration", "<=", Date.now())
             .execute();
     }
 

@@ -30,10 +30,10 @@ import type { ISerderRegister } from "@/serde/contracts/_module-exports.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { v4 } from "uuid";
-import { resolveDatabaseSharedLockAdapter } from "@/shared-lock/implementations/derivables/shared-lock-provider/resolve-database-shared-lock-adapter.js";
+import { resolveSharedLockAdapter } from "@/shared-lock/implementations/derivables/shared-lock-provider/resolve-shared-lock-adapter.js";
 import { SharedLockSerdeTransformer } from "@/shared-lock/implementations/derivables/shared-lock-provider/shared-lock-serde-transformer.js";
 import { SharedLock } from "@/shared-lock/implementations/derivables/shared-lock-provider/shared-lock.js";
-import { Namespace } from "@/namespace/namespace.js";
+import { Namespace } from "@/namespace/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
@@ -64,6 +64,11 @@ export type SharedLockProviderSettingsBase = {
 
     /**
      * You can pass your lock id id generator function.
+     * @default
+     * ```ts
+     * import { v4 } from "uuid";
+     *
+     * () => v4
      */
     createLockId?: Invokable<[], string>;
 
@@ -212,7 +217,7 @@ export class SharedLockProvider implements ISharedLockProvider {
         this.serdeTransformerName = serdeTransformerName;
 
         this.originalAdapter = adapter;
-        this.adapter = resolveDatabaseSharedLockAdapter(adapter);
+        this.adapter = resolveSharedLockAdapter(adapter);
         this.registerToSerde();
     }
 
