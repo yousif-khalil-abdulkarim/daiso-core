@@ -253,7 +253,7 @@ console.log("END");
 ```
 
 :::warning
-Note using `acquireReaderBlocking` and `acquireWriterBlocking` in a HTTP request handler is discouraged because it blocks the HTTP request handler causing the handler wait until the shared becomes available or the timeout is reached. This will delay HTTP request handler to generate response and will make frontend app slow because of HTTP request handler.
+Note using `acquireReaderBlocking`, `acquireReaderBlockingOrFail`, `runReaderBlockingOrFail`, `acquireWriterBlocking`, `acquireWriterBlockingOrFail` and `runWriterBlockingOrFail` in a HTTP request handler is discouraged because it blocks the HTTP request handler causing the handler wait until the shared becomes available or the timeout is reached. This will delay HTTP request handler to generate response and will make frontend app slow because of HTTP request handler.
 :::
 
 
@@ -376,23 +376,6 @@ const sharedLock = sharedLockProvider.create("resource");
 await sharedLock.refreshWriterOrFail();
 ```
 
-The `runWriter` method automatically manages shared-lock acquisition and release as writer around function execution.
-It calls `acquireWriter` before invoking the function and calls `releaseWriter` in a finally block, ensuring the shared-lock is always freed, even if an error occurs during execution.
-
-```ts
-const sharedLock = sharedLockProvider.create("resource", {
-    limit: 2
-});
-
-await sharedLock.runWriter(async () => {
-    await doWork();
-});
-```
-
-:::info
-Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
-:::
-
 The `runWriterOrFail` method automatically manages shared-lock acquisition and release as writer around function execution.
 It calls `acquireWriterOrFail` before invoking the function and calls `releaseWriter` in a finally block, ensuring the shared-lock is always freed, even if an error occurs during execution.
 
@@ -408,28 +391,6 @@ await sharedLock.runWriterOrFail(async () => {
 
 :::info
 Note the method throws an error when the shared-lock cannot be acquired as writer.
-:::
-
-The `runWriterBlocking` method automatically manages shared-lock acquisition and release as writer around function execution.
-It calls `acquireWriterBlocking` before invoking the function and calls `releaseWriter` in a finally block, ensuring the shared-lock is always freed, even if an error occurs during execution.
-
-```ts
-const sharedLock = sharedLockProvider.create("resource", {
-    limit: 2
-});
-
-await sharedLock.runWriterBlocking(
-    async () => {
-        await doWork();
-    },
-    {
-        // You can provide the same configuration as in acquireBlocking method
-    },
-);
-```
-
-:::info
-Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
 :::
 
 The `runWriterBlockingOrFail` method automatically manages shared-lock acquisition and release as writer around function execution.
@@ -455,7 +416,7 @@ Note the method throws an error when a shared-lock cannot be acquired as writer.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runWriter`, `runWriterOrFail`, `runWriterBlocking`, and `runWriterBlockingOrFail` methods.
+You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runWriterOrFail`, and `runWriterBlockingOrFail` methods.
 :::
 
 ### Additional reader methods
@@ -498,23 +459,6 @@ const sharedLock = sharedLockProvider.create("resource");
 await sharedLock.refreshReaderOrFail();
 ```
 
-The `runReader` method automatically manages shared-lock acquisition and release as reader around function execution.
-It calls `acquireReader` before invoking the function and calls `releaseReader` in a finally block, ensuring the shared-lock is always freed, even if an error occurs during execution.
-
-```ts
-const sharedLock = sharedLockProvider.create("resource", {
-    limit: 2
-});
-
-await sharedLock.runReader(async () => {
-    await doWork();
-});
-```
-
-:::info
-Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
-:::
-
 The `runReaderOrFail` method automatically manages shared-lock acquisition and release as reader around function execution.
 It calls `acquireReaderOrFail` before invoking the function and calls `releaseReader` in a finally block, ensuring the shared-lock is always freed, even if an error occurs during execution.
 
@@ -530,28 +474,6 @@ await sharedLock.runReaderOrFail(async () => {
 
 :::info
 Note the method throws an error when the shared-lock cannot be acquired as reader.
-:::
-
-The `runReaderBlocking` method automatically manages shared-lock acquisition and release as reader around function execution.
-It calls `acquireReaderBlocking` before invoking the function and calls `releaseReader` in a finally block, ensuring the shared-lock is always freed, even if an error occurs during execution.
-
-```ts
-const sharedLock = sharedLockProvider.create("resource", {
-    limit: 2
-});
-
-await sharedLock.runReaderBlocking(
-    async () => {
-        await doWork();
-    },
-    {
-        // You can provide the same configuration as in acquireBlocking method
-    },
-);
-```
-
-:::info
-Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
 :::
 
 The `runReaderBlockingOrFail` method automatically manages shared-lock acquisition and release as reader around function execution.
@@ -577,7 +499,7 @@ Note the method throws an error when a shared-lock cannot be acquired as reader.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runReader`, `runReaderOrFail`, `runReaderBlocking`, and `runReaderBlockingOrFail` methods.
+You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runReaderOrFail`, and `runReaderBlockingOrFail` methods.
 :::
 
 ### Additional methods
@@ -767,29 +689,6 @@ await sharedLock
     );
 ```
 
-Retrying acquiring shared-lock with `runWriter` method:
-
-```ts
-import { retry } from "@daiso-tech/core/resilience";
-import { FailedAcquireWriterLockError } from "@daiso-tech/core/shared-lock/contracts";
-
-const sharedLock = sharedLockProvider.create("shared-lock", {
-    limit: 2
-});
-
-await sharedLock
-    .runWriter(async () => {
-        // The critical section
-    })
-    .pipe(
-        retry({
-            maxAttempts: 4,
-            errorPolicy: FailedAcquireWriterLockError,
-        }),
-    );
-```
-
-
 ### Retrying acquiring shared-lock as reader
 
 Retrying acquiring shared-lock with `acquireReaderOrFail` method:
@@ -853,28 +752,6 @@ const sharedLock = sharedLockProvider.create("shared-lock", {
 
 await sharedLock
     .runReaderOrFail(async () => {
-        // The critical section
-    })
-    .pipe(
-        retry({
-            maxAttempts: 4,
-            errorPolicy: LimitReachedReaderSemaphoreError,
-        }),
-    );
-```
-
-Retrying acquiring shared-lock with `runReader` method:
-
-```ts
-import { retry } from "@daiso-tech/core/resilience";
-import { LimitReachedReaderSemaphoreError } from "@daiso-tech/core/shared-lock/contracts";
-
-const sharedLock = sharedLockProvider.create("shared-lock", {
-    limit: 2
-});
-
-await sharedLock
-    .runReader(async () => {
         // The critical section
     })
     .pipe(
@@ -1100,7 +977,7 @@ async function writerLockFunc(writerLock: IWriterLock): Promise<void> {
     // You cannot access the writer methods
     // You will get typescript error if you try
 
-    await writerLock.runWriter(async () => {
+    await writerLock.runWriterOrFail(async () => {
         await doWork();
     });
 }
@@ -1109,7 +986,7 @@ async function readerSemaphoreFunc(readerSemaphore: IReaderSemaphore): Promise<v
     // You cannot access the reader methods
     // You will get typescript error if you try
 
-    await readerSemaphore.runReader(async () => {
+    await readerSemaphore.runReaderOrFail(async () => {
         await doWork();
     });
 }
