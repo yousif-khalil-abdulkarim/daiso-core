@@ -9,8 +9,9 @@ import {
 } from "@/utilities/functions/invokable.js";
 import { isStandardSchema } from "@/utilities/functions/is-standard-schema.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { isClass } from "@/utilities/functions/is-class.js";
 import { type AnyClass } from "@/utilities/types/_module.js";
+import type { OneOrMore } from "mongodb";
+import { resolveOneOrMore } from "@/utilities/functions/resolve-one-or-more.js";
 
 /**
  *
@@ -48,7 +49,7 @@ export function isErrorPolicyBoolSetting(
 export type ErrorPolicy<TError = unknown> =
     | Invokable<[error: TError], boolean>
     | StandardSchemaV1<TError>
-    | AnyClass
+    | OneOrMore<AnyClass>
     | ErrorPolicyBoolSetting;
 
 /**
@@ -100,8 +101,15 @@ export async function callErrorPolicyOnThrow<TError = unknown>(
         return result.issues === undefined;
     }
 
-    if (isClass(errorPolicy)) {
-        return error instanceof errorPolicy;
+    // Used only for ensuring correct type without type casting.
+    if (isErrorPolicyBoolSetting(errorPolicy)) {
+        return false;
+    }
+
+    for (const ErrorClass of resolveOneOrMore(errorPolicy)) {
+        if (error instanceof ErrorClass) {
+            return true;
+        }
     }
 
     return false;
