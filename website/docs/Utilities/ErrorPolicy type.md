@@ -45,6 +45,19 @@ const func = new AsyncHooks((): string => {
 ]).toFunc();
 ```
 
+You can also pass multiple error classes:
+
+```ts
+const func = new AsyncHooks((): string => {
+    return "asd";
+}, [
+    fallback({
+        fallbackValue: "DEFAULT_VALUE",
+        errorPolicy: [CustomErrorA, CustomErrorB],
+    }),
+]).toFunc();
+```
+
 ## Standard Schema as ErrorPolicy
 
 You can use any [standard schema](https://standardschema.dev/) as error policy:
