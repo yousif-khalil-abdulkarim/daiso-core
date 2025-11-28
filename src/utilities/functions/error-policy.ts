@@ -7,11 +7,6 @@ import {
     isInvokable,
     type Invokable,
 } from "@/utilities/functions/invokable.js";
-import {
-    isResult,
-    isResultSuccess,
-    type Result,
-} from "@/utilities/functions/result.js";
 import { isStandardSchema } from "@/utilities/functions/is-standard-schema.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { isClass } from "@/utilities/functions/is-class.js";
@@ -76,45 +71,17 @@ export type ErrorPolicySettings<TError = unknown> = {
 /**
  * @internal
  */
-export async function callErrorPolicyOnValue<
-    TValue = unknown,
-    TError = unknown,
->(
+export function callErrorPolicyOnValue<TValue = unknown, TError = unknown>(
     errorPolicy: ErrorPolicy<TError> = () => true,
-    value: TValue | Result<TValue, TError>,
-): Promise<boolean> {
+    value: TValue,
+): boolean {
     // Will retry if the value is false and the setting treatFalseAsError is true
-    if (!isResult(value)) {
-        const shouldRetry =
-            isErrorPolicyBoolSetting(errorPolicy) &&
-            typeof value === "boolean" &&
-            !value &&
-            errorPolicy.treatFalseAsError;
-        return shouldRetry;
-    }
-
-    // Will not retry if the Result successful
-    if (isResultSuccess(value)) {
-        return false;
-    }
-
-    if (isInvokable(errorPolicy)) {
-        return callInvokable(errorPolicy, value.error);
-    }
-
-    if (isStandardSchema(errorPolicy)) {
-        const schemaResult = await errorPolicy["~standard"].validate(
-            value.error,
-        );
-        return schemaResult.issues === undefined;
-    }
-
-    // This only need so typescript wont complain
-    if (isErrorPolicyBoolSetting(errorPolicy)) {
-        return false;
-    }
-
-    return value.error instanceof errorPolicy;
+    const shouldRetry =
+        isErrorPolicyBoolSetting(errorPolicy) &&
+        typeof value === "boolean" &&
+        !value &&
+        errorPolicy.treatFalseAsError;
+    return shouldRetry;
 }
 
 /**

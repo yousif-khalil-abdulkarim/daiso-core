@@ -190,7 +190,7 @@ console.log("END");
 ```
 
 :::warning
-Note using `acquireBlocking` in a HTTP request handler is discouraged because it blocks the HTTP request handler causing the handler wait until the semaphore becomes available or the timeout is reached. This will delay HTTP request handler to generate response and will make frontend app slow because of HTTP request handler.
+Note using `acquireBlocking`, `acquireBlockingOrFail` or `runBlockingOrFail` in a HTTP request handler is discouraged because it blocks the HTTP request handler causing the handler wait until the semaphore becomes available or the timeout is reached. This will delay HTTP request handler to generate response and will make frontend app slow because of HTTP request handler.
 :::
 
 
@@ -281,23 +281,6 @@ const semaphore = semaphoreProvider.create("resource");
 await semaphore.refreshOrFail();
 ```
 
-The `run` method automatically manages semaphore acquisition and release around function execution.
-It calls `acquire` before invoking the function and calls `release` in a finally block, ensuring the semaphore is always freed, even if an error occurs during execution.
-
-```ts
-const semaphore = semaphoreProvider.create("resource", {
-    limit: 2
-});
-
-await semaphore.run(async () => {
-    await doWork();
-});
-```
-
-:::info
-Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
-:::
-
 The `runOrFail` method automatically manages semaphore acquisition and release around function execution.
 It calls `acquireOrFail` before invoking the function and calls `release` in a finally block, ensuring the semaphore is always freed, even if an error occurs during execution.
 
@@ -313,28 +296,6 @@ await semaphore.runOrFail(async () => {
 
 :::info
 Note the method throws an error when the semaphore cannot be acquired.
-:::
-
-The `runBlocking` method automatically manages semaphore acquisition and release around function execution.
-It calls `acquireBlocking` before invoking the function and calls `release` in a finally block, ensuring the semaphore is always freed, even if an error occurs during execution.
-
-```ts
-const semaphore = semaphoreProvider.create("resource", {
-    limit: 2
-});
-
-await semaphore.runBlocking(
-    async () => {
-        await doWork();
-    },
-    {
-        // You can provide the same configuration as in acquireBlocking method
-    },
-);
-```
-
-:::info
-Note the method returns a [`Result`](../../Utilities/Result%20type.md) type that can be inspected to determine the operation's success or failure.
 :::
 
 The `runBlockingOrFail` method automatically manages semaphore acquisition and release around function execution.
@@ -360,7 +321,7 @@ Note the method throws an error when a semaphore cannot be acquired.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `run`, `runOrFail`, `runBlocking` and `runBlockingOrFail` methods.
+You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runOrFail`, and `runBlockingOrFail` methods.
 :::
 
 ### Semaphore instance variables
@@ -530,28 +491,6 @@ const semaphore = semaphoreProvider.create("semaphore", {
 
 await semaphore
     .runOrFail(async () => {
-        // The critical section
-    })
-    .pipe(
-        retry({
-            maxAttempts: 4,
-            errorPolicy: FailedAcquireSemaphoreError,
-        }),
-    );
-```
-
-Retrying acquiring semaphore with `run` method:
-
-```ts
-import { retry } from "@daiso-tech/core/resilience";
-import { FailedAcquireSemaphoreError } from "@daiso-tech/core/semaphore/contracts";
-
-const semaphore = semaphoreProvider.create("semaphore", {
-    limit: 2
-});
-
-await semaphore
-    .run(async () => {
         // The critical section
     })
     .pipe(
@@ -770,7 +709,7 @@ import {
 } from "@daiso-tech/core/semaphore/contracts";
 
 async function semaphoreFunc(semaphore: ISemaphore): Promise<void> {
-    await semaphore.run(async () => {
+    await semaphore.runOrFail(async () => {
         await doWork();
     });
 }

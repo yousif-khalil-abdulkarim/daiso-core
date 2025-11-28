@@ -3,11 +3,7 @@
  */
 
 import type { HookContext } from "@/hooks/_module-exports.js";
-import type {
-    AsyncLazyable,
-    InferResultSuccess,
-    InferResultError,
-} from "@/utilities/_module-exports.js";
+import type { AsyncLazyable } from "@/utilities/_module-exports.js";
 import { type Invokable } from "@/utilities/_module-exports.js";
 import { type ErrorPolicySettings } from "@/utilities/_module-exports.js";
 
@@ -63,8 +59,7 @@ export type FallbackSettings<
     TParameters extends unknown[] = unknown[],
     TReturn = unknown,
     TContext extends HookContext = HookContext,
-    TError = unknown,
 > = FallbackCallbacks<TParameters, TReturn, TContext> &
-    ErrorPolicySettings<InferResultError<TError>> & {
-        fallbackValue: AsyncLazyable<InferResultSuccess<TReturn>>;
+    ErrorPolicySettings & {
+        fallbackValue: AsyncLazyable<TReturn>;
     };

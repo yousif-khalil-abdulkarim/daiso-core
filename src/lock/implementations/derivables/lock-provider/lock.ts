@@ -4,10 +4,7 @@
 
 import {
     type AsyncLazy,
-    type Result,
     resolveLazyable,
-    resultSuccess,
-    resultFailure,
 } from "@/utilities/_module-exports.js";
 import type {
     ILockState,
@@ -131,29 +128,6 @@ export class Lock implements ILock {
         return this.originalAdapter;
     }
 
-    run<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-    ): Task<Result<TValue, FailedAcquireLockError>> {
-        return new Task(
-            async (): Promise<Result<TValue, FailedAcquireLockError>> => {
-                try {
-                    const hasAquired = await this.acquire();
-                    if (!hasAquired) {
-                        return resultFailure(
-                            new FailedAcquireLockError(
-                                `Key "${this._key.get()}" already acquired`,
-                            ),
-                        );
-                    }
-
-                    return resultSuccess(await resolveLazyable(asyncFn));
-                } finally {
-                    await this.release();
-                }
-            },
-        );
-    }
-
     runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
         return new Task(async () => {
             try {
@@ -163,30 +137,6 @@ export class Lock implements ILock {
                 await this.release();
             }
         });
-    }
-
-    runBlocking<TValue = void>(
-        asyncFn: AsyncLazy<TValue>,
-        settings?: LockAquireBlockingSettings,
-    ): Task<Result<TValue, FailedAcquireLockError>> {
-        return new Task(
-            async (): Promise<Result<TValue, FailedAcquireLockError>> => {
-                try {
-                    const hasAquired = await this.acquireBlocking(settings);
-                    if (!hasAquired) {
-                        return resultFailure(
-                            new FailedAcquireLockError(
-                                `Key "${this._key.get()}" already acquired`,
-                            ),
-                        );
-                    }
-
-                    return resultSuccess(await resolveLazyable(asyncFn));
-                } finally {
-                    await this.release();
-                }
-            },
-        );
     }
 
     runBlockingOrFail<TValue = void>(

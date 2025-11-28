@@ -2,7 +2,7 @@
  * @module Resilience
  */
 
-import type { Option, ResultFailure } from "@/utilities/_module-exports.js";
+import type { Option } from "@/utilities/_module-exports.js";
 import {
     callInvokable,
     optionNone,
@@ -57,43 +57,13 @@ import { RetryResilienceError } from "@/resilience/resilience.errors.js";
  * )
  * .invoke("URL");
  * ```
- *
- * The middleware works also when the function returns a {@link Result | `Result`} type.
- * @example
- * ```ts
- * import { retry } from "@daiso-tech/core/resilience";
- * import { Result, resultFailure, resultSuccess } from "@daiso-tech/core/utilities";
- * import { AsyncHooks } from "@daiso-tech/core/hooks";
- * import { TimeSpan } from "@daiso-tech/core/time-span";
- *
- * const data = await new AsyncHooks(
- *   async (url: string, signal?: AbortSignal): Promise<Result> => {
- *     const response = await fetch(url, { signal });
- *     const json = await response.json();
- *     if (!response.ok) {
- *       return resultFailure(json);
- *     }
- *     return resultSuccess(json);
- *   },
- *   [retry()],
- *   {
- *     signalBinder: {
- *       getSignal: (args) => args[1],
- *       forwardSignal: (args, signal) => {
- *         args[1] = signal;
- *       }
- *     }
- *   }
- * )
- * .invoke("URL");
- * ```
  */
 export function retry<
     TParameters extends unknown[],
     TReturn,
     TContext extends HookContext,
 >(
-    settings: NoInfer<RetrySettings<TParameters, TContext, TReturn>> = {},
+    settings: NoInfer<RetrySettings<TParameters, TContext>> = {},
 ): AsyncMiddlewareFn<TParameters, TReturn, TContext> {
     const {
         maxAttempts = 4,
@@ -112,24 +82,18 @@ export function retry<
 
                 // Handle retrying if an Result type is returned
                 result = optionSome(value);
-                if (!(await callErrorPolicyOnValue(errorPolicy, value))) {
+                if (!callErrorPolicyOnValue(errorPolicy, value)) {
                     return value;
                 }
-                // We can cast type here because callErrorPolicyOnValue ensures the value is a ResultFailure
-                const resultFailure = value as ResultFailure;
 
                 if (signal.aborted) {
                     break;
                 }
 
-                const waitTime = callInvokable(
-                    backoffPolicy,
-                    attempt,
-                    resultFailure.error,
-                );
+                const waitTime = callInvokable(backoffPolicy, attempt, value);
 
                 callInvokable(onRetryDelay, {
-                    error: resultFailure.error,
+                    error: value,
                     waitTime,
                     attempt,
                     args,
