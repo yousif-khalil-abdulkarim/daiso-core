@@ -10,17 +10,12 @@ To begin using the `SharedLockProvider` class, you'll need to create and configu
 import { TimeSpan } from "@daiso-tech/core/time-span";
 import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
 import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const sharedLockProvider = new SharedLockProvider({
     // You can provide default TTL value
     // If you set it to null it means shared-locks will not expire and most be released manually by default.
     defaultTtl: TimeSpan.fromSeconds(2),
-
-    serde,
 
     // You can choose the adapter to use
     adapter: new MemorySharedLockAdapter(),
@@ -416,7 +411,7 @@ Note the method throws an error when a shared-lock cannot be acquired as writer.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runWriterOrFail`, and `runWriterBlockingOrFail` methods.
+You can provide [`Task`](../Task.md), synchronous and asynchronous [`Invokable`](../../Utilities/Invokable.md) as values for `runWriterOrFail`, and `runWriterBlockingOrFail` methods.
 :::
 
 ### Additional reader methods
@@ -499,7 +494,7 @@ Note the method throws an error when a shared-lock cannot be acquired as reader.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runReaderOrFail`, and `runReaderBlockingOrFail` methods.
+You can provide [`Task`](../Task.md), synchronous and asynchronous [`Invokable`](../../Utilities/Invokable.md) as values for `runReaderOrFail`, and `runReaderBlockingOrFail` methods.
 :::
 
 ### Additional methods
@@ -568,22 +563,17 @@ For further information about namespacing refer to [`@daiso-tech/core/namespace`
 import { Namespace } from "@daiso-tech/core/namespace";
 import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
 import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
-const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const sharedLockProviderA = new SharedLockProvider({
     namespace: new Namespace("@sharedLock-a"),
     adapter: new RedisSharedLockAdapter(database),
-    serde,
 });
 const sharedLockProviderB = new SharedLockProvider({
     namespace: new Namespace("@sharedLock-b"),
     adapter: new RedisSharedLockAdapter(database),
-    serde,
 });
 
 const sharedLockA = await sharedLockProviderA.create("key", {
@@ -766,6 +756,7 @@ await sharedLock
 
 Shared-locks can be serialized, allowing them to be transmitted over the network to another server and later deserialized for reuse.
 This means you can, for example, acquire the shared-lock on the main server, transfer it to a queue worker server, and release it there.
+In order to serialize or deserialize a shared-lock you need pass an object that implements [`ISerderRegister`](../Serde.md) contract like the [`Serde`](../Serde.md) class to `SharedLockProvider`. 
 
 Manually serializing and deserializing the shared-lock:
 
@@ -812,8 +803,7 @@ import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
-const mainRedisClient = new Redis("YOUR_REDIS_CONNECTION");
-const listenerRedisClient = new Redis("YOUR_REDIS_CONNECTION");
+const redis = new Redis("YOUR_REDIS_CONNECTION");
 
 type EventMap = {
     "sending-shared-lock-over-network": {
@@ -822,15 +812,14 @@ type EventMap = {
 };
 const eventBus = new EventBus<EventMap>({
     adapter: new RedisPubSubEventBusAdapter({
-        listenerClient,
-        dispatcherClient: mainRedisClient,
+        client: redis,
         serde,
     }),
 });
 
 const sharedLockProvider = new SharedLockProvider({
     serde,
-    adapter: new RedisSharedLockAdapter(mainRedisClient),
+    adapter: new RedisSharedLockAdapter(redis),
     eventBus,
 });
 const sharedLock = sharedLockProvider.create("resource", {
@@ -852,41 +841,16 @@ await eventBus.addListener("sending-shared-lock-over-network", ({ sharedLock }) 
 ### SharedLock events
 
 You can listen to different [shared-lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/SharedLock.html) that are triggered by the `SharedLock`.
-Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events.
-
-```ts
-import { SHARED_LOCK_EVENTS } from "@daiso-tech/core/shared-lock/contracts";
-
-// Will log whenever an shared-lock is acquiured
-await sharedLockProvider.subscribe(SHARED_LOCK_EVENTS.WRITER_ACQUIRED, (event) => {
-    console.log(event);
-});
-
-const sharedLock = sharedLockProvider.create("resource", {
-    limit: 2
-});
-await sharedLock.acquireWriter();
-```
-
-:::info
-Note the `SharedLock` class uses [`MemoryEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.MemoryEventBusAdapter.html) by default. You can choose what event bus adapter to use:
+Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
 import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
-import { SharedLockProvider } from "@daiso-tech/core/shared-lock";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
+import { SharedLockProvider, SHARED_LOCK_EVENTS } from "@daiso-tech/core/shared-lock";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
-import Redis from "ioredis";
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
 
-const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
-    dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    serde,
-});
+const redisPubSubEventBusAdapter = new MemoryEventBusAdapter();
 
 const sharedLock = new SharedLockProvider({
     adapter: new MemorySharedLockAdapter(),
@@ -894,15 +858,16 @@ const sharedLock = new SharedLockProvider({
         adapter: redisPubSubEventBusAdapter,
     }),
 });
-```
-:::
 
-:::info
-Note you can disable dispatching `SharedLock` events by passing an `EventBus` that uses `NoOpEventBusAdapter`.
-:::
+await sharedLockProvider.addListener(SHARED_LOCK_EVENTS.WRITER_ACQUIRED, () => {
+    console.log("Lock acquired");
+});
+
+await sharedLockProvider.create("a").acquireWriter();
+```
 
 :::warning
-If multiple shared-lock adapters (e.g., `RedisSharedLockAdapter` and `MemorySharedLockAdapter`) are used at the same time, isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
+If multiple shared-lock adapters (e.g., `RedisSharedLockAdapter` and `MemorySharedLockAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
 import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
@@ -916,8 +881,7 @@ import { Namespace } from "@daiso-tech/core/namespace";
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
-    dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+    client: new Redis("YOUR_REDIS_CONNECTION_STRING"),
     serde,
 });
 

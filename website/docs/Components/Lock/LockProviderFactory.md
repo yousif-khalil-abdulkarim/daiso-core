@@ -10,14 +10,9 @@ To begin using the `ILockProviderFactory`, You will need to register all require
 import { LockProviderFactory } from "@daiso-tech/core/lock";
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
 import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
-import { Serde } from "@daiso-tech/core/serde";
-import type { ISerde } from "@daiso-tech/core/serde/contracts";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
 const lockProvider = new LockProviderFactory({
-    serde,
     adapters: {
         memory: new MemoryLockAdapter(),
         redis: new RedisLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),

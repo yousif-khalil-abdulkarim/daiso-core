@@ -360,7 +360,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
      * The `pipeWhen` method conditionally applies additional `middlewares`, returning a new `Task` instance only if the specified condition is met.
      */
     pipeWhen(
-        condition: boolean,
+        condition: AsyncLazy<boolean>,
         middlewares: OneOrMore<AsyncMiddleware<[], TValue>>,
     ): Task<TValue> {
         return new Task(this.invokable.pipeWhen(condition, middlewares));

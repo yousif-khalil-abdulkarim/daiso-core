@@ -177,9 +177,9 @@ The library includes 4 additional contracts:
 
 -   `ISerde` - Allows for both serialization and deserialization.
 
--   `ISerderRegister` - Allows only for regestering custom serialization and deserialization logic.
+-   `ISerderRegister` - Allows only for regestering custom serialization/deserialization logic.
 
--   `IFlexibleSerde` – Allows for both serialization and deserialization. Allows also for customizable serialization/deserialization logic.
+-   `IFlexibleSerde` – Allows for both serialization, deserialization and for regestering custom serialization/deserialization and deserialization logic.
 
 This seperation makes it easy to visually distinguish the 4 contracts, making it immediately obvious that they serve different purposes.
 

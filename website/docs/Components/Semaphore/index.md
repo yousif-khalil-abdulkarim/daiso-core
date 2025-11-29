@@ -10,17 +10,12 @@ To begin using the `SemaphoreProvider` class, you'll need to create and configur
 import { TimeSpan } from "@daiso-tech/core/time-span";
 import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
 import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const semaphoreProvider = new SemaphoreProvider({
     // You can provide default TTL value
     // If you set it to null it means semaphores will not expire and most be released manually by default.
     defaultTtl: TimeSpan.fromSeconds(2),
-
-    serde,
 
     // You can choose the adapter to use
     adapter: new MemorySemaphoreAdapter(),
@@ -321,7 +316,7 @@ Note the method throws an error when a semaphore cannot be acquired.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runOrFail`, and `runBlockingOrFail` methods.
+You can provide [`Task<TValue>`](../Task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../Utilities/Invokable.md) as values for `runOrFail`, and `runBlockingOrFail` methods.
 :::
 
 ### Semaphore instance variables
@@ -380,8 +375,6 @@ For further information about namespacing refer to [`@daiso-tech/core/namespace`
 import { Namespace } from "@daiso-tech/core/namespace";
 import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
 import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
@@ -505,6 +498,7 @@ await semaphore
 
 Semaphores can be serialized, allowing them to be transmitted over the network to another server and later deserialized for reuse.
 This means you can, for example, acquire the semaphore on the main server, transfer it to a queue worker server, and release it there.
+In order to serialize or deserialize a semaphore you need pass an object that implements [`ISerderRegister`](../Serde.md) contract like the [`Serde`](../Serde.md) class to `SemaphoreProvider`. 
 
 Manually serializing and deserializing the semaphore:
 
@@ -551,8 +545,7 @@ import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
-const mainRedisClient = new Redis("YOUR_REDIS_CONNECTION");
-const listenerRedisClient = new Redis("YOUR_REDIS_CONNECTION");
+const redis = new Redis("YOUR_REDIS_CONNECTION");
 
 type EventMap = {
     "sending-semaphore-over-network": {
@@ -561,15 +554,14 @@ type EventMap = {
 };
 const eventBus = new EventBus<EventMap>({
     adapter: new RedisPubSubEventBusAdapter({
-        listenerClient,
-        dispatcherClient: mainRedisClient,
+        client: redis,
         serde,
     }),
 });
 
 const semaphoreProvider = new SemaphoreProvider({
     serde,
-    adapter: new RedisSemaphoreAdapter(mainRedisClient),
+    adapter: new RedisSemaphoreAdapter(redis),
     eventBus,
 });
 const semaphore = semaphoreProvider.create("resource", {
@@ -591,58 +583,30 @@ await eventBus.addListener("sending-semaphore-over-network", ({ semaphore }) => 
 ### Semaphore events
 
 You can listen to different [semaphore events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Semaphore.html) that are triggered by the `Semaphore`.
-Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events.
-
-```ts
-import { SEMAPHORE_EVENTS } from "@daiso-tech/core/semaphore/contracts";
-
-// Will log whenever an semaphore is acquiured
-await semaphoreProvider.subscribe(SEMAPHORE_EVENTS.ACQUIRED, (event) => {
-    console.log(event);
-});
-
-const semaphore = semaphoreProvider.create("resource", {
-    limit: 2
-});
-await semaphore.acquire();
-```
-
-:::info
-Note the `Semaphore` class uses [`MemoryEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.MemoryEventBusAdapter.html) by default. You can choose what event bus adapter to use:
+Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
 import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
-import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
+import { SemaphoreProvider, SEMAPHORE_EVENTS } from "@daiso-tech/core/semaphore";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
-import Redis from "ioredis";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
-
-const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
-    dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    serde,
-});
-
-const semaphore = new SemaphoreProvider({
+const semaphoreProvider = new SemaphoreProvider({
     adapter: new MemorySemaphoreAdapter(),
     eventBus: new EventBus({
-        adapter: redisPubSubEventBusAdapter,
+        adapter: new MemoryEventBusAdapter(),
     }),
 });
+
+await semaphoreProvider.addListener(SEMAPHORE_EVENTS.ACQUIRED, () => {
+    console.log("Lock acquired");
+});
+
+await semaphoreProvider.create("a").acquire();
 ```
 
-:::
-
-:::info
-Note you can disable dispatching `Semaphore` events by passing an `EventBus` that uses `NoOpEventBusAdapter`.
-:::
-
 :::warning
-If multiple semaphore adapters (e.g., `RedisSemaphoreAdapter` and `MemorySemaphoreAdapter`) are used at the same time, isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
+If multiple semaphore adapters (e.g., `RedisSemaphoreAdapter` and `MemorySemaphoreAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
 import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
@@ -656,8 +620,7 @@ import { Namespace } from "@daiso-tech/core/namespace";
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
-    dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+    client: new Redis("YOUR_REDIS_CONNECTION_STRING"),
     serde,
 });
 

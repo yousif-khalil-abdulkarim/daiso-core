@@ -10,14 +10,10 @@ To begin using the `ISemaphoreProviderFactory`, You will need to register all re
 import { SemaphoreProviderFactory } from "@daiso-tech/core/semaphore";
 import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
 import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
-import { Serde } from "@daiso-tech/core/serde";
-import type { ISerde } from "@daiso-tech/core/serde/contracts";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 const semaphoreProvider = new SemaphoreProviderFactory({
-    serde,
     adapters: {
         memory: new MemorySemaphoreAdapter(),
         redis: new RedisSemaphoreAdapter(new Redis("YOUR_REDIS_CONNECTION")),

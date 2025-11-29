@@ -34,7 +34,7 @@ console.log(await fn.invoke());
 ```
 
 :::info
-You can provide [`Task`](./Task.md), synchronous and asynchronous [`Invokable`](../Utilities/Invokable.md) as fallback value.
+You can provide [`Task<TValue>`](./Task.md), synchronous and asynchronous [`Invokable<TValue, []>`](../Utilities/Invokable.md) as fallback value.
 :::
 
 ### Custom ErrorPolicy

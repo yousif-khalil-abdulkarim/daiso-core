@@ -94,6 +94,9 @@ const task = new Task(async () => {
 
 await task;
 ```
+:::info
+You can provide [`Task<boolean>`](./Task.md), synchronous and asynchronous [`Invokable<[], boolean>`](../Utilities/Invokable.md) as values for `pipeWhen` method.
+:::
 
 ### Static methods
 
