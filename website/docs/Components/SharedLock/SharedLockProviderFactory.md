@@ -10,14 +10,9 @@ To begin using the `ISharedLockProviderFactory`, You will need to register all r
 import { SharedLockProviderFactory } from "@daiso-tech/core/shared-lock";
 import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";
 import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
-import { Serde } from "@daiso-tech/core/serde";
-import type { ISerde } from "@daiso-tech/core/serde/contracts";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
 const sharedLockProvider = new SharedLockProviderFactory({
-    serde,
     adapters: {
         memory: new MemorySharedLockAdapter(),
         redis: new RedisSharedLockAdapter(new Redis("YOUR_REDIS_CONNECTION")),

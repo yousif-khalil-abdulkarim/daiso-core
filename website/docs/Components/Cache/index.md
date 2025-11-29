@@ -239,7 +239,7 @@ await cache.getOrAdd("ab", 1);
 ```
 
 :::info
-You can provide `Task`, synchronous and asynchronous `Invokable` as default values for both `getOr` and `getOrAdd` methods.
+You can provide [`Task<TValue>`](../Task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../Utilities/Invokable.md) as default values for both `getOr` and `getOrAdd` methods.
 :::
 
 You can retrieve the key and afterwards remove it and will return true if the value was found:
@@ -333,8 +333,7 @@ import Redis from "ioredis";
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
-    dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+    client: new Redis("YOUR_REDIS_CONNECTION_STRING"),
     serde,
 });
 
@@ -353,7 +352,7 @@ Note you can disable dispatching `Cache` events by passing an `EventBus` that us
 :::
 
 :::warning
-If multiple cache adapters (e.g., `RedisCacheAdapter` and `MemoryCacheAdapter`) are used at the same time, isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
+If multiple cache adapters (e.g., `RedisCacheAdapter` and `MemoryCacheAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
@@ -368,8 +367,7 @@ import Redis from "ioredis";
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
-    dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+    client: new Redis("YOUR_REDIS_CONNECTION_STRING"),
     serde,
 });
 

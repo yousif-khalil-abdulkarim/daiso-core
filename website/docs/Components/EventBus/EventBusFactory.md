@@ -24,9 +24,8 @@ const eventBusFactory = new EventBusFactory({
     adapters: {
         memory: new MemoryEventBusAdapter(),
         redis: new RedisPubSubEventBusAdapter({
+            client: new Redis("YOUR_REDIS_CONNECTION_STRING"),
             serde,
-            dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-            listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
         }),
     },
     // You can set an optional default adapter

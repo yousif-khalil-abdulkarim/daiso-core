@@ -212,6 +212,9 @@ const addC = addA.pipeWhen(false, (args, next) => {
     return next(...args);
 });
 ```
+:::info
+You can provide `Task<boolean>`, synchronous and asynchronous `Invokable<[], boolean>` as values for `pipeWhen` method.
+:::
 
 :::info
 Note that the `Hooks` class is immutable, meaning any configuration override returns a new instance rather than modifying the existing one.

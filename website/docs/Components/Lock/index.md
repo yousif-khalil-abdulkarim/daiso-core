@@ -10,17 +10,11 @@ To begin using the `LockProvider` class, you'll need to create and configure an 
 import { TimeSpan } from "@daiso-tech/core/time-span";
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
 import { LockProvider } from "@daiso-tech/core/lock";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
-
-const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const lockProvider = new LockProvider({
     // You can provide default TTL value
     // If you set it to null it means locks will not expire and most be released manually by default.
     defaultTtl: TimeSpan.fromSeconds(2),
-
-    serde,
 
     // You can choose the adapter to use
     adapter: new MemoryLockAdapter(),
@@ -255,7 +249,7 @@ Note the method throws an error when the lock cannot be acquired.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous `Invokable` as values for `runOrFail`, and `runBlockingOrFail` methods.
+You can provide [`Task<TValue>`](../Task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../Utilities/Invokable.md) as values for `runOrFail`, and `runBlockingOrFail` methods.
 :::
 
 ### Lock instance variables
@@ -313,22 +307,17 @@ For further information about namespacing refer to [`@daiso-tech/core/namespace`
 import { Namespace } from "@daiso-tech/core/namespace";
 import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
 import { LockProvider } from "@daiso-tech/core/lock";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
-const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const lockProviderA = new LockProvider({
     namespace: new Namespace("@lock-a"),
     adapter: new RedisLockAdapter(database),
-    serde,
 });
 const lockProviderB = new LockProvider({
     namespace: new Namespace("@lock-b"),
     adapter: new RedisLockAdapter(database),
-    serde,
 });
 
 const lockA = await lockProviderA.create("key", { ttl: null });
@@ -426,6 +415,7 @@ await lock
 
 Locks can be serialized, allowing them to be transmitted over the network to another server and later deserialized for reuse.
 This means you can, for example, acquire the lock on the main server, transfer it to a queue worker server, and release it there.
+In order to serialize or deserialize a lock you need pass an object that implements [`ISerderRegister`](../Serde.md) contract like the [`Serde`](../Serde.md) class to `LockProvider`. 
 
 Manually serializing and deserializing the lock:
 
@@ -470,8 +460,7 @@ import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
-const mainRedisClient = new Redis("YOUR_REDIS_CONNECTION");
-const listenerRedisClient = new Redis("YOUR_REDIS_CONNECTION");
+const redis = new Redis("YOUR_REDIS_CONNECTION");
 
 type EventMap = {
     "sending-lock-over-network": {
@@ -480,15 +469,14 @@ type EventMap = {
 };
 const eventBus = new EventBus<EventMap>({
     adapter: new RedisPubSubEventBusAdapter({
-        listenerClient,
-        dispatcherClient: mainRedisClient,
+        client: redis,
         serde,
     }),
 });
 
 const lockProvider = new LockProvider({
     serde,
-    adapter: new RedisLockAdapter(mainRedisClient),
+    adapter: new RedisLockAdapter(redis),
     eventBus,
 });
 const lock = lockProvider.create("resource");
@@ -508,56 +496,30 @@ await eventBus.addListener("sending-lock-over-network", ({ lock }) => {
 ### Lock events
 
 You can listen to different [lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) that are triggered by the `Lock`.
-Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events.
-
-```ts
-import { LOCK_EVENTS } from "@daiso-tech/core/lock/contracts";
-
-// Will log whenever an lock is acquiured
-await lockProvider.subscribe(LOCK_EVENTS.ACQUIRED, (event) => {
-    console.log(event);
-});
-
-const lock = lockProvider.create("resource");
-await lock.acquire();
-```
-
-:::info
-Note the `Lock` class uses [`MemoryEventBusAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/EventBus.MemoryEventBusAdapter.html) by default. You can choose what event bus adapter to use:
+Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
-import { LockProvider } from "@daiso-tech/core/lock";
+import { LockProvider, LOCK_EVENTS } from "@daiso-tech/core/lock";
 import { EventBus } from "@daiso-tech/core/event-bus";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
-import Redis from "ioredis";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
-
-const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
-    dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    serde,
-});
-
-const lock = new LockProvider({
+const lockProvider = new LockProvider({
     adapter: new MemoryLockAdapter(),
     eventBus: new EventBus({
-        adapter: redisPubSubEventBusAdapter,
+        adapter: new MemoryEventBusAdapter(),
     }),
 });
+
+await lockProvider.addListener(LOCK_EVENTS.ACQUIRED, () => {
+    console.log("Lock acquired");
+});
+
+await lockProvider.create("a").acquire();
 ```
 
-:::
-
-:::info
-Note you can disable dispatching `Lock` events by passing an `EventBus` that uses `NoOpEventBusAdapter`.
-:::
-
 :::warning
-If multiple lock adapters (e.g., `RedisLockAdapter` and `MemoryLockAdapter`) are used at the same time, isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
+If multiple lock adapters (e.g., `RedisLockAdapter` and `MemoryLockAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
@@ -571,8 +533,7 @@ import { Namespace } from "@daiso-tech/core/namespace";
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
 const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
-    dispatcherClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    listenerClient: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+    client: new Redis("YOUR_REDIS_CONNECTION_STRING"),
     serde,
 });
 
