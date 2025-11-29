@@ -5,8 +5,10 @@
 import {
     callInvokable,
     getInvokableName,
+    resolveAsyncLazyable,
     resolveInvokable,
     resolveOneOrMore,
+    type AsyncLazyable,
     type IInvokableObject,
     type Invokable,
     type InvokableFn,
@@ -339,13 +341,18 @@ export class AsyncHooks<
      * The `pipeWhen` method conditionally applies additional `middlewares`, returning a new `AsyncHooks` instance only if the specified condition is met.
      */
     pipeWhen(
-        condition: boolean,
+        condition: AsyncLazyable<boolean>,
         middlewares: OneOrMore<AsyncMiddleware<TParameters, TReturn, TContext>>,
     ): AsyncHooks<TParameters, TReturn, TContext> {
-        if (condition) {
-            return this.pipe(middlewares);
-        }
-        return this;
+        return this.pipe(async (args, next) => {
+            if (await resolveAsyncLazyable(condition)) {
+                return await new AsyncHooks<TParameters, TReturn, TContext>(
+                    next,
+                    resolveOneOrMore(middlewares),
+                ).invoke(...args);
+            }
+            return await next(...args);
+        });
     }
 
     /**
