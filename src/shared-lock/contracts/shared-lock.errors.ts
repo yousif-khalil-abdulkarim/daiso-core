@@ -87,6 +87,7 @@ export function isReaderSemaphoreError(
 export class FailedAcquireWriterLockError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
+        this.name = FailedAcquireWriterLockError.name;
     }
 }
 
@@ -99,6 +100,7 @@ export class FailedAcquireWriterLockError extends Error {
 export class FailedReleaseWriterLockError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
+        this.name = FailedReleaseWriterLockError.name;
     }
 }
 
@@ -111,6 +113,7 @@ export class FailedReleaseWriterLockError extends Error {
 export class FailedRefreshWriterLockError extends Error {
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
+        this.name = FailedRefreshWriterLockError.name;
     }
 }
 
