@@ -32,6 +32,7 @@ export type CircuitBreakerSerdeTransformerSettings = {
     trigger: CircuitBreakerTrigger;
     eventBus: IEventBus<CircuitBreakerEventMap>;
     serdeTransformerName: string;
+    enableAsyncTracking: boolean;
 };
 
 /**
@@ -47,6 +48,7 @@ export class CircuitBreakerSerdeTransformer
     private readonly trigger: CircuitBreakerTrigger;
     private readonly eventBus: IEventBus<CircuitBreakerEventMap>;
     private readonly serdeTransformerName: string;
+    private readonly enableAsyncTracking: boolean;
 
     constructor(settings: CircuitBreakerSerdeTransformerSettings) {
         const {
@@ -57,8 +59,10 @@ export class CircuitBreakerSerdeTransformer
             trigger,
             eventBus,
             serdeTransformerName,
+            enableAsyncTracking,
         } = settings;
 
+        this.enableAsyncTracking = enableAsyncTracking;
         this.adapter = adapter;
         this.namespace = namespace;
         this.slowCallTime = slowCallTime;
@@ -109,6 +113,7 @@ export class CircuitBreakerSerdeTransformer
         const keyObj = this.namespace.create(key);
 
         return new CircuitBreaker({
+            enableAsyncTracking: this.enableAsyncTracking,
             eventDispatcher: this.eventBus,
             adapter: this.adapter,
             key: keyObj,

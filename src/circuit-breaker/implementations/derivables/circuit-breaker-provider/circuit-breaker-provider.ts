@@ -168,6 +168,7 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
 
     private registerToSerde(): void {
         const transformer = new CircuitBreakerSerdeTransformer({
+            enableAsyncTracking: this.enableAsyncTracking,
             adapter: this.adapter,
             slowCallTime: this.slowCallTime,
             errorPolicy: this.errorPolicy,
