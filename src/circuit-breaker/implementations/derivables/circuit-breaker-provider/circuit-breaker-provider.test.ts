@@ -69,6 +69,7 @@ describe("class: CircuitBreakerProvider", () => {
                 }),
                 serde: new Serde(new SuperJsonSerdeAdapter()),
                 slowCallTime,
+                enableAsyncTracking: false,
             });
         });
         describe("method: runOrFail", () => {
@@ -420,6 +421,7 @@ describe("class: CircuitBreakerProvider", () => {
                 }),
                 slowCallTime,
                 serde: new Serde(new SuperJsonSerdeAdapter()),
+                enableAsyncTracking: false,
             });
         });
         describe("method: runOrFail", () => {
