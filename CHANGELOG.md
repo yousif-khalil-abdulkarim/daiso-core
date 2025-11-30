@@ -1,5 +1,18 @@
 # @daiso-tech/core
 
+## 0.43.0
+
+### Minor Changes
+
+- 512063a: You can now pass in `boolean`, `Task<boolean>`, `Invokable<[], Promiseable<boolean>>` to the `pipeWhen` method of an `Task` and `AsyncHooks`.
+- d58a233: Removed runReader, runReaderBlock, runWriter and runWriterBlocking from ISharedLock contract
+- f90e497: Now you can pass an array of Error classes as error policy.
+- d58a233: Removed run and runBlocking methods from ISemaphore contract
+- d58a233: Removed run and runBlocking methods from ILock contract
+- 16be35d: Added new circuit-breaker component
+- d58a233: Removed Result type
+- b7a4d46: Renamed backoff policies to not use the "Policy" as suffix.
+
 ## 0.42.0
 
 ### Minor Changes
@@ -584,8 +597,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                            - `AsyncFactoryable`
-                            - `Factoryable`
+                              - `AsyncFactoryable`
+                              - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
