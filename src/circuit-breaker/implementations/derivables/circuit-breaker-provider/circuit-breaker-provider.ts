@@ -85,6 +85,12 @@ export type CircuitBreakerProviderSettingsBase = ErrorPolicySettings & {
      */
     trigger?: CircuitBreakerTrigger;
 
+    /**
+     * If true, metric tracking will run asynchronously in the background and won't block the function utilizing the circuit breaker logic.
+     * @default true
+     */
+    enableAsyncTracking?: boolean;
+
     serde?: OneOrMore<ISerderRegister>;
 
     /**
@@ -131,9 +137,11 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
     private readonly errorPolicy: ErrorPolicy;
     private readonly serde: OneOrMore<ISerderRegister>;
     private readonly serdeTransformerName: string;
+    private readonly enableAsyncTracking: boolean;
 
     constructor(settings: CircuitBreakerProviderSettings) {
         const {
+            enableAsyncTracking = true,
             namespace = DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE,
             eventBus = new EventBus({
                 adapter: new NoOpEventBusAdapter(),
@@ -146,6 +154,7 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
             serdeTransformerName = "",
         } = settings;
 
+        this.enableAsyncTracking = enableAsyncTracking;
         this.namespace = namespace;
         this.eventBus = eventBus;
         this.adapter = adapter;
@@ -221,6 +230,7 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
             settings;
 
         return new CircuitBreaker({
+            enableAsyncTracking: this.enableAsyncTracking,
             eventDispatcher: this.eventBus,
             adapter: this.adapter,
             key: this.namespace.create(key),

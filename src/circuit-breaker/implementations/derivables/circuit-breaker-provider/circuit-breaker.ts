@@ -29,6 +29,7 @@ import {
  * @internal
  */
 export type CircuitBreakerSettings = {
+    enableAsyncTracking: boolean;
     eventDispatcher: IEventDispatcher<CircuitBreakerEventMap>;
     adapter: ICircuitBreakerAdapter;
     key: Key;
@@ -71,9 +72,11 @@ export class CircuitBreaker implements ICircuitBreaker {
     private readonly eventDispatcher: IEventDispatcher<CircuitBreakerEventMap>;
     private readonly serdeTransformerName: string;
     private readonly namespace: Namespace;
+    private readonly enableAsyncTracking: boolean;
 
     constructor(settings: CircuitBreakerSettings) {
         const {
+            enableAsyncTracking,
             eventDispatcher,
             key,
             errorPolicy,
@@ -83,6 +86,8 @@ export class CircuitBreaker implements ICircuitBreaker {
             serdeTransformerName,
             namespace,
         } = settings;
+
+        this.enableAsyncTracking = enableAsyncTracking;
         this.eventDispatcher = eventDispatcher;
         this._key = key;
         this.errorPolicy = errorPolicy;
@@ -115,7 +120,27 @@ export class CircuitBreaker implements ICircuitBreaker {
         });
     }
 
-    private async trackError<TValue = void>(
+    private async trackFailure(): Promise<void> {
+        if (this.enableAsyncTracking) {
+            new Task(async () => {
+                await this.adapter.trackFailure(this._key.toString());
+            }).detach();
+            return;
+        }
+        await this.adapter.trackFailure(this._key.toString());
+    }
+
+    private async trackSuccess(): Promise<void> {
+        if (this.enableAsyncTracking) {
+            new Task(async () => {
+                await this.adapter.trackSuccess(this._key.toString());
+            }).detach();
+            return;
+        }
+        await this.adapter.trackSuccess(this._key.toString());
+    }
+
+    private async trackErrorWrapper<TValue = void>(
         fn: InvokableFn<[], Promise<TValue>>,
     ): Promise<TValue> {
         try {
@@ -130,7 +155,13 @@ export class CircuitBreaker implements ICircuitBreaker {
                 this.trigger === CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR;
 
             if (shouldRecordError && isErrorMatching) {
-                await this.adapter.trackFailure(this._key.toString());
+                if (this.enableAsyncTracking) {
+                    new Task(async () => {
+                        await this.trackFailure();
+                    }).detach();
+                } else {
+                    await this.trackFailure();
+                }
                 this.eventDispatcher
                     .dispatch(CIRCUIT_BREAKER_EVENTS.TRACKED_FAILURE, {
                         circuitBreaker: this,
@@ -149,7 +180,7 @@ export class CircuitBreaker implements ICircuitBreaker {
         }
     }
 
-    private async trackSlowCall<TValue = void>(
+    private async trackSlowCallWrapper<TValue = void>(
         fn: InvokableFn<[], Promise<TValue>>,
     ): Promise<TValue> {
         const start = performance.now();
@@ -166,7 +197,7 @@ export class CircuitBreaker implements ICircuitBreaker {
         const isCallSlow = executionTime.gte(this.slowCallTime);
 
         if (shouldRecordSlowCall && isCallSlow) {
-            await this.adapter.trackFailure(this._key.toString());
+            await this.trackFailure();
             this.eventDispatcher
                 .dispatch(CIRCUIT_BREAKER_EVENTS.TRACKED_SLOW_CALL, {
                     circuitBreaker: this,
@@ -174,7 +205,7 @@ export class CircuitBreaker implements ICircuitBreaker {
                 .detach();
         }
         if (shouldRecordSlowCall && !isCallSlow) {
-            await this.adapter.trackSuccess(this._key.toString());
+            await this.trackSuccess();
             this.eventDispatcher
                 .dispatch(CIRCUIT_BREAKER_EVENTS.TRACKED_SUCCESS, {
                     circuitBreaker: this,
@@ -182,7 +213,7 @@ export class CircuitBreaker implements ICircuitBreaker {
                 .detach();
         }
         if (!shouldRecordSlowCall) {
-            await this.adapter.trackSuccess(this._key.toString());
+            await this.trackSuccess();
             this.eventDispatcher
                 .dispatch(CIRCUIT_BREAKER_EVENTS.TRACKED_SUCCESS, {
                     circuitBreaker: this,
@@ -216,8 +247,8 @@ export class CircuitBreaker implements ICircuitBreaker {
         return new Task(async () => {
             await this.guard();
 
-            return await this.trackError(async () => {
-                return await this.trackSlowCall(async () => {
+            return await this.trackErrorWrapper(async () => {
+                return await this.trackSlowCallWrapper(async () => {
                     return await resolveAsyncLazyable(asyncFn);
                 });
             });
