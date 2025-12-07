@@ -34,6 +34,12 @@ export const BACKOFFS = {
  * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
  * @group Adapters
  */
+export type BackoffsLiterals = (typeof BACKOFFS)[keyof typeof BACKOFFS];
+
+/**
+ * IMPORT_PATH: `"@daiso-tech/core/backoff-policies"`
+ * @group Adapters
+ */
 export type ConstantBackoffSettingsEnum = Omit<
     ConstantBackoffSettings,
     "_mathRandom"
