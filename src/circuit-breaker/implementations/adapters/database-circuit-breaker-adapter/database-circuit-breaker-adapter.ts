@@ -20,10 +20,10 @@ import { CircuitBreakerStateManager } from "@/circuit-breaker/implementations/ad
 import { CircuitBreakerStorage } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-storage.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/database-circuit-breaker-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter"`
  * @group Adapters
  */
-export type DatabaseCirciuitBreakerAdapterSettings = {
+export type DatabaseCircuitBreakerAdapterSettings = {
     adapter: ICircuitBreakerStorageAdapter;
 
     /**
@@ -41,19 +41,19 @@ export type DatabaseCirciuitBreakerAdapterSettings = {
      * You can define your own {@link ICircuitBreakerPolicy | `ICircuitBreakerPolicy`}.
      * @default
      * ```ts
-     * import { ConsecutiveBreaker } from "@daiso-tech/core/circiuit-breaker/circuit-breaker-policies";
+     * import { ConsecutiveBreaker } from "@daiso-tech/core/circuit-breaker/policies";
      *
-     * new ConsecutiveBreaker({ failureThreshold: 5 });
+     * new ConsecutiveBreaker();
      * ```
      */
     circuitBreakerPolicy?: ICircuitBreakerPolicy;
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/database-circuit-breaker-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter"`
  * @group Adapters
  */
-export class DatabaseCirciuitBreakerAdapter<TMetrics = unknown>
+export class DatabaseCircuitBreakerAdapter<TMetrics = unknown>
     implements ICircuitBreakerAdapter
 {
     private readonly circuitBreakerStorage: CircuitBreakerStorage<TMetrics>;
@@ -71,7 +71,7 @@ export class DatabaseCirciuitBreakerAdapter<TMetrics = unknown>
      * });
      * ```
      */
-    constructor(settings: DatabaseCirciuitBreakerAdapterSettings) {
+    constructor(settings: DatabaseCircuitBreakerAdapterSettings) {
         const {
             adapter,
             backoffPolicy = exponentialBackoff(),

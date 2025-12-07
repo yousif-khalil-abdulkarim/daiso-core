@@ -21,7 +21,7 @@ export class OpenCircuitBreakerError extends Error {
  * @group Errors
  */
 export const CIRCUIT_BREAKER_ERRORS = {
-    OpenCircuitBreaker: OpenCircuitBreakerError,
+    Open: OpenCircuitBreakerError,
 } as const;
 
 /**

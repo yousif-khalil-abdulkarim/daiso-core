@@ -8,7 +8,7 @@ import {
 } from "@/circuit-breaker/contracts/_module-exports.js";
 import type { CircuitBreakerPolicy } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
 import { type AllCircuitBreakerState } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
-import type { InvokableFn } from "@/utilities/_module-exports.js";
+import type { DatabaseCircuitBreakerUpdateStateFn } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/types.js";
 
 /**
  * @internal
@@ -23,17 +23,15 @@ export class CircuitBreakerStorage<TMetrics = unknown> {
 
     async atomicUpdate(
         key: string,
-        update: InvokableFn<
-            [currentState: AllCircuitBreakerState<TMetrics>],
-            AllCircuitBreakerState<TMetrics>
-        >,
+        update: DatabaseCircuitBreakerUpdateStateFn<TMetrics>,
     ): Promise<CircuitBreakerStateTransition> {
+        const currentDate = new Date();
         return await this.adapter.transaction(async (trx) => {
             const currentState =
                 (await trx.find(key)) ??
                 this.circuitBreakerPolicy.initialState();
 
-            const newState = update(currentState);
+            const newState = update(currentState, currentDate);
 
             if (!this.circuitBreakerPolicy.isEqual(currentState, newState)) {
                 await trx.upsert(key, newState);

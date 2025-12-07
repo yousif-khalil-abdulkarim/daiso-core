@@ -5,7 +5,7 @@
 import type { BackoffPolicy } from "@/backoff-policies/_module-exports.js";
 import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module-exports.js";
 import type { CircuitBreakerPolicy } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
-import { type AllCircuitBreakerState } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
+import type { DatabaseCircuitBreakerUpdateStateFn } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/types.js";
 
 /**
  * @internal
@@ -16,19 +16,20 @@ export class CircuitBreakerStateManager<TMetrics = unknown> {
         private readonly backoffPolicy: BackoffPolicy,
     ) {}
 
-    updateState = (
-        currentState: AllCircuitBreakerState<TMetrics>,
-    ): AllCircuitBreakerState<TMetrics> => {
+    updateState: DatabaseCircuitBreakerUpdateStateFn<TMetrics> = (
+        currentState,
+        currentDate,
+    ) => {
         if (currentState.type === CIRCUIT_BREAKER_STATE.CLOSED) {
             return this.circuitBreakerPolicy.whenClosed(
                 currentState,
-                new Date(),
+                currentDate,
             );
         }
 
         if (currentState.type === CIRCUIT_BREAKER_STATE.OPEN) {
             return this.circuitBreakerPolicy.whenOpened(currentState, {
-                currentDate: new Date(),
+                currentDate: currentDate,
                 backoffPolicy: this.backoffPolicy,
             });
         }
@@ -39,51 +40,56 @@ export class CircuitBreakerStateManager<TMetrics = unknown> {
 
         return this.circuitBreakerPolicy.whenHalfOpened(
             currentState,
-            new Date(),
+            currentDate,
         );
     };
 
-    trackFailure = (
-        currentState: AllCircuitBreakerState<TMetrics>,
-    ): AllCircuitBreakerState<TMetrics> => {
+    trackFailure: DatabaseCircuitBreakerUpdateStateFn<TMetrics> = (
+        currentState,
+        currentDate,
+    ) => {
         if (currentState.type === CIRCUIT_BREAKER_STATE.CLOSED) {
             return this.circuitBreakerPolicy.trackFailureWhenClosed(
                 currentState,
-                new Date(),
+                currentDate,
             );
         }
 
         if (currentState.type === CIRCUIT_BREAKER_STATE.HALF_OPEN) {
             return this.circuitBreakerPolicy.trackFailureWhenHalfOpened(
                 currentState,
-                new Date(),
+                currentDate,
             );
         }
 
         return currentState;
     };
 
-    trackSuccess = (
-        currentState: AllCircuitBreakerState<TMetrics>,
-    ): AllCircuitBreakerState<TMetrics> => {
+    trackSuccess: DatabaseCircuitBreakerUpdateStateFn<TMetrics> = (
+        currentState,
+        currentDate,
+    ) => {
         if (currentState.type === CIRCUIT_BREAKER_STATE.CLOSED) {
             return this.circuitBreakerPolicy.trackSuccessWhenClosed(
                 currentState,
-                new Date(),
+                currentDate,
             );
         }
 
         if (currentState.type === CIRCUIT_BREAKER_STATE.HALF_OPEN) {
             return this.circuitBreakerPolicy.trackSuccessWhenHalfOpened(
                 currentState,
-                new Date(),
+                currentDate,
             );
         }
 
         return currentState;
     };
 
-    isolate = (): AllCircuitBreakerState<TMetrics> => {
+    isolate: DatabaseCircuitBreakerUpdateStateFn<TMetrics> = (
+        _currentState,
+        _currentDate,
+    ) => {
         return {
             type: CIRCUIT_BREAKER_STATE.ISOLATED,
         };

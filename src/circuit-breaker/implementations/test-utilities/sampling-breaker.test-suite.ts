@@ -60,7 +60,7 @@ const backoffPolicySettings: Required<ConstantBackoffSettingsEnum> = {
  * @example
  * ```ts
  * import { beforeEach, describe, expect, test } from "vitest";
- * import { DatabaseCirciuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter";
+ * import { DatabaseCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter";
  * import { SamplingBreaker } from "@daiso-tech/core/circuit-breaker/policies";
  * import { samplingBreakerTestSuite } from "@daiso-tech/core/circuit-breaker/test-utilities";
  * import { constantBackoff } from "@daiso-tech/core/backoff-policies";
@@ -69,7 +69,7 @@ const backoffPolicySettings: Required<ConstantBackoffSettingsEnum> = {
  * describe("sampling-breaker class: DatabaseCircuitBreakerAdapter", () => {
  *     samplingBreakerTestSuite({
  *         createAdapter: () => {
- *             const adapter = new DatabaseCirciuitBreakerAdapter({
+ *             const adapter = new DatabaseCircuitBreakerAdapter({
  *                 adapter: new MemoryCircuitBreakerStorageAdapter(),
  *                 backoffPolicy: constantBackoff(
  *                     samplingBreakerTestSuite.backoffPolicySettings,

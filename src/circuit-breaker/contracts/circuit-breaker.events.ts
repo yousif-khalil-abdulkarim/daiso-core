@@ -6,7 +6,7 @@ import type { CircuitBreakerState } from "@/circuit-breaker/contracts/circuit-br
 import type { ICircuitBreakerStateMethods } from "@/circuit-breaker/contracts/circuit-breaker.contract.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/contracts"`
  * @group Events
  */
 export type CircuitBreakerEventBase = {

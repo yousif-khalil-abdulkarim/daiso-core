@@ -12,12 +12,12 @@ import { resolveConsecutiveBreakerSettings } from "@/circuit-breaker/implementat
 import {
     resolveSamplingBreakerSettings,
     serializeSamplingBreakerSettings,
-} from "@/circuit-breaker/implementations/policies/_module-exports.js";
+} from "@/circuit-breaker/implementations/policies/sampling-breaker/_module.js";
 
 /**
  * @internal
  */
-export function resolvePolicySettings(
+export function resolveCircuitBreakerPolicySettings(
     settings: CircuitBreakerPolicySettingsEnum,
 ): Required<CircuitBreakerPolicySettingsEnum> {
     if (settings.type === BREAKER_POLICIES.CONSECUTIVE) {

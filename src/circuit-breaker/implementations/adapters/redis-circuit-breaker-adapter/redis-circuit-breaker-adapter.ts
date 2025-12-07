@@ -10,7 +10,7 @@ import {
 } from "@/circuit-breaker/contracts/_module-exports.js";
 import {
     BREAKER_POLICIES,
-    resolvePolicySettings,
+    resolveCircuitBreakerPolicySettings,
     serializePolicySettingsEnum,
     type CircuitBreakerPolicySettingsEnum,
 } from "@/circuit-breaker/implementations/policies/_module-exports.js";
@@ -25,7 +25,7 @@ import type { AllCircuitBreakerState } from "@/circuit-breaker/implementations/a
 import { circuitBreakerFactoryLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/_module-exports.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/redis-circuit-breaker-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/redis-circuit-breaker-adapter"`
  * @group Adapters
  */
 export type RedisCircuitBreakerAdapterSettings = {
@@ -76,7 +76,7 @@ declare module "ioredis" {
 }
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/redis-circuit-breaker-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/redis-circuit-breaker-adapter"`
  * @group Adapters
  */
 export class RedisCircuitBreakerAdapter implements ICircuitBreakerAdapter {
@@ -111,7 +111,7 @@ export class RedisCircuitBreakerAdapter implements ICircuitBreakerAdapter {
 
         this.database = database;
         this.backoff = resolveBackoffSettingsEnum(backoff);
-        this.policy = resolvePolicySettings(policy);
+        this.policy = resolveCircuitBreakerPolicySettings(policy);
 
         this.initUpdateStateCommmand();
         this.initTrackFailureCommmand();

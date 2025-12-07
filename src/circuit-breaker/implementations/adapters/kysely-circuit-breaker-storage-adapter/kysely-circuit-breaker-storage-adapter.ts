@@ -15,7 +15,7 @@ import type {
 import { MysqlAdapter, type Kysely } from "kysely";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/kysely-circuit-breaker-storage-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
 export type KyselyCircuitBreakerStorageTable = {
@@ -24,7 +24,7 @@ export type KyselyCircuitBreakerStorageTable = {
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/kysely-circuit-breaker-storage-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
 export type KyselyCircuitBreakerStorageTables = {
@@ -32,7 +32,7 @@ export type KyselyCircuitBreakerStorageTables = {
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/kysely-circuit-breaker-storage-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
 export type KyselyCircuitBreakerStorageAdapterSettings = {
@@ -114,7 +114,7 @@ class KyselyCircuitBreakerStorageAdapterTransaction<TType>
  * Note in order to use `KyselyCircuitBreakerStorageAdapter` correctly, you need to use a database that has support for transactions.
  * The adapter have been tested with `sqlite`, `postgres` and `mysql` databases.
  *
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/kysely-circuit-breaker-storage-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
 export class KyselyCircuitBreakerStorageAdapter<TType>
@@ -133,7 +133,7 @@ export class KyselyCircuitBreakerStorageAdapter<TType>
      * import { Kysely, SqliteDialect } from "kysely";
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const circiuitBreakerStorageAdapter = new KyselyCircuitBreakerStorageAdapter({
+     * const circuitBreakerStorageAdapter = new KyselyCircuitBreakerStorageAdapter({
      *   kysely: new Kysely({
      *     dialect: new SqliteDialect({
      *       database: new Sqlite("local.db"),
@@ -142,7 +142,7 @@ export class KyselyCircuitBreakerStorageAdapter<TType>
      *   serde
      * });
      * // You need initialize the adapter once before using it.
-     * await circiuitBreakerStorageAdapter.init();
+     * await circuitBreakerStorageAdapter.init();
      * ```
      */
     constructor(settings: KyselyCircuitBreakerStorageAdapterSettings) {
@@ -187,7 +187,7 @@ export class KyselyCircuitBreakerStorageAdapter<TType>
     async transaction<TValue>(
         fn: InvokableFn<
             [transaction: ICircuitBreakerStorageAdapterTransaction],
-            TValue
+            Promise<TValue>
         >,
     ): Promise<TValue> {
         return await this.kysely.transaction().execute(async (trx) => {

@@ -24,7 +24,7 @@ import {
 import type { Namespace } from "@/namespace/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { DatabaseCirciuitBreakerAdapter } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/_module-exports.js";
+import { DatabaseCircuitBreakerAdapter } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/_module-exports.js";
 import { type BackoffPolicy } from "@/backoff-policies/_module-exports.js";
 
 /**
@@ -61,9 +61,9 @@ export type DatabaseCircuitBreakerProviderFactorySettings<
     /**
      * @default
      * ```ts
-     * import { ConsecutiveBreaker } from "@daiso-tech/core/circiuit-breaker/circuit-breaker-policies";
+     * import { ConsecutiveBreaker } from "@daiso-tech/core/circuit-breaker/policies";
      *
-     * new ConsecutiveBreaker({ failureThreshold: 5 });
+     * new ConsecutiveBreaker();
      * ```
      */
     circuitBreakerPolicy?: ICircuitBreakerPolicy;
@@ -237,7 +237,7 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
             this.settings;
         return new CircuitBreakerProvider({
             ...this.settings,
-            adapter: new DatabaseCirciuitBreakerAdapter({
+            adapter: new DatabaseCircuitBreakerAdapter({
                 adapter,
             }),
             namespace: namespace.appendRoot(adapterName),

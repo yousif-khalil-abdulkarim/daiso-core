@@ -9,9 +9,8 @@ export const circuitBreakerLua = `
 -- @template TMetrics
 -- @param circuitBreakerStorage CircuitBreakerStorage<TMetrics>
 -- @param circuitBreakerStateManager CircuitBreakerStateManager<TMetrics>
--- @param backoffPolicy BackoffPolicy
 -- @return ICircuitBreakerAdapter
-local function CircuitBreaker(circuitBreakerStorage, circuitBreakerStateManager, backoffPolicy)
+local function CircuitBreaker(circuitBreakerStorage, circuitBreakerStateManager)
     return {
         -- @param key string
         -- @return CircuitBreakerState

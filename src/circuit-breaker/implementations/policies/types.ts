@@ -10,7 +10,7 @@ import type {
 } from "@/circuit-breaker/implementations/policies/sampling-breaker/_module.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export const BREAKER_POLICIES = {
@@ -20,7 +20,7 @@ export const BREAKER_POLICIES = {
 } as const;
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type ConsecutiveBreakerSettingsEnum = ConsecutiveBreakerSettings & {
@@ -28,7 +28,7 @@ export type ConsecutiveBreakerSettingsEnum = ConsecutiveBreakerSettings & {
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type CountBreakerSettingsEnum = CountBreakerSettings & {
@@ -36,7 +36,7 @@ export type CountBreakerSettingsEnum = CountBreakerSettings & {
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type SamplingBreakerSettingsEnum = SamplingBreakerSettings & {
@@ -51,7 +51,7 @@ export type SerializedSamplingBreakerSettingsEnum =
         type: (typeof BREAKER_POLICIES)["SAMPLING"];
     };
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type CircuitBreakerPolicySettingsEnum =

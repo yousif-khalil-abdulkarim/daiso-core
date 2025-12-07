@@ -18,7 +18,7 @@ import {
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type SamplingBreakerSettings = {
@@ -150,7 +150,7 @@ export function serializeSamplingBreakerSettings(
 }
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type Sample = {
@@ -160,7 +160,7 @@ export type Sample = {
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type SamplingBreakerState = {
@@ -177,7 +177,7 @@ type ProccesedMetricData = {
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export class SamplingBreaker
@@ -189,7 +189,7 @@ export class SamplingBreaker
     private readonly sampleTimeSpan: TimeSpan;
     private readonly minimumRps: number;
 
-    constructor(settings: SamplingBreakerSettings) {
+    constructor(settings: SamplingBreakerSettings = {}) {
         const {
             failureThreshold,
             successThreshold,

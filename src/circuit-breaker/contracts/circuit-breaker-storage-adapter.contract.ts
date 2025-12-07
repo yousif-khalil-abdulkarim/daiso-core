@@ -40,7 +40,7 @@ export type ICircuitBreakerStorageAdapter<TType = unknown> = {
     transaction<TValue>(
         fn: InvokableFn<
             [transaction: ICircuitBreakerStorageAdapterTransaction<TType>],
-            TValue
+            Promise<TValue>
         >,
     ): Promise<TValue>;
 

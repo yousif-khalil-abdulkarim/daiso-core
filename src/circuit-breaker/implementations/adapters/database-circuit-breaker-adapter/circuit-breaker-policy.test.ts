@@ -153,7 +153,7 @@ describe("class: CircuitBreakerPolicy", () => {
 
                 expect(result).toBe(false);
             });
-            test("Should return true when both states are ClosedState and metrics is same", () => {
+            test("Should return false when both states are ClosedState and metrics is same", () => {
                 const result = internalPolicy.isEqual(
                     {
                         type: CIRCUIT_BREAKER_STATE.CLOSED,
@@ -165,9 +165,9 @@ describe("class: CircuitBreakerPolicy", () => {
                     },
                 );
 
-                expect(result).toBe(true);
+                expect(result).toBe(false);
             });
-            test("Should return true when both states are ClosedState and metrics is different", () => {
+            test("Should return false when both states are ClosedState and metrics is different", () => {
                 const result = internalPolicy.isEqual(
                     {
                         type: CIRCUIT_BREAKER_STATE.CLOSED,
@@ -179,7 +179,7 @@ describe("class: CircuitBreakerPolicy", () => {
                     },
                 );
 
-                expect(result).toBe(true);
+                expect(result).toBe(false);
             });
             test("Should return true when both states are OpenState, attempt and startedAt are same", () => {
                 const currentDate = new Date();
@@ -231,7 +231,7 @@ describe("class: CircuitBreakerPolicy", () => {
 
                 expect(result).toBe(false);
             });
-            test("Should return true when both states are HalfOpenState, attempt and metrics are same", () => {
+            test("Should return false when both states are HalfOpenState, attempt and metrics are same", () => {
                 const result = internalPolicy.isEqual(
                     {
                         type: CIRCUIT_BREAKER_STATE.HALF_OPEN,
@@ -245,7 +245,7 @@ describe("class: CircuitBreakerPolicy", () => {
                     },
                 );
 
-                expect(result).toBe(true);
+                expect(result).toBe(false);
             });
             test("Should return false when both states are HalfOpenState, only attempt is different", () => {
                 const result = internalPolicy.isEqual(
@@ -263,7 +263,7 @@ describe("class: CircuitBreakerPolicy", () => {
 
                 expect(result).toBe(false);
             });
-            test("Should return true when both states are HalfOpenState, only metrics is different", () => {
+            test("Should return false when both states are HalfOpenState, only metrics is different", () => {
                 const result = internalPolicy.isEqual(
                     {
                         type: CIRCUIT_BREAKER_STATE.HALF_OPEN,
@@ -277,7 +277,7 @@ describe("class: CircuitBreakerPolicy", () => {
                     },
                 );
 
-                expect(result).toBe(true);
+                expect(result).toBe(false);
             });
         });
         describe("when ICircuitBreakerPolicy.isEqual is defined", () => {

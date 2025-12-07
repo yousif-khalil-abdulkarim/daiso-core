@@ -69,9 +69,9 @@ ${circuitBreakerLua}
 -- @return ICircuitBreakerAdapter
 local function circuitBreakerFactory(backoffSettings, policySettings, currentDate)
     local policy = CircuitBreakerPolicy(circuitBreakerPolicyFactory(policySettings))
-    local storage = CircuitBreakerStorage(policy)
+    local storage = CircuitBreakerStorage(policy, currentDate)
     local backoff = backoffPolicyFactory(backoffSettings)
-    local stateManager = CircuitBreakerStateManager(policy, backoff, currentDate)
-    return CircuitBreaker(storage, stateManager, backoff)
+    local stateManager = CircuitBreakerStateManager(policy, backoff)
+    return CircuitBreaker(storage, stateManager)
 end
 `;
