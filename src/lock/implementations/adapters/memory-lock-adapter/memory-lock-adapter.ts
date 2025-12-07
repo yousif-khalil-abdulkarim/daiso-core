@@ -52,6 +52,9 @@ export class MemoryLockAdapter implements ILockAdapter, IDeinitizable {
      */
     constructor(private readonly map = new Map<string, MemoryLockData>()) {}
 
+    /**
+     * Removes all in-memory lock data.
+     */
     // eslint-disable-next-line @typescript-eslint/require-await
     async deInit(): Promise<void> {
         for (const [key, lockData] of this.map) {

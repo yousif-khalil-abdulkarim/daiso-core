@@ -19,7 +19,7 @@ export const SHARED_LOCK_WRITER_STATE = {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Contracts
  */
-export type SharedLockWriterState =
+export type SharedLockWriterStateLiterals =
     (typeof SHARED_LOCK_WRITER_STATE)[keyof typeof SHARED_LOCK_WRITER_STATE];
 
 /**
@@ -38,7 +38,7 @@ export const SHARED_LOCK_READER_STATE = {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Contracts
  */
-export type SharedLockReaderState =
+export type SharedLockReaderStateLiterals =
     (typeof SHARED_LOCK_READER_STATE)[keyof typeof SHARED_LOCK_READER_STATE];
 
 /**

@@ -119,6 +119,10 @@ export class MongodbSemaphoreAdapter
         }
     }
 
+    /**
+     * Removes the collection where the semaphore keys are stored and all it's related indexes.
+     * Note all semaphore data will be removed.
+     */
     async deInit(): Promise<void> {
         try {
             await this.collection.dropIndexes();

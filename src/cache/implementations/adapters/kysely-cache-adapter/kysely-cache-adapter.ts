@@ -188,6 +188,10 @@ export class KyselyCacheAdapter<TType = unknown>
         }
     }
 
+    /**
+     * Removes all related cache tables and their rows.
+     * Note all cache data will be removed.
+     */
     async deInit(): Promise<void> {
         if (this.shouldRemoveExpiredKeys && this.timeoutId !== null) {
             clearInterval(this.timeoutId);

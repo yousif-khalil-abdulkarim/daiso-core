@@ -592,6 +592,10 @@ export class KyselySharedLockAdapter
         }
     }
 
+    /**
+     * Removes all related shared-lock tables and their rows.
+     * Note all shared-lock data will be removed.
+     */
     async deInit(): Promise<void> {
         if (this.shouldRemoveExpiredKeys && this.intervalId !== null) {
             clearInterval(this.intervalId);

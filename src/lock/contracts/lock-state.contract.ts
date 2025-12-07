@@ -20,7 +20,7 @@ export const LOCK_STATE = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
-export type LockState = (typeof LOCK_STATE)[keyof typeof LOCK_STATE];
+export type LockStateLiterals = (typeof LOCK_STATE)[keyof typeof LOCK_STATE];
 
 /**
  *

@@ -273,6 +273,10 @@ export class KyselySemaphoreAdapter
         }
     }
 
+    /**
+     * Removes all related semaphore tables and their rows.
+     * Note all semaphore data will be removed.
+     */
     async deInit(): Promise<void> {
         if (this.shouldRemoveExpiredKeys && this.intervalId !== null) {
             clearInterval(this.intervalId);
