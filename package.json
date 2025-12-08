@@ -230,6 +230,50 @@
             "types": "./dist/namespace/_module-exports.d.ts",
             "import": "./dist/namespace/_module-exports.js"
         },
+        "./rate-limiter": {
+            "types": "./dist/rate-limiter/implementations/derivables/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/derivables/_module-exports.js"
+        },
+        "./rate-limiter/contracts": {
+            "types": "./dist/rate-limiter/contracts/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/contracts/_module-exports.js"
+        },
+        "./rate-limiter/policies": {
+            "types": "./dist/rate-limiter/implementations/policies/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/policies/_module-exports.js"
+        },
+        "./rate-limiter/database-rate-limiter-adapter": {
+            "types": "./dist/rate-limiter/implementations/adapters/database-rate-limiter-adapter/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/adapters/database-rate-limiter-adapter/_module-exports.js"
+        },
+        "./rate-limiter/kysely-rate-limiter-storage-adapter": {
+            "types": "./dist/rate-limiter/implementations/adapters/kysely-rate-limiter-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/adapters/kysely-rate-limiter-storage-adapter/_module-exports.js"
+        },
+        "./rate-limiter/memory-rate-limiter-storage-adapter": {
+            "types": "./dist/rate-limiter/implementations/adapters/memory-rate-limiter-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/adapters/memory-rate-limiter-storage-adapter/_module-exports.js"
+        },
+        "./rate-limiter/mongodb-rate-limiter-storage-adapter": {
+            "types": "./dist/rate-limiter/implementations/adapters/mongodb-rate-limiter-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/adapters/mongodb-rate-limiter-storage-adapter/_module-exports.js"
+        },
+        "./rate-limiter/no-op-rate-limiter-adapter": {
+            "types": "./dist/rate-limiter/implementations/adapters/no-op-rate-limiter-adapter/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/adapters/no-op-rate-limiter-adapter/_module-exports.js"
+        },
+        "./rate-limiter/no-op-rate-limiter-storage-adapter": {
+            "types": "./dist/rate-limiter/implementations/adapters/no-op-rate-limiter-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/adapters/no-op-rate-limiter-storage-adapter/_module-exports.js"
+        },
+        "./rate-limiter/redis-rate-limiter-adapter": {
+            "types": "./dist/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/_module-exports.js"
+        },
+        "./rate-limiter/test-utilities": {
+            "types": "./dist/rate-limiter/implementations/test-utilities/_module-exports.d.ts",
+            "import": "./dist/rate-limiter/implementations/test-utilities/_module-exports.js"
+        },
         "./resilience": {
             "types": "./dist/resilience/_module-exports.d.ts",
             "import": "./dist/resilience/_module-exports.js"
