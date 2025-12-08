@@ -53,7 +53,7 @@ export type ICircuitBreakerStorageAdapter<TType = unknown> = {
     find(key: string): Promise<TType | null>;
 
     /**
-     * Removes a circuit breaker from the database..
+     * Removes a circuit breaker from the database.
      *
      * @param key The unique identifier for the cricuit breaker to remove.
      */

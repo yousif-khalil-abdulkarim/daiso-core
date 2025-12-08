@@ -21,6 +21,7 @@ import {
     type IPrunable,
 } from "@/utilities/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *
@@ -81,10 +82,12 @@ export type KyselySharedLockAdapterSettings = {
     /**
      * @default
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromMinutes(1)
      * ```
      */
-    expiredKeysRemovalInterval?: TimeSpan;
+    expiredKeysRemovalInterval?: ITimeSpan;
 
     /**
      * @default true
@@ -508,7 +511,9 @@ export class KyselySharedLockAdapter
             shouldRemoveExpiredKeys = true,
             currentDate = () => new Date(),
         } = settings;
-        this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
+        this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
+            expiredKeysRemovalInterval,
+        );
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.kysely = kysely;
         this.currentDate = currentDate;
