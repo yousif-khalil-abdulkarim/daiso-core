@@ -1,0 +1,44 @@
+/**
+ * @module RateLimiter
+ */
+
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { IRateLimiterProvider } from "@/rate-limiter/contracts/rate-limiter-provider.contract.js";
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
+ * @group Errors
+ */
+export type IRateLimiterAdapterState = {
+    success: boolean;
+    attempt: number;
+    limit: number;
+    resetTime: ITimeSpan | null;
+};
+
+/**
+ * The `IRateLimiterAdapter` contract defines a way for managing rate limiters independent of the underlying technology and algorithm.
+ * This contract is not meant to be used directly, instead you should use {@link IRateLimiterProvider | `IRateLimiterProvider`} contract.
+ *
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
+ * @group Errors
+ */
+export type IRateLimiterAdapter = {
+    /**
+     * The `getState` method returns the state of the rate limiter.
+     */
+    getState(key: string, limit: number): Promise<IRateLimiterAdapterState>;
+
+    /**
+     * The `updateState` method updates the state of the rate limiter and returns the new state.
+     */
+    updateState(key: string, limit: number): Promise<IRateLimiterAdapterState>;
+
+    /**
+     * The `reset` method resets rate limiter to its initial state regardless of the current state.
+     */
+    reset(key: string): Promise<void>;
+};
