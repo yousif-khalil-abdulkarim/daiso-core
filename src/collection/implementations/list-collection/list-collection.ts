@@ -2,7 +2,6 @@
  * @module Collection
  */
 
-import { isIterable } from "@/collection/implementations/_shared.js";
 import type {
     EnsureMap,
     EnsureRecord,
@@ -27,8 +26,11 @@ import {
 } from "@/collection/contracts/_module-exports.js";
 import {
     isInvokable,
+    isIterable,
     isPromiseLike,
     resolveInvokable,
+    resolveIterableValue,
+    type IterableValue,
     type Lazyable,
 } from "@/utilities/_module-exports.js";
 import { resolveLazyable } from "@/utilities/_module-exports.js";
@@ -70,11 +72,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
      * ```
      */
     static concat<TValue>(
-        iterables: Iterable<Iterable<TValue>>,
+        iterables: IterableValue<IterableValue<TValue>>,
     ): ICollection<TValue> {
         let array: TValue[] = [];
-        for (const iterable of iterables) {
-            array = [...array, ...iterable];
+        for (const iterable of resolveIterableValue(iterables)) {
+            array = [...array, ...resolveIterableValue(iterable)];
         }
         return new ListCollection(array);
     }
@@ -118,8 +120,8 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
      * ```
      */
     static difference<TValue, TSelect>(
-        iterableA: Iterable<TValue>,
-        iterableB: Iterable<TValue>,
+        iterableA: IterableValue<TValue>,
+        iterableB: IterableValue<TValue>,
         selectFn?: Map<TValue, ICollection<TValue>, TSelect>,
     ): ICollection<TValue> {
         return new ListCollection(iterableA).difference(iterableB, selectFn);
@@ -154,8 +156,8 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
      * ```
      */
     static zip<TValueA, TValueB>(
-        iterableA: Iterable<TValueA>,
-        iterableB: Iterable<TValueB>,
+        iterableA: IterableValue<TValueA>,
+        iterableB: IterableValue<TValueB>,
     ): ICollection<[TValueA, TValueB]> {
         return new ListCollection(iterableA).zip(iterableB);
     }
@@ -218,8 +220,8 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
      * const collection = new ListCollection(new MyIterable());
      * ```
      */
-    constructor(iterable: Iterable<TInput> = []) {
-        this.array = [...iterable];
+    constructor(iterable: IterableValue<TInput> = []) {
+        this.array = [...resolveIterableValue(iterable)];
     }
 
     serialize(): SerializedCollection<TInput> {
@@ -808,7 +810,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     difference<TOutput = TInput>(
-        iterable: Iterable<TInput>,
+        iterable: IterableValue<TInput>,
         selectFn: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
             item as unknown as TOutput,
     ): ICollection<TInput> {
@@ -839,9 +841,9 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     padStart<TExtended = TInput>(
         maxLength: number,
-        fillItems: Iterable<TExtended>,
+        fillItems: IterableValue<TExtended>,
     ): ICollection<TInput | TExtended> {
-        const fillItemsArray = [...fillItems];
+        const fillItemsArray = [...resolveIterableValue(fillItems)];
         const size = this.size();
         const repeat = Math.floor((maxLength - size) / fillItemsArray.length);
         const resultItemsArray: Array<TInput | TExtended> = [];
@@ -861,9 +863,9 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     padEnd<TExtended = TInput>(
         maxLength: number,
-        fillItems: Iterable<TExtended>,
+        fillItems: IterableValue<TExtended>,
     ): ICollection<TInput | TExtended> {
-        const fillItemsArray = [...fillItems];
+        const fillItemsArray = [...resolveIterableValue(fillItems)];
         const size = this.size();
         const repeat = Math.floor((maxLength - size) / fillItemsArray.length);
         const resultItemsArray: Array<TInput | TExtended> = [];
@@ -886,20 +888,26 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     prepend<TExtended = TInput>(
-        iterable: Iterable<TInput | TExtended>,
+        iterable: IterableValue<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
-        return new ListCollection([...iterable, ...this.array]);
+        return new ListCollection([
+            ...resolveIterableValue(iterable),
+            ...this.array,
+        ]);
     }
 
     append<TExtended = TInput>(
-        iterable: Iterable<TInput | TExtended>,
+        iterable: IterableValue<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
-        return new ListCollection([...this.array, ...iterable]);
+        return new ListCollection([
+            ...this.array,
+            ...resolveIterableValue(iterable),
+        ]);
     }
 
     insertBefore<TExtended = TInput>(
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
-        iterable: Iterable<TInput | TExtended>,
+        iterable: IterableValue<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
         const index = this.array.findIndex((item, index) =>
             resolveInvokable(predicateFn)(item, index, this),
@@ -908,13 +916,13 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
             return new ListCollection<TInput | TExtended>(this.array);
         }
         const newArray = [...this.array] as Array<TInput | TExtended>;
-        newArray.splice(index, 0, ...iterable);
+        newArray.splice(index, 0, ...resolveIterableValue(iterable));
         return new ListCollection(newArray);
     }
 
     insertAfter<TExtended = TInput>(
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
-        iterable: Iterable<TInput | TExtended>,
+        iterable: IterableValue<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
         const index = this.array.findIndex((item, index) =>
             resolveInvokable(predicateFn)(item, index, this),
@@ -928,17 +936,17 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
             lastPart = this.array.slice(index + 1);
         return new ListCollection([
             ...firstPart,
-            ...iterable,
+            ...resolveIterableValue(iterable),
             ...lastPart,
         ]) as ICollection<TInput | TExtended>;
     }
 
     crossJoin<TExtended>(
-        iterable: Iterable<TExtended>,
+        iterable: IterableValue<TExtended>,
     ): ICollection<CrossJoinResult<TInput, TExtended>> {
         const array: Array<Array<TInput | TExtended>> = [];
         for (const itemA of this) {
-            for (const itemB of iterable) {
+            for (const itemB of resolveIterableValue(iterable)) {
                 array.push([
                     ...(isIterable<TInput | TExtended>(itemA)
                         ? itemA
@@ -956,9 +964,9 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     zip<TExtended>(
-        iterable: Iterable<TExtended>,
+        iterable: IterableValue<TExtended>,
     ): ICollection<[TInput, TExtended]> {
-        const iterableArray = [...iterable];
+        const iterableArray = [...resolveIterableValue(iterable)];
         let size = iterableArray.length;
         if (size > this.size()) {
             size = this.size();

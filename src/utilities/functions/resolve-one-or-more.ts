@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-import { isIterable } from "@/collection/implementations/_shared.js";
+import { isIterable } from "@/utilities/functions/is-iterable.js";
 
 /**
  *

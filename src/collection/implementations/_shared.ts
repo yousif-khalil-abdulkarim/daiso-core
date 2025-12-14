@@ -2,17 +2,6 @@
  * @module Collection
  */
 
-import type { ISerderRegister } from "@/serde/contracts/_module-exports.js";
-import {
-    CORE,
-    resolveOneOrMore,
-    type OneOrMore,
-} from "@/utilities/_module-exports.js";
-import {
-    IterableCollection,
-    ListCollection,
-} from "@/collection/implementations/_module-exports.js";
-
 /**
  * @internal
  */
@@ -44,54 +33,4 @@ class RangeIterable implements Iterable<number> {
  */
 export function range(from: number, to: number): Iterable<number> {
     return new RangeIterable(from, to);
-}
-
-/**
- * The `isIterable` returns true if the value is {@link Iterable | `Iterable`}.
- *
- * IMPORT_PATH: `"@daiso-tech/core/collection"`
- * @group Utilities
- */
-export function isIterable<TItem>(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    value: any,
-): value is Iterable<TItem> {
-    return (
-        typeof value === "object" &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        typeof value[Symbol.iterator] === "function"
-    );
-}
-
-/**
- * The `isAsyncIterable` returns true if the value is {@link AsyncIterable | `AsyncIterable`}.
- *
- * IMPORT_PATH: `"@daiso-tech/core/collection"`
- * @group Utilities
- */
-export function isAsyncIterable<TItem>(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    value: any,
-): value is AsyncIterable<TItem> {
-    return (
-        typeof value === "object" &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        typeof value[Symbol.asyncIterator] === "function"
-    );
-}
-
-/**
- * The `registerCollectionsToSerde` function registers the `ListCollection` and `IterableCollection` classes with `ISerderRegister`, ensuring they will properly be serialized and deserialized.
- *
- * IMPORT_PATH: `"@daiso-tech/core/collection"`
- * @group Utilities
- */
-export function registerCollectionsToSerde(
-    serde: OneOrMore<ISerderRegister>,
-): void {
-    for (const serde_ of resolveOneOrMore(serde)) {
-        serde_
-            .registerClass(ListCollection, CORE)
-            .registerClass(IterableCollection, CORE);
-    }
 }

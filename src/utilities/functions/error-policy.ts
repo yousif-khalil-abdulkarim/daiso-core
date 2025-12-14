@@ -16,7 +16,7 @@ import { resolveOneOrMore } from "@/utilities/functions/resolve-one-or-more.js";
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Middlewares
+ * @group Utilities
  */
 export type ErrorPolicyBoolSetting = {
     /**
@@ -44,7 +44,7 @@ export function isErrorPolicyBoolSetting(
  * The `ErrorPolicy` can be a predicate function, {@link StandardSchemaV1 | `StandardSchemaV1`} and a class.
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Middlewares
+ * @group Utilities
  */
 export type ErrorPolicy<TError = unknown> =
     | Invokable<[error: TError], boolean>
@@ -55,7 +55,7 @@ export type ErrorPolicy<TError = unknown> =
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- * @group Middlewares
+ * @group Utilities
  */
 export type ErrorPolicySettings<TError = unknown> = {
     /**

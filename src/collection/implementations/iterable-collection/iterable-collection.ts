@@ -62,6 +62,8 @@ import {
 import {
     isInvokable,
     resolveInvokable,
+    resolveIterableValue,
+    type IterableValue,
     type Lazyable,
 } from "@/utilities/_module-exports.js";
 import { resolveLazyable } from "@/utilities/_module-exports.js";
@@ -105,9 +107,11 @@ export class IterableCollection<TInput = unknown>
      * ```
      */
     static concat<TValue>(
-        iterables: Iterable<Iterable<TValue>>,
+        iterables: IterableValue<IterableValue<TValue>>,
     ): ICollection<TValue> {
-        return new IterableCollection(new MergeIterable(iterables));
+        return new IterableCollection(
+            new MergeIterable(resolveIterableValue(iterables)),
+        );
     }
 
     /**
@@ -149,8 +153,8 @@ export class IterableCollection<TInput = unknown>
      * ```
      */
     static difference<TValue, TSelect>(
-        iterableA: Iterable<TValue>,
-        iterableB: Iterable<TValue>,
+        iterableA: IterableValue<TValue>,
+        iterableB: IterableValue<TValue>,
         selectFn?: Map<TValue, ICollection<TValue>, TSelect>,
     ): ICollection<TValue> {
         return new IterableCollection(iterableA).difference(
@@ -188,8 +192,8 @@ export class IterableCollection<TInput = unknown>
      * ```
      */
     static zip<TValueA, TValueB>(
-        iterableA: Iterable<TValueA>,
-        iterableB: Iterable<TValueB>,
+        iterableA: IterableValue<TValueA>,
+        iterableB: IterableValue<TValueB>,
     ): ICollection<[TValueA, TValueB]> {
         return new IterableCollection(iterableA).zip(iterableB);
     }
@@ -203,10 +207,12 @@ export class IterableCollection<TInput = unknown>
     private static DEFAULT_CHUNK_SIZE = 1024;
 
     private static makeCollection = <TInput>(
-        iterable: Iterable<TInput> = [],
+        iterable: IterableValue<TInput> = [],
     ): ICollection<TInput> => {
         return new IterableCollection<TInput>(iterable);
     };
+
+    private readonly iterable: Iterable<TInput>;
 
     /**
      * The `constructor` takes an {@link Iterable | `Iterable`}.
@@ -258,7 +264,9 @@ export class IterableCollection<TInput = unknown>
      * const collection = new IterableCollection(new MyIterable());
      * ```
      */
-    constructor(private readonly iterable: Iterable<TInput>) {}
+    constructor(iterable: IterableValue<TInput>) {
+        this.iterable = resolveIterableValue(iterable);
+    }
 
     serialize(): SerializedCollection<TInput> {
         return {
@@ -760,7 +768,7 @@ export class IterableCollection<TInput = unknown>
     }
 
     difference<TOutput = TInput>(
-        iterable: Iterable<TInput>,
+        iterable: IterableValue<TInput>,
         mapFn: Map<TInput, ICollection<TInput>, TOutput> = (item) =>
             item as unknown as TOutput,
     ): ICollection<TInput> {
@@ -789,13 +797,13 @@ export class IterableCollection<TInput = unknown>
 
     padStart<TExtended = TInput>(
         maxLength: number,
-        fillItems: Iterable<TExtended>,
+        fillItems: IterableValue<TExtended>,
     ): ICollection<TInput | TExtended> {
         return new IterableCollection(
             new PadStartIterable(
                 this,
                 maxLength,
-                fillItems,
+                resolveIterableValue(fillItems),
                 IterableCollection.makeCollection,
             ),
         );
@@ -803,13 +811,13 @@ export class IterableCollection<TInput = unknown>
 
     padEnd<TExtended = TInput>(
         maxLength: number,
-        fillItems: Iterable<TExtended>,
+        fillItems: IterableValue<TExtended>,
     ): ICollection<TInput | TExtended> {
         return new IterableCollection(
             new PadEndIterable(
                 this,
                 maxLength,
-                fillItems,
+                resolveIterableValue(fillItems),
                 IterableCollection.makeCollection,
             ),
         );
@@ -820,51 +828,65 @@ export class IterableCollection<TInput = unknown>
     }
 
     prepend<TExtended = TInput>(
-        iterable: Iterable<TInput | TExtended>,
+        iterable: IterableValue<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
-        return new IterableCollection(new MergeIterable([iterable, this]));
+        return new IterableCollection(
+            new MergeIterable([resolveIterableValue(iterable), this]),
+        );
     }
 
     append<TExtended = TInput>(
-        iterable: Iterable<TInput | TExtended>,
+        iterable: IterableValue<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
-        return new IterableCollection(new MergeIterable([this, iterable]));
+        return new IterableCollection(
+            new MergeIterable([this, resolveIterableValue(iterable)]),
+        );
     }
 
     insertBefore<TExtended = TInput>(
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
-        iterable: Iterable<TInput | TExtended>,
+        iterable: IterableValue<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
         return new IterableCollection(
-            new InsertBeforeIterable(this, predicateFn, iterable),
+            new InsertBeforeIterable(
+                this,
+                predicateFn,
+                resolveIterableValue(iterable),
+            ),
         );
     }
 
     insertAfter<TExtended = TInput>(
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
-        iterable: Iterable<TInput | TExtended>,
+        iterable: IterableValue<TInput | TExtended>,
     ): ICollection<TInput | TExtended> {
         return new IterableCollection(
-            new InsertAfterIterable(this, predicateFn, iterable),
+            new InsertAfterIterable(
+                this,
+                predicateFn,
+                resolveIterableValue(iterable),
+            ),
         );
     }
 
     crossJoin<TExtended>(
-        iterable: Iterable<TExtended>,
+        iterable: IterableValue<TExtended>,
     ): ICollection<CrossJoinResult<TInput, TExtended>> {
         return new IterableCollection(
             new CrossJoinIterable(
                 this,
-                iterable,
+                resolveIterableValue(iterable),
                 IterableCollection.makeCollection,
             ),
         );
     }
 
     zip<TExtended>(
-        iterable: Iterable<TExtended>,
+        iterable: IterableValue<TExtended>,
     ): ICollection<[TInput, TExtended]> {
-        return new IterableCollection(new ZipIterable(this, iterable));
+        return new IterableCollection(
+            new ZipIterable(this, resolveIterableValue(iterable)),
+        );
     }
 
     sort(comparator?: Comparator<TInput>): ICollection<TInput> {

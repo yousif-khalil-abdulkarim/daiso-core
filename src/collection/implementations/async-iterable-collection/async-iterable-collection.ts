@@ -60,6 +60,7 @@ import {
 } from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
 import {
     isInvokable,
+    resolveAsyncIterableValue,
     resolveInvokable,
     type AsyncIterableValue,
     type AsyncLazyable,
@@ -212,6 +213,8 @@ export class AsyncIterableCollection<TInput = unknown>
         return new AsyncIterableCollection<TInput>(iterable);
     };
 
+    private readonly iterable: AsyncIterable<TInput>;
+
     /**
      * The `constructor` takes an {@link Iterable | `Iterable`} or {@link AsyncIterable | `AsyncIterable`}.
      *
@@ -277,7 +280,9 @@ export class AsyncIterableCollection<TInput = unknown>
      * const collection = new AsyncIterableCollection(new MyIterable());
      * ```
      */
-    constructor(private readonly iterable: AsyncIterableValue<TInput> = []) {}
+    constructor(iterable: AsyncIterableValue<TInput> = []) {
+        this.iterable = resolveAsyncIterableValue(iterable);
+    }
 
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
         yield* this.iterable;

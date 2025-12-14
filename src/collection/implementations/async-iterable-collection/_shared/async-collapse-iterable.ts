@@ -2,10 +2,7 @@
  * @module Collection
  */
 
-import {
-    isAsyncIterable,
-    isIterable,
-} from "@/collection/implementations/_shared.js";
+import { isAsyncIterable, isIterable } from "@/utilities/_module-exports.js";
 import {
     type AsyncCollapse,
     type IAsyncCollection,

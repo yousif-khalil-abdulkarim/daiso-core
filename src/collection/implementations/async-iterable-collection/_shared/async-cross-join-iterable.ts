@@ -4,11 +4,11 @@
 
 import type { CrossJoinResult } from "@/collection/contracts/_module-exports.js";
 import { type IAsyncCollection } from "@/collection/contracts/_module-exports.js";
-import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
 import {
-    isAsyncIterable,
-    isIterable,
-} from "@/collection/implementations/_shared.js";
+    resolveAsyncIterableValue,
+    type AsyncIterableValue,
+} from "@/utilities/_module-exports.js";
+import { isAsyncIterable, isIterable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -28,7 +28,9 @@ export class AsyncCrossJoinIterable<TInput, TExtended>
         CrossJoinResult<TInput, TExtended>
     > {
         for await (const itemA of this.collection) {
-            for await (const itemB of this.iterable) {
+            for await (const itemB of resolveAsyncIterableValue(
+                this.iterable,
+            )) {
                 let collection = this.makeCollection<TInput | TExtended>([]);
                 if (
                     isIterable<TInput | TExtended>(itemA) ||
