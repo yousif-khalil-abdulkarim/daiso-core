@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import { isIterable } from "@/collection/implementations/_shared.js";
+import { resolveAsyncIterableValue } from "@/utilities/_module-exports.js";
 import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
 
 /**
@@ -17,19 +17,13 @@ export class AsyncZipIterable<TInput, TExtended>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<[TInput, TExtended]> {
-        let iteratorA: AsyncIterator<TInput> | Iterator<TInput>;
-        if (isIterable(this.iterableA)) {
-            iteratorA = this.iterableA[Symbol.iterator]();
-        } else {
-            iteratorA = this.iterableA[Symbol.asyncIterator]();
-        }
+        const iteratorA = resolveAsyncIterableValue(this.iterableA)[
+            Symbol.asyncIterator
+        ]();
 
-        let iteratorB: AsyncIterator<TExtended> | Iterator<TExtended>;
-        if (isIterable(this.iterableB)) {
-            iteratorB = this.iterableB[Symbol.iterator]();
-        } else {
-            iteratorB = this.iterableB[Symbol.asyncIterator]();
-        }
+        const iteratorB = resolveAsyncIterableValue(this.iterableB)[
+            Symbol.asyncIterator
+        ]();
 
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         while (true) {

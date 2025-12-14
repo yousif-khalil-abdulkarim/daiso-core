@@ -2,7 +2,10 @@
  * @module Collection
  */
 
-import { isIterable } from "@/collection/implementations/_shared.js";
+import {
+    isIterable,
+    resolveAsyncIterableValue,
+} from "@/utilities/_module-exports.js";
 import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
 
 /**
@@ -18,11 +21,13 @@ export class AsyncMergeIterable<TInput> implements AsyncIterable<TInput> {
     async *[Symbol.asyncIterator](): AsyncIterator<TInput> {
         if (isIterable(this.iterables)) {
             for (const iterable of this.iterables) {
-                yield* iterable;
+                yield* resolveAsyncIterableValue(iterable);
             }
         } else {
-            for await (const iterable of this.iterables) {
-                yield* iterable;
+            for await (const iterable of resolveAsyncIterableValue(
+                this.iterables,
+            )) {
+                yield* resolveAsyncIterableValue(iterable);
             }
         }
     }

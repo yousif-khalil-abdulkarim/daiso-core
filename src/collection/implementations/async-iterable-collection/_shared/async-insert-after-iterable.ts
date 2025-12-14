@@ -7,6 +7,7 @@ import {
     type IAsyncCollection,
 } from "@/collection/contracts/_module-exports.js";
 import {
+    resolveAsyncIterableValue,
     resolveInvokable,
     type AsyncIterableValue,
 } from "@/utilities/_module-exports.js";
@@ -36,7 +37,7 @@ export class AsyncInsertAfterIterable<TInput, TExtended>
                     this.collection,
                 ))
             ) {
-                yield* this.iterable;
+                yield* resolveAsyncIterableValue(this.iterable);
                 hasMatched = true;
             }
             index++;

@@ -2,7 +2,10 @@
  * @module Collection
  */
 
-import { type AsyncIterableValue } from "@/utilities/_module-exports.js";
+import {
+    resolveAsyncIterableValue,
+    type AsyncIterableValue,
+} from "@/utilities/_module-exports.js";
 
 /**
  * @internal
@@ -14,7 +17,7 @@ export class AsyncEntriesIterable<TInput>
 
     async *[Symbol.asyncIterator](): AsyncIterator<[number, TInput]> {
         let index = 0;
-        for await (const item of this.iterable) {
+        for await (const item of resolveAsyncIterableValue(this.iterable)) {
             yield [index, item];
             index++;
         }
