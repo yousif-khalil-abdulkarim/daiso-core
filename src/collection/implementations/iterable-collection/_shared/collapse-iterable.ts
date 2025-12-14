@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import { isIterable } from "@/collection/implementations/_shared.js";
+import { isIterable } from "@/utilities/_module-exports.js";
 import {
     type Collapse,
     type ICollection,

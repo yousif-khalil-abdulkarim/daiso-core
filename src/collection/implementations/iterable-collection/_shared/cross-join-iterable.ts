@@ -2,11 +2,11 @@
  * @module Collection
  */
 
-import { isIterable } from "@/collection/implementations/_shared.js";
 import type {
     CrossJoinResult,
     ICollection,
 } from "@/collection/contracts/_module-exports.js";
+import { isIterable } from "@/utilities/_module-exports.js";
 
 /**
  * @internal
