@@ -35,8 +35,8 @@ export type SlidingWindowLimiterTestSuiteSettings = {
  * @group TestUtilities
  */
 const rateLimiterPolicySettings: Required<SlidingWindowLimiterSettings> = {
-    attempts: 5,
-    timeSpan: TimeSpan.fromMilliseconds(100),
+    maxAttempts: 5,
+    window: TimeSpan.fromMilliseconds(100),
 };
 
 /**

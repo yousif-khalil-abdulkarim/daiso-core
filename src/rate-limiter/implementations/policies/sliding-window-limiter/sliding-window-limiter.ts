@@ -19,7 +19,7 @@ export type SlidingWindowLimiterSettings = {
      *
      * @default 10
      */
-    attempts?: number;
+    maxAttempts?: number;
 
     /**
      * The time span in which `maxAttempts` are allowed.
@@ -31,7 +31,7 @@ export type SlidingWindowLimiterSettings = {
      * TimeSpan.fromSeconds(1)
      * ```
      */
-    timeSpan?: ITimeSpan;
+    window?: ITimeSpan;
 };
 
 /**
@@ -40,7 +40,7 @@ export type SlidingWindowLimiterSettings = {
 export function resolveSlidingWindowLimiterSettings(
     settings: SlidingWindowLimiterSettings,
 ): Required<SlidingWindowLimiterSettings> {
-    const { attempts: maxAttempts = 10, timeSpan = TimeSpan.fromSeconds(1) } = settings;
+    const { maxAttempts = 10, window = TimeSpan.fromSeconds(1) } = settings;
     if (!Number.isSafeInteger(maxAttempts)) {
         throw new TypeError(
             `"SlidingWindowLimiterSettings.maxAttempts" should be an integer, got float instead`,
@@ -52,8 +52,8 @@ export function resolveSlidingWindowLimiterSettings(
         );
     }
     return {
-        attempts: maxAttempts,
-        timeSpan,
+        maxAttempts: maxAttempts,
+        window,
     };
 }
 
@@ -62,7 +62,7 @@ export function resolveSlidingWindowLimiterSettings(
  */
 export type SerializedSlidingWindowLimiterSettings = {
     maxAttempts?: number;
-    timeSpan?: number;
+    window?: number;
 };
 
 /**
@@ -71,21 +71,23 @@ export type SerializedSlidingWindowLimiterSettings = {
 export function serializeSlidingWindowLimiterSettings(
     settings: SlidingWindowLimiterSettings,
 ): Required<SerializedSlidingWindowLimiterSettings> {
-    const { attempts: maxAttempts, timeSpan } =
+    const { maxAttempts: maxAttempts, window } =
         resolveSlidingWindowLimiterSettings(settings);
     return {
         maxAttempts,
-        timeSpan: timeSpan[TO_MILLISECONDS](),
+        window: window[TO_MILLISECONDS](),
     };
 }
 
 /**
+ * Defines the structure for tracking attempts in the rate limiter.
+ * The key is the timestamp of the window's start (e.g., 1700000000000).
+ * The value is the attempts for that window.
+ *
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/policies"`
  * @group Policies
  */
-export type SlidingWindowLimiterState = {
-    attempt: number;
-};
+export type SlidingWindowLimiterState = Partial<Record<number, number>>;
 
 /**
  * Combined approach of `slidingLogs` and `fixedWindow` with lower storage
@@ -106,38 +108,133 @@ export type SlidingWindowLimiterState = {
 export class SlidingWindowLimiter
     implements IRateLimiterPolicy<SlidingWindowLimiterState>
 {
-    constructor(settings: SlidingWindowLimiterSettings = {}) {}
+    private readonly maxAttempts: number;
+    private readonly window: TimeSpan;
+    private readonly margin = TimeSpan.fromSeconds(1);
 
-    initialMetrics(): SlidingWindowLimiterState {
-        throw new Error("Method not implemented.");
+    constructor(settings: SlidingWindowLimiterSettings = {}) {
+        const { maxAttempts, window } =
+            resolveSlidingWindowLimiterSettings(settings);
+        this.maxAttempts = maxAttempts;
+        this.window = TimeSpan.fromTimeSpan(window);
+    }
+
+    private currentWindow(currentDate: Date): number {
+        return (
+            Math.floor(currentDate.getTime() / this.window.toMilliseconds()) *
+            this.window.toMilliseconds()
+        );
+    }
+
+    private previousWindow(currentDate: Date): number {
+        return this.currentWindow(currentDate) - this.window.toMilliseconds();
+    }
+
+    private cleanup(
+        metrics: SlidingWindowLimiterState,
+        currentDate: Date,
+    ): SlidingWindowLimiterState {
+        const previousWindow = this.previousWindow(currentDate);
+        return Object.fromEntries(
+            Object.entries(metrics).filter(([timeStampAsStr]) => {
+                const timeStamp = Number(timeStampAsStr);
+
+                return timeStamp >= previousWindow;
+            }),
+        );
+    }
+
+    private currentAttempt(
+        currentMetrics: SlidingWindowLimiterState,
+        currentDate: Date,
+    ): number {
+        return currentMetrics[this.currentWindow(currentDate)] ?? 0;
+    }
+
+    private previousAttempt(
+        currentMetrics: SlidingWindowLimiterState,
+        currentDate: Date,
+    ): number {
+        let previousAttempt =
+            currentMetrics[this.previousWindow(currentDate)] ?? 0;
+
+        const percentageInCurrentWindow =
+            (currentDate.getTime() % this.window.toMilliseconds()) /
+            this.window.toMilliseconds();
+        previousAttempt = Math.floor(
+            (1 - percentageInCurrentWindow) * previousAttempt,
+        );
+
+        return previousAttempt;
+    }
+
+    initialMetrics(currentDate: Date): SlidingWindowLimiterState {
+        return {
+            [this.currentWindow(currentDate)]: 0,
+        };
     }
 
     shouldBlock(
         currentMetrics: SlidingWindowLimiterState,
         currentDate: Date,
     ): boolean {
-        throw new Error("Method not implemented.");
+        const currentAttempts = this.currentAttempt(
+            currentMetrics,
+            currentDate,
+        );
+        const previousAttempts = this.previousAttempt(
+            currentMetrics,
+            currentDate,
+        );
+        return currentAttempts + previousAttempts >= this.maxAttempts;
     }
 
-    getExpiration?(currentMetrics: SlidingWindowLimiterState): TimeSpan {
-        throw new Error("Method not implemented.");
+    getExpiration(
+        _currentMetrics: SlidingWindowLimiterState,
+        currentDate: Date,
+    ): Date {
+        return this.window
+            .multiply(2)
+            .addTimeSpan(this.margin)
+            .toEndDate(new Date(this.currentWindow(currentDate)));
     }
 
-    getAttempts(currentMetrics: SlidingWindowLimiterState): number {
-        return currentMetrics.attempt;
+    getAttempts(
+        currentMetrics: SlidingWindowLimiterState,
+        currentDate: Date,
+    ): number {
+        const currentAttempt = this.currentAttempt(currentMetrics, currentDate);
+        const previousAttempt = this.previousAttempt(
+            currentMetrics,
+            currentDate,
+        );
+        return currentAttempt + previousAttempt;
     }
 
     updateMetrics(
         currentMetrics: SlidingWindowLimiterState,
         currentDate: Date,
     ): SlidingWindowLimiterState {
-        throw new Error("Method not implemented.");
+        currentMetrics = this.cleanup(currentMetrics, currentDate);
+        const currentAttempt = this.currentAttempt(currentMetrics, currentDate);
+        const currentKey = this.currentWindow(currentDate);
+        return {
+            ...currentMetrics,
+            [currentKey]: currentAttempt + 1,
+        };
     }
 
-    isEqual?(
+    isEqual(
         metricsA: SlidingWindowLimiterState,
         metricsB: SlidingWindowLimiterState,
     ): boolean {
-        throw new Error("Method not implemented.");
+        for (const key in metricsA) {
+            const valueA = metricsA[key];
+            const valueB = metricsB[key];
+            if (valueA !== valueB) {
+                return false;
+            }
+        }
+        return true;
     }
 }
