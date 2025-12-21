@@ -22,7 +22,6 @@ import {
 } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/_module.js";
 import type { Namespace } from "@/namespace/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 import { DatabaseRateLimiterAdapter } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/_module-exports.js";
 import { type BackoffPolicy } from "@/backoff-policies/_module-exports.js";
 
@@ -126,15 +125,6 @@ export class DatabaseRateLimiterProviderFactory<TAdapters extends string>
         return new DatabaseRateLimiterProviderFactory({
             ...this.settings,
             eventBus,
-        });
-    }
-
-    setSlowCallTime(
-        slowCallTime?: ITimeSpan,
-    ): DatabaseRateLimiterProviderFactory<TAdapters> {
-        return new DatabaseRateLimiterProviderFactory({
-            ...this.settings,
-            slowCallTime,
         });
     }
 
