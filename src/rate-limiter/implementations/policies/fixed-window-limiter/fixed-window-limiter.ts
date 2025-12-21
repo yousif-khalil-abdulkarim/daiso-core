@@ -2,7 +2,7 @@
  * @module RateLimiter
  */
 
-import type { IRateLimiterPolicy } from "@/rate-limiter/contracts/rate-limiter-policy.contract.js";
+import type { IRateLimiterPolicy } from "@/rate-limiter/contracts/_module-exports.js";
 import {
     TO_MILLISECONDS,
     type ITimeSpan,
@@ -14,13 +14,6 @@ import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
  * @group Policies
  */
 export type FixedWindowLimiterSettings = {
-    /**
-     * How many attempts are allowed per window.
-     *
-     * @default 10
-     */
-    limit?: number;
-
     /**
      * The time span in which attempts are active before reseting.
      *
@@ -40,19 +33,9 @@ export type FixedWindowLimiterSettings = {
 export function resolveFixedWindowLimiterSettings(
     settings: FixedWindowLimiterSettings,
 ): Required<FixedWindowLimiterSettings> {
-    const { limit = 10, window = TimeSpan.fromSeconds(1) } = settings;
-    if (!Number.isSafeInteger(limit)) {
-        throw new TypeError(
-            `"FixedWindowLimiterSettings.limit" should be an integer, got float instead`,
-        );
-    }
-    if (limit < 1) {
-        throw new RangeError(
-            `"FixedWindowLimiterSettings.limit" should be a positive, got ${String(limit)}`,
-        );
-    }
+    const { window = TimeSpan.fromSeconds(1) } = settings;
+
     return {
-        limit,
         window,
     };
 }
@@ -61,7 +44,6 @@ export function resolveFixedWindowLimiterSettings(
  * @internal
  */
 export type SerializedFixedWindowLimiterSettings = {
-    limit?: number;
     window?: number;
 };
 
@@ -71,9 +53,8 @@ export type SerializedFixedWindowLimiterSettings = {
 export function serializeFixedWindowLimiterSettings(
     settings: FixedWindowLimiterSettings,
 ): Required<SerializedFixedWindowLimiterSettings> {
-    const { limit, window } = resolveFixedWindowLimiterSettings(settings);
+    const { window } = resolveFixedWindowLimiterSettings(settings);
     return {
-        limit,
         window: window[TO_MILLISECONDS](),
     };
 }
@@ -83,7 +64,7 @@ export function serializeFixedWindowLimiterSettings(
  * @group Policies
  */
 export type FixedWindowLimiterState = {
-    limit: number;
+    attempt: number;
 
     /**
      * Unix timestamp in ms
@@ -112,31 +93,30 @@ export type FixedWindowLimiterState = {
 export class FixedWindowLimiter
     implements IRateLimiterPolicy<FixedWindowLimiterState>
 {
-    private readonly limit: number;
     private readonly window: TimeSpan;
 
     constructor(settings: FixedWindowLimiterSettings = {}) {
-        const { limit, window } = resolveFixedWindowLimiterSettings(settings);
-        this.limit = limit;
+        const { window } = resolveFixedWindowLimiterSettings(settings);
         this.window = TimeSpan.fromTimeSpan(window);
     }
 
     initialMetrics(currentDate: Date): FixedWindowLimiterState {
         return {
-            limit: 0,
+            attempt: 0,
             lastAttemptAt: currentDate.getTime(),
         };
     }
 
     shouldBlock(
         currentMetrics: FixedWindowLimiterState,
+        limit: number,
         currentDate: Date,
     ): boolean {
         const timeSinceLastAttempt =
             currentDate.getTime() - currentMetrics.lastAttemptAt;
         return (
             timeSinceLastAttempt < this.window.toMilliseconds() &&
-            currentMetrics.limit >= this.limit
+            currentMetrics.attempt >= limit
         );
     }
 
@@ -151,7 +131,7 @@ export class FixedWindowLimiter
         currentMetrics: FixedWindowLimiterState,
         _currentDate: Date,
     ): number {
-        return currentMetrics.limit;
+        return currentMetrics.attempt;
     }
 
     updateMetrics(
@@ -159,7 +139,7 @@ export class FixedWindowLimiter
         currentDate: Date,
     ): FixedWindowLimiterState {
         return {
-            limit: currentMetrics.limit + 1,
+            attempt: currentMetrics.attempt + 1,
             lastAttemptAt: currentDate.getTime(),
         };
     }
@@ -169,7 +149,7 @@ export class FixedWindowLimiter
         metricsB: FixedWindowLimiterState,
     ): boolean {
         return (
-            metricsA.limit === metricsB.limit &&
+            metricsA.attempt === metricsB.attempt &&
             metricsA.lastAttemptAt === metricsB.lastAttemptAt
         );
     }

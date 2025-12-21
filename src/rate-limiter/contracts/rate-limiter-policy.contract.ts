@@ -9,7 +9,11 @@
 export type IRateLimiterPolicy<TMetrics = unknown> = {
     initialMetrics(currentDate: Date): TMetrics;
 
-    shouldBlock(currentMetrics: TMetrics, currentDate: Date): boolean;
+    shouldBlock(
+        currentMetrics: TMetrics,
+        limit: number,
+        currentDate: Date,
+    ): boolean;
 
     /**
      * The `getExpiration` method should return the expiration as `Date`.

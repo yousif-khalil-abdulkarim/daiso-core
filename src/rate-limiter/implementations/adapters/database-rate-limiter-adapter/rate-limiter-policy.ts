@@ -3,8 +3,8 @@
  */
 
 import type { BackoffPolicy } from "@/backoff-policies/_module-exports.js";
-import type { IRateLimiterPolicy } from "@/rate-limiter/contracts/rate-limiter-policy.contract.js";
-import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/rate-limiter-state.contract.js";
+import type { IRateLimiterPolicy } from "@/rate-limiter/contracts/_module-exports.js";
+import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/_module-exports.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { callInvokable } from "@/utilities/_module-exports.js";
 
@@ -97,11 +97,13 @@ export class RateLimiterPolicy<TMetrics = unknown> {
 
     whenAllowed(
         currentState: AllowedRateLimiterState<TMetrics>,
+        limit: number,
         currentDate: Date,
     ): AllRateLimiterState<TMetrics> {
         if (
             this.rateLimiterPolicy.shouldBlock(
                 currentState.metrics,
+                limit,
                 currentDate,
             )
         ) {

@@ -3,7 +3,7 @@
  */
 
 import type { BackoffPolicy } from "@/backoff-policies/_module-exports.js";
-import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/rate-limiter-state.contract.js";
+import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/_module-exports.js";
 import type {
     AllRateLimiterState,
     RateLimiterPolicy,
@@ -19,13 +19,14 @@ export class RateLimiterStateManager<TMetrics = unknown> {
     ) {}
 
     updateState =
-        (currentDate: Date) =>
+        (limit: number, currentDate: Date) =>
         (
             currentState: AllRateLimiterState<TMetrics>,
         ): AllRateLimiterState<TMetrics> => {
             if (currentState.type === RATE_LIMITER_STATE.ALLOWED) {
                 return this.rateLimiterPolicy.whenAllowed(
                     currentState,
+                    limit,
                     currentDate,
                 );
             }
