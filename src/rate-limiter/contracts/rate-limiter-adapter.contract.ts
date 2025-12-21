@@ -14,7 +14,6 @@ import type { IRateLimiterProvider } from "@/rate-limiter/contracts/rate-limiter
 export type IRateLimiterAdapterState = {
     success: boolean;
     attempt: number;
-    limit: number;
     resetTime: ITimeSpan | null;
 };
 
@@ -30,7 +29,10 @@ export type IRateLimiterAdapter = {
     /**
      * The `getState` method returns the state of the rate limiter.
      */
-    getState(key: string, limit: number): Promise<IRateLimiterAdapterState>;
+    getState(
+        key: string,
+        limit: number,
+    ): Promise<IRateLimiterAdapterState | null>;
 
     /**
      * The `updateState` method updates the state of the rate limiter and returns the new state.
