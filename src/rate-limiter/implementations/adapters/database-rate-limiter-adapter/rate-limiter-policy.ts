@@ -15,7 +15,6 @@ export type AllowedRateLimiterState<TMetrics = unknown> = {
     type: (typeof RATE_LIMITER_STATE)["ALLOWED"];
     metrics: TMetrics;
     attempt: number;
-    limit: number;
 };
 
 /**
@@ -27,7 +26,6 @@ export type BlockedRateLimiterState = {
      * Unix timestamp in miliseconds
      */
     startedAt: number;
-    limit: number;
     attempt: number;
 };
 
@@ -54,14 +52,10 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         private readonly rateLimiterPolicy: IRateLimiterPolicy<TMetrics>,
     ) {}
 
-    initialState(
-        limit: number,
-        currentDate: Date,
-    ): AllowedRateLimiterState<TMetrics> {
+    initialState(currentDate: Date): AllowedRateLimiterState<TMetrics> {
         const currentMetrics =
             this.rateLimiterPolicy.initialMetrics(currentDate);
         return {
-            limit,
             attempt: this.rateLimiterPolicy.getAttempts(
                 currentMetrics,
                 currentDate,
@@ -112,7 +106,6 @@ export class RateLimiterPolicy<TMetrics = unknown> {
             )
         ) {
             return {
-                limit: currentState.limit,
                 type: RATE_LIMITER_STATE.BLOCKED,
                 attempt: 1,
                 startedAt: currentDate.getTime(),
@@ -137,7 +130,6 @@ export class RateLimiterPolicy<TMetrics = unknown> {
                 settings.currentDate,
             );
             return {
-                limit: currentState.limit,
                 attempt: this.rateLimiterPolicy.getAttempts(
                     currentMetrics,
                     settings.currentDate,
