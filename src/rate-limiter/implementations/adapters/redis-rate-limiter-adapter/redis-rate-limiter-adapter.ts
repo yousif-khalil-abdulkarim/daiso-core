@@ -83,7 +83,10 @@ export class RedisRateLimiterAdapter implements IRateLimiterAdapter {
         this.policy = resolveRateLimiterPolicySettings(policy);
     }
 
-    getState(key: string, limit: number): Promise<IRateLimiterAdapterState> {
+    getState(
+        key: string,
+        limit: number,
+    ): Promise<IRateLimiterAdapterState | null> {
         throw new Error("Method not implemented.");
     }
 

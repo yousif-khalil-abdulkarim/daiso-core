@@ -19,10 +19,10 @@ export type FixedWindowLimiterSettings = {
      *
      * @default 10
      */
-    maxAttempt?: number;
+    limit?: number;
 
     /**
-     * The time span in which `maxAttempt` are allowed.
+     * The time span in which `limit` are allowed.
      *
      * @default
      * ```ts
@@ -40,20 +40,19 @@ export type FixedWindowLimiterSettings = {
 export function resolveFixedWindowLimiterSettings(
     settings: FixedWindowLimiterSettings,
 ): Required<FixedWindowLimiterSettings> {
-    const { maxAttempt: attempts = 10, window = TimeSpan.fromSeconds(1) } =
-        settings;
-    if (!Number.isSafeInteger(attempts)) {
+    const { limit = 10, window = TimeSpan.fromSeconds(1) } = settings;
+    if (!Number.isSafeInteger(limit)) {
         throw new TypeError(
-            `"FixedWindowLimiterSettings.maxAttempt" should be an integer, got float instead`,
+            `"FixedWindowLimiterSettings.limit" should be an integer, got float instead`,
         );
     }
-    if (attempts < 1) {
+    if (limit < 1) {
         throw new RangeError(
-            `"FixedWindowLimiterSettings.maxAttempt" should be a positive, got ${String(attempts)}`,
+            `"FixedWindowLimiterSettings.limit" should be a positive, got ${String(limit)}`,
         );
     }
     return {
-        maxAttempt: attempts,
+        limit,
         window,
     };
 }
@@ -62,7 +61,7 @@ export function resolveFixedWindowLimiterSettings(
  * @internal
  */
 export type SerializedFixedWindowLimiterSettings = {
-    maxAttempt?: number;
+    limit?: number;
     window?: number;
 };
 
@@ -72,9 +71,9 @@ export type SerializedFixedWindowLimiterSettings = {
 export function serializeFixedWindowLimiterSettings(
     settings: FixedWindowLimiterSettings,
 ): Required<SerializedFixedWindowLimiterSettings> {
-    const { maxAttempt, window } = resolveFixedWindowLimiterSettings(settings);
+    const { limit, window } = resolveFixedWindowLimiterSettings(settings);
     return {
-        maxAttempt,
+        limit,
         window: window[TO_MILLISECONDS](),
     };
 }
@@ -84,7 +83,7 @@ export function serializeFixedWindowLimiterSettings(
  * @group Policies
  */
 export type FixedWindowLimiterState = {
-    maxAttempt: number;
+    limit: number;
 
     /**
      * Unix timestamp in ms
@@ -113,19 +112,18 @@ export type FixedWindowLimiterState = {
 export class FixedWindowLimiter
     implements IRateLimiterPolicy<FixedWindowLimiterState>
 {
-    private readonly maxAttempt: number;
+    private readonly limit: number;
     private readonly window: TimeSpan;
 
     constructor(settings: FixedWindowLimiterSettings = {}) {
-        const { maxAttempt, window } =
-            resolveFixedWindowLimiterSettings(settings);
-        this.maxAttempt = maxAttempt;
+        const { limit, window } = resolveFixedWindowLimiterSettings(settings);
+        this.limit = limit;
         this.window = TimeSpan.fromTimeSpan(window);
     }
 
     initialMetrics(currentDate: Date): FixedWindowLimiterState {
         return {
-            maxAttempt: 0,
+            limit: 0,
             lastAttemptAt: currentDate.getTime(),
         };
     }
@@ -138,7 +136,7 @@ export class FixedWindowLimiter
             currentDate.getTime() - currentMetrics.lastAttemptAt;
         return (
             timeSinceLastAttempt < this.window.toMilliseconds() &&
-            currentMetrics.maxAttempt >= this.maxAttempt
+            currentMetrics.limit >= this.limit
         );
     }
 
@@ -153,7 +151,7 @@ export class FixedWindowLimiter
         currentMetrics: FixedWindowLimiterState,
         _currentDate: Date,
     ): number {
-        return currentMetrics.maxAttempt;
+        return currentMetrics.limit;
     }
 
     updateMetrics(
@@ -161,7 +159,7 @@ export class FixedWindowLimiter
         currentDate: Date,
     ): FixedWindowLimiterState {
         return {
-            maxAttempt: currentMetrics.maxAttempt + 1,
+            limit: currentMetrics.limit + 1,
             lastAttemptAt: currentDate.getTime(),
         };
     }
@@ -171,7 +169,7 @@ export class FixedWindowLimiter
         metricsB: FixedWindowLimiterState,
     ): boolean {
         return (
-            metricsA.maxAttempt === metricsB.maxAttempt &&
+            metricsA.limit === metricsB.limit &&
             metricsA.lastAttemptAt === metricsB.lastAttemptAt
         );
     }

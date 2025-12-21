@@ -19,10 +19,10 @@ export type SlidingWindowLimiterSettings = {
      *
      * @default 10
      */
-    maxAttempts?: number;
+    limit?: number;
 
     /**
-     * The time span in which `maxAttempts` are allowed.
+     * The time span in which `limit` are allowed.
      *
      * @default
      * ```ts
@@ -40,19 +40,19 @@ export type SlidingWindowLimiterSettings = {
 export function resolveSlidingWindowLimiterSettings(
     settings: SlidingWindowLimiterSettings,
 ): Required<SlidingWindowLimiterSettings> {
-    const { maxAttempts = 10, window = TimeSpan.fromSeconds(1) } = settings;
-    if (!Number.isSafeInteger(maxAttempts)) {
+    const { limit = 10, window = TimeSpan.fromSeconds(1) } = settings;
+    if (!Number.isSafeInteger(limit)) {
         throw new TypeError(
-            `"SlidingWindowLimiterSettings.maxAttempts" should be an integer, got float instead`,
+            `"SlidingWindowLimiterSettings.limit" should be an integer, got float instead`,
         );
     }
-    if (maxAttempts < 1) {
+    if (limit < 1) {
         throw new RangeError(
-            `"SlidingWindowLimiterSettings.maxAttempts" should be a positive, got ${String(maxAttempts)}`,
+            `"SlidingWindowLimiterSettings.limit" should be a positive, got ${String(limit)}`,
         );
     }
     return {
-        maxAttempts: maxAttempts,
+        limit: limit,
         window,
     };
 }
@@ -61,7 +61,7 @@ export function resolveSlidingWindowLimiterSettings(
  * @internal
  */
 export type SerializedSlidingWindowLimiterSettings = {
-    maxAttempts?: number;
+    limit?: number;
     window?: number;
 };
 
@@ -71,10 +71,10 @@ export type SerializedSlidingWindowLimiterSettings = {
 export function serializeSlidingWindowLimiterSettings(
     settings: SlidingWindowLimiterSettings,
 ): Required<SerializedSlidingWindowLimiterSettings> {
-    const { maxAttempts: maxAttempts, window } =
+    const { limit: limit, window } =
         resolveSlidingWindowLimiterSettings(settings);
     return {
-        maxAttempts,
+        limit,
         window: window[TO_MILLISECONDS](),
     };
 }
@@ -108,14 +108,13 @@ export type SlidingWindowLimiterState = Partial<Record<number, number>>;
 export class SlidingWindowLimiter
     implements IRateLimiterPolicy<SlidingWindowLimiterState>
 {
-    private readonly maxAttempts: number;
+    private readonly limit: number;
     private readonly window: TimeSpan;
     private readonly margin = TimeSpan.fromSeconds(1);
 
     constructor(settings: SlidingWindowLimiterSettings = {}) {
-        const { maxAttempts, window } =
-            resolveSlidingWindowLimiterSettings(settings);
-        this.maxAttempts = maxAttempts;
+        const { limit, window } = resolveSlidingWindowLimiterSettings(settings);
+        this.limit = limit;
         this.window = TimeSpan.fromTimeSpan(window);
     }
 
@@ -186,7 +185,7 @@ export class SlidingWindowLimiter
             currentMetrics,
             currentDate,
         );
-        return currentAttempts + previousAttempts >= this.maxAttempts;
+        return currentAttempts + previousAttempts >= this.limit;
     }
 
     getExpiration(
