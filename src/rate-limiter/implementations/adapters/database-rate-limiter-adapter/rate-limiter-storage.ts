@@ -91,7 +91,7 @@ export class RateLimiterStorage<TMetrics = unknown> {
     private async get(args: TestArgs<TMetrics>) {
         const { key, limit, find } = args;
         let state: AllRateLimiterState<TMetrics> =
-            this.rateLimiterPolicy.initialState(limit);
+            this.rateLimiterPolicy.initialState(limit, new Date());
         const data = await find(key);
         const isNotNull = data !== null;
         const isUnexpireable = isNotNull && data.expiration === null;
@@ -125,12 +125,10 @@ export class RateLimiterStorage<TMetrics = unknown> {
                 await trx.upsert(
                     key,
                     newState,
-                    this.rateLimiterPolicy
-                        .getExpiration(newState, {
-                            backoffPolicy: this.backoffPolicy,
-                            currentDate,
-                        })
-                        ?.toEndDate(currentDate) ?? null,
+                    this.rateLimiterPolicy.getExpiration(newState, {
+                        backoffPolicy: this.backoffPolicy,
+                        currentDate,
+                    }) ?? null,
                 );
             }
 
