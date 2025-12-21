@@ -21,7 +21,6 @@ import {
 } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/_module.js";
 import type { Namespace } from "@/namespace/_module-exports.js";
 import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *
@@ -94,15 +93,6 @@ export class RateLimiterProviderFactory<TAdapters extends string>
         return new RateLimiterProviderFactory({
             ...this.settings,
             eventBus,
-        });
-    }
-
-    setSlowCallTime(
-        slowCallTime?: ITimeSpan,
-    ): RateLimiterProviderFactory<TAdapters> {
-        return new RateLimiterProviderFactory({
-            ...this.settings,
-            slowCallTime,
         });
     }
 
