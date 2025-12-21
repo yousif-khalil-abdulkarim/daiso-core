@@ -29,7 +29,6 @@ export type RateLimiterStorageSettings<TMetrics> = {
 export type IRateLimiterStorageState = {
     success: boolean;
     attempt: number;
-    limit: number;
     resetTime: Date | null;
 };
 
@@ -38,7 +37,6 @@ export type IRateLimiterStorageState = {
  */
 export type AtomicUpdateArgs<TMetrics> = {
     key: string;
-    limit: number;
     update: InvokableFn<
         [currentState: AllRateLimiterState<TMetrics>],
         AllRateLimiterState<TMetrics>
@@ -50,7 +48,6 @@ export type AtomicUpdateArgs<TMetrics> = {
  */
 export type TestArgs<TMetrics = unknown> = {
     key: string;
-    limit: number;
     find: (
         key: string,
     ) => Promise<IRateLimiterData<AllRateLimiterState<TMetrics>> | null>;
@@ -80,7 +77,6 @@ export class RateLimiterStorage<TMetrics = unknown> {
         return {
             success: state.type === RATE_LIMITER_STATE.ALLOWED,
             attempt: state.attempt,
-            limit: state.limit,
             resetTime:
                 state.type === RATE_LIMITER_STATE.ALLOWED
                     ? null
@@ -88,42 +84,22 @@ export class RateLimiterStorage<TMetrics = unknown> {
         };
     }
 
-    private async get(args: TestArgs<TMetrics>) {
-        const { key, limit, find } = args;
-        let state: AllRateLimiterState<TMetrics> =
-            this.rateLimiterPolicy.initialState(limit, new Date());
-        const data = await find(key);
-        const isNotNull = data !== null;
-        const isUnexpireable = isNotNull && data.expiration === null;
-        const isUnexpired =
-            isNotNull &&
-            data.expiration !== null &&
-            data.expiration > new Date();
-        if (isUnexpireable || isUnexpired) {
-            state = data.state;
-        }
-        return state;
-    }
-
     async atomicUpdate(
         args: AtomicUpdateArgs<TMetrics>,
     ): Promise<IRateLimiterStorageState> {
-        const { key, limit, update } = args;
         const currentDate = new Date();
         const state = await this.adapter.transaction(async (trx) => {
-            const currentState = await this.get({
-                key,
-                limit,
-                find: (key) => {
-                    return trx.find(key);
-                },
-            });
+            const data = await this.adapter.find(args.key);
+            let currentState = data?.state;
+            if (currentState === undefined) {
+                currentState = this.rateLimiterPolicy.initialState(currentDate);
+            }
 
-            const newState = update(currentState);
+            const newState = args.update(currentState);
 
             if (!this.rateLimiterPolicy.isEqual(currentState, newState)) {
                 await trx.upsert(
-                    key,
+                    args.key,
                     newState,
                     this.rateLimiterPolicy.getExpiration(newState, {
                         backoffPolicy: this.backoffPolicy,
@@ -137,15 +113,12 @@ export class RateLimiterStorage<TMetrics = unknown> {
         return this.toAdapterState(state);
     }
 
-    async find(key: string, limit: number): Promise<IRateLimiterStorageState> {
-        const state = await this.get({
-            key,
-            limit,
-            find: (key) => {
-                return this.adapter.find(key);
-            },
-        });
-        return this.toAdapterState(state);
+    async find(key: string): Promise<IRateLimiterStorageState | null> {
+        const data = await this.adapter.find(key);
+        if (data === null) {
+            return null;
+        }
+        return this.toAdapterState(data.state);
     }
 
     async remove(key: string): Promise<void> {
