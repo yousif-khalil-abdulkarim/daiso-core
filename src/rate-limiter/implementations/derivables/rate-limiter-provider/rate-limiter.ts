@@ -102,10 +102,7 @@ export class RateLimiter implements IRateLimiter {
 
     getState(): Task<RateLimiterState> {
         return new Task<RateLimiterState>(async () => {
-            const state = await this.adapter.getState(
-                this._key.toString(),
-                this.limit,
-            );
+            const state = await this.adapter.getState(this._key.toString());
 
             return this.toRateLimiterState(state);
         });
@@ -123,7 +120,7 @@ export class RateLimiter implements IRateLimiter {
         asyncFn: AsyncLazy<TValue>,
     ): Promise<TValue> {
         const state = this.toRateLimiterState(
-            await this.adapter.getState(this.key.toString(), this.limit),
+            await this.adapter.getState(this.key.toString()),
         );
 
         if (state.type === RATE_LIMITER_STATE.BLOCKED) {

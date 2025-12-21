@@ -29,10 +29,7 @@ export type IRateLimiterAdapter = {
     /**
      * The `getState` method returns the state of the rate limiter.
      */
-    getState(
-        key: string,
-        limit: number,
-    ): Promise<IRateLimiterAdapterState | null>;
+    getState(key: string): Promise<IRateLimiterAdapterState | null>;
 
     /**
      * The `updateState` method updates the state of the rate limiter and returns the new state.

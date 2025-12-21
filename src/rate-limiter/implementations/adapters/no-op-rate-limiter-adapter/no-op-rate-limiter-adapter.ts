@@ -12,11 +12,10 @@ import type {
  * @group Adapters
  */
 export class NoOpRateLimiterAdapter implements IRateLimiterAdapter {
-    getState(_key: string, limit: number): Promise<IRateLimiterAdapterState> {
+    getState(_key: string): Promise<IRateLimiterAdapterState> {
         return Promise.resolve({
             success: true,
             attempt: 1,
-            limit,
             resetTime: null,
         });
     }
