@@ -67,24 +67,32 @@ export class RateLimiter implements IRateLimiter {
         this.adapter = adapter;
     }
 
-    private static toRateLimiterState(
-        state: IRateLimiterAdapterState,
+    private toRateLimiterState(
+        state: IRateLimiterAdapterState | null,
     ): RateLimiterState {
+        if (state === null) {
+            return {
+                type: RATE_LIMITER_STATE.ALLOWED,
+                usedAttempts: 0,
+                reaminingAttemps: this.limit,
+                limit: this.limit,
+            };
+        }
         if (state.success) {
             return {
                 type: RATE_LIMITER_STATE.ALLOWED,
                 usedAttempts: state.attempt,
-                reaminingAttemps: state.limit - state.attempt,
-                limit: state.limit,
+                reaminingAttemps: this.limit - state.attempt,
+                limit: this.limit,
             } satisfies RateLimiterAllowedState;
         }
 
         if (state.resetTime !== null) {
             return {
                 type: RATE_LIMITER_STATE.BLOCKED,
-                limit: state.limit,
+                limit: this.limit,
                 totalAttempts: state.attempt,
-                exceedAttempts: state.attempt - state.limit,
+                exceedAttempts: state.attempt - this.limit,
                 resetTime: TimeSpan.fromTimeSpan(state.resetTime),
             } satisfies RateLimiterBlockedState;
         }
@@ -99,7 +107,7 @@ export class RateLimiter implements IRateLimiter {
                 this.limit,
             );
 
-            return RateLimiter.toRateLimiterState(state);
+            return this.toRateLimiterState(state);
         });
     }
 
@@ -114,7 +122,7 @@ export class RateLimiter implements IRateLimiter {
     private async trackErrorWrapper<TValue>(
         asyncFn: AsyncLazy<TValue>,
     ): Promise<TValue> {
-        const state = RateLimiter.toRateLimiterState(
+        const state = this.toRateLimiterState(
             await this.adapter.getState(this.key.toString(), this.limit),
         );
 
@@ -179,7 +187,7 @@ export class RateLimiter implements IRateLimiter {
     private async trackWrapper<TValue>(
         asyncFn: AsyncLazy<TValue>,
     ): Promise<TValue> {
-        const state = RateLimiter.toRateLimiterState(
+        const state = this.toRateLimiterState(
             await this.adapter.updateState(this.key.toString(), this.limit),
         );
 
