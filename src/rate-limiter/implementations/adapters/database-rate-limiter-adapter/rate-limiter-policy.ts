@@ -54,12 +54,20 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         private readonly rateLimiterPolicy: IRateLimiterPolicy<TMetrics>,
     ) {}
 
-    initialState(limit: number): AllowedRateLimiterState<TMetrics> {
+    initialState(
+        limit: number,
+        currentDate: Date,
+    ): AllowedRateLimiterState<TMetrics> {
+        const currentMetrics =
+            this.rateLimiterPolicy.initialMetrics(currentDate);
         return {
             limit,
-            attempt: 0,
+            attempt: this.rateLimiterPolicy.getAttempts(
+                currentMetrics,
+                currentDate,
+            ),
             type: RATE_LIMITER_STATE.ALLOWED,
-            metrics: this.rateLimiterPolicy.initialMetrics(),
+            metrics: currentMetrics,
         };
     }
 
@@ -125,11 +133,17 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         const isWaitTimeOver = endDate <= new Date(settings.currentDate);
 
         if (isWaitTimeOver) {
+            const currentMetrics = this.rateLimiterPolicy.initialMetrics(
+                settings.currentDate,
+            );
             return {
                 limit: currentState.limit,
-                attempt: 0,
+                attempt: this.rateLimiterPolicy.getAttempts(
+                    currentMetrics,
+                    settings.currentDate,
+                ),
                 type: RATE_LIMITER_STATE.ALLOWED,
-                metrics: this.rateLimiterPolicy.initialMetrics(),
+                metrics: currentMetrics,
             };
         }
         return currentState;
@@ -160,17 +174,16 @@ export class RateLimiterPolicy<TMetrics = unknown> {
     getExpiration(
         currentState: AllRateLimiterState<TMetrics>,
         settings: BackoffPolicySettings,
-    ): TimeSpan | null {
+    ): Date | null {
         if (currentState.type === RATE_LIMITER_STATE.ALLOWED) {
-            return (
-                this.rateLimiterPolicy.getExpiration?.(currentState.metrics) ??
-                null
+            return this.rateLimiterPolicy.getExpiration(
+                currentState.metrics,
+                settings.currentDate,
             );
         }
 
-        const waitTime = TimeSpan.fromTimeSpan(
+        return TimeSpan.fromTimeSpan(
             callInvokable(settings.backoffPolicy, currentState.attempt, null),
-        );
-        return waitTime;
+        ).toEndDate(settings.currentDate);
     }
 }
