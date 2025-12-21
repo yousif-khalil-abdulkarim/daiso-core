@@ -19,10 +19,10 @@ export type FixedWindowLimiterSettings = {
      *
      * @default 10
      */
-    attempts?: number;
+    maxAttempt?: number;
 
     /**
-     * The time span in which `maxAttempts` are allowed.
+     * The time span in which `maxAttempt` are allowed.
      *
      * @default
      * ```ts
@@ -31,7 +31,7 @@ export type FixedWindowLimiterSettings = {
      * TimeSpan.fromSeconds(1)
      * ```
      */
-    timeSpan?: ITimeSpan;
+    window?: ITimeSpan;
 };
 
 /**
@@ -40,21 +40,21 @@ export type FixedWindowLimiterSettings = {
 export function resolveFixedWindowLimiterSettings(
     settings: FixedWindowLimiterSettings,
 ): Required<FixedWindowLimiterSettings> {
-    const { attempts: maxAttempts = 10, timeSpan = TimeSpan.fromSeconds(1) } =
+    const { maxAttempt: attempts = 10, window = TimeSpan.fromSeconds(1) } =
         settings;
-    if (!Number.isSafeInteger(maxAttempts)) {
+    if (!Number.isSafeInteger(attempts)) {
         throw new TypeError(
-            `"FixedWindowLimiterSettings.maxAttempts" should be an integer, got float instead`,
+            `"FixedWindowLimiterSettings.maxAttempt" should be an integer, got float instead`,
         );
     }
-    if (maxAttempts < 1) {
+    if (attempts < 1) {
         throw new RangeError(
-            `"FixedWindowLimiterSettings.maxAttempts" should be a positive, got ${String(maxAttempts)}`,
+            `"FixedWindowLimiterSettings.maxAttempt" should be a positive, got ${String(attempts)}`,
         );
     }
     return {
-        attempts: maxAttempts,
-        timeSpan,
+        maxAttempt: attempts,
+        window,
     };
 }
 
@@ -62,8 +62,8 @@ export function resolveFixedWindowLimiterSettings(
  * @internal
  */
 export type SerializedFixedWindowLimiterSettings = {
-    maxAttempts?: number;
-    timeSpan?: number;
+    maxAttempt?: number;
+    window?: number;
 };
 
 /**
@@ -72,11 +72,10 @@ export type SerializedFixedWindowLimiterSettings = {
 export function serializeFixedWindowLimiterSettings(
     settings: FixedWindowLimiterSettings,
 ): Required<SerializedFixedWindowLimiterSettings> {
-    const { attempts: maxAttempts, timeSpan } =
-        resolveFixedWindowLimiterSettings(settings);
+    const { maxAttempt, window } = resolveFixedWindowLimiterSettings(settings);
     return {
-        maxAttempts,
-        timeSpan: timeSpan[TO_MILLISECONDS](),
+        maxAttempt,
+        window: window[TO_MILLISECONDS](),
     };
 }
 
@@ -85,7 +84,12 @@ export function serializeFixedWindowLimiterSettings(
  * @group Policies
  */
 export type FixedWindowLimiterState = {
-    attempt: number;
+    maxAttempt: number;
+
+    /**
+     * Unix timestamp in ms
+     */
+    lastAttemptAt: number;
 };
 
 /**
@@ -109,38 +113,66 @@ export type FixedWindowLimiterState = {
 export class FixedWindowLimiter
     implements IRateLimiterPolicy<FixedWindowLimiterState>
 {
-    constructor(settings: FixedWindowLimiterSettings = {}) {}
+    private readonly maxAttempt: number;
+    private readonly window: TimeSpan;
 
-    initialMetrics(): FixedWindowLimiterState {
-        throw new Error("Method not implemented.");
+    constructor(settings: FixedWindowLimiterSettings = {}) {
+        const { maxAttempt, window } =
+            resolveFixedWindowLimiterSettings(settings);
+        this.maxAttempt = maxAttempt;
+        this.window = TimeSpan.fromTimeSpan(window);
+    }
+
+    initialMetrics(currentDate: Date): FixedWindowLimiterState {
+        return {
+            maxAttempt: 0,
+            lastAttemptAt: currentDate.getTime(),
+        };
     }
 
     shouldBlock(
         currentMetrics: FixedWindowLimiterState,
         currentDate: Date,
     ): boolean {
-        throw new Error("Method not implemented.");
+        const timeSinceLastAttempt =
+            currentDate.getTime() - currentMetrics.lastAttemptAt;
+        return (
+            timeSinceLastAttempt < this.window.toMilliseconds() &&
+            currentMetrics.maxAttempt >= this.maxAttempt
+        );
     }
 
-    getExpiration?(currentMetrics: FixedWindowLimiterState): TimeSpan {
-        throw new Error("Method not implemented.");
+    getExpiration(
+        currentMetrics: FixedWindowLimiterState,
+        _currentDate: Date,
+    ): Date {
+        return this.window.toEndDate(new Date(currentMetrics.lastAttemptAt));
     }
 
-    getAttempts(currentMetrics: FixedWindowLimiterState): number {
-        return currentMetrics.attempt;
+    getAttempts(
+        currentMetrics: FixedWindowLimiterState,
+        _currentDate: Date,
+    ): number {
+        return currentMetrics.maxAttempt;
     }
 
     updateMetrics(
         currentMetrics: FixedWindowLimiterState,
         currentDate: Date,
     ): FixedWindowLimiterState {
-        throw new Error("Method not implemented.");
+        return {
+            maxAttempt: currentMetrics.maxAttempt + 1,
+            lastAttemptAt: currentDate.getTime(),
+        };
     }
 
-    isEqual?(
+    isEqual(
         metricsA: FixedWindowLimiterState,
         metricsB: FixedWindowLimiterState,
     ): boolean {
-        throw new Error("Method not implemented.");
+        return (
+            metricsA.maxAttempt === metricsB.maxAttempt &&
+            metricsA.lastAttemptAt === metricsB.lastAttemptAt
+        );
     }
 }

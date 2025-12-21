@@ -35,8 +35,8 @@ export type FixedWindowLimiterTestSuiteSettings = {
  * @group TestUtilities
  */
 const rateLimiterPolicySettings: Required<FixedWindowLimiterSettings> = {
-    attempts: 5,
-    timeSpan: TimeSpan.fromMilliseconds(100),
+    maxAttempt: 5,
+    window: TimeSpan.fromMilliseconds(100),
 };
 
 /**
