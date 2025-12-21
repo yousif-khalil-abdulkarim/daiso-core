@@ -83,11 +83,11 @@ export class DatabaseRateLimiterAdapter<TMetrics = unknown>
         );
     }
 
-    async getState(
-        key: string,
-        limit: number,
-    ): Promise<IRateLimiterAdapterState> {
-        const state = await this.rateLimiterStorage.find(key, limit);
+    async getState(key: string): Promise<IRateLimiterAdapterState | null> {
+        const state = await this.rateLimiterStorage.find(key);
+        if (state === null) {
+            return null;
+        }
         return {
             ...state,
             resetTime:
@@ -99,14 +99,10 @@ export class DatabaseRateLimiterAdapter<TMetrics = unknown>
         };
     }
 
-    async updateState(
-        key: string,
-        limit: number,
-    ): Promise<IRateLimiterAdapterState> {
+    async updateState(key: string): Promise<IRateLimiterAdapterState> {
         const currentDate = new Date();
         const state = await this.rateLimiterStorage.atomicUpdate({
             key,
-            limit,
             update: (state) => {
                 return this.rateLimiterStateManager.updateState(currentDate)(
                     this.rateLimiterStateManager.track(currentDate)(state),
