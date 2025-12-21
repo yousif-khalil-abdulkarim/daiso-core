@@ -22,7 +22,7 @@ export type FixedWindowLimiterSettings = {
     limit?: number;
 
     /**
-     * The time span in which `limit` are allowed.
+     * The time span in which attempts are active before reseting.
      *
      * @default
      * ```ts
