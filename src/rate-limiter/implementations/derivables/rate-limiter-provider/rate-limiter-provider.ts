@@ -18,8 +18,6 @@ import type {
     RateLimiterProviderCreateSettings,
 } from "@/rate-limiter/contracts/_module-exports.js";
 import type { Task } from "@/task/task.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import type {
     ErrorPolicy,
     ErrorPolicySettings,
@@ -54,16 +52,6 @@ export type RateLimiterProviderSettingsBase = ErrorPolicySettings & {
      * ```
      */
     eventBus?: IEventBus;
-
-    /**
-     * @default
-     * ```ts
-     * import { TimeSpan } from "@daiso-tech/core/time-span";
-     *
-     * TimeSpan.fromSeconds(10);
-     * ```
-     */
-    slowCallTime?: ITimeSpan;
 
     /**
      * If true will only apply rate limiting when function errors and not when function is called.
@@ -106,7 +94,6 @@ export class RateLimiterProvider implements IRateLimiterProvider {
     private readonly namespace: Namespace;
     private readonly eventBus: IEventBus<RateLimiterEventMap>;
     private readonly adapter: IRateLimiterAdapter;
-    private readonly slowCallTime: TimeSpan;
     private readonly onlyError: boolean;
     private readonly errorPolicy: ErrorPolicy;
     private readonly enableAsyncTracking: boolean;
@@ -150,7 +137,6 @@ export class RateLimiterProvider implements IRateLimiterProvider {
                 adapter: new NoOpEventBusAdapter(),
             }),
             adapter,
-            slowCallTime = TimeSpan.fromSeconds(10),
             onlyError = false,
             errorPolicy = () => true,
         } = settings;
@@ -159,7 +145,6 @@ export class RateLimiterProvider implements IRateLimiterProvider {
         this.namespace = namespace;
         this.eventBus = eventBus;
         this.adapter = adapter;
-        this.slowCallTime = TimeSpan.fromTimeSpan(slowCallTime);
         this.onlyError = onlyError;
         this.errorPolicy = errorPolicy;
     }
