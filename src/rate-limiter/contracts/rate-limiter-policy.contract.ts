@@ -2,28 +2,26 @@
  * @module RateLimiter
  */
 
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-
 /**
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
  * @group Contracts
  */
 export type IRateLimiterPolicy<TMetrics = unknown> = {
-    initialMetrics(): TMetrics;
+    initialMetrics(currentDate: Date): TMetrics;
 
     shouldBlock(currentMetrics: TMetrics, currentDate: Date): boolean;
 
     /**
-     * The `getExpiration` method should return the expiration as `TimeSpan`.
+     * The `getExpiration` method should return the expiration as `Date`.
      * This method is optional, if defined rate limiter data will be cleaned up when expired.
      * If not defined the rate limiter data will be stored forever.
      */
-    getExpiration?(currentMetrics: TMetrics): TimeSpan;
+    getExpiration(currentMetrics: TMetrics, currentDate: Date): Date;
 
     /**
      * The `getAttempts` method returns amount of used attempts.
      */
-    getAttempts(currentMetrics: TMetrics): number;
+    getAttempts(currentMetrics: TMetrics, currentDate: Date): number;
 
     /**
      * The `updateMetrics` method updates the metrics when an attempt occurs.
