@@ -5,7 +5,6 @@
 import type { BackoffPolicy } from "@/backoff-policies/_module-exports.js";
 import {
     RATE_LIMITER_STATE,
-    type IRateLimiterData,
     type IRateLimiterStorageAdapter,
 } from "@/rate-limiter/contracts/_module-exports.js";
 import type {
@@ -41,16 +40,6 @@ export type AtomicUpdateArgs<TMetrics> = {
         [currentState: AllRateLimiterState<TMetrics>],
         AllRateLimiterState<TMetrics>
     >;
-};
-
-/**
- * @internal
- */
-export type TestArgs<TMetrics = unknown> = {
-    key: string;
-    find: (
-        key: string,
-    ) => Promise<IRateLimiterData<AllRateLimiterState<TMetrics>> | null>;
 };
 
 /**
