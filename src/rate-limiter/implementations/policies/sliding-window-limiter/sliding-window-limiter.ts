@@ -22,7 +22,7 @@ export type SlidingWindowLimiterSettings = {
     limit?: number;
 
     /**
-     * The time span in which `limit` are allowed.
+     * The time span in which attempts are active before reseting.
      *
      * @default
      * ```ts
@@ -32,6 +32,8 @@ export type SlidingWindowLimiterSettings = {
      * ```
      */
     window?: ITimeSpan;
+
+    margin?: ITimeSpan;
 };
 
 /**
@@ -40,7 +42,11 @@ export type SlidingWindowLimiterSettings = {
 export function resolveSlidingWindowLimiterSettings(
     settings: SlidingWindowLimiterSettings,
 ): Required<SlidingWindowLimiterSettings> {
-    const { limit = 10, window = TimeSpan.fromSeconds(1) } = settings;
+    const {
+        limit = 10,
+        window = TimeSpan.fromSeconds(1),
+        margin = TimeSpan.fromTimeSpan(window).divide(4),
+    } = settings;
     if (!Number.isSafeInteger(limit)) {
         throw new TypeError(
             `"SlidingWindowLimiterSettings.limit" should be an integer, got float instead`,
@@ -52,8 +58,9 @@ export function resolveSlidingWindowLimiterSettings(
         );
     }
     return {
-        limit: limit,
+        limit,
         window,
+        margin,
     };
 }
 
@@ -63,6 +70,7 @@ export function resolveSlidingWindowLimiterSettings(
 export type SerializedSlidingWindowLimiterSettings = {
     limit?: number;
     window?: number;
+    margin?: number;
 };
 
 /**
@@ -71,11 +79,12 @@ export type SerializedSlidingWindowLimiterSettings = {
 export function serializeSlidingWindowLimiterSettings(
     settings: SlidingWindowLimiterSettings,
 ): Required<SerializedSlidingWindowLimiterSettings> {
-    const { limit: limit, window } =
+    const { limit, window, margin } =
         resolveSlidingWindowLimiterSettings(settings);
     return {
         limit,
         window: window[TO_MILLISECONDS](),
+        margin: margin[TO_MILLISECONDS](),
     };
 }
 
@@ -110,12 +119,14 @@ export class SlidingWindowLimiter
 {
     private readonly limit: number;
     private readonly window: TimeSpan;
-    private readonly margin = TimeSpan.fromSeconds(1);
+    private readonly margin: TimeSpan;
 
     constructor(settings: SlidingWindowLimiterSettings = {}) {
-        const { limit, window } = resolveSlidingWindowLimiterSettings(settings);
+        const { limit, window, margin } =
+            resolveSlidingWindowLimiterSettings(settings);
         this.limit = limit;
         this.window = TimeSpan.fromTimeSpan(window);
+        this.margin = TimeSpan.fromTimeSpan(margin);
     }
 
     private currentWindow(currentDate: Date): number {
