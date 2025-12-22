@@ -4,6 +4,7 @@ import {
     MemoryRateLimiterStorageAdapter,
     type MemoryRateLimiterData,
 } from "@/rate-limiter/implementations/adapters/memory-rate-limiter-storage-adapter/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/time-span.js";
 
 describe("class: MemoryRateLimiterStorageAdapter", () => {
     rateLimiterStorageAdapterTestSuite({
@@ -20,9 +21,9 @@ describe("class: MemoryRateLimiterStorageAdapter", () => {
             const map = new Map<string, MemoryRateLimiterData>();
             const adapter = new MemoryRateLimiterStorageAdapter(map);
             await adapter.transaction(async (trx) => {
-                await trx.upsert("a", 1, null);
-                await trx.upsert("b", 2, null);
-                await trx.upsert("c", 3, null);
+                await trx.upsert("a", 1, TimeSpan.fromSeconds(2).toEndDate());
+                await trx.upsert("b", 2, TimeSpan.fromSeconds(2).toEndDate());
+                await trx.upsert("c", 3, TimeSpan.fromSeconds(2).toEndDate());
             });
             await adapter.deInit();
 

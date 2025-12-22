@@ -16,7 +16,7 @@ export type IRateLimiterData<TType = unknown> = {
      * The expiration date and time of the lock.
      * `null` indicates the lock does not expire.
      */
-    expiration: Date | null;
+    expiration: Date;
 };
 
 /**
@@ -29,7 +29,7 @@ export type IRateLimiterStorageAdapterTransaction<TType = unknown> = {
      *
      * @param key The unique identifier for the rate limiter.
      */
-    upsert(key: string, state: TType, expiration: Date | null): Promise<void>;
+    upsert(key: string, state: TType, expiration: Date): Promise<void>;
 
     /**
      * Retrieves the current rate limiter state for a given key.

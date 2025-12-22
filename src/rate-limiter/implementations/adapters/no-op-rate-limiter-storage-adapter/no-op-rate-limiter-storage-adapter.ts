@@ -16,11 +16,7 @@ import type { InvokableFn } from "@/utilities/_module-exports.js";
 class NoOpRateLimiterStorageAdapterTransaction<TType>
     implements IRateLimiterStorageAdapterTransaction<TType>
 {
-    upsert(
-        _key: string,
-        _state: TType,
-        _expiration: Date | null,
-    ): Promise<void> {
+    upsert(_key: string, _state: TType, _expiration: Date): Promise<void> {
         return Promise.resolve();
     }
 

@@ -19,8 +19,8 @@ import type {
  */
 export type MemoryRateLimiterData<TType = unknown> = {
     state: TType;
-    timeoutId: string | number | NodeJS.Timeout | null;
-    expiration: Date | null;
+    timeoutId: string | number | NodeJS.Timeout;
+    expiration: Date;
 };
 
 /**
@@ -45,9 +45,7 @@ export class MemoryRateLimiterStorageAdapter<TType>
     // eslint-disable-next-line @typescript-eslint/require-await
     async deInit(): Promise<void> {
         for (const [key, { timeoutId }] of this.map) {
-            if (timeoutId !== null) {
-                clearTimeout(timeoutId);
-            }
+            clearTimeout(timeoutId);
             this.map.delete(key);
         }
         this.map.clear();
@@ -64,15 +62,12 @@ export class MemoryRateLimiterStorageAdapter<TType>
             upsert: async (
                 key: string,
                 state: TType,
-                expiration: Date | null,
+                expiration: Date,
             ): Promise<void> => {
-                const timeoutId: string | number | NodeJS.Timeout | null = null;
-                if (expiration !== null) {
-                    const ttl = expiration.getTime() - Date.now();
-                    setTimeout(() => {
-                        this.map.delete(key);
-                    }, ttl);
-                }
+                const ttl = expiration.getTime() - Date.now();
+                const timeoutId = setTimeout(() => {
+                    this.map.delete(key);
+                }, ttl);
                 this.map.set(key, {
                     state,
                     expiration,
@@ -103,9 +98,7 @@ export class MemoryRateLimiterStorageAdapter<TType>
         if (data === undefined) {
             return;
         }
-        if (data.timeoutId !== null) {
-            clearTimeout(data.timeoutId);
-        }
+        clearTimeout(data.timeoutId);
         this.map.delete(key);
     }
 }

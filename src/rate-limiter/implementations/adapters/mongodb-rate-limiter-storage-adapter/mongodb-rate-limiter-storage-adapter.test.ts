@@ -124,7 +124,7 @@ describe("class: MongodbRateLimiterStorageAdapter", () => {
 
             const key = "a";
             const state = "1";
-            const ttl = null;
+            const ttl = TimeSpan.fromSeconds(1).toEndDate();
 
             await adapter.transaction(async (trx) => {
                 await trx.upsert(key, state, ttl);
@@ -136,7 +136,7 @@ describe("class: MongodbRateLimiterStorageAdapter", () => {
 
             expect(doc).toEqual(
                 expect.objectContaining({
-                    expiration: null,
+                    expiration: ttl,
                 } satisfies Partial<MongodbRateLimiterDocument>),
             );
         });
@@ -165,10 +165,10 @@ describe("class: MongodbRateLimiterStorageAdapter", () => {
             const doc = await collection.findOne({
                 key,
             });
-            expect(doc?.expiration?.getTime()).toBeLessThan(
+            expect(doc?.expiration.getTime()).toBeLessThan(
                 expiration.getTime() + 25,
             );
-            expect(doc?.expiration?.getTime()).toBeGreaterThan(
+            expect(doc?.expiration.getTime()).toBeGreaterThan(
                 expiration.getTime() - 25,
             );
         });

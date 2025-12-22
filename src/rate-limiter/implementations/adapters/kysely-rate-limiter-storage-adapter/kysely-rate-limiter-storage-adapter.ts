@@ -28,7 +28,7 @@ export type KyselyRateLimiterTable = {
     // In ms since unix epoch.
     // The type in mysql is bigint and will be returned as a string.
     // Some sql database drivers have support for js bigint if enabled. Meaning bigint will be returned.
-    expiration: number | bigint | string | null;
+    expiration: number | bigint | string;
 };
 
 /**
@@ -57,8 +57,7 @@ async function find<TType>(
     }
     return {
         state: serde.deserialize(row.state),
-        expiration:
-            row.expiration === null ? null : new Date(Number(row.expiration)),
+        expiration: new Date(Number(row.expiration)),
     };
 }
 
@@ -78,12 +77,8 @@ class KyselyRateLimiterStorageAdapterTransaction<TType>
             this.kysely.getExecutor().adapter instanceof MysqlAdapter;
     }
 
-    async upsert(
-        key: string,
-        state: TType,
-        expiration: Date | null,
-    ): Promise<void> {
-        const expirationAsMs = expiration?.getTime() ?? null;
+    async upsert(key: string, state: TType, expiration: Date): Promise<void> {
+        const expirationAsMs = expiration.getTime();
         const serializedState = this.serde.serialize(state);
         await this.kysely
             .insertInto("rateLimiter")

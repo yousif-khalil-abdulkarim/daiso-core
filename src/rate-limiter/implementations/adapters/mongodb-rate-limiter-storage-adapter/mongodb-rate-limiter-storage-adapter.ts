@@ -44,7 +44,7 @@ export type MongodbRateLimiterDocument = {
     _id: ObjectId;
     key: string;
     state: string;
-    expiration: Date | null;
+    expiration: Date;
 };
 
 /**
@@ -146,7 +146,7 @@ export class MongodbRateLimiterStorageAdapter<TType>
     private async upsert(
         key: string,
         state: TType,
-        expiration: Date | null,
+        expiration: Date,
     ): Promise<void> {
         await this.collection.updateOne(
             {
