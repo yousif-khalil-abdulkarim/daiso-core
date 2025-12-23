@@ -41,7 +41,7 @@ export function resolveCircuitBreakerPolicySettings(
 /**
  * @internal
  */
-export function serializePolicySettingsEnum(
+export function serializeCircuitBreakerPolicySettingsEnum(
     settings: CircuitBreakerPolicySettingsEnum,
 ): Required<SerializedCircuitBreakerPolicySettingsEnum> {
     if (settings.type === BREAKER_POLICIES.CONSECUTIVE) {

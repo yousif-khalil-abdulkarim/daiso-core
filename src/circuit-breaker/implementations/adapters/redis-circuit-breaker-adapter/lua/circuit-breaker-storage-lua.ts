@@ -13,7 +13,6 @@ local function CircuitBreakerStorage(circuitBreakerPolicy, currentDate)
     -- @param key string
     -- @param AllCircuitBreakerState<TMetrics>
     local function find(key)
-        local key = "a"
         if redis.call("EXISTS", key) == 1 then
             local value = redis.call("GET", key)
             return cjson.decode(value)
@@ -34,14 +33,6 @@ local function CircuitBreakerStorage(circuitBreakerPolicy, currentDate)
                 from = currentState.type,
                 to = newState.type,
             }
-        end,
-
-        find = find,
-
-        -- @param key string
-        -- @return void
-        remove = function(key)
-            redis.call("del", key)
         end
     }
 end

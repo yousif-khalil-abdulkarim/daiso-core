@@ -13,13 +13,6 @@ export const circuitBreakerLua = `
 local function CircuitBreaker(circuitBreakerStorage, circuitBreakerStateManager)
     return {
         -- @param key string
-        -- @return CircuitBreakerState
-        getState = function(key)
-            local state = circuitBreakerStorage.find(key)
-            return state.type
-        end,
-
-        -- @param key string
         -- @return CircuitBreakerStateTransition
         updateState = function(key)
             return circuitBreakerStorage.atomicUpdate(key, circuitBreakerStateManager.updateState)
@@ -35,18 +28,6 @@ local function CircuitBreaker(circuitBreakerStorage, circuitBreakerStateManager)
         -- @return void
         trackSuccess = function(key)
             return circuitBreakerStorage.atomicUpdate(key, circuitBreakerStateManager.trackSuccess)
-        end,
-
-        -- @param key string
-        -- @return void
-        reset = function(key)
-            return circuitBreakerStorage.remove(key)
-        end,
-
-        -- @param key string
-        -- @return void
-        isolate = function(key)
-            return circuitBreakerStorage.update(key, circuitBreakerStateManager.isolate)
         end
     }
 end

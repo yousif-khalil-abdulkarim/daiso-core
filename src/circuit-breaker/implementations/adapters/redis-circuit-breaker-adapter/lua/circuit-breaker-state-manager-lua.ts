@@ -60,13 +60,6 @@ local function CircuitBreakerStateManager(circuitBreakerPolicy, backoffPolicy)
 
             return currentState
         end,
-
-        -- @type DatabaseCircuitBreakerUpdateStateFn<TMetrics>
-        isolate = function(_currentState, _currentDate)
-            return {
-                type = "${CIRCUIT_BREAKER_STATE.ISOLATED}"
-            }
-        end,
     }
 end
 `;
