@@ -5,18 +5,46 @@
 import {
     BACKOFFS,
     resolveBackoffSettingsEnum,
+    serializeBackoffSettingsEnum,
     type BackoffSettingsEnum,
 } from "@/backoff-policies/_module-exports.js";
-import type { Redis } from "ioredis";
+import type { Redis, Result } from "ioredis";
 import {
     LIMITER_POLICIES,
     resolveRateLimiterPolicySettings,
+    serializeRateLimiterPolicySettingsEnum,
     type RateLimiterPolicySettingsEnum,
 } from "@/rate-limiter/implementations/policies/_module-exports.js";
 import type {
     IRateLimiterAdapter,
     IRateLimiterAdapterState,
 } from "@/rate-limiter/contracts/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/time-span.js";
+import { rateLimiterFactoryLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/_module.js";
+
+/**
+ * @internal
+ */
+type IRedisJsonRateLimiterState = {
+    success: boolean;
+    attempt: number;
+    resetTime: number;
+};
+
+declare module "ioredis" {
+    interface RedisCommander<Context> {
+        /**
+         * @returns {string} {@link IRedisJsonRateLimiterState | `IRedisJsonRateLimiterState | null`} as json string.
+         */
+        daiso_rate_limiter_update_state(
+            key: string,
+            limit: number,
+            backoffSettings: string,
+            policySettings: string,
+            currentDate: number,
+        ): Result<string, Context>;
+    }
+}
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/redis-rate-limiter-adapter"`
@@ -38,7 +66,7 @@ export type RedisRateLimiterAdapterSettings = {
      * You can choose between different types of predefined circuit breaker policies.
      * @default
      * ```ts
-     * { type: POLICIES.CONSECUTIVE }
+     * { type: LIMITER.FIXED_WINDOW }
      * ```
      */
     policy?: RateLimiterPolicySettingsEnum;
@@ -81,17 +109,77 @@ export class RedisRateLimiterAdapter implements IRateLimiterAdapter {
         this.database = database;
         this.backoff = resolveBackoffSettingsEnum(backoff);
         this.policy = resolveRateLimiterPolicySettings(policy);
+        this.initUpdateStateCommmand();
     }
 
-    getState(key: string): Promise<IRateLimiterAdapterState | null> {
-        throw new Error("Method not implemented.");
+    private initUpdateStateCommmand(): void {
+        if (
+            typeof this.database.daiso_rate_limiter_update_state === "function"
+        ) {
+            return;
+        }
+
+        this.database.defineCommand("daiso_rate_limiter_update_state", {
+            numberOfKeys: 1,
+            lua: `
+            ${rateLimiterFactoryLua}
+
+            local key = KEYS[1];
+            local limit = tonumber(ARGV[1]);
+            local backoffSettings = cjson.decode(ARGV[2]);
+            local policySettings = cjson.decode(ARGV[3]);
+            local currentDate = tonumber(ARGV[4]);
+
+            local rateLimiter = rateLimiterFactory(backoffSettings, policySettings, currentDate)
+            local state = rateLimiter.updateState(key, limit)
+            return cjson.encode(state)
+            `,
+        });
     }
 
-    updateState(key: string, limit: number): Promise<IRateLimiterAdapterState> {
-        throw new Error("Method not implemented.");
+    async getState(key: string): Promise<IRateLimiterAdapterState | null> {
+        const json = await this.database.get(key);
+        if (json === null) {
+            return null;
+        }
+        const state = JSON.parse(json) as IRedisJsonRateLimiterState;
+        return {
+            success: state.success,
+            attempt: state.attempt,
+            resetTime:
+                state.resetTime === -1
+                    ? null
+                    : TimeSpan.fromDateRange({
+                          end: new Date(state.resetTime),
+                      }),
+        };
     }
 
-    reset(key: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async updateState(
+        key: string,
+        limit: number,
+    ): Promise<IRateLimiterAdapterState> {
+        const json = await this.database.daiso_rate_limiter_update_state(
+            key,
+            limit,
+            JSON.stringify(serializeBackoffSettingsEnum(this.backoff)),
+            JSON.stringify(serializeRateLimiterPolicySettingsEnum(this.policy)),
+            Date.now(),
+        );
+        const state = JSON.parse(json) as IRedisJsonRateLimiterState;
+        return {
+            success: state.success,
+            attempt: state.attempt,
+            resetTime:
+                state.resetTime === -1
+                    ? null
+                    : TimeSpan.fromDateRange({
+                          end: new Date(state.resetTime),
+                      }),
+        };
+    }
+
+    async reset(key: string): Promise<void> {
+        await this.database.del(key);
     }
 }
