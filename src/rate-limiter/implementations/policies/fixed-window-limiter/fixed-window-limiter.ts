@@ -143,14 +143,4 @@ export class FixedWindowLimiter
             lastAttemptAt: currentDate.getTime(),
         };
     }
-
-    isEqual(
-        metricsA: FixedWindowLimiterState,
-        metricsB: FixedWindowLimiterState,
-    ): boolean {
-        return (
-            metricsA.attempt === metricsB.attempt &&
-            metricsA.lastAttemptAt === metricsB.lastAttemptAt
-        );
-    }
 }

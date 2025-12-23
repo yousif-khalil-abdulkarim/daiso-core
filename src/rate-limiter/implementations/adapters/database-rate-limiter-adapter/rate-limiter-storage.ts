@@ -60,7 +60,7 @@ export class RateLimiterStorage<TMetrics = unknown> {
         this.backoffPolicy = backoffPolicy;
     }
 
-    private toAdapterState(
+    private static toAdapterState<TMetrics>(
         state: AllRateLimiterState<TMetrics>,
     ): IRateLimiterStorageState {
         return {
@@ -86,20 +86,18 @@ export class RateLimiterStorage<TMetrics = unknown> {
 
             const newState = args.update(currentState);
 
-            if (!this.rateLimiterPolicy.isEqual(currentState, newState)) {
-                await trx.upsert(
-                    args.key,
-                    newState,
-                    this.rateLimiterPolicy.getExpiration(newState, {
-                        backoffPolicy: this.backoffPolicy,
-                        currentDate,
-                    }) ?? null,
-                );
-            }
+            await trx.upsert(
+                args.key,
+                newState,
+                this.rateLimiterPolicy.getExpiration(newState, {
+                    backoffPolicy: this.backoffPolicy,
+                    currentDate,
+                }),
+            );
 
             return newState;
         });
-        return this.toAdapterState(state);
+        return RateLimiterStorage.toAdapterState(state);
     }
 
     async find(key: string): Promise<IRateLimiterStorageState | null> {
@@ -107,7 +105,7 @@ export class RateLimiterStorage<TMetrics = unknown> {
         if (data === null) {
             return null;
         }
-        return this.toAdapterState(data.state);
+        return RateLimiterStorage.toAdapterState(data.state);
     }
 
     async remove(key: string): Promise<void> {

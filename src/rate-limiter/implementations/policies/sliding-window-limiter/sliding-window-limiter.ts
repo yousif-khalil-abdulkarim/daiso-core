@@ -211,18 +211,4 @@ export class SlidingWindowLimiter
             [currentKey]: currentAttempt + 1,
         };
     }
-
-    isEqual(
-        metricsA: SlidingWindowLimiterState,
-        metricsB: SlidingWindowLimiterState,
-    ): boolean {
-        for (const key in metricsA) {
-            const valueA = metricsA[key];
-            const valueB = metricsB[key];
-            if (valueA !== valueB) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

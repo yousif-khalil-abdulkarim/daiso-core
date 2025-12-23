@@ -31,10 +31,4 @@ export type IRateLimiterPolicy<TMetrics = unknown> = {
      * The `updateMetrics` method updates the metrics when an attempt occurs.
      */
     updateMetrics(currentMetrics: TMetrics, currentDate: Date): TMetrics;
-
-    /**
-     * The `isEqual` method should return true only when both metrics are equal.
-     * This method is optional, it is only used for optimization purposes.
-     */
-    isEqual?(metricsA: TMetrics, metricsB: TMetrics): boolean;
 };

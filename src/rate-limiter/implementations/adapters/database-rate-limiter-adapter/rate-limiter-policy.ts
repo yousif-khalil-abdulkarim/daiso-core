@@ -65,36 +65,6 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         };
     }
 
-    private isMetricsEqual(metricsA: TMetrics, metricsB: TMetrics): boolean {
-        return this.rateLimiterPolicy.isEqual?.(metricsA, metricsB) ?? false;
-    }
-
-    isEqual(
-        metricsA: AllRateLimiterState<TMetrics>,
-        metricsB: AllRateLimiterState<TMetrics>,
-    ): boolean {
-        if (
-            metricsA.type === RATE_LIMITER_STATE.ALLOWED &&
-            metricsB.type === RATE_LIMITER_STATE.ALLOWED
-        ) {
-            return (
-                metricsA.attempt === metricsB.attempt &&
-                this.isMetricsEqual(metricsA.metrics, metricsB.metrics)
-            );
-        }
-        if (
-            metricsA.type === RATE_LIMITER_STATE.BLOCKED &&
-            metricsB.type === RATE_LIMITER_STATE.BLOCKED
-        ) {
-            return (
-                metricsA.attempt === metricsB.attempt &&
-                metricsA.startedAt === metricsB.startedAt
-            );
-        }
-
-        return false;
-    }
-
     whenAllowed(
         currentState: AllowedRateLimiterState<TMetrics>,
         limit: number,
@@ -148,7 +118,8 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         currentDate: Date,
     ): AllRateLimiterState<TMetrics> {
         return {
-            ...currentState,
+            type: currentState.type,
+            attempt: currentState.attempt,
             metrics: this.rateLimiterPolicy.updateMetrics(
                 currentState.metrics,
                 currentDate,
@@ -160,7 +131,8 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         currentState: BlockedRateLimiterState,
     ): BlockedRateLimiterState {
         return {
-            ...currentState,
+            type: currentState.type,
+            startedAt: currentState.startedAt,
             attempt: currentState.attempt + 1,
         };
     }
@@ -168,7 +140,7 @@ export class RateLimiterPolicy<TMetrics = unknown> {
     getExpiration(
         currentState: AllRateLimiterState<TMetrics>,
         settings: BackoffPolicySettings,
-    ): Date | null {
+    ): Date {
         if (currentState.type === RATE_LIMITER_STATE.ALLOWED) {
             return this.rateLimiterPolicy.getExpiration(
                 currentState.metrics,
