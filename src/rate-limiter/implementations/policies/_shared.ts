@@ -37,7 +37,7 @@ export function resolveRateLimiterPolicySettings(
 /**
  * @internal
  */
-export function serializePolicySettingsEnum(
+export function serializeRateLimiterPolicySettingsEnum(
     settings: RateLimiterPolicySettingsEnum,
 ): Required<SerializedRateLimiterPolicySettingsEnum> {
     if (settings.type === LIMITER_POLICIES.FIXED_WINDOW) {
