@@ -17,7 +17,7 @@ import type {
     RateLimiterEventMap,
     RateLimiterProviderCreateSettings,
 } from "@/rate-limiter/contracts/_module.js";
-import type { Task } from "@/task/task.js";
+import type { ITask } from "@/task/contracts/_module.js";
 import type { ErrorPolicy, ErrorPolicySettings } from "@/utilities/_module.js";
 import { RateLimiter } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/rate-limiter.js";
 
@@ -150,41 +150,41 @@ export class RateLimiterProvider implements IRateLimiterProvider {
     addListener<TEventName extends keyof RateLimiterEventMap>(
         eventName: TEventName,
         listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
     removeListener<TEventName extends keyof RateLimiterEventMap>(
         eventName: TEventName,
         listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
     listenOnce<TEventName extends keyof RateLimiterEventMap>(
         eventName: TEventName,
         listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
     asPromise<TEventName extends keyof RateLimiterEventMap>(
         eventName: TEventName,
-    ): Task<RateLimiterEventMap[TEventName]> {
+    ): ITask<RateLimiterEventMap[TEventName]> {
         return this.eventBus.asPromise(eventName);
     }
 
     subscribeOnce<TEventName extends keyof RateLimiterEventMap>(
         eventName: TEventName,
         listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribeOnce(eventName, listener);
     }
 
     subscribe<TEventName extends keyof RateLimiterEventMap>(
         eventName: TEventName,
         listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 

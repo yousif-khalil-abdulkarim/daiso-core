@@ -15,7 +15,8 @@ import {
 } from "@/circuit-breaker/contracts/_module.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/_module.js";
 import type { Key, Namespace } from "@/namespace/_module.js";
-import { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     callErrorPolicyOnThrow,
@@ -114,7 +115,7 @@ export class CircuitBreaker implements ICircuitBreaker {
         return this._key.get();
     }
 
-    getState(): Task<CircuitBreakerState> {
+    getState(): ITask<CircuitBreakerState> {
         return new Task(async () => {
             return this.adapter.getState(this._key.toString());
         });
@@ -243,7 +244,7 @@ export class CircuitBreaker implements ICircuitBreaker {
         }
     }
 
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue> {
         return new Task(async () => {
             await this.guard();
 
@@ -255,7 +256,7 @@ export class CircuitBreaker implements ICircuitBreaker {
         });
     }
 
-    reset(): Task<void> {
+    reset(): ITask<void> {
         return new Task(async () => {
             await this.adapter.reset(this._key.toString());
             this.eventDispatcher
@@ -266,7 +267,7 @@ export class CircuitBreaker implements ICircuitBreaker {
         });
     }
 
-    isolate(): Task<void> {
+    isolate(): ITask<void> {
         return new Task(async () => {
             await this.adapter.isolate(this.key);
             this.eventDispatcher

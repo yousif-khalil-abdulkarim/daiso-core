@@ -21,7 +21,8 @@ import {
     type ILockProvider,
     type ILockAdapter,
 } from "@/lock/contracts/_module.js";
-import type { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import type {
     EventListener,
     IEventBus,
@@ -256,7 +257,7 @@ export class LockProvider implements ILockProvider {
     addListener<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
@@ -267,7 +268,7 @@ export class LockProvider implements ILockProvider {
     removeListener<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
@@ -278,7 +279,7 @@ export class LockProvider implements ILockProvider {
     listenOnce<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
@@ -288,7 +289,7 @@ export class LockProvider implements ILockProvider {
      */
     asPromise<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
-    ): Task<LockEventMap[TEventName]> {
+    ): ITask<LockEventMap[TEventName]> {
         return this.eventBus.asPromise(eventName);
     }
 
@@ -299,7 +300,7 @@ export class LockProvider implements ILockProvider {
     subscribeOnce<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribeOnce(eventName, listener);
     }
 
@@ -310,7 +311,7 @@ export class LockProvider implements ILockProvider {
     subscribe<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
         listener: EventListener<LockEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 

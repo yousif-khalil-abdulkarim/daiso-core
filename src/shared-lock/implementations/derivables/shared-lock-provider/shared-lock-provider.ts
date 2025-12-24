@@ -17,7 +17,8 @@ import type {
     ISharedLockProvider,
     SharedLockAdapterVariants,
 } from "@/shared-lock/contracts/_module.js";
-import type { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import type {
     EventListener,
     IEventBus,
@@ -252,7 +253,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     addListener<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
@@ -263,7 +264,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     removeListener<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
@@ -274,7 +275,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     listenOnce<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
@@ -284,7 +285,7 @@ export class SharedLockProvider implements ISharedLockProvider {
      */
     asPromise<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
-    ): Task<SharedLockEventMap[TEventName]> {
+    ): ITask<SharedLockEventMap[TEventName]> {
         return this.eventBus.asPromise(eventName);
     }
 
@@ -295,7 +296,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     subscribeOnce<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribeOnce(eventName, listener);
     }
 
@@ -306,7 +307,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     subscribe<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
         listener: EventListener<SharedLockEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 

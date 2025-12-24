@@ -13,7 +13,7 @@ import {
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { CircuitBreakerProvider } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker-provider.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
+import { Task } from "@/task/implementations/_module.js";
 import {
     CIRCUIT_BREAKER_EVENTS,
     type StateTransitionCircuitBreakerEvent,

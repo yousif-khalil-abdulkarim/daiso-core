@@ -2,7 +2,8 @@
  * @module EventBus
  */
 
-import { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import type {
     BaseEvent,
     BaseEventMap,
@@ -156,7 +157,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     addListener<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return new Task(async () => {
             const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getOrAdd(
@@ -179,7 +180,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     removeListener<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return new Task(async () => {
             const key = this.namespace.create(String(eventName));
             const resolvedListener = this.store.getAndRemove(
@@ -204,7 +205,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     listenOnce<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return new Task(async () => {
             const wrappedListener = async (event_: TEventMap[TEventName]) => {
                 try {
@@ -251,7 +252,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
 
     asPromise<TEventName extends keyof TEventMap>(
         eventName: TEventName,
-    ): Task<TEventMap[TEventName]> {
+    ): ITask<TEventMap[TEventName]> {
         return Task.fromCallback((resolve, reject) => {
             this.listenOnce(eventName, resolve).then(() => {}, reject);
         });
@@ -260,8 +261,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     subscribeOnce<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
-        return new Task(async () => {
+    ): ITask<Unsubscribe> {
+        return new Task<Unsubscribe>(async () => {
             await this.listenOnce(eventName, listener);
             const unsubscribe = () => {
                 return new Task(async () => {
@@ -275,8 +276,8 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     subscribe<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         listener: EventListener<TEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
-        return new Task(async () => {
+    ): ITask<Unsubscribe> {
+        return new Task<Unsubscribe>(async () => {
             await this.addListener(eventName, listener);
             const unsubscribe = () => {
                 return new Task(async () => {
@@ -290,7 +291,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     dispatch<TEventName extends keyof TEventMap>(
         eventName: TEventName,
         event: TEventMap[TEventName],
-    ): Task<void> {
+    ): ITask<void> {
         return new Task(async () => {
             await validate(this.eventMapSchema?.[eventName], event);
             await this.adapter.dispatch(

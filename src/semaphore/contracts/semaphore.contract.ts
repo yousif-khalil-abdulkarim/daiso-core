@@ -2,7 +2,8 @@
  * @module Semaphore
  */
 
-import type { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import type {
     AsyncLazy,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -25,7 +26,7 @@ import type { ITimeSpan } from "@/time-span/contracts/_module.js";
  * @group Contracts
  */
 export type ISemaphoreStateMethods = {
-    getState(): Task<ISemaphoreState>;
+    getState(): ITask<ISemaphoreState>;
 
     /**
      * The `key` of the `ISemaphore` instance.
@@ -60,26 +61,26 @@ export type SemaphoreAquireBlockingSettings = {
  */
 export type ISemaphoreBase = {
     /**
-     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
+     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link ITask | `ITask`} with the `acquireOrFail` and `release` method.
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue>;
 
     /**
-     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link ITask | `ITask`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SemaphoreAquireBlockingSettings,
-    ): Task<TValue>;
+    ): ITask<TValue>;
 
     /**
      * The `acquire` method acquires an slots only if the slot limit is not reached.
      *
      * @returns Returns true if the slot limit is not reached otherwise false is returned.
      */
-    acquire(): Task<boolean>;
+    acquire(): ITask<boolean>;
 
     /**
      * The `acquireOrFail` method acquires an slots only if the slot limit is not reached.
@@ -87,7 +88,7 @@ export type ISemaphoreBase = {
      *
      * @throws {LimitReachedSemaphoreError} {@link LimitReachedSemaphoreError}
      */
-    acquireOrFail(): Task<void>;
+    acquireOrFail(): ITask<void>;
 
     /**
      * The `acquireBlocking` method acquires an slots only if the slot limit is not reached.
@@ -95,7 +96,7 @@ export type ISemaphoreBase = {
      *
      * @returns Returns true if the slot limit is not reached otherwise false is returned.
      */
-    acquireBlocking(settings?: SemaphoreAquireBlockingSettings): Task<boolean>;
+    acquireBlocking(settings?: SemaphoreAquireBlockingSettings): ITask<boolean>;
 
     /**
      * The `acquireBlockingOrFail` method acquires an slots only if the slot limit is not reached.
@@ -106,42 +107,42 @@ export type ISemaphoreBase = {
      */
     acquireBlockingOrFail(
         settings?: SemaphoreAquireBlockingSettings,
-    ): Task<void>;
+    ): ITask<void>;
 
     /**
      * The `release` method releases the current slot.
      *
      * @returns Returns true if the semaphore exists and has at least one busy slot or false.
      */
-    release(): Task<boolean>;
+    release(): ITask<boolean>;
 
     /**
      * The `releaseOrFail` method releases the current slot.
      * Throws an error if the slot is not acquired.
      * @throws {FailedReleaseSemaphoreError} {@link FailedReleaseSemaphoreError}
      */
-    releaseOrFail(): Task<void>;
+    releaseOrFail(): ITask<void>;
 
     /**
      * The `forceReleaseAll` method releases the all slots.
      *
      * @returns Returns true if the semaphore exists and has at least one unavailable slot or false if all slots are available.
      */
-    forceReleaseAll(): Task<boolean>;
+    forceReleaseAll(): ITask<boolean>;
 
     /**
      * The `refresh` method updates the `ttl` of the slot when acquired.
      *
      * @returns Returns true if the slot is refreshed otherwise false is returned.
      */
-    refresh(ttl?: ITimeSpan): Task<boolean>;
+    refresh(ttl?: ITimeSpan): ITask<boolean>;
 
     /**
      * The `refreshOrFail` method updates the `ttl` of the slot when acquired.
      * Throws an error if the slot is not acquired.
      * @throws {FailedRefreshSemaphoreError} {@link FailedRefreshSemaphoreError}
      */
-    refreshOrFail(ttl?: ITimeSpan): Task<void>;
+    refreshOrFail(ttl?: ITimeSpan): ITask<void>;
 };
 
 /**

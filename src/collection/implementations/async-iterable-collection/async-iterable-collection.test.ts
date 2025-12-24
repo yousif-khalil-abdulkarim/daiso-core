@@ -7,7 +7,7 @@ import {
     EmptyCollectionError,
 } from "@/collection/contracts/_module-exports.js";
 import { AsyncIterableCollection } from "@/collection/implementations/async-iterable-collection/_module.js";
-import { Task } from "@/task/_module-exports.js";
+import { Task } from "@/task/implementations/_module.js";
 
 describe("class: AsyncIterableCollection", () => {
     describe("method: filter", () => {
@@ -2310,7 +2310,7 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe("a");
             });
-            test("Task", async () => {
+            test("ITask", async () => {
                 const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                     item = await collection.firstOr("a", (item) => item === 6);
                 expect(item).toBe("a");
@@ -2391,7 +2391,7 @@ describe("class: AsyncIterableCollection", () => {
                 );
             expect(item).toEqual(persons[0]);
         });
-        test("Should work with Task function", async () => {
+        test("Should work with ITask function", async () => {
             type Person = {
                 name: string;
                 age: number;
@@ -2655,7 +2655,7 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe("a");
             });
-            test("Task", async () => {
+            test("ITask", async () => {
                 const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
                     item = await collection.lastOr(
                         // eslint-disable-next-line @typescript-eslint/require-await
@@ -2880,7 +2880,7 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe(-1);
             });
-            test("Task", async () => {
+            test("ITask", async () => {
                 const collection = new AsyncIterableCollection(["a", "b", "c"]),
                     item = await collection.beforeOr(
                         // eslint-disable-next-line @typescript-eslint/require-await
@@ -2916,7 +2916,7 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe(-1);
             });
-            test("Task", async () => {
+            test("ITask", async () => {
                 const collection = new AsyncIterableCollection(["a", "b", "c"]),
                     item = await collection.beforeOr(
                         // eslint-disable-next-line @typescript-eslint/require-await
@@ -3078,7 +3078,7 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe(-1);
             });
-            test("Task", async () => {
+            test("ITask", async () => {
                 const collection = new AsyncIterableCollection(["a", "b", "c"]),
                     item = await collection.afterOr(
                         // eslint-disable-next-line @typescript-eslint/require-await
@@ -3111,7 +3111,7 @@ describe("class: AsyncIterableCollection", () => {
                     );
                 expect(item).toBe(-1);
             });
-            test("Task", async () => {
+            test("ITask", async () => {
                 const collection = new AsyncIterableCollection(["a", "b", "c"]),
                     item = await collection.afterOr(
                         // eslint-disable-next-line @typescript-eslint/require-await

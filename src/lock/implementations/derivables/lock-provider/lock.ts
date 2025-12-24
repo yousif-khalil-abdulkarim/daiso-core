@@ -21,7 +21,8 @@ import {
     isLockError,
 } from "@/lock/contracts/_module.js";
 import { type ILock, type ILockAdapter } from "@/lock/contracts/_module.js";
-import { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import type { Key, Namespace } from "@/namespace/_module.js";
@@ -122,7 +123,7 @@ export class Lock implements ILock {
         return this.originalAdapter;
     }
 
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue> {
         return new Task(async () => {
             try {
                 await this.acquireOrFail();
@@ -136,7 +137,7 @@ export class Lock implements ILock {
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
-    ): Task<TValue> {
+    ): ITask<TValue> {
         return new Task(async () => {
             try {
                 await this.acquireBlockingOrFail(settings);
@@ -197,7 +198,7 @@ export class Lock implements ILock {
         };
     };
 
-    acquire(): Task<boolean> {
+    acquire(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.acquire(
                 this._key.toString(),
@@ -223,7 +224,7 @@ export class Lock implements ILock {
         ]);
     }
 
-    acquireOrFail(): Task<void> {
+    acquireOrFail(): ITask<void> {
         return new Task(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
@@ -234,7 +235,7 @@ export class Lock implements ILock {
         });
     }
 
-    acquireBlocking(settings: LockAquireBlockingSettings = {}): Task<boolean> {
+    acquireBlocking(settings: LockAquireBlockingSettings = {}): ITask<boolean> {
         return new Task(async () => {
             const {
                 time = this.defaultBlockingTime,
@@ -255,7 +256,7 @@ export class Lock implements ILock {
         });
     }
 
-    acquireBlockingOrFail(settings?: LockAquireBlockingSettings): Task<void> {
+    acquireBlockingOrFail(settings?: LockAquireBlockingSettings): ITask<void> {
         return new Task(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
@@ -266,7 +267,7 @@ export class Lock implements ILock {
         });
     }
 
-    release(): Task<boolean> {
+    release(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.release(
                 this._key.toString(),
@@ -291,7 +292,7 @@ export class Lock implements ILock {
         ]);
     }
 
-    releaseOrFail(): Task<void> {
+    releaseOrFail(): ITask<void> {
         return new Task(async () => {
             const hasRelased = await this.release();
             if (!hasRelased) {
@@ -302,7 +303,7 @@ export class Lock implements ILock {
         });
     }
 
-    forceRelease(): Task<boolean> {
+    forceRelease(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.forceRelease(this._key.toString());
         }).pipe([
@@ -320,7 +321,7 @@ export class Lock implements ILock {
         ]);
     }
 
-    refresh(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
+    refresh(ttl: ITimeSpan = this.defaultRefreshTime): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.refresh(
                 this._key.toString(),
@@ -353,7 +354,7 @@ export class Lock implements ILock {
         ]);
     }
 
-    refreshOrFail(ttl?: ITimeSpan): Task<void> {
+    refreshOrFail(ttl?: ITimeSpan): ITask<void> {
         return new Task(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
@@ -376,7 +377,7 @@ export class Lock implements ILock {
         return this._ttl;
     }
 
-    getState(): Task<ILockState> {
+    getState(): ITask<ILockState> {
         return new Task(async () => {
             const state = await this.adapter.getState(this._key.toString());
             if (state === null) {

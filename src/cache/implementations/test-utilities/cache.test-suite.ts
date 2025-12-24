@@ -22,7 +22,8 @@ import {
     CACHE_EVENTS,
 } from "@/cache/contracts/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
-import { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
@@ -156,7 +157,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                         await cache.getOr("a", () => Promise.resolve(-1)),
                     ).toBe(-1);
                 });
-                test("Task", async () => {
+                test("ITask", async () => {
                     expect(
                         await cache.getOr(
                             "a",
@@ -183,7 +184,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                         await cache.getOr("a", () => Promise.resolve(-1)),
                     ).toBe(-1);
                 });
-                test("Task", async () => {
+                test("ITask", async () => {
                     await cache.add("a", 1, TTL);
                     await Task.delay(TTL);
                     expect(
@@ -235,7 +236,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     await cache.getOrAdd("a", () => Promise.resolve(-1));
                     expect(await cache.get("a")).toBe(-1);
                 });
-                test("Task", async () => {
+                test("ITask", async () => {
                     await cache.getOrAdd(
                         "a",
                         new Task(() => Promise.resolve(-1)),
@@ -262,7 +263,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     await cache.getOrAdd("a", () => Promise.resolve(-1));
                     expect(await cache.get("a")).toBe(-1);
                 });
-                test("Task", async () => {
+                test("ITask", async () => {
                     await cache.add("a", 1, TTL);
                     await Task.delay(TTL);
                     await cache.getOrAdd(

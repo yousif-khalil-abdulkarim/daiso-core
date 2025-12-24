@@ -6,7 +6,7 @@ import { EventEmitter } from "node:events";
 import { ValidationError } from "@/utilities/_module-exports.js";
 import { z } from "zod";
 import type { EventListenerFn } from "@/event-bus/contracts/event-bus-adapter.contract.js";
-import { Task } from "@/task/_module-exports.js";
+import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
 import { Namespace } from "@/namespace/_module-exports.js";
 

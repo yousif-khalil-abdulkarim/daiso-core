@@ -26,7 +26,8 @@ import type {
     EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
 import type { AsyncLazyable, AsyncIterableValue } from "@/utilities/_module.js";
-import type { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -178,16 +179,16 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     reduce(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
-    ): Task<TInput>;
+    ): ITask<TInput>;
     reduce(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TInput>,
         // eslint-disable-next-line @typescript-eslint/unified-signatures
         initialValue: TInput,
-    ): Task<TInput>;
+    ): ITask<TInput>;
     reduce<TOutput>(
         reduceFn: AsyncReduce<TInput, IAsyncCollection<TInput>, TOutput>,
         initialValue: TOutput,
-    ): Task<TOutput>;
+    ): ITask<TOutput>;
 
     /**
      * The `join` method joins the collection's items with ` separator `. An error will be thrown when if a none string item is encounterd.
@@ -219,7 +220,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * }
      * ```
      */
-    join(separator?: string): Task<Extract<TInput, string>>;
+    join(separator?: string): ITask<Extract<TInput, string>>;
 
     /**
      * The `collapse` method collapses a collection of iterables into a single, flat collection.
@@ -337,7 +338,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * }
      * ```
      */
-    get(index: number): Task<TInput | null>;
+    get(index: number): ITask<TInput | null>;
 
     /**
      * The `getOrFail` method returns the item by index. If the item is not found an error will be thrown.
@@ -358,7 +359,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * }
      * ```
      */
-    getOrFail(index: number): Task<TInput>;
+    getOrFail(index: number): ITask<TInput>;
 
     /**
      * The `page` method returns a new collection containing the items that would be present on ` page ` with custom ` pageSize `.
@@ -395,7 +396,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * }
      * ```
      */
-    sum(): Task<Extract<TInput, number>>;
+    sum(): ITask<Extract<TInput, number>>;
 
     /**
      * The `average` method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -414,7 +415,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * }
      * ```
      */
-    average(): Task<Extract<TInput, number>>;
+    average(): ITask<Extract<TInput, number>>;
 
     /**
      * The `median` method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -433,7 +434,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * }
      * ```
      */
-    median(): Task<Extract<TInput, number>>;
+    median(): ITask<Extract<TInput, number>>;
 
     /**
      * The `min` method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -452,7 +453,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * }
      * ```
      */
-    min(): Task<Extract<TInput, number>>;
+    min(): ITask<Extract<TInput, number>>;
 
     /**
      * The `max` method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
@@ -471,7 +472,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      * }
      * ```
      */
-    max(): Task<Extract<TInput, number>>;
+    max(): ITask<Extract<TInput, number>>;
 
     /**
      * The `percentage` method may be used to quickly determine the percentage of items in the collection that pass `predicateFn`.
@@ -491,7 +492,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     percentage(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<number>;
+    ): ITask<number>;
 
     /**
      * The `some` method determines whether at least one item in the collection matches `predicateFn`.
@@ -510,7 +511,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     some<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Task<boolean>;
+    ): ITask<boolean>;
 
     /**
      * The `every` method determines whether all items in the collection matches `predicateFn`.
@@ -529,7 +530,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     every<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Task<boolean>;
+    ): ITask<boolean>;
 
     /**
      * The `take` method takes the first `limit` items.
@@ -810,7 +811,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     pipe<TOutput = TInput>(
         callback: AsyncTransform<IAsyncCollection<TInput>, TOutput>,
-    ): Task<TOutput>;
+    ): ITask<TOutput>;
 
     /**
      * The `tap` method passes a copy of the original collection to `callback`, allowing you to do something with the items while not affecting the original collection.
@@ -1665,7 +1666,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     first<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Task<TOutput | null>;
+    ): ITask<TOutput | null>;
 
     /**
      * The `firstOr` method returns the first item in the collection that passes ` predicateFn `
@@ -1720,7 +1721,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a {@link Task | `Task`} as default value.
+     * You can pass a {@link ITask | `ITask`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core/collection/contracts";
@@ -1737,7 +1738,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     firstOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Task<TOutput | TExtended>;
+    ): ITask<TOutput | TExtended>;
 
     /**
      * The `firstOrFail` method returns the first item in the collection that passes ` predicateFn `.
@@ -1782,7 +1783,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     firstOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Task<TOutput>;
+    ): ITask<TOutput>;
 
     /**
      * The `last` method returns the last item in the collection that passes ` predicateFn `.
@@ -1826,7 +1827,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     last<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Task<TOutput | null>;
+    ): ITask<TOutput | null>;
 
     /**
      * The `lastOr` method returns the last item in the collection that passes ` predicateFn `.
@@ -1881,7 +1882,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a {@link Task | `Task`} as default value.
+     * You can pass a {@link ITask | `ITask`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core/collection/contracts";
@@ -1898,7 +1899,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     lastOr<TOutput extends TInput, TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Task<TOutput | TExtended>;
+    ): ITask<TOutput | TExtended>;
 
     /**
      * The `lastOrFail` method returns the last item in the collection that passes ` predicateFn `.
@@ -1943,7 +1944,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     lastOrFail<TOutput extends TInput>(
         predicateFn?: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Task<TOutput>;
+    ): ITask<TOutput>;
 
     /**
      * The `before` method returns the item that comes before the first item that matches `predicateFn`.
@@ -1975,7 +1976,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     before(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<TInput | null>;
+    ): ITask<TInput | null>;
 
     /**
      * The `beforeOr` method returns the item that comes before the first item that matches `predicateFn`.
@@ -2018,7 +2019,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a {@link Task | `Task`} as default value.
+     * You can pass a {@link ITask | `ITask`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core/collection/contracts";
@@ -2035,7 +2036,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     beforeOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<TInput | TExtended>;
+    ): ITask<TInput | TExtended>;
 
     /**
      * The `beforeOrFail` method returns the item that comes before the first item that matches `predicateFn`.
@@ -2068,7 +2069,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     beforeOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<TInput>;
+    ): ITask<TInput>;
 
     /**
      * The `after` method returns the item that comes after the first item that matches `predicateFn`.
@@ -2100,7 +2101,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     after(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<TInput | null>;
+    ): ITask<TInput | null>;
 
     /**
      * The `afterOr` method returns the item that comes after the first item that matches `predicateFn`.
@@ -2143,7 +2144,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      *   // -1
      * }
      * ```
-     * You can pass a {@link Task | `Task`} as default value.
+     * You can pass a {@link ITask | `ITask`} as default value.
      * @example
      * ```ts
      * import type { IAsyncCollection, ICache } from "@daiso-tech/core/collection/contracts";
@@ -2160,7 +2161,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     afterOr<TExtended = TInput>(
         defaultValue: AsyncLazyable<TExtended>,
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<TInput | TExtended>;
+    ): ITask<TInput | TExtended>;
 
     /**
      * The `afterOrFail` method returns the item that comes after the first item that matches `predicateFn`.
@@ -2193,7 +2194,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     afterOrFail(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<TInput>;
+    ): ITask<TInput>;
 
     /**
      * The `sole` method returns the first item in the collection that passes `predicateFn`, but only if `predicateFn` matches exactly one item.
@@ -2239,7 +2240,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     sole<TOutput extends TInput>(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>, TOutput>,
-    ): Task<TOutput>;
+    ): ITask<TOutput>;
 
     /**
      * The `nth` method creates a new collection consisting of every n-th item.
@@ -2275,22 +2276,22 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     count(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<number>;
+    ): ITask<number>;
 
     /**
      * The `size` returns the size of the collection.
      */
-    size(): Task<number>;
+    size(): ITask<number>;
 
     /**
      * The `isEmpty` returns true if the collection is empty.
      */
-    isEmpty(): Task<boolean>;
+    isEmpty(): ITask<boolean>;
 
     /**
      * The `isNotEmpty` returns true if the collection is not empty.
      */
-    isNotEmpty(): Task<boolean>;
+    isNotEmpty(): ITask<boolean>;
 
     /**
      * The `searchFirst` return the index of the first item that matches `predicateFn`.
@@ -2309,7 +2310,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     searchFirst(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<number>;
+    ): ITask<number>;
 
     /**
      * The `searchLast` return the index of the last item that matches `predicateFn`.
@@ -2328,31 +2329,31 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
      */
     searchLast(
         predicateFn: AsyncPredicate<TInput, IAsyncCollection<TInput>>,
-    ): Task<number>;
+    ): ITask<number>;
 
     /**
      * The `forEach` method iterates through all items in the collection.
      */
     forEach(
         callback: AsyncForEach<TInput, IAsyncCollection<TInput>>,
-    ): Task<void>;
+    ): ITask<void>;
 
     /**
      * The `toArray` method converts the collection to a new {@link Array | `Array`}.
      */
-    toArray(): Task<TInput[]>;
+    toArray(): ITask<TInput[]>;
 
     /**
      * The `toRecord` method converts the collection to a new {@link Record | `Record`}.
      * An error will be thrown if item is not a tuple of size 2 where the first element is a string or a number.
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
-    toRecord(): Task<EnsureRecord<TInput>>;
+    toRecord(): ITask<EnsureRecord<TInput>>;
 
     /**
      * The `toMap` method converts the collection to a new {@link Map | `Map`}.
      * An error will be thrown if item is not a tuple of size 2.
      * @throws {TypeCollectionError} {@link TypeCollectionError}
      */
-    toMap(): Task<EnsureMap<TInput>>;
+    toMap(): ITask<EnsureMap<TInput>>;
 };
