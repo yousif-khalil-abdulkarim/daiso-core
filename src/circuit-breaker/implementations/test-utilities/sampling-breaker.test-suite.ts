@@ -49,8 +49,7 @@ const circuitBreakerPolicySettings: Required<SamplingBreakerSettings> = {
 const backoffPolicySettings: Required<ConstantBackoffSettingsEnum> = {
     type: BACKOFFS.CONSTANT,
     delay: TimeSpan.fromMilliseconds(50),
-    jitter: 0.5,
-    enableJitter: false,
+    jitter: null,
 };
 
 /**

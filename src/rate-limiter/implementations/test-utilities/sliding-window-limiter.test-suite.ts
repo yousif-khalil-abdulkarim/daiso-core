@@ -46,8 +46,7 @@ const rateLimiterPolicySettings: Required<SlidingWindowLimiterSettings> = {
 const backoffPolicySettings: Required<ConstantBackoffSettingsEnum> = {
     type: BACKOFFS.CONSTANT,
     delay: TimeSpan.fromMilliseconds(50),
-    jitter: 0.5,
-    enableJitter: false,
+    jitter: null,
 };
 
 /**
