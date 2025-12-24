@@ -19,8 +19,8 @@ import { AsyncHooks, type AsyncMiddleware } from "@/hooks/_module.js";
 import type { ITask } from "@/task/contracts/_module-exports.js";
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskResolve<TValue> = InvokableFn<
     [value: Promisable<TValue>],
@@ -28,14 +28,14 @@ export type TaskResolve<TValue> = InvokableFn<
 >;
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskReject = InvokableFn<[error: unknown], void>;
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskCallback<TValue> = InvokableFn<
     [resolve: TaskResolve<TValue>, reject: TaskReject],
@@ -43,16 +43,16 @@ export type TaskCallback<TValue> = InvokableFn<
 >;
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskAllResult<T extends readonly unknown[]> = {
     -readonly [P in keyof T]: Awaited<T[P]>;
 };
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskAllSettledResult<T extends readonly unknown[]> = {
     -readonly [P in keyof T]: PromiseSettledResult<Awaited<T[P]>>;
@@ -63,6 +63,7 @@ export type TaskAllSettledResult<T extends readonly unknown[]> = {
  * Note the class is immutable.
  *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export class Task<TValue> implements PromiseLike<TValue> {
     /**

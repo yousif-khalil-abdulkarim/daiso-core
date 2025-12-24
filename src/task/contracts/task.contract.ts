@@ -5,6 +5,7 @@ import { type AsyncLazyable, type OneOrMore } from "@/utilities/_module.js";
 import { type AsyncMiddleware } from "@/hooks/_module.js";
 
 /**
+ * IMPORT_PATH: `"@daiso-tech/core/task/contracts"`
  * @group Contracts
  */
 export type ITask<TValue> = PromiseLike<TValue> & {
