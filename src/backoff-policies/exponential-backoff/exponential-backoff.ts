@@ -47,13 +47,7 @@ export type ExponentialBackoffSettings = {
     /**
      * @default 0.5
      */
-    jitter?: number;
-
-    /**
-     * @default true
-     */
-    enableJitter?: boolean;
-
+    jitter?: number | null;
     /**
      * @internal
      * Should only be used for testing
@@ -68,7 +62,6 @@ export function resolveExponentialBackoffSettings(
     settings: ExponentialBackoffSettings,
 ): Required<ExponentialBackoffSettings> {
     const {
-        enableJitter = true,
         maxDelay = TimeSpan.fromMilliseconds(60_000),
         minDelay = TimeSpan.fromMilliseconds(1_000),
         multiplier = 2,
@@ -77,7 +70,6 @@ export function resolveExponentialBackoffSettings(
     } = settings;
 
     return {
-        enableJitter,
         maxDelay,
         minDelay,
         multiplier,
@@ -103,14 +95,8 @@ export function exponentialBackoff(
                 settings = dynamicSettings;
             }
         }
-        const {
-            jitter,
-            enableJitter,
-            _mathRandom,
-            multiplier,
-            maxDelay,
-            minDelay,
-        } = resolveExponentialBackoffSettings(settings);
+        const { jitter, _mathRandom, multiplier, maxDelay, minDelay } =
+            resolveExponentialBackoffSettings(settings);
 
         const exponential = Math.min(
             maxDelay[TO_MILLISECONDS](),
@@ -118,7 +104,6 @@ export function exponentialBackoff(
         );
         return TimeSpan.fromMilliseconds(
             withJitter({
-                enable: enableJitter,
                 jitter,
                 value: exponential,
                 mathRandom: _mathRandom,
@@ -137,9 +122,7 @@ export type SerializedExponentialBackoffSettings = {
 
     multiplier?: number;
 
-    jitter?: number;
-
-    enableJitter?: boolean;
+    jitter?: number | null;
 
     _mathRandom?: number;
 };
@@ -150,16 +133,9 @@ export type SerializedExponentialBackoffSettings = {
 export function serializeExponentialBackoffSettings(
     settings: ExponentialBackoffSettings,
 ): Required<SerializedExponentialBackoffSettings> {
-    const {
-        enableJitter,
-        maxDelay,
-        minDelay,
-        multiplier,
-        jitter,
-        _mathRandom,
-    } = resolveExponentialBackoffSettings(settings);
+    const { maxDelay, minDelay, multiplier, jitter, _mathRandom } =
+        resolveExponentialBackoffSettings(settings);
     return {
-        enableJitter,
         maxDelay: maxDelay[TO_MILLISECONDS](),
         minDelay: minDelay[TO_MILLISECONDS](),
         multiplier,

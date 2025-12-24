@@ -20,11 +20,6 @@ import { TimeSpan } from "@/time-span/implementations/_module.js";
  */
 export type PolynomialBackoffSettings = {
     /**
-     * @default true
-     */
-    enableJitter?: boolean;
-
-    /**
      * @default
      * ```ts
      * import { TimeSpan } from "@daiso-tech/core/time-span";
@@ -52,7 +47,7 @@ export type PolynomialBackoffSettings = {
     /**
      * @default 0.5
      */
-    jitter?: number;
+    jitter?: number | null;
 
     /**
      * @internal
@@ -68,7 +63,6 @@ export function resolvePolynomialBackoffSettings(
     settings: PolynomialBackoffSettings,
 ): Required<PolynomialBackoffSettings> {
     const {
-        enableJitter = true,
         maxDelay = TimeSpan.fromMilliseconds(6000),
         minDelay = TimeSpan.fromMilliseconds(1_000),
         degree = 2,
@@ -76,7 +70,6 @@ export function resolvePolynomialBackoffSettings(
         _mathRandom = Math.random,
     } = settings;
     return {
-        enableJitter,
         maxDelay,
         minDelay,
         degree,
@@ -102,21 +95,14 @@ export function polynomialBackoff(
                 settings = dynamicSettings;
             }
         }
-        const {
-            maxDelay,
-            minDelay,
-            degree,
-            jitter,
-            enableJitter,
-            _mathRandom,
-        } = resolvePolynomialBackoffSettings(settings);
+        const { maxDelay, minDelay, degree, jitter, _mathRandom } =
+            resolvePolynomialBackoffSettings(settings);
         const polynomial = Math.min(
             maxDelay[TO_MILLISECONDS](),
             minDelay[TO_MILLISECONDS]() * Math.pow(attempt, degree),
         );
         return TimeSpan.fromMilliseconds(
             withJitter({
-                enable: enableJitter,
                 jitter,
                 value: polynomial,
                 mathRandom: _mathRandom,
@@ -129,15 +115,13 @@ export function polynomialBackoff(
  * @internal
  */
 export type SerializedPolynomialBackoffSettings = {
-    enableJitter?: boolean;
-
     maxDelay?: number;
 
     minDelay?: number;
 
     degree?: number;
 
-    jitter?: number;
+    jitter?: number | null;
 
     _mathRandom?: number;
 };
@@ -148,10 +132,9 @@ export type SerializedPolynomialBackoffSettings = {
 export function serializePolynomialBackoffSettings(
     settings: PolynomialBackoffSettings,
 ): Required<SerializedPolynomialBackoffSettings> {
-    const { enableJitter, maxDelay, minDelay, degree, jitter, _mathRandom } =
+    const { maxDelay, minDelay, degree, jitter, _mathRandom } =
         resolvePolynomialBackoffSettings(settings);
     return {
-        enableJitter,
         maxDelay: maxDelay[TO_MILLISECONDS](),
         minDelay: minDelay[TO_MILLISECONDS](),
         degree,

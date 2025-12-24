@@ -9,7 +9,7 @@ export const backoffsLua = `
 -- @param args WithJitterArgs
 -- @return number
 local function withJitter(args)
-    if args.enable then
+    if args.jitter ~= nil then
         return (1 - args.jitter * args.mathRandom) * args.value
     end
 
@@ -26,7 +26,6 @@ local function constantBackoff(settings)
             jitter = settings.jitter,
             value = settings.delay,
             mathRandom = settings._mathRandom,
-            enable = settings.enableJitter
         })
     end
 end
@@ -42,7 +41,6 @@ local function exponentialBackoff(settings)
             jitter = settings.jitter,
             value = exponential,
             mathRandom = settings._mathRandom,
-            enable = settings.enableJitter
         })
     end
 end
@@ -58,7 +56,6 @@ local function linearBackoff(settings)
             jitter = settings.jitter,
             value = linear,
             mathRandom = settings._mathRandom,
-            enable = settings.enableJitter
         })
     end
 end
@@ -75,7 +72,6 @@ local function polynomialBackoff(settings)
             jitter = settings.jitter,
             value = polynomial,
             mathRandom = settings._mathRandom,
-            enable = settings.enableJitter
         })
     end
 end

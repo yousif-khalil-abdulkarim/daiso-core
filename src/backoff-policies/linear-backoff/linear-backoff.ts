@@ -20,11 +20,6 @@ import {
  */
 export type LinearBackoffSettings = {
     /**
-     * @default true
-     */
-    enableJitter?: boolean;
-
-    /**
      * @default
      * ```ts
      * import { TimeSpan } from "@daiso-tech/core/time-span";
@@ -47,7 +42,7 @@ export type LinearBackoffSettings = {
     /**
      * @default 0.5
      */
-    jitter?: number;
+    jitter?: number | null;
 
     /**
      * @internal
@@ -63,7 +58,6 @@ export function resolveLinearBackoffSettings(
     settings: LinearBackoffSettings,
 ): Required<LinearBackoffSettings> {
     const {
-        enableJitter = true,
         maxDelay = TimeSpan.fromMilliseconds(6000),
         minDelay = TimeSpan.fromMilliseconds(1_000),
         jitter = 0.5,
@@ -71,7 +65,6 @@ export function resolveLinearBackoffSettings(
     } = settings;
 
     return {
-        enableJitter,
         maxDelay,
         minDelay,
         jitter,
@@ -96,7 +89,7 @@ export function linearBackoff(
                 settings = dynamicSettings;
             }
         }
-        const { maxDelay, minDelay, jitter, enableJitter, _mathRandom } =
+        const { maxDelay, minDelay, jitter, _mathRandom } =
             resolveLinearBackoffSettings(settings);
         const linear = Math.min(
             maxDelay[TO_MILLISECONDS](),
@@ -104,7 +97,6 @@ export function linearBackoff(
         );
         return TimeSpan.fromMilliseconds(
             withJitter({
-                enable: enableJitter,
                 jitter,
                 value: linear,
                 mathRandom: _mathRandom,
@@ -117,13 +109,11 @@ export function linearBackoff(
  * @internal
  */
 export type SerializedLinearBackoffSettings = {
-    enableJitter?: boolean;
-
     maxDelay?: number;
 
     minDelay?: number;
 
-    jitter?: number;
+    jitter?: number | null;
 
     _mathRandom?: number;
 };
@@ -134,11 +124,10 @@ export type SerializedLinearBackoffSettings = {
 export function serializeLinearBackoffSettings(
     settings: LinearBackoffSettings,
 ): Required<SerializedLinearBackoffSettings> {
-    const { enableJitter, maxDelay, minDelay, jitter, _mathRandom } =
+    const { maxDelay, minDelay, jitter, _mathRandom } =
         resolveLinearBackoffSettings(settings);
 
     return {
-        enableJitter,
         maxDelay: maxDelay[TO_MILLISECONDS](),
         minDelay: minDelay[TO_MILLISECONDS](),
         jitter,

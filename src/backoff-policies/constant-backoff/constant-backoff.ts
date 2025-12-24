@@ -30,14 +30,11 @@ export type ConstantBackoffSettings = {
     delay?: ITimeSpan;
 
     /**
+     * You can pass jitter value to ensure the backoff will not execute at the same time.
+     * If you pas null you can disable the jitrter.
      * @default 0.5
      */
-    jitter?: number;
-
-    /**
-     * @default true
-     */
-    enableJitter?: boolean;
+    jitter?: number | null;
 
     /**
      * @internal
@@ -53,7 +50,6 @@ export function resolveConstantBackoffSettings(
     settings: ConstantBackoffSettings,
 ): Required<ConstantBackoffSettings> {
     const {
-        enableJitter = true,
         delay = TimeSpan.fromMilliseconds(100),
         jitter = 0.5,
         _mathRandom = Math.random,
@@ -62,7 +58,6 @@ export function resolveConstantBackoffSettings(
     return {
         delay,
         jitter,
-        enableJitter,
         _mathRandom,
     };
 }
@@ -84,11 +79,10 @@ export function constantBackoff(
                 settings = dynamicSettings;
             }
         }
-        const { delay, jitter, enableJitter, _mathRandom } =
+        const { delay, jitter, _mathRandom } =
             resolveConstantBackoffSettings(settings);
         return TimeSpan.fromMilliseconds(
             withJitter({
-                enable: enableJitter,
                 jitter,
                 value: delay[TO_MILLISECONDS](),
                 mathRandom: _mathRandom,
@@ -103,9 +97,7 @@ export function constantBackoff(
 export type SerializedConstantBackoffSettings = {
     delay?: number;
 
-    jitter?: number;
-
-    enableJitter?: boolean;
+    jitter?: number | null;
 
     _mathRandom?: number;
 };
@@ -116,12 +108,11 @@ export type SerializedConstantBackoffSettings = {
 export function serializeConstantBackoffSettings(
     settings: ConstantBackoffSettings,
 ): Required<SerializedConstantBackoffSettings> {
-    const { delay, jitter, enableJitter, _mathRandom } =
+    const { delay, jitter, _mathRandom } =
         resolveConstantBackoffSettings(settings);
     return {
         delay: delay[TO_MILLISECONDS](),
         jitter,
-        enableJitter,
         _mathRandom: _mathRandom(),
     };
 }

@@ -48,8 +48,7 @@ export type DynamicBackoffPolicy<TSettings> =
  * @internal
  */
 export type WithJitterArgs = {
-    enable: boolean;
-    jitter: number;
+    jitter: number | null;
     value: number;
     mathRandom: () => number;
 };
@@ -58,8 +57,8 @@ export type WithJitterArgs = {
  * @internal
  */
 export function withJitter(args: WithJitterArgs): number {
-    const { enable, jitter, value, mathRandom } = args;
-    if (enable) {
+    const { jitter, value, mathRandom } = args;
+    if (jitter !== null) {
         return (1 - jitter * mathRandom()) * value;
     }
     return value;
