@@ -3,7 +3,6 @@
  */
 
 import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
 import type {
     AsyncLazy,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

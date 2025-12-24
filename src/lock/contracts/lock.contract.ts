@@ -8,7 +8,6 @@ import type {
     Invokable,
 } from "@/utilities/_module.js";
 import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     FailedAcquireLockError,

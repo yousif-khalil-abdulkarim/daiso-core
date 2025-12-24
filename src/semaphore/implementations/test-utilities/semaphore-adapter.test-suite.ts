@@ -10,7 +10,6 @@ import {
 } from "vitest";
 import { type ISemaphoreAdapter } from "@/semaphore/contracts/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 

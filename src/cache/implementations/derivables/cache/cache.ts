@@ -496,7 +496,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    increment(key: string, value = 0 as Extract<TType, number>): ITask<boolean> {
+    increment(
+        key: string,
+        value = 0 as Extract<TType, number>,
+    ): ITask<boolean> {
         return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
@@ -547,7 +550,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    decrement(key: string, value = 0 as Extract<TType, number>): ITask<boolean> {
+    decrement(
+        key: string,
+        value = 0 as Extract<TType, number>,
+    ): ITask<boolean> {
         return new Task(async () => {
             return await this.increment(key, -value as Extract<TType, number>);
         });

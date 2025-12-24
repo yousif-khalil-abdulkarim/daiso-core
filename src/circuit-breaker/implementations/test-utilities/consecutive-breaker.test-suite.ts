@@ -7,7 +7,6 @@ import {
     type CircuitBreakerStateTransition,
 } from "@/circuit-breaker/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import {
     type TestAPI,

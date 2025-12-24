@@ -65,7 +65,7 @@ export type TaskAllSettledResult<T extends readonly unknown[]> = {
  * IMPORT_PATH: `"@daiso-tech/core/task"`
  * @group Derivables
  */
-export class Task<TValue> implements PromiseLike<TValue> {
+export class Task<TValue> implements ITask<TValue> {
     /**
      * The `wrapFn` is convience method used for wrapping async {@link Invokable | `Invokable`} with a `Task`.
      * @example

@@ -20,7 +20,6 @@ import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_modul
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { Namespace } from "@/namespace/_module.js";
 import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
 import { CircuitBreaker } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
