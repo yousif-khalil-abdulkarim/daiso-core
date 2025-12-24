@@ -5,7 +5,7 @@
 import type {
     IDatabaseSharedLockAdapter,
     SharedLockAdapterVariants,
-} from "@/shared-lock/contracts/_module-exports.js";
+} from "@/shared-lock/contracts/_module.js";
 
 /**
  * @internal

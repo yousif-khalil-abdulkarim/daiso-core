@@ -2,12 +2,12 @@
  * @module TimeSpan
  */
 
-import type { ISerializable } from "@/serde/contracts/_module-exports.js";
+import type { ISerializable } from "@/serde/contracts/_module.js";
 import {
     TO_MILLISECONDS,
     type ITimeSpan,
-} from "@/time-span/contracts/_module-exports.js";
-import type { IComparable } from "@/utilities/_module-exports.js";
+} from "@/time-span/contracts/_module.js";
+import type { IComparable } from "@/utilities/_module.js";
 
 /**
  *

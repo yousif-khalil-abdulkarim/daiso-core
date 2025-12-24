@@ -22,19 +22,19 @@ import type {
     RefreshedLockEvent,
     ReleasedLockEvent,
     UnavailableLockEvent,
-} from "@/lock/contracts/_module-exports.js";
+} from "@/lock/contracts/_module.js";
 import {
     FailedAcquireLockError,
     FailedReleaseLockError,
     LOCK_EVENTS,
     FailedRefreshLockError,
     LOCK_STATE,
-} from "@/lock/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
-import type { ISerde } from "@/serde/contracts/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { TO_MILLISECONDS } from "@/time-span/contracts/_module-exports.js";
+} from "@/lock/contracts/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
+import type { ISerde } from "@/serde/contracts/_module.js";
+import { Task } from "@/task/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { TO_MILLISECONDS } from "@/time-span/contracts/_module.js";
 
 /**
  *

@@ -28,13 +28,13 @@ import type {
 import type {
     AsyncLazyable,
     AsyncIterableValue,
-} from "@/utilities/_module-exports.js";
-import type { Task } from "@/task/_module-exports.js";
+} from "@/utilities/_module.js";
+import type { Task } from "@/task/_module.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedError,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  *

@@ -5,8 +5,8 @@
 import {
     type ICollection,
     type Tap,
-} from "@/collection/contracts/_module-exports.js";
-import { resolveInvokable } from "@/utilities/_module-exports.js";
+} from "@/collection/contracts/_module.js";
+import { resolveInvokable } from "@/utilities/_module.js";
 
 /**
  * @internal

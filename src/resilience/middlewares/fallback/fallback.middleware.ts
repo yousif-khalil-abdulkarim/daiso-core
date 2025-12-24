@@ -6,13 +6,13 @@ import {
     resolveAsyncLazyable,
     callInvokable,
     callErrorPolicyOnValue,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import type { FallbackSettings } from "@/resilience/middlewares/fallback/fallback.types.js";
-import { callErrorPolicyOnThrow } from "@/utilities/_module-exports.js";
+import { callErrorPolicyOnThrow } from "@/utilities/_module.js";
 import type {
     AsyncMiddlewareFn,
     HookContext,
-} from "@/hooks/_module-exports.js";
+} from "@/hooks/_module.js";
 
 /**
  * The `fallback` middleware adds fallback value when an error occurs.

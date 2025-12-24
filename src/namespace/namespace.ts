@@ -7,7 +7,7 @@ import {
     resolveOneOrMore,
     UnexpectedError,
     type OneOrMore,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * @internal

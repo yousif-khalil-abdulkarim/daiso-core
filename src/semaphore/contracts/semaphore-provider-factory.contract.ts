@@ -8,7 +8,7 @@ import {
     UnregisteredAdapterError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultAdapterNotDefinedError,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * The `ISemaphoreProviderFactory` contract makes it easy to configure and switch between different {@link ISemaphoreProvider | `ISemaphoreProvider`} dynamically.

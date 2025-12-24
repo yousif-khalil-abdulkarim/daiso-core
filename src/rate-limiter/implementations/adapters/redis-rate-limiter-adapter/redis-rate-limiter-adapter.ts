@@ -7,18 +7,18 @@ import {
     resolveBackoffSettingsEnum,
     serializeBackoffSettingsEnum,
     type BackoffSettingsEnum,
-} from "@/backoff-policies/_module-exports.js";
+} from "@/backoff-policies/_module.js";
 import type { Redis, Result } from "ioredis";
 import {
     LIMITER_POLICIES,
     resolveRateLimiterPolicySettings,
     serializeRateLimiterPolicySettingsEnum,
     type RateLimiterPolicySettingsEnum,
-} from "@/rate-limiter/implementations/policies/_module-exports.js";
+} from "@/rate-limiter/implementations/policies/_module.js";
 import type {
     IRateLimiterAdapter,
     IRateLimiterAdapterState,
-} from "@/rate-limiter/contracts/_module-exports.js";
+} from "@/rate-limiter/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/time-span.js";
 import { rateLimiterFactoryLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/_module.js";
 

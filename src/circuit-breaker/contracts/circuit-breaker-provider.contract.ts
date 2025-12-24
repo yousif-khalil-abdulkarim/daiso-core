@@ -2,9 +2,9 @@
  * @module CircuitBreaker
  */
 
-import type { ErrorPolicySettings } from "@/utilities/_module-exports.js";
+import type { ErrorPolicySettings } from "@/utilities/_module.js";
 import type { ICircuitBreaker } from "@/circuit-breaker/contracts/circuit-breaker.contract.js";
-import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventListenable } from "@/event-bus/contracts/_module.js";
 import type { CircuitBreakerEventMap } from "@/circuit-breaker/contracts/circuit-breaker.events.js";
 
 /**

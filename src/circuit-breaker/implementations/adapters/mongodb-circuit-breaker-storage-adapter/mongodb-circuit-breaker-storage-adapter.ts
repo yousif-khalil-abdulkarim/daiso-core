@@ -11,7 +11,7 @@ import type {
     IDeinitizable,
     IInitizable,
     InvokableFn,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import type { ObjectId } from "mongodb";
 import {
     type Collection,

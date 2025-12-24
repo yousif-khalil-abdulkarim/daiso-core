@@ -2,12 +2,12 @@
  * @module SharedLock
  */
 
-import type { Task } from "@/task/_module-exports.js";
+import type { Task } from "@/task/_module.js";
 import type {
     AsyncLazy,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     LimitReachedReaderSemaphoreError,
@@ -25,8 +25,8 @@ import {
     FailedRefreshWriterLockError,
 } from "@/shared-lock/contracts/shared-lock.errors.js";
 import type { ISharedLockState } from "@/shared-lock/contracts/shared-lock-state.contract.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  *

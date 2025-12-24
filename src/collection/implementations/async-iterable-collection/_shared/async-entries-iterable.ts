@@ -5,7 +5,7 @@
 import {
     resolveAsyncIterableValue,
     type AsyncIterableValue,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * @internal

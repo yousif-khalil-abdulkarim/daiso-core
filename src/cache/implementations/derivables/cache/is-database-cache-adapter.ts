@@ -5,7 +5,7 @@
 import type {
     CacheAdapterVariants,
     IDatabaseCacheAdapter,
-} from "@/cache/contracts/_module-exports.js";
+} from "@/cache/contracts/_module.js";
 
 /**
  * @internal

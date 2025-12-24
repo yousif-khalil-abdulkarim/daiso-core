@@ -7,7 +7,7 @@ import {
     type IFlexibleSerdeAdapter,
     DeserializationSerdeError,
     SerializationSerdeError,
-} from "@/serde/contracts/_module-exports.js";
+} from "@/serde/contracts/_module.js";
 import { SuperJSON } from "superjson";
 
 /**

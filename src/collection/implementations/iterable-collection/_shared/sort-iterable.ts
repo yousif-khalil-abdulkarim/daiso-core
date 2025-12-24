@@ -2,8 +2,8 @@
  * @module Collection
  */
 
-import { type Comparator } from "@/collection/contracts/_module-exports.js";
-import { resolveInvokable } from "@/utilities/_module-exports.js";
+import { type Comparator } from "@/collection/contracts/_module.js";
+import { resolveInvokable } from "@/utilities/_module.js";
 
 /**
  * @internal

@@ -4,7 +4,7 @@
 import type {
     IDatabaseSemaphoreAdapter,
     SemaphoreAdapterVariants,
-} from "@/semaphore/contracts/_module-exports.js";
+} from "@/semaphore/contracts/_module.js";
 
 /**
  * @internal

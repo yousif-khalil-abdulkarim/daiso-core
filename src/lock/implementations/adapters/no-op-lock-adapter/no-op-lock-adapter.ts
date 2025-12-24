@@ -5,10 +5,10 @@
 import type {
     ILockAdapter,
     ILockAdapterState,
-} from "@/lock/contracts/_module-exports.js";
+} from "@/lock/contracts/_module.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ILockProvider } from "@/lock/contracts/_module-exports.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { ILockProvider } from "@/lock/contracts/_module.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * This `NoOpLockAdapter` will do nothing and is used for easily mocking {@link ILockProvider | `ILockProvider`} for testing.

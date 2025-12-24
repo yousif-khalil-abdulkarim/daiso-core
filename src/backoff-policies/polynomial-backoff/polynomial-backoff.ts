@@ -2,7 +2,7 @@
  * @module BackoffPolicy
  */
 
-import { callInvokable, isInvokable } from "@/utilities/_module-exports.js";
+import { callInvokable, isInvokable } from "@/utilities/_module.js";
 import type {
     BackoffPolicy,
     DynamicBackoffPolicy,
@@ -11,8 +11,8 @@ import { withJitter } from "@/backoff-policies/_shared.js";
 import {
     TO_MILLISECONDS,
     type ITimeSpan,
-} from "@/time-span/contracts/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  *

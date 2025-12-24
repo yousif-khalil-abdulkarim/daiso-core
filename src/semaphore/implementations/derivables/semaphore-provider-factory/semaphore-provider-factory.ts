@@ -1,23 +1,23 @@
 /**
  * @module Semaphore
  */
-import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventBus } from "@/event-bus/contracts/_module.js";
 import type {
     ISemaphoreProviderFactory,
     ISemaphoreProvider,
     SemaphoreAdapterVariants,
-} from "@/semaphore/contracts/_module-exports.js";
+} from "@/semaphore/contracts/_module.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import {
     DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE,
     SemaphoreProvider,
     type SemaphoreProviderSettingsBase,
 } from "@/semaphore/implementations/derivables/semaphore-provider/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import type { Namespace } from "@/namespace/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import type { Namespace } from "@/namespace/_module.js";
 
 /**
  *

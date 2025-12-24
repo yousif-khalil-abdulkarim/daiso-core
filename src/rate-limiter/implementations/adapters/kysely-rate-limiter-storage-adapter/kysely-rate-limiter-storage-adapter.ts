@@ -6,16 +6,16 @@ import type {
     IRateLimiterData,
     IRateLimiterStorageAdapter,
     IRateLimiterStorageAdapterTransaction,
-} from "@/rate-limiter/contracts/_module-exports.js";
-import type { ISerde } from "@/serde/contracts/_module-exports.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/rate-limiter/contracts/_module.js";
+import type { ISerde } from "@/serde/contracts/_module.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 import type {
     IDeinitizable,
     IInitizable,
     InvokableFn,
     IPrunable,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import { MysqlAdapter, type Kysely } from "kysely";
 
 /**

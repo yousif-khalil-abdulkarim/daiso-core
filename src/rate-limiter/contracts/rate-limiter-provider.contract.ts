@@ -2,9 +2,9 @@
  * @module RateLimiter
  */
 
-import type { ErrorPolicySettings } from "@/utilities/_module-exports.js";
+import type { ErrorPolicySettings } from "@/utilities/_module.js";
 import type { IRateLimiter } from "@/rate-limiter/contracts/rate-limiter.contract.js";
-import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventListenable } from "@/event-bus/contracts/_module.js";
 import type { RateLimiterEventMap } from "@/rate-limiter/contracts/rate-limiter.events.js";
 
 /**

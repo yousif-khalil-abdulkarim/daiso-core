@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import type { InvokableFn } from "@/utilities/_module-exports.js";
+import type { InvokableFn } from "@/utilities/_module.js";
 
 /**
  *

@@ -2,7 +2,7 @@
  * @module CircuitBreaker
  */
 
-import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module-exports.js";
+import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module.js";
 
 /**
  * @internal

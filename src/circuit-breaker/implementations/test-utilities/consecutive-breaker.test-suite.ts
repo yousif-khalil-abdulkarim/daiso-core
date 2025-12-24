@@ -5,22 +5,22 @@
 import {
     CIRCUIT_BREAKER_STATE,
     type CircuitBreakerStateTransition,
-} from "@/circuit-breaker/contracts/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { Task } from "@/task/_module.js";
 import {
     type TestAPI,
     type SuiteAPI,
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { type ICircuitBreakerAdapter } from "@/circuit-breaker/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
-import type { ConsecutiveBreakerSettings } from "@/circuit-breaker/implementations/policies/_module-exports.js";
+import { type ICircuitBreakerAdapter } from "@/circuit-breaker/contracts/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
+import type { ConsecutiveBreakerSettings } from "@/circuit-breaker/implementations/policies/_module.js";
 import {
     BACKOFFS,
     type ConstantBackoffSettingsEnum,
-} from "@/backoff-policies/_module-exports.js";
+} from "@/backoff-policies/_module.js";
 
 /**
  *

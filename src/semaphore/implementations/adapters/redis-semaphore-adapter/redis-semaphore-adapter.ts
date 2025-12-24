@@ -6,8 +6,8 @@ import type {
     ISemaphoreAdapter,
     ISemaphoreAdapterState,
     SemaphoreAcquireSettings,
-} from "@/semaphore/contracts/_module-exports.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/semaphore/contracts/_module.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 import type { Redis, Result } from "ioredis";
 
 /**

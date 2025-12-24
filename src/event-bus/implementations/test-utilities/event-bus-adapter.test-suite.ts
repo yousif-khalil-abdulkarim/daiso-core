@@ -13,10 +13,10 @@ import {
 import type {
     BaseEvent,
     IEventBusAdapter,
-} from "@/event-bus/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/event-bus/contracts/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
+import { Task } from "@/task/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  *

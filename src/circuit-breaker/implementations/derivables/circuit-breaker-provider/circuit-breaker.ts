@@ -12,18 +12,18 @@ import {
     CIRCUIT_BREAKER_STATE,
     type CircuitBreakerEventMap,
     CIRCUIT_BREAKER_EVENTS,
-} from "@/circuit-breaker/contracts/_module-exports.js";
-import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
-import type { Key, Namespace } from "@/namespace/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
+import type { IEventDispatcher } from "@/event-bus/contracts/_module.js";
+import type { Key, Namespace } from "@/namespace/_module.js";
+import { Task } from "@/task/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     callErrorPolicyOnThrow,
     resolveAsyncLazyable,
     type AsyncLazy,
     type ErrorPolicy,
     type InvokableFn,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * @internal

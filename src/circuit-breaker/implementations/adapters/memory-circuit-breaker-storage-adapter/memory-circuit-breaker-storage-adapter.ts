@@ -9,7 +9,7 @@ import type {
 import type {
     IDeinitizable,
     InvokableFn,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * Note the `MemoryCircuitBreakerStorageAdapter` is limited to single process usage and cannot be shared across multiple servers or different processes.

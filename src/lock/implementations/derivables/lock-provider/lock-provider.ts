@@ -7,40 +7,40 @@ import {
     resolveOneOrMore,
     type Invokable,
     callInvokable,
-} from "@/utilities/_module-exports.js";
-import { type OneOrMore } from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
+import { type OneOrMore } from "@/utilities/_module.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IDatabaseLockAdapter,
     LockAdapterVariants,
     LockEventMap,
-} from "@/lock/contracts/_module-exports.js";
+} from "@/lock/contracts/_module.js";
 import {
     type ILock,
     type LockProviderCreateSettings,
     type ILockProvider,
     type ILockAdapter,
-} from "@/lock/contracts/_module-exports.js";
-import type { Task } from "@/task/_module-exports.js";
+} from "@/lock/contracts/_module.js";
+import type { Task } from "@/task/_module.js";
 import type {
     EventListener,
     IEventBus,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
     Unsubscribe,
-} from "@/event-bus/contracts/_module-exports.js";
+} from "@/event-bus/contracts/_module.js";
 
-import type { ISerderRegister } from "@/serde/contracts/_module-exports.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import type { ISerderRegister } from "@/serde/contracts/_module.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { v4 } from "uuid";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
 import { resolveLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-lock-adapter.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { Namespace } from "@/namespace/_module-exports.js";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { Namespace } from "@/namespace/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 
 /**

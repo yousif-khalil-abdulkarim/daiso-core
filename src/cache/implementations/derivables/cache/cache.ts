@@ -7,30 +7,30 @@ import type {
     CacheEventMap,
     NotFoundCacheEvent,
     RemovedCacheEvent,
-} from "@/cache/contracts/_module-exports.js";
+} from "@/cache/contracts/_module.js";
 import {
     CACHE_EVENTS,
     type ICache,
     type ICacheAdapter,
-} from "@/cache/contracts/_module-exports.js";
-import { KeyNotFoundCacheError } from "@/cache/contracts/_module-exports.js";
-import { resolveAsyncLazyable, validate } from "@/utilities/_module-exports.js";
-import type { AsyncLazyable } from "@/utilities/_module-exports.js";
-import { type NoneFunc } from "@/utilities/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
+} from "@/cache/contracts/_module.js";
+import { KeyNotFoundCacheError } from "@/cache/contracts/_module.js";
+import { resolveAsyncLazyable, validate } from "@/utilities/_module.js";
+import type { AsyncLazyable } from "@/utilities/_module.js";
+import { type NoneFunc } from "@/utilities/_module.js";
+import { Task } from "@/task/_module.js";
 import type {
     IEventBus,
     Unsubscribe,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
     EventListener,
-} from "@/event-bus/contracts/_module-exports.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+} from "@/event-bus/contracts/_module.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { Namespace } from "@/namespace/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { Namespace } from "@/namespace/_module.js";
 import type { CacheAdapterVariants } from "@/cache/contracts/types.js";
 import { resolveCacheAdapter } from "@/cache/implementations/derivables/cache/resolve-cache-adapter.js";
 

@@ -2,7 +2,7 @@
  * @module RateLimiter
  */
 
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { IRateLimiterProvider } from "@/rate-limiter/contracts/rate-limiter-provider.contract.js";
 

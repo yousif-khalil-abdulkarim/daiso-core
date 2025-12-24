@@ -2,25 +2,25 @@
  * @module Resilience
  */
 
-import type { Option } from "@/utilities/_module-exports.js";
+import type { Option } from "@/utilities/_module.js";
 import {
     callInvokable,
     optionNone,
     optionSome,
     OPTION,
     UnexpectedError,
-} from "@/utilities/_module-exports.js";
-import { exponentialBackoff } from "@/backoff-policies/_module-exports.js";
+} from "@/utilities/_module.js";
+import { exponentialBackoff } from "@/backoff-policies/_module.js";
 import type { RetrySettings } from "@/resilience/middlewares/retry/retry.types.js";
 import {
     callErrorPolicyOnThrow,
     callErrorPolicyOnValue,
-} from "@/utilities/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
+} from "@/utilities/_module.js";
+import { Task } from "@/task/_module.js";
 import type {
     AsyncMiddlewareFn,
     HookContext,
-} from "@/hooks/_module-exports.js";
+} from "@/hooks/_module.js";
 import { RetryResilienceError } from "@/resilience/resilience.errors.js";
 
 /**

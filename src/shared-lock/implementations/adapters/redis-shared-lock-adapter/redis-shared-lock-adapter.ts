@@ -6,8 +6,8 @@ import type {
     ISharedLockAdapter,
     ISharedLockAdapterState,
     SharedLockAcquireSettings,
-} from "@/shared-lock/contracts/_module-exports.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/shared-lock/contracts/_module.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 import { UnexpectedError } from "@/utilities/errors.js";
 import type { Redis, Result } from "ioredis";
 

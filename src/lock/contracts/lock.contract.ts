@@ -6,8 +6,8 @@ import type {
     AsyncLazy,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
-} from "@/utilities/_module-exports.js";
-import type { Task } from "@/task/_module-exports.js";
+} from "@/utilities/_module.js";
+import type { Task } from "@/task/_module.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     FailedAcquireLockError,
@@ -17,7 +17,7 @@ import type {
     FailedRefreshLockError,
 } from "@/lock/contracts/lock.errors.js";
 import type { ILockState } from "@/lock/contracts/lock-state.contract.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  *

@@ -10,11 +10,11 @@ import {
     callInvokable,
     isPromiseLike,
     resolveAsyncLazyable,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import { abortAndFail } from "@/task/abort-and-fail.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { AsyncHooks, type AsyncMiddleware } from "@/hooks/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { AsyncHooks, type AsyncMiddleware } from "@/hooks/_module.js";
 
 /**
  *

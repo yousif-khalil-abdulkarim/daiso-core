@@ -10,7 +10,7 @@ import {
     type ICircuitBreakerPolicy,
     CLOSED_TRANSITIONS,
     type ClosedTransitions,
-} from "@/circuit-breaker/contracts/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`

@@ -2,7 +2,7 @@
  * @module Utilities
  */
 
-import type { Task } from "@/task/_module-exports.js";
+import type { Task } from "@/task/_module.js";
 import {
     type Invokable,
     isInvokable,

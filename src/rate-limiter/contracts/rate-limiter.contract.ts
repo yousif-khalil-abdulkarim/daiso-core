@@ -3,8 +3,8 @@
  */
 
 import type { Task } from "@/task/task.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import type { AsyncLazy } from "@/utilities/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import type { AsyncLazy } from "@/utilities/_module.js";
 import type { RateLimiterState } from "@/rate-limiter/contracts/rate-limiter-state.contract.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { BlockedRateLimiterError } from "@/rate-limiter/contracts/rate-limiter.errors.js";

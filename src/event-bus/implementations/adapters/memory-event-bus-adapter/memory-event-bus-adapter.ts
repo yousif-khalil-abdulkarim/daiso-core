@@ -6,7 +6,7 @@ import type {
     BaseEvent,
     EventListenerFn,
     IEventBusAdapter,
-} from "@/event-bus/contracts/_module-exports.js";
+} from "@/event-bus/contracts/_module.js";
 import { EventEmitter } from "node:events";
 
 /**

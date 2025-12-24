@@ -1,24 +1,24 @@
 /**
  * @module Lock
  */
-import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
+import type { IEventBus } from "@/event-bus/contracts/_module.js";
 import type {
     ILockProviderFactory,
     ILockProvider,
     LockAdapterVariants,
-} from "@/lock/contracts/_module-exports.js";
+} from "@/lock/contracts/_module.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
-} from "@/utilities/_module-exports.js";
-import type { Invokable } from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
+import type { Invokable } from "@/utilities/_module.js";
 import {
     DEFAULT_LOCK_PROVIDER_NAMESPACE,
     LockProvider,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import type { Namespace } from "@/namespace/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import type { Namespace } from "@/namespace/_module.js";
 
 /**
  *
