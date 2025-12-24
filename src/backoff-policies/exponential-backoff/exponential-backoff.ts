@@ -45,9 +45,12 @@ export type ExponentialBackoffSettings = {
     multiplier?: number;
 
     /**
+     * You can pass jitter value to ensure the backoff will not execute at the same time.
+     * If you pas null you can disable the jitrter.
      * @default 0.5
      */
     jitter?: number | null;
+
     /**
      * @internal
      * Should only be used for testing
