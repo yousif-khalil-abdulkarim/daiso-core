@@ -23,10 +23,7 @@ import {
 } from "@/semaphore/contracts/_module.js";
 import type { ISemaphoreState } from "@/semaphore/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import {
-    resolveLazyable,
-    type AsyncLazy,
-} from "@/utilities/_module.js";
+import { resolveLazyable, type AsyncLazy } from "@/utilities/_module.js";
 import type { AsyncMiddlewareFn } from "@/hooks/_module.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 

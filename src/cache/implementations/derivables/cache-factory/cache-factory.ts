@@ -7,10 +7,7 @@ import {
     UnregisteredAdapterError,
 } from "@/utilities/_module.js";
 import type { IEventBus } from "@/event-bus/contracts/_module.js";
-import type {
-    ICache,
-    ICacheFactory,
-} from "@/cache/contracts/_module.js";
+import type { ICache, ICacheFactory } from "@/cache/contracts/_module.js";
 import {
     Cache,
     type CacheSettingsBase,

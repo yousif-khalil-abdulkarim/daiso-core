@@ -17,10 +17,7 @@ import {
     callErrorPolicyOnValue,
 } from "@/utilities/_module.js";
 import { Task } from "@/task/_module.js";
-import type {
-    AsyncMiddlewareFn,
-    HookContext,
-} from "@/hooks/_module.js";
+import type { AsyncMiddlewareFn, HookContext } from "@/hooks/_module.js";
 import { RetryResilienceError } from "@/resilience/resilience.errors.js";
 
 /**

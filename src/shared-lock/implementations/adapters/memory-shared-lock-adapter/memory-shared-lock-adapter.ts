@@ -2,10 +2,7 @@
  * @module SharedLock
  */
 
-import {
-    UnexpectedError,
-    type IDeinitizable,
-} from "@/utilities/_module.js";
+import { UnexpectedError, type IDeinitizable } from "@/utilities/_module.js";
 import type {
     ISharedLockAdapter,
     ISharedLockAdapterState,

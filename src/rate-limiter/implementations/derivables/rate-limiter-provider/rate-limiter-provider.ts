@@ -18,10 +18,7 @@ import type {
     RateLimiterProviderCreateSettings,
 } from "@/rate-limiter/contracts/_module.js";
 import type { Task } from "@/task/task.js";
-import type {
-    ErrorPolicy,
-    ErrorPolicySettings,
-} from "@/utilities/_module.js";
+import type { ErrorPolicy, ErrorPolicySettings } from "@/utilities/_module.js";
 import { RateLimiter } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/rate-limiter.js";
 
 /**

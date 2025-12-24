@@ -6,10 +6,7 @@ import type {
     ICircuitBreakerStorageAdapter,
     ICircuitBreakerStorageAdapterTransaction,
 } from "@/circuit-breaker/contracts/circuit-breaker-storage-adapter.contract.js";
-import type {
-    IDeinitizable,
-    InvokableFn,
-} from "@/utilities/_module.js";
+import type { IDeinitizable, InvokableFn } from "@/utilities/_module.js";
 
 /**
  * Note the `MemoryCircuitBreakerStorageAdapter` is limited to single process usage and cannot be shared across multiple servers or different processes.

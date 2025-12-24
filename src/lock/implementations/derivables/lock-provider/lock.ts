@@ -2,10 +2,7 @@
  * @module Lock
  */
 
-import {
-    type AsyncLazy,
-    resolveLazyable,
-} from "@/utilities/_module.js";
+import { type AsyncLazy, resolveLazyable } from "@/utilities/_module.js";
 import type {
     ILockState,
     IDatabaseLockAdapter,
@@ -23,10 +20,7 @@ import {
     LOCK_STATE,
     isLockError,
 } from "@/lock/contracts/_module.js";
-import {
-    type ILock,
-    type ILockAdapter,
-} from "@/lock/contracts/_module.js";
+import { type ILock, type ILockAdapter } from "@/lock/contracts/_module.js";
 import { Task } from "@/task/_module.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";

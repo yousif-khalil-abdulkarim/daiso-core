@@ -25,10 +25,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
-import type {
-    AsyncLazyable,
-    AsyncIterableValue,
-} from "@/utilities/_module.js";
+import type { AsyncLazyable, AsyncIterableValue } from "@/utilities/_module.js";
 import type { Task } from "@/task/_module.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {

@@ -2,10 +2,7 @@
  * @module Collection
  */
 
-import {
-    type ICollection,
-    type Tap,
-} from "@/collection/contracts/_module.js";
+import { type ICollection, type Tap } from "@/collection/contracts/_module.js";
 import { resolveInvokable } from "@/utilities/_module.js";
 
 /**

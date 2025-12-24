@@ -7,10 +7,7 @@ import { TimeoutResilienceError } from "@/resilience/resilience.errors.js";
 import { timeoutAndFail } from "@/resilience/utilities/timeout-and-fail/_module.js";
 import type { TimeoutSettings } from "@/resilience/middlewares/timeout/timeout.type.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type {
-    AsyncMiddlewareFn,
-    HookContext,
-} from "@/hooks/_module.js";
+import type { AsyncMiddlewareFn, HookContext } from "@/hooks/_module.js";
 
 /**
  * The `timeout` middleware automatically cancels functions after a specified time period, throwing an error when aborted.

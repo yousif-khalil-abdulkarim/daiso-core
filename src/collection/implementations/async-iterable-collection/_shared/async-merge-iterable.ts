@@ -2,10 +2,7 @@
  * @module Collection
  */
 
-import {
-    isIterable,
-    resolveAsyncIterableValue,
-} from "@/utilities/_module.js";
+import { isIterable, resolveAsyncIterableValue } from "@/utilities/_module.js";
 import { type AsyncIterableValue } from "@/utilities/_module.js";
 
 /**

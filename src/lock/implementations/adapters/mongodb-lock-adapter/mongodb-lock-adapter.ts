@@ -2,10 +2,7 @@
  * @module Lock
  */
 
-import {
-    type IDeinitizable,
-    type IInitizable,
-} from "@/utilities/_module.js";
+import { type IDeinitizable, type IInitizable } from "@/utilities/_module.js";
 import type {
     ILockAdapter,
     ILockAdapterState,
