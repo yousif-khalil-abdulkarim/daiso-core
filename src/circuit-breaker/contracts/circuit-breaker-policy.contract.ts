@@ -100,7 +100,7 @@ export type CircuitBreakerTrackSettings<TMetrics = unknown> = {
 
 /**
  * The `ICircuitBreakerPolicy` contract defines the circuite breaker algorithm.
- * Note all the methods here are pure functions, meaning they should not mutate input data and return copies.
+ * Note all the methods here are pure functions, meaning they should return copies and not mutate input data.
  *
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/contracts"`
  * @group Contracts

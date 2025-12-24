@@ -33,6 +33,8 @@ export type IRateLimiterProviderBase = {
 };
 
 /**
+ * The `IRateLimiterListenable` contract defines a way for listening {@link IRateLimiter | `IRateLimiter`} operations and state transitions.
+ *
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
  * @group Contracts
  */

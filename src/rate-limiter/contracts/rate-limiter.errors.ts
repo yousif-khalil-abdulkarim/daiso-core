@@ -5,7 +5,7 @@
 import type { RateLimiterBlockedState } from "@/rate-limiter/contracts/rate-limiter-state.contract.js";
 
 /**
- * The error is throw when rate limiter start to block the attempts.
+ * The error is throw when rate limiter blocks the attempts.
  *
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
  * @group Errors

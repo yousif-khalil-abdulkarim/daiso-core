@@ -61,6 +61,7 @@ export type RateLimiterProviderSettingsBase = ErrorPolicySettings & {
 
     /**
      * If true, metric tracking will run asynchronously in the background and won't block the function utilizing the circuit breaker logic.
+     * This will only have effect if `onlyError` settings is true.
      * @default true
      */
     enableAsyncTracking?: boolean;

@@ -3,6 +3,9 @@
  */
 
 /**
+ * The `IRateLimiterPolicy` contract defines the rate limiter algorithm.
+ * Note all the methods here are pure functions, meaning they should return copies and not mutate input data.
+ *
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
  * @group Contracts
  */

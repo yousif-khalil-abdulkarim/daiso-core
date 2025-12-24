@@ -13,7 +13,7 @@ export type RateLimiterEventBase = {
 };
 
 /**
- * The event is dispatched when attempts are blocked.
+ * The event is dispatched when the attempt is blocked.
  *
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
  * @group Events
@@ -21,7 +21,7 @@ export type RateLimiterEventBase = {
 export type BlockedRateLimiterEvent = RateLimiterEventBase;
 
 /**
- * The event is dispatched when attempts are allowed to proceed.
+ * The event is dispatched when the attempt is allowed to proceed.
  *
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
  * @group Events

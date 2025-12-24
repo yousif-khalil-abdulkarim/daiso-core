@@ -1,3 +1,6 @@
+/**
+ * @module RateLimiter
+ */
 export const rateLimiterLua = `
 -- @template TMetrics
 -- @param rateLimiterStorage RateLimiterStorage<AllRateLimiterState<TMetrics>>
