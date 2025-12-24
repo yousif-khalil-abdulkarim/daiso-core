@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { databaseSharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module-exports.js";
+import { databaseSharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
 import {
     KyselySharedLockAdapter,
     type KyselySharedLockTables,
-} from "@/shared-lock/implementations/adapters/kysely-shared-lock-adapter/_module-exports.js";
+} from "@/shared-lock/implementations/adapters/kysely-shared-lock-adapter/_module.js";
 import Sqlite, { type Database } from "better-sqlite3";
 import {
     Kysely,
@@ -11,7 +11,7 @@ import {
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("sqlite class: KyselySharedLockAdapter", () => {
     let database: Database;

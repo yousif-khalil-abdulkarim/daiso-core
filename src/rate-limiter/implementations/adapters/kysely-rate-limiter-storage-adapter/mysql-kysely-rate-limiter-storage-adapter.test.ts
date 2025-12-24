@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module-exports.js";
+import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module.js";
 import {
     KyselyRateLimiterStorageAdapter,
     type KyselyRateLimiterStorageTables,
-} from "@/rate-limiter/implementations/adapters/kysely-rate-limiter-storage-adapter/_module-exports.js";
+} from "@/rate-limiter/implementations/adapters/kysely-rate-limiter-storage-adapter/_module.js";
 import {
     Kysely,
     MysqlDialect,
@@ -13,7 +13,7 @@ import {
 import type { StartedMySqlContainer } from "@testcontainers/mysql";
 import { MySqlContainer } from "@testcontainers/mysql";
 import { createPool, type Pool } from "mysql2";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { Serde } from "@/serde/implementations/derivables/serde.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 

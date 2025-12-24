@@ -15,7 +15,7 @@ import {
     type ICircuitBreakerPolicy,
 } from "@/circuit-breaker/contracts/circuit-breaker-policy.contract.js";
 import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("class: CircuitBreakerPolicy", () => {
     const basePolicy: Required<ICircuitBreakerPolicy<string>> = {

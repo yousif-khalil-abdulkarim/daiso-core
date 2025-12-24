@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { type OnFallbackData } from "@/resilience/middlewares/fallback/fallback.types.js";
 import { fallback } from "@/resilience/middlewares/fallback/fallback.middleware.js";
-import { AsyncHooks } from "@/hooks/_module-exports.js";
+import { AsyncHooks } from "@/hooks/_module.js";
 
 describe("function: fallback", () => {
     test("Should return function value when no error is thrown", async () => {

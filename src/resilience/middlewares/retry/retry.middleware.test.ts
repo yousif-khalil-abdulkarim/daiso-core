@@ -4,9 +4,9 @@ import type {
     OnRetryAttemptData,
     OnRetryDelayData,
 } from "@/resilience/middlewares/retry/retry.types.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { TO_MILLISECONDS } from "@/time-span/contracts/_module-exports.js";
-import { AsyncHooks } from "@/hooks/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { TO_MILLISECONDS } from "@/time-span/contracts/_module.js";
+import { AsyncHooks } from "@/hooks/_module.js";
 import { RetryResilienceError } from "@/resilience/resilience.errors.js";
 
 describe("function: retry", () => {

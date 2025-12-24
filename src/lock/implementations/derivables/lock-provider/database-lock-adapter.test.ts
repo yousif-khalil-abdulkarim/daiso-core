@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
+import { lockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module.js";
 import { KyselyLockAdapter } from "@/lock/implementations/adapters/_module.js";
 import { DatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/database-lock-adapter.js";
 import Sqlite, { type Database } from "better-sqlite3";

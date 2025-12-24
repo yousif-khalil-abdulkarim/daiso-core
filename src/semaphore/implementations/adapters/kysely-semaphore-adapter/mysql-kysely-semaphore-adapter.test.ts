@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { databaseSemaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module-exports.js";
+import { databaseSemaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
 import {
     KyselySemaphoreAdapter,
     type KyselySemaphoreTables,
-} from "@/semaphore/implementations/adapters/kysely-semaphore-adapter/_module-exports.js";
+} from "@/semaphore/implementations/adapters/kysely-semaphore-adapter/_module.js";
 import {
     Kysely,
     MysqlDialect,
@@ -15,7 +15,7 @@ import {
 import type { StartedMySqlContainer } from "@testcontainers/mysql";
 import { MySqlContainer } from "@testcontainers/mysql";
 import { createPool, type Pool } from "mysql2";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("mysql class: KyselySemaphoreAdapter", () => {

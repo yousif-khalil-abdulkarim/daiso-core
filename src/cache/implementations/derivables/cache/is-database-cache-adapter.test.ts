@@ -5,10 +5,10 @@ import type {
     ICacheInsert,
     ICacheUpdate,
     IDatabaseCacheAdapter,
-} from "@/cache/contracts/_module-exports.js";
+} from "@/cache/contracts/_module.js";
 import { describe, expect, test } from "vitest";
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("function: isDatabaseCacheAdapter", () => {
     test("Should return true when is IDatabaseCacheAdapter", () => {

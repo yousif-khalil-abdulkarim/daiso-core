@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { MemoryCircuitBreakerStorageAdapter } from "@/circuit-breaker/implementations/adapters/memory-circuit-breaker-storage-adapter/_module-exports.js";
+import { MemoryCircuitBreakerStorageAdapter } from "@/circuit-breaker/implementations/adapters/memory-circuit-breaker-storage-adapter/_module.js";
 import { CircuitBreakerStorage } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-storage.js";
 import {
     CircuitBreakerPolicy,
@@ -13,8 +13,8 @@ import type {
     HalfOpenTransitions,
     ICircuitBreakerPolicy,
     CircuitBreakerStateTransition,
-} from "@/circuit-breaker/contracts/_module-exports.js";
-import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
+import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module.js";
 
 describe("class: CircuitBreakerStorage", () => {
     let storage: CircuitBreakerStorage;

@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { databaseSemaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module-exports.js";
+import { databaseSemaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
 import {
     KyselySemaphoreAdapter,
     type KyselySemaphoreTables,
-} from "@/semaphore/implementations/adapters/kysely-semaphore-adapter/_module-exports.js";
+} from "@/semaphore/implementations/adapters/kysely-semaphore-adapter/_module.js";
 import Sqlite, { type Database } from "better-sqlite3";
 import {
     Kysely,
@@ -11,7 +11,7 @@ import {
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("sqlite class: KyselySemaphoreAdapter", () => {
     let database: Database;

@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module-exports.js";
+import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module.js";
 import {
     KyselyLockAdapter,
     type KyselyLockTables,
-} from "@/lock/implementations/adapters/kysely-lock-adapter/_module-exports.js";
+} from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
 import {
     Kysely,
     PostgresDialect,
@@ -13,7 +13,7 @@ import {
 import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { Pool } from "pg";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("postgres class: KyselyLockAdapter", () => {

@@ -6,8 +6,8 @@ import {
     type OnObserveSuccessData,
 } from "@/resilience/middlewares/observe/observe.types.js";
 import { observe } from "@/resilience/middlewares/observe/observe.middleware.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { AsyncHooks } from "@/hooks/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { AsyncHooks } from "@/hooks/_module.js";
 
 describe("function: observe", () => {
     test("Should call onStart callback when no error is thrown", async () => {

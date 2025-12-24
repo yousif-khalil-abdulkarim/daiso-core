@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { databaseCacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
-import { KyselyCacheAdapter } from "@/cache/implementations/adapters/kysely-cache-adapter/_module-exports.js";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
+import { databaseCacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module.js";
+import { KyselyCacheAdapter } from "@/cache/implementations/adapters/kysely-cache-adapter/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Kysely, MysqlDialect } from "kysely";
 import type { StartedMySqlContainer } from "@testcontainers/mysql";
 import { MySqlContainer } from "@testcontainers/mysql";
 import { createPool, type Pool } from "mysql2";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("mysql class: KyselyCacheAdapter", () => {

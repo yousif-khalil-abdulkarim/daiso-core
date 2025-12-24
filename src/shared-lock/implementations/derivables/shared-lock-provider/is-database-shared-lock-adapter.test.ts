@@ -4,11 +4,11 @@ import type {
     ISharedLockAdapter,
     ISharedLockAdapterState,
     SharedLockAcquireSettings,
-} from "@/shared-lock/contracts/_module-exports.js";
+} from "@/shared-lock/contracts/_module.js";
 import { describe, expect, test } from "vitest";
 import { isDatabaseSharedLockAdapter } from "@/shared-lock/implementations/derivables/shared-lock-provider/is-database-shared-lock-adapter.js";
-import type { InvokableFn } from "@/utilities/_module-exports.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { InvokableFn } from "@/utilities/_module.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("function: isDatabaseSharedLockAdapter", () => {
     test("Should return true when given IDatabaseSharedLockAdapter", () => {

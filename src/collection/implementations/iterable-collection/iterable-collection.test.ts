@@ -5,7 +5,7 @@ import {
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
     EmptyCollectionError,
-} from "@/collection/contracts/_module-exports.js";
+} from "@/collection/contracts/_module.js";
 import { IterableCollection } from "@/collection/implementations/iterable-collection/_module.js";
 
 describe("class: IterableCollection", () => {

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
+import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module.js";
 import { RedisCacheAdapter } from "@/cache/implementations/adapters/_module.js";
 import { Redis } from "ioredis";
 import {
@@ -7,8 +7,8 @@ import {
     type StartedRedisContainer,
 } from "@testcontainers/redis";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: RedisCacheAdapter", () => {

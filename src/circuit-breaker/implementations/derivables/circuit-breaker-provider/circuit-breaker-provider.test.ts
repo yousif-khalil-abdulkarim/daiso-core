@@ -12,7 +12,7 @@ import {
 } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { CircuitBreakerProvider } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker-provider.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import {
     CIRCUIT_BREAKER_EVENTS,
@@ -26,10 +26,10 @@ import type {
     ICircuitBreakerStateMethods,
     IsolatedCircuitBreakerEvent,
     ResetedCircuitBreakerEvent,
-} from "@/circuit-breaker/contracts/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
 import { Serde } from "@/serde/implementations/derivables/serde.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 
 describe("class: CircuitBreakerProvider", () => {

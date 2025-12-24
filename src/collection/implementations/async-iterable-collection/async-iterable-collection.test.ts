@@ -5,7 +5,7 @@ import {
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
     EmptyCollectionError,
-} from "@/collection/contracts/_module-exports.js";
+} from "@/collection/contracts/_module.js";
 import { AsyncIterableCollection } from "@/collection/implementations/async-iterable-collection/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 
