@@ -2,7 +2,8 @@
  * @module Semaphore
  */
 
-import { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
 import type { Key, Namespace } from "@/namespace/_module.js";
 import type {
@@ -131,7 +132,7 @@ export class Semaphore implements ISemaphore {
         return this.originalAdapter;
     }
 
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue> {
         return new Task(async () => {
             try {
                 await this.acquireOrFail();
@@ -145,7 +146,7 @@ export class Semaphore implements ISemaphore {
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SemaphoreAquireBlockingSettings,
-    ): Task<TValue> {
+    ): ITask<TValue> {
         return new Task(async () => {
             try {
                 await this.acquireBlockingOrFail(settings);
@@ -206,7 +207,7 @@ export class Semaphore implements ISemaphore {
         };
     };
 
-    acquire(): Task<boolean> {
+    acquire(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.acquire({
                 key: this._key.toString(),
@@ -233,7 +234,7 @@ export class Semaphore implements ISemaphore {
         ]);
     }
 
-    acquireOrFail(): Task<void> {
+    acquireOrFail(): ITask<void> {
         return new Task(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
@@ -246,7 +247,7 @@ export class Semaphore implements ISemaphore {
 
     acquireBlocking(
         settings: SemaphoreAquireBlockingSettings = {},
-    ): Task<boolean> {
+    ): ITask<boolean> {
         return new Task(async () => {
             const {
                 time = this.defaultBlockingTime,
@@ -268,7 +269,7 @@ export class Semaphore implements ISemaphore {
 
     acquireBlockingOrFail(
         settings?: SemaphoreAquireBlockingSettings,
-    ): Task<void> {
+    ): ITask<void> {
         return new Task(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
@@ -279,7 +280,7 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    release(): Task<boolean> {
+    release(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.release(
                 this._key.toString(),
@@ -304,7 +305,7 @@ export class Semaphore implements ISemaphore {
         ]);
     }
 
-    releaseOrFail(): Task<void> {
+    releaseOrFail(): ITask<void> {
         return new Task(async () => {
             const hasReleased = await this.release();
             if (!hasReleased) {
@@ -315,7 +316,7 @@ export class Semaphore implements ISemaphore {
         });
     }
 
-    forceReleaseAll(): Task<boolean> {
+    forceReleaseAll(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.forceReleaseAll(this._key.toString());
         }).pipe([
@@ -333,7 +334,7 @@ export class Semaphore implements ISemaphore {
         ]);
     }
 
-    refresh(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
+    refresh(ttl: ITimeSpan = this.defaultRefreshTime): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.refresh(
                 this._key.toString(),
@@ -366,7 +367,7 @@ export class Semaphore implements ISemaphore {
         ]);
     }
 
-    refreshOrFail(ttl?: ITimeSpan): Task<void> {
+    refreshOrFail(ttl?: ITimeSpan): ITask<void> {
         return new Task(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
@@ -389,7 +390,7 @@ export class Semaphore implements ISemaphore {
         return this._key.get();
     }
 
-    getState(): Task<ISemaphoreState> {
+    getState(): ITask<ISemaphoreState> {
         return new Task(async () => {
             const state = await this.adapter.getState(this._key.toString());
             if (state === null) {

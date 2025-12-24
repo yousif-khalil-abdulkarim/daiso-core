@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import type { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
 import type {
     EventListener,
     IEventBus,
@@ -256,7 +256,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     addListener<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
@@ -267,7 +267,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     removeListener<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
@@ -278,7 +278,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     listenOnce<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
@@ -288,7 +288,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
      */
     asPromise<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
-    ): Task<SemaphoreEventMap[TEventName]> {
+    ): ITask<SemaphoreEventMap[TEventName]> {
         return this.eventBus.asPromise(eventName);
     }
 
@@ -299,7 +299,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     subscribeOnce<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribeOnce(eventName, listener);
     }
 
@@ -310,7 +310,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     subscribe<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
         listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 

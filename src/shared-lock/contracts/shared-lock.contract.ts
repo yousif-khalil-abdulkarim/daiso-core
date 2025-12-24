@@ -2,7 +2,7 @@
  * @module SharedLock
  */
 
-import type { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
 import type {
     AsyncLazy,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -45,26 +45,26 @@ export type SharedLockAquireBlockingSettings = {
  */
 export type IReaderSemaphore = {
     /**
-     * The `runReaderOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
+     * The `runReaderOrFail` method wraps an {@link Invokable | `Invokable`} or {@link ITask | `ITask`} with the `acquireOrFail` and `release` method.
      * @throws {LimitReachedReaderSemaphoreError} {@link LimitReachedReaderSemaphoreError}
      */
-    runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
+    runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue>;
 
     /**
-     * The `runReaderBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runReaderBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link ITask | `ITask`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {LimitReachedReaderSemaphoreError} {@link LimitReachedReaderSemaphoreError}
      */
     runReaderBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<TValue>;
+    ): ITask<TValue>;
 
     /**
      * The `acquireReader` method acquires an slots only if the slot limit is not reached.
      *
      * @returns Returns true if the slot limit is not reached otherwise false is returned.
      */
-    acquireReader(): Task<boolean>;
+    acquireReader(): ITask<boolean>;
 
     /**
      * The `acquireReaderOrFail` method acquires an slots only if the slot limit is not reached.
@@ -72,7 +72,7 @@ export type IReaderSemaphore = {
      *
      * @throws {LimitReachedReaderSemaphoreError} {@link LimitReachedReaderSemaphoreError}
      */
-    acquireReaderOrFail(): Task<void>;
+    acquireReaderOrFail(): ITask<void>;
 
     /**
      * The `acquireReaderBlocking` method acquires an slots only if the slot limit is not reached.
@@ -82,7 +82,7 @@ export type IReaderSemaphore = {
      */
     acquireReaderBlocking(
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<boolean>;
+    ): ITask<boolean>;
 
     /**
      * The `acquireReaderBlockingOrFail` method acquires an slots only if the slot limit is not reached.
@@ -93,42 +93,42 @@ export type IReaderSemaphore = {
      */
     acquireReaderBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<void>;
+    ): ITask<void>;
 
     /**
      * The `releaseReader` method releases the current slot.
      *
      * @returns Returns true if the semaphore exists and has at least one busy slot or false.
      */
-    releaseReader(): Task<boolean>;
+    releaseReader(): ITask<boolean>;
 
     /**
      * The `releaseReaderOrFail` method releases the current slot.
      * Throws an error if the slot is not acquired.
      * @throws {FailedReleaseReaderSemaphoreError} {@link FailedReleaseReaderSemaphoreError}
      */
-    releaseReaderOrFail(): Task<void>;
+    releaseReaderOrFail(): ITask<void>;
 
     /**
      * The `forceReleaseAllReaders` method releases the all slots.
      *
      * @returns Returns true if the semaphore exists and has at least one unavailable slot or false if all slots are available.
      */
-    forceReleaseAllReaders(): Task<boolean>;
+    forceReleaseAllReaders(): ITask<boolean>;
 
     /**
      * The `refreshReader` method updates the `ttl` of the slot when acquired.
      *
      * @returns Returns true if the slot is refreshed otherwise false is returned.
      */
-    refreshReader(ttl?: ITimeSpan): Task<boolean>;
+    refreshReader(ttl?: ITimeSpan): ITask<boolean>;
 
     /**
      * The `refreshReaderOrFail` method updates the `ttl` of the slot when acquired.
      * Throws an error if the slot is not acquired.
      * @throws {FailedRefreshReaderSemaphoreError} {@link FailedRefreshReaderSemaphoreError}
      */
-    refreshReaderOrFail(ttl?: ITimeSpan): Task<void>;
+    refreshReaderOrFail(ttl?: ITimeSpan): ITask<void>;
 };
 
 /**
@@ -138,26 +138,26 @@ export type IReaderSemaphore = {
  */
 export type IWriterLock = {
     /**
-     * The `runWriterOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
+     * The `runWriterOrFail` method wraps an {@link Invokable | `Invokable`} or {@link ITask | `ITask`} with the `acquireOrFail` and `release` method.
      * @throws {FailedAcquireWriterLockError} {@link FailedAcquireWriterLockError}
      */
-    runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
+    runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue>;
 
     /**
-     * The `runWriterBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runWriterBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link ITask | `ITask`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {FailedAcquireWriterLockError} {@link FailedAcquireWriterLockError}
      */
     runWriterBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<TValue>;
+    ): ITask<TValue>;
 
     /**
      * The `acquireWriter` method acquires a lock only if the key is not already acquired by different owner.
      *
      * @returns Returns true if the lock is not already acquired otherwise false is returned.
      */
-    acquireWriter(): Task<boolean>;
+    acquireWriter(): ITask<boolean>;
 
     /**
      * The `acquireWriterOrFail` method acquires a lock only if the key is not already acquired by different owner.
@@ -165,7 +165,7 @@ export type IWriterLock = {
      *
      * @throws {FailedAcquireWriterLockError} {@link FailedAcquireWriterLockError}
      */
-    acquireWriterOrFail(): Task<void>;
+    acquireWriterOrFail(): ITask<void>;
 
     /**
      * The `acquireWriterBlocking` method acquires a lock only if the key is not already acquired by different owner.
@@ -175,7 +175,7 @@ export type IWriterLock = {
      */
     acquireWriterBlocking(
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<boolean>;
+    ): ITask<boolean>;
 
     /**
      * The `acquireWriterBlockingOrFail` method acquires a lock only if the key is not already acquired by different owner.
@@ -186,14 +186,14 @@ export type IWriterLock = {
      */
     acquireWriterBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<void>;
+    ): ITask<void>;
 
     /**
      * The `releaseWriter` method releases a lock if owned by the same owner.
      *
      * @returns Returns true if the lock is released otherwise false is returned.
      */
-    releaseWriter(): Task<boolean>;
+    releaseWriter(): ITask<boolean>;
 
     /**
      * The `releaseWriterOrFail` method releases a lock if owned by the same owner.
@@ -201,21 +201,21 @@ export type IWriterLock = {
      *
      * @throws {FailedReleaseWriterLockError} {@link FailedReleaseWriterLockError}
      */
-    releaseWriterOrFail(): Task<void>;
+    releaseWriterOrFail(): ITask<void>;
 
     /**
      * The `forceReleaseWriter` method releases a lock regardless of the owner.
      *
      * @returns Returns true if the lock exists or false if the lock doesnt exists.
      */
-    forceReleaseWriter(): Task<boolean>;
+    forceReleaseWriter(): ITask<boolean>;
 
     /**
      * The `refreshWriter` method updates the `ttl` of the lock if expireable and owned by the same owner.
      *
      * @returns Returns true if the lock is refreshed otherwise false is returned.
      */
-    refreshWriter(ttl?: ITimeSpan): Task<boolean>;
+    refreshWriter(ttl?: ITimeSpan): ITask<boolean>;
 
     /**
      * The `refreshWriterOrFail` method updates the `ttl` of the lock if expireable and owned by the same owner.
@@ -224,7 +224,7 @@ export type IWriterLock = {
      *
      * @throws {FailedRefreshWriterLockError} {@link FailedRefreshWriterLockError}
      */
-    refreshWriterOrFail(ttl?: ITimeSpan): Task<void>;
+    refreshWriterOrFail(ttl?: ITimeSpan): ITask<void>;
 };
 
 /**
@@ -233,7 +233,7 @@ export type IWriterLock = {
  * @group Contracts
  */
 export type ISharedLockStateMethods = {
-    getState(): Task<ISharedLockState>;
+    getState(): ITask<ISharedLockState>;
 
     /**
      * The `key` of the `ISharedLock` instance.
@@ -258,7 +258,7 @@ export type ISharedLockStateMethods = {
  */
 export type ISharedLockBase = IReaderSemaphore &
     IWriterLock & {
-        forceRelease(): Task<boolean>;
+        forceRelease(): ITask<boolean>;
     };
 
 /**

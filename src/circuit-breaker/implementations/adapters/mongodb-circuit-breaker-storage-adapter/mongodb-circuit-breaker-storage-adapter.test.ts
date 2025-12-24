@@ -1,14 +1,14 @@
 import { describe, test, expect, beforeEach, afterEach } from "vitest";
 import { circuitBreakerStorageAdapterTestSuite } from "@/circuit-breaker/implementations/test-utilities/circuit-breaker-storage-adapter.test-suite.js";
 import { MongodbCircuitBreakerStorageAdapter } from "@/circuit-breaker/implementations/adapters/mongodb-circuit-breaker-storage-adapter/mongodb-circuit-breaker-storage-adapter.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { MongoClient } from "mongodb";
 import {
     MongoDBContainer,
     type StartedMongoDBContainer,
 } from "@testcontainers/mongodb";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/super-json-serde-adapter/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/super-json-serde-adapter/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: MongodbCircuitBreakerStorageAdapter", () => {

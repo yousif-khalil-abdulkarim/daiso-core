@@ -2,7 +2,8 @@
  * @module SharedLock
  */
 
-import { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import type { IEventDispatcher } from "@/event-bus/contracts/event-bus.contract.js";
 import type { Key, Namespace } from "@/namespace/_module.js";
 import {
@@ -141,7 +142,7 @@ export class SharedLock implements ISharedLock {
         return this.originalAdapter;
     }
 
-    runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+    runReaderOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue> {
         return new Task(async () => {
             try {
                 await this.acquireReaderOrFail();
@@ -155,7 +156,7 @@ export class SharedLock implements ISharedLock {
     runReaderBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<TValue> {
+    ): ITask<TValue> {
         return new Task(async () => {
             try {
                 await this.acquireReaderBlockingOrFail(settings);
@@ -216,7 +217,7 @@ export class SharedLock implements ISharedLock {
         };
     };
 
-    acquireReader(): Task<boolean> {
+    acquireReader(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.acquireReader({
                 key: this._key.get(),
@@ -243,7 +244,7 @@ export class SharedLock implements ISharedLock {
         ]);
     }
 
-    acquireReaderOrFail(): Task<void> {
+    acquireReaderOrFail(): ITask<void> {
         return new Task(async () => {
             const hasAquired = await this.acquireReader();
             if (!hasAquired) {
@@ -256,7 +257,7 @@ export class SharedLock implements ISharedLock {
 
     acquireReaderBlocking(
         settings: SharedLockAquireBlockingSettings = {},
-    ): Task<boolean> {
+    ): ITask<boolean> {
         return new Task(async () => {
             const {
                 time = this.defaultBlockingTime,
@@ -277,7 +278,7 @@ export class SharedLock implements ISharedLock {
 
     acquireReaderBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<void> {
+    ): ITask<void> {
         return new Task(async () => {
             const hasAquired = await this.acquireReaderBlocking(settings);
             if (!hasAquired) {
@@ -288,7 +289,7 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    releaseReader(): Task<boolean> {
+    releaseReader(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.releaseReader(
                 this._key.get(),
@@ -313,7 +314,7 @@ export class SharedLock implements ISharedLock {
         ]);
     }
 
-    releaseReaderOrFail(): Task<void> {
+    releaseReaderOrFail(): ITask<void> {
         return new Task(async () => {
             const hasReleased = await this.releaseReader();
             if (!hasReleased) {
@@ -324,7 +325,7 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    forceReleaseAllReaders(): Task<boolean> {
+    forceReleaseAllReaders(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.forceReleaseAllReaders(this._key.get());
         }).pipe([
@@ -342,7 +343,7 @@ export class SharedLock implements ISharedLock {
         ]);
     }
 
-    refreshReader(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
+    refreshReader(ttl: ITimeSpan = this.defaultRefreshTime): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.refreshReader(
                 this._key.get(),
@@ -373,7 +374,7 @@ export class SharedLock implements ISharedLock {
         ]);
     }
 
-    refreshReaderOrFail(ttl?: ITimeSpan): Task<void> {
+    refreshReaderOrFail(ttl?: ITimeSpan): ITask<void> {
         return new Task(async () => {
             const hasRefreshed = await this.refreshReader(ttl);
             if (!hasRefreshed) {
@@ -384,7 +385,7 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+    runWriterOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue> {
         return new Task(async () => {
             try {
                 await this.acquireWriterOrFail();
@@ -398,7 +399,7 @@ export class SharedLock implements ISharedLock {
     runWriterBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<TValue> {
+    ): ITask<TValue> {
         return new Task(async () => {
             try {
                 await this.acquireWriterBlockingOrFail(settings);
@@ -410,7 +411,7 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    acquireWriter(): Task<boolean> {
+    acquireWriter(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.acquireWriter(
                 this._key.get(),
@@ -436,7 +437,7 @@ export class SharedLock implements ISharedLock {
         ]);
     }
 
-    acquireWriterOrFail(): Task<void> {
+    acquireWriterOrFail(): ITask<void> {
         return new Task(async () => {
             const hasAquired = await this.acquireWriter();
             if (!hasAquired) {
@@ -449,7 +450,7 @@ export class SharedLock implements ISharedLock {
 
     acquireWriterBlocking(
         settings: SharedLockAquireBlockingSettings = {},
-    ): Task<boolean> {
+    ): ITask<boolean> {
         return new Task(async () => {
             const {
                 time = this.defaultBlockingTime,
@@ -470,7 +471,7 @@ export class SharedLock implements ISharedLock {
 
     acquireWriterBlockingOrFail(
         settings?: SharedLockAquireBlockingSettings,
-    ): Task<void> {
+    ): ITask<void> {
         return new Task(async () => {
             const hasAquired = await this.acquireWriterBlocking(settings);
             if (!hasAquired) {
@@ -481,7 +482,7 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    releaseWriter(): Task<boolean> {
+    releaseWriter(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.releaseWriter(
                 this._key.get(),
@@ -506,7 +507,7 @@ export class SharedLock implements ISharedLock {
         ]);
     }
 
-    releaseWriterOrFail(): Task<void> {
+    releaseWriterOrFail(): ITask<void> {
         return new Task(async () => {
             const hasRelased = await this.releaseWriter();
             if (!hasRelased) {
@@ -517,7 +518,7 @@ export class SharedLock implements ISharedLock {
         });
     }
 
-    forceReleaseWriter(): Task<boolean> {
+    forceReleaseWriter(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.forceReleaseWriter(this._key.get());
         }).pipe([
@@ -535,7 +536,7 @@ export class SharedLock implements ISharedLock {
         ]);
     }
 
-    refreshWriter(ttl: ITimeSpan = this.defaultRefreshTime): Task<boolean> {
+    refreshWriter(ttl: ITimeSpan = this.defaultRefreshTime): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.refreshWriter(
                 this._key.get(),
@@ -568,7 +569,7 @@ export class SharedLock implements ISharedLock {
         ]);
     }
 
-    refreshWriterOrFail(ttl?: ITimeSpan): Task<void> {
+    refreshWriterOrFail(ttl?: ITimeSpan): ITask<void> {
         return new Task(async () => {
             const hasRefreshed = await this.refreshWriter(ttl);
             if (!hasRefreshed) {
@@ -591,13 +592,13 @@ export class SharedLock implements ISharedLock {
         return this._ttl;
     }
 
-    forceRelease(): Task<boolean> {
+    forceRelease(): ITask<boolean> {
         return new Task(async () => {
             return await this.adapter.forceRelease(this._key.get());
         }).pipe([this.handleUnexpectedError()]);
     }
 
-    getState(): Task<ISharedLockState> {
+    getState(): ITask<ISharedLockState> {
         return new Task<ISharedLockState>(async () => {
             const state = await this.adapter.getState(this._key.get());
             if (state === null) {

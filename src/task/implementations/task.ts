@@ -3,6 +3,7 @@
  */
 import {
     type AsyncLazy,
+    type AsyncLazyable,
     type Invokable,
     type InvokableFn,
     type OneOrMore,
@@ -11,14 +12,15 @@ import {
     isPromiseLike,
     resolveAsyncLazyable,
 } from "@/utilities/_module.js";
-import { abortAndFail } from "@/task/abort-and-fail.js";
+import { abortAndFail } from "@/task/implementations/abort-and-fail.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { AsyncHooks, type AsyncMiddleware } from "@/hooks/_module.js";
+import type { ITask } from "@/task/contracts/_module-exports.js";
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskResolve<TValue> = InvokableFn<
     [value: Promisable<TValue>],
@@ -26,14 +28,14 @@ export type TaskResolve<TValue> = InvokableFn<
 >;
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskReject = InvokableFn<[error: unknown], void>;
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskCallback<TValue> = InvokableFn<
     [resolve: TaskResolve<TValue>, reject: TaskReject],
@@ -41,34 +43,29 @@ export type TaskCallback<TValue> = InvokableFn<
 >;
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskAllResult<T extends readonly unknown[]> = {
     -readonly [P in keyof T]: Awaited<T[P]>;
 };
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
 export type TaskAllSettledResult<T extends readonly unknown[]> = {
     -readonly [P in keyof T]: PromiseSettledResult<Awaited<T[P]>>;
 };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/task"`
- */
-export type Test<TValue> = Exclude<TValue, Promise<any>>;
-
-/**
  * The `Task` class is used for creating lazy {@link PromiseLike | `PromiseLike`} object that will only execute when awaited or when `then` method is called.
  * Note the class is immutable.
  *
  * IMPORT_PATH: `"@daiso-tech/core/task"`
+ * @group Derivables
  */
-export class Task<TValue> implements PromiseLike<TValue> {
+export class Task<TValue> implements ITask<TValue> {
     /**
      * The `wrapFn` is convience method used for wrapping async {@link Invokable | `Invokable`} with a `Task`.
      * @example
@@ -84,7 +81,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
      */
     static wrapFn<TArgs extends unknown[], TReturn>(
         fn: Invokable<TArgs, Promisable<TReturn>>,
-    ): InvokableFn<TArgs, Task<TReturn>> {
+    ): InvokableFn<TArgs, ITask<TReturn>> {
         return (...parameters) =>
             new Task<TReturn>(() => callInvokable(fn, ...parameters));
     }
@@ -105,7 +102,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
     static delay(
         time: ITimeSpan,
         abortSignal: AbortSignal = new AbortController().signal,
-    ): Task<void> {
+    ): ITask<void> {
         return new Task(async () => {
             let timeoutId = null as NodeJS.Timeout | string | number | null;
             try {
@@ -128,17 +125,19 @@ export class Task<TValue> implements PromiseLike<TValue> {
     /**
      * The `resolve` method works similarly to {@link Promise.resolve | `Promise.resolve`} with the key distinction that it operates lazily.
      */
-    static resolve<TValue>(value: TValue | Task<TValue>): Task<TValue>;
+    static resolve<TValue>(value: TValue | Task<TValue>): ITask<TValue>;
 
     /**
      * The `resolve` method works similarly to {@link Promise.resolve | `Promise.resolve`} with the key distinction that it operates lazily.
      */
-    static resolve(): Task<void>;
+    static resolve(): ITask<void>;
 
     /**
      * The `resolve` method works similarly to {@link Promise.resolve | `Promise.resolve`} with the key distinction that it operates lazily.
      */
-    static resolve<TValue>(value?: TValue | Task<TValue>): Task<TValue | void> {
+    static resolve<TValue>(
+        value?: TValue | ITask<TValue>,
+    ): ITask<TValue | void> {
         return new Task<TValue | void>(async () => {
             if (value === undefined) {
                 return;
@@ -155,7 +154,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
      */
     static reject<TValue = never, TError = unknown>(
         reason?: TError,
-    ): Task<TValue> {
+    ): ITask<TValue> {
         return new Task<TValue>(async () => {
             if (!(reason instanceof Task)) {
                 throw new TypeError("You cant pass a Promise to Task.reject");
@@ -169,8 +168,8 @@ export class Task<TValue> implements PromiseLike<TValue> {
     private static toTasks<TValue>(
         promises: Iterable<TValue | PromiseLike<TValue>>,
         errorMessage: string,
-    ): Task<TValue>[] {
-        const tasks: Task<TValue>[] = [];
+    ): ITask<TValue>[] {
+        const tasks: ITask<TValue>[] = [];
         for (const promise of promises) {
             if (promise instanceof Task) {
                 tasks.push(promise as Task<TValue>);
@@ -188,21 +187,21 @@ export class Task<TValue> implements PromiseLike<TValue> {
      */
     static all<TValue extends readonly unknown[] | []>(
         tasks: TValue,
-    ): Task<TaskAllResult<TValue>>;
+    ): ITask<TaskAllResult<TValue>>;
 
     /**
      * The `all` method works similarly to {@link Promise.all | `Promise.all`} with the key distinction that it operates lazily.
      */
     static all<TValue>(
-        tasks: Iterable<TValue | Task<TValue>>,
-    ): Task<Awaited<TValue>[]>;
+        tasks: Iterable<TValue | ITask<TValue>>,
+    ): ITask<Awaited<TValue>[]>;
 
     /**
      * The `all` method works similarly to {@link Promise.all | `Promise.all`} with the key distinction that it operates lazily.
      */
     static all<TValue>(
         tasks: Iterable<TValue | PromiseLike<TValue>>,
-    ): Task<TValue[]> {
+    ): ITask<TValue[]> {
         return new Task<TValue[]>(async () =>
             Promise.all(
                 Task.toTasks(tasks, "You cant pass in a Promise to Task.all"),
@@ -215,21 +214,21 @@ export class Task<TValue> implements PromiseLike<TValue> {
      */
     static allSettled<TValues extends readonly unknown[] | []>(
         tasks: TValues,
-    ): Task<TaskAllSettledResult<TValues>>;
+    ): ITask<TaskAllSettledResult<TValues>>;
 
     /**
      * The `allSettled` method works similarly to {@link Promise.allSettled | `Promise.allSettled`} with the key distinction that it operates lazily.
      */
     static allSettled<TValue>(
-        tasks: Iterable<Task<TValue>>,
-    ): Task<PromiseSettledResult<TValue>[]>;
+        tasks: Iterable<ITask<TValue>>,
+    ): ITask<PromiseSettledResult<TValue>[]>;
 
     /**
      * The `allSettled` method works similarly to {@link Promise.allSettled | `Promise.allSettled`} with the key distinction that it operates lazily.
      */
     static allSettled<TValue>(
         tasks: Iterable<TValue | PromiseLike<TValue>>,
-    ): Task<PromiseSettledResult<TValue>[]> {
+    ): ITask<PromiseSettledResult<TValue>[]> {
         return new Task<PromiseSettledResult<TValue>[]>(async () =>
             Promise.allSettled(
                 Task.toTasks(
@@ -245,19 +244,19 @@ export class Task<TValue> implements PromiseLike<TValue> {
      */
     static race<T extends readonly unknown[] | []>(
         tasks: T,
-    ): Task<Awaited<T[number]>>;
+    ): ITask<Awaited<T[number]>>;
 
     /**
      * The `race` method works similarly to {@link Promise.race | `Promise.race`} with the key distinction that it operates lazily.
      */
-    static race<TValue>(tasks: Iterable<TValue | Task<TValue>>): Task<TValue>;
+    static race<TValue>(tasks: Iterable<TValue | ITask<TValue>>): ITask<TValue>;
 
     /**
      * The `race` method works similarly to {@link Promise.race | `Promise.race`} with the key distinction that it operates lazily.
      */
     static race<TValue>(
         tasks: Iterable<TValue | PromiseLike<TValue>>,
-    ): Task<TValue> {
+    ): ITask<TValue> {
         return new Task(async () =>
             Promise.race(
                 Task.toTasks(tasks, "You cant pass in a Promise to Task.race"),
@@ -270,19 +269,19 @@ export class Task<TValue> implements PromiseLike<TValue> {
      */
     static any<T extends readonly unknown[] | []>(
         tasks: T,
-    ): Task<Awaited<T[number]>>;
+    ): ITask<Awaited<T[number]>>;
 
     /**
      * The `any` method works similarly to {@link Promise.any | `Promise.any`} with the key distinction that it operates lazily.
      */
-    static any<TValue>(tasks: Iterable<TValue | Task<TValue>>): Task<TValue>;
+    static any<TValue>(tasks: Iterable<TValue | ITask<TValue>>): ITask<TValue>;
 
     /**
      * The `any` method works similarly to {@link Promise.any | `Promise.any`} with the key distinction that it operates lazily.
      */
     static any<TValue>(
         tasks: Iterable<TValue | PromiseLike<TValue>>,
-    ): Task<TValue> {
+    ): ITask<TValue> {
         return new Task(async () =>
             Promise.any(
                 Task.toTasks(tasks, "You cant pass in a Promise to Task.any"),
@@ -310,7 +309,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
      * console.log(file);
      * ```
      */
-    static fromCallback<TValue>(callback: TaskCallback<TValue>): Task<TValue> {
+    static fromCallback<TValue>(callback: TaskCallback<TValue>): ITask<TValue> {
         return new Task(
             () =>
                 new Promise((resolve, reject) => {
@@ -352,7 +351,7 @@ export class Task<TValue> implements PromiseLike<TValue> {
     /**
      * The `pipe` method returns a new `Task` instance with the additional `middlewares` applied.
      */
-    pipe(middlewares: OneOrMore<AsyncMiddleware<[], TValue>>): Task<TValue> {
+    pipe(middlewares: OneOrMore<AsyncMiddleware<[], TValue>>): ITask<TValue> {
         return new Task(this.invokable.pipe(middlewares));
     }
 
@@ -360,9 +359,9 @@ export class Task<TValue> implements PromiseLike<TValue> {
      * The `pipeWhen` method conditionally applies additional `middlewares`, returning a new `Task` instance only if the specified condition is met.
      */
     pipeWhen(
-        condition: AsyncLazy<boolean>,
+        condition: AsyncLazyable<boolean>,
         middlewares: OneOrMore<AsyncMiddleware<[], TValue>>,
-    ): Task<TValue> {
+    ): ITask<TValue> {
         return new Task(this.invokable.pipeWhen(condition, middlewares));
     }
 

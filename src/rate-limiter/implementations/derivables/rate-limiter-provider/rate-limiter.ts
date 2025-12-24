@@ -16,7 +16,8 @@ import {
     type RateLimiterEventMap,
     type RateLimiterState,
 } from "@/rate-limiter/contracts/_module.js";
-import { Task } from "@/task/task.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     callErrorPolicyOnThrow,
@@ -100,7 +101,7 @@ export class RateLimiter implements IRateLimiter {
         throw new UnexpectedError("!!__MESSAGE__!!");
     }
 
-    getState(): Task<RateLimiterState> {
+    getState(): ITask<RateLimiterState> {
         return new Task<RateLimiterState>(async () => {
             const state = await this.adapter.getState(this._key.toString());
 
@@ -208,7 +209,7 @@ export class RateLimiter implements IRateLimiter {
         return await resolveAsyncLazyable(asyncFn);
     }
 
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue> {
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue> {
         return new Task(async () => {
             if (this.onlyError) {
                 return await this.trackErrorWrapper(asyncFn);
@@ -217,7 +218,7 @@ export class RateLimiter implements IRateLimiter {
         });
     }
 
-    reset(): Task<void> {
+    reset(): ITask<void> {
         return new Task(async () => {
             this.eventDispatcher
                 .dispatch(RATE_LIMITER_EVENTS.RESETED, {

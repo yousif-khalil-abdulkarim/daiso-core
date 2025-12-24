@@ -4,7 +4,7 @@
  */
 
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { Task } from "@/task/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import {
     type TestAPI,
     type SuiteAPI,

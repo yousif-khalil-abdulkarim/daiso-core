@@ -15,7 +15,7 @@ import type { AsyncMiddlewareFn, HookContext } from "@/hooks/_module.js";
  *
  * @example
  * ```ts
- * import { observe, Task } from "@daiso-tech/core/resilience";
+ * import { observe, ITask } from "@daiso-tech/core/resilience";
  * import { AsyncHooks } from "@daiso-tech/core/hooks";
  * import { TimeSpan } from "@daiso-tech/core/time-span";
  *

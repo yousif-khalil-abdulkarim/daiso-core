@@ -19,7 +19,7 @@ import type {
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { Namespace } from "@/namespace/_module.js";
-import type { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
 import { CircuitBreaker } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
@@ -216,41 +216,41 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
     addListener<TEventName extends keyof CircuitBreakerEventMap>(
         eventName: TEventName,
         listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
     removeListener<TEventName extends keyof CircuitBreakerEventMap>(
         eventName: TEventName,
         listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
     listenOnce<TEventName extends keyof CircuitBreakerEventMap>(
         eventName: TEventName,
         listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
     asPromise<TEventName extends keyof CircuitBreakerEventMap>(
         eventName: TEventName,
-    ): Task<CircuitBreakerEventMap[TEventName]> {
+    ): ITask<CircuitBreakerEventMap[TEventName]> {
         return this.eventBus.asPromise(eventName);
     }
 
     subscribeOnce<TEventName extends keyof CircuitBreakerEventMap>(
         eventName: TEventName,
         listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribeOnce(eventName, listener);
     }
 
     subscribe<TEventName extends keyof CircuitBreakerEventMap>(
         eventName: TEventName,
         listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 

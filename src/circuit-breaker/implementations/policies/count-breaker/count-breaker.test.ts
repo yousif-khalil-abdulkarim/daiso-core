@@ -7,7 +7,7 @@ import {
     CLOSED_TRANSITIONS,
     CIRCUIT_BREAKER_STATE,
     HALF_OPEN_TRANSITIONS,
-} from "@/circuit-breaker/contracts/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
 
 describe("class: CountBreaker", () => {
     describe("method: initialMetrics", () => {

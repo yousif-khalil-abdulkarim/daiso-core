@@ -17,7 +17,8 @@ import { KeyNotFoundCacheError } from "@/cache/contracts/_module.js";
 import { resolveAsyncLazyable, validate } from "@/utilities/_module.js";
 import type { AsyncLazyable } from "@/utilities/_module.js";
 import { type NoneFunc } from "@/utilities/_module.js";
-import { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import type {
     IEventBus,
     Unsubscribe,
@@ -167,7 +168,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     addListener<TEventName extends keyof CacheEventMap<TType>>(
         eventName: TEventName,
         listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.addListener(eventName, listener);
     }
 
@@ -178,7 +179,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     removeListener<TEventName extends keyof CacheEventMap<TType>>(
         eventName: TEventName,
         listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.removeListener(eventName, listener);
     }
 
@@ -189,7 +190,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     listenOnce<TEventName extends keyof CacheEventMap<TType>>(
         eventName: TEventName,
         listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): Task<void> {
+    ): ITask<void> {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
@@ -199,7 +200,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
      */
     asPromise<TEventName extends keyof CacheEventMap<TType>>(
         eventName: TEventName,
-    ): Task<CacheEventMap<TType>[TEventName]> {
+    ): ITask<CacheEventMap<TType>[TEventName]> {
         return this.eventBus.asPromise(eventName);
     }
 
@@ -210,7 +211,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     subscribeOnce<TEventName extends keyof CacheEventMap<TType>>(
         eventName: TEventName,
         listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribeOnce(eventName, listener);
     }
 
@@ -221,25 +222,25 @@ export class Cache<TType = unknown> implements ICache<TType> {
     subscribe<TEventName extends keyof CacheEventMap<TType>>(
         eventName: TEventName,
         listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): Task<Unsubscribe> {
+    ): ITask<Unsubscribe> {
         return this.eventBus.subscribe(eventName, listener);
     }
 
-    exists(key: string): Task<boolean> {
+    exists(key: string): ITask<boolean> {
         return new Task(async () => {
             const value = await this.get(key);
             return value !== null;
         });
     }
 
-    missing(key: string): Task<boolean> {
+    missing(key: string): ITask<boolean> {
         return new Task(async () => {
             const hasKey = await this.exists(key);
             return !hasKey;
         });
     }
 
-    get(key: string): Task<TType | null> {
+    get(key: string): ITask<TType | null> {
         return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
@@ -277,7 +278,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    getOrFail(key: string): Task<TType> {
+    getOrFail(key: string): ITask<TType> {
         return new Task<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
@@ -289,7 +290,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    getAndRemove(key: string): Task<TType | null> {
+    getAndRemove(key: string): ITask<TType | null> {
         return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
@@ -337,7 +338,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     getOr(
         key: string,
         defaultValue: AsyncLazyable<NoneFunc<TType>>,
-    ): Task<TType> {
+    ): ITask<TType> {
         return new Task<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
@@ -353,7 +354,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         key: string,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,
         ttl?: ITimeSpan | null,
-    ): Task<TType> {
+    ): ITask<TType> {
         return new Task<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
@@ -370,7 +371,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         key: string,
         value: TType,
         ttl: ITimeSpan | null = this.defaultTtl,
-    ): Task<boolean> {
+    ): ITask<boolean> {
         return new Task(async () => {
             const ttlAsTimeSpan =
                 ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
@@ -411,7 +412,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         key: string,
         value: TType,
         ttl: ITimeSpan | null = this.defaultTtl,
-    ): Task<boolean> {
+    ): ITask<boolean> {
         return new Task(async () => {
             const ttlAsTimeSpan =
                 ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
@@ -456,7 +457,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    update(key: string, value: TType): Task<boolean> {
+    update(key: string, value: TType): ITask<boolean> {
         return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
@@ -495,7 +496,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    increment(key: string, value = 0 as Extract<TType, number>): Task<boolean> {
+    increment(
+        key: string,
+        value = 0 as Extract<TType, number>,
+    ): ITask<boolean> {
         return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
@@ -546,13 +550,16 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    decrement(key: string, value = 0 as Extract<TType, number>): Task<boolean> {
+    decrement(
+        key: string,
+        value = 0 as Extract<TType, number>,
+    ): ITask<boolean> {
         return new Task(async () => {
             return await this.increment(key, -value as Extract<TType, number>);
         });
     }
 
-    remove(key: string): Task<boolean> {
+    remove(key: string): ITask<boolean> {
         return new Task(async () => {
             const keyObj = this.namespace.create(key);
             try {
@@ -587,7 +594,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    removeMany(keys: Iterable<string>): Task<boolean> {
+    removeMany(keys: Iterable<string>): ITask<boolean> {
         return new Task(async () => {
             const keysArr = [...keys];
             if (keysArr.length === 0) {
@@ -647,7 +654,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
-    clear(): Task<void> {
+    clear(): ITask<void> {
         return new Task(async () => {
             try {
                 const promise = this.eventBus.dispatch(

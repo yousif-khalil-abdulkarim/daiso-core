@@ -4,10 +4,10 @@ import {
     RedisContainer,
     type StartedRedisContainer,
 } from "@testcontainers/redis";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { countBreakerTestSuite } from "@/circuit-breaker/implementations/test-utilities/_module-exports.js";
-import { RedisCircuitBreakerAdapter } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/_module-exports.js";
-import { BREAKER_POLICIES } from "@/circuit-breaker/implementations/policies/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { countBreakerTestSuite } from "@/circuit-breaker/implementations/test-utilities/_module.js";
+import { RedisCircuitBreakerAdapter } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/_module.js";
+import { BREAKER_POLICIES } from "@/circuit-breaker/implementations/policies/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("count-breaker class: RedisCircuitBreakerAdapter", () => {

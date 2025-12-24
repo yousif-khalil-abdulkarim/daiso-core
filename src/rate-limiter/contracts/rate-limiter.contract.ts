@@ -2,7 +2,7 @@
  * @module RateLimiter
  */
 
-import type { Task } from "@/task/task.js";
+import type { ITask } from "@/task/contracts/_module.js";
 import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 import type { AsyncLazy } from "@/utilities/_module.js";
 import type { RateLimiterState } from "@/rate-limiter/contracts/rate-limiter-state.contract.js";
@@ -15,7 +15,7 @@ import { BlockedRateLimiterError } from "@/rate-limiter/contracts/rate-limiter.e
  * @group Contracts
  */
 export type IRateLimiterStateMethods = {
-    getState(): Task<RateLimiterState>;
+    getState(): ITask<RateLimiterState>;
 
     /**
      * The `key` of the `IRateLimiter` instance.
@@ -46,10 +46,10 @@ export type IRateLimiter = IRateLimiterStateMethods & {
     /**
      * @throws {BlockedRateLimiterError} {@link BlockedRateLimiterError}
      */
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue>;
 
     /**
      * The `reset` method resets rate limiter to its initial state regardless of the current state.
      */
-    reset(): Task<void>;
+    reset(): ITask<void>;
 };

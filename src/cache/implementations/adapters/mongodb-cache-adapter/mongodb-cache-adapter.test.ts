@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module-exports.js";
+import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module.js";
 import { MongoClient } from "mongodb";
 import type { StartedMongoDBContainer } from "@testcontainers/mongodb";
 import { MongoDBContainer } from "@testcontainers/mongodb";
 import { MongodbCacheAdapter } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: MongodbCacheAdapter", () => {

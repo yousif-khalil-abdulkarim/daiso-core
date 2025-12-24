@@ -7,7 +7,7 @@ import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
 } from "@/utilities/_module.js";
-import type { Task } from "@/task/_module.js";
+import type { ITask } from "@/task/contracts/_module.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     FailedAcquireLockError,
@@ -35,7 +35,7 @@ export type LockAquireBlockingSettings = {
  * @group Contracts
  */
 export type ILockStateMethods = {
-    getState(): Task<ILockState>;
+    getState(): ITask<ILockState>;
 
     /**
      * The `key` of the `ILock` instance.
@@ -60,26 +60,26 @@ export type ILockStateMethods = {
  */
 export type ILockBase = {
     /**
-     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireOrFail` and `release` method.
+     * The `runOrFail` method wraps an {@link Invokable | `Invokable`} or {@link ITask | `ITask`} with the `acquireOrFail` and `release` method.
      * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
-    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): Task<TValue>;
+    runOrFail<TValue = void>(asyncFn: AsyncLazy<TValue>): ITask<TValue>;
 
     /**
-     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link Task | `Task`} with the `acquireBlockingOrFail` and `release` method.
+     * The `runBlockingOrFail` method wraps an {@link Invokable | `Invokable`} or {@link ITask | `ITask`} with the `acquireBlockingOrFail` and `release` method.
      * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
     runBlockingOrFail<TValue = void>(
         asyncFn: AsyncLazy<TValue>,
         settings?: LockAquireBlockingSettings,
-    ): Task<TValue>;
+    ): ITask<TValue>;
 
     /**
      * The `acquire` method acquires a lock only if the key is not already acquired by different owner.
      *
      * @returns Returns true if the lock is not already acquired otherwise false is returned.
      */
-    acquire(): Task<boolean>;
+    acquire(): ITask<boolean>;
 
     /**
      * The `acquireOrFail` method acquires a lock only if the key is not already acquired by different owner.
@@ -87,7 +87,7 @@ export type ILockBase = {
      *
      * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
-    acquireOrFail(): Task<void>;
+    acquireOrFail(): ITask<void>;
 
     /**
      * The `acquireBlocking` method acquires a lock only if the key is not already acquired by different owner.
@@ -95,7 +95,7 @@ export type ILockBase = {
      *
      * @returns Returns true if the lock is not already acquired otherwise false is returned.
      */
-    acquireBlocking(settings?: LockAquireBlockingSettings): Task<boolean>;
+    acquireBlocking(settings?: LockAquireBlockingSettings): ITask<boolean>;
 
     /**
      * The `acquireBlockingOrFail` method acquires a lock only if the key is not already acquired by different owner.
@@ -104,14 +104,14 @@ export type ILockBase = {
      *
      * @throws {FailedAcquireLockError} {@link FailedAcquireLockError}
      */
-    acquireBlockingOrFail(settings?: LockAquireBlockingSettings): Task<void>;
+    acquireBlockingOrFail(settings?: LockAquireBlockingSettings): ITask<void>;
 
     /**
      * The `release` method releases a lock if owned by the same owner.
      *
      * @returns Returns true if the lock is released otherwise false is returned.
      */
-    release(): Task<boolean>;
+    release(): ITask<boolean>;
 
     /**
      * The `releaseOrFail` method releases a lock if owned by the same owner.
@@ -119,21 +119,21 @@ export type ILockBase = {
      *
      * @throws {FailedReleaseLockError} {@link FailedReleaseLockError}
      */
-    releaseOrFail(): Task<void>;
+    releaseOrFail(): ITask<void>;
 
     /**
      * The `forceRelease` method releases a lock regardless of the owner.
      *
      * @returns Returns true if the lock exists or false if the lock doesnt exists.
      */
-    forceRelease(): Task<boolean>;
+    forceRelease(): ITask<boolean>;
 
     /**
      * The `refresh` method updates the `ttl` of the lock if expireable and owned by the same owner.
      *
      * @returns Returns true if the lock is refreshed otherwise false is returned.
      */
-    refresh(ttl?: ITimeSpan): Task<boolean>;
+    refresh(ttl?: ITimeSpan): ITask<boolean>;
 
     /**
      * The `refreshOrFail` method updates the `ttl` of the lock if expireable and owned by the same owner.
@@ -142,7 +142,7 @@ export type ILockBase = {
      *
      * @throws {FailedRefreshLockError} {@link FailedRefreshLockError}
      */
-    refreshOrFail(ttl?: ITimeSpan): Task<void>;
+    refreshOrFail(ttl?: ITimeSpan): ITask<void>;
 };
 
 /**

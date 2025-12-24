@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module-exports.js";
+import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module.js";
 import {
     MongodbRateLimiterStorageAdapter,
     type MongodbRateLimiterDocument,
-} from "@/rate-limiter/implementations/adapters/mongodb-rate-limiter-storage-adapter/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/rate-limiter/implementations/adapters/mongodb-rate-limiter-storage-adapter/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
 import { MongoClient } from "mongodb";
 import {
     MongoDBContainer,

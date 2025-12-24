@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { Task } from "@/task/task.js";
+import { Task } from "@/task/implementations/task.js";
 
 describe("class: Task", () => {
     describe("static method: wrapFn", () => {
