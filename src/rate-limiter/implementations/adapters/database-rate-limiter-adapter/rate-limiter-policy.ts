@@ -2,11 +2,11 @@
  * @module RateLimiter
  */
 
-import type { BackoffPolicy } from "@/backoff-policies/_module-exports.js";
-import type { IRateLimiterPolicy } from "@/rate-limiter/contracts/_module-exports.js";
-import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { callInvokable } from "@/utilities/_module-exports.js";
+import type { BackoffPolicy } from "@/backoff-policies/_module.js";
+import type { IRateLimiterPolicy } from "@/rate-limiter/contracts/_module.js";
+import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { callInvokable } from "@/utilities/_module.js";
 
 /**
  * @internal

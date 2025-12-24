@@ -6,10 +6,10 @@ import type {
     ISharedLockAdapter,
     ISharedLockAdapterState,
     SharedLockAcquireSettings,
-} from "@/shared-lock/contracts/_module-exports.js";
+} from "@/shared-lock/contracts/_module.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ISharedLockProvider } from "@/shared-lock/contracts/_module-exports.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { ISharedLockProvider } from "@/shared-lock/contracts/_module.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * This `NoOpSharedLockAdapter` will do nothing and is used for easily mocking {@link ISharedLockProvider | `ISharedLockProvider`} for testing.

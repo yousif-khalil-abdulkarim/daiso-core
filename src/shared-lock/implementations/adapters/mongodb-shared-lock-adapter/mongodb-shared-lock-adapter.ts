@@ -6,12 +6,12 @@ import {
     UnexpectedError,
     type IDeinitizable,
     type IInitizable,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import type {
     ISharedLockAdapter,
     ISharedLockAdapterState,
     SharedLockAcquireSettings,
-} from "@/shared-lock/contracts/_module-exports.js";
+} from "@/shared-lock/contracts/_module.js";
 import type {
     Collection,
     CollectionOptions,
@@ -19,7 +19,7 @@ import type {
     Document,
     ObjectId,
 } from "mongodb";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  *

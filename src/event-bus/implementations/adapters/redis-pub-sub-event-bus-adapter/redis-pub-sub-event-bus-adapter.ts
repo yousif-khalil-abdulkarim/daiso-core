@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import { type ISerde } from "@/serde/contracts/_module-exports.js";
+import { type ISerde } from "@/serde/contracts/_module.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     SuperJsonSerdeAdapter,
@@ -11,7 +11,7 @@ import type {
     BaseEvent,
     EventListenerFn,
     IEventBusAdapter,
-} from "@/event-bus/contracts/_module-exports.js";
+} from "@/event-bus/contracts/_module.js";
 import type { Redis } from "ioredis";
 import { EventEmitter } from "node:events";
 

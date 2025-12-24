@@ -6,11 +6,8 @@ import type {
     IRateLimiterData,
     IRateLimiterStorageAdapter,
     IRateLimiterStorageAdapterTransaction,
-} from "@/rate-limiter/contracts/_module-exports.js";
-import type {
-    IDeinitizable,
-    InvokableFn,
-} from "@/utilities/_module-exports.js";
+} from "@/rate-limiter/contracts/_module.js";
+import type { IDeinitizable, InvokableFn } from "@/utilities/_module.js";
 
 /**
  *

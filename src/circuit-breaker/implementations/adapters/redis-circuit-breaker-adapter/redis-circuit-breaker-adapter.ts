@@ -7,19 +7,19 @@ import {
     type ICircuitBreakerAdapter,
     type CircuitBreakerState,
     CIRCUIT_BREAKER_STATE,
-} from "@/circuit-breaker/contracts/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
 import {
     BREAKER_POLICIES,
     resolveCircuitBreakerPolicySettings,
     serializeCircuitBreakerPolicySettingsEnum,
     type CircuitBreakerPolicySettingsEnum,
-} from "@/circuit-breaker/implementations/policies/_module-exports.js";
+} from "@/circuit-breaker/implementations/policies/_module.js";
 import {
     BACKOFFS,
     resolveBackoffSettingsEnum,
     serializeBackoffSettingsEnum,
     type BackoffSettingsEnum,
-} from "@/backoff-policies/_module-exports.js";
+} from "@/backoff-policies/_module.js";
 import type { Redis, Result } from "ioredis";
 import type { AllCircuitBreakerState } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
 import { circuitBreakerFactoryLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/_module.js";

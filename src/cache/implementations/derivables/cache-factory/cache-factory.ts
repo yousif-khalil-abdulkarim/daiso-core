@@ -5,21 +5,18 @@
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
-} from "@/utilities/_module-exports.js";
-import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
-import type {
-    ICache,
-    ICacheFactory,
-} from "@/cache/contracts/_module-exports.js";
+} from "@/utilities/_module.js";
+import type { IEventBus } from "@/event-bus/contracts/_module.js";
+import type { ICache, ICacheFactory } from "@/cache/contracts/_module.js";
 import {
     Cache,
     type CacheSettingsBase,
     DEFAULT_CACHE_NAMESPACE,
 } from "@/cache/implementations/derivables/cache/_module.js";
-import type { CacheAdapterVariants } from "@/cache/contracts/_module-exports.js";
+import type { CacheAdapterVariants } from "@/cache/contracts/_module.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import type { Namespace } from "@/namespace/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import type { Namespace } from "@/namespace/_module.js";
 
 /**
  *

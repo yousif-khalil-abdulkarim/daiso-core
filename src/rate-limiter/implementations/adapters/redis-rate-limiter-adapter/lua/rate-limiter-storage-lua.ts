@@ -1,8 +1,8 @@
 /**
- * @module RateLimiterPolicy
+ * @module RateLimiter
  */
 
-import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/_module-exports.js";
+import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/_module.js";
 
 /**
  * @internal

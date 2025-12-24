@@ -2,8 +2,8 @@
  * @module RateLimiter
  */
 
-import type { IEventDispatcher } from "@/event-bus/contracts/_module-exports.js";
-import type { Key } from "@/namespace/_module-exports.js";
+import type { IEventDispatcher } from "@/event-bus/contracts/_module.js";
+import type { Key } from "@/namespace/_module.js";
 import {
     BlockedRateLimiterError,
     RATE_LIMITER_EVENTS,
@@ -15,16 +15,16 @@ import {
     type RateLimiterBlockedState,
     type RateLimiterEventMap,
     type RateLimiterState,
-} from "@/rate-limiter/contracts/_module-exports.js";
+} from "@/rate-limiter/contracts/_module.js";
 import { Task } from "@/task/task.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     callErrorPolicyOnThrow,
     resolveAsyncLazyable,
     UnexpectedError,
     type AsyncLazy,
     type ErrorPolicy,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * @internal

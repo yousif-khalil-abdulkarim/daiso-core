@@ -29,12 +29,12 @@ import {
     type ISemaphoreUnacquiredState,
     type ISemaphoreLimitReachedState,
     type ISemaphoreAcquiredState,
-} from "@/semaphore/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
-import type { ISerde } from "@/serde/contracts/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { TO_MILLISECONDS } from "@/time-span/contracts/_module-exports.js";
+} from "@/semaphore/contracts/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
+import type { ISerde } from "@/serde/contracts/_module.js";
+import { Task } from "@/task/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { TO_MILLISECONDS } from "@/time-span/contracts/_module.js";
 
 /**
  *

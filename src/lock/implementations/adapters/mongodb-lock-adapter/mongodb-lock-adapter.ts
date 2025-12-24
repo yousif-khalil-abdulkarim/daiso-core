@@ -2,17 +2,14 @@
  * @module Lock
  */
 
-import {
-    type IDeinitizable,
-    type IInitizable,
-} from "@/utilities/_module-exports.js";
+import { type IDeinitizable, type IInitizable } from "@/utilities/_module.js";
 import type {
     ILockAdapter,
     ILockAdapterState,
-} from "@/lock/contracts/_module-exports.js";
+} from "@/lock/contracts/_module.js";
 import type { Collection, CollectionOptions, Db } from "mongodb";
 import type { ObjectId } from "mongodb";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  *

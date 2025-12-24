@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import type { Invokable } from "@/utilities/_module-exports.js";
+import type { Invokable } from "@/utilities/_module.js";
 
 /**
  *

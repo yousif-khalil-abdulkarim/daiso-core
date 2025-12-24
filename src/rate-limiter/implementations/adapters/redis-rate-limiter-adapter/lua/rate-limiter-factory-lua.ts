@@ -1,11 +1,11 @@
 /**
  * @module RateLimiter
  */
-import { BACKOFFS } from "@/backoff-policies/_module-exports.js";
+import { BACKOFFS } from "@/backoff-policies/_module.js";
 import { backoffsLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/backoffs-lua.js";
 import { fixedWindowLimiterLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/fixed-window-limiter-lua.js";
 import { slidingWindowLimiterLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/sliding-window-limiter-lua.js";
-import { LIMITER_POLICIES } from "@/rate-limiter/implementations/policies/_module-exports.js";
+import { LIMITER_POLICIES } from "@/rate-limiter/implementations/policies/_module.js";
 import { rateLimiterPolicyLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/rate-limiter-policy-lua.js";
 import { rateLimterStorageLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/rate-limiter-storage-lua.js";
 import { rateLimiterStateManagerLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/rate-limiter-state-manager-lua.js";

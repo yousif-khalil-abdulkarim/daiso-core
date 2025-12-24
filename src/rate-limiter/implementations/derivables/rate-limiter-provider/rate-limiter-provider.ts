@@ -6,22 +6,19 @@ import type {
     EventListener,
     IEventBus,
     Unsubscribe,
-} from "@/event-bus/contracts/_module-exports.js";
+} from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
-import { Namespace } from "@/namespace/_module-exports.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
+import { Namespace } from "@/namespace/_module.js";
 import type {
     IRateLimiter,
     IRateLimiterAdapter,
     IRateLimiterProvider,
     RateLimiterEventMap,
     RateLimiterProviderCreateSettings,
-} from "@/rate-limiter/contracts/_module-exports.js";
+} from "@/rate-limiter/contracts/_module.js";
 import type { Task } from "@/task/task.js";
-import type {
-    ErrorPolicy,
-    ErrorPolicySettings,
-} from "@/utilities/_module-exports.js";
+import type { ErrorPolicy, ErrorPolicySettings } from "@/utilities/_module.js";
 import { RateLimiter } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/rate-limiter.js";
 
 /**
@@ -61,6 +58,7 @@ export type RateLimiterProviderSettingsBase = ErrorPolicySettings & {
 
     /**
      * If true, metric tracking will run asynchronously in the background and won't block the function utilizing the circuit breaker logic.
+     * This will only have effect if `onlyError` settings is true.
      * @default true
      */
     enableAsyncTracking?: boolean;

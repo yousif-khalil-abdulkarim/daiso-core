@@ -40,12 +40,12 @@ import {
     type ReleasedReaderSemaphoreEvent,
     type ReleasedWriterLockEvent,
     type UnavailableSharedLockEvent,
-} from "@/shared-lock/contracts/_module-exports.js";
+} from "@/shared-lock/contracts/_module.js";
 
-import { type Promisable } from "@/utilities/_module-exports.js";
-import type { ISerde } from "@/serde/contracts/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import { type Promisable } from "@/utilities/_module.js";
+import type { ISerde } from "@/serde/contracts/_module.js";
+import { Task } from "@/task/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  *

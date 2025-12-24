@@ -2,22 +2,22 @@
  * @module SharedLock
  */
 
-import type { ISerdeTransformer } from "@/serde/contracts/_module-exports.js";
+import type { ISerdeTransformer } from "@/serde/contracts/_module.js";
 import {
     SharedLock,
     type ISerializedSharedLock,
 } from "@/shared-lock/implementations/derivables/shared-lock-provider/shared-lock.js";
-import { type OneOrMore } from "@/utilities/_module-exports.js";
+import { type OneOrMore } from "@/utilities/_module.js";
 import type {
     IDatabaseSharedLockAdapter,
     ISharedLockAdapter,
     SharedLockAdapterVariants,
     SharedLockEventMap,
-} from "@/shared-lock/contracts/_module-exports.js";
-import { getConstructorName } from "@/utilities/_module-exports.js";
-import type { IEventBus } from "@/event-bus/contracts/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import type { Namespace } from "@/namespace/_module-exports.js";
+} from "@/shared-lock/contracts/_module.js";
+import { getConstructorName } from "@/utilities/_module.js";
+import type { IEventBus } from "@/event-bus/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import type { Namespace } from "@/namespace/_module.js";
 
 /**
  * @internal

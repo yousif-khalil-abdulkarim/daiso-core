@@ -7,16 +7,16 @@ import type {
     IDatabaseLockTransaction,
     ILockData,
     ILockExpirationData,
-} from "@/lock/contracts/_module-exports.js";
+} from "@/lock/contracts/_module.js";
 import { MysqlAdapter, type Kysely } from "kysely";
 import {
     type IDeinitizable,
     type IInitizable,
     type InvokableFn,
     type IPrunable,
-} from "@/utilities/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+} from "@/utilities/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  *

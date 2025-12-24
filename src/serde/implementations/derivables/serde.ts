@@ -2,11 +2,11 @@
  * @module Serde
  */
 
-import type { OneOrMore } from "@/utilities/_module-exports.js";
+import type { OneOrMore } from "@/utilities/_module.js";
 import {
     getConstructorName,
     resolveOneOrMoreStr,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import type {
     IFlexibleSerde,
     IFlexibleSerdeAdapter,
@@ -14,7 +14,7 @@ import type {
     ISerializable,
     SerializableClass,
     SerializedValueBase,
-} from "@/serde/contracts/_module-exports.js";
+} from "@/serde/contracts/_module.js";
 import {
     ArrayBufferSerdeTransformer,
     BufferSerdeTransformer,

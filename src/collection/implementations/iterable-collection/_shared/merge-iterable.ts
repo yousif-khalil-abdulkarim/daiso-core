@@ -5,7 +5,7 @@
 import {
     resolveIterableValue,
     type IterableValue,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * @internal

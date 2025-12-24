@@ -2,8 +2,8 @@
  * @module EventBus
  */
 
-import type { IInvokableObject } from "@/utilities/_module-exports.js";
-import type { Task } from "@/task/_module-exports.js";
+import type { IInvokableObject } from "@/utilities/_module.js";
+import type { Task } from "@/task/_module.js";
 import type {
     BaseEvent,
     EventListenerFn,

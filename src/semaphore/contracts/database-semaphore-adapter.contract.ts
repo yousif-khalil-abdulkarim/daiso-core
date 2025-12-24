@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import type { InvokableFn } from "@/utilities/_module-exports.js";
+import type { InvokableFn } from "@/utilities/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`

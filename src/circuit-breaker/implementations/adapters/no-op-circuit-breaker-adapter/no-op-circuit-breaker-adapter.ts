@@ -7,7 +7,7 @@ import {
     type CircuitBreakerState,
     type CircuitBreakerStateTransition,
     type ICircuitBreakerAdapter,
-} from "@/circuit-breaker/contracts/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/no-op-circuit-breaker-adapter"`

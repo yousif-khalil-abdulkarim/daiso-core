@@ -5,11 +5,11 @@
 import {
     type AsyncMap,
     type IAsyncCollection,
-} from "@/collection/contracts/_module-exports.js";
+} from "@/collection/contracts/_module.js";
 import {
     resolveInvokable,
     type AsyncIterableValue,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * @internal

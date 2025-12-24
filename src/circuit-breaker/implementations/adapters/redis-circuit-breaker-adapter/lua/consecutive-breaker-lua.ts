@@ -6,7 +6,7 @@ import {
     CIRCUIT_BREAKER_STATE,
     CLOSED_TRANSITIONS,
     HALF_OPEN_TRANSITIONS,
-} from "@/circuit-breaker/contracts/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
 
 /**
  * @internal

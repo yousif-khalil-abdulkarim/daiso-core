@@ -5,8 +5,8 @@
 import {
     type ICircuitBreakerStorageAdapter,
     type ICircuitBreakerStorageAdapterTransaction,
-} from "@/circuit-breaker/contracts/_module-exports.js";
-import type { InvokableFn } from "@/utilities/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
+import type { InvokableFn } from "@/utilities/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/database-circuit-breaker-storage-adapter"`

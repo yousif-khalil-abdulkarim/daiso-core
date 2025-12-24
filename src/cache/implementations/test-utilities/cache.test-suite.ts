@@ -20,10 +20,10 @@ import {
     type ClearedCacheEvent,
     type UpdatedCacheEvent,
     CACHE_EVENTS,
-} from "@/cache/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/cache/contracts/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
+import { Task } from "@/task/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  *

@@ -2,16 +2,16 @@
  * @module Semaphore
  */
 
-import type { Task } from "@/task/_module-exports.js";
+import type { Task } from "@/task/_module.js";
 import type {
     EventListener,
     IEventBus,
     Unsubscribe,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     IEventListenable,
-} from "@/event-bus/contracts/_module-exports.js";
+} from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module-exports.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import type {
     IDatabaseSemaphoreAdapter,
     ISemaphore,
@@ -19,9 +19,9 @@ import type {
     SemaphoreAdapterVariants,
     SemaphoreEventMap,
     SemaphoreProviderCreateSettings,
-} from "@/semaphore/contracts/_module-exports.js";
-import type { ISemaphoreProvider } from "@/semaphore/contracts/_module-exports.js";
-import type { ISerderRegister } from "@/serde/contracts/_module-exports.js";
+} from "@/semaphore/contracts/_module.js";
+import type { ISemaphoreProvider } from "@/semaphore/contracts/_module.js";
+import type { ISerderRegister } from "@/serde/contracts/_module.js";
 import {
     callInvokable,
     CORE,
@@ -29,15 +29,15 @@ import {
     resolveOneOrMore,
     type Invokable,
     type OneOrMore,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import { Semaphore } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore.js";
 import { v4 } from "uuid";
 import { SemaphoreSerdeTransformer } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore-serde-transformer.js";
 import { resolveSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/resolve-semaphore-adapter.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
-import { Namespace } from "@/namespace/_module-exports.js";
-import { Serde } from "@/serde/implementations/derivables/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { Namespace } from "@/namespace/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 
 /**

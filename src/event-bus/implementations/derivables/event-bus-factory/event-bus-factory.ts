@@ -7,18 +7,18 @@ import {
     type IEventBusFactory,
     type BaseEventMap,
     type IEventBusAdapter,
-} from "@/event-bus/contracts/_module-exports.js";
+} from "@/event-bus/contracts/_module.js";
 import {
     DEFAULT_EVENT_BUS_NAMESPACE,
     EventBus,
     type EventBusSettingsBase,
     type EventMapSchema,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
-import type { Namespace } from "@/namespace/_module-exports.js";
+import type { Namespace } from "@/namespace/_module.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  *

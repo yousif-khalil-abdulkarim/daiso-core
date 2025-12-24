@@ -11,7 +11,7 @@ import {
     CIRCUIT_BREAKER_STATE,
     HALF_OPEN_TRANSITIONS,
     CLOSED_TRANSITIONS,
-} from "@/circuit-breaker/contracts/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`

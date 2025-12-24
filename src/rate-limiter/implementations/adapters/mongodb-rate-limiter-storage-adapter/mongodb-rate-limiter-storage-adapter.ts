@@ -6,13 +6,13 @@ import type {
     IRateLimiterData,
     IRateLimiterStorageAdapter,
     IRateLimiterStorageAdapterTransaction,
-} from "@/rate-limiter/contracts/_module-exports.js";
+} from "@/rate-limiter/contracts/_module.js";
 import type { ISerde } from "@/serde/contracts/serde.contract.js";
 import type {
     IDeinitizable,
     IInitizable,
     InvokableFn,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import type {
     Collection,
     CollectionOptions,

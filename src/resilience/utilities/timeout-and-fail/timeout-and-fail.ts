@@ -6,7 +6,7 @@ import { abortAndFail } from "@/resilience/utilities/abort-and-fail/_module.js";
 import {
     TO_MILLISECONDS,
     type ITimeSpan,
-} from "@/time-span/contracts/_module-exports.js";
+} from "@/time-span/contracts/_module.js";
 
 /**
  * @throws {TimeoutResilienceError} {@link TimeoutResilienceError}

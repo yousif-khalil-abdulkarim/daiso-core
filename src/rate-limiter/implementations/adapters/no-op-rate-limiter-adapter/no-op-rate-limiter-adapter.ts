@@ -5,7 +5,7 @@
 import type {
     IRateLimiterAdapter,
     IRateLimiterAdapterState,
-} from "@/rate-limiter/contracts/_module-exports.js";
+} from "@/rate-limiter/contracts/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/no-op-rate-limiter-adapter"`

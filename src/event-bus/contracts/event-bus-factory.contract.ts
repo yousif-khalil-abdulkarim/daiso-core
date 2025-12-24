@@ -11,7 +11,7 @@ import {
     UnregisteredAdapterError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     DefaultAdapterNotDefinedError,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * The `IEventBusFactory` contract makes it easy to configure and switch between different {@link IEventBus | `IEventBus`} dynamically.

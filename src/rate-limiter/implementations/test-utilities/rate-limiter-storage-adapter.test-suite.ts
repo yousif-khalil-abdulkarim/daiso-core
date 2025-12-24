@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @module RateLimiter
  */
@@ -8,8 +9,8 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { type IRateLimiterStorageAdapter } from "@/rate-limiter/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
+import { type IRateLimiterStorageAdapter } from "@/rate-limiter/contracts/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
 
 /**
  *

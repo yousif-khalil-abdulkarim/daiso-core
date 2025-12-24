@@ -2,15 +2,15 @@
  * @module Cache
  */
 
-import type { Task } from "@/task/_module-exports.js";
+import type { Task } from "@/task/_module.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
-} from "@/utilities/_module-exports.js";
-import type { AsyncLazyable, NoneFunc } from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
+import type { AsyncLazyable, NoneFunc } from "@/utilities/_module.js";
 import type { CacheEventMap } from "@/cache/contracts/cache.events.js";
-import type { IEventListenable } from "@/event-bus/contracts/_module-exports.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import type { IEventListenable } from "@/event-bus/contracts/_module.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  * The `ICacheListenable` contract defines a way for listening {@link ICache | `ICache`} operation events.

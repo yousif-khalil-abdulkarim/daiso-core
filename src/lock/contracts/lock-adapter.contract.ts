@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ILockProvider } from "@/lock/contracts/lock-provider.contract.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`

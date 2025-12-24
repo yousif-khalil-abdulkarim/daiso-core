@@ -1,22 +1,23 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @module RateLimiter
  */
 
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { Task } from "@/task/_module.js";
 import {
     type TestAPI,
     type SuiteAPI,
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { type IRateLimiterAdapter } from "@/rate-limiter/contracts/_module-exports.js";
-import { type Promisable } from "@/utilities/_module-exports.js";
-import type { SlidingWindowLimiterSettings } from "@/rate-limiter/implementations/policies/_module-exports.js";
+import { type IRateLimiterAdapter } from "@/rate-limiter/contracts/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
+import type { SlidingWindowLimiterSettings } from "@/rate-limiter/implementations/policies/_module.js";
 import {
     BACKOFFS,
     type ConstantBackoffSettingsEnum,
-} from "@/backoff-policies/_module-exports.js";
+} from "@/backoff-policies/_module.js";
 
 /**
  *

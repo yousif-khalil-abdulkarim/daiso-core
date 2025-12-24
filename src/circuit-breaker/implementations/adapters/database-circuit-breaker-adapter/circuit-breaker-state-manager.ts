@@ -2,8 +2,8 @@
  * @module CircuitBreaker
  */
 
-import type { BackoffPolicy } from "@/backoff-policies/_module-exports.js";
-import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module-exports.js";
+import type { BackoffPolicy } from "@/backoff-policies/_module.js";
+import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module.js";
 import type { CircuitBreakerPolicy } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
 import type { DatabaseCircuitBreakerUpdateStateFn } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/types.js";
 

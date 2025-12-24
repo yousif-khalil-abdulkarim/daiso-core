@@ -2,16 +2,16 @@
  * @module CircuitBreaker
  */
 
-import { exponentialBackoff } from "@/backoff-policies/_module-exports.js";
-import type { BackoffPolicy } from "@/backoff-policies/_module-exports.js";
+import { exponentialBackoff } from "@/backoff-policies/_module.js";
+import type { BackoffPolicy } from "@/backoff-policies/_module.js";
 import {
     type ICircuitBreakerAdapter,
     type ICircuitBreakerStorageAdapter,
     type CircuitBreakerState,
     type CircuitBreakerStateTransition,
     type ICircuitBreakerPolicy,
-} from "@/circuit-breaker/contracts/_module-exports.js";
-import { ConsecutiveBreaker } from "@/circuit-breaker/implementations/policies/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
+import { ConsecutiveBreaker } from "@/circuit-breaker/implementations/policies/_module.js";
 import {
     CircuitBreakerPolicy,
     type AllCircuitBreakerState,

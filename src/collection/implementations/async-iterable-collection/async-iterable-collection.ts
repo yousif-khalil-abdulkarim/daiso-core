@@ -5,7 +5,7 @@
 import type {
     EnsureMap,
     EnsureRecord,
-} from "@/collection/contracts/_module-exports.js";
+} from "@/collection/contracts/_module.js";
 import {
     type AsyncCollapse,
     type AsyncPredicate,
@@ -22,7 +22,7 @@ import {
     type AsyncReduce,
     EmptyCollectionError,
     type CrossJoinResult,
-} from "@/collection/contracts/_module-exports.js";
+} from "@/collection/contracts/_module.js";
 import {
     AsyncCrossJoinIterable,
     AsyncSlidingIteralbe,
@@ -64,14 +64,14 @@ import {
     resolveInvokable,
     type AsyncIterableValue,
     type AsyncLazyable,
-} from "@/utilities/_module-exports.js";
-import { resolveAsyncLazyable } from "@/utilities/_module-exports.js";
-import { Task } from "@/task/_module-exports.js";
+} from "@/utilities/_module.js";
+import { resolveAsyncLazyable } from "@/utilities/_module.js";
+import { Task } from "@/task/_module.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedError,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * All methods that return {@link IAsyncCollection | `IAsyncCollection`} are executed lazly, meaning the execution will occur iterating the items withthe `forEach` method or `for await` loop.

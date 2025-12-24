@@ -5,8 +5,8 @@
 import {
     type IDatabaseCacheAdapter,
     type ICacheAdapter,
-} from "@/cache/contracts/_module-exports.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/cache/contracts/_module.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * @internal

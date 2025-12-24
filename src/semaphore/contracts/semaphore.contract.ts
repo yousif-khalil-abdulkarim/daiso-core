@@ -2,12 +2,12 @@
  * @module Semaphore
  */
 
-import type { Task } from "@/task/_module-exports.js";
+import type { Task } from "@/task/_module.js";
 import type {
     AsyncLazy,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Invokable,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 import type {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     LimitReachedSemaphoreError,
@@ -17,7 +17,7 @@ import type {
     FailedReleaseSemaphoreError,
 } from "@/semaphore/contracts/semaphore.errors.js";
 import type { ISemaphoreState } from "@/semaphore/contracts/semaphore-state.contract.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  *

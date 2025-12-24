@@ -4,8 +4,8 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { type OpenCircuitBreakerError } from "@/circuit-breaker/contracts/circuit-breaker.errors.js";
-import type { Task } from "@/task/_module-exports.js";
-import type { AsyncLazy } from "@/utilities/_module-exports.js";
+import type { Task } from "@/task/_module.js";
+import type { AsyncLazy } from "@/utilities/_module.js";
 import type { CircuitBreakerState } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
 
 /**

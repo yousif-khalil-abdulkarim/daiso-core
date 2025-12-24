@@ -10,12 +10,12 @@ import {
     type ClosedTransitions,
     CLOSED_TRANSITIONS,
     HALF_OPEN_TRANSITIONS,
-} from "@/circuit-breaker/contracts/_module-exports.js";
+} from "@/circuit-breaker/contracts/_module.js";
 import {
     TO_MILLISECONDS,
     type ITimeSpan,
-} from "@/time-span/contracts/_module-exports.js";
-import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`

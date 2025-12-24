@@ -5,8 +5,8 @@
 import type {
     EventListener,
     EventListenerFn,
-} from "@/event-bus/contracts/_module-exports.js";
-import { resolveInvokable } from "@/utilities/_module-exports.js";
+} from "@/event-bus/contracts/_module.js";
+import { resolveInvokable } from "@/utilities/_module.js";
 
 /**
  * @internal

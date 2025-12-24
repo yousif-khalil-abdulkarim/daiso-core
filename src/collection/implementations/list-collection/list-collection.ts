@@ -6,7 +6,7 @@ import type {
     EnsureMap,
     EnsureRecord,
     SerializedCollection,
-} from "@/collection/contracts/_module-exports.js";
+} from "@/collection/contracts/_module.js";
 import {
     type Collapse,
     type Comparator,
@@ -23,7 +23,7 @@ import {
     type ForEach,
     EmptyCollectionError,
     type CrossJoinResult,
-} from "@/collection/contracts/_module-exports.js";
+} from "@/collection/contracts/_module.js";
 import {
     isInvokable,
     isIterable,
@@ -32,13 +32,13 @@ import {
     resolveIterableValue,
     type IterableValue,
     type Lazyable,
-} from "@/utilities/_module-exports.js";
-import { resolveLazyable } from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
+import { resolveLazyable } from "@/utilities/_module.js";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedError,
-} from "@/utilities/_module-exports.js";
+} from "@/utilities/_module.js";
 
 /**
  * All methods in `ListCollection` are executed eagerly.

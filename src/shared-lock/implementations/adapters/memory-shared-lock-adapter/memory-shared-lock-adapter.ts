@@ -2,16 +2,13 @@
  * @module SharedLock
  */
 
-import {
-    UnexpectedError,
-    type IDeinitizable,
-} from "@/utilities/_module-exports.js";
+import { UnexpectedError, type IDeinitizable } from "@/utilities/_module.js";
 import type {
     ISharedLockAdapter,
     ISharedLockAdapterState,
     SharedLockAcquireSettings,
-} from "@/shared-lock/contracts/_module-exports.js";
-import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+} from "@/shared-lock/contracts/_module.js";
+import type { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  *
