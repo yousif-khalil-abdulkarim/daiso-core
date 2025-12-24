@@ -17,6 +17,7 @@ import type {
 } from "@/utilities/_module-exports.js";
 import type { ExpressionWrapper, SqlBool, Kysely } from "kysely";
 import { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { ITimeSpan } from "@/time-span/contracts/_module-exports.js";
 
 /**
  *
@@ -52,10 +53,12 @@ export type KyselyCacheAdapterSettings = {
     /**
      * @default
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromMinutes(1)
      * ```
      */
-    expiredKeysRemovalInterval?: TimeSpan;
+    expiredKeysRemovalInterval?: ITimeSpan;
 
     /**
      * @default true
@@ -145,7 +148,9 @@ export class KyselyCacheAdapter<TType = unknown>
         this.disableTransaction = kysely instanceof Transaction;
         this.kysely = kysely;
         this.serde = serde;
-        this.expiredKeysRemovalInterval = expiredKeysRemovalInterval;
+        this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
+            expiredKeysRemovalInterval,
+        );
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
     }
 
@@ -188,6 +193,10 @@ export class KyselyCacheAdapter<TType = unknown>
         }
     }
 
+    /**
+     * Removes all related cache tables and their rows.
+     * Note all cache data will be removed.
+     */
     async deInit(): Promise<void> {
         if (this.shouldRemoveExpiredKeys && this.timeoutId !== null) {
             clearInterval(this.timeoutId);

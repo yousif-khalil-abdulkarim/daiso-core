@@ -21,7 +21,7 @@ import {
 } from "mongodb";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/mongodb-circuit-breaker-storage-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/mongodb-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
 export type MongodbCircuitBreakerStorageDocument = {
@@ -31,14 +31,14 @@ export type MongodbCircuitBreakerStorageDocument = {
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/mongodb-circuit-breaker-storage-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/mongodb-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
 export type MongodbCircuitBreakerStorageAdapterSettings = {
     client: MongoClient;
     database: Db;
     /**
-     * @default "circiuitBreaker"
+     * @default "circuitBreaker"
      */
     collectionName?: string;
     collectionSettings?: CollectionOptions;
@@ -50,7 +50,7 @@ export type MongodbCircuitBreakerStorageAdapterSettings = {
  *
  * Note in order to use `MongodbCircuitBreakerStorageAdapter` correctly, you need to use a database that has support for transactions.
  *
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/mongodb-circuit-breaker-storage-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/mongodb-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
 export class MongodbCircuitBreakerStorageAdapter<TType>
@@ -72,6 +72,7 @@ export class MongodbCircuitBreakerStorageAdapter<TType>
      * const database = client.db("database");
      * const serde = new Serde(new SuperJsonSerdeAdapter());
      * const circuitBreakerStorageAdapter = new MongodbCircuitBreakerStorageAdapter({
+     *   client,
      *   database,
      *   serde
      * });
@@ -154,7 +155,7 @@ export class MongodbCircuitBreakerStorageAdapter<TType>
     async transaction<TValue>(
         fn: InvokableFn<
             [transaction: ICircuitBreakerStorageAdapterTransaction<TType>],
-            TValue
+            Promise<TValue>
         >,
     ): Promise<TValue> {
         return await this.client.startSession().withTransaction(async () => {

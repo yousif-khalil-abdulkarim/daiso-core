@@ -15,7 +15,7 @@ import type {
  * Note the `MemoryCircuitBreakerStorageAdapter` is limited to single process usage and cannot be shared across multiple servers or different processes.
  * This adapter is meant for testing.
  *
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/memory-circuit-breaker-storage-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/memory-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
 export class MemoryCircuitBreakerStorageAdapter<TType>
@@ -40,8 +40,7 @@ export class MemoryCircuitBreakerStorageAdapter<TType>
     constructor(private readonly map = new Map<string, TType>()) {}
 
     /**
-     * Removes the collection where the circuit breaker keys are stored and all it's related indexes.
-     * Note all circuit breaker data will be removed.
+     * Removes all in-memory circuit breaker data.
      */
     // eslint-disable-next-line @typescript-eslint/require-await
     async deInit(): Promise<void> {
@@ -56,7 +55,7 @@ export class MemoryCircuitBreakerStorageAdapter<TType>
     async transaction<TValue>(
         fn: InvokableFn<
             [transaction: ICircuitBreakerStorageAdapterTransaction<TType>],
-            TValue
+            Promise<TValue>
         >,
     ): Promise<TValue> {
         return await fn({

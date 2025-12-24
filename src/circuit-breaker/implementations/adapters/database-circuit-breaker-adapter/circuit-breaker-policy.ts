@@ -74,7 +74,7 @@ export class CircuitBreakerPolicy<TMetrics = unknown> {
     ) {}
 
     private isMetricsEqual(metricsA: TMetrics, metricsB: TMetrics): boolean {
-        return this.circuitBreakerPolicy.isEqual?.(metricsA, metricsB) ?? true;
+        return this.circuitBreakerPolicy.isEqual?.(metricsA, metricsB) ?? false;
     }
 
     isEqual(

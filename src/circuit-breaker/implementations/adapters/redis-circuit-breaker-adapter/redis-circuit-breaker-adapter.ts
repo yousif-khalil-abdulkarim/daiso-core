@@ -10,8 +10,8 @@ import {
 } from "@/circuit-breaker/contracts/_module-exports.js";
 import {
     BREAKER_POLICIES,
-    resolvePolicySettings,
-    serializePolicySettingsEnum,
+    resolveCircuitBreakerPolicySettings,
+    serializeCircuitBreakerPolicySettingsEnum,
     type CircuitBreakerPolicySettingsEnum,
 } from "@/circuit-breaker/implementations/policies/_module-exports.js";
 import {
@@ -22,10 +22,10 @@ import {
 } from "@/backoff-policies/_module-exports.js";
 import type { Redis, Result } from "ioredis";
 import type { AllCircuitBreakerState } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
-import { circuitBreakerFactoryLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/_module-exports.js";
+import { circuitBreakerFactoryLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/_module.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/redis-circuit-breaker-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/redis-circuit-breaker-adapter"`
  * @group Adapters
  */
 export type RedisCircuitBreakerAdapterSettings = {
@@ -76,7 +76,7 @@ declare module "ioredis" {
 }
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/redis-circuit-breaker-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/redis-circuit-breaker-adapter"`
  * @group Adapters
  */
 export class RedisCircuitBreakerAdapter implements ICircuitBreakerAdapter {
@@ -111,7 +111,7 @@ export class RedisCircuitBreakerAdapter implements ICircuitBreakerAdapter {
 
         this.database = database;
         this.backoff = resolveBackoffSettingsEnum(backoff);
-        this.policy = resolvePolicySettings(policy);
+        this.policy = resolveCircuitBreakerPolicySettings(policy);
 
         this.initUpdateStateCommmand();
         this.initTrackFailureCommmand();
@@ -204,7 +204,9 @@ export class RedisCircuitBreakerAdapter implements ICircuitBreakerAdapter {
         const value = await this.database.daiso_circuit_breaker_update_state(
             key,
             JSON.stringify(serializeBackoffSettingsEnum(this.backoff)),
-            JSON.stringify(serializePolicySettingsEnum(this.policy)),
+            JSON.stringify(
+                serializeCircuitBreakerPolicySettingsEnum(this.policy),
+            ),
             Date.now(),
         );
         return JSON.parse(value) as CircuitBreakerStateTransition;
@@ -223,7 +225,9 @@ export class RedisCircuitBreakerAdapter implements ICircuitBreakerAdapter {
         await this.database.daiso_circuit_breaker_track_failure(
             key,
             JSON.stringify(serializeBackoffSettingsEnum(this.backoff)),
-            JSON.stringify(serializePolicySettingsEnum(this.policy)),
+            JSON.stringify(
+                serializeCircuitBreakerPolicySettingsEnum(this.policy),
+            ),
             Date.now(),
         );
     }
@@ -232,7 +236,9 @@ export class RedisCircuitBreakerAdapter implements ICircuitBreakerAdapter {
         await this.database.daiso_circuit_breaker_track_success(
             key,
             JSON.stringify(serializeBackoffSettingsEnum(this.backoff)),
-            JSON.stringify(serializePolicySettingsEnum(this.policy)),
+            JSON.stringify(
+                serializeCircuitBreakerPolicySettingsEnum(this.policy),
+            ),
             Date.now(),
         );
     }

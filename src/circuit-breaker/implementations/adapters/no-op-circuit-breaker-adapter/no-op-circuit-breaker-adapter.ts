@@ -10,10 +10,10 @@ import {
 } from "@/circuit-breaker/contracts/_module-exports.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/no-op-circuit-breaker-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/no-op-circuit-breaker-adapter"`
  * @group Adapters
  */
-export class NoOpCirciuitBreakerAdapter implements ICircuitBreakerAdapter {
+export class NoOpCircuitBreakerAdapter implements ICircuitBreakerAdapter {
     getState(_key: string): Promise<CircuitBreakerState> {
         return Promise.resolve(CIRCUIT_BREAKER_STATE.CLOSED);
     }

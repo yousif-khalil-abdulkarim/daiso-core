@@ -139,6 +139,37 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
     private readonly serdeTransformerName: string;
     private readonly enableAsyncTracking: boolean;
 
+    /**
+     * @example
+     * ```ts
+     * import { KyselyCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter";
+     * import { DatabaseCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter";
+     * import { Serde } from "@daiso-tech/core/serde";
+     * import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter"
+     * import Sqlite from "better-sqlite3";
+     * import { Kysely, SqliteDialect } from "kysely";
+     *
+     * const serde = new Serde(new SuperJsonSerdeAdapter());
+     * const circuitBreakerStorageAdapter = new KyselyCircuitBreakerStorageAdapter({
+     *   kysely: new Kysely({
+     *     dialect: new SqliteDialect({
+     *       database: new Sqlite("local.db"),
+     *     }),
+     *   }),
+     *   serde
+     * });
+     * // You need initialize the adapter once before using it.
+     * await circuitBreakerStorageAdapter.init();
+     *
+     * const circuitBreakerAdapter = new DatabaseCircuitBreakerAdapter({
+     *   adapter: circuitBreakerStorageAdapter
+     * });
+     *
+     * const circuitBreakerProvider = new CircuitBreakerProvider({
+     *   adapter: circuitBreakerAdapter
+     * })
+     * ```
+     */
     constructor(settings: CircuitBreakerProviderSettings) {
         const {
             enableAsyncTracking = true,

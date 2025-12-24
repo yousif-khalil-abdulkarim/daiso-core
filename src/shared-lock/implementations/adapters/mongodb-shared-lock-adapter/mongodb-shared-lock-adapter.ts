@@ -152,8 +152,8 @@ export class MongodbSharedLockAdapter
     }
 
     /**
-     * Removes the collection where the lock keys are stored and all it's related indexes.
-     * Note all lock data will be removed.
+     * Removes the collection where the shared-lock keys are stored and all it's related indexes.
+     * Note all shared-lock data will be removed.
      */
     async deInit(): Promise<void> {
         // Should throw if the collection already does not exists thats why the try catch is used.

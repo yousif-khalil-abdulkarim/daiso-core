@@ -16,7 +16,7 @@ export type CircuitBreakerStateTransition = {
 };
 
 /**
- * The `ICircuitBreakerAdapter` contract defines a way for managing circuit breakers independent of the underlying technology.
+ * The `ICircuitBreakerAdapter` contract defines a way for managing circuit breakers independent of the underlying technology and algorithm.
  * This contract is not meant to be used directly, instead you should use {@link ICircuitBreakerProvider | `ICircuitBreakerProvider`} contract.
  *
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/contracts"`

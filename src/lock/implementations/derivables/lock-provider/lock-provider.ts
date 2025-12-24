@@ -93,6 +93,8 @@ export type LockProviderSettingsBase = {
      * You can decide the default ttl value for {@link ILock | `ILock`} expiration. If null is passed then no ttl will be used by default.
      * @default
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromMinutes(5);
      * ```
      */
@@ -102,6 +104,8 @@ export type LockProviderSettingsBase = {
      * The default refresh time used in the {@link ILock | `ILock`} `acquireBlocking` and `runBlocking` methods.
      * @default
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromSeconds(1);
      * ```
      */
@@ -111,6 +115,8 @@ export type LockProviderSettingsBase = {
      * The default refresh time used in the {@link ILock | `ILock`} `acquireBlocking` and `runBlocking` methods.
      * @default
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromMinutes(1);
      * ```
      */
@@ -119,6 +125,8 @@ export type LockProviderSettingsBase = {
     /**
      * The default refresh time used in the {@link ILock | `ILock`} `referesh` method.
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromMinutes(5);
      * ```
      */

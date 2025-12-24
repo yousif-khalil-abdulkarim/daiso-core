@@ -21,7 +21,7 @@ export const SEMAPHORE_STATE = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Contracts
  */
-export type SemaphoreState =
+export type SemaphoreStateLiterals =
     (typeof SEMAPHORE_STATE)[keyof typeof SEMAPHORE_STATE];
 
 /**

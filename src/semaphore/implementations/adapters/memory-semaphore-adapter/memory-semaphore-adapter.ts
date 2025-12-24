@@ -8,6 +8,7 @@ import type {
     SemaphoreAcquireSettings,
 } from "@/semaphore/contracts/_module-exports.js";
 import type { TimeSpan } from "@/time-span/implementations/_module-exports.js";
+import type { IDeinitizable } from "@/utilities/_module-exports.js";
 
 /**
  *
@@ -32,7 +33,9 @@ export type MemorySemaphoreAdapterData = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/memory-semaphore-adapter"`
  * @group Adapters
  */
-export class MemorySemaphoreAdapter implements ISemaphoreAdapter {
+export class MemorySemaphoreAdapter
+    implements ISemaphoreAdapter, IDeinitizable
+{
     /**
      *  @example
      * ```ts
@@ -52,6 +55,22 @@ export class MemorySemaphoreAdapter implements ISemaphoreAdapter {
     constructor(
         private readonly map = new Map<string, MemorySemaphoreAdapterData>(),
     ) {}
+
+    /**
+     * Removes all in-memory semaphore data.
+     */
+    // eslint-disable-next-line @typescript-eslint/require-await
+    async deInit(): Promise<void> {
+        for (const [key, semaphoreData] of this.map) {
+            for (const [slotId, slotData] of semaphoreData.slots) {
+                if (slotData.timeoutId !== null) {
+                    clearTimeout(slotData.timeoutId);
+                }
+                semaphoreData.slots.delete(slotId);
+            }
+            this.map.delete(key);
+        }
+    }
 
     // eslint-disable-next-line @typescript-eslint/require-await
     async acquire(settings: SemaphoreAcquireSettings): Promise<boolean> {

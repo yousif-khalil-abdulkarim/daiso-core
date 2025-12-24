@@ -90,6 +90,8 @@ export type SemaphoreProviderSettingsBase = {
      * You can decide the default ttl value for {@link ISemaphore | `ISemaphore`} expiration. If null is passed then no ttl will be used by default.
      * @default
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromMinutes(5);
      * ```
      */
@@ -99,6 +101,8 @@ export type SemaphoreProviderSettingsBase = {
      * The default refresh time used in the {@link ISemaphore | `ISemaphore`} `acquireBlocking` and `runBlocking` methods.
      * @default
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromSeconds(1);
      * ```
      */
@@ -108,6 +112,8 @@ export type SemaphoreProviderSettingsBase = {
      * The default refresh time used in the {@link ISemaphore | `ISemaphore`} `acquireBlocking` and `runBlocking` methods.
      * @default
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromMinutes(1);
      * ```
      */
@@ -116,6 +122,8 @@ export type SemaphoreProviderSettingsBase = {
     /**
      * The default refresh time used in the {@link ISemaphore | `ISemaphore`} `referesh` method.
      * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
      * TimeSpan.fromMinutes(5);
      * ```
      */

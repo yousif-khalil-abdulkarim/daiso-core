@@ -9,16 +9,16 @@ import {
 import type { InvokableFn } from "@/utilities/_module-exports.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/database-circuit-breaker-storage-adapter"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/database-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
-export class NoOpCirciuitBreakerStorageAdapter<TType>
+export class NoOpCircuitBreakerStorageAdapter<TType>
     implements ICircuitBreakerStorageAdapter<TType>
 {
     transaction<TValue>(
         fn: InvokableFn<
             [transaction: ICircuitBreakerStorageAdapterTransaction<TType>],
-            TValue
+            Promise<TValue>
         >,
     ): Promise<TValue> {
         return Promise.resolve(

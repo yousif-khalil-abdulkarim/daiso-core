@@ -1,0 +1,114 @@
+/**
+ * @module RateLimiter
+ */
+
+import type { BackoffPolicy } from "@/backoff-policies/_module-exports.js";
+import {
+    RATE_LIMITER_STATE,
+    type IRateLimiterStorageAdapter,
+} from "@/rate-limiter/contracts/_module-exports.js";
+import type {
+    AllRateLimiterState,
+    RateLimiterPolicy,
+} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-policy.js";
+import type { InvokableFn } from "@/utilities/_module-exports.js";
+
+/**
+ * @internal
+ */
+export type RateLimiterStorageSettings<TMetrics> = {
+    adapter: IRateLimiterStorageAdapter<AllRateLimiterState<TMetrics>>;
+    rateLimiterPolicy: RateLimiterPolicy<TMetrics>;
+    backoffPolicy: BackoffPolicy;
+};
+
+/**
+ * @internal
+ */
+export type IRateLimiterStorageState = {
+    success: boolean;
+    attempt: number;
+    resetTime: Date | null;
+};
+
+/**
+ * @internal
+ */
+export type AtomicUpdateArgs<TMetrics> = {
+    key: string;
+    update: InvokableFn<
+        [currentState: AllRateLimiterState<TMetrics>],
+        AllRateLimiterState<TMetrics>
+    >;
+};
+
+/**
+ * @internal
+ */
+export class RateLimiterStorage<TMetrics = unknown> {
+    private readonly adapter: IRateLimiterStorageAdapter<
+        AllRateLimiterState<TMetrics>
+    >;
+    private readonly rateLimiterPolicy: RateLimiterPolicy<TMetrics>;
+    private readonly backoffPolicy: BackoffPolicy;
+
+    constructor(settings: RateLimiterStorageSettings<TMetrics>) {
+        const { adapter, rateLimiterPolicy, backoffPolicy } = settings;
+
+        this.adapter = adapter;
+        this.rateLimiterPolicy = rateLimiterPolicy;
+        this.backoffPolicy = backoffPolicy;
+    }
+
+    private static toAdapterState<TMetrics>(
+        state: AllRateLimiterState<TMetrics>,
+    ): IRateLimiterStorageState {
+        return {
+            success: state.type === RATE_LIMITER_STATE.ALLOWED,
+            attempt: state.attempt,
+            resetTime:
+                state.type === RATE_LIMITER_STATE.ALLOWED
+                    ? null
+                    : new Date(state.startedAt),
+        };
+    }
+
+    async atomicUpdate(
+        args: AtomicUpdateArgs<TMetrics>,
+    ): Promise<IRateLimiterStorageState> {
+        const currentDate = new Date();
+        const state = await this.adapter.transaction(async (trx) => {
+            const data = await this.adapter.find(args.key);
+            let currentState = data?.state;
+            if (currentState === undefined) {
+                currentState = this.rateLimiterPolicy.initialState(currentDate);
+            }
+
+            const newState = args.update(currentState);
+
+            await trx.upsert(
+                args.key,
+                newState,
+                this.rateLimiterPolicy.getExpiration(newState, {
+                    backoffPolicy: this.backoffPolicy,
+                    currentDate,
+                }),
+            );
+
+            return newState;
+        });
+        return RateLimiterStorage.toAdapterState(state);
+    }
+
+    async find(key: string): Promise<IRateLimiterStorageState | null> {
+        const data = await this.adapter.find(key);
+        if (data === null) {
+            return null;
+        }
+        return RateLimiterStorage.toAdapterState(data.state);
+    }
+
+    async remove(key: string): Promise<void> {
+        await this.adapter.remove(key);
+    }
+}

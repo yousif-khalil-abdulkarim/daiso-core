@@ -8,11 +8,11 @@
 export const circuitBreakerStorageLua = `
 -- @template TMetrics
 -- @param circuitBreakerPolicy CircuitBreakerPolicy<TMetrics>
-local function CircuitBreakerStorage(circuitBreakerPolicy)    
+-- @param currentDate number
+local function CircuitBreakerStorage(circuitBreakerPolicy, currentDate)    
     -- @param key string
     -- @param AllCircuitBreakerState<TMetrics>
     local function find(key)
-        local key = "a"
         if redis.call("EXISTS", key) == 1 then
             local value = redis.call("GET", key)
             return cjson.decode(value)
@@ -23,24 +23,16 @@ local function CircuitBreakerStorage(circuitBreakerPolicy)
 
     return {
         -- @param key string
-        -- @param update InvokableFn<[currentState: AllCircuitBreakerState<TMetrics>], AllCircuitBreakerState<TMetrics>>
+        -- @param update DatabaseCircuitBreakerUpdateStateFn<TMetrics>
         atomicUpdate = function(key, update)
             local currentState = find(key)
-            local newState = update(currentState)
+            local newState = update(currentState, currentDate)
             redis.call("set", key, cjson.encode(newState))
 
             return {
                 from = currentState.type,
                 to = newState.type,
             }
-        end,
-
-        find = find,
-
-        -- @param key string
-        -- @return void
-        remove = function(key)
-            redis.call("del", key)
         end
     }
 end

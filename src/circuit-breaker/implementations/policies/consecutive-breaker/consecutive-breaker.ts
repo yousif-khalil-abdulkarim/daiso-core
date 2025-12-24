@@ -14,7 +14,7 @@ import {
 } from "@/circuit-breaker/contracts/_module-exports.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type ConsecutiveBreakerState = {
@@ -23,7 +23,7 @@ export type ConsecutiveBreakerState = {
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type ConsecutiveBreakerSettings = {
@@ -77,7 +77,7 @@ export function resolveConsecutiveBreakerSettings(
 }
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export class ConsecutiveBreaker

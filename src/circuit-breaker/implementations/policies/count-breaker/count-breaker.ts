@@ -13,7 +13,7 @@ import {
 } from "@/circuit-breaker/contracts/_module-exports.js";
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type CountBreakerSettings = {
@@ -115,7 +115,7 @@ export function resolveCountBreakerSettings(
 }
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export type CountBreakerState = {
@@ -123,7 +123,7 @@ export type CountBreakerState = {
 };
 
 /**
- * IMPORT_PATH: `"@daiso-tech/core/circiuit-breaker/policies"`
+ * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
 export class CountBreaker implements ICircuitBreakerPolicy<CountBreakerState> {
@@ -132,7 +132,7 @@ export class CountBreaker implements ICircuitBreakerPolicy<CountBreakerState> {
     private readonly minimumNumberOfCalls: number;
     private readonly size: number;
 
-    constructor(settings: CountBreakerSettings) {
+    constructor(settings: CountBreakerSettings = {}) {
         const {
             failureThreshold,
             successThreshold,

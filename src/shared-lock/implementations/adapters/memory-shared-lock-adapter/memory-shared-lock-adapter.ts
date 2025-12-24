@@ -86,6 +86,9 @@ export class MemorySharedLockAdapter
         private readonly map = new Map<string, MemorySharedLockData>(),
     ) {}
 
+    /**
+     * Removes all in-memory shared-lock data.
+     */
     // eslint-disable-next-line @typescript-eslint/require-await
     async deInit(): Promise<void> {
         for (const [key, sharedLock] of this.map) {
