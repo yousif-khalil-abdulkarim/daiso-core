@@ -2,12 +2,11 @@
  * @module BackoffPolicy
  */
 
-import { callInvokable, isInvokable } from "@/utilities/_module.js";
+import { callInvokable, isInvokable, withJitter } from "@/utilities/_module.js";
 import type {
     BackoffPolicy,
     DynamicBackoffPolicy,
 } from "@/backoff-policies/_shared.js";
-import { withJitter } from "@/backoff-policies/_shared.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     TO_MILLISECONDS,
@@ -101,7 +100,7 @@ export function linearBackoff(
             withJitter({
                 jitter,
                 value: linear,
-                mathRandom: _mathRandom,
+                randomValue: _mathRandom(),
             }),
         );
     };

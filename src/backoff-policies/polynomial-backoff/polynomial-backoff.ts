@@ -2,12 +2,11 @@
  * @module BackoffPolicy
  */
 
-import { callInvokable, isInvokable } from "@/utilities/_module.js";
+import { callInvokable, isInvokable, withJitter } from "@/utilities/_module.js";
 import type {
     BackoffPolicy,
     DynamicBackoffPolicy,
 } from "@/backoff-policies/_shared.js";
-import { withJitter } from "@/backoff-policies/_shared.js";
 import {
     TO_MILLISECONDS,
     type ITimeSpan,
@@ -107,7 +106,7 @@ export function polynomialBackoff(
             withJitter({
                 jitter,
                 value: polynomial,
-                mathRandom: _mathRandom,
+                randomValue: _mathRandom(),
             }),
         );
     };

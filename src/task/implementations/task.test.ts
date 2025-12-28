@@ -2,6 +2,9 @@ import { describe, test, expect } from "vitest";
 import { Task } from "@/task/implementations/task.js";
 
 describe("class: Task", () => {
+    describe("static method: isTask", () => {
+        test.todo("Write tests!!!");
+    });
     describe("static method: wrapFn", () => {
         test("Should work exactly like the given function", async () => {
             // eslint-disable-next-line @typescript-eslint/require-await

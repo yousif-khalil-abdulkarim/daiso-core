@@ -1,0 +1,15 @@
+/**
+ * @module Cache
+ */
+
+import type { ICacheAdapter } from "@/new-cache/contracts/cache-adapter.contract.js";
+import type { IDatabaseCacheAdapter } from "@/new-cache/contracts/database-cache-adapter.contract.js";
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
+ * @group Contracts
+ */
+export type CacheAdapterVariants<TType = unknown> =
+    | ICacheAdapter<TType>
+    | IDatabaseCacheAdapter<TType>;

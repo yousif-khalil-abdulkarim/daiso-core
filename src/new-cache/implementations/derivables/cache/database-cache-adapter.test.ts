@@ -1,0 +1,37 @@
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { cacheAdapterTestSuite } from "@/new-cache/implementations/test-utilities/_module.js";
+import { KyselyCacheAdapter } from "@/new-cache/implementations/adapters/_module.js";
+import Sqlite, { type Database } from "better-sqlite3";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { DatabaseCacheAdapter } from "@/new-cache/implementations/derivables/_module.js";
+import { Kysely, SqliteDialect } from "kysely";
+
+describe("class: DatabaseCacheAdapter", () => {
+    let database: Database;
+    beforeEach(() => {
+        database = new Sqlite(":memory:");
+    });
+    afterEach(() => {
+        database.close();
+    });
+    cacheAdapterTestSuite({
+        createAdapter: async () => {
+            const adapter = new KyselyCacheAdapter({
+                kysely: new Kysely({
+                    dialect: new SqliteDialect({
+                        database,
+                    }),
+                }),
+                shouldRemoveExpiredKeys: false,
+                serde: new Serde(new SuperJsonSerdeAdapter()),
+            });
+            await adapter.init();
+            return new DatabaseCacheAdapter(adapter);
+        },
+        test,
+        beforeEach,
+        expect,
+        describe,
+    });
+});

@@ -2,9 +2,8 @@
  * @module BackoffPolicy
  */
 
-import { callInvokable, isInvokable } from "@/utilities/_module.js";
+import { callInvokable, isInvokable, withJitter } from "@/utilities/_module.js";
 import {
-    withJitter,
     type BackoffPolicy,
     type DynamicBackoffPolicy,
 } from "@/backoff-policies/_shared.js";
@@ -85,7 +84,7 @@ export function constantBackoff(
             withJitter({
                 jitter,
                 value: delay[TO_MILLISECONDS](),
-                mathRandom: _mathRandom,
+                randomValue: _mathRandom(),
             }),
         );
     };

@@ -14,6 +14,9 @@ export type OneOrMore<TItem> = TItem | Iterable<TItem>;
  * @internal
  */
 export function resolveOneOrMore<TType>(value: OneOrMore<TType>): TType[] {
+    if (typeof value === "string") {
+        return [value];
+    }
     if (isIterable(value)) {
         return [...value];
     }

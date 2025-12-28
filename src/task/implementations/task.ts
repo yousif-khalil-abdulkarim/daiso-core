@@ -142,7 +142,7 @@ export class Task<TValue> implements ITask<TValue> {
             if (value === undefined) {
                 return;
             }
-            if (!(value instanceof Task)) {
+            if (!Task.isTask(value)) {
                 throw new TypeError("You cant pass a Promise to Task.resolve");
             }
             return await value;
@@ -156,7 +156,7 @@ export class Task<TValue> implements ITask<TValue> {
         reason?: TError,
     ): ITask<TValue> {
         return new Task<TValue>(async () => {
-            if (!(reason instanceof Task)) {
+            if (!Task.isTask(reason)) {
                 throw new TypeError("You cant pass a Promise to Task.reject");
             }
 
@@ -171,8 +171,8 @@ export class Task<TValue> implements ITask<TValue> {
     ): ITask<TValue>[] {
         const tasks: ITask<TValue>[] = [];
         for (const promise of promises) {
-            if (promise instanceof Task) {
-                tasks.push(promise as Task<TValue>);
+            if (Task.isTask<TValue>(promise)) {
+                tasks.push(promise);
             }
             if (!isPromiseLike(promise)) {
                 tasks.push(Task.resolve(promise));
@@ -315,6 +315,24 @@ export class Task<TValue> implements ITask<TValue> {
                 new Promise((resolve, reject) => {
                     callback(resolve, reject);
                 }),
+        );
+    }
+
+    static isTask<TValue>(value: unknown): value is ITask<TValue> {
+        return (
+            typeof value === "object" &&
+            value !== null &&
+            "pipe" in value &&
+            typeof value.pipe === "function" &&
+            value.pipe.length === 1 &&
+            "pipeWhen" in value &&
+            typeof value.pipeWhen === "function" &&
+            value.pipeWhen.length === 2 &&
+            "detach" in value &&
+            typeof value.detach === "function" &&
+            value.detach.length === 2 &&
+            "then" in value &&
+            typeof value.then === "function"
         );
     }
 
