@@ -398,13 +398,13 @@
         "@testcontainers/mysql": "^11.0.0",
         "@testcontainers/postgresql": "^11.0.0",
         "@testcontainers/redis": "^10.13.2",
-        "@types/better-sqlite3": "^7.6.11",
+        "@types/better-sqlite3": "^7.6.13",
         "@types/pg": "^8.15.4",
         "@types/uuid": "^10.0.0",
         "@typescript-eslint/eslint-plugin": "^8.1.0",
         "@typescript-eslint/parser": "^8.1.0",
         "@vitest/eslint-plugin": "^1.0.3",
-        "better-sqlite3": "^11.5.0",
+        "better-sqlite3": "^12.5.0",
         "eslint": "^8.57.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-no-relative-import-paths": "^1.5.5",
@@ -430,8 +430,8 @@
     },
     "peerDependencies": {
         "ioredis": "^5.0.0",
-        "mongodb": "^6.0.0",
-        "kysely": "^0.28.0"
+        "kysely": "^0.28.0",
+        "mongodb": "^6.0.0"
     },
     "peerDependenciesMeta": {
         "mongodb": {
