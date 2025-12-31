@@ -2,7 +2,7 @@
  * @module CircuitBreaker
  */
 import { BACKOFFS } from "@/backoff-policies/_module.js";
-import { backoffsLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/backoffs-lua.js";
+import { backoffsLua } from "@/backoff-policies/_module.js";
 import { consecutiveBreakerLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/consecutive-breaker-lua.js";
 import { countBreakerLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/count-breaker-lua.js";
 import { samplingBreakerLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/sampling-breaker-lua.js";

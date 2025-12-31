@@ -61,7 +61,7 @@ async function find<TType>(
 /**
  * @internal
  */
-class KyselyCircuitBreakerStorageAdapterTransaction<TType>
+class KyselyCircuitBreakerStorageAdapterTransaction<TType = unknown>
     implements ICircuitBreakerStorageAdapterTransaction<TType>
 {
     private readonly kysely: Kysely<KyselyCircuitBreakerStorageTables>;

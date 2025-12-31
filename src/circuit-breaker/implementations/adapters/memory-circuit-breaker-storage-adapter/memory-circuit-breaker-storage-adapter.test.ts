@@ -4,7 +4,17 @@ import { MemoryCircuitBreakerStorageAdapter } from "@/circuit-breaker/implementa
 
 describe("class: MemoryCircuitBreakerStorageAdapter", () => {
     describe("method: deInit", () => {
-        test.todo("Write tests!!!");
+        test("Should clear map", async () => {
+            const map = new Map<string, unknown>();
+            const adapter = new MemoryCircuitBreakerStorageAdapter(map);
+            await adapter.transaction(async (trx) => {
+                await trx.upsert("a", "1");
+                await trx.upsert("b", "1");
+            });
+            await adapter.deInit();
+
+            expect(map.size).toBe(0);
+        });
     });
     circuitBreakerStorageAdapterTestSuite({
         createAdapter: () => {
