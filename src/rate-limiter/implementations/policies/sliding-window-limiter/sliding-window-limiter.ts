@@ -26,6 +26,14 @@ export type SlidingWindowLimiterSettings = {
      */
     window?: ITimeSpan;
 
+    /**
+     * @default
+     * ```ts
+     * import { TimeSpan } from "@daiso-tech/core/time-span";
+     *
+     * TimeSpan.fromTimeSpan(window).divide(4)
+     * ```
+     */
     margin?: ITimeSpan;
 };
 
