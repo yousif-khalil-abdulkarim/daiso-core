@@ -11,7 +11,7 @@ import { callInvokable } from "@/utilities/_module.js";
 /**
  * @internal
  */
-export type AllowedRateLimiterState<TMetrics = unknown> = {
+export type AllowedState<TMetrics = unknown> = {
     type: (typeof RATE_LIMITER_STATE)["ALLOWED"];
     metrics: TMetrics;
     attempt: number;
@@ -20,7 +20,7 @@ export type AllowedRateLimiterState<TMetrics = unknown> = {
 /**
  * @internal
  */
-export type BlockedRateLimiterState = {
+export type BlockedState = {
     type: (typeof RATE_LIMITER_STATE)["BLOCKED"];
     /**
      * Unix timestamp in miliseconds
@@ -33,8 +33,8 @@ export type BlockedRateLimiterState = {
  * @internal
  */
 export type AllRateLimiterState<TMetrics = unknown> =
-    | AllowedRateLimiterState<TMetrics>
-    | BlockedRateLimiterState;
+    | AllowedState<TMetrics>
+    | BlockedState;
 
 /**
  * @internal
@@ -52,7 +52,7 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         private readonly rateLimiterPolicy: IRateLimiterPolicy<TMetrics>,
     ) {}
 
-    initialState(currentDate: Date): AllowedRateLimiterState<TMetrics> {
+    initialState(currentDate: Date): AllowedState<TMetrics> {
         const currentMetrics =
             this.rateLimiterPolicy.initialMetrics(currentDate);
         return {
@@ -66,7 +66,7 @@ export class RateLimiterPolicy<TMetrics = unknown> {
     }
 
     whenAllowed(
-        currentState: AllowedRateLimiterState<TMetrics>,
+        currentState: AllowedState<TMetrics>,
         limit: number,
         currentDate: Date,
     ): AllRateLimiterState<TMetrics> {
@@ -88,14 +88,15 @@ export class RateLimiterPolicy<TMetrics = unknown> {
     }
 
     whenBlocked(
-        currentState: BlockedRateLimiterState,
+        currentState: BlockedState,
         settings: BackoffPolicySettings,
     ): AllRateLimiterState<TMetrics> {
         const waitTime = TimeSpan.fromTimeSpan(
             callInvokable(settings.backoffPolicy, currentState.attempt, null),
         );
         const endDate = waitTime.toEndDate(new Date(currentState.startedAt));
-        const isWaitTimeOver = endDate <= new Date(settings.currentDate);
+        const isWaitTimeOver =
+            endDate.getTime() <= settings.currentDate.getTime();
 
         if (isWaitTimeOver) {
             const currentMetrics = this.rateLimiterPolicy.initialMetrics(
@@ -110,11 +111,12 @@ export class RateLimiterPolicy<TMetrics = unknown> {
                 metrics: currentMetrics,
             };
         }
+
         return currentState;
     }
 
     trackWhenAllowed(
-        currentState: AllowedRateLimiterState<TMetrics>,
+        currentState: AllowedState<TMetrics>,
         currentDate: Date,
     ): AllRateLimiterState<TMetrics> {
         return {
@@ -127,9 +129,7 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         };
     }
 
-    trackWhenBlocked(
-        currentState: BlockedRateLimiterState,
-    ): BlockedRateLimiterState {
+    trackWhenBlocked(currentState: BlockedState): BlockedState {
         return {
             type: currentState.type,
             startedAt: currentState.startedAt,
