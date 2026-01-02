@@ -11,7 +11,8 @@ import type {
     AllRateLimiterState,
     RateLimiterPolicy,
 } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-policy.js";
-import type { InvokableFn } from "@/utilities/_module.js";
+import { TimeSpan } from "@/time-span/implementations/time-span.js";
+import { callInvokable, type InvokableFn } from "@/utilities/_module.js";
 
 /**
  * @internal
@@ -60,19 +61,6 @@ export class RateLimiterStorage<TMetrics = unknown> {
         this.backoffPolicy = backoffPolicy;
     }
 
-    private static toAdapterState<TMetrics>(
-        state: AllRateLimiterState<TMetrics>,
-    ): IRateLimiterStorageState {
-        return {
-            success: state.type === RATE_LIMITER_STATE.ALLOWED,
-            attempt: state.attempt,
-            resetTime:
-                state.type === RATE_LIMITER_STATE.ALLOWED
-                    ? null
-                    : new Date(state.startedAt),
-        };
-    }
-
     async atomicUpdate(
         args: AtomicUpdateArgs<TMetrics>,
     ): Promise<IRateLimiterStorageState> {
@@ -97,7 +85,26 @@ export class RateLimiterStorage<TMetrics = unknown> {
 
             return newState;
         });
-        return RateLimiterStorage.toAdapterState(state);
+        return this.toAdapterState(state);
+    }
+
+    private toAdapterState<TMetrics>(
+        state: AllRateLimiterState<TMetrics>,
+    ): IRateLimiterStorageState {
+        return {
+            success: state.type === RATE_LIMITER_STATE.ALLOWED,
+            attempt: state.attempt,
+            resetTime:
+                state.type === RATE_LIMITER_STATE.ALLOWED
+                    ? null
+                    : TimeSpan.fromTimeSpan(
+                          callInvokable(
+                              this.backoffPolicy,
+                              state.attempt,
+                              null,
+                          ),
+                      ).toEndDate(new Date(state.startedAt)),
+        };
     }
 
     async find(key: string): Promise<IRateLimiterStorageState | null> {
@@ -105,7 +112,7 @@ export class RateLimiterStorage<TMetrics = unknown> {
         if (data === null) {
             return null;
         }
-        return RateLimiterStorage.toAdapterState(data.state);
+        return this.toAdapterState(data.state);
     }
 
     async remove(key: string): Promise<void> {
