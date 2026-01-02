@@ -53,6 +53,7 @@ describe("class: CircuitBreakerStorage", () => {
     };
     const internalPolicy = new CircuitBreakerPolicy(policy);
     beforeEach(() => {
+        vi.resetAllMocks();
         storage = new CircuitBreakerStorage(
             new MemoryCircuitBreakerStorageAdapter(),
             internalPolicy,
