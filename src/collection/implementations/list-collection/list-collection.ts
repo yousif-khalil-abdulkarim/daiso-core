@@ -412,7 +412,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     getOrFail(index: number): TInput {
         const item = this.get(index);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -426,9 +426,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     sum(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         const result = this.reduce((sum, item) => {
             if (typeof item !== "number") {
@@ -443,9 +441,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     average(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         return ((this.sum() as number) / this.size()) as Extract<
             TInput,
@@ -455,9 +451,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     median(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         const nbrs = this.array.map((item) => {
                 if (typeof item !== "number") {
@@ -483,9 +477,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     min(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let min = 0;
         for (const item of this.array) {
@@ -503,9 +495,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     max(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let max = 0;
         for (const item of this.array) {
@@ -525,9 +515,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): number {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         return (this.count(predicateFn) / this.size()) * 100;
     }
@@ -1027,7 +1015,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): TOutput {
         const item = this.first(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1066,7 +1054,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): TOutput {
         const item = this.last(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1098,7 +1086,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): TInput {
         const item = this.before(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1130,7 +1118,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): TInput {
         const item = this.after(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1144,14 +1132,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                 matchedItems.push(item);
             }
             if (matchedItems.length > 1) {
-                throw new MultipleItemsFoundCollectionError(
-                    "Multiple items were found",
-                );
+                throw MultipleItemsFoundCollectionError.create();
             }
         }
         const [matchedItem] = matchedItems;
         if (matchedItem === undefined) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return matchedItem as TOutput;
     }

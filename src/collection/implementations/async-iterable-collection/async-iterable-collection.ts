@@ -465,9 +465,7 @@ export class AsyncIterableCollection<TInput = unknown>
     sum(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let sum = 0;
             for await (const item of this) {
@@ -483,9 +481,7 @@ export class AsyncIterableCollection<TInput = unknown>
     average(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let size = 0,
                 sum = 0;
@@ -503,9 +499,7 @@ export class AsyncIterableCollection<TInput = unknown>
     median(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             const size = await this.size();
             if (size === 0) {
@@ -549,9 +543,7 @@ export class AsyncIterableCollection<TInput = unknown>
     min(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let min = 0;
             for await (const item of this) {
@@ -571,9 +563,7 @@ export class AsyncIterableCollection<TInput = unknown>
     max(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let max = 0;
             for await (const item of this) {
@@ -595,9 +585,7 @@ export class AsyncIterableCollection<TInput = unknown>
     ): ITask<number> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let part = 0,
                 total = 0;
@@ -1005,7 +993,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return new Task<TOutput>(async () => {
             const item = await this.first(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return item;
         });
@@ -1045,7 +1033,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return new Task<TOutput>(async () => {
             const item = await this.last(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return item;
         });
@@ -1084,7 +1072,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return new Task<TInput>(async () => {
             const item = await this.before(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return item;
         });
@@ -1124,7 +1112,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return new Task<TInput>(async () => {
             const item = await this.after(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return item;
         });
@@ -1138,15 +1126,13 @@ export class AsyncIterableCollection<TInput = unknown>
             for await (const [index, item] of this.entries()) {
                 if (await resolveInvokable(predicateFn)(item, index, this)) {
                     if (matchedItem !== null) {
-                        throw new MultipleItemsFoundCollectionError(
-                            "Multiple items were found",
-                        );
+                        throw MultipleItemsFoundCollectionError.create();
                     }
                     matchedItem = item as TOutput;
                 }
             }
             if (matchedItem === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return matchedItem;
         });

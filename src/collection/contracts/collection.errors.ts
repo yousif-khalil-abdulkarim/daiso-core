@@ -9,6 +9,15 @@
  * @group Errors
  */
 export class ItemNotFoundCollectionError extends Error {
+    static create(cause?: unknown): ItemNotFoundCollectionError {
+        return new ItemNotFoundCollectionError("Item was not found", cause);
+    }
+
+    /**
+     * Note: Do not instantiate `ItemNotFoundCollectionError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = ItemNotFoundCollectionError.name;
@@ -22,6 +31,18 @@ export class ItemNotFoundCollectionError extends Error {
  * @group Errors
  */
 export class MultipleItemsFoundCollectionError extends Error {
+    static create(cause?: unknown): MultipleItemsFoundCollectionError {
+        return new MultipleItemsFoundCollectionError(
+            "Multiple items were found",
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `MultipleItemsFoundCollectionError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = MultipleItemsFoundCollectionError.name;
@@ -35,6 +56,18 @@ export class MultipleItemsFoundCollectionError extends Error {
  * @group Errors
  */
 export class EmptyCollectionError extends Error {
+    static create(cause?: unknown): EmptyCollectionError {
+        return new EmptyCollectionError(
+            "Collection is empty therby operation cannot be performed",
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `EmptyCollectionError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = EmptyCollectionError.name;

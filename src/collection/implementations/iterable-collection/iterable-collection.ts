@@ -435,9 +435,7 @@ export class IterableCollection<TInput = unknown>
 
     sum(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let sum = 0;
         for (const item of this) {
@@ -451,9 +449,7 @@ export class IterableCollection<TInput = unknown>
 
     average(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let size = 0,
             sum = 0;
@@ -469,9 +465,7 @@ export class IterableCollection<TInput = unknown>
 
     median(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         const size = this.size();
         if (size === 0) {
@@ -511,9 +505,7 @@ export class IterableCollection<TInput = unknown>
 
     min(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let min = 0;
         for (const item of this) {
@@ -531,9 +523,7 @@ export class IterableCollection<TInput = unknown>
 
     max(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let max = 0;
         for (const item of this) {
@@ -553,9 +543,7 @@ export class IterableCollection<TInput = unknown>
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): number {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let part = 0,
             total = 0;
@@ -922,7 +910,7 @@ export class IterableCollection<TInput = unknown>
     ): TOutput {
         const item = this.first(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -960,7 +948,7 @@ export class IterableCollection<TInput = unknown>
     ): TOutput {
         const item = this.last(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -995,7 +983,7 @@ export class IterableCollection<TInput = unknown>
     ): TInput {
         const item = this.before(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1027,7 +1015,7 @@ export class IterableCollection<TInput = unknown>
     ): TInput {
         const item = this.after(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1040,16 +1028,14 @@ export class IterableCollection<TInput = unknown>
         for (const item of this) {
             if (resolveInvokable(predicateFn)(item, index, this)) {
                 if (matchedItem !== null) {
-                    throw new MultipleItemsFoundCollectionError(
-                        "Multiple items were found",
-                    );
+                    throw MultipleItemsFoundCollectionError.create();
                 }
                 matchedItem = item as TOutput;
             }
             index++;
         }
         if (matchedItem === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return matchedItem;
     }
