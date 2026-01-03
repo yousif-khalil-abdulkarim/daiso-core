@@ -227,9 +227,7 @@ export class Lock implements ILock {
         return new Task(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
-                throw new FailedAcquireLockError(
-                    `Key "${this._key.get()}" already acquired`,
-                );
+                throw FailedAcquireLockError.create(this._key);
             }
         });
     }
@@ -259,9 +257,7 @@ export class Lock implements ILock {
         return new Task(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
-                throw new FailedAcquireLockError(
-                    `Key "${this._key.get()}" already acquired`,
-                );
+                throw FailedAcquireLockError.create(this._key);
             }
         });
     }
@@ -295,9 +291,7 @@ export class Lock implements ILock {
         return new Task(async () => {
             const hasRelased = await this.release();
             if (!hasRelased) {
-                throw new FailedReleaseLockError(
-                    `Unonwed release on key "${this._key.get()}" by owner "${this.lockId}"`,
-                );
+                throw FailedReleaseLockError.create(this._key, this.lockId);
             }
         });
     }
@@ -357,9 +351,7 @@ export class Lock implements ILock {
         return new Task(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
-                throw new FailedRefreshLockError(
-                    `Unonwed refresh on key "${this._key.get()}" by owner "${this.lockId}"`,
-                );
+                throw FailedRefreshLockError.create(this._key, this.lockId);
             }
         });
     }

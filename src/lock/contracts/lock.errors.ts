@@ -2,6 +2,8 @@
  * @module Lock
  */
 
+import { type Key } from "@/namespace/_module.js";
+
 /**
  * The error is thrown when trying to acquire a lock that is owned by a different owner.
  *
@@ -9,6 +11,18 @@
  * @group Errors
  */
 export class FailedAcquireLockError extends Error {
+    static create(key: Key, cause?: unknown): FailedAcquireLockError {
+        return new FailedAcquireLockError(
+            `Key "${key.get()}" already acquired`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `FailedAcquireLockError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedAcquireLockError.name;
@@ -22,6 +36,22 @@ export class FailedAcquireLockError extends Error {
  * @group Errors
  */
 export class FailedReleaseLockError extends Error {
+    static create(
+        key: Key,
+        lockId: string,
+        cause?: unknown,
+    ): FailedReleaseLockError {
+        return new FailedReleaseLockError(
+            `Unonwed release on key "${key.get()}" by owner "${lockId}"`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `FailedReleaseLockError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedReleaseLockError.name;
@@ -35,6 +65,22 @@ export class FailedReleaseLockError extends Error {
  * @group Errors
  */
 export class FailedRefreshLockError extends Error {
+    static create(
+        key: Key,
+        lockId: string,
+        cause?: unknown,
+    ): FailedRefreshLockError {
+        return new FailedRefreshLockError(
+            `Unonwed refresh on key "${key.get()}" by owner "${lockId}"`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `FailedRefreshLockError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedRefreshLockError.name;
