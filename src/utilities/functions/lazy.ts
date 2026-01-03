@@ -2,13 +2,13 @@
  * @module Utilities
  */
 
-import type { ITask } from "@/task/contracts/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
 import {
     type Invokable,
     isInvokable,
     resolveInvokable,
 } from "@/utilities/functions/invokable.js";
-import type { Promisable } from "@/utilities/types/promiseable.type.js";
+import { type Promisable } from "@/utilities/types/promiseable.type.js";
 
 /**
  *

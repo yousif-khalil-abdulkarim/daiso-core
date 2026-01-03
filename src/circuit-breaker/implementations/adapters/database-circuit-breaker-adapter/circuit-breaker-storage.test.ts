@@ -1,20 +1,21 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { MemoryCircuitBreakerStorageAdapter } from "@/circuit-breaker/implementations/adapters/memory-circuit-breaker-storage-adapter/_module.js";
-import { CircuitBreakerStorage } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-storage.js";
+
+import {
+    type CircuitBreakerTrackSettings,
+    type CircuitBreakerTrackState,
+    type ClosedTransitions,
+    type HalfOpenTransitions,
+    type ICircuitBreakerPolicy,
+    type CircuitBreakerStateTransition,
+    CIRCUIT_BREAKER_STATE,
+} from "@/circuit-breaker/contracts/_module.js";
 import {
     CircuitBreakerPolicy,
     type HalfOpenedState,
     type OpenedState,
 } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
-import type {
-    CircuitBreakerTrackSettings,
-    CircuitBreakerTrackState,
-    ClosedTransitions,
-    HalfOpenTransitions,
-    ICircuitBreakerPolicy,
-    CircuitBreakerStateTransition,
-} from "@/circuit-breaker/contracts/_module.js";
-import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module.js";
+import { CircuitBreakerStorage } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-storage.js";
+import { MemoryCircuitBreakerStorageAdapter } from "@/circuit-breaker/implementations/adapters/memory-circuit-breaker-storage-adapter/_module.js";
 
 describe("class: CircuitBreakerStorage", () => {
     let storage: CircuitBreakerStorage;

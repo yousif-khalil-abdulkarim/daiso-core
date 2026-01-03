@@ -1,11 +1,12 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module.js";
-import { RedisCacheAdapter } from "@/cache/implementations/adapters/_module.js";
-import { Redis } from "ioredis";
 import {
     RedisContainer,
     type StartedRedisContainer,
 } from "@testcontainers/redis";
+import { Redis } from "ioredis";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+
+import { RedisCacheAdapter } from "@/cache/implementations/adapters/_module.js";
+import { cacheAdapterTestSuite } from "@/cache/implementations/test-utilities/_module.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";

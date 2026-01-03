@@ -2,16 +2,17 @@
  * @module Utilities
  */
 
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+import { type OneOrMore } from "mongodb";
+
 import {
     callInvokable,
     isInvokable,
     type Invokable,
 } from "@/utilities/functions/invokable.js";
 import { isStandardSchema } from "@/utilities/functions/is-standard-schema.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { type AnyClass } from "@/utilities/types/_module.js";
-import type { OneOrMore } from "mongodb";
 import { resolveOneOrMore } from "@/utilities/functions/resolve-one-or-more.js";
+import { type AnyClass } from "@/utilities/types/_module.js";
 
 /**
  *

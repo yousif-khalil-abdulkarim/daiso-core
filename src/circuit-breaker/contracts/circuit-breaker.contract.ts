@@ -2,11 +2,11 @@
  * @module CircuitBreaker
  */
 
+import { type CircuitBreakerState } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { type OpenCircuitBreakerError } from "@/circuit-breaker/contracts/circuit-breaker.errors.js";
-import type { ITask } from "@/task/contracts/_module.js";
-import type { AsyncLazy } from "@/utilities/_module.js";
-import type { CircuitBreakerState } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { type AsyncLazy } from "@/utilities/_module.js";
 
 /**
  *

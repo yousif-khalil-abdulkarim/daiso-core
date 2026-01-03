@@ -2,11 +2,8 @@
  * @module Collection
  */
 
-import type {
-    EnsureMap,
-    EnsureRecord,
-    SerializedCollection,
-} from "@/collection/contracts/_module.js";
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
 import {
     type Collapse,
     type Comparator,
@@ -23,6 +20,9 @@ import {
     type Reduce,
     EmptyCollectionError,
     type CrossJoinResult,
+    type EnsureMap,
+    type EnsureRecord,
+    type SerializedCollection,
 } from "@/collection/contracts/_module.js";
 import {
     CrossJoinIterable,
@@ -65,10 +65,7 @@ import {
     resolveIterableValue,
     type IterableValue,
     type Lazyable,
-} from "@/utilities/_module.js";
-import { resolveLazyable } from "@/utilities/_module.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import {
+    resolveLazyable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedError,
 } from "@/utilities/_module.js";

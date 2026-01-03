@@ -2,15 +2,11 @@
  * @module Lock
  */
 
-import { type AsyncLazy, resolveLazyable } from "@/utilities/_module.js";
-import type {
-    ILockState,
-    IDatabaseLockAdapter,
-    ILockExpiredState,
-    ILockAcquiredState,
-    ILockUnavailableState,
-} from "@/lock/contracts/_module.js";
+import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
+import { type AsyncMiddlewareFn } from "@/hooks/_module.js";
 import {
+    type ILock,
+    type ILockAdapter,
     FailedAcquireLockError,
     LOCK_EVENTS,
     FailedReleaseLockError,
@@ -19,15 +15,18 @@ import {
     type LockEventMap,
     LOCK_STATE,
     isLockError,
+    type ILockState,
+    type IDatabaseLockAdapter,
+    type ILockExpiredState,
+    type ILockAcquiredState,
+    type ILockUnavailableState,
 } from "@/lock/contracts/_module.js";
-import { type ILock, type ILockAdapter } from "@/lock/contracts/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
+import { type Key, type Namespace } from "@/namespace/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
-import type { IEventDispatcher } from "@/event-bus/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { Key, Namespace } from "@/namespace/_module.js";
-import type { AsyncMiddlewareFn } from "@/hooks/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type AsyncLazy, resolveLazyable } from "@/utilities/_module.js";
 
 /**
  * @internal

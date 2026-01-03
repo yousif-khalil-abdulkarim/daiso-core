@@ -3,21 +3,28 @@
  */
 
 import {
+    MysqlAdapter,
+    Transaction,
+    type ExpressionBuilder,
+    type ExpressionWrapper,
+    type SqlBool,
+    type Kysely,
+} from "kysely";
+
+import {
     type ICacheData,
     type ICacheInsert,
     type ICacheUpdate,
     type IDatabaseCacheAdapter,
 } from "@/cache/contracts/_module.js";
-import { MysqlAdapter, Transaction, type ExpressionBuilder } from "kysely";
-import type { ISerde } from "@/serde/contracts/_module.js";
-import type {
-    IDeinitizable,
-    IInitizable,
-    IPrunable,
-} from "@/utilities/_module.js";
-import type { ExpressionWrapper, SqlBool, Kysely } from "kysely";
+import { type ISerde } from "@/serde/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import {
+    type IDeinitizable,
+    type IInitizable,
+    type IPrunable,
+} from "@/utilities/_module.js";
 
 /**
  *

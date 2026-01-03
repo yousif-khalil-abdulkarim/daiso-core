@@ -2,7 +2,7 @@
  * @module Collection
  */
 
-import type { Invokable, Promisable } from "@/utilities/_module.js";
+import { type Invokable, type Promisable } from "@/utilities/_module.js";
 
 /**
  *

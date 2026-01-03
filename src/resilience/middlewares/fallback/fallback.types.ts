@@ -2,10 +2,12 @@
  * @module Resilience
  */
 
-import type { HookContext } from "@/hooks/_module.js";
-import type { AsyncLazyable } from "@/utilities/_module.js";
-import { type Invokable } from "@/utilities/_module.js";
-import { type ErrorPolicySettings } from "@/utilities/_module.js";
+import { type HookContext } from "@/hooks/_module.js";
+import {
+    type Invokable,
+    type AsyncLazyable,
+    type ErrorPolicySettings,
+} from "@/utilities/_module.js";
 
 /**
  *

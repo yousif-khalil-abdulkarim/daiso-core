@@ -2,7 +2,7 @@
  * @module CircuitBreaker
  */
 
-import type { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
+import { type CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/contracts"`

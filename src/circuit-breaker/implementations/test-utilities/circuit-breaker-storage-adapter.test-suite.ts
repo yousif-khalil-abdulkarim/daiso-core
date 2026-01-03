@@ -8,6 +8,7 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
+
 import { type ICircuitBreakerStorageAdapter } from "@/circuit-breaker/contracts/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
 

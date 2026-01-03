@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import type { ISemaphoreProvider } from "@/semaphore/contracts/semaphore-provider.contract.js";
+import { type ISemaphoreProvider } from "@/semaphore/contracts/semaphore-provider.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,

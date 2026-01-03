@@ -2,10 +2,10 @@
  * @module SharedLock
  */
 
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
-import type { ISharedLock } from "@/shared-lock/contracts/shared-lock.contract.js";
-import type { IEventListenable } from "@/event-bus/contracts/_module.js";
-import type { SharedLockEventMap } from "@/shared-lock/contracts/shared-lock.events.js";
+import { type IEventListenable } from "@/event-bus/contracts/_module.js";
+import { type ISharedLock } from "@/shared-lock/contracts/shared-lock.contract.js";
+import { type SharedLockEventMap } from "@/shared-lock/contracts/shared-lock.events.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  * The `ISharedLockListenable` contract defines a way for listening {@link ISharedLock | `ISharedLock`} operations.

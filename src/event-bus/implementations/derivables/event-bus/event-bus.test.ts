@@ -1,14 +1,16 @@
+import { EventEmitter } from "node:events";
+
 import { describe, test, beforeEach, expect } from "vitest";
+import { z } from "zod";
+
+import { type EventListenerFn } from "@/event-bus/contracts/event-bus-adapter.contract.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/memory-event-bus-adapter/memory-event-bus-adapter.js";
 import { EventBus } from "@/event-bus/implementations/derivables/event-bus/event-bus.js";
 import { eventBusTestSuite } from "@/event-bus/implementations/test-utilities/_module.js";
-import { EventEmitter } from "node:events";
-import { ValidationError } from "@/utilities/_module.js";
-import { z } from "zod";
-import type { EventListenerFn } from "@/event-bus/contracts/event-bus-adapter.contract.js";
+import { Namespace } from "@/namespace/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { Namespace } from "@/namespace/_module.js";
+import { ValidationError } from "@/utilities/_module.js";
 
 describe("class: EventBus", () => {
     let eventEmitter: EventEmitter;

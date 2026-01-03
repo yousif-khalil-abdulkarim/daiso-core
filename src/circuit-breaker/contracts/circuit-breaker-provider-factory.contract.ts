@@ -2,7 +2,7 @@
  * @module CircuitBreaker
  */
 
-import type { ICircuitBreakerProvider } from "@/circuit-breaker/contracts/circuit-breaker-provider.contract.js";
+import { type ICircuitBreakerProvider } from "@/circuit-breaker/contracts/circuit-breaker-provider.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,

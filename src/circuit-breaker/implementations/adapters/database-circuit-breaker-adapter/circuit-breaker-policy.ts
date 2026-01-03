@@ -2,13 +2,13 @@
  * @module CircuitBreaker
  */
 
-import type { BackoffPolicy } from "@/backoff-policies/_module.js";
+import { type BackoffPolicy } from "@/backoff-policies/_module.js";
 import {
     CIRCUIT_BREAKER_STATE,
     CLOSED_TRANSITIONS,
+    HALF_OPEN_TRANSITIONS,
+    type ICircuitBreakerPolicy,
 } from "@/circuit-breaker/contracts/_module.js";
-import { HALF_OPEN_TRANSITIONS } from "@/circuit-breaker/contracts/_module.js";
-import { type ICircuitBreakerPolicy } from "@/circuit-breaker/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { callInvokable } from "@/utilities/_module.js";
 

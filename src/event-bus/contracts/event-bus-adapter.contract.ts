@@ -2,7 +2,7 @@
  * @module EventBus
  */
 
-import type { InvokableFn } from "@/utilities/_module.js";
+import { type InvokableFn } from "@/utilities/_module.js";
 
 /**
  *

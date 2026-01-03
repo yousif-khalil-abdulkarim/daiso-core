@@ -2,17 +2,14 @@
  * @module Semaphore
  */
 
-import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
 import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
-import type { Key, Namespace } from "@/namespace/_module.js";
-import type {
-    IDatabaseSemaphoreAdapter,
-    ISemaphoreAdapter,
-    SemaphoreAdapterVariants,
-    SemaphoreEventMap,
-} from "@/semaphore/contracts/_module.js";
+import { type AsyncMiddlewareFn } from "@/hooks/_module.js";
+import { type Key, type Namespace } from "@/namespace/_module.js";
 import {
+    type IDatabaseSemaphoreAdapter,
+    type ISemaphoreAdapter,
+    type SemaphoreAdapterVariants,
+    type SemaphoreEventMap,
     type ISemaphore,
     type SemaphoreAquireBlockingSettings,
     FailedRefreshSemaphoreError,
@@ -21,12 +18,13 @@ import {
     SEMAPHORE_EVENTS,
     SEMAPHORE_STATE,
     isSemaphoreError,
+    type ISemaphoreState,
 } from "@/semaphore/contracts/_module.js";
-import type { ISemaphoreState } from "@/semaphore/contracts/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { resolveLazyable, type AsyncLazy } from "@/utilities/_module.js";
-import type { AsyncMiddlewareFn } from "@/hooks/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  * @internal

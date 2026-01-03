@@ -2,11 +2,18 @@
  * @module RateLimiter
  */
 
-import type {
-    IRateLimiterProviderFactory,
-    IRateLimiterProvider,
-    IRateLimiterAdapter,
+import { type IEventBus } from "@/event-bus/contracts/_module.js";
+import { type Namespace } from "@/namespace/_module.js";
+import {
+    type IRateLimiterProviderFactory,
+    type IRateLimiterProvider,
+    type IRateLimiterAdapter,
 } from "@/rate-limiter/contracts/_module.js";
+import {
+    RateLimiterProvider,
+    DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE,
+    type RateLimiterProviderSettingsBase,
+} from "@/rate-limiter/implementations/derivables/rate-limiter-provider/_module.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,
@@ -14,13 +21,6 @@ import {
     DefaultAdapterNotDefinedError,
     type ErrorPolicy,
 } from "@/utilities/_module.js";
-import {
-    RateLimiterProvider,
-    DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE,
-    type RateLimiterProviderSettingsBase,
-} from "@/rate-limiter/implementations/derivables/rate-limiter-provider/_module.js";
-import type { Namespace } from "@/namespace/_module.js";
-import type { IEventBus } from "@/event-bus/contracts/_module.js";
 
 /**
  *

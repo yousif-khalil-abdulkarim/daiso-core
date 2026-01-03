@@ -2,35 +2,37 @@
  * @module Collection
  */
 
-import type {
-    AsyncReduce,
-    CrossJoinResult,
-    AsyncPredicate,
-    AsyncForEach,
-    AsyncMap,
-    AsyncModifier,
-    Tap,
-    AsyncTransform,
-    Comparator,
-    EnsureRecord,
-    EnsureMap,
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
+import {
+    type AsyncReduce,
+    type CrossJoinResult,
+    type AsyncPredicate,
+    type AsyncForEach,
+    type AsyncMap,
+    type AsyncModifier,
+    type Tap,
+    type AsyncTransform,
+    type Comparator,
+    type EnsureRecord,
+    type EnsureMap,
 } from "@/collection/contracts/_shared/_module.js";
-import type {
+import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ItemNotFoundCollectionError,
+    type ItemNotFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    MultipleItemsFoundCollectionError,
+    type MultipleItemsFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    TypeCollectionError,
+    type TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    EmptyCollectionError,
+    type EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
-import type { AsyncLazyable, AsyncIterableValue } from "@/utilities/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { type ITask } from "@/task/contracts/_module.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedError,
+    type AsyncLazyable,
+    type AsyncIterableValue,
 } from "@/utilities/_module.js";
 
 /**

@@ -2,25 +2,26 @@
  * @module RateLimiter
  */
 
+import { type Redis, type Result } from "ioredis";
+
 import {
     BACKOFFS,
     resolveBackoffSettingsEnum,
     serializeBackoffSettingsEnum,
     type BackoffSettingsEnum,
 } from "@/backoff-policies/_module.js";
-import type { Redis, Result } from "ioredis";
+import {
+    type IRateLimiterAdapter,
+    type IRateLimiterAdapterState,
+} from "@/rate-limiter/contracts/_module.js";
+import { rateLimiterFactoryLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/_module.js";
 import {
     LIMITER_POLICIES,
     resolveRateLimiterPolicySettings,
     serializeRateLimiterPolicySettingsEnum,
     type RateLimiterPolicySettingsEnum,
 } from "@/rate-limiter/implementations/policies/_module.js";
-import type {
-    IRateLimiterAdapter,
-    IRateLimiterAdapterState,
-} from "@/rate-limiter/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/time-span.js";
-import { rateLimiterFactoryLua } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/lua/_module.js";
 
 /**
  * @internal

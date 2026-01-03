@@ -2,12 +2,12 @@
  * @module EventBus
  */
 
-import type { IInvokableObject } from "@/utilities/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
-import type {
-    BaseEvent,
-    EventListenerFn,
+import {
+    type BaseEvent,
+    type EventListenerFn,
 } from "@/event-bus/contracts/event-bus-adapter.contract.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { type IInvokableObject } from "@/utilities/_module.js";
 
 /**
  *

@@ -2,46 +2,45 @@
  * @module Lock
  */
 
+import { v4 } from "uuid";
+
 import {
-    CORE,
-    resolveOneOrMore,
-    type Invokable,
-    callInvokable,
-} from "@/utilities/_module.js";
-import { type OneOrMore } from "@/utilities/_module.js";
-import type {
+    type EventListener,
+    type IEventBus,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IDatabaseLockAdapter,
-    LockAdapterVariants,
-    LockEventMap,
-} from "@/lock/contracts/_module.js";
+    type IEventListenable,
+    type Unsubscribe,
+} from "@/event-bus/contracts/_module.js";
+import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import {
     type ILock,
     type LockProviderCreateSettings,
     type ILockProvider,
     type ILockAdapter,
-} from "@/lock/contracts/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
-import type {
-    EventListener,
-    IEventBus,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IEventListenable,
-    Unsubscribe,
-} from "@/event-bus/contracts/_module.js";
 
-import type { ISerderRegister } from "@/serde/contracts/_module.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
-import { v4 } from "uuid";
-import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type IDatabaseLockAdapter,
+    type LockAdapterVariants,
+    type LockEventMap,
+} from "@/lock/contracts/_module.js";
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
+import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
 import { resolveLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-lock-adapter.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 import { Namespace } from "@/namespace/_module.js";
-import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { type ISerderRegister } from "@/serde/contracts/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import {
+    type OneOrMore,
+    CORE,
+    resolveOneOrMore,
+    type Invokable,
+    callInvokable,
+} from "@/utilities/_module.js";
 
 /**
  *

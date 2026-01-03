@@ -2,6 +2,7 @@
  * @module Hooks
  */
 
+import { type HookContext } from "@/hooks/types.js";
 import {
     callInvokable,
     getInvokableName,
@@ -15,7 +16,6 @@ import {
     type OneOrMore,
     type Promisable,
 } from "@/utilities/_module.js";
-import type { HookContext } from "@/hooks/types.js";
 
 /**
  *

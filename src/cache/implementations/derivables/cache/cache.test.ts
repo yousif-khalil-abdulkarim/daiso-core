@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module.js";
+import { z } from "zod";
+
 import { MemoryCacheAdapter } from "@/cache/implementations/adapters/_module.js";
 import { Cache } from "@/cache/implementations/derivables/_module.js";
-import { ValidationError } from "@/utilities/_module.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
+import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
-import { z } from "zod";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { Namespace } from "@/namespace/_module.js";
+import { ValidationError } from "@/utilities/_module.js";
 
 describe("class: Cache", () => {
     cacheTestSuite({

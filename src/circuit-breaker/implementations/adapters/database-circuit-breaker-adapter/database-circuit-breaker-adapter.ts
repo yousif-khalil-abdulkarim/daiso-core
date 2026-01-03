@@ -2,8 +2,10 @@
  * @module CircuitBreaker
  */
 
-import { exponentialBackoff } from "@/backoff-policies/_module.js";
-import type { BackoffPolicy } from "@/backoff-policies/_module.js";
+import {
+    exponentialBackoff,
+    type BackoffPolicy,
+} from "@/backoff-policies/_module.js";
 import {
     type ICircuitBreakerAdapter,
     type ICircuitBreakerStorageAdapter,
@@ -11,13 +13,13 @@ import {
     type CircuitBreakerStateTransition,
     type ICircuitBreakerPolicy,
 } from "@/circuit-breaker/contracts/_module.js";
-import { ConsecutiveBreaker } from "@/circuit-breaker/implementations/policies/_module.js";
 import {
     CircuitBreakerPolicy,
     type AllCircuitBreakerState,
 } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
 import { CircuitBreakerStateManager } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-state-manager.js";
 import { CircuitBreakerStorage } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-storage.js";
+import { ConsecutiveBreaker } from "@/circuit-breaker/implementations/policies/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter"`

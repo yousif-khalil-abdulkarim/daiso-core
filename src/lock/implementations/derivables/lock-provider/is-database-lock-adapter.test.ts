@@ -1,15 +1,16 @@
 import { describe, expect, test } from "vitest";
-import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
-import type {
-    ILockAdapter,
-    ILockAdapterState,
-    IDatabaseLockAdapter,
-    IDatabaseLockTransaction,
-    ILockData,
-    ILockExpirationData,
+
+import {
+    type ILockAdapter,
+    type ILockAdapterState,
+    type IDatabaseLockAdapter,
+    type IDatabaseLockTransaction,
+    type ILockData,
+    type ILockExpirationData,
 } from "@/lock/contracts/_module.js";
-import type { InvokableFn } from "@/utilities/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { isDatabaseLockAdapter } from "@/lock/implementations/derivables/lock-provider/is-database-lock-adapter.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
+import { type InvokableFn } from "@/utilities/_module.js";
 
 describe("function: isDatabaseLockAdapter", () => {
     test("Should return true when given IDatabaseLockAdapter", () => {

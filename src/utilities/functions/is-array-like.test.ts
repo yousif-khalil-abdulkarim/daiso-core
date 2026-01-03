@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { isArrayLike } from "@/utilities/functions/is-array-like.js";
 
 describe("function: isArrayLike", () => {

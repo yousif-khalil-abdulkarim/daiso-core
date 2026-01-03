@@ -2,10 +2,10 @@
  * @module Lock
  */
 
-import type { ILock } from "@/lock/contracts/lock.contract.js";
-import type { IEventListenable } from "@/event-bus/contracts/_module.js";
-import type { LockEventMap } from "@/lock/contracts/lock.events.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type IEventListenable } from "@/event-bus/contracts/_module.js";
+import { type ILock } from "@/lock/contracts/lock.contract.js";
+import { type LockEventMap } from "@/lock/contracts/lock.events.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  * The `ILockListenable` contract defines a way for listening {@link ILock | `ILock`} operations.

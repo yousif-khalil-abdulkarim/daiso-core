@@ -1,18 +1,19 @@
+import Sqlite from "better-sqlite3";
+import { Kysely, SqliteDialect } from "kysely";
 import { beforeEach, describe, expect, test } from "vitest";
+
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
+import { Namespace } from "@/namespace/_module.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { type ISharedLock } from "@/shared-lock/contracts/_module.js";
 import {
     KyselySharedLockAdapter,
     MemorySharedLockAdapter,
 } from "@/shared-lock/implementations/adapters/_module.js";
 import { SharedLockProvider } from "@/shared-lock/implementations/derivables/_module.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { sharedLockProviderTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
-import { Serde } from "@/serde/implementations/derivables/_module.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
-import { Namespace } from "@/namespace/_module.js";
-import type { ISharedLock } from "@/shared-lock/contracts/_module.js";
-import { Kysely, SqliteDialect } from "kysely";
-import Sqlite from "better-sqlite3";
 
 describe("class: SharedLockProvider", () => {
     sharedLockProviderTestSuite({

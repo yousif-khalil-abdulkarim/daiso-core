@@ -2,11 +2,11 @@
  * @module Utilities
  */
 
-import { isNullable } from "@/utilities/functions/is-nullable.js";
 import { getConstructorName } from "@/utilities/functions/get-constructor-name.js";
-import type { NoneFunc } from "@/utilities/types/none-func.type.js";
-import type { Promisable } from "@/utilities/types/promiseable.type.js";
 import { isClass } from "@/utilities/functions/is-class.js";
+import { isNullable } from "@/utilities/functions/is-nullable.js";
+import { type NoneFunc } from "@/utilities/types/none-func.type.js";
+import { type Promisable } from "@/utilities/types/promiseable.type.js";
 
 /**
  *

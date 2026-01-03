@@ -2,17 +2,17 @@
  * @module CircuitBreaker
  */
 
+import { resolveConsecutiveBreakerSettings } from "@/circuit-breaker/implementations/policies/consecutive-breaker/_module.js";
+import { resolveCountBreakerSettings } from "@/circuit-breaker/implementations/policies/count-breaker/_module.js";
+import {
+    resolveSamplingBreakerSettings,
+    serializeSamplingBreakerSettings,
+} from "@/circuit-breaker/implementations/policies/sampling-breaker/_module.js";
 import {
     BREAKER_POLICIES,
     type CircuitBreakerPolicySettingsEnum,
     type SerializedCircuitBreakerPolicySettingsEnum,
 } from "@/circuit-breaker/implementations/policies/types.js";
-import { resolveCountBreakerSettings } from "@/circuit-breaker/implementations/policies/count-breaker/_module.js";
-import { resolveConsecutiveBreakerSettings } from "@/circuit-breaker/implementations/policies/consecutive-breaker/_module.js";
-import {
-    resolveSamplingBreakerSettings,
-    serializeSamplingBreakerSettings,
-} from "@/circuit-breaker/implementations/policies/sampling-breaker/_module.js";
 
 /**
  * @internal

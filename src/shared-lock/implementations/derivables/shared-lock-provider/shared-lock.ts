@@ -2,10 +2,9 @@
  * @module SharedLock
  */
 
-import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
-import type { IEventDispatcher } from "@/event-bus/contracts/event-bus.contract.js";
-import type { Key, Namespace } from "@/namespace/_module.js";
+import { type IEventDispatcher } from "@/event-bus/contracts/event-bus.contract.js";
+import { type AsyncMiddlewareFn } from "@/hooks/_module.js";
+import { type Key, type Namespace } from "@/namespace/_module.js";
 import {
     FailedAcquireWriterLockError,
     FailedRefreshReaderSemaphoreError,
@@ -29,14 +28,15 @@ import {
     type SharedLockAquireBlockingSettings,
     type SharedLockEventMap,
 } from "@/shared-lock/contracts/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     resolveLazyable,
     UnexpectedError,
     type AsyncLazy,
 } from "@/utilities/_module.js";
-import type { AsyncMiddlewareFn } from "@/hooks/_module.js";
 
 /**
  * @internal

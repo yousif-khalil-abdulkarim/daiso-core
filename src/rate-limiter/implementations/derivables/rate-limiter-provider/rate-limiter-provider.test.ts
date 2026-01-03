@@ -1,3 +1,7 @@
+import { beforeEach, describe, expect, test, vi } from "vitest";
+
+import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import {
     BlockedRateLimiterError,
     RATE_LIMITER_EVENTS,
@@ -9,14 +13,11 @@ import {
     type TrackedFailureRateLimiterEvent,
     type UntrackedFailureRateLimiterEvent,
 } from "@/rate-limiter/contracts/_module.js";
-import type {
-    IRateLimiterAdapter,
-    IRateLimiterAdapterState,
+import {
+    type IRateLimiterAdapter,
+    type IRateLimiterAdapterState,
 } from "@/rate-limiter/contracts/rate-limiter-adapter.contract.js";
-import { beforeEach, describe, expect, test, vi } from "vitest";
 import { RateLimiterProvider } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/rate-limiter-provider.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("class: RateLimiterProvider", () => {

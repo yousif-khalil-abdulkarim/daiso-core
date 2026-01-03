@@ -2,24 +2,27 @@
  * @module RateLimiter
  */
 
-import type {
-    EventListener,
-    IEventBus,
-    Unsubscribe,
+import {
+    type EventListener,
+    type IEventBus,
+    type Unsubscribe,
 } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { Namespace } from "@/namespace/_module.js";
-import type {
-    IRateLimiter,
-    IRateLimiterAdapter,
-    IRateLimiterProvider,
-    RateLimiterEventMap,
-    RateLimiterProviderCreateSettings,
+import {
+    type IRateLimiter,
+    type IRateLimiterAdapter,
+    type IRateLimiterProvider,
+    type RateLimiterEventMap,
+    type RateLimiterProviderCreateSettings,
 } from "@/rate-limiter/contracts/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
-import type { ErrorPolicy, ErrorPolicySettings } from "@/utilities/_module.js";
 import { RateLimiter } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/rate-limiter.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import {
+    type ErrorPolicy,
+    type ErrorPolicySettings,
+} from "@/utilities/_module.js";
 
 /**
  *

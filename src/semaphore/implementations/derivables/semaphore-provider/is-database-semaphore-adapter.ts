@@ -1,9 +1,9 @@
 /**
  * @module Semaphore
  */
-import type {
-    IDatabaseSemaphoreAdapter,
-    SemaphoreAdapterVariants,
+import {
+    type IDatabaseSemaphoreAdapter,
+    type SemaphoreAdapterVariants,
 } from "@/semaphore/contracts/_module.js";
 
 /**

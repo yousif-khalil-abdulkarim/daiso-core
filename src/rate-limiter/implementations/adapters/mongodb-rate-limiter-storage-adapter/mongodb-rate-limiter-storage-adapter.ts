@@ -2,24 +2,25 @@
  * @module RateLimiter
  */
 
-import type {
-    IRateLimiterData,
-    IRateLimiterStorageAdapter,
-    IRateLimiterStorageAdapterTransaction,
-} from "@/rate-limiter/contracts/_module.js";
-import type { ISerde } from "@/serde/contracts/serde.contract.js";
-import type {
-    IDeinitizable,
-    IInitizable,
-    InvokableFn,
-} from "@/utilities/_module.js";
-import type {
-    Collection,
-    CollectionOptions,
-    Db,
-    MongoClient,
-    ObjectId,
+import {
+    type Collection,
+    type CollectionOptions,
+    type Db,
+    type MongoClient,
+    type ObjectId,
 } from "mongodb";
+
+import {
+    type IRateLimiterData,
+    type IRateLimiterStorageAdapter,
+    type IRateLimiterStorageAdapterTransaction,
+} from "@/rate-limiter/contracts/_module.js";
+import { type ISerde } from "@/serde/contracts/serde.contract.js";
+import {
+    type IDeinitizable,
+    type IInitizable,
+    type InvokableFn,
+} from "@/utilities/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/mongodb-rate-limiter-storage-adapter"`

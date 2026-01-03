@@ -2,9 +2,9 @@
  * @module Resilience
  */
 
-import type { HookContext } from "@/hooks/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type HookContext } from "@/hooks/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 import { type Invokable } from "@/utilities/_module.js";
 
 /**

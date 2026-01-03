@@ -2,9 +2,9 @@
  * @module EventBus
  */
 
-import type {
-    BaseEventMap,
-    IEventBus,
+import {
+    type BaseEventMap,
+    type IEventBus,
 } from "@/event-bus/contracts/event-bus.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

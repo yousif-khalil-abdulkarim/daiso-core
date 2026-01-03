@@ -1,9 +1,3 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module.js";
-import {
-    KyselyLockAdapter,
-    type KyselyLockTables,
-} from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
 import Sqlite, { type Database } from "better-sqlite3";
 import {
     Kysely,
@@ -11,6 +5,13 @@ import {
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
+import {
+    KyselyLockAdapter,
+    type KyselyLockTables,
+} from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
+import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("sqlite class: KyselyLockAdapter", () => {

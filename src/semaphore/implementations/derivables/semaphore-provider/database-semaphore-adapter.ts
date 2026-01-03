@@ -2,13 +2,13 @@
  * @module Semaphore
  */
 
-import type {
-    SemaphoreAcquireSettings,
-    IDatabaseSemaphoreAdapter,
-    ISemaphoreAdapter,
-    ISemaphoreAdapterState,
+import {
+    type SemaphoreAcquireSettings,
+    type IDatabaseSemaphoreAdapter,
+    type ISemaphoreAdapter,
+    type ISemaphoreAdapterState,
 } from "@/semaphore/contracts/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * @internal

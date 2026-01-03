@@ -3,10 +3,11 @@
  */
 
 import { type TestAPI, type ExpectStatic, beforeEach, vi } from "vitest";
-import type {
-    IFlexibleSerde,
-    ISerdeTransformer,
-    ISerializable,
+
+import {
+    type IFlexibleSerde,
+    type ISerdeTransformer,
+    type ISerializable,
 } from "@/serde/contracts/_module.js";
 
 /**

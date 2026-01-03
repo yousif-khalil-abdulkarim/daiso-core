@@ -1,9 +1,10 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { sharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
-import { KyselySharedLockAdapter } from "@/shared-lock/implementations/adapters/_module.js";
-import { DatabaseSharedLockAdapter } from "@/shared-lock/implementations/derivables/shared-lock-provider/database-shared-lock-adapter.js";
 import Sqlite, { type Database } from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+
+import { KyselySharedLockAdapter } from "@/shared-lock/implementations/adapters/_module.js";
+import { DatabaseSharedLockAdapter } from "@/shared-lock/implementations/derivables/shared-lock-provider/database-shared-lock-adapter.js";
+import { sharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
 
 describe("class: DatabaseSharedLockAdapter", () => {
     let database: Database;

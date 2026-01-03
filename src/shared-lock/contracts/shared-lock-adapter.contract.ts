@@ -2,9 +2,9 @@
  * @module SharedLock
  */
 
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ISharedLockProvider } from "@/shared-lock/contracts/shared-lock-provider.contract.js";
+import { type ISharedLockProvider } from "@/shared-lock/contracts/shared-lock-provider.contract.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`

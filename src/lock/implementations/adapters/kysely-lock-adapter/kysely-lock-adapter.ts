@@ -2,21 +2,22 @@
  * @module Lock
  */
 
-import type {
-    IDatabaseLockAdapter,
-    IDatabaseLockTransaction,
-    ILockData,
-    ILockExpirationData,
-} from "@/lock/contracts/_module.js";
 import { MysqlAdapter, type Kysely } from "kysely";
+
+import {
+    type IDatabaseLockAdapter,
+    type IDatabaseLockTransaction,
+    type ILockData,
+    type ILockExpirationData,
+} from "@/lock/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     type IDeinitizable,
     type IInitizable,
     type InvokableFn,
     type IPrunable,
 } from "@/utilities/_module.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  *

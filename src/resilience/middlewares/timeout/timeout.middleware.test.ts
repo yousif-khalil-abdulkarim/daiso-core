@@ -1,10 +1,11 @@
 import { describe, expect, test } from "vitest";
+
+import { AsyncHooks } from "@/hooks/_module.js";
 import { timeout } from "@/resilience/middlewares/timeout/timeout.middleware.js";
 import { type OnTimeoutData } from "@/resilience/middlewares/timeout/timeout.type.js";
 import { TimeoutResilienceError } from "@/resilience/resilience.errors.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { AsyncHooks } from "@/hooks/_module.js";
 
 function createDelayedFn<TParameters extends unknown[], TReturn>(
     time: TimeSpan,

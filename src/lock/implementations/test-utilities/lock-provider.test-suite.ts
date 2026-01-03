@@ -8,33 +8,32 @@ import {
     type beforeEach,
     vi,
 } from "vitest";
-import type {
-    AcquiredLockEvent,
-    FailedRefreshLockEvent,
-    FailedReleaseLockEvent,
-    ForceReleasedLockEvent,
-    ILock,
-    ILockAcquiredState,
-    ILockExpiredState,
-    ILockStateMethods,
-    ILockProvider,
-    ILockUnavailableState,
-    RefreshedLockEvent,
-    ReleasedLockEvent,
-    UnavailableLockEvent,
-} from "@/lock/contracts/_module.js";
+
 import {
     FailedAcquireLockError,
     FailedReleaseLockError,
     LOCK_EVENTS,
     FailedRefreshLockError,
     LOCK_STATE,
+    type AcquiredLockEvent,
+    type FailedRefreshLockEvent,
+    type FailedReleaseLockEvent,
+    type ForceReleasedLockEvent,
+    type ILock,
+    type ILockAcquiredState,
+    type ILockExpiredState,
+    type ILockStateMethods,
+    type ILockProvider,
+    type ILockUnavailableState,
+    type RefreshedLockEvent,
+    type ReleasedLockEvent,
+    type UnavailableLockEvent,
 } from "@/lock/contracts/_module.js";
-import { type Promisable } from "@/utilities/_module.js";
-import type { ISerde } from "@/serde/contracts/_module.js";
+import { type ISerde } from "@/serde/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { TO_MILLISECONDS } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
 
 /**
  *

@@ -2,32 +2,33 @@
  * @module Collection
  */
 
-import type {
-    Comparator,
-    PredicateInvokable,
-    ForEach,
-    Map,
-    Modifier,
-    Tap,
-    Transform,
-    Reduce,
-    CrossJoinResult,
-    EnsureMap,
-    EnsureRecord,
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
+import {
+    type Comparator,
+    type PredicateInvokable,
+    type ForEach,
+    type Map,
+    type Modifier,
+    type Tap,
+    type Transform,
+    type Reduce,
+    type CrossJoinResult,
+    type EnsureMap,
+    type EnsureRecord,
 } from "@/collection/contracts/_shared/_module.js";
-import type {
+import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ItemNotFoundCollectionError,
+    type ItemNotFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    MultipleItemsFoundCollectionError,
+    type MultipleItemsFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    TypeCollectionError,
+    type TypeCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    EmptyCollectionError,
+    type EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
-import type { ISerializable } from "@/serde/contracts/_module.js";
-import type { Lazyable } from "@/utilities/_module.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { type ISerializable } from "@/serde/contracts/_module.js";
+import { type Lazyable } from "@/utilities/_module.js";
 
 /**
  *

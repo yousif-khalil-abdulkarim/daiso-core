@@ -1,9 +1,10 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { semaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
-import { KyselySemaphoreAdapter } from "@/semaphore/implementations/adapters/_module.js";
-import { DatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/database-semaphore-adapter.js";
 import Sqlite, { type Database } from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+
+import { KyselySemaphoreAdapter } from "@/semaphore/implementations/adapters/_module.js";
+import { DatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/database-semaphore-adapter.js";
+import { semaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
 
 describe("class: DatabaseSemaphoreAdapter", () => {
     let database: Database;

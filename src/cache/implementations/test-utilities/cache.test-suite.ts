@@ -8,6 +8,7 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
+
 import {
     KeyNotFoundCacheError,
     type ICache,
@@ -21,9 +22,9 @@ import {
     type UpdatedCacheEvent,
     CACHE_EVENTS,
 } from "@/cache/contracts/_module.js";
-import { type Promisable } from "@/utilities/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
 
 /**
  *

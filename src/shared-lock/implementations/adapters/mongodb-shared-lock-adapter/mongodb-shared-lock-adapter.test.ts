@@ -1,12 +1,15 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { sharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
+import {
+    type StartedMongoDBContainer,
+    MongoDBContainer,
+} from "@testcontainers/mongodb";
 import { MongoClient } from "mongodb";
-import type { StartedMongoDBContainer } from "@testcontainers/mongodb";
-import { MongoDBContainer } from "@testcontainers/mongodb";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+
 import {
     MongodbSharedLockAdapter,
     type MongodbSharedLockDocument,
 } from "@/shared-lock/implementations/adapters/mongodb-shared-lock-adapter/mongodb-shared-lock-adapter.js";
+import { sharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);

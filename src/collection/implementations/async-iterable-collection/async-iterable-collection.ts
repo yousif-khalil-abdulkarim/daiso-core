@@ -2,10 +2,8 @@
  * @module Collection
  */
 
-import type {
-    EnsureMap,
-    EnsureRecord,
-} from "@/collection/contracts/_module.js";
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
 import {
     type AsyncCollapse,
     type AsyncPredicate,
@@ -22,6 +20,8 @@ import {
     type AsyncReduce,
     EmptyCollectionError,
     type CrossJoinResult,
+    type EnsureMap,
+    type EnsureRecord,
 } from "@/collection/contracts/_module.js";
 import {
     AsyncCrossJoinIterable,
@@ -58,18 +58,15 @@ import {
     AsyncRepeatIterable,
     AsyncValidateIterable,
 } from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import {
     isInvokable,
     resolveAsyncIterableValue,
     resolveInvokable,
     type AsyncIterableValue,
     type AsyncLazyable,
-} from "@/utilities/_module.js";
-import { resolveAsyncLazyable } from "@/utilities/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import {
+    resolveAsyncLazyable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedError,
 } from "@/utilities/_module.js";

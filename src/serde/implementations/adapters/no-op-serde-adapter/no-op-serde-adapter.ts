@@ -1,11 +1,11 @@
 /**
  * @module Serde
  */
-import type {
-    IFlexibleSerdeAdapter,
-    ISerdeTransformerAdapter,
+import {
+    type IFlexibleSerdeAdapter,
+    type ISerdeTransformerAdapter,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    IFlexibleSerde,
+    type IFlexibleSerde,
 } from "@/serde/contracts/_module.js";
 
 /**

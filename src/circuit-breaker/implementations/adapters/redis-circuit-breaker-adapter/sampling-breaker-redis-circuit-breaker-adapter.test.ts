@@ -1,13 +1,14 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { Redis } from "ioredis";
 import {
     RedisContainer,
     type StartedRedisContainer,
 } from "@testcontainers/redis";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { samplingBreakerTestSuite } from "@/circuit-breaker/implementations/test-utilities/_module.js";
+import { Redis } from "ioredis";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+
 import { RedisCircuitBreakerAdapter } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/_module.js";
 import { BREAKER_POLICIES } from "@/circuit-breaker/implementations/policies/_module.js";
+import { samplingBreakerTestSuite } from "@/circuit-breaker/implementations/test-utilities/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("sampling-breaker class: RedisCircuitBreakerAdapter", () => {

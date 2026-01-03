@@ -2,8 +2,8 @@
  * @module Semaphore
  */
 
-import type { IDatabaseSemaphoreAdapter } from "@/semaphore/contracts/database-semaphore-adapter.contract.js";
-import type { ISemaphoreAdapter } from "@/semaphore/contracts/semaphore-adapter.contract.js";
+import { type IDatabaseSemaphoreAdapter } from "@/semaphore/contracts/database-semaphore-adapter.contract.js";
+import { type ISemaphoreAdapter } from "@/semaphore/contracts/semaphore-adapter.contract.js";
 
 /**
  *

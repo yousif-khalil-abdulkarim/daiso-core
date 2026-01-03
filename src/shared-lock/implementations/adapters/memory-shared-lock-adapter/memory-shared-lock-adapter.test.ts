@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { sharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
+
 import {
     MemorySharedLockAdapter,
     type MemorySharedLockData,
 } from "@/shared-lock/implementations/adapters/memory-shared-lock-adapter/_module.js";
+import { sharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("class: MemorySharedLockAdapter", () => {

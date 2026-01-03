@@ -2,22 +2,21 @@
  * @module Semaphore
  */
 
-import type { ISerdeTransformer } from "@/serde/contracts/_module.js";
+import { type IEventBus } from "@/event-bus/contracts/_module.js";
+import { type Namespace } from "@/namespace/_module.js";
+import {
+    type IDatabaseSemaphoreAdapter,
+    type ISemaphoreAdapter,
+    type SemaphoreAdapterVariants,
+    type SemaphoreEventMap,
+} from "@/semaphore/contracts/_module.js";
 import {
     Semaphore,
     type ISerializedSemaphore,
 } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore.js";
-import { type OneOrMore } from "@/utilities/_module.js";
-import type {
-    IDatabaseSemaphoreAdapter,
-    ISemaphoreAdapter,
-    SemaphoreAdapterVariants,
-    SemaphoreEventMap,
-} from "@/semaphore/contracts/_module.js";
-import { getConstructorName } from "@/utilities/_module.js";
-import type { IEventBus } from "@/event-bus/contracts/_module.js";
+import { type ISerdeTransformer } from "@/serde/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { Namespace } from "@/namespace/_module.js";
+import { type OneOrMore, getConstructorName } from "@/utilities/_module.js";
 
 /**
  * @internal

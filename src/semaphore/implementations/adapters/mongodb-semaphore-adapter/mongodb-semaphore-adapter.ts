@@ -2,16 +2,21 @@
  * @module Semaphore
  */
 
-import { type IDeinitizable, type IInitizable } from "@/utilities/_module.js";
-import type {
-    ISemaphoreAdapter,
-    ISemaphoreAdapterState,
-    SemaphoreAcquireSettings,
+import {
+    type Document,
+    type Collection,
+    type CollectionOptions,
+    type Db,
+    type ObjectId,
+} from "mongodb";
+
+import {
+    type ISemaphoreAdapter,
+    type ISemaphoreAdapterState,
+    type SemaphoreAcquireSettings,
 } from "@/semaphore/contracts/_module.js";
-import type { ObjectId } from "mongodb";
-import { type Document } from "mongodb";
-import { type Collection, type CollectionOptions, type Db } from "mongodb";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type IDeinitizable, type IInitizable } from "@/utilities/_module.js";
 
 /**
  *

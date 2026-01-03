@@ -2,7 +2,7 @@
  * @module RateLimiter
  */
 
-import type { IRateLimiterPolicy } from "@/rate-limiter/contracts/_module.js";
+import { type IRateLimiterPolicy } from "@/rate-limiter/contracts/_module.js";
 import {
     TO_MILLISECONDS,
     type ITimeSpan,

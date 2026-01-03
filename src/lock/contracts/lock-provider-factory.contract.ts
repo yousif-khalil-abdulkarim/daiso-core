@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import type { ILockProvider } from "@/lock/contracts/lock-provider.contract.js";
+import { type ILockProvider } from "@/lock/contracts/lock-provider.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,

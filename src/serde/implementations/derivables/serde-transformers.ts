@@ -1,7 +1,7 @@
 /**
  * @module Serde
  */
-import type { ISerdeTransformer } from "@/serde/contracts/_module.js";
+import { type ISerdeTransformer } from "@/serde/contracts/_module.js";
 import { getConstructorName, type OneOrMore } from "@/utilities/_module.js";
 
 /**

@@ -2,22 +2,22 @@
  * @module Lock
  */
 
-import type {
-    AsyncLazy,
+import { type ILockState } from "@/lock/contracts/lock-state.contract.js";
+import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Invokable,
-} from "@/utilities/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
-import type {
+    type FailedAcquireLockError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    FailedAcquireLockError,
+    type FailedReleaseLockError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    FailedReleaseLockError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    FailedRefreshLockError,
+    type FailedRefreshLockError,
 } from "@/lock/contracts/lock.errors.js";
-import type { ILockState } from "@/lock/contracts/lock-state.contract.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import {
+    type AsyncLazy,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type Invokable,
+} from "@/utilities/_module.js";
 
 /**
  *

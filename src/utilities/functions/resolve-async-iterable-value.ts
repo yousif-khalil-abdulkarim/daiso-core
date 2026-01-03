@@ -2,11 +2,11 @@
  * @module Utilities
  */
 
-import type { AsyncIterableValue } from "@/utilities/types/_module.js";
-import { isIterable } from "@/utilities/functions/is-iterable.js";
-import { isArrayLike } from "@/utilities/functions/is-array-like.js";
 import { arrayLikeToIterable } from "@/utilities/functions/array-like-to-iterable.js";
+import { isArrayLike } from "@/utilities/functions/is-array-like.js";
+import { isIterable } from "@/utilities/functions/is-iterable.js";
 import { iterableToAsyncIterable } from "@/utilities/functions/iterable-to-async-iterable.js";
+import { type AsyncIterableValue } from "@/utilities/types/_module.js";
 
 /**
  * @internal

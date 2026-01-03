@@ -2,19 +2,19 @@
  * @module CircuitBreaker
  */
 
-import type {
-    CircuitBreakerEventMap,
-    CircuitBreakerTrigger,
-    ICircuitBreakerAdapter,
+import {
+    type CircuitBreakerEventMap,
+    type CircuitBreakerTrigger,
+    type ICircuitBreakerAdapter,
 } from "@/circuit-breaker/contracts/_module.js";
 import {
     CircuitBreaker,
     type ISerializedCircuitBreaker,
 } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker.js";
-import type { IEventBus } from "@/event-bus/contracts/_module.js";
-import type { Namespace } from "@/namespace/_module.js";
-import type { ISerdeTransformer } from "@/serde/contracts/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type IEventBus } from "@/event-bus/contracts/_module.js";
+import { type Namespace } from "@/namespace/_module.js";
+import { type ISerdeTransformer } from "@/serde/contracts/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     getConstructorName,
     type ErrorPolicy,

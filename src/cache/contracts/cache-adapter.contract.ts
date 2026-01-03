@@ -1,7 +1,7 @@
 /**
  * @module Cache
  */
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * The `ICacheAdapter` contract defines a way for storing key-value pairs with expiration independent of data storage.

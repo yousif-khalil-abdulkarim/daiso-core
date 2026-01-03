@@ -1,1 +1,1 @@
-export * from "@/task/contracts/task.contract.js";
+export type * from "@/task/contracts/task.contract.js";

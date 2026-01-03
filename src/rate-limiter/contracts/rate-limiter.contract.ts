@@ -2,12 +2,12 @@
  * @module RateLimiter
  */
 
-import type { ITask } from "@/task/contracts/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
-import type { AsyncLazy } from "@/utilities/_module.js";
-import type { RateLimiterState } from "@/rate-limiter/contracts/rate-limiter-state.contract.js";
+import { type RateLimiterState } from "@/rate-limiter/contracts/rate-limiter-state.contract.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { BlockedRateLimiterError } from "@/rate-limiter/contracts/rate-limiter.errors.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type AsyncLazy } from "@/utilities/_module.js";
 
 /**
  *

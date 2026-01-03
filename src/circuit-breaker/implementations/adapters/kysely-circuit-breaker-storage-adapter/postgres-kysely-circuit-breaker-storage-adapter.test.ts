@@ -1,9 +1,3 @@
-import { describe, test, expect, beforeEach, afterEach } from "vitest";
-import { circuitBreakerStorageAdapterTestSuite } from "@/circuit-breaker/implementations/test-utilities/circuit-breaker-storage-adapter.test-suite.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { Serde } from "@/serde/implementations/derivables/_module.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/super-json-serde-adapter/_module.js";
-import { Pool } from "pg";
 import {
     PostgreSqlContainer,
     type StartedPostgreSqlContainer,
@@ -14,10 +8,17 @@ import {
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
+import { Pool } from "pg";
+import { describe, test, expect, beforeEach, afterEach } from "vitest";
+
 import {
     KyselyCircuitBreakerStorageAdapter,
     type KyselyCircuitBreakerStorageTables,
 } from "@/circuit-breaker/implementations/adapters/kysely-circuit-breaker-storage-adapter/kysely-circuit-breaker-storage-adapter.js";
+import { circuitBreakerStorageAdapterTestSuite } from "@/circuit-breaker/implementations/test-utilities/circuit-breaker-storage-adapter.test-suite.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/super-json-serde-adapter/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("postgres class: KyselyCircuitBreakerStorageAdapter", () => {

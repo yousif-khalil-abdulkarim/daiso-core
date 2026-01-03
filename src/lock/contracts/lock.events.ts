@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-import type { ILockStateMethods } from "@/lock/contracts/lock.contract.js";
+import { type ILockStateMethods } from "@/lock/contracts/lock.contract.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
