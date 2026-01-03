@@ -192,9 +192,13 @@ export class RateLimiterProvider implements IRateLimiterProvider {
         key: string,
         settings: RateLimiterProviderCreateSettings,
     ): IRateLimiter {
-        const { errorPolicy = this.errorPolicy, onlyError = this.onlyError } =
-            settings;
+        const {
+            errorPolicy = this.errorPolicy,
+            onlyError = this.onlyError,
+            limit,
+        } = settings;
         return new RateLimiter({
+            limit,
             enableAsyncTracking: this.enableAsyncTracking,
             eventDispatcher: this.eventBus,
             adapter: this.adapter,

@@ -113,7 +113,7 @@ describe("mysql class: KyselyRateLimiterStorageAdapter", () => {
 
             expect(tables).toContainEqual(
                 expect.objectContaining<Partial<TableMetadata>>({
-                    name: "rate-limiter",
+                    name: "rateLimiter",
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
                     columns: expect.arrayContaining<Partial<ColumnMetadata>>([
                         expect.objectContaining<Partial<ColumnMetadata>>({
@@ -123,7 +123,7 @@ describe("mysql class: KyselyRateLimiterStorageAdapter", () => {
                             hasDefaultValue: false,
                         }),
                         expect.objectContaining<Partial<ColumnMetadata>>({
-                            name: "owner",
+                            name: "state",
                             dataType: "varchar",
                             isNullable: false,
                             hasDefaultValue: false,

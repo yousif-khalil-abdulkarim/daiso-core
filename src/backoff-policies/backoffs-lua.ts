@@ -9,7 +9,7 @@ export const backoffsLua = `
 -- @param args WithJitterArgs
 -- @return number
 local function withJitter(args)
-    if args.jitter ~= nil then
+    if args.jitter ~= nil and args.jitter ~= cjson.null then
         return (1 - args.jitter * args.mathRandom) * args.value
     end
 

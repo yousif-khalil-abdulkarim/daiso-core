@@ -94,10 +94,10 @@ local function CountBreaker(settings)
                 return "${CLOSED_TRANSITIONS.NONE}"
             end
 
-            local failureCount = math.ceil(
+            local allowedFailureCount = math.ceil(
                 settings.failureThreshold * #currentMetrics.samples
             )
-            local hasFailed = getFailureCount(currentMetrics) > failureCount
+            local hasFailed = getFailureCount(currentMetrics) > allowedFailureCount
 
             if hasFailed then
                 return "${CLOSED_TRANSITIONS.TO_OPEN}"
@@ -114,8 +114,8 @@ local function CountBreaker(settings)
                 return "${CLOSED_TRANSITIONS.NONE}"
             end
 
-            local successCount = math.ceil(settings.successThreshold * #currentMetrics.samples)
-            local hasSucceeded = getSuccessCount(currentMetrics) > successCount
+            local allowedSuccessCount = math.ceil(settings.successThreshold * #currentMetrics.samples)
+            local hasSucceeded = getSuccessCount(currentMetrics) >= allowedSuccessCount
             if hasSucceeded then
                 return "${HALF_OPEN_TRANSITIONS.TO_CLOSED}"
             end

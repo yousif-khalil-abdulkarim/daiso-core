@@ -148,7 +148,6 @@ export class KyselyRateLimiterStorageAdapter<TType>
 {
     private readonly kysely: Kysely<KyselyRateLimiterStorageTables>;
     private readonly serde: ISerde<string>;
-    private readonly isMysql: boolean;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private readonly shouldRemoveExpiredKeys: boolean;
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
@@ -190,8 +189,6 @@ export class KyselyRateLimiterStorageAdapter<TType>
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.kysely = kysely;
         this.serde = serde;
-        this.isMysql =
-            this.kysely.getExecutor().adapter instanceof MysqlAdapter;
     }
 
     /**

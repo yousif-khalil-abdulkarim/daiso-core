@@ -15,7 +15,7 @@ import type { IDeinitizable, InvokableFn } from "@/utilities/_module.js";
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/memory-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
-export class MemoryCircuitBreakerStorageAdapter<TType>
+export class MemoryCircuitBreakerStorageAdapter<TType = unknown>
     implements ICircuitBreakerStorageAdapter<TType>, IDeinitizable
 {
     /**

@@ -43,7 +43,7 @@ local function SlidingWindowLimiter(settings)
     -- @return number
     local function currentAttempt(currentMetrics, currentDate)
         local currentAttempt = currentMetrics[currentWindow(currentDate)]
-        if currentAttempt == nil then
+        if currentAttempt == nil or currentAttempt == cjson.null then
             currentAttempt = 0
         end
 
@@ -55,7 +55,7 @@ local function SlidingWindowLimiter(settings)
     -- @return number
     local function previousAttempt(currentMetrics, currentDate)
         local previousAttempt = currentMetrics[previousWindow(currentDate)]
-        if previousAttempt == nil then
+        if previousAttempt == nil or previousAttempt == cjson.null then
             previousAttempt = 0
         end
 

@@ -63,7 +63,7 @@ local function SamplingBreaker(settings)
         end
 
         local currentSample = samples[#samples]
-        if currentSample == nil then
+        if currentSample == nil or currentSample == cjson.null then
             currentSample = {
                 failures = 0,
                 successes = 0,

@@ -184,14 +184,16 @@ export class CountBreaker implements ICircuitBreakerPolicy<CountBreakerState> {
             return CLOSED_TRANSITIONS.NONE;
         }
 
-        const failureCount = Math.ceil(
+        const allowedFailureCount = Math.ceil(
             this.failureThreshold * currentMetrics.samples.length,
         );
+
         const hasFailed =
-            CountBreaker.failureCount(currentMetrics) > failureCount;
+            CountBreaker.failureCount(currentMetrics) > allowedFailureCount;
         if (hasFailed) {
             return CLOSED_TRANSITIONS.TO_OPEN;
         }
+
         return CLOSED_TRANSITIONS.NONE;
     }
 
@@ -203,11 +205,11 @@ export class CountBreaker implements ICircuitBreakerPolicy<CountBreakerState> {
             return CLOSED_TRANSITIONS.NONE;
         }
 
-        const successCount = Math.ceil(
+        const allowedSuccessCount = Math.ceil(
             this.successThreshold * currentMetrics.samples.length,
         );
         const hasSucceeded =
-            CountBreaker.successCount(currentMetrics) > successCount;
+            CountBreaker.successCount(currentMetrics) >= allowedSuccessCount;
         if (hasSucceeded) {
             return HALF_OPEN_TRANSITIONS.TO_CLOSED;
         }

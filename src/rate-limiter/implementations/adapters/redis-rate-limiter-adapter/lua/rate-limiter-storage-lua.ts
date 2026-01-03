@@ -34,10 +34,10 @@ local function RateLimiterStorage(rateLimiterPolicy, backoffPolicy, currentDate)
         atomicUpdate = function(args)
             local data = cjson.decode(redis.call(args.key))
             local currentState = nil
-            if data ~= nil then
+            if data ~= nil and data ~= cjson.null then
                 currentState = data.state
             end
-            if currentState == nil then
+            if currentState == nil or currentState == cjson.null then
                 currentState = rateLimiterPolicy.initialState(currentDate)
             end
 

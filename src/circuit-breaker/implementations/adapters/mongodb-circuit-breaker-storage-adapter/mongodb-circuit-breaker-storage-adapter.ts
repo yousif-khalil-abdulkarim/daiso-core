@@ -53,7 +53,7 @@ export type MongodbCircuitBreakerStorageAdapterSettings = {
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/mongodb-circuit-breaker-storage-adapter"`
  * @group Adapters
  */
-export class MongodbCircuitBreakerStorageAdapter<TType>
+export class MongodbCircuitBreakerStorageAdapter<TType = unknown>
     implements ICircuitBreakerStorageAdapter<TType>, IInitizable, IDeinitizable
 {
     private readonly collection: Collection<MongodbCircuitBreakerStorageDocument>;

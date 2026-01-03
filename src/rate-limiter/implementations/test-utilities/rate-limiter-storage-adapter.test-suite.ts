@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @module RateLimiter
  */
@@ -9,8 +8,12 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { type IRateLimiterStorageAdapter } from "@/rate-limiter/contracts/_module.js";
+import {
+    type IRateLimiterData,
+    type IRateLimiterStorageAdapter,
+} from "@/rate-limiter/contracts/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
+import { TimeSpan } from "@/time-span/implementations/time-span.js";
 
 /**
  *
@@ -63,17 +66,85 @@ export function rateLimiterStorageAdapterTestSuite(
                 (await createAdapter()) as IRateLimiterStorageAdapter<string>;
         });
 
-        describe("method: transaction upsert", () => {
-            test.todo("Write tests!!!");
+        describe("method: transaction upsert / find", () => {
+            test("Should insert item when key doesnt exists", async () => {
+                const key = "a";
+                const value = "b";
+                const expiration = TimeSpan.fromMinutes(5).toEndDate(
+                    new Date("2026-01-01"),
+                );
+
+                const data = await adapter.transaction(async (trx) => {
+                    await trx.upsert(key, value, expiration);
+                    return await trx.find(key);
+                });
+
+                expect(data).toEqual({
+                    state: value,
+                    expiration,
+                } satisfies IRateLimiterData<string>);
+            });
+            test("Should update item when key exists", async () => {
+                const key = "d";
+                const value = "f";
+                const expiration = TimeSpan.fromHours(5).toEndDate(
+                    new Date("2026-01-01"),
+                );
+
+                const data = await adapter.transaction(async (trx) => {
+                    await trx.upsert(
+                        "a",
+                        "b",
+                        TimeSpan.fromMinutes(5).toEndDate(
+                            new Date("2026-01-01"),
+                        ),
+                    );
+                    await trx.upsert(key, value, expiration);
+                    return await trx.find(key);
+                });
+
+                expect(data).toEqual({
+                    state: value,
+                    expiration,
+                } satisfies IRateLimiterData<string>);
+            });
         });
         describe("method: transaction find", () => {
-            test.todo("Write tests!!!");
+            test("Should return null when key doesnt exists", async () => {
+                const noneExistingKey = "a";
+
+                const data = await adapter.transaction(async (trx) => {
+                    return await trx.find(noneExistingKey);
+                });
+
+                expect(data).toBeNull();
+            });
         });
         describe("method: find", () => {
-            test.todo("Write tests!!!");
+            test("Should return null when key doesnt exists", async () => {
+                const noneExistingKey = "a";
+
+                const data = await adapter.find(noneExistingKey);
+
+                expect(data).toBeNull();
+            });
         });
         describe("method: remove", () => {
-            test.todo("Write tests!!!");
+            test("Should remove item when key exists", async () => {
+                const key = "a";
+                const value = "b";
+                const expiration = TimeSpan.fromMinutes(5).toEndDate(
+                    new Date("2026-01-01"),
+                );
+
+                await adapter.transaction(async (trx) => {
+                    await trx.upsert(key, value, expiration);
+                });
+                await adapter.remove(key);
+                const item = await adapter.find(key);
+
+                expect(item).toBeNull();
+            });
         });
     });
 }

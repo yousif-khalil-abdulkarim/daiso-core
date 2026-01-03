@@ -40,8 +40,9 @@ export type TrackedFailureCircuitBreakerEvent = CircuitBreakerEventBase & {
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/contracts"`
  * @group Events
  */
-export type UntrackedFailureCircuitBreakerEvent = CircuitBreakerEventBase &
-    TrackedFailureCircuitBreakerEvent;
+export type UntrackedFailureCircuitBreakerEvent = CircuitBreakerEventBase & {
+    error: unknown;
+};
 
 /**
  * The event is dispatched when a circuit breaker has tracked slow call.
