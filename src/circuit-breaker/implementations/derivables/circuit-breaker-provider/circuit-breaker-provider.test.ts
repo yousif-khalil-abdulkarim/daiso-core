@@ -22,10 +22,11 @@ import {
     type TrackedSuccessCircuitBreakerEvent,
     type UntrackedFailureCircuitBreakerEvent,
 } from "@/circuit-breaker/contracts/circuit-breaker.events.js";
-import type {
-    ICircuitBreakerStateMethods,
-    IsolatedCircuitBreakerEvent,
-    ResetedCircuitBreakerEvent,
+import {
+    OpenCircuitBreakerError,
+    type ICircuitBreakerStateMethods,
+    type IsolatedCircuitBreakerEvent,
+    type ResetedCircuitBreakerEvent,
 } from "@/circuit-breaker/contracts/_module.js";
 import { Serde } from "@/serde/implementations/derivables/serde.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
@@ -57,21 +58,22 @@ describe("class: CircuitBreakerProvider", () => {
     };
     const KEY = "A";
 
-    describe("API tests:", () => {
-        let circuitBreakerProvider: ICircuitBreakerProvider;
-        const slowCallTime = TimeSpan.fromMilliseconds(50);
-        beforeEach(() => {
-            vi.resetAllMocks();
-            circuitBreakerProvider = new CircuitBreakerProvider({
-                adapter,
-                eventBus: new EventBus({
-                    adapter: new MemoryEventBusAdapter(),
-                }),
-                serde: new Serde(new SuperJsonSerdeAdapter()),
-                slowCallTime,
-                enableAsyncTracking: false,
-            });
+    let circuitBreakerProvider: ICircuitBreakerProvider;
+    const slowCallTime = TimeSpan.fromMilliseconds(50);
+    beforeEach(() => {
+        vi.resetAllMocks();
+        circuitBreakerProvider = new CircuitBreakerProvider({
+            adapter,
+            eventBus: new EventBus({
+                adapter: new MemoryEventBusAdapter(),
+            }),
+            serde: new Serde(new SuperJsonSerdeAdapter()),
+            slowCallTime,
+            enableAsyncTracking: false,
         });
+    });
+
+    describe("API tests:", () => {
         describe("method: runOrFail", () => {
             describe("CIRCUIT_BREAKER_TRIGGER.BOTH:", () => {
                 test("Should call ICircuitBreakerAdapter.trackFailure when the function throws an error", async () => {
@@ -165,6 +167,27 @@ describe("class: CircuitBreakerProvider", () => {
                     }
 
                     expect(trackFailureSpy).not.toHaveBeenCalled();
+                });
+                test("Should throw OpenCircuitBreakerError when in OpenedState", async () => {
+                    vi.spyOn(adapter, "updateState").mockImplementation(() =>
+                        Promise.resolve({
+                            from: CIRCUIT_BREAKER_STATE.CLOSED,
+                            to: CIRCUIT_BREAKER_STATE.OPEN,
+                        }),
+                    );
+                    vi.spyOn(adapter, "trackFailure").mockImplementation(() =>
+                        Promise.resolve(),
+                    );
+
+                    const circuitBreaker = circuitBreakerProvider.create(KEY, {
+                        trigger: CIRCUIT_BREAKER_TRIGGER.BOTH,
+                    });
+                    const promise = circuitBreaker.runOrFail(() => {
+                        return Promise.reject(new Error("UNEXPECTED ERROR"));
+                    });
+                    await expect(promise).rejects.toBeInstanceOf(
+                        OpenCircuitBreakerError,
+                    );
                 });
             });
             describe("CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR:", () => {
@@ -286,6 +309,27 @@ describe("class: CircuitBreakerProvider", () => {
 
                     expect(trackFailureSpy).not.toHaveBeenCalled();
                 });
+                test("Should throw OpenCircuitBreakerError when in OpenedState", async () => {
+                    vi.spyOn(adapter, "updateState").mockImplementation(() =>
+                        Promise.resolve({
+                            from: CIRCUIT_BREAKER_STATE.CLOSED,
+                            to: CIRCUIT_BREAKER_STATE.OPEN,
+                        }),
+                    );
+                    vi.spyOn(adapter, "trackFailure").mockImplementation(() =>
+                        Promise.resolve(),
+                    );
+
+                    const circuitBreaker = circuitBreakerProvider.create(KEY, {
+                        trigger: CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR,
+                    });
+                    const promise = circuitBreaker.runOrFail(() => {
+                        return Promise.reject(new Error("UNEXPECTED ERROR"));
+                    });
+                    await expect(promise).rejects.toBeInstanceOf(
+                        OpenCircuitBreakerError,
+                    );
+                });
             });
             describe("CIRCUIT_BREAKER_TRIGGER.ONLY_SLOW_CALL:", () => {
                 test("Should not call ICircuitBreakerAdapter.trackFailure when the function throws an error", async () => {
@@ -380,6 +424,27 @@ describe("class: CircuitBreakerProvider", () => {
 
                     expect(trackFailureSpy).not.toHaveBeenCalled();
                 });
+                test("Should throw OpenCircuitBreakerError when in OpenedState", async () => {
+                    vi.spyOn(adapter, "updateState").mockImplementation(() =>
+                        Promise.resolve({
+                            from: CIRCUIT_BREAKER_STATE.CLOSED,
+                            to: CIRCUIT_BREAKER_STATE.OPEN,
+                        }),
+                    );
+                    vi.spyOn(adapter, "trackFailure").mockImplementation(() =>
+                        Promise.resolve(),
+                    );
+
+                    const circuitBreaker = circuitBreakerProvider.create(KEY, {
+                        trigger: CIRCUIT_BREAKER_TRIGGER.ONLY_SLOW_CALL,
+                    });
+                    const promise = circuitBreaker.runOrFail(() => {
+                        return Promise.reject(new Error("UNEXPECTED ERROR"));
+                    });
+                    await expect(promise).rejects.toBeInstanceOf(
+                        OpenCircuitBreakerError,
+                    );
+                });
             });
         });
         describe("method: isolate", () => {
@@ -410,22 +475,8 @@ describe("class: CircuitBreakerProvider", () => {
         });
     });
     describe("Event tests:", () => {
-        let circuitBreakerProvider: ICircuitBreakerProvider;
-        const slowCallTime = TimeSpan.fromMilliseconds(50);
-        beforeEach(() => {
-            vi.resetAllMocks();
-            circuitBreakerProvider = new CircuitBreakerProvider({
-                adapter,
-                eventBus: new EventBus({
-                    adapter: new MemoryEventBusAdapter(),
-                }),
-                slowCallTime,
-                serde: new Serde(new SuperJsonSerdeAdapter()),
-                enableAsyncTracking: false,
-            });
-        });
         describe("method: runOrFail", () => {
-            describe("CIRCUIT_BREAKER_TRIGGER.BOTH:", () => {
+            describe("trigger = CIRCUIT_BREAKER_TRIGGER.BOTH:", () => {
                 test("Should dispatch TrackedFailureCircuitBreakerEvent when the function throws", async () => {
                     vi.spyOn(adapter, "updateState").mockImplementation(() =>
                         Promise.resolve({
@@ -619,7 +670,7 @@ describe("class: CircuitBreakerProvider", () => {
                     expect(handlerFn).toHaveBeenCalled();
                 });
             });
-            describe("CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR:", () => {
+            describe("trigger = CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR:", () => {
                 test("Should dispatch TrackedFailureCircuitBreakerEvent when the function throws", async () => {
                     vi.spyOn(adapter, "updateState").mockImplementation(() =>
                         Promise.resolve({
@@ -844,7 +895,7 @@ describe("class: CircuitBreakerProvider", () => {
                     expect(handlerFn).toHaveBeenCalled();
                 });
             });
-            describe("CIRCUIT_BREAKER_TRIGGER.ONLY_SLOW_CALL:", () => {
+            describe("trigger = CIRCUIT_BREAKER_TRIGGER.ONLY_SLOW_CALL:", () => {
                 test("Should not dispatch TrackedFailureCircuitBreakerEvent when the function throws an error", async () => {
                     vi.spyOn(adapter, "updateState").mockImplementation(() =>
                         Promise.resolve({
