@@ -12,6 +12,7 @@
                 "typescript-enum",
                 "no-relative-import-paths",
                 "eslint-plugin-tsdoc",
+                "eslint-plugin-import",
                 "only-error"
             ],
             "extends": [
@@ -21,10 +22,76 @@
                 "plugin:prettier/recommended"
             ],
             "rules": {
+                "import/order": [
+                    "error",
+                    {
+                        "groups": [
+                            "builtin",
+                            "external",
+                            "internal",
+                            "object",
+                            "type"
+                        ],
+                        "alphabetize": {
+                            "order": "asc",
+                            "caseInsensitive": false
+                        },
+                        "newlines-between": "always",
+                        "sortTypesGroup": true,
+                        "pathGroups": [
+                            {
+                                // Minimatch pattern used to match against specifiers
+                                "pattern": "@/**",
+                                // The predefined group this PathGroup is defined in relation to
+                                "group": "internal",
+                                // How matching imports will be positioned relative to "group"
+                                "position": "after"
+                            }
+                        ]
+                    }
+                ],
+                "import/no-default-export": "error",
+                "import/first": "error",
+                "import/no-named-default": "error",
+                "import/no-useless-path-segments": [
+                    "error",
+                    {
+                        "noUselessIndex": true
+                    }
+                ],
+                "import/consistent-type-specifier-style": [
+                    "error",
+                    "prefer-inline"
+                ],
+                "import/no-duplicates": [
+                    "error",
+                    {
+                        "prefer-inline": true
+                    }
+                ],
+                "@typescript-eslint/consistent-generic-constructors": "error",
+                "@typescript-eslint/consistent-indexed-object-style": [
+                    "error",
+                    "record"
+                ],
+                "@typescript-eslint/consistent-type-assertions": "error",
+                "@typescript-eslint/consistent-type-exports": [
+                    "error",
+                    {
+                        "fixMixedExportsWithInlineTypeSpecifier": true
+                    }
+                ],
+                "@typescript-eslint/consistent-type-imports": [
+                    "error",
+                    {
+                        "disallowTypeAnnotations": true,
+                        "fixStyle": "inline-type-imports",
+                        "prefer": "type-imports"
+                    }
+                ],
                 "@typescript-eslint/strict-boolean-expressions": "error",
                 "@typescript-eslint/no-explicit-any": "off",
                 "@typescript-eslint/explicit-module-boundary-types": "error",
-                "@typescript-eslint/consistent-type-imports": "error",
                 "@typescript-eslint/no-unnecessary-type-parameters": "off",
                 "@typescript-eslint/no-unused-vars": [
                     "error",
@@ -46,6 +113,12 @@
                         "prefix": "@"
                     }
                 ]
+            }
+        },
+        {
+            "files": ["*.config.ts","*.config.mts","*.config.js", "*.config.cjs","*.config.mjs"],
+            "rules": {
+                "import/no-default-export": "off"
             }
         },
         {
