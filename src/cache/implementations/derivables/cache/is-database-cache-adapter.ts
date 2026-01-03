@@ -2,9 +2,9 @@
  * @module Cache
  */
 
-import type {
-    CacheAdapterVariants,
-    IDatabaseCacheAdapter,
+import {
+    type CacheAdapterVariants,
+    type IDatabaseCacheAdapter,
 } from "@/cache/contracts/_module.js";
 
 /**

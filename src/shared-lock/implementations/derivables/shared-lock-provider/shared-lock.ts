@@ -2,10 +2,9 @@
  * @module SharedLock
  */
 
-import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
-import type { IEventDispatcher } from "@/event-bus/contracts/event-bus.contract.js";
-import type { Key, Namespace } from "@/namespace/_module.js";
+import { type IEventDispatcher } from "@/event-bus/contracts/event-bus.contract.js";
+import { type AsyncMiddlewareFn } from "@/hooks/_module.js";
+import { type Key, type Namespace } from "@/namespace/_module.js";
 import {
     FailedAcquireWriterLockError,
     FailedRefreshReaderSemaphoreError,
@@ -29,14 +28,15 @@ import {
     type SharedLockAquireBlockingSettings,
     type SharedLockEventMap,
 } from "@/shared-lock/contracts/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     resolveLazyable,
     UnexpectedError,
     type AsyncLazy,
 } from "@/utilities/_module.js";
-import type { AsyncMiddlewareFn } from "@/hooks/_module.js";
 
 /**
  * @internal
@@ -248,9 +248,7 @@ export class SharedLock implements ISharedLock {
         return new Task(async () => {
             const hasAquired = await this.acquireReader();
             if (!hasAquired) {
-                throw new LimitReachedReaderSemaphoreError(
-                    `Key "${this._key.toString()}" has reached the limit`,
-                );
+                throw LimitReachedReaderSemaphoreError.create(this._key);
             }
         });
     }
@@ -282,9 +280,7 @@ export class SharedLock implements ISharedLock {
         return new Task(async () => {
             const hasAquired = await this.acquireReaderBlocking(settings);
             if (!hasAquired) {
-                throw new LimitReachedReaderSemaphoreError(
-                    `Key "${this._key.toString()}" has reached the limit`,
-                );
+                throw LimitReachedReaderSemaphoreError.create(this._key);
             }
         });
     }
@@ -318,8 +314,9 @@ export class SharedLock implements ISharedLock {
         return new Task(async () => {
             const hasReleased = await this.releaseReader();
             if (!hasReleased) {
-                throw new FailedReleaseReaderSemaphoreError(
-                    `Failed to release lock "${this.lockId}" of key "${this._key.toString()}"`,
+                throw FailedReleaseReaderSemaphoreError.create(
+                    this._key,
+                    this.lockId,
                 );
             }
         });
@@ -378,8 +375,9 @@ export class SharedLock implements ISharedLock {
         return new Task(async () => {
             const hasRefreshed = await this.refreshReader(ttl);
             if (!hasRefreshed) {
-                throw new FailedRefreshReaderSemaphoreError(
-                    `Failed to refresh lock "${this.lockId}" of key "${this._key.toString()}"`,
+                throw FailedRefreshReaderSemaphoreError.create(
+                    this._key,
+                    this.lockId,
                 );
             }
         });
@@ -441,9 +439,7 @@ export class SharedLock implements ISharedLock {
         return new Task(async () => {
             const hasAquired = await this.acquireWriter();
             if (!hasAquired) {
-                throw new FailedAcquireWriterLockError(
-                    `Key "${this._key.toString()}" already acquired`,
-                );
+                throw FailedAcquireWriterLockError.create(this._key);
             }
         });
     }
@@ -475,9 +471,7 @@ export class SharedLock implements ISharedLock {
         return new Task(async () => {
             const hasAquired = await this.acquireWriterBlocking(settings);
             if (!hasAquired) {
-                throw new FailedAcquireWriterLockError(
-                    `Key "${this._key.toString()}" already acquired`,
-                );
+                throw FailedAcquireWriterLockError.create(this._key);
             }
         });
     }
@@ -511,8 +505,9 @@ export class SharedLock implements ISharedLock {
         return new Task(async () => {
             const hasRelased = await this.releaseWriter();
             if (!hasRelased) {
-                throw new FailedReleaseWriterLockError(
-                    `Unonwed release on key "${this._key.toString()}" by owner "${this.lockId}"`,
+                throw FailedReleaseWriterLockError.create(
+                    this._key,
+                    this.lockId,
                 );
             }
         });
@@ -573,8 +568,9 @@ export class SharedLock implements ISharedLock {
         return new Task(async () => {
             const hasRefreshed = await this.refreshWriter(ttl);
             if (!hasRefreshed) {
-                throw new FailedRefreshWriterLockError(
-                    `Unonwed refresh on key "${this._key.toString()}" by owner "${this.lockId}"`,
+                throw FailedRefreshWriterLockError.create(
+                    this._key,
+                    this.lockId,
                 );
             }
         });

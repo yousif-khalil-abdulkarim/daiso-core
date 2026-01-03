@@ -1,18 +1,21 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module.js";
 import {
-    KyselyLockAdapter,
-    type KyselyLockTables,
-} from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
+    type StartedPostgreSqlContainer,
+    PostgreSqlContainer,
+} from "@testcontainers/postgresql";
 import {
     Kysely,
     PostgresDialect,
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
-import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
-import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { Pool } from "pg";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
+import {
+    KyselyLockAdapter,
+    type KyselyLockTables,
+} from "@/lock/implementations/adapters/kysely-lock-adapter/_module.js";
+import { databaseLockAdapterTestSuite } from "@/lock/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);

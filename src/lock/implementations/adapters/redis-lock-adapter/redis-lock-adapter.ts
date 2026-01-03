@@ -2,13 +2,13 @@
  * @module Lock
  */
 
-import type {
-    ILockAdapter,
-    ILockAdapterState,
+import { type Result, type Redis } from "ioredis";
+
+import {
+    type ILockAdapter,
+    type ILockAdapterState,
 } from "@/lock/contracts/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { Redis } from "ioredis";
-import type { Result } from "ioredis";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * @internal

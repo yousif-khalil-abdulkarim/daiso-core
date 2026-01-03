@@ -1,17 +1,24 @@
 /**
  * @module SharedLock
  */
-import type { TestAPI, SuiteAPI, ExpectStatic, beforeEach } from "vitest";
-import type {
-    IDatabaseSharedLockAdapter,
-    IReaderSemaphoreData,
-    IReaderSemaphoreSlotData,
-    IReaderSemaphoreSlotExpirationData,
-    IWriterLockData,
-    IWriterLockExpirationData,
+
+import {
+    type TestAPI,
+    type SuiteAPI,
+    type ExpectStatic,
+    type beforeEach,
+} from "vitest";
+
+import {
+    type IDatabaseSharedLockAdapter,
+    type IReaderSemaphoreData,
+    type IReaderSemaphoreSlotData,
+    type IReaderSemaphoreSlotExpirationData,
+    type IWriterLockData,
+    type IWriterLockExpirationData,
 } from "@/shared-lock/contracts/_module.js";
-import type { Promisable } from "@/utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
 
 /**
  *

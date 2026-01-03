@@ -2,18 +2,16 @@
  * @module SharedLock
  */
 
-import type {
-    IDatabaseSharedLockAdapter,
-    IDatabaseSharedLockTransaction,
-    IReaderSemaphoreAdapterState,
-    IWriterLockAdapterState,
+import {
+    type IDatabaseSharedLockAdapter,
+    type IDatabaseSharedLockTransaction,
+    type IReaderSemaphoreAdapterState,
+    type IWriterLockAdapterState,
+    type ISharedLockAdapter,
+    type ISharedLockAdapterState,
+    type SharedLockAcquireSettings,
 } from "@/shared-lock/contracts/_module.js";
-import type {
-    ISharedLockAdapter,
-    ISharedLockAdapterState,
-    SharedLockAcquireSettings,
-} from "@/shared-lock/contracts/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * @internal

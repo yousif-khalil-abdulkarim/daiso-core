@@ -7,13 +7,14 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
+
 import {
     type IDatabaseLockAdapter,
     type ILockData,
     type ILockExpirationData,
 } from "@/lock/contracts/_module.js";
-import { type Promisable } from "@/utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
 
 /**
  *

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { isAsyncIterable } from "@/utilities/functions/is-async-iterable.js";
 
 describe("function: isAsyncIterable", () => {

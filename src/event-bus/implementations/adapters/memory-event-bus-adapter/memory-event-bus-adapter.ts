@@ -2,12 +2,13 @@
  * @module EventBus
  */
 
-import type {
-    BaseEvent,
-    EventListenerFn,
-    IEventBusAdapter,
-} from "@/event-bus/contracts/_module.js";
 import { EventEmitter } from "node:events";
+
+import {
+    type BaseEvent,
+    type EventListenerFn,
+    type IEventBusAdapter,
+} from "@/event-bus/contracts/_module.js";
 
 /**
  * To utilize the `MemoryEventBusAdapter`, you must create instance of it.

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { Hooks } from "@/hooks/hooks.js";
 
 describe("class: Hooks", () => {

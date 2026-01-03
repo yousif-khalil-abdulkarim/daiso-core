@@ -1,12 +1,15 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { semaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
+import {
+    type StartedMongoDBContainer,
+    MongoDBContainer,
+} from "@testcontainers/mongodb";
 import { MongoClient } from "mongodb";
-import type { StartedMongoDBContainer } from "@testcontainers/mongodb";
-import { MongoDBContainer } from "@testcontainers/mongodb";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+
 import {
     MongodbSemaphoreAdapter,
     type MongodbSemaphoreDocument,
 } from "@/semaphore/implementations/adapters/mongodb-semaphore-adapter/mongodb-semaphore-adapter.js";
+import { semaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);

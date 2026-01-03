@@ -2,23 +2,21 @@
  * @module Resilience
  */
 
-import type { Option } from "@/utilities/_module.js";
+import { exponentialBackoff } from "@/backoff-policies/_module.js";
+import { type AsyncMiddlewareFn, type HookContext } from "@/hooks/_module.js";
+import { type RetrySettings } from "@/resilience/middlewares/retry/retry.types.js";
+import { RetryResilienceError } from "@/resilience/resilience.errors.js";
+import { Task } from "@/task/implementations/_module.js";
 import {
     callInvokable,
     optionNone,
     optionSome,
     OPTION,
     UnexpectedError,
-} from "@/utilities/_module.js";
-import { exponentialBackoff } from "@/backoff-policies/_module.js";
-import type { RetrySettings } from "@/resilience/middlewares/retry/retry.types.js";
-import {
     callErrorPolicyOnThrow,
     callErrorPolicyOnValue,
+    type Option,
 } from "@/utilities/_module.js";
-import { Task } from "@/task/implementations/_module.js";
-import type { AsyncMiddlewareFn, HookContext } from "@/hooks/_module.js";
-import { RetryResilienceError } from "@/resilience/resilience.errors.js";
 
 /**
  * The `retry` middleware enables automatic retries for all errors or specific errors, with configurable backoff policies.

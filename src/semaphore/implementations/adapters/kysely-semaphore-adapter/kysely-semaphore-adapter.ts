@@ -2,14 +2,16 @@
  * @module Semaphore
  */
 
-import type {
-    IDatabaseSemaphoreTransaction,
-    IDatabaseSemaphoreAdapter,
-    ISemaphoreData,
-    ISemaphoreSlotData,
-    ISemaphoreSlotExpirationData,
+import { MysqlAdapter, type Kysely } from "kysely";
+
+import {
+    type IDatabaseSemaphoreTransaction,
+    type IDatabaseSemaphoreAdapter,
+    type ISemaphoreData,
+    type ISemaphoreSlotData,
+    type ISemaphoreSlotExpirationData,
 } from "@/semaphore/contracts/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     type IDeinitizable,
@@ -17,7 +19,6 @@ import {
     type InvokableFn,
     type IPrunable,
 } from "@/utilities/_module.js";
-import { MysqlAdapter, type Kysely } from "kysely";
 
 /**
  *

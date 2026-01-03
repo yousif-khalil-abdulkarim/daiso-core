@@ -1,4 +1,5 @@
 import { describe, test, expect } from "vitest";
+
 import { isAsyncIterable } from "@/utilities/functions/is-async-iterable.js";
 import { iterableToAsyncIterable } from "@/utilities/functions/iterable-to-async-iterable.js";
 

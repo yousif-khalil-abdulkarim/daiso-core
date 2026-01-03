@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { isIterable } from "@/utilities/functions/is-iterable.js";
+
 import { arrayLikeToIterable } from "@/utilities/functions/array-like-to-iterable.js";
+import { isIterable } from "@/utilities/functions/is-iterable.js";
 
 describe("function: arrayLikeToIterable", () => {
     test("Should convert ArrayLike to Iterable", () => {

@@ -1,15 +1,16 @@
-import type {
-    IDatabaseSemaphoreAdapter,
-    IDatabaseSemaphoreTransaction,
-    ISemaphoreSlotExpirationData,
-    ISemaphoreAdapter,
-    ISemaphoreAdapterState,
-    SemaphoreAcquireSettings,
-} from "@/semaphore/contracts/_module.js";
 import { describe, expect, test } from "vitest";
+
+import {
+    type IDatabaseSemaphoreAdapter,
+    type IDatabaseSemaphoreTransaction,
+    type ISemaphoreSlotExpirationData,
+    type ISemaphoreAdapter,
+    type ISemaphoreAdapterState,
+    type SemaphoreAcquireSettings,
+} from "@/semaphore/contracts/_module.js";
 import { isDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/is-database-semaphore-adapter.js";
-import type { InvokableFn } from "@/utilities/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
+import { type InvokableFn } from "@/utilities/_module.js";
 
 describe("function: isDatabaseSemaphoreAdapter", () => {
     test("Should return true when given IDatabaseSemaphoreAdapter", () => {

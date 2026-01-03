@@ -2,25 +2,27 @@
  * @module Cache
  */
 
-import { type ICacheAdapter } from "@/cache/contracts/_module.js";
-import type { ISerde } from "@/serde/contracts/_module.js";
-import { MongodbCacheAdapterSerde } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter-serde.js";
+import escapeStringRegexp from "escape-string-regexp";
 import {
-    UnexpectedError,
-    type IDeinitizable,
-    type IInitizable,
-} from "@/utilities/_module.js";
-import { MongoServerError, type ObjectId } from "mongodb";
-import {
+    MongoServerError,
+    type ObjectId,
     type Collection,
     type Filter,
     type CollectionOptions,
     type Db,
 } from "mongodb";
-import escapeStringRegexp from "escape-string-regexp";
+
+import { type ICacheAdapter } from "@/cache/contracts/_module.js";
+import { MongodbCacheAdapterSerde } from "@/cache/implementations/adapters/mongodb-cache-adapter/mongodb-cache-adapter-serde.js";
+import { type ISerde } from "@/serde/contracts/_module.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
+import {
+    UnexpectedError,
+    type IDeinitizable,
+    type IInitizable,
+} from "@/utilities/_module.js";
 
 /**
  *

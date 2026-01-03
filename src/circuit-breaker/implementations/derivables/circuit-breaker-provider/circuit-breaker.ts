@@ -13,9 +13,9 @@ import {
     type CircuitBreakerEventMap,
     CIRCUIT_BREAKER_EVENTS,
 } from "@/circuit-breaker/contracts/_module.js";
-import type { IEventDispatcher } from "@/event-bus/contracts/_module.js";
-import type { Key, Namespace } from "@/namespace/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
+import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
+import { type Key, type Namespace } from "@/namespace/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
@@ -240,7 +240,7 @@ export class CircuitBreaker implements ICircuitBreaker {
 
         const isInOpenState = transition.to === CIRCUIT_BREAKER_STATE.OPEN;
         if (isInOpenState) {
-            throw new OpenCircuitBreakerError("!!__MESSAGE__!!");
+            throw OpenCircuitBreakerError.create(this._key);
         }
     }
 

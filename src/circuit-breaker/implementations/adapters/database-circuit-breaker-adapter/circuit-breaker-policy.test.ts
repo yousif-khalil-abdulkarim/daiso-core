@@ -1,10 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-    CircuitBreakerPolicy,
-    type ClosedState,
-    type HalfOpenedState,
-    type OpenedState,
-} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
+
 import {
     CLOSED_TRANSITIONS,
     HALF_OPEN_TRANSITIONS,
@@ -15,6 +10,12 @@ import {
     type ICircuitBreakerPolicy,
 } from "@/circuit-breaker/contracts/circuit-breaker-policy.contract.js";
 import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
+import {
+    CircuitBreakerPolicy,
+    type ClosedState,
+    type HalfOpenedState,
+    type OpenedState,
+} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("class: CircuitBreakerPolicy", () => {

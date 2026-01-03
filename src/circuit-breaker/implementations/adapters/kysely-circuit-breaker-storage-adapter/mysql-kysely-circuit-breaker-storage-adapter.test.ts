@@ -1,23 +1,24 @@
-import { describe, test, expect, beforeEach, afterEach } from "vitest";
-import { circuitBreakerStorageAdapterTestSuite } from "@/circuit-breaker/implementations/test-utilities/circuit-breaker-storage-adapter.test-suite.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { Serde } from "@/serde/implementations/derivables/_module.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/super-json-serde-adapter/_module.js";
+import {
+    MySqlContainer,
+    type StartedMySqlContainer,
+} from "@testcontainers/mysql";
 import {
     Kysely,
     MysqlDialect,
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
+import { createPool, type Pool } from "mysql2";
+import { describe, test, expect, beforeEach, afterEach } from "vitest";
+
 import {
     KyselyCircuitBreakerStorageAdapter,
     type KyselyCircuitBreakerStorageTables,
 } from "@/circuit-breaker/implementations/adapters/kysely-circuit-breaker-storage-adapter/kysely-circuit-breaker-storage-adapter.js";
-import { createPool, type Pool } from "mysql2";
-import {
-    MySqlContainer,
-    type StartedMySqlContainer,
-} from "@testcontainers/mysql";
+import { circuitBreakerStorageAdapterTestSuite } from "@/circuit-breaker/implementations/test-utilities/circuit-breaker-storage-adapter.test-suite.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/super-json-serde-adapter/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("mysql class: KyselyCircuitBreakerStorageAdapter", () => {

@@ -2,13 +2,14 @@
  * @module Semaphore
  */
 
-import type {
-    ISemaphoreAdapter,
-    ISemaphoreAdapterState,
-    SemaphoreAcquireSettings,
+import { type Redis, type Result } from "ioredis";
+
+import {
+    type ISemaphoreAdapter,
+    type ISemaphoreAdapterState,
+    type SemaphoreAcquireSettings,
 } from "@/semaphore/contracts/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { Redis, Result } from "ioredis";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * @internal

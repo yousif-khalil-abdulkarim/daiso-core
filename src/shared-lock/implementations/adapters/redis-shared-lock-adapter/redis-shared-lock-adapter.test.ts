@@ -1,11 +1,12 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { sharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
-import { RedisSharedLockAdapter } from "@/shared-lock/implementations/adapters/redis-shared-lock-adapter/_module.js";
-import { Redis } from "ioredis";
 import {
     RedisContainer,
     type StartedRedisContainer,
 } from "@testcontainers/redis";
+import { Redis } from "ioredis";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+
+import { RedisSharedLockAdapter } from "@/shared-lock/implementations/adapters/redis-shared-lock-adapter/_module.js";
+import { sharedLockAdapterTestSuite } from "@/shared-lock/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);

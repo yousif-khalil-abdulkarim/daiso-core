@@ -2,7 +2,7 @@
  * @module RateLimiter
  */
 
-import type { IRateLimiterStateMethods } from "@/rate-limiter/contracts/rate-limiter.contract.js";
+import { type IRateLimiterStateMethods } from "@/rate-limiter/contracts/rate-limiter.contract.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`

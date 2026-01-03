@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { AsyncHooks } from "@/hooks/async-hooks.js";
 
 describe("class: AsyncHooks", () => {

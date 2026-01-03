@@ -2,26 +2,27 @@
  * @module SharedLock
  */
 
-import type {
-    IDatabaseReaderSemaphoreTransaction,
-    IDatabaseSharedLockAdapter,
-    IDatabaseSharedLockTransaction,
-    IWriterLockData,
-    IWriterLockExpirationData,
-    IDatabaseWriterLockTransaction,
-    IReaderSemaphoreData,
-    IReaderSemaphoreSlotData,
-    IReaderSemaphoreSlotExpirationData,
-} from "@/shared-lock/contracts/_module.js";
 import { MysqlAdapter, type Kysely } from "kysely";
+
+import {
+    type IDatabaseReaderSemaphoreTransaction,
+    type IDatabaseSharedLockAdapter,
+    type IDatabaseSharedLockTransaction,
+    type IWriterLockData,
+    type IWriterLockExpirationData,
+    type IDatabaseWriterLockTransaction,
+    type IReaderSemaphoreData,
+    type IReaderSemaphoreSlotData,
+    type IReaderSemaphoreSlotExpirationData,
+} from "@/shared-lock/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     type IDeinitizable,
     type IInitizable,
     type InvokableFn,
     type IPrunable,
 } from "@/utilities/_module.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  *

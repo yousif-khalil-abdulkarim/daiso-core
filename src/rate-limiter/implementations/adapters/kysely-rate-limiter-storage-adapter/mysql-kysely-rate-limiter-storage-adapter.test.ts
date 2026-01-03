@@ -1,21 +1,24 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module.js";
 import {
-    KyselyRateLimiterStorageAdapter,
-    type KyselyRateLimiterStorageTables,
-} from "@/rate-limiter/implementations/adapters/kysely-rate-limiter-storage-adapter/_module.js";
+    type StartedMySqlContainer,
+    MySqlContainer,
+} from "@testcontainers/mysql";
 import {
     Kysely,
     MysqlDialect,
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
-import type { StartedMySqlContainer } from "@testcontainers/mysql";
-import { MySqlContainer } from "@testcontainers/mysql";
 import { createPool, type Pool } from "mysql2";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { Serde } from "@/serde/implementations/derivables/serde.js";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
+import {
+    KyselyRateLimiterStorageAdapter,
+    type KyselyRateLimiterStorageTables,
+} from "@/rate-limiter/implementations/adapters/kysely-rate-limiter-storage-adapter/_module.js";
+import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { Serde } from "@/serde/implementations/derivables/serde.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("mysql class: KyselyRateLimiterStorageAdapter", () => {

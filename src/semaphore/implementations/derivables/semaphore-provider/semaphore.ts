@@ -2,17 +2,14 @@
  * @module Semaphore
  */
 
-import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
 import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
-import type { Key, Namespace } from "@/namespace/_module.js";
-import type {
-    IDatabaseSemaphoreAdapter,
-    ISemaphoreAdapter,
-    SemaphoreAdapterVariants,
-    SemaphoreEventMap,
-} from "@/semaphore/contracts/_module.js";
+import { type AsyncMiddlewareFn } from "@/hooks/_module.js";
+import { type Key, type Namespace } from "@/namespace/_module.js";
 import {
+    type IDatabaseSemaphoreAdapter,
+    type ISemaphoreAdapter,
+    type SemaphoreAdapterVariants,
+    type SemaphoreEventMap,
     type ISemaphore,
     type SemaphoreAquireBlockingSettings,
     FailedRefreshSemaphoreError,
@@ -21,12 +18,13 @@ import {
     SEMAPHORE_EVENTS,
     SEMAPHORE_STATE,
     isSemaphoreError,
+    type ISemaphoreState,
 } from "@/semaphore/contracts/_module.js";
-import type { ISemaphoreState } from "@/semaphore/contracts/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { resolveLazyable, type AsyncLazy } from "@/utilities/_module.js";
-import type { AsyncMiddlewareFn } from "@/hooks/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  * @internal
@@ -238,9 +236,7 @@ export class Semaphore implements ISemaphore {
         return new Task(async () => {
             const hasAquired = await this.acquire();
             if (!hasAquired) {
-                throw new LimitReachedSemaphoreError(
-                    `Key "${this._key.get()}" has reached the limit`,
-                );
+                throw LimitReachedSemaphoreError.create(this._key);
             }
         });
     }
@@ -309,8 +305,9 @@ export class Semaphore implements ISemaphore {
         return new Task(async () => {
             const hasReleased = await this.release();
             if (!hasReleased) {
-                throw new FailedReleaseSemaphoreError(
-                    `Failed to release slot "${this.slotId}" of key "${this._key.get()}"`,
+                throw FailedReleaseSemaphoreError.create(
+                    this._key,
+                    this.slotId,
                 );
             }
         });
@@ -371,8 +368,9 @@ export class Semaphore implements ISemaphore {
         return new Task(async () => {
             const hasRefreshed = await this.refresh(ttl);
             if (!hasRefreshed) {
-                throw new FailedRefreshSemaphoreError(
-                    `Failed to refresh slot "${this.slotId}" of key "${this._key.get()}"`,
+                throw FailedRefreshSemaphoreError.create(
+                    this._key,
+                    this.slotId,
                 );
             }
         });

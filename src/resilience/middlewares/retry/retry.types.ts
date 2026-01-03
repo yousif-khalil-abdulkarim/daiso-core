@@ -2,11 +2,13 @@
  * @module Resilience
  */
 
-import { type Invokable } from "@/utilities/_module.js";
 import { type BackoffPolicy } from "@/backoff-policies/_module.js";
-import { type ErrorPolicySettings } from "@/utilities/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
-import type { HookContext } from "@/hooks/_module.js";
+import { type HookContext } from "@/hooks/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import {
+    type Invokable,
+    type ErrorPolicySettings,
+} from "@/utilities/_module.js";
 
 /**
  *

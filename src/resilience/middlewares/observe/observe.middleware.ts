@@ -2,10 +2,10 @@
  * @module Resilience
  */
 
-import { callInvokable } from "@/utilities/_module.js";
-import type { ObserveCallbacks } from "@/resilience/middlewares/observe/observe.types.js";
+import { type AsyncMiddlewareFn, type HookContext } from "@/hooks/_module.js";
+import { type ObserveCallbacks } from "@/resilience/middlewares/observe/observe.types.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { AsyncMiddlewareFn, HookContext } from "@/hooks/_module.js";
+import { callInvokable } from "@/utilities/_module.js";
 
 /**
  * The `observe` middleware tracks an async function's state and runs callbacks when it fails with an error or succeeds.

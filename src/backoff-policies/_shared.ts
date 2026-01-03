@@ -2,13 +2,6 @@
  * @module BackoffPolicy
  */
 
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
-import type { Invokable } from "@/utilities/_module.js";
-import {
-    BACKOFFS,
-    type BackoffSettingsEnum,
-    type SerializedBackoffSettingsEnum,
-} from "@/backoff-policies/types.js";
 import {
     resolveConstantBackoffSettings,
     serializeConstantBackoffSettings,
@@ -25,6 +18,13 @@ import {
     resolvePolynomialBackoffSettings,
     serializePolynomialBackoffSettings,
 } from "@/backoff-policies/polynomial-backoff/_module.js";
+import {
+    BACKOFFS,
+    type BackoffSettingsEnum,
+    type SerializedBackoffSettingsEnum,
+} from "@/backoff-policies/types.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type Invokable } from "@/utilities/_module.js";
 
 /**
  * @returns Amount milliseconds to wait

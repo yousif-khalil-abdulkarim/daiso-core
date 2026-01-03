@@ -1,6 +1,14 @@
-import type {
-    CircuitBreakerStateTransition,
-    ICircuitBreakerAdapter,
+import { beforeEach, describe, expect, test, vi } from "vitest";
+
+import {
+    OpenCircuitBreakerError,
+    type ICircuitBreakerStateMethods,
+    type IsolatedCircuitBreakerEvent,
+    type ResetedCircuitBreakerEvent,
+} from "@/circuit-breaker/contracts/_module.js";
+import {
+    type CircuitBreakerStateTransition,
+    type ICircuitBreakerAdapter,
 } from "@/circuit-breaker/contracts/circuit-breaker-adapter.contract.js";
 import {
     CIRCUIT_BREAKER_TRIGGER,
@@ -10,10 +18,6 @@ import {
     CIRCUIT_BREAKER_STATE,
     type CircuitBreakerState,
 } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
-import { beforeEach, describe, expect, test, vi } from "vitest";
-import { CircuitBreakerProvider } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker-provider.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { Task } from "@/task/implementations/_module.js";
 import {
     CIRCUIT_BREAKER_EVENTS,
     type StateTransitionCircuitBreakerEvent,
@@ -22,16 +26,13 @@ import {
     type TrackedSuccessCircuitBreakerEvent,
     type UntrackedFailureCircuitBreakerEvent,
 } from "@/circuit-breaker/contracts/circuit-breaker.events.js";
-import {
-    OpenCircuitBreakerError,
-    type ICircuitBreakerStateMethods,
-    type IsolatedCircuitBreakerEvent,
-    type ResetedCircuitBreakerEvent,
-} from "@/circuit-breaker/contracts/_module.js";
-import { Serde } from "@/serde/implementations/derivables/serde.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
-import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
+import { CircuitBreakerProvider } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker-provider.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
+import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { Serde } from "@/serde/implementations/derivables/serde.js";
+import { Task } from "@/task/implementations/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("class: CircuitBreakerProvider", () => {
     const adapter: ICircuitBreakerAdapter = {

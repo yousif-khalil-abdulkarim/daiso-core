@@ -8,6 +8,7 @@ import {
     type beforeEach,
     vi,
 } from "vitest";
+
 import {
     type ISemaphoreProvider,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,11 +31,11 @@ import {
     type ISemaphoreLimitReachedState,
     type ISemaphoreAcquiredState,
 } from "@/semaphore/contracts/_module.js";
-import { type Promisable } from "@/utilities/_module.js";
-import type { ISerde } from "@/serde/contracts/_module.js";
+import { type ISerde } from "@/serde/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { TO_MILLISECONDS } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
 
 /**
  *

@@ -2,7 +2,7 @@
  * @module SharedLock
  */
 
-import type { ISharedLockStateMethods } from "@/shared-lock/contracts/shared-lock.contract.js";
+import { type ISharedLockStateMethods } from "@/shared-lock/contracts/shared-lock.contract.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`

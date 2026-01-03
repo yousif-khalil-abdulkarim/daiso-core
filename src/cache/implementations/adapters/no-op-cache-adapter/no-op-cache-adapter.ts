@@ -7,7 +7,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type ICache,
 } from "@/cache/contracts/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * This `NoOpCacheAdapter` will do nothing and is used for easily mocking {@link ICache | `ICache`} for testing.

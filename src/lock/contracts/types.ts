@@ -2,8 +2,8 @@
  * @module Lock
  */
 
-import type { IDatabaseLockAdapter } from "@/lock/contracts/database-lock-adapter.contract.js";
-import type { ILockAdapter } from "@/lock/contracts/lock-adapter.contract.js";
+import { type IDatabaseLockAdapter } from "@/lock/contracts/database-lock-adapter.contract.js";
+import { type ILockAdapter } from "@/lock/contracts/lock-adapter.contract.js";
 
 /**
  *

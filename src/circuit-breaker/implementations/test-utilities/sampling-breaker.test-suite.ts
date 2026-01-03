@@ -3,21 +3,22 @@
  * @module CircuitBreaker
  */
 
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { Task } from "@/task/implementations/_module.js";
 import {
     type TestAPI,
     type SuiteAPI,
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
-import { type ICircuitBreakerAdapter } from "@/circuit-breaker/contracts/_module.js";
-import { type Promisable } from "@/utilities/_module.js";
-import type { SamplingBreakerSettings } from "@/circuit-breaker/implementations/policies/_module.js";
+
 import {
     BACKOFFS,
     type ConstantBackoffSettingsEnum,
 } from "@/backoff-policies/_module.js";
+import { type ICircuitBreakerAdapter } from "@/circuit-breaker/contracts/_module.js";
+import { type SamplingBreakerSettings } from "@/circuit-breaker/implementations/policies/_module.js";
+import { Task } from "@/task/implementations/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
 
 /**
  *

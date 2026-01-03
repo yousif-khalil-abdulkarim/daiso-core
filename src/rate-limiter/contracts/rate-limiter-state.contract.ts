@@ -2,7 +2,7 @@
  * @module RateLimiter
  */
 
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 
 /**
  *

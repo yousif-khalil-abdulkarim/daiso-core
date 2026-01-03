@@ -2,6 +2,8 @@
  * @module SharedLock
  */
 
+import { type Key } from "@/namespace/_module.js";
+
 /**
  * The error is thrown when trying to acquire a semaphore slot, but all slots are already taken.
  *
@@ -9,6 +11,18 @@
  * @group Errors
  */
 export class LimitReachedReaderSemaphoreError extends Error {
+    static create(key: Key, cause?: unknown): LimitReachedReaderSemaphoreError {
+        return new LimitReachedReaderSemaphoreError(
+            `Key "${key.get()}" has reached the limit`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `LimitReachedReaderSemaphoreError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = LimitReachedReaderSemaphoreError.name;
@@ -22,6 +36,22 @@ export class LimitReachedReaderSemaphoreError extends Error {
  * @group Errors
  */
 export class FailedRefreshReaderSemaphoreError extends Error {
+    static create(
+        key: Key,
+        slotId: string,
+        cause?: unknown,
+    ): FailedRefreshReaderSemaphoreError {
+        return new FailedRefreshReaderSemaphoreError(
+            `Failed to refresh slot "${slotId}" of key "${key.get()}"`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `FailedRefreshReaderSemaphoreError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedRefreshReaderSemaphoreError.name;
@@ -35,6 +65,22 @@ export class FailedRefreshReaderSemaphoreError extends Error {
  * @group Errors
  */
 export class FailedReleaseReaderSemaphoreError extends Error {
+    static create(
+        key: Key,
+        slotId: string,
+        cause?: unknown,
+    ): FailedReleaseReaderSemaphoreError {
+        return new FailedReleaseReaderSemaphoreError(
+            `Failed to release slot "${slotId}" of key "${key.get()}"`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `FailedReleaseReaderSemaphoreError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedReleaseReaderSemaphoreError.name;
@@ -85,6 +131,18 @@ export function isReaderSemaphoreError(
  * @group Errors
  */
 export class FailedAcquireWriterLockError extends Error {
+    static create(key: Key, cause?: unknown): FailedAcquireWriterLockError {
+        return new FailedAcquireWriterLockError(
+            `Key "${key.get()}" already acquired`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `FailedAcquireWriterLockError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedAcquireWriterLockError.name;
@@ -98,6 +156,22 @@ export class FailedAcquireWriterLockError extends Error {
  * @group Errors
  */
 export class FailedReleaseWriterLockError extends Error {
+    static create(
+        key: Key,
+        lockId: string,
+        cause?: unknown,
+    ): FailedReleaseWriterLockError {
+        return new FailedReleaseWriterLockError(
+            `Unonwed release on key "${key.get()}" by owner "${lockId}"`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `FailedReleaseWriterLockError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedReleaseWriterLockError.name;
@@ -111,6 +185,22 @@ export class FailedReleaseWriterLockError extends Error {
  * @group Errors
  */
 export class FailedRefreshWriterLockError extends Error {
+    static create(
+        _key: Key,
+        lockId: string,
+        cause?: unknown,
+    ): FailedRefreshWriterLockError {
+        return new FailedRefreshWriterLockError(
+            `Unonwed refresh on key "${_key.get()}" by owner "${lockId}"`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `FailedRefreshWriterLockError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = FailedRefreshWriterLockError.name;

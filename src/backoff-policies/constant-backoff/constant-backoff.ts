@@ -2,7 +2,6 @@
  * @module BackoffPolicy
  */
 
-import { callInvokable, isInvokable } from "@/utilities/_module.js";
 import {
     withJitter,
     type BackoffPolicy,
@@ -13,6 +12,7 @@ import {
     type ITimeSpan,
 } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { callInvokable, isInvokable } from "@/utilities/_module.js";
 
 /**
  *

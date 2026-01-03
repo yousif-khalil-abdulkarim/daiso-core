@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { abortAndFail } from "@/resilience/utilities/abort-and-fail/abort-and-fail.js";
 
 describe("function: abortAndFail", () => {

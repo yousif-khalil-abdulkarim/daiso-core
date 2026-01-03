@@ -2,11 +2,8 @@
  * @module Collection
  */
 
-import type {
-    EnsureMap,
-    EnsureRecord,
-    SerializedCollection,
-} from "@/collection/contracts/_module.js";
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
 import {
     type Collapse,
     type Comparator,
@@ -19,10 +16,12 @@ import {
     MultipleItemsFoundCollectionError,
     type Tap,
     type Transform,
-    TypeCollectionError,
     type Reduce,
     EmptyCollectionError,
     type CrossJoinResult,
+    type EnsureMap,
+    type EnsureRecord,
+    type SerializedCollection,
 } from "@/collection/contracts/_module.js";
 import {
     CrossJoinIterable,
@@ -65,10 +64,7 @@ import {
     resolveIterableValue,
     type IterableValue,
     type Lazyable,
-} from "@/utilities/_module.js";
-import { resolveLazyable } from "@/utilities/_module.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import {
+    resolveLazyable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedError,
 } from "@/utilities/_module.js";
@@ -338,7 +334,7 @@ export class IterableCollection<TInput = unknown>
         initialValue?: TOutput,
     ): TOutput {
         if (initialValue === undefined && this.isEmpty()) {
-            throw new TypeCollectionError(
+            throw new TypeError(
                 "Reduce of empty array must be inputed a initial value",
             );
         }
@@ -370,9 +366,7 @@ export class IterableCollection<TInput = unknown>
         let str: string | null = null;
         for (const item of this) {
             if (typeof item !== "string") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be string",
-                );
+                throw new TypeError("Item type is invalid must be string");
             }
             if (str === null) {
                 str = item as string;
@@ -441,16 +435,12 @@ export class IterableCollection<TInput = unknown>
 
     sum(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let sum = 0;
         for (const item of this) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             sum += item;
         }
@@ -459,17 +449,13 @@ export class IterableCollection<TInput = unknown>
 
     average(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let size = 0,
             sum = 0;
         for (const item of this) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             size++;
             sum += item;
@@ -479,9 +465,7 @@ export class IterableCollection<TInput = unknown>
 
     median(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         const size = this.size();
         if (size === 0) {
@@ -490,9 +474,7 @@ export class IterableCollection<TInput = unknown>
         const isEven = size % 2 === 0,
             items = this.map((item) => {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 return item;
             })
@@ -523,16 +505,12 @@ export class IterableCollection<TInput = unknown>
 
     min(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let min = 0;
         for (const item of this) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             if (min === 0) {
                 min = item;
@@ -545,16 +523,12 @@ export class IterableCollection<TInput = unknown>
 
     max(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let max = 0;
         for (const item of this) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             if (max === 0) {
                 max = item;
@@ -569,9 +543,7 @@ export class IterableCollection<TInput = unknown>
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): number {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let part = 0,
             total = 0;
@@ -938,7 +910,7 @@ export class IterableCollection<TInput = unknown>
     ): TOutput {
         const item = this.first(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -976,7 +948,7 @@ export class IterableCollection<TInput = unknown>
     ): TOutput {
         const item = this.last(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1011,7 +983,7 @@ export class IterableCollection<TInput = unknown>
     ): TInput {
         const item = this.before(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1043,7 +1015,7 @@ export class IterableCollection<TInput = unknown>
     ): TInput {
         const item = this.after(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1056,16 +1028,14 @@ export class IterableCollection<TInput = unknown>
         for (const item of this) {
             if (resolveInvokable(predicateFn)(item, index, this)) {
                 if (matchedItem !== null) {
-                    throw new MultipleItemsFoundCollectionError(
-                        "Multiple items were found",
-                    );
+                    throw MultipleItemsFoundCollectionError.create();
                 }
                 matchedItem = item as TOutput;
             }
             index++;
         }
         if (matchedItem === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return matchedItem;
     }
@@ -1144,12 +1114,12 @@ export class IterableCollection<TInput = unknown>
         const record: Record<string | number | symbol, unknown> = {};
         for (const item of this) {
             if (!Array.isArray(item)) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                 );
             }
             if (item.length !== 2) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                 );
             }
@@ -1161,7 +1131,7 @@ export class IterableCollection<TInput = unknown>
                     typeof key === "symbol"
                 )
             ) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                 );
             }
@@ -1174,12 +1144,12 @@ export class IterableCollection<TInput = unknown>
         const map = new Map();
         for (const item of this) {
             if (!Array.isArray(item)) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2",
                 );
             }
             if (item.length !== 2) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2",
                 );
             }

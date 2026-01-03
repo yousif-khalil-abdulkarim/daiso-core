@@ -2,21 +2,22 @@
  * @module RateLimiter
  */
 
-import type {
-    IRateLimiterData,
-    IRateLimiterStorageAdapter,
-    IRateLimiterStorageAdapterTransaction,
-} from "@/rate-limiter/contracts/_module.js";
-import type { ISerde } from "@/serde/contracts/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import type {
-    IDeinitizable,
-    IInitizable,
-    InvokableFn,
-    IPrunable,
-} from "@/utilities/_module.js";
 import { MysqlAdapter, type Kysely } from "kysely";
+
+import {
+    type IRateLimiterData,
+    type IRateLimiterStorageAdapter,
+    type IRateLimiterStorageAdapterTransaction,
+} from "@/rate-limiter/contracts/_module.js";
+import { type ISerde } from "@/serde/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
+import {
+    type IDeinitizable,
+    type IInitizable,
+    type InvokableFn,
+    type IPrunable,
+} from "@/utilities/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/kysely-rate-limiter-storage-adapter"`

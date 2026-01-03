@@ -1,7 +1,7 @@
 /**
  * @module Collection
  */
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { type StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
  * @internal

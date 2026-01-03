@@ -2,9 +2,9 @@
  * @module CircuitBreaker
  */
 
-import type { CircuitBreakerState } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { ICircuitBreakerProvider } from "@/circuit-breaker/contracts/circuit-breaker-provider.contract.js";
+import { type ICircuitBreakerProvider } from "@/circuit-breaker/contracts/circuit-breaker-provider.contract.js";
+import { type CircuitBreakerState } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/contracts"`

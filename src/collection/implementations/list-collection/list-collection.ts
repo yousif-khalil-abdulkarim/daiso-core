@@ -2,11 +2,8 @@
  * @module Collection
  */
 
-import type {
-    EnsureMap,
-    EnsureRecord,
-    SerializedCollection,
-} from "@/collection/contracts/_module.js";
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
 import {
     type Collapse,
     type Comparator,
@@ -18,11 +15,13 @@ import {
     MultipleItemsFoundCollectionError,
     type Tap,
     type Transform,
-    TypeCollectionError,
     type Reduce,
     type ForEach,
     EmptyCollectionError,
     type CrossJoinResult,
+    type EnsureMap,
+    type EnsureRecord,
+    type SerializedCollection,
 } from "@/collection/contracts/_module.js";
 import {
     isInvokable,
@@ -32,10 +31,7 @@ import {
     resolveIterableValue,
     type IterableValue,
     type Lazyable,
-} from "@/utilities/_module.js";
-import { resolveLazyable } from "@/utilities/_module.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import {
+    resolveLazyable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedError,
 } from "@/utilities/_module.js";
@@ -313,7 +309,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         initialValue?: TOutput,
     ): TOutput {
         if (initialValue === undefined && this.isEmpty()) {
-            throw new TypeCollectionError(
+            throw new TypeError(
                 "Reduce of empty array must be inputed a initial value",
             );
         }
@@ -337,9 +333,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     join(separator = ","): Extract<TInput, string> {
         for (const item of this) {
             if (typeof item !== "string") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be string",
-                );
+                throw new TypeError("Item type is invalid must be string");
             }
         }
         return this.array.join(separator) as Extract<TInput, string>;
@@ -418,7 +412,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     getOrFail(index: number): TInput {
         const item = this.get(index);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -432,15 +426,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     sum(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         const result = this.reduce((sum, item) => {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             return sum + item;
         }, 0);
@@ -451,9 +441,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     average(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         return ((this.sum() as number) / this.size()) as Extract<
             TInput,
@@ -463,15 +451,11 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     median(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         const nbrs = this.array.map((item) => {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 return item;
             }),
@@ -493,16 +477,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     min(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let min = 0;
         for (const item of this.array) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             if (min === 0) {
                 min = item;
@@ -515,16 +495,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
     max(): Extract<TInput, number> {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         let max = 0;
         for (const item of this.array) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             if (max === 0) {
                 max = item;
@@ -539,9 +515,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): number {
         if (this.isEmpty()) {
-            throw new EmptyCollectionError(
-                "Collection is empty therby operation cannot be performed",
-            );
+            throw EmptyCollectionError.create();
         }
         return (this.count(predicateFn) / this.size()) * 100;
     }
@@ -1041,7 +1015,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): TOutput {
         const item = this.first(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1080,7 +1054,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): TOutput {
         const item = this.last(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1112,7 +1086,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): TInput {
         const item = this.before(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1144,7 +1118,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     ): TInput {
         const item = this.after(predicateFn);
         if (item === null) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return item;
     }
@@ -1158,14 +1132,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                 matchedItems.push(item);
             }
             if (matchedItems.length > 1) {
-                throw new MultipleItemsFoundCollectionError(
-                    "Multiple items were found",
-                );
+                throw MultipleItemsFoundCollectionError.create();
             }
         }
         const [matchedItem] = matchedItems;
         if (matchedItem === undefined) {
-            throw new ItemNotFoundCollectionError("Item was not found");
+            throw ItemNotFoundCollectionError.create();
         }
         return matchedItem as TOutput;
     }
@@ -1226,12 +1198,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         const record: Record<string | number | symbol, unknown> = {};
         for (const item of this) {
             if (!Array.isArray(item)) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                 );
             }
             if (item.length !== 2) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                 );
             }
@@ -1243,7 +1215,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                     typeof key === "symbol"
                 )
             ) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                 );
             }
@@ -1256,12 +1228,12 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         const map = new Map();
         for (const item of this) {
             if (!Array.isArray(item)) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2",
                 );
             }
             if (item.length !== 2) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2",
                 );
             }

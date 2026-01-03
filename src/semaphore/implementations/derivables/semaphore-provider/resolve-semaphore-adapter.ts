@@ -2,12 +2,12 @@
  * @module Semaphore
  */
 
-import type {
-    ISemaphoreAdapter,
-    SemaphoreAdapterVariants,
+import {
+    type ISemaphoreAdapter,
+    type SemaphoreAdapterVariants,
 } from "@/semaphore/contracts/_module.js";
-import { isDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/is-database-semaphore-adapter.js";
 import { DatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/database-semaphore-adapter.js";
+import { isDatabaseSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/is-database-semaphore-adapter.js";
 
 /**
  * @internal

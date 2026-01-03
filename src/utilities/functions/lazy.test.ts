@@ -1,15 +1,16 @@
 import { describe, expect, test } from "vitest";
+
+import {
+    type IInvokableObject,
+    type InvokableFn,
+} from "@/utilities/functions/_module.js";
 import {
     isAsyncLazy,
     isLazy,
     resolveAsyncLazyable,
     resolveLazyable,
 } from "@/utilities/functions/lazy.js";
-import type {
-    IInvokableObject,
-    InvokableFn,
-} from "@/utilities/functions/_module.js";
-import type { Promisable } from "@/utilities/types/_module.js";
+import { type Promisable } from "@/utilities/types/_module.js";
 
 describe("file: lazy.ts", () => {
     describe("function: isLazy", () => {

@@ -9,6 +9,15 @@
  * @group Errors
  */
 export class ItemNotFoundCollectionError extends Error {
+    static create(cause?: unknown): ItemNotFoundCollectionError {
+        return new ItemNotFoundCollectionError("Item was not found", cause);
+    }
+
+    /**
+     * Note: Do not instantiate `ItemNotFoundCollectionError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = ItemNotFoundCollectionError.name;
@@ -22,22 +31,21 @@ export class ItemNotFoundCollectionError extends Error {
  * @group Errors
  */
 export class MultipleItemsFoundCollectionError extends Error {
+    static create(cause?: unknown): MultipleItemsFoundCollectionError {
+        return new MultipleItemsFoundCollectionError(
+            "Multiple items were found",
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `MultipleItemsFoundCollectionError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = MultipleItemsFoundCollectionError.name;
-    }
-}
-
-/**
- * The error is thrown when calling a method that needs all items to be of a specific type. For example, the `sum` method requires all items to be numbers.
- *
- * IMPORT_PATH: `"@daiso-tech/core/collection/contracts"`
- * @group Errors
- */
-export class TypeCollectionError extends Error {
-    constructor(message: string, cause?: unknown) {
-        super(message, { cause });
-        this.name = TypeCollectionError.name;
     }
 }
 
@@ -48,6 +56,18 @@ export class TypeCollectionError extends Error {
  * @group Errors
  */
 export class EmptyCollectionError extends Error {
+    static create(cause?: unknown): EmptyCollectionError {
+        return new EmptyCollectionError(
+            "Collection is empty therby operation cannot be performed",
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `EmptyCollectionError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = EmptyCollectionError.name;
@@ -62,6 +82,5 @@ export class EmptyCollectionError extends Error {
 export const COLLECTION_ERRORS = {
     ItemNotFound: ItemNotFoundCollectionError,
     MultipleItemsFound: MultipleItemsFoundCollectionError,
-    Type: TypeCollectionError,
     Empty: EmptyCollectionError,
 } as const;

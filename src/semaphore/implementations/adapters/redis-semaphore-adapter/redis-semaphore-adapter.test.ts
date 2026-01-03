@@ -1,11 +1,12 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { semaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
-import { RedisSemaphoreAdapter } from "@/semaphore/implementations/adapters/redis-semaphore-adapter/_module.js";
-import { Redis } from "ioredis";
 import {
     RedisContainer,
     type StartedRedisContainer,
 } from "@testcontainers/redis";
+import { Redis } from "ioredis";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+
+import { RedisSemaphoreAdapter } from "@/semaphore/implementations/adapters/redis-semaphore-adapter/_module.js";
+import { semaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);

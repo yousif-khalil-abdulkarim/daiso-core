@@ -1,11 +1,14 @@
-import { describe, test, beforeEach, expect, afterEach } from "vitest";
-import { eventBusAdapterTestSuite } from "@/event-bus/implementations/test-utilities/_module.js";
-import { RedisPubSubEventBusAdapter } from "@/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/redis-pub-sub-event-bus-adapter.js";
-import type { StartedRedisContainer } from "@testcontainers/redis";
-import { RedisContainer } from "@testcontainers/redis";
+import {
+    RedisContainer,
+    type StartedRedisContainer,
+} from "@testcontainers/redis";
 import { Redis } from "ioredis";
-import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { describe, test, beforeEach, expect, afterEach } from "vitest";
+
+import { RedisPubSubEventBusAdapter } from "@/event-bus/implementations/adapters/redis-pub-sub-event-bus-adapter/redis-pub-sub-event-bus-adapter.js";
+import { eventBusAdapterTestSuite } from "@/event-bus/implementations/test-utilities/_module.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);

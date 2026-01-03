@@ -1,8 +1,9 @@
+import { beforeEach, describe, expect, test, vi } from "vitest";
+
 import {
     RATE_LIMITER_STATE,
     type IRateLimiterPolicy,
 } from "@/rate-limiter/contracts/_module.js";
-import { beforeEach, describe, expect, test, vi } from "vitest";
 import {
     RateLimiterPolicy,
     type AllowedState,

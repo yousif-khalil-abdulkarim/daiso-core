@@ -1,8 +1,9 @@
 /**
  * @module Collection
  */
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
 import { isPromiseLike } from "@/utilities/_module.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 /**
  * @internal

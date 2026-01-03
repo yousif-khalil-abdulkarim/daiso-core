@@ -2,10 +2,10 @@
  * @module Resilience
  */
 
-import type {
-    AsyncMiddleware,
-    AsyncMiddlewareFn,
-    HookContext,
+import {
+    type AsyncMiddleware,
+    type AsyncMiddlewareFn,
+    type HookContext,
 } from "@/hooks/_module.js";
 import { callInvokable, type Invokable } from "@/utilities/_module.js";
 

@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import type { ICache } from "@/cache/contracts/cache.contract.js";
+import { type ICache } from "@/cache/contracts/cache.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,

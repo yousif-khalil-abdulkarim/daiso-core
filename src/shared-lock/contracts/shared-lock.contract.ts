@@ -2,18 +2,7 @@
  * @module SharedLock
  */
 
-import type { ITask } from "@/task/contracts/_module.js";
-import type {
-    AsyncLazy,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Invokable,
-} from "@/utilities/_module.js";
-import type {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    LimitReachedReaderSemaphoreError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    FailedAcquireWriterLockError,
-} from "@/shared-lock/contracts/shared-lock.errors.js";
+import { type ISharedLockState } from "@/shared-lock/contracts/shared-lock-state.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     FailedRefreshReaderSemaphoreError,
@@ -23,10 +12,19 @@ import {
     FailedReleaseWriterLockError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     FailedRefreshWriterLockError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type LimitReachedReaderSemaphoreError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type FailedAcquireWriterLockError,
 } from "@/shared-lock/contracts/shared-lock.errors.js";
-import type { ISharedLockState } from "@/shared-lock/contracts/shared-lock-state.contract.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
+import {
+    type AsyncLazy,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type Invokable,
+} from "@/utilities/_module.js";
 
 /**
  *

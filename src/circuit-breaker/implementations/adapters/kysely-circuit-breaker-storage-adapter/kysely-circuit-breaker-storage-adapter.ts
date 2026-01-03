@@ -2,17 +2,18 @@
  * @module CircuitBreaker
  */
 
-import type {
-    ICircuitBreakerStorageAdapter,
-    ICircuitBreakerStorageAdapterTransaction,
-} from "@/circuit-breaker/contracts/circuit-breaker-storage-adapter.contract.js";
-import type { ISerde } from "@/serde/contracts/serde.contract.js";
-import type {
-    IDeinitizable,
-    IInitizable,
-    InvokableFn,
-} from "@/utilities/_module.js";
 import { MysqlAdapter, type Kysely } from "kysely";
+
+import {
+    type ICircuitBreakerStorageAdapter,
+    type ICircuitBreakerStorageAdapterTransaction,
+} from "@/circuit-breaker/contracts/circuit-breaker-storage-adapter.contract.js";
+import { type ISerde } from "@/serde/contracts/serde.contract.js";
+import {
+    type IDeinitizable,
+    type IInitizable,
+    type InvokableFn,
+} from "@/utilities/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter"`

@@ -1,13 +1,14 @@
 import { describe, expect, test } from "vitest";
-import {
-    CountBreaker,
-    type CountBreakerState,
-} from "@/circuit-breaker/implementations/policies/count-breaker/count-breaker.js";
+
 import {
     CLOSED_TRANSITIONS,
     CIRCUIT_BREAKER_STATE,
     HALF_OPEN_TRANSITIONS,
 } from "@/circuit-breaker/contracts/_module.js";
+import {
+    CountBreaker,
+    type CountBreakerState,
+} from "@/circuit-breaker/implementations/policies/count-breaker/count-breaker.js";
 
 describe("class: CountBreaker", () => {
     describe("method: initialMetrics", () => {

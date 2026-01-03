@@ -2,32 +2,31 @@
  * @module Collection
  */
 
-import type {
-    Comparator,
-    PredicateInvokable,
-    ForEach,
-    Map,
-    Modifier,
-    Tap,
-    Transform,
-    Reduce,
-    CrossJoinResult,
-    EnsureMap,
-    EnsureRecord,
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
+import {
+    type Comparator,
+    type PredicateInvokable,
+    type ForEach,
+    type Map,
+    type Modifier,
+    type Tap,
+    type Transform,
+    type Reduce,
+    type CrossJoinResult,
+    type EnsureMap,
+    type EnsureRecord,
 } from "@/collection/contracts/_shared/_module.js";
-import type {
+import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ItemNotFoundCollectionError,
+    type ItemNotFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    MultipleItemsFoundCollectionError,
+    type MultipleItemsFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    TypeCollectionError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    EmptyCollectionError,
+    type EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
-import type { ISerializable } from "@/serde/contracts/_module.js";
-import type { Lazyable } from "@/utilities/_module.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { type ISerializable } from "@/serde/contracts/_module.js";
+import { type Lazyable } from "@/utilities/_module.js";
 
 /**
  *
@@ -205,7 +204,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
 
         /**
          * The `join` method joins the collection's items with ` separator `. An error will be thrown when if a none string item is encounterd.
-         * @throws {TypeCollectionError}
+         * @throws {TypeError}
          * @example
          * ```ts
          * import type { ICollection } from "@daiso-tech/core/collection/contracts";
@@ -394,7 +393,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         /**
          * The `sum` method returns the sum of all items in the collection. If the collection includes other than number items an error will be thrown.
          * If the collection is empty an error will also be thrown.
-         * @throws {TypeCollectionError} {@link TypeCollectionError}
+         * @throws {TypeError} {@link TypeError}
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
@@ -414,7 +413,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         /**
          * The `average` method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
          * If the collection is empty an error will also be thrown.
-         * @throws {TypeCollectionError} {@link TypeCollectionError}
+         * @throws {TypeError} {@link TypeError}
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
@@ -434,7 +433,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         /**
          * The `median` method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
          * If the collection is empty an error will also be thrown.
-         * @throws {TypeCollectionError} {@link TypeCollectionError}
+         * @throws {TypeError} {@link TypeError}
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
@@ -454,7 +453,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         /**
          * The `min` method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
          * If the collection is empty an error will also be thrown.
-         * @throws {TypeCollectionError} {@link TypeCollectionError}
+         * @throws {TypeError} {@link TypeError}
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
@@ -474,7 +473,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         /**
          * The `max` method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
          * If the collection is empty an error will also be thrown.
-         * @throws {TypeCollectionError} {@link TypeCollectionError}
+         * @throws {TypeError} {@link TypeError}
          * @throws {EmptyCollectionError} {@link EmptyCollectionError}
          * @example
          * ```ts
@@ -2340,14 +2339,14 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         /**
          * The `toRecord` method converts the collection to a new {@link Record | `Record`}.
          * An error will be thrown if item is not a tuple of size 2 where the first element is a string or a number.
-         * @throws {TypeCollectionError} {@link TypeCollectionError}
+         * @throws {TypeError} {@link TypeError}
          */
         toRecord(): EnsureRecord<TInput>;
 
         /**
          * The `toMap` method converts the collection to a new {@link Map | `Map`}.
          * An error will be thrown if item is not a tuple of size 2.
-         * @throws {TypeCollectionError} {@link TypeCollectionError}
+         * @throws {TypeError} {@link TypeError}
          */
         toMap(): EnsureMap<TInput>;
     };

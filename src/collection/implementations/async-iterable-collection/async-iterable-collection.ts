@@ -2,10 +2,8 @@
  * @module Collection
  */
 
-import type {
-    EnsureMap,
-    EnsureRecord,
-} from "@/collection/contracts/_module.js";
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
 import {
     type AsyncCollapse,
     type AsyncPredicate,
@@ -18,10 +16,11 @@ import {
     type IAsyncCollection,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
-    TypeCollectionError,
     type AsyncReduce,
     EmptyCollectionError,
     type CrossJoinResult,
+    type EnsureMap,
+    type EnsureRecord,
 } from "@/collection/contracts/_module.js";
 import {
     AsyncCrossJoinIterable,
@@ -58,18 +57,15 @@ import {
     AsyncRepeatIterable,
     AsyncValidateIterable,
 } from "@/collection/implementations/async-iterable-collection/_shared/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
 import {
     isInvokable,
     resolveAsyncIterableValue,
     resolveInvokable,
     type AsyncIterableValue,
     type AsyncLazyable,
-} from "@/utilities/_module.js";
-import { resolveAsyncLazyable } from "@/utilities/_module.js";
-import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import {
+    resolveAsyncLazyable,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnexpectedError,
 } from "@/utilities/_module.js";
@@ -354,7 +350,7 @@ export class AsyncIterableCollection<TInput = unknown>
     ): ITask<TOutput> {
         return new Task(async () => {
             if (initialValue === undefined && (await this.isEmpty())) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "AsyncReduce of empty array must be inputed a initial value",
                 );
             }
@@ -396,9 +392,7 @@ export class AsyncIterableCollection<TInput = unknown>
             let str: string | null = null;
             for await (const item of this) {
                 if (typeof item !== "string") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be string",
-                    );
+                    throw new TypeError("Item type is invalid must be string");
                 }
                 if (str === null) {
                     str = item;
@@ -471,16 +465,12 @@ export class AsyncIterableCollection<TInput = unknown>
     sum(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let sum = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 sum += item;
             }
@@ -491,17 +481,13 @@ export class AsyncIterableCollection<TInput = unknown>
     average(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let size = 0,
                 sum = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 size++;
                 sum += item;
@@ -513,9 +499,7 @@ export class AsyncIterableCollection<TInput = unknown>
     median(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             const size = await this.size();
             if (size === 0) {
@@ -524,7 +508,7 @@ export class AsyncIterableCollection<TInput = unknown>
             const isEven = size % 2 === 0,
                 items = await this.map((item) => {
                     if (typeof item !== "number") {
-                        throw new TypeCollectionError(
+                        throw new TypeError(
                             "Item type is invalid must be number",
                         );
                     }
@@ -559,16 +543,12 @@ export class AsyncIterableCollection<TInput = unknown>
     min(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let min = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 if (min === 0) {
                     min = item;
@@ -583,16 +563,12 @@ export class AsyncIterableCollection<TInput = unknown>
     max(): ITask<Extract<TInput, number>> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let max = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 if (max === 0) {
                     max = item;
@@ -609,9 +585,7 @@ export class AsyncIterableCollection<TInput = unknown>
     ): ITask<number> {
         return new Task(async () => {
             if (await this.isEmpty()) {
-                throw new EmptyCollectionError(
-                    "Collection is empty therby operation cannot be performed",
-                );
+                throw EmptyCollectionError.create();
             }
             let part = 0,
                 total = 0;
@@ -1019,7 +993,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return new Task<TOutput>(async () => {
             const item = await this.first(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return item;
         });
@@ -1059,7 +1033,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return new Task<TOutput>(async () => {
             const item = await this.last(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return item;
         });
@@ -1098,7 +1072,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return new Task<TInput>(async () => {
             const item = await this.before(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return item;
         });
@@ -1138,7 +1112,7 @@ export class AsyncIterableCollection<TInput = unknown>
         return new Task<TInput>(async () => {
             const item = await this.after(predicateFn);
             if (item === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return item;
         });
@@ -1152,15 +1126,13 @@ export class AsyncIterableCollection<TInput = unknown>
             for await (const [index, item] of this.entries()) {
                 if (await resolveInvokable(predicateFn)(item, index, this)) {
                     if (matchedItem !== null) {
-                        throw new MultipleItemsFoundCollectionError(
-                            "Multiple items were found",
-                        );
+                        throw MultipleItemsFoundCollectionError.create();
                     }
                     matchedItem = item as TOutput;
                 }
             }
             if (matchedItem === null) {
-                throw new ItemNotFoundCollectionError("Item was not found");
+                throw ItemNotFoundCollectionError.create();
             }
             return matchedItem;
         });
@@ -1255,12 +1227,12 @@ export class AsyncIterableCollection<TInput = unknown>
             const record: Record<string | number | symbol, unknown> = {};
             for await (const item of this) {
                 if (!Array.isArray(item)) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                     );
                 }
                 if (item.length !== 2) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                     );
                 }
@@ -1272,7 +1244,7 @@ export class AsyncIterableCollection<TInput = unknown>
                         typeof key === "symbol"
                     )
                 ) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                     );
                 }
@@ -1287,12 +1259,12 @@ export class AsyncIterableCollection<TInput = unknown>
             const map = new Map();
             for await (const item of this) {
                 if (!Array.isArray(item)) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2",
                     );
                 }
                 if (item.length !== 2) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2",
                     );
                 }

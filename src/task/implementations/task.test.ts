@@ -1,4 +1,5 @@
 import { describe, test, expect } from "vitest";
+
 import { Task } from "@/task/implementations/task.js";
 
 describe("class: Task", () => {

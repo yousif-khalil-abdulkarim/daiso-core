@@ -6,20 +6,20 @@ import {
     exponentialBackoff,
     type BackoffPolicy,
 } from "@/backoff-policies/_module.js";
-import type {
-    IRateLimiterAdapter,
-    IRateLimiterAdapterState,
-    IRateLimiterPolicy,
-    IRateLimiterStorageAdapter,
+import {
+    type IRateLimiterAdapter,
+    type IRateLimiterAdapterState,
+    type IRateLimiterPolicy,
+    type IRateLimiterStorageAdapter,
 } from "@/rate-limiter/contracts/_module.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     RateLimiterPolicy,
     type AllRateLimiterState,
 } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-policy.js";
-import { RateLimiterStorage } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-storage.js";
 import { RateLimiterStateManager } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-state-manager.js";
+import { RateLimiterStorage } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-storage.js";
 import { FixedWindowLimiter } from "@/rate-limiter/implementations/policies/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/database-rate-limiter-adapter"`

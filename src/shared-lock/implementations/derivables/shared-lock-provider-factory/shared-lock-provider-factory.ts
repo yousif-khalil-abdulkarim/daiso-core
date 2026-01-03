@@ -1,24 +1,24 @@
 /**
  * @module SharedLock
  */
-import type { IEventBus } from "@/event-bus/contracts/_module.js";
-import type {
-    ISharedLockProviderFactory,
-    ISharedLockProvider,
-    SharedLockAdapterVariants,
-} from "@/shared-lock/contracts/_module.js";
+import { type IEventBus } from "@/event-bus/contracts/_module.js";
+import { type Namespace } from "@/namespace/_module.js";
 import {
-    DefaultAdapterNotDefinedError,
-    UnregisteredAdapterError,
-} from "@/utilities/_module.js";
-import type { Invokable } from "@/utilities/_module.js";
+    type ISharedLockProviderFactory,
+    type ISharedLockProvider,
+    type SharedLockAdapterVariants,
+} from "@/shared-lock/contracts/_module.js";
 import {
     DEFAULT_SHARED_LOCK_NAMESPACE,
     SharedLockProvider,
     type SharedLockProviderSettingsBase,
 } from "@/shared-lock/implementations/derivables/shared-lock-provider/_module.js";
-import type { Namespace } from "@/namespace/_module.js";
-import type { ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import {
+    DefaultAdapterNotDefinedError,
+    UnregisteredAdapterError,
+    type Invokable,
+} from "@/utilities/_module.js";
 
 /**
  *

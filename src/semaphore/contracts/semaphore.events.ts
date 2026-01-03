@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import type { ISemaphoreStateMethods } from "@/semaphore/contracts/semaphore.contract.js";
+import { type ISemaphoreStateMethods } from "@/semaphore/contracts/semaphore.contract.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`

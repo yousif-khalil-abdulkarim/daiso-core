@@ -4,7 +4,7 @@
  */
 
 import { type ICacheAdapter } from "@/cache/contracts/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  * To utilize the `MemoryCacheAdapter`, you must create instance of it.

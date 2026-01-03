@@ -1,21 +1,24 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module.js";
 import {
-    KyselyRateLimiterStorageAdapter,
-    type KyselyRateLimiterStorageTables,
-} from "@/rate-limiter/implementations/adapters/kysely-rate-limiter-storage-adapter/_module.js";
+    PostgreSqlContainer,
+    type StartedPostgreSqlContainer,
+} from "@testcontainers/postgresql";
 import {
     Kysely,
     PostgresDialect,
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
-import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
-import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { Pool } from "pg";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
+import {
+    KyselyRateLimiterStorageAdapter,
+    type KyselyRateLimiterStorageTables,
+} from "@/rate-limiter/implementations/adapters/kysely-rate-limiter-storage-adapter/_module.js";
+import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("postgres class: KyselyRateLimiterStorageAdapter", () => {

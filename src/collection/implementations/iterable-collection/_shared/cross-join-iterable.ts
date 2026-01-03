@@ -2,9 +2,9 @@
  * @module Collection
  */
 
-import type {
-    CrossJoinResult,
-    ICollection,
+import {
+    type CrossJoinResult,
+    type ICollection,
 } from "@/collection/contracts/_module.js";
 import { isIterable } from "@/utilities/_module.js";
 

@@ -1,12 +1,13 @@
 import { describe, expect, test } from "vitest";
+import { z } from "zod";
+
 import {
     callErrorPolicyOnThrow,
     callErrorPolicyOnValue,
     isErrorPolicyBoolSetting,
     type ErrorPolicyBoolSetting,
 } from "@/utilities/functions/error-policy.js";
-import { z } from "zod";
-import type { IInvokableObject } from "@/utilities/functions/invokable.js";
+import { type IInvokableObject } from "@/utilities/functions/invokable.js";
 
 describe("file: error-policy.ts", () => {
     describe("function: isErrorPolicyBoolSetting", () => {

@@ -2,9 +2,9 @@
  * @module SharedLock
  */
 
-import type {
-    IDatabaseSharedLockAdapter,
-    SharedLockAdapterVariants,
+import {
+    type IDatabaseSharedLockAdapter,
+    type SharedLockAdapterVariants,
 } from "@/shared-lock/contracts/_module.js";
 
 /**

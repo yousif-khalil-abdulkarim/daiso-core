@@ -2,11 +2,11 @@
  * @module Collection
  */
 
-import { isAsyncIterable, isIterable } from "@/utilities/_module.js";
 import {
     type AsyncCollapse,
     type IAsyncCollection,
 } from "@/collection/contracts/_module.js";
+import { isAsyncIterable, isIterable } from "@/utilities/_module.js";
 
 /**
  * @internal

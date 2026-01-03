@@ -8,6 +8,7 @@ import {
     type ExpectStatic,
     type beforeEach,
 } from "vitest";
+
 import {
     type ICacheData,
     type ICacheDataExpiration,
@@ -15,8 +16,8 @@ import {
     type ICacheUpdate,
     type IDatabaseCacheAdapter,
 } from "@/cache/contracts/_module.js";
-import { type Promisable } from "@/utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type Promisable } from "@/utilities/_module.js";
 
 /**
  *

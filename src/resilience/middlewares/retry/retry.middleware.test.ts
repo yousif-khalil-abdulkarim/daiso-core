@@ -1,13 +1,14 @@
 import { describe, expect, test } from "vitest";
-import { retry } from "@/resilience/middlewares/retry/retry.middleware.js";
-import type {
-    OnRetryAttemptData,
-    OnRetryDelayData,
-} from "@/resilience/middlewares/retry/retry.types.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { TO_MILLISECONDS } from "@/time-span/contracts/_module.js";
+
 import { AsyncHooks } from "@/hooks/_module.js";
+import { retry } from "@/resilience/middlewares/retry/retry.middleware.js";
+import {
+    type OnRetryAttemptData,
+    type OnRetryDelayData,
+} from "@/resilience/middlewares/retry/retry.types.js";
 import { RetryResilienceError } from "@/resilience/resilience.errors.js";
+import { TO_MILLISECONDS } from "@/time-span/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 describe("function: retry", () => {
     test("Should throw RetryResilienceError when all atempts fail", async () => {

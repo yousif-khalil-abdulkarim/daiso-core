@@ -2,14 +2,15 @@
  * @module SharedLock
  */
 
-import type {
-    ISharedLockAdapter,
-    ISharedLockAdapterState,
-    SharedLockAcquireSettings,
+import { type Redis, type Result } from "ioredis";
+
+import {
+    type ISharedLockAdapter,
+    type ISharedLockAdapterState,
+    type SharedLockAcquireSettings,
 } from "@/shared-lock/contracts/_module.js";
-import type { TimeSpan } from "@/time-span/implementations/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 import { UnexpectedError } from "@/utilities/errors.js";
-import type { Redis, Result } from "ioredis";
 
 /**
  * @internal

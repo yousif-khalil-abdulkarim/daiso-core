@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { Namespace } from "@/namespace/namespace.js";
 
 describe("class: Namespace", () => {

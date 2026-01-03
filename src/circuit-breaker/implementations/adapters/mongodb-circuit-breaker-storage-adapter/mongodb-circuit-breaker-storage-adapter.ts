@@ -2,23 +2,24 @@
  * @module CircuitBreaker
  */
 
-import type {
-    ICircuitBreakerStorageAdapter,
-    ICircuitBreakerStorageAdapterTransaction,
-} from "@/circuit-breaker/contracts/circuit-breaker-storage-adapter.contract.js";
-import type { ISerde } from "@/serde/contracts/serde.contract.js";
-import type {
-    IDeinitizable,
-    IInitizable,
-    InvokableFn,
-} from "@/utilities/_module.js";
-import type { ObjectId } from "mongodb";
 import {
     type Collection,
     type CollectionOptions,
     type Db,
     type MongoClient,
+    type ObjectId,
 } from "mongodb";
+
+import {
+    type ICircuitBreakerStorageAdapter,
+    type ICircuitBreakerStorageAdapterTransaction,
+} from "@/circuit-breaker/contracts/circuit-breaker-storage-adapter.contract.js";
+import { type ISerde } from "@/serde/contracts/serde.contract.js";
+import {
+    type IDeinitizable,
+    type IInitizable,
+    type InvokableFn,
+} from "@/utilities/_module.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/mongodb-circuit-breaker-storage-adapter"`

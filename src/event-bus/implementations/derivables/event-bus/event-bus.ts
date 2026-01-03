@@ -2,25 +2,26 @@
  * @module EventBus
  */
 
-import type { ITask } from "@/task/contracts/_module.js";
-import { Task } from "@/task/implementations/_module.js";
-import type {
-    BaseEvent,
-    BaseEventMap,
-    EventListener,
-    EventListenerFn,
-    Unsubscribe,
-} from "@/event-bus/contracts/_module.js";
+import { type StandardSchemaV1 } from "@standard-schema/spec";
+
 import {
     type IEventBus,
     type IEventBusAdapter,
+    type BaseEvent,
+    type BaseEventMap,
+    type EventListener,
+    type EventListenerFn,
+    type Unsubscribe,
 } from "@/event-bus/contracts/_module.js";
-
-import { getInvokableName, validate } from "@/utilities/_module.js";
-import { resolveInvokable } from "@/utilities/_module.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { Namespace } from "@/namespace/_module.js";
+import { type ITask } from "@/task/contracts/_module.js";
+import { Task } from "@/task/implementations/_module.js";
+import {
+    getInvokableName,
+    validate,
+    resolveInvokable,
+} from "@/utilities/_module.js";
 
 /**
  *

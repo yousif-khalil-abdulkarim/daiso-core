@@ -2,9 +2,9 @@
  * @module RateLimiter
  */
 
-import type {
-    IRateLimiterAdapter,
-    IRateLimiterAdapterState,
+import {
+    type IRateLimiterAdapter,
+    type IRateLimiterAdapterState,
 } from "@/rate-limiter/contracts/_module.js";
 
 /**

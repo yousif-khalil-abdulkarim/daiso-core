@@ -1,13 +1,14 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-    RateLimiterStorage,
-    type IRateLimiterStorageState,
-} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-storage.js";
+
 import {
     RATE_LIMITER_STATE,
     type IRateLimiterPolicy,
 } from "@/rate-limiter/contracts/_module.js";
 import { RateLimiterPolicy } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-policy.js";
+import {
+    RateLimiterStorage,
+    type IRateLimiterStorageState,
+} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-storage.js";
 import { MemoryRateLimiterStorageAdapter } from "@/rate-limiter/implementations/adapters/memory-rate-limiter-storage-adapter/_module.js";
 import { TimeSpan } from "@/time-span/implementations/time-span.js";
 

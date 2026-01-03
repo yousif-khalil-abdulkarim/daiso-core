@@ -1,18 +1,21 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { databaseSemaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
 import {
-    KyselySemaphoreAdapter,
-    type KyselySemaphoreTables,
-} from "@/semaphore/implementations/adapters/kysely-semaphore-adapter/_module.js";
+    type StartedPostgreSqlContainer,
+    PostgreSqlContainer,
+} from "@testcontainers/postgresql";
 import {
     Kysely,
     PostgresDialect,
     type ColumnMetadata,
     type TableMetadata,
 } from "kysely";
-import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
-import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { Pool } from "pg";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
+import {
+    KyselySemaphoreAdapter,
+    type KyselySemaphoreTables,
+} from "@/semaphore/implementations/adapters/kysely-semaphore-adapter/_module.js";
+import { databaseSemaphoreAdapterTestSuite } from "@/semaphore/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);

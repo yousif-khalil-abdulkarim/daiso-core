@@ -1,17 +1,18 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module.js";
-import {
-    MongodbRateLimiterStorageAdapter,
-    type MongodbRateLimiterDocument,
-} from "@/rate-limiter/implementations/adapters/mongodb-rate-limiter-storage-adapter/_module.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
-import { Serde } from "@/serde/implementations/derivables/_module.js";
-import { MongoClient } from "mongodb";
 import {
     MongoDBContainer,
     type StartedMongoDBContainer,
 } from "@testcontainers/mongodb";
+import { MongoClient } from "mongodb";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
+
+import {
+    MongodbRateLimiterStorageAdapter,
+    type MongodbRateLimiterDocument,
+} from "@/rate-limiter/implementations/adapters/mongodb-rate-limiter-storage-adapter/_module.js";
+import { rateLimiterStorageAdapterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module.js";
+import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
+import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
 describe("class: MongodbRateLimiterStorageAdapter", () => {

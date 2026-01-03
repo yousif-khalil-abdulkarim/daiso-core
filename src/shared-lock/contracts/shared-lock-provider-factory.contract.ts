@@ -2,7 +2,7 @@
  * @module SharedLock
  */
 
-import type { ISharedLockProvider } from "@/shared-lock/contracts/shared-lock-provider.contract.js";
+import { type ISharedLockProvider } from "@/shared-lock/contracts/shared-lock-provider.contract.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     UnregisteredAdapterError,

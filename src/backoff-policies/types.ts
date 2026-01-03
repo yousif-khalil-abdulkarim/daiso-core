@@ -2,21 +2,21 @@
  * @module BackoffPolicy
  */
 
-import type {
-    ConstantBackoffSettings,
-    SerializedConstantBackoffSettings,
+import {
+    type ConstantBackoffSettings,
+    type SerializedConstantBackoffSettings,
 } from "@/backoff-policies/constant-backoff/_module.js";
-import type {
-    ExponentialBackoffSettings,
-    SerializedExponentialBackoffSettings,
+import {
+    type ExponentialBackoffSettings,
+    type SerializedExponentialBackoffSettings,
 } from "@/backoff-policies/exponential-backoff/_module.js";
-import type {
-    LinearBackoffSettings,
-    SerializedLinearBackoffSettings,
+import {
+    type LinearBackoffSettings,
+    type SerializedLinearBackoffSettings,
 } from "@/backoff-policies/linear-backoff/_module.js";
-import type {
-    PolynomialBackoffSettings,
-    SerializedPolynomialBackoffSettings,
+import {
+    type PolynomialBackoffSettings,
+    type SerializedPolynomialBackoffSettings,
 } from "@/backoff-policies/polynomial-backoff/_module.js";
 
 /**

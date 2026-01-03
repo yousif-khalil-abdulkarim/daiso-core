@@ -2,9 +2,9 @@
  * @module EventBus
  */
 
-import type {
-    EventListener,
-    EventListenerFn,
+import {
+    type EventListener,
+    type EventListenerFn,
 } from "@/event-bus/contracts/_module.js";
 import { resolveInvokable } from "@/utilities/_module.js";
 
