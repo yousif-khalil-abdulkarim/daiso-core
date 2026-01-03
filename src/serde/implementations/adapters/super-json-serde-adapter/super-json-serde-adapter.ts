@@ -55,10 +55,7 @@ export class SuperJsonSerdeAdapter implements IFlexibleSerdeAdapter<string> {
         try {
             return this.superJson.stringify(value);
         } catch (error: unknown) {
-            throw new SerializationSerdeError(
-                `Serialization error "${String(error)}" occured`,
-                error,
-            );
+            throw SerializationSerdeError.create(error);
         }
     }
 
@@ -66,10 +63,7 @@ export class SuperJsonSerdeAdapter implements IFlexibleSerdeAdapter<string> {
         try {
             return this.superJson.parse(value);
         } catch (error: unknown) {
-            throw new DeserializationSerdeError(
-                `Deserialization error "${String(error)}" occured`,
-                error,
-            );
+            throw DeserializationSerdeError.create(error);
         }
     }
 }
