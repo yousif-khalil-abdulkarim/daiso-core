@@ -16,7 +16,6 @@ import {
     type IAsyncCollection,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
-    TypeCollectionError,
     type AsyncReduce,
     EmptyCollectionError,
     type CrossJoinResult,
@@ -351,7 +350,7 @@ export class AsyncIterableCollection<TInput = unknown>
     ): ITask<TOutput> {
         return new Task(async () => {
             if (initialValue === undefined && (await this.isEmpty())) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "AsyncReduce of empty array must be inputed a initial value",
                 );
             }
@@ -393,9 +392,7 @@ export class AsyncIterableCollection<TInput = unknown>
             let str: string | null = null;
             for await (const item of this) {
                 if (typeof item !== "string") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be string",
-                    );
+                    throw new TypeError("Item type is invalid must be string");
                 }
                 if (str === null) {
                     str = item;
@@ -475,9 +472,7 @@ export class AsyncIterableCollection<TInput = unknown>
             let sum = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 sum += item;
             }
@@ -496,9 +491,7 @@ export class AsyncIterableCollection<TInput = unknown>
                 sum = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 size++;
                 sum += item;
@@ -521,7 +514,7 @@ export class AsyncIterableCollection<TInput = unknown>
             const isEven = size % 2 === 0,
                 items = await this.map((item) => {
                     if (typeof item !== "number") {
-                        throw new TypeCollectionError(
+                        throw new TypeError(
                             "Item type is invalid must be number",
                         );
                     }
@@ -563,9 +556,7 @@ export class AsyncIterableCollection<TInput = unknown>
             let min = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 if (min === 0) {
                     min = item;
@@ -587,9 +578,7 @@ export class AsyncIterableCollection<TInput = unknown>
             let max = 0;
             for await (const item of this) {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 if (max === 0) {
                     max = item;
@@ -1252,12 +1241,12 @@ export class AsyncIterableCollection<TInput = unknown>
             const record: Record<string | number | symbol, unknown> = {};
             for await (const item of this) {
                 if (!Array.isArray(item)) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                     );
                 }
                 if (item.length !== 2) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                     );
                 }
@@ -1269,7 +1258,7 @@ export class AsyncIterableCollection<TInput = unknown>
                         typeof key === "symbol"
                     )
                 ) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                     );
                 }
@@ -1284,12 +1273,12 @@ export class AsyncIterableCollection<TInput = unknown>
             const map = new Map();
             for await (const item of this) {
                 if (!Array.isArray(item)) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2",
                     );
                 }
                 if (item.length !== 2) {
-                    throw new TypeCollectionError(
+                    throw new TypeError(
                         "Item type is invalid must be a tuple of size 2",
                     );
                 }

@@ -16,7 +16,6 @@ import {
     MultipleItemsFoundCollectionError,
     type Tap,
     type Transform,
-    TypeCollectionError,
     type Reduce,
     EmptyCollectionError,
     type CrossJoinResult,
@@ -335,7 +334,7 @@ export class IterableCollection<TInput = unknown>
         initialValue?: TOutput,
     ): TOutput {
         if (initialValue === undefined && this.isEmpty()) {
-            throw new TypeCollectionError(
+            throw new TypeError(
                 "Reduce of empty array must be inputed a initial value",
             );
         }
@@ -367,9 +366,7 @@ export class IterableCollection<TInput = unknown>
         let str: string | null = null;
         for (const item of this) {
             if (typeof item !== "string") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be string",
-                );
+                throw new TypeError("Item type is invalid must be string");
             }
             if (str === null) {
                 str = item as string;
@@ -445,9 +442,7 @@ export class IterableCollection<TInput = unknown>
         let sum = 0;
         for (const item of this) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             sum += item;
         }
@@ -464,9 +459,7 @@ export class IterableCollection<TInput = unknown>
             sum = 0;
         for (const item of this) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             size++;
             sum += item;
@@ -487,9 +480,7 @@ export class IterableCollection<TInput = unknown>
         const isEven = size % 2 === 0,
             items = this.map((item) => {
                 if (typeof item !== "number") {
-                    throw new TypeCollectionError(
-                        "Item type is invalid must be number",
-                    );
+                    throw new TypeError("Item type is invalid must be number");
                 }
                 return item;
             })
@@ -527,9 +518,7 @@ export class IterableCollection<TInput = unknown>
         let min = 0;
         for (const item of this) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             if (min === 0) {
                 min = item;
@@ -549,9 +538,7 @@ export class IterableCollection<TInput = unknown>
         let max = 0;
         for (const item of this) {
             if (typeof item !== "number") {
-                throw new TypeCollectionError(
-                    "Item type is invalid must be number",
-                );
+                throw new TypeError("Item type is invalid must be number");
             }
             if (max === 0) {
                 max = item;
@@ -1141,12 +1128,12 @@ export class IterableCollection<TInput = unknown>
         const record: Record<string | number | symbol, unknown> = {};
         for (const item of this) {
             if (!Array.isArray(item)) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                 );
             }
             if (item.length !== 2) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                 );
             }
@@ -1158,7 +1145,7 @@ export class IterableCollection<TInput = unknown>
                     typeof key === "symbol"
                 )
             ) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2 where first tuple item is a string or number or symbol",
                 );
             }
@@ -1171,12 +1158,12 @@ export class IterableCollection<TInput = unknown>
         const map = new Map();
         for (const item of this) {
             if (!Array.isArray(item)) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2",
                 );
             }
             if (item.length !== 2) {
-                throw new TypeCollectionError(
+                throw new TypeError(
                     "Item type is invalid must be a tuple of size 2",
                 );
             }

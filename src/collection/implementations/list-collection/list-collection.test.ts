@@ -1,7 +1,6 @@
 import { describe, expect, test } from "vitest";
 
 import {
-    TypeCollectionError,
     ItemNotFoundCollectionError,
     MultipleItemsFoundCollectionError,
     EmptyCollectionError,
@@ -112,11 +111,11 @@ describe("class: ListCollection", () => {
             }, initialValue);
             expect(indexes).toEqual([0, 1, 2, 3]);
         });
-        test("Should throw TypeCollectionError when given an empty array without initial value", () => {
+        test("Should throw TypeError when given an empty array without initial value", () => {
             const collection = new ListCollection<string>([]);
             expect(() => {
                 collection.reduce((a, b) => a + b);
-            }).toThrowError(TypeCollectionError);
+            }).toThrowError(TypeError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const arr = ["a", "b", "c", "d"],
@@ -374,11 +373,11 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([1, 2, 3, 4]);
             expect(collection.sum()).toBe(10);
         });
-        test("Should throw TypeCollectionError when containg a none number item", () => {
+        test("Should throw TypeError when containg a none number item", () => {
             const collection = new ListCollection([1, 2, 3, 4, "a"]);
             expect(() => {
                 collection.sum();
-            }).toThrowError(TypeCollectionError);
+            }).toThrowError(TypeError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new ListCollection([1, 2, 3, 4]);
@@ -397,11 +396,11 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([1, 2, 3, 4]);
             expect(collection.average()).toBe(2.5);
         });
-        test("Should throw TypeCollectionError when containg a none number item", () => {
+        test("Should throw TypeError when containg a none number item", () => {
             const collection = new ListCollection([1, 2, 3, 4, "a"]);
             expect(() => {
                 collection.average();
-            }).toThrowError(TypeCollectionError);
+            }).toThrowError(TypeError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new ListCollection([1, 2, 3, 4]);
@@ -424,11 +423,11 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]);
             expect(collection.median()).toBe(3);
         });
-        test("Should throw TypeCollectionError when containg a none number item", () => {
+        test("Should throw TypeError when containg a none number item", () => {
             const collection = new ListCollection([1, 2, 3, 4, "a"]);
             expect(() => {
                 collection.median();
-            }).toThrowError(TypeCollectionError);
+            }).toThrowError(TypeError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]);
@@ -447,11 +446,11 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([2, 1, 3, -2, 4]);
             expect(collection.min()).toBe(-2);
         });
-        test("Should throw TypeCollectionError when containg a none number item", () => {
+        test("Should throw TypeError when containg a none number item", () => {
             const collection = new ListCollection([2, 1, 3, -2, 4, "-4"]);
             expect(() => {
                 collection.min();
-            }).toThrowError(TypeCollectionError);
+            }).toThrowError(TypeError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new ListCollection([2, 1, 3, -2, 4]);
@@ -470,11 +469,11 @@ describe("class: ListCollection", () => {
             const collection = new ListCollection([2, 1, 3, -2, 4]);
             expect(collection.max()).toBe(4);
         });
-        test("Should throw TypeCollectionError when containg a none number item", () => {
+        test("Should throw TypeError when containg a none number item", () => {
             const collection = new ListCollection([2, 1, 3, -2, 4, "-4"]);
             expect(() => {
                 collection.max();
-            }).toThrowError(TypeCollectionError);
+            }).toThrowError(TypeError);
         });
         test("Should return the same value when called more than 1 times", () => {
             const collection = new ListCollection([2, 1, 3, -2, 4]);
@@ -2385,53 +2384,37 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: toRecord", () => {
-        test("Should throw TypeCollectionError when given an item that is not array", () => {
+        test("Should throw TypeError when given an item that is not array", () => {
             const collection = new ListCollection(["a"]);
-            expect(() => collection.toRecord()).toThrowError(
-                TypeCollectionError,
-            );
+            expect(() => collection.toRecord()).toThrowError(TypeError);
         });
-        test("Should throw TypeCollectionError when given an item that is empty array", () => {
+        test("Should throw TypeError when given an item that is empty array", () => {
             const collection = new ListCollection([[]]);
-            expect(() => collection.toRecord()).toThrowError(
-                TypeCollectionError,
-            );
+            expect(() => collection.toRecord()).toThrowError(TypeError);
         });
-        test("Should throw TypeCollectionError when given an item that is array of size 1", () => {
+        test("Should throw TypeError when given an item that is array of size 1", () => {
             const collection = new ListCollection([["a"]]);
-            expect(() => collection.toRecord()).toThrowError(
-                TypeCollectionError,
-            );
+            expect(() => collection.toRecord()).toThrowError(TypeError);
         });
-        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item boolean", () => {
+        test("Should throw TypeError when given an item that is array of size 2 and where first item boolean", () => {
             const collection = new ListCollection([[false, "a"]]);
-            expect(() => collection.toRecord()).toThrowError(
-                TypeCollectionError,
-            );
+            expect(() => collection.toRecord()).toThrowError(TypeError);
         });
-        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item is a object", () => {
+        test("Should throw TypeError when given an item that is array of size 2 and where first item is a object", () => {
             const collection = new ListCollection([[{}, "a"]]);
-            expect(() => collection.toRecord()).toThrowError(
-                TypeCollectionError,
-            );
+            expect(() => collection.toRecord()).toThrowError(TypeError);
         });
-        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item is a function", () => {
+        test("Should throw TypeError when given an item that is array of size 2 and where first item is a function", () => {
             const collection = new ListCollection([[() => {}, "a"]]);
-            expect(() => collection.toRecord()).toThrowError(
-                TypeCollectionError,
-            );
+            expect(() => collection.toRecord()).toThrowError(TypeError);
         });
-        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item is a bigint", () => {
+        test("Should throw TypeError when given an item that is array of size 2 and where first item is a bigint", () => {
             const collection = new ListCollection([[1n, "a"]]);
-            expect(() => collection.toRecord()).toThrowError(
-                TypeCollectionError,
-            );
+            expect(() => collection.toRecord()).toThrowError(TypeError);
         });
-        test("Should throw TypeCollectionError when given an item that is array of size 2 and where first item is a null", () => {
+        test("Should throw TypeError when given an item that is array of size 2 and where first item is a null", () => {
             const collection = new ListCollection([[null, "a"]]);
-            expect(() => collection.toRecord()).toThrowError(
-                TypeCollectionError,
-            );
+            expect(() => collection.toRecord()).toThrowError(TypeError);
         });
         test("Should return Record when given items that is array of size 2 and where first items are string, number and symbols", () => {
             const MY_SYMBOL = Symbol("MY_SYMBOL");
@@ -2448,17 +2431,17 @@ describe("class: ListCollection", () => {
         });
     });
     describe("method: toMap", () => {
-        test("Should throw TypeCollectionError when given an item that is not array", () => {
+        test("Should throw TypeError when given an item that is not array", () => {
             const collection = new ListCollection(["a"]);
-            expect(() => collection.toMap()).toThrowError(TypeCollectionError);
+            expect(() => collection.toMap()).toThrowError(TypeError);
         });
-        test("Should throw TypeCollectionError when given an item that is empty array", () => {
+        test("Should throw TypeError when given an item that is empty array", () => {
             const collection = new ListCollection([[]]);
-            expect(() => collection.toMap()).toThrowError(TypeCollectionError);
+            expect(() => collection.toMap()).toThrowError(TypeError);
         });
-        test("Should throw TypeCollectionError when given an item that is array of size 1", () => {
+        test("Should throw TypeError when given an item that is array of size 1", () => {
             const collection = new ListCollection([["a"]]);
-            expect(() => collection.toMap()).toThrowError(TypeCollectionError);
+            expect(() => collection.toMap()).toThrowError(TypeError);
         });
         test("Should return Map when given items that is array of size 2", () => {
             const MY_SYMBOL = Symbol("MY_SYMBOL");

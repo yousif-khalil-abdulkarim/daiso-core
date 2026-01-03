@@ -23,8 +23,6 @@ import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type MultipleItemsFoundCollectionError,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type TypeCollectionError,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
 import { type ITask } from "@/task/contracts/_module.js";
@@ -193,7 +191,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
 
     /**
      * The `join` method joins the collection's items with ` separator `. An error will be thrown when if a none string item is encounterd.
-     * @throws {TypeCollectionError}
+     * @throws {TypeError}
      * @example
      * ```ts
      * import type { IAsyncCollection } from "@daiso-tech/core/collection/contracts";
@@ -382,7 +380,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
 
     /**
      * The `sum` method returns the sum of all items in the collection. If the collection includes other than number items an error will be thrown.
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {TypeError} {@link TypeError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
@@ -401,7 +399,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
 
     /**
      * The `average` method returns the average of all items in the collection. If the collection includes other than number items an error will be thrown.
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {TypeError} {@link TypeError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
@@ -420,7 +418,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
 
     /**
      * The `median` method returns the median of all items in the collection. If the collection includes other than number items an error will be thrown.
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {TypeError} {@link TypeError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
@@ -439,7 +437,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
 
     /**
      * The `min` method returns the min of all items in the collection. If the collection includes other than number items an error will be thrown.
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {TypeError} {@link TypeError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
@@ -458,7 +456,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
 
     /**
      * The `max` method returns the max of all items in the collection. If the collection includes other than number items an error will be thrown.
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {TypeError} {@link TypeError}
      * @throws {EmptyCollectionError} {@link EmptyCollectionError}
      * @example
      * ```ts
@@ -2347,14 +2345,14 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     /**
      * The `toRecord` method converts the collection to a new {@link Record | `Record`}.
      * An error will be thrown if item is not a tuple of size 2 where the first element is a string or a number.
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {TypeError} {@link TypeError}
      */
     toRecord(): ITask<EnsureRecord<TInput>>;
 
     /**
      * The `toMap` method converts the collection to a new {@link Map | `Map`}.
      * An error will be thrown if item is not a tuple of size 2.
-     * @throws {TypeCollectionError} {@link TypeCollectionError}
+     * @throws {TypeError} {@link TypeError}
      */
     toMap(): ITask<EnsureMap<TInput>>;
 };
