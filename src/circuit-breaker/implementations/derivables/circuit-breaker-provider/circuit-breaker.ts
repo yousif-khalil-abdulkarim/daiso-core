@@ -240,7 +240,7 @@ export class CircuitBreaker implements ICircuitBreaker {
 
         const isInOpenState = transition.to === CIRCUIT_BREAKER_STATE.OPEN;
         if (isInOpenState) {
-            throw new OpenCircuitBreakerError("!!__MESSAGE__!!");
+            throw OpenCircuitBreakerError.create(this._key);
         }
     }
 
