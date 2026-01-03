@@ -31,6 +31,7 @@ import {
  * @internal
  */
 export type RateLimiterSettings = {
+    limit: number;
     enableAsyncTracking: boolean;
     eventDispatcher: IEventDispatcher<RateLimiterEventMap>;
     adapter: IRateLimiterAdapter;
@@ -44,6 +45,7 @@ export type RateLimiterSettings = {
  */
 export class RateLimiter implements IRateLimiter {
     private readonly _key: Key;
+    private readonly _limit: number;
     private readonly errorPolicy: ErrorPolicy;
     private readonly onlyError: boolean;
     private readonly adapter: IRateLimiterAdapter;
@@ -52,6 +54,7 @@ export class RateLimiter implements IRateLimiter {
 
     constructor(settings: RateLimiterSettings) {
         const {
+            limit,
             enableAsyncTracking,
             eventDispatcher,
             key,
@@ -60,6 +63,7 @@ export class RateLimiter implements IRateLimiter {
             adapter,
         } = settings;
 
+        this._limit = limit;
         this.enableAsyncTracking = enableAsyncTracking;
         this.eventDispatcher = eventDispatcher;
         this._key = key;
@@ -98,7 +102,7 @@ export class RateLimiter implements IRateLimiter {
             } satisfies RateLimiterBlockedState;
         }
 
-        throw new UnexpectedError("!!__MESSAGE__!!");
+        throw new UnexpectedError("1_!!__MESSAGE__!!");
     }
 
     getState(): ITask<RateLimiterState> {
@@ -114,7 +118,7 @@ export class RateLimiter implements IRateLimiter {
     }
 
     get limit(): number {
-        return this.limit;
+        return this._limit;
     }
 
     private async trackErrorWrapper<TValue>(
@@ -127,18 +131,18 @@ export class RateLimiter implements IRateLimiter {
         if (state.type === RATE_LIMITER_STATE.BLOCKED) {
             this.eventDispatcher
                 .dispatch(RATE_LIMITER_EVENTS.BLOCKED, {
-                    circuitBreaker: this,
+                    rateLimiter: this,
                 })
                 .detach();
 
             const { type: _type, ...rest } = state;
-            throw new BlockedRateLimiterError(rest, "!!__MESSAGE__!!");
+            throw new BlockedRateLimiterError(rest, "2_!!__MESSAGE__!!");
         }
 
         try {
             this.eventDispatcher
                 .dispatch(RATE_LIMITER_EVENTS.ALLOWED, {
-                    circuitBreaker: this,
+                    rateLimiter: this,
                 })
                 .detach();
 
@@ -152,30 +156,31 @@ export class RateLimiter implements IRateLimiter {
             if (isErrorMatching) {
                 this.eventDispatcher
                     .dispatch(RATE_LIMITER_EVENTS.TRACKED_FAILURE, {
-                        circuitBreaker: this,
+                        rateLimiter: this,
                         error,
                     })
                     .detach();
             } else {
                 this.eventDispatcher
                     .dispatch(RATE_LIMITER_EVENTS.UNTRACKED_FAILURE, {
-                        circuitBreaker: this,
+                        rateLimiter: this,
                         error,
                     })
                     .detach();
             }
 
-            if (!this.enableAsyncTracking && isErrorMatching) {
-                await this.adapter.updateState(this.key.toString(), this.limit);
-            }
-
-            if (this.enableAsyncTracking && isErrorMatching) {
-                new Task(async () => {
+            if (isErrorMatching) {
+                const task = new Task(async () => {
                     await this.adapter.updateState(
                         this.key.toString(),
                         this.limit,
                     );
-                }).detach();
+                });
+                if (this.enableAsyncTracking) {
+                    task.detach();
+                } else {
+                    await task;
+                }
             }
 
             throw error;
@@ -192,17 +197,17 @@ export class RateLimiter implements IRateLimiter {
         if (state.type === RATE_LIMITER_STATE.BLOCKED) {
             this.eventDispatcher
                 .dispatch(RATE_LIMITER_EVENTS.BLOCKED, {
-                    circuitBreaker: this,
+                    rateLimiter: this,
                 })
                 .detach();
 
             const { type: _type, ...rest } = state;
-            throw new BlockedRateLimiterError(rest, "!!__MESSAGE__!!");
+            throw new BlockedRateLimiterError(rest, "3_!!__MESSAGE__!!");
         }
 
         this.eventDispatcher
             .dispatch(RATE_LIMITER_EVENTS.ALLOWED, {
-                circuitBreaker: this,
+                rateLimiter: this,
             })
             .detach();
 
@@ -222,7 +227,7 @@ export class RateLimiter implements IRateLimiter {
         return new Task(async () => {
             this.eventDispatcher
                 .dispatch(RATE_LIMITER_EVENTS.RESETED, {
-                    circuitBreaker: this,
+                    rateLimiter: this,
                 })
                 .detach();
             await this.adapter.reset(this._key.toString());

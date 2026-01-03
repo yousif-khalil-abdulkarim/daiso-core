@@ -9,7 +9,7 @@ import type { IRateLimiterStateMethods } from "@/rate-limiter/contracts/rate-lim
  * @group Events
  */
 export type RateLimiterEventBase = {
-    circuitBreaker: IRateLimiterStateMethods;
+    rateLimiter: IRateLimiterStateMethods;
 };
 
 /**
@@ -52,8 +52,9 @@ export type TrackedFailureRateLimiterEvent = RateLimiterEventBase & {
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
  * @group Events
  */
-export type UntrackedFailureRateLimiterEvent = RateLimiterEventBase &
-    TrackedFailureRateLimiterEvent;
+export type UntrackedFailureRateLimiterEvent = RateLimiterEventBase & {
+    error: unknown;
+};
 
 /**
  *
