@@ -73,9 +73,9 @@ export type IEventListenable<TEventMap extends BaseEventMap = BaseEventMap> = {
     ): ITask<void>;
 
     /**
-     * The `asPromise` method returns {@link ITask | `ITask`} objecet that resolves once the {@link BaseEvent | `BaseEvent`} is dispatched.
+     * The `asTask` method returns {@link ITask | `ITask`} objecet that resolves once the {@link BaseEvent | `BaseEvent`} is dispatched.
      */
-    asPromise<TEventName extends keyof TEventMap>(
+    asTask<TEventName extends keyof TEventMap>(
         eventName: TEventName,
     ): ITask<TEventMap[TEventName]>;
 

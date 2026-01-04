@@ -251,7 +251,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
         });
     }
 
-    asPromise<TEventName extends keyof TEventMap>(
+    asTask<TEventName extends keyof TEventMap>(
         eventName: TEventName,
     ): ITask<TEventMap[TEventName]> {
         return Task.fromCallback((resolve, reject) => {

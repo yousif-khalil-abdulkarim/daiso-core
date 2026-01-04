@@ -285,10 +285,10 @@ export class LockProvider implements ILockProvider {
      * You can listen to the following {@link LockEventMap | `LockEventMap`} of all {@link ILock | `ILock`} instances created by the {@link ILockProvider | `ILockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    asPromise<TEventName extends keyof LockEventMap>(
+    asTask<TEventName extends keyof LockEventMap>(
         eventName: TEventName,
     ): ITask<LockEventMap[TEventName]> {
-        return this.eventBus.asPromise(eventName);
+        return this.eventBus.asTask(eventName);
     }
 
     /**

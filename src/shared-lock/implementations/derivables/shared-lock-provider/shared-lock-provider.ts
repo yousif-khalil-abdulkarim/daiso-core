@@ -282,10 +282,10 @@ export class SharedLockProvider implements ISharedLockProvider {
      * You can listen to the following {@link SharedLockEventMap | `SharedLockEventMap`} of all {@link ISharedLock | `ISharedLock`} instances created by the {@link ISharedLockProvider | `ISharedLockProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    asPromise<TEventName extends keyof SharedLockEventMap>(
+    asTask<TEventName extends keyof SharedLockEventMap>(
         eventName: TEventName,
     ): ITask<SharedLockEventMap[TEventName]> {
-        return this.eventBus.asPromise(eventName);
+        return this.eventBus.asTask(eventName);
     }
 
     /**

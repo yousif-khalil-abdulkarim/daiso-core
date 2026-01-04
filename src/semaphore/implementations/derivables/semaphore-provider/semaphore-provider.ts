@@ -287,10 +287,10 @@ export class SemaphoreProvider implements ISemaphoreProvider {
      * You can listen to the following {@link SemaphoreEventMap | `SemaphoreEventMap`} of all {@link ISemaphore | `ISemaphore`} instances created by the {@link ISemaphoreProvider | `ISemaphoreProvider`}.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    asPromise<TEventName extends keyof SemaphoreEventMap>(
+    asTask<TEventName extends keyof SemaphoreEventMap>(
         eventName: TEventName,
     ): ITask<SemaphoreEventMap[TEventName]> {
-        return this.eventBus.asPromise(eventName);
+        return this.eventBus.asTask(eventName);
     }
 
     /**
