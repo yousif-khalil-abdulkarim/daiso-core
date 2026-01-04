@@ -21,10 +21,11 @@ export class DatabaseLockAdapter implements ILockAdapter {
         lockId: string,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
+        const expiration = ttl?.toEndDate() ?? null;
         return await this.adapter.transaction<boolean>(async (trx) => {
             const lockData = await trx.find(key);
             if (lockData === null) {
-                await trx.upsert(key, lockId, ttl?.toEndDate() ?? null);
+                await trx.upsert(key, lockId, expiration);
                 return true;
             }
             if (lockData.owner === lockId) {
@@ -34,7 +35,7 @@ export class DatabaseLockAdapter implements ILockAdapter {
                 return false;
             }
             if (lockData.expiration <= new Date()) {
-                await trx.upsert(key, lockId, ttl?.toEndDate() ?? null);
+                await trx.upsert(key, lockId, expiration);
                 return true;
             }
 

@@ -102,6 +102,7 @@ export class DatabaseSharedLockAdapter implements ISharedLockAdapter {
         lockId: string,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
+        const expiration = ttl?.toEndDate() ?? null;
         return await this.adapter.transaction<boolean>(async (trx) => {
             const readerSemaphore = await trx.reader.findSemaphore(key);
             if (readerSemaphore !== null) {
@@ -110,7 +111,7 @@ export class DatabaseSharedLockAdapter implements ISharedLockAdapter {
 
             const writerLock = await trx.writer.find(key);
             if (writerLock === null) {
-                await trx.writer.upsert(key, lockId, ttl?.toEndDate() ?? null);
+                await trx.writer.upsert(key, lockId, expiration);
                 return true;
             }
             if (writerLock.owner === lockId) {
@@ -120,7 +121,7 @@ export class DatabaseSharedLockAdapter implements ISharedLockAdapter {
                 return false;
             }
             if (writerLock.expiration <= new Date()) {
-                await trx.writer.upsert(key, lockId, ttl?.toEndDate() ?? null);
+                await trx.writer.upsert(key, lockId, expiration);
                 return true;
             }
 
@@ -180,13 +181,12 @@ export class DatabaseSharedLockAdapter implements ISharedLockAdapter {
     }
 
     async acquireReader(settings: SharedLockAcquireSettings): Promise<boolean> {
+        const expiration = settings.ttl?.toEndDate() ?? null;
         return await this.adapter.transaction<boolean>(async (trx) => {
             const writerLock = await trx.writer.find(settings.key);
             if (writerLock !== null) {
                 return false;
             }
-
-            const expiration = settings.ttl?.toEndDate() ?? null;
 
             const semaphoreData = await trx.reader.findSemaphore(settings.key);
 

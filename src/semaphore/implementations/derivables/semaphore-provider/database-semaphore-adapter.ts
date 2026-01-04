@@ -17,9 +17,9 @@ export class DatabaseSemaphoreAdapter implements ISemaphoreAdapter {
     constructor(private readonly adapter: IDatabaseSemaphoreAdapter) {}
 
     async acquire(settings: SemaphoreAcquireSettings): Promise<boolean> {
-        return await this.adapter.transaction(async (methods) => {
-            const expiration = settings.ttl?.toEndDate() ?? null;
+        const expiration = settings.ttl?.toEndDate() ?? null;
 
+        return await this.adapter.transaction(async (methods) => {
             const semaphoreData = await methods.findSemaphore(settings.key);
 
             let limit = semaphoreData?.limit;
