@@ -13,6 +13,8 @@ import {
     type CacheEventMap,
     type NotFoundCacheEvent,
     type RemovedCacheEvent,
+    KeyExistsCacheError,
+    type CacheWriteSettings,
 } from "@/cache/contracts/_module.js";
 import { type CacheAdapterVariants } from "@/cache/contracts/types.js";
 import { resolveCacheAdapter } from "@/cache/implementations/derivables/cache/resolve-cache-adapter.js";
@@ -33,6 +35,7 @@ import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     resolveAsyncLazyable,
     validate,
+    withJitter,
     type AsyncLazyable,
     type NoneFunc,
 } from "@/utilities/_module.js";
@@ -82,6 +85,13 @@ export type CacheSettingsBase<TType = unknown> = {
      * @default null
      */
     defaultTtl?: ITimeSpan | null;
+
+    /**
+     * You can pass jitter value to ensure the backoff will not execute at the same time.
+     * If you pas null you can disable the jitrter.
+     * @default 0.2
+     */
+    defaultJitter?: number | null;
 };
 
 /**
@@ -112,6 +122,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
     private readonly namespace: Namespace;
     private readonly schema: StandardSchemaV1<TType> | undefined;
     private readonly shouldValidateOutput: boolean;
+    private readonly defaultJitter: number | null;
 
     /**
      *
@@ -152,6 +163,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 adapter: new NoOpEventBusAdapter(),
             }),
             defaultTtl = null,
+            defaultJitter = 0.2,
         } = settings;
 
         this.shouldValidateOutput = shouldValidateOutput;
@@ -161,6 +173,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
             defaultTtl === null ? null : TimeSpan.fromTimeSpan(defaultTtl);
         this.eventBus = eventBus;
         this.adapter = resolveCacheAdapter(adapter);
+        this.defaultJitter = defaultJitter;
     }
 
     /**
@@ -254,13 +267,13 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 if (value === null) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.get(),
+                            key: keyObj,
                         })
                         .detach();
                 } else {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.FOUND, {
-                            key: keyObj.get(),
+                            key: keyObj,
                             value,
                         })
                         .detach();
@@ -284,9 +297,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         return new Task<TType>(async () => {
             const value = await this.get(key);
             if (value === null) {
-                throw new KeyNotFoundCacheError(
-                    `Key "${this.namespace.create(key).get()}" is not found`,
-                );
+                throw KeyNotFoundCacheError.create(this.namespace.create(key));
             }
             return value;
         });
@@ -306,20 +317,13 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 if (value === null) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.get(),
+                            key: keyObj,
                         })
                         .detach();
                 } else {
                     this.eventBus
-                        .dispatch(CACHE_EVENTS.FOUND, {
-                            key: keyObj.get(),
-                            value,
-                        })
-                        .detach();
-                    this.eventBus
-                        .dispatch(CACHE_EVENTS.WRITTEN, {
-                            type: "removed",
-                            key: keyObj.get(),
+                        .dispatch(CACHE_EVENTS.REMOVED, {
+                            key: keyObj,
                         })
                         .detach();
                 }
@@ -355,43 +359,94 @@ export class Cache<TType = unknown> implements ICache<TType> {
     getOrAdd(
         key: string,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,
-        ttl?: ITimeSpan | null,
+        settings?: CacheWriteSettings,
     ): ITask<TType> {
         return new Task<TType>(async () => {
-            const value = await this.get(key);
-            if (value === null) {
-                const simplifiedValueToAdd =
-                    await resolveAsyncLazyable<NoneFunc<TType>>(valueToAdd);
-                await this.add(key, simplifiedValueToAdd, ttl);
-                return simplifiedValueToAdd;
+            const ttl = this.resolveCacheWriteSettings(settings);
+            const keyObj = this.namespace.create(key);
+            const value = await this.adapter.get(keyObj.toString());
+            if (this.shouldValidateOutput && value !== null) {
+                await validate(this.schema, value);
             }
+            if (value === null) {
+                const resolvedValueToAdd =
+                    await resolveAsyncLazyable(valueToAdd);
+                await validate(this.schema, resolvedValueToAdd);
+                const hasAdded = await this.adapter.add(
+                    keyObj.toString(),
+                    resolvedValueToAdd,
+                    ttl,
+                );
+                if (hasAdded) {
+                    this.eventBus
+                        .dispatch(CACHE_EVENTS.ADDED, {
+                            key: keyObj,
+                            value: resolvedValueToAdd,
+                            ttl,
+                        })
+                        .detach();
+                }
+                return resolvedValueToAdd;
+            } else {
+                this.eventBus
+                    .dispatch(CACHE_EVENTS.FOUND, {
+                        key: keyObj,
+                        value,
+                    })
+                    .detach();
+            }
+
             return value;
         });
+    }
+
+    private resolveCacheWriteSettings(
+        settings: CacheWriteSettings = {},
+    ): TimeSpan | null {
+        const {
+            ttl = this.defaultTtl,
+            jitter = this.defaultJitter,
+            _mathRandom = Math.random,
+        } = settings;
+        if (ttl === null) {
+            return null;
+        }
+
+        const ttlAsTimeSpan = TimeSpan.fromTimeSpan(ttl);
+        if (jitter === null) {
+            return ttlAsTimeSpan;
+        }
+
+        return TimeSpan.fromMilliseconds(
+            withJitter({
+                jitter,
+                randomValue: _mathRandom(),
+                value: ttlAsTimeSpan.toMilliseconds(),
+            }),
+        );
     }
 
     add(
         key: string,
         value: TType,
-        ttl: ITimeSpan | null = this.defaultTtl,
+        settings?: CacheWriteSettings,
     ): ITask<boolean> {
         return new Task(async () => {
-            const ttlAsTimeSpan =
-                ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
+            const ttl = this.resolveCacheWriteSettings(settings);
             const keyObj = this.namespace.create(key);
             try {
                 await validate(this.schema, value);
                 const hasAdded = await this.adapter.add(
                     keyObj.toString(),
                     value,
-                    ttlAsTimeSpan,
+                    ttl,
                 );
                 if (hasAdded) {
                     this.eventBus
-                        .dispatch(CACHE_EVENTS.WRITTEN, {
-                            type: "added",
-                            key: keyObj.get(),
+                        .dispatch(CACHE_EVENTS.ADDED, {
+                            key: keyObj,
                             value,
-                            ttl: ttlAsTimeSpan,
+                            ttl,
                         })
                         .detach();
                 }
@@ -410,37 +465,47 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
+    addOrFail(
+        key: string,
+        value: TType,
+        settings?: CacheWriteSettings,
+    ): ITask<void> {
+        return new Task(async () => {
+            const isNotFound = await this.add(key, value, settings);
+            if (!isNotFound) {
+                throw KeyExistsCacheError.create(this.namespace.create(key));
+            }
+        });
+    }
+
     put(
         key: string,
         value: TType,
-        ttl: ITimeSpan | null = this.defaultTtl,
+        settings?: CacheWriteSettings,
     ): ITask<boolean> {
         return new Task(async () => {
-            const ttlAsTimeSpan =
-                ttl === null ? null : TimeSpan.fromTimeSpan(ttl);
+            const ttl = this.resolveCacheWriteSettings(settings);
             const keyObj = this.namespace.create(key);
             try {
                 await validate(this.schema, value);
                 const hasUpdated = await this.adapter.put(
                     keyObj.toString(),
                     value,
-                    ttlAsTimeSpan,
+                    ttl,
                 );
                 if (hasUpdated) {
                     this.eventBus
-                        .dispatch(CACHE_EVENTS.WRITTEN, {
-                            type: "updated",
-                            key: keyObj.get(),
+                        .dispatch(CACHE_EVENTS.UPDATED, {
+                            key: keyObj,
                             value,
                         })
                         .detach();
                 } else {
                     this.eventBus
-                        .dispatch(CACHE_EVENTS.WRITTEN, {
-                            type: "added",
-                            key: keyObj.get(),
+                        .dispatch(CACHE_EVENTS.ADDED, {
+                            key: keyObj,
                             value,
-                            ttl: ttlAsTimeSpan,
+                            ttl,
                         })
                         .detach();
                 }
@@ -470,16 +535,15 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 );
                 if (hasUpdated) {
                     this.eventBus
-                        .dispatch(CACHE_EVENTS.WRITTEN, {
-                            type: "updated",
-                            key: keyObj.get(),
+                        .dispatch(CACHE_EVENTS.UPDATED, {
+                            key: keyObj,
                             value,
                         })
                         .detach();
                 } else {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.get(),
+                            key: keyObj,
                         })
                         .detach();
                 }
@@ -498,9 +562,18 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
+    updateOrFail(key: string, value: TType): ITask<void> {
+        return new Task(async () => {
+            const isFound = await this.update(key, value);
+            if (!isFound) {
+                throw KeyNotFoundCacheError.create(this.namespace.create(key));
+            }
+        });
+    }
+
     increment(
         key: string,
-        value = 0 as Extract<TType, number>,
+        value = 1 as Extract<TType, number>,
     ): ITask<boolean> {
         return new Task(async () => {
             const keyObj = this.namespace.create(key);
@@ -511,18 +584,16 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 );
                 if (hasUpdated && value > 0) {
                     this.eventBus
-                        .dispatch(CACHE_EVENTS.WRITTEN, {
-                            type: "incremented",
-                            key: keyObj.get(),
+                        .dispatch(CACHE_EVENTS.INCREMENTED, {
+                            key: keyObj,
                             value,
                         })
                         .detach();
                 }
                 if (hasUpdated && value < 0) {
                     this.eventBus
-                        .dispatch(CACHE_EVENTS.WRITTEN, {
-                            type: "decremented",
-                            key: keyObj.get(),
+                        .dispatch(CACHE_EVENTS.DECREMENTED, {
+                            key: keyObj,
                             value: -value,
                         })
                         .detach();
@@ -530,7 +601,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 if (!hasUpdated) {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.get(),
+                            key: keyObj,
                         })
                         .detach();
                 }
@@ -552,12 +623,30 @@ export class Cache<TType = unknown> implements ICache<TType> {
         });
     }
 
+    incrementOrFail(key: string, value?: Extract<TType, number>): ITask<void> {
+        return new Task(async () => {
+            const isFound = await this.increment(key, value);
+            if (!isFound) {
+                throw KeyNotFoundCacheError.create(this.namespace.create(key));
+            }
+        });
+    }
+
     decrement(
         key: string,
-        value = 0 as Extract<TType, number>,
+        value = 1 as Extract<TType, number>,
     ): ITask<boolean> {
         return new Task(async () => {
             return await this.increment(key, -value as Extract<TType, number>);
+        });
+    }
+
+    decrementOrFail(key: string, value?: Extract<TType, number>): ITask<void> {
+        return new Task(async () => {
+            const isFound = await this.decrement(key, value);
+            if (!isFound) {
+                throw KeyNotFoundCacheError.create(this.namespace.create(key));
+            }
         });
     }
 
@@ -570,15 +659,14 @@ export class Cache<TType = unknown> implements ICache<TType> {
                 ]);
                 if (hasRemoved) {
                     this.eventBus
-                        .dispatch(CACHE_EVENTS.WRITTEN, {
-                            type: "removed",
-                            key: keyObj.get(),
+                        .dispatch(CACHE_EVENTS.REMOVED, {
+                            key: keyObj,
                         })
                         .detach();
                 } else {
                     this.eventBus
                         .dispatch(CACHE_EVENTS.NOT_FOUND, {
-                            key: keyObj.get(),
+                            key: keyObj,
                         })
                         .detach();
                 }
@@ -592,6 +680,15 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     })
                     .detach();
                 throw error;
+            }
+        });
+    }
+
+    removeOrFail(key: string): ITask<void> {
+        return new Task(async () => {
+            const isFound = await this.remove(key);
+            if (!isFound) {
+                throw KeyNotFoundCacheError.create(this.namespace.create(key));
             }
         });
     }
@@ -611,12 +708,11 @@ export class Cache<TType = unknown> implements ICache<TType> {
                     const events = keyObjArr.map(
                         (
                             keyObj,
-                        ): [typeof CACHE_EVENTS.WRITTEN, RemovedCacheEvent] =>
+                        ): [typeof CACHE_EVENTS.REMOVED, RemovedCacheEvent] =>
                             [
-                                CACHE_EVENTS.WRITTEN,
+                                CACHE_EVENTS.REMOVED,
                                 {
-                                    type: "removed",
-                                    key: keyObj.get(),
+                                    key: keyObj,
                                 },
                             ] as const,
                     );
@@ -634,7 +730,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
                             [
                                 CACHE_EVENTS.NOT_FOUND,
                                 {
-                                    key: keyObj.get(),
+                                    key: keyObj,
                                 },
                             ] as const,
                     );

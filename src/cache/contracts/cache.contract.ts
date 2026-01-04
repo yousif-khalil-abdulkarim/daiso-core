@@ -2,6 +2,12 @@
  * @module Cache
  */
 
+import {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    KeyExistsCacheError,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    KeyNotFoundCacheError,
+} from "@/cache/contracts/cache.errors.js";
 import { type CacheEventMap } from "@/cache/contracts/cache.events.js";
 import { type IEventListenable } from "@/event-bus/contracts/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
@@ -22,6 +28,22 @@ import {
 export type ICacheListenable<TType = unknown> = IEventListenable<
     CacheEventMap<TType>
 >;
+
+/**
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
+ * @group Contracts
+ */
+export type CacheWriteSettings = {
+    ttl?: ITimeSpan | null;
+    jitter?: number;
+
+    /**
+     * Used internally for testin.
+     *
+     * @internal
+     */
+    _mathRandom?: () => number;
+};
 
 /**
  * The `ICacheBase` contract defines a way for as key-value pairs independent of data storage.
@@ -76,7 +98,7 @@ export type ICacheBase<TType = unknown> = {
     getOrAdd(
         key: string,
         valueToAdd: AsyncLazyable<NoneFunc<TType>>,
-        ttl?: ITimeSpan | null,
+        settings?: CacheWriteSettings,
     ): ITask<TType>;
 
     /**
@@ -86,7 +108,23 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns Returns true when key doesn't exists otherwise false will be returned.
      */
-    add(key: string, value: TType, ttl?: ITimeSpan | null): ITask<boolean>;
+    add(
+        key: string,
+        value: TType,
+        settings?: CacheWriteSettings,
+    ): ITask<boolean>;
+
+    /**
+     * The `addOrFail` method adds a `key` with given `value` when key doesn't exists.
+     * Throws an error if the `key` exists.
+     *
+     * @throws {KeyExistsCacheError} {@link KeyExistsCacheError}
+     */
+    addOrFail(
+        key: string,
+        value: TType,
+        settings?: CacheWriteSettings,
+    ): ITask<void>;
 
     /**
      * The `put` method replaces th given `key` with the given `value` and `ttl` if the `key` exists
@@ -96,7 +134,11 @@ export type ICacheBase<TType = unknown> = {
      *
      * @returns Returns true if the `key` where replaced otherwise false is returned.
      */
-    put(key: string, value: TType, ttl?: ITimeSpan | null): ITask<boolean>;
+    put(
+        key: string,
+        value: TType,
+        settings?: CacheWriteSettings,
+    ): ITask<boolean>;
 
     /**
      * The `update` method updates the given `key` with given `value`.
@@ -106,8 +148,16 @@ export type ICacheBase<TType = unknown> = {
     update(key: string, value: TType): ITask<boolean>;
 
     /**
+     * The `updateOrFail` method updates the given `key` with given `value`.
+     * Thorws error if the `key` is not found.
+     *
+     * @throws {KeyNotFoundCacheError} {@link KeyNotFoundCacheError}
+     */
+    updateOrFail(key: string, value: TType): ITask<void>;
+
+    /**
      * The `increment` method increments the given `key` with given `value`.
-     * An error will thrown if the key is not a number.
+     * An error will thrown if the value is not a number.
      *
      * @param value - If not defined then it will be defaulted to 1.
      *
@@ -118,8 +168,19 @@ export type ICacheBase<TType = unknown> = {
     increment(key: string, value?: Extract<TType, number>): ITask<boolean>;
 
     /**
+     * The `incrementOrFail` method increments the given `key` with given `value`.
+     * An error will thrown if the value is not a number or if the key is not found.
+     *
+     * @param value - If not defined then it will be defaulted to 1.
+     *
+     * @throws {KeyNotFoundCacheError} {@link KeyNotFoundCacheError}
+     * @throws {TypeError} {@link TypeError}
+     */
+    incrementOrFail(key: string, value?: Extract<TType, number>): ITask<void>;
+
+    /**
      * The `decrement` method decrements the given `key` with given `value`.
-     * An error will thrown if the key is not a number.
+     * An error will thrown if the value is not a number.
      *
      * @param value - If not defined then it will be defaulted to 1.
      *
@@ -130,11 +191,30 @@ export type ICacheBase<TType = unknown> = {
     decrement(key: string, value?: Extract<TType, number>): ITask<boolean>;
 
     /**
+     * The `decrementOrFail` method decrements the given `key` with given `value`.
+     * An error will thrown if the value is not a number or if the key is not found.
+     *
+     * @param value - If not defined then it will be defaulted to 1.
+     *
+     * @throws {KeyNotFoundCacheError} {@link KeyNotFoundCacheError}
+     * @throws {TypeError} {@link TypeError}
+     */
+    decrementOrFail(key: string, value?: Extract<TType, number>): ITask<void>;
+
+    /**
      * The `remove` method removes the given `key`.
      *
      * @returns Returns true if the key is found otherwise false is returned.
      */
     remove(key: string): ITask<boolean>;
+
+    /**
+     * The `removeOrFail` method removes the given `key`.
+     * Throws an error if the key is not found.
+     *
+     * @throws {KeyNotFoundCacheError} {@link KeyNotFoundCacheError}
+     */
+    removeOrFail(key: string): ITask<void>;
 
     /**
      * The `removeMany` method removes many keys.

@@ -7,6 +7,7 @@ import {
     type SuiteAPI,
     type ExpectStatic,
     type beforeEach,
+    vi,
 } from "vitest";
 
 import {
@@ -21,8 +22,11 @@ import {
     type ClearedCacheEvent,
     type UpdatedCacheEvent,
     CACHE_EVENTS,
+    KeyExistsCacheError,
 } from "@/cache/contracts/_module.js";
+import { Key } from "@/namespace/_module.js";
 import { Task } from "@/task/implementations/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/time-span.contract.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
 
@@ -37,6 +41,10 @@ export type CacheTestSuiteSettings = {
     describe: SuiteAPI;
     beforeEach: typeof beforeEach;
     createCache: () => Promisable<ICache>;
+    /**
+     * @default false
+     */
+    excludeEventTests?: boolean;
 };
 
 /**
@@ -67,952 +75,2130 @@ export type CacheTestSuiteSettings = {
  * ```
  */
 export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
-    const { expect, test, createCache, describe, beforeEach } = settings;
-    let cache: ICache<any>;
+    const {
+        expect,
+        test,
+        createCache,
+        describe,
+        beforeEach,
+        excludeEventTests = false,
+    } = settings;
+    let cache: ICache<number>;
     beforeEach(async () => {
-        cache = await createCache();
+        cache = (await createCache()) as ICache<number>;
     });
 
+    async function delay(ttl: ITimeSpan): Promise<void> {
+        await Task.delay(ttl);
+    }
+
     const TTL = TimeSpan.fromMilliseconds(50);
-    const DELAY_TIME = TimeSpan.fromMilliseconds(50);
+    const LONG_TTL = TimeSpan.fromMinutes(5);
+
     describe("Api tests:", () => {
         describe("method: exists", () => {
+            test("Should return false when key does not exists", async () => {
+                const key = "a";
+
+                const result = await cache.exists(key);
+
+                expect(result).toBe(false);
+            });
+            test("Should return false when key is expired", async () => {
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const result = await cache.exists(key);
+
+                expect(result).toBe(false);
+            });
             test("Should return true when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.exists("a")).toBe(true);
+                const key = "a";
+
+                await cache.add(key, 1);
+
+                const result = await cache.exists(key);
+
+                expect(result).toBe(true);
             });
-            test("Should return false when keys doesnt exists", async () => {
-                expect(await cache.exists("a")).toBe(false);
-            });
-            test("Should return false when key is experied", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                expect(await cache.exists("a")).toBe(false);
+            test("Should return true when key is unexpired", async () => {
+                const key = "a";
+
+                await cache.add(key, 1, { ttl: LONG_TTL });
+
+                const result = await cache.exists(key);
+
+                expect(result).toBe(true);
             });
         });
         describe("method: missing", () => {
-            test("Should return false when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.missing("a")).toBe(false);
-            });
-            test("Should return true when keys doesnt exists", async () => {
-                expect(await cache.missing("a")).toBe(true);
-            });
-            test("Should return true when key is experied", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                expect(await cache.missing("a")).toBe(true);
-            });
-        });
-        describe("method: get", () => {
-            test("Should return the value when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBe(1);
-            });
-            test("Should return null when keys doesnt exists", async () => {
-                expect(await cache.get("a")).toBeNull();
-            });
-            test("Should return null when key is experied", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                expect(await cache.get("a")).toBeNull();
-            });
-        });
-        describe("method: getOrFail", () => {
-            test("Should return the value when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.getOrFail("a")).toBe(1);
-            });
-            test("Should throw an KeyNotFoundCacheError when keys doesnt exists", async () => {
-                await expect(cache.getOrFail("a")).rejects.toBeInstanceOf(
-                    KeyNotFoundCacheError,
-                );
-            });
-            test("Should throw an KeyNotFoundCacheError when key is experied", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                await expect(cache.getOrFail("a")).rejects.toBeInstanceOf(
-                    KeyNotFoundCacheError,
-                );
-            });
-        });
-        describe("method: getOr", () => {
-            test("Should return value when key exists", async () => {
-                await cache.add("a", 1);
-                expect(await cache.getOr("a", -1)).toBe(1);
-            });
-            describe("Should return default value when key doesnt exists", () => {
-                test("Value", async () => {
-                    expect(await cache.getOr("a", -1)).toBe(-1);
-                });
-                test("Function", async () => {
-                    expect(await cache.getOr("a", () => -1)).toBe(-1);
-                });
-                test("Async function", async () => {
-                    expect(
-                        await cache.getOr("a", () => Promise.resolve(-1)),
-                    ).toBe(-1);
-                });
-                test("ITask", async () => {
-                    expect(
-                        await cache.getOr(
-                            "a",
-                            new Task(() => Promise.resolve(-1)),
-                        ),
-                    ).toBe(-1);
-                });
-            });
-            describe("Should return default value when key is expired", () => {
-                test("Value", async () => {
-                    await cache.add("a", 1, TTL);
-                    await Task.delay(TTL);
-                    expect(await cache.getOr("a", -1)).toBe(-1);
-                });
-                test("Function", async () => {
-                    await cache.add("a", 1, TTL);
-                    await Task.delay(TTL);
-                    expect(await cache.getOr("a", () => -1)).toBe(-1);
-                });
-                test("Async function", async () => {
-                    await cache.add("a", 1, TTL);
-                    await Task.delay(TTL);
-                    expect(
-                        await cache.getOr("a", () => Promise.resolve(-1)),
-                    ).toBe(-1);
-                });
-                test("ITask", async () => {
-                    await cache.add("a", 1, TTL);
-                    await Task.delay(TTL);
-                    expect(
-                        await cache.getOr(
-                            "a",
-                            new Task(() => Promise.resolve(-1)),
-                        ),
-                    ).toBe(-1);
-                });
-            });
-        });
-        describe("method: getAndRemove", () => {
-            test("Should return value when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.getAndRemove("a")).toBe(1);
-            });
-            test("Should return null when key doesnt exists", async () => {
-                expect(await cache.getAndRemove("a")).toBeNull();
-            });
-            test("Should return null when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                expect(await cache.getAndRemove("a")).toBeNull();
-            });
-            test("Should persist removal when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                await cache.getAndRemove("a");
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBeNull();
-            });
-        });
-        describe("method: getOrAdd", () => {
-            test("Should return value when key exists", async () => {
-                await cache.add("a", 1);
-                expect(await cache.getOrAdd("a", -1)).toBe(1);
-            });
-            describe("Should persist insertion when key doesnt exists", () => {
-                test("Value", async () => {
-                    await cache.getOrAdd("a", -1);
-                    expect(await cache.get("a")).toBe(-1);
-                });
-                test("Function", async () => {
-                    await cache.getOrAdd("a", () => -1);
-                    expect(await cache.get("a")).toBe(-1);
-                });
-                test("Async function", async () => {
-                    await cache.getOrAdd("a", () => Promise.resolve(-1));
-                    expect(await cache.get("a")).toBe(-1);
-                });
-                test("ITask", async () => {
-                    await cache.getOrAdd(
-                        "a",
-                        new Task(() => Promise.resolve(-1)),
-                    );
-                    expect(await cache.get("a")).toBe(-1);
-                });
-            });
-            describe("Should persist insertion when key is expired", () => {
-                test("Value", async () => {
-                    await cache.add("a", 1, TTL);
-                    await Task.delay(TTL);
-                    await cache.getOrAdd("a", -1);
-                    expect(await cache.get("a")).toBe(-1);
-                });
-                test("Function", async () => {
-                    await cache.add("a", 1, TTL);
-                    await Task.delay(TTL);
-                    await cache.getOrAdd("a", () => -1);
-                    expect(await cache.get("a")).toBe(-1);
-                });
-                test("Async function", async () => {
-                    await cache.add("a", 1, TTL);
-                    await Task.delay(TTL);
-                    await cache.getOrAdd("a", () => Promise.resolve(-1));
-                    expect(await cache.get("a")).toBe(-1);
-                });
-                test("ITask", async () => {
-                    await cache.add("a", 1, TTL);
-                    await Task.delay(TTL);
-                    await cache.getOrAdd(
-                        "a",
-                        new Task(() => Promise.resolve(-1)),
-                    );
-                    expect(await cache.get("a")).toBe(-1);
-                });
-            });
-        });
-        describe("method: add", () => {
-            test("Should return true when key doesnt exists", async () => {
-                const result = await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
+            test("Should return true when key does not exists", async () => {
+                const key = "a";
+
+                const result = await cache.missing(key);
+
                 expect(result).toBe(true);
             });
             test("Should return true when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                expect(await cache.add("a", 1, null)).toBe(true);
-            });
-            test("Should persist values when key doesnt exist", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBe(1);
-            });
-            test("Should persist values when key is expired", async () => {
-                await cache.add("a", -1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                await cache.add("a", 1, null);
-                expect(await cache.get("a")).toBe(1);
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const result = await cache.missing(key);
+
+                expect(result).toBe(true);
             });
             test("Should return false when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.add("a", 1, null)).toBe(false);
+                const key = "a";
+
+                await cache.add(key, 1);
+
+                const result = await cache.missing(key);
+
+                expect(result).toBe(false);
             });
-            test("Should not persist value when key exist", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                await cache.add("a", 2, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBe(1);
+            test("Should return false when key is unexpired", async () => {
+                const key = "a";
+
+                await cache.add(key, 1, { ttl: LONG_TTL });
+
+                const result = await cache.missing(key);
+
+                expect(result).toBe(false);
+            });
+        });
+        describe("method: get", () => {
+            test("Should return null when key does not exists", async () => {
+                const key = "a";
+
+                const result = await cache.get(key);
+
+                expect(result).toBeNull();
+            });
+            test("Should return null when key is expired", async () => {
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const result = await cache.get(key);
+
+                expect(result).toBeNull();
+            });
+            test("Should return value when key exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value);
+
+                const result = await cache.get(key);
+
+                expect(result).toBe(value);
+            });
+            test("Should return value when key is unexpired", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value, { ttl: LONG_TTL });
+
+                const result = await cache.get(key);
+
+                expect(result).toBe(value);
+            });
+        });
+        describe("method: getOrFail", () => {
+            test("Should throw KeyNotFoundCacheError when key does not exists", async () => {
+                const key = "a";
+
+                const result = cache.getOrFail(key);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
+            });
+            test("Should throw KeyNotFoundCacheError when key is expired", async () => {
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const result = cache.getOrFail(key);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
+            });
+            test("Should return value when key exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value);
+
+                const result = await cache.getOrFail(key);
+
+                expect(result).toBe(value);
+            });
+            test("Should return value when key is unexpired", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value, { ttl: LONG_TTL });
+
+                const result = await cache.getOrFail(key);
+
+                expect(result).toBe(value);
+            });
+        });
+        describe("method: getOr", () => {
+            test("Should return default value when key does not exists", async () => {
+                const key = "a";
+
+                const defaultValue = -1;
+                const result = await cache.getOr(key, defaultValue);
+
+                expect(result).toBe(defaultValue);
+            });
+            test("Should return default value when key is expired", async () => {
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const defaultValue = -1;
+                const result = await cache.getOr(key, defaultValue);
+
+                expect(result).toBe(defaultValue);
+            });
+            test("Should return value when key exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value);
+
+                const defaultValue = -1;
+                const result = await cache.getOr(key, defaultValue);
+
+                expect(result).toBe(value);
+            });
+            test("Should return value when key is unexpired", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value, { ttl: LONG_TTL });
+
+                const defaultValue = -1;
+                const result = await cache.getOr(key, defaultValue);
+
+                expect(result).toBe(value);
+            });
+        });
+        describe("method: getAndRemove", () => {
+            test("Should return null when key does not exists", async () => {
+                const key = "a";
+
+                const result = await cache.getAndRemove(key);
+
+                expect(result).toBeNull();
+            });
+            test("Should return null when key is expired", async () => {
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const result = await cache.getAndRemove(key);
+
+                expect(result).toBeNull();
+            });
+            test("Should return value when key exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value);
+
+                const result = await cache.getAndRemove(key);
+
+                expect(result).toBe(value);
+            });
+            test("Should return value when key is unexpired", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value, { ttl: LONG_TTL });
+
+                const result = await cache.getAndRemove(key);
+
+                expect(result).toBe(value);
+            });
+            test("Should remove key when exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value);
+
+                await cache.getAndRemove(key);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should remove key when is unexpired", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value, { ttl: LONG_TTL });
+
+                await cache.getAndRemove(key);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+        });
+        describe("method: getOrAdd", () => {
+            test("Should return value to add when key does not exists", async () => {
+                const key = "a";
+
+                const valueToAdd = -1;
+                const result = await cache.getOrAdd(key, valueToAdd);
+
+                expect(result).toBe(valueToAdd);
+            });
+            test("Should persist value when key does not exists", async () => {
+                const key = "a";
+
+                const valueToAdd = -1;
+                await cache.getOrAdd(key, valueToAdd);
+
+                const result = await cache.get(key);
+                expect(result).toBe(valueToAdd);
+            });
+            test("Should return value to add when key is expired", async () => {
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const valueToAdd = -1;
+                const result = await cache.getOrAdd(key, valueToAdd);
+
+                expect(result).toBe(valueToAdd);
+            });
+            test("Should persist value when key is expired", async () => {
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const valueToAdd = -1;
+                await cache.getOrAdd(key, valueToAdd);
+
+                const result = await cache.get(key);
+                expect(result).toBe(valueToAdd);
+            });
+            test("Should return value when key exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value);
+
+                const valueToAdd = -1;
+                const result = await cache.getOrAdd(key, valueToAdd);
+
+                expect(result).toBe(value);
+            });
+            test("Should not persist value when key exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value);
+
+                const valueToAdd = -1;
+                await cache.getOrAdd(key, valueToAdd);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value);
+            });
+            test("Should return value when key is unexpired", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value, { ttl: LONG_TTL });
+
+                const valueToAdd = -1;
+                const result = await cache.getOrAdd(key, valueToAdd);
+
+                expect(result).toBe(value);
+            });
+            test("Should not persist when key is unexpired", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value, { ttl: LONG_TTL });
+
+                const valueToAdd = -1;
+                await cache.getOrAdd(key, valueToAdd);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value);
+            });
+        });
+        describe("method: add", () => {
+            test("Should return true when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                const result = await cache.add(key, value);
+
+                expect(result).toBe(true);
+            });
+            test("Should persist value when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.add(key, value);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value);
+            });
+            test("Should return true when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                const result = await cache.add(key, value2);
+
+                expect(result).toBe(true);
+            });
+            test("Should persist value when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                await cache.add(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value2);
+            });
+            test("Should return false when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                const result = await cache.add(key, value2);
+
+                expect(result).toBe(false);
+            });
+            test("Should return false when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                const result = await cache.add(key, value2);
+
+                expect(result).toBe(false);
+            });
+            test("Should not persist value when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                await cache.add(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value1);
+            });
+            test("Should not persist value when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                await cache.add(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value1);
+            });
+        });
+        describe("method: addOrFail", () => {
+            test("Should not throw error when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                const result = cache.addOrFail(key, value);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should persist value when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.addOrFail(key, value);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value);
+            });
+            test("Should not throw error when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.addOrFail(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                const result = cache.addOrFail(key, value2);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should persist value when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.addOrFail(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                await cache.addOrFail(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value2);
+            });
+            test("Should throw KeyExistsCacheError when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.addOrFail(key, value1);
+
+                const value2 = 2;
+                const result = cache.addOrFail(key, value2);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyExistsCacheError,
+                );
+            });
+            test("Should throw KeyExistsCacheError when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.addOrFail(key, value1, {
+                    ttl: LONG_TTL,
+                });
+
+                const value2 = 2;
+                const result = cache.addOrFail(key, value2);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyExistsCacheError,
+                );
+            });
+            test("Should not persist value when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.addOrFail(key, value1);
+
+                const value2 = 2;
+                try {
+                    await cache.addOrFail(key, value2);
+                } catch {
+                    /* EMPTY */
+                }
+
+                const result = await cache.get(key);
+                expect(result).toBe(value1);
+            });
+            test("Should not persist value when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.addOrFail(key, value1, {
+                    ttl: LONG_TTL,
+                });
+
+                const value2 = 2;
+                try {
+                    await cache.addOrFail(key, value2);
+                } catch {
+                    /* EMPTY */
+                }
+
+                const result = await cache.get(key);
+                expect(result).toBe(value1);
             });
         });
         describe("method: put", () => {
             test("Should return true when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.put("a", -1, null)).toBe(true);
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                const result = await cache.put(key, value2);
+
+                expect(result).toBe(true);
             });
-            test("Should persist value when key exist", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                await cache.put("a", -1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBe(-1);
+            test("Should persist value when key exists", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                await cache.put(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value2);
             });
-            test("Should return false when key doesnt exists", async () => {
-                expect(await cache.put("a", -1, null)).toBe(false);
+            test("Should persist ttl when key exists", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                await cache.put(key, value2, { ttl: TTL });
+
+                await delay(TTL.addMilliseconds(10));
+                const result = await cache.get(key);
+                expect(result).toBeNull();
             });
-            test("Should return false when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                expect(await cache.put("a", -1, null)).toBe(false);
+            test("Should return true when key is unexpired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                const result = await cache.put(key, value2);
+
+                expect(result).toBe(true);
             });
-            test("Should persist values when key doesnt exist", async () => {
-                await cache.put("a", -1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBe(-1);
+            test("Should persist value when key is unexpired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                await cache.put(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value2);
             });
-            test("Should persist values when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                await cache.put("a", -1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBe(-1);
+            test("Should persist ttl when key is unexpired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                await cache.put(key, value2, { ttl: TTL });
+
+                await delay(TTL.addMilliseconds(10));
+                const result = await cache.get(key);
+                expect(result).toBeNull();
             });
-            test("Should replace the ttl value", async () => {
-                const ttlA = TimeSpan.fromMilliseconds(100);
-                await cache.add("a", 1, ttlA);
-                await Task.delay(TTL.divide(4));
-                const ttlB = TimeSpan.fromMilliseconds(50);
-                await cache.put("a", -1, ttlB);
-                await Task.delay(ttlB);
-                expect(await cache.get("a")).toBeNull();
+            test("Should return false when key does not exist", async () => {
+                const key = "a";
+                const value = 1;
+
+                const result = await cache.put(key, value);
+
+                expect(result).toBe(false);
+            });
+            test("Should persist value when key does not exist", async () => {
+                const key = "a";
+
+                const value = 2;
+                await cache.put(key, value);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value);
+            });
+            test("Should persist ttl when key does not exist", async () => {
+                const key = "a";
+
+                const value = 2;
+                await cache.put(key, value, { ttl: TTL });
+
+                await delay(TTL.addMilliseconds(10));
+                const result = await cache.get(key);
+                expect(result).toBeNull();
             });
         });
         describe("method: update", () => {
-            test("Should return true when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.update("a", -1)).toBe(true);
+            test("Should return false when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                const result = await cache.update(key, value);
+
+                expect(result).toBe(false);
             });
-            test("Should persist value when key exist", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                await cache.update("a", -1);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBe(-1);
-            });
-            test("Should return false when key doesnt exists", async () => {
-                expect(await cache.update("a", -1)).toBe(false);
+            test("Should not persist value when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.update(key, value);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
             });
             test("Should return false when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                expect(await cache.update("a", -1)).toBe(false);
-            });
-            test("Should not persist value when key doesnt exist", async () => {
-                await cache.update("a", -1);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBeNull();
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                const result = await cache.update(key, value2);
+
+                expect(result).toBe(false);
             });
             test("Should not persist value when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                await cache.update("a", -1);
-                expect(await cache.get("a")).toBeNull();
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                await cache.update(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should return true when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                const result = await cache.update(key, value2);
+
+                expect(result).toBe(true);
+            });
+            test("Should return true when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                const result = await cache.update(key, value2);
+
+                expect(result).toBe(true);
+            });
+            test("Should persist value when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                await cache.update(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value2);
+            });
+            test("Should persist value when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                await cache.update(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value2);
+            });
+        });
+        describe("method: updateOrFail", () => {
+            test("Should throw KeyNotFoundCacheError when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                const result = cache.updateOrFail(key, value);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
+            });
+            test("Should not persist value when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                try {
+                    await cache.updateOrFail(key, value);
+                } catch {
+                    /* EMPTY */
+                }
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should throw KeyNotFoundCacheError when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                const result = cache.updateOrFail(key, value2);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
+            });
+            test("Should not persist value when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                try {
+                    await cache.updateOrFail(key, value2);
+                } catch {
+                    /* EMPTY */
+                }
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should not throw error when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                const result = cache.updateOrFail(key, value2);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should not throw error when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                const result = cache.updateOrFail(key, value2);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should persist value when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                await cache.updateOrFail(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value2);
+            });
+            test("Should persist value when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                await cache.updateOrFail(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(value2);
             });
         });
         describe("method: increment", () => {
-            test("Should return true when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.increment("a", 1)).toBe(true);
+            test("Should return false when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                const result = await cache.increment(key, value);
+
+                expect(result).toBe(false);
             });
-            test("Should persist increment when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                await cache.increment("a", 1);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBe(2);
-            });
-            test("Should return false when key doesnt exists", async () => {
-                expect(await cache.increment("a", 1)).toBe(false);
+            test("Should not persist value when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.increment(key, value);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
             });
             test("Should return false when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                expect(await cache.increment("a", 1)).toBe(false);
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                const result = await cache.increment(key, value2);
+
+                expect(result).toBe(false);
             });
-            test("Should not persist increment when key doesnt exists", async () => {
-                await cache.increment("a", 1);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBeNull();
+            test("Should not persist value when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                await cache.increment(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
             });
-            test("Should not persist increment when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                await cache.increment("a", 1);
-                expect(await cache.get("a")).toBeNull();
+            test("Should return true when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                const result = await cache.increment(key, value2);
+
+                expect(result).toBe(true);
             });
-            test("Should throw TypeError key value is not number type", async () => {
-                await cache.add("a", "str", null);
-                await Task.delay(TTL.divide(4));
-                await expect(cache.increment("a", 1)).rejects.toBeInstanceOf(
-                    TypeError,
+            test("Should return true when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                const result = await cache.increment(key, value2);
+
+                expect(result).toBe(true);
+            });
+            test("Should persist value when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                await cache.increment(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(3);
+            });
+            test("Should persist value when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                await cache.increment(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(3);
+            });
+        });
+        describe("method: incrementOrFail", () => {
+            test("Should throw KeyNotFoundCacheError when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                const result = cache.incrementOrFail(key, value);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
                 );
+            });
+            test("Should not persist value when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                try {
+                    await cache.incrementOrFail(key, value);
+                } catch {
+                    /* EMPTY */
+                }
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should throw KeyNotFoundCacheError when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                const result = cache.incrementOrFail(key, value2);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
+            });
+            test("Should not persist value when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                try {
+                    await cache.incrementOrFail(key, value2);
+                } catch {
+                    /* EMPTY */
+                }
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should not throw error when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                const result = cache.incrementOrFail(key, value2);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should not throw error when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                const result = cache.incrementOrFail(key, value2);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should persist value when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                await cache.incrementOrFail(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(3);
+            });
+            test("Should persist value when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                await cache.incrementOrFail(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(3);
             });
         });
         describe("method: decrement", () => {
-            test("Should return true when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.decrement("a", 1)).toBe(true);
+            test("Should return false when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                const result = await cache.decrement(key, value);
+
+                expect(result).toBe(false);
             });
-            test("Should persist decrement when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
-                await cache.decrement("a", 1);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBe(0);
-            });
-            test("Should return false when key doesnt exists", async () => {
-                expect(await cache.decrement("a", 1)).toBe(false);
+            test("Should not persist value when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                await cache.decrement(key, value);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
             });
             test("Should return false when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                expect(await cache.decrement("a", 1)).toBe(false);
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                const result = await cache.decrement(key, value2);
+
+                expect(result).toBe(false);
             });
-            test("Should not persist decrement when key doesnt exists", async () => {
-                await cache.decrement("a", 1);
-                await Task.delay(TTL.divide(4));
-                expect(await cache.get("a")).toBeNull();
+            test("Should not persist value when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                await cache.decrement(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
             });
-            test("Should not persist decrement when key is expired", async () => {
-                await cache.add("a", 1, TTL);
-                await Task.delay(TTL.addTimeSpan(TTL.divide(4)));
-                await cache.decrement("a", 1);
-                expect(await cache.get("a")).toBeNull();
+            test("Should return true when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                const result = await cache.decrement(key, value2);
+
+                expect(result).toBe(true);
             });
-            test("Should throw TypeError key value is not number type", async () => {
-                await cache.add("a", "str", null);
-                await Task.delay(TTL.divide(4));
-                await expect(cache.decrement("a", 1)).rejects.toBeInstanceOf(
-                    TypeError,
+            test("Should return true when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                const result = await cache.decrement(key, value2);
+
+                expect(result).toBe(true);
+            });
+            test("Should persist value when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                await cache.decrement(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(-1);
+            });
+            test("Should persist value when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                await cache.decrement(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(-1);
+            });
+        });
+        describe("method: decrementOrFail", () => {
+            test("Should throw KeyNotFoundCacheError when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                const result = cache.decrementOrFail(key, value);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
                 );
+            });
+            test("Should not persist value when key does not exists", async () => {
+                const key = "a";
+
+                const value = 1;
+                try {
+                    await cache.decrementOrFail(key, value);
+                } catch {
+                    /* EMPTY */
+                }
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should throw KeyNotFoundCacheError when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                const result = cache.decrementOrFail(key, value2);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
+            });
+            test("Should not persist value when key is expired", async () => {
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const value2 = 2;
+                try {
+                    await cache.decrementOrFail(key, value2);
+                } catch {
+                    /* EMPTY */
+                }
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should not throw error when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                const result = cache.decrementOrFail(key, value2);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should not throw error when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                const result = cache.decrementOrFail(key, value2);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should persist value when key exists", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1);
+
+                const value2 = 2;
+                await cache.decrementOrFail(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(-1);
+            });
+            test("Should persist value when key is unexpired", async () => {
+                const key = "a";
+
+                const value1 = 1;
+                await cache.add(key, value1, { ttl: LONG_TTL });
+
+                const value2 = 2;
+                await cache.decrementOrFail(key, value2);
+
+                const result = await cache.get(key);
+                expect(result).toBe(-1);
             });
         });
         describe("method: remove", () => {
-            test("Should return true when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
+            test("Should return false when key does not exists", async () => {
+                const key = "a";
 
-                const result = await cache.remove("a");
+                const result = await cache.remove(key);
+
+                expect(result).toBe(false);
+            });
+            test("Should return false when key is expired", async () => {
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const result = await cache.remove(key);
+
+                expect(result).toBe(false);
+            });
+            test("Should return true when key exists", async () => {
+                const key = "a";
+
+                await cache.add(key, 1);
+
+                const result = await cache.remove(key);
 
                 expect(result).toBe(true);
             });
-            test("Should persist the key removal when key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
+            test("Should return true when key is unexpired", async () => {
+                const key = "a";
 
-                await cache.remove("a");
-                await Task.delay(TTL.divide(4));
+                await cache.add(key, 1, { ttl: LONG_TTL });
 
-                expect(await cache.get("a")).toEqual(null);
+                const result = await cache.remove(key);
+
+                expect(result).toBe(true);
+            });
+            test("Should persist removal when key exists", async () => {
+                const key = "a";
+
+                await cache.add(key, 1);
+
+                await cache.remove(key);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should persist removal when key is unexpired", async () => {
+                const key = "a";
+
+                await cache.add(key, 1, { ttl: LONG_TTL });
+
+                await cache.remove(key);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+        });
+        describe("method: removeOrFail", () => {
+            test("Should throw KeyNotFoundCacheError when key does not exists", async () => {
+                const key = "a";
+
+                const result = cache.removeOrFail(key);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
+            });
+            test("Should throw KeyNotFoundCacheError when key is expired", async () => {
+                const key = "a";
+                await cache.add(key, 1, {
+                    ttl: TTL,
+                });
+                await delay(TTL.addMilliseconds(10));
+
+                const result = cache.removeOrFail(key);
+
+                await expect(result).rejects.toBeInstanceOf(
+                    KeyNotFoundCacheError,
+                );
+            });
+            test("Should not throw error when key exists", async () => {
+                const key = "a";
+
+                await cache.add(key, 1);
+
+                const result = cache.removeOrFail(key);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should not throw error when key is unexpired", async () => {
+                const key = "a";
+
+                await cache.add(key, 1, { ttl: LONG_TTL });
+
+                const result = cache.removeOrFail(key);
+
+                await expect(result).resolves.toBeUndefined();
+            });
+            test("Should persist removal when key exists", async () => {
+                const key = "a";
+
+                await cache.add(key, 1);
+
+                await cache.removeOrFail(key);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
+            });
+            test("Should persist removal when key is unexpired", async () => {
+                const key = "a";
+
+                await cache.add(key, 1, { ttl: LONG_TTL });
+
+                await cache.removeOrFail(key);
+
+                const result = await cache.get(key);
+                expect(result).toBeNull();
             });
         });
         describe("method: removeMany", () => {
-            test("Should return true when one key exists", async () => {
-                await cache.add("a", 1, null);
-                await Task.delay(TTL.divide(4));
+            test("Should return false when all keys dont exists", async () => {
+                const keyA = "a";
+                const keyB = "b";
+                const keyC = "c";
+                await cache.add(keyA, 1, { ttl: TTL });
+                await delay(TTL.addMilliseconds(10));
 
-                const result = await cache.removeMany(["a", "b", "c"]);
+                const result = await cache.removeMany([keyA, keyB, keyC]);
+
+                expect(result).toBe(false);
+            });
+            test("Should return true when one key exists", async () => {
+                const keyA = "a";
+                const keyB = "b";
+                const keyC = "c";
+                await cache.add(keyA, 1, { ttl: TTL });
+                await delay(TTL.addMilliseconds(10));
+
+                await cache.add(keyC, 2);
+                const result = await cache.removeMany([keyA, keyB, keyC]);
 
                 expect(result).toBe(true);
             });
-            test("Should persist removal of the keys that exists", async () => {
-                await cache.add("a", 1, null);
-                await cache.add("b", 2, null);
-                await cache.add("c", 3, null);
-                await Task.delay(TTL.divide(4));
+            test("Should persist removal when one key exists", async () => {
+                const keyA = "a";
+                const keyB = "b";
+                const keyC = "c";
+                await cache.add(keyA, 1, { ttl: TTL });
+                await delay(TTL.addMilliseconds(10));
 
-                await cache.removeMany(["a", "b"]);
-                await Task.delay(TTL.divide(4));
+                await cache.add(keyC, 2);
+                await cache.removeMany([keyA, keyB, keyC]);
 
-                const result = [
-                    await cache.get("a"),
-                    await cache.get("b"),
-                    await cache.get("c"),
-                ];
-                expect(result).toEqual([null, null, 3]);
-            });
-        });
-        describe("method: clear", () => {
-            test("Should remove all keys", async () => {
-                await cache.add("a", 1);
-                await cache.add("b", 2);
-                await cache.add("c", 3);
-                await cache.add("d", 4);
-                await cache.clear();
-                const result = [
-                    await cache.get("a"),
-                    await cache.get("b"),
-                    await cache.get("c"),
-                    await cache.get("d"),
-                ];
-                expect(result).toStrictEqual([null, null, null, null]);
+                const resultA = await cache.get(keyA);
+                expect(resultA).toBeNull();
+                const resultB = await cache.get(keyB);
+                expect(resultB).toBeNull();
+                const resultC = await cache.get(keyC);
+                expect(resultC).toBeNull();
             });
         });
     });
-    describe("Event tests:", () => {
+    describe.skipIf(excludeEventTests)("Event tests:", () => {
         describe("method: exists", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.exists("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                await cache.exists(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
-                let event_ = null as FoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.exists("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.exists(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                } satisfies FoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: missing", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.missing("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                await cache.missing(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
-                let event_ = null as FoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.missing("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.missing(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                } satisfies FoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: get", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.get("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                await cache.get(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
-                let event_ = null as FoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.get("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.get(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                } satisfies FoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: getOr", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.getOr("a", 1);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                await cache.getOr(key, -1);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
-                let event_ = null as FoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.getOr("a", 1);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.getOr(key, -1);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                } satisfies FoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: getOrFail", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
                 try {
-                    await cache.getOrFail("a");
+                    await cache.getOrFail(key);
                 } catch {
-                    /* Empty */
+                    /* EMPTY */
                 }
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
-                let event_ = null as FoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.getOrFail("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.getOrFail(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                } satisfies FoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: add", () => {
             test("Should dispatch AddedCacheEvent when key doesnt exists", async () => {
-                let event_ = null as AddedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "added") {
-                            event_ = event;
-                        }
-                    },
-                );
-                const ttl = TimeSpan.fromMilliseconds(20);
-                await cache.add("a", 1, ttl);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                expect(event_?.ttl?.toMilliseconds()).toBe(
-                    ttl.toMilliseconds(),
-                );
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: AddedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.ADDED, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value, { ttl: TTL });
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                    ttl: expect.any(TimeSpan) as TimeSpan,
+                } satisfies AddedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+
+                const ttl_ = handlerFn.mock.calls[0]?.[0].ttl;
+                expect(ttl_?.toMilliseconds()).toBe(TTL.toMilliseconds());
             });
         });
         describe("method: update", () => {
-            test("Should dispatch UpdatedCacheEvent when key exists", async () => {
-                let event_ = null as UpdatedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "updated") {
-                            event_ = event;
-                        }
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.update("a", 2);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(2);
-                await unsubscribe();
-            });
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.update("a", 2);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.update(key, value);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+            test("Should dispatch UpdatedCacheEvent when key exists", async () => {
+                const handlerFn = vi.fn((_event: UpdatedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.UPDATED, handlerFn);
+
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1);
+                const value2 = 2;
+                await cache.update(key, value2);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value: value2,
+                } satisfies UpdatedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+        });
+        describe("method: updateOrFail", () => {
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                try {
+                    await cache.updateOrFail(key, value);
+                } catch {
+                    /* EMPTY */
+                }
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+            test("Should dispatch UpdatedCacheEvent when key exists", async () => {
+                const handlerFn = vi.fn((_event: UpdatedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.UPDATED, handlerFn);
+
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1);
+                const value2 = 2;
+                await cache.updateOrFail(key, value2);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value: value2,
+                } satisfies UpdatedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: put", () => {
             test("Should dispatch AddedCacheEvent when key doesnt exists", async () => {
-                let event_ = null as AddedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "added") {
-                            event_ = event;
-                        }
-                    },
-                );
-                const ttl = TimeSpan.fromMilliseconds(20);
-                await cache.put("a", 1, ttl);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                expect(event_?.ttl?.toMilliseconds()).toBe(
-                    ttl.toMilliseconds(),
-                );
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: AddedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.ADDED, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.put(key, value, { ttl: TTL });
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                    ttl: expect.any(TimeSpan) as TimeSpan,
+                } satisfies AddedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+
+                const ttl = handlerFn.mock.calls[0]?.[0].ttl;
+                expect(ttl?.toMilliseconds()).toBe(ttl?.toMilliseconds());
             });
             test("Should dispatch UpdatedCacheEvent when key exists", async () => {
-                let event_ = null as UpdatedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "updated") {
-                            event_ = event;
-                        }
-                    },
-                );
-                await cache.put("a", 1);
-                await cache.put("a", 2);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(2);
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: UpdatedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.UPDATED, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.put(key, value, { ttl: TTL });
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                } satisfies UpdatedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: remove", () => {
-            test("Should dispatch RemovedCacheEvent when key exists", async () => {
-                let event_ = null as RemovedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "removed") {
-                            event_ = event;
-                        }
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.remove("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
-            });
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.remove("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                await cache.remove(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+            test("Should dispatch RemovedCacheEvent when key exists", async () => {
+                const handlerFn = vi.fn((_event: RemovedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.REMOVED, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.remove(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies RemovedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+        });
+        describe("method: removeOrFail", () => {
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                try {
+                    await cache.removeOrFail(key);
+                } catch {
+                    /* EMPTY */
+                }
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+            test("Should dispatch RemovedCacheEvent when key exists", async () => {
+                const handlerFn = vi.fn((_event: RemovedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.REMOVED, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.removeOrFail(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies RemovedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: removeMany", () => {
-            test("Should dispatch RemovedCacheEvent when key doesnt exists", async () => {
-                let event_ = null as RemovedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "removed") {
-                            event_ = event;
-                        }
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.removeMany(["a"]);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+            test("Should dispatch RemovedCacheEvent when one key exists", async () => {
+                const handlerFn = vi.fn((_event: RemovedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.REMOVED, handlerFn);
+
+                const key1 = "a";
+                const key2 = "b";
+                const value = 1;
+                await cache.add(key1, value);
+
+                await cache.removeMany([key1, key2]);
+
+                expect(handlerFn).toHaveBeenCalledTimes(2);
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies RemovedCacheEvent);
+
+                const keyObj1 = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj1?.get()).toBe("a");
+
+                const keyObj2 = handlerFn.mock.calls[1]?.[0].key;
+                expect(keyObj2?.get()).toBe("b");
             });
-            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.removeMany(["a"]);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+            test("Should dispatch NotFoundCacheEvent when all keys doesnt exists", async () => {
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key1 = "a";
+                const key2 = "b";
+                await cache.removeMany([key1, key2]);
+
+                expect(handlerFn).toHaveBeenCalledTimes(2);
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj1 = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj1?.get()).toBe("a");
+
+                const keyObj2 = handlerFn.mock.calls[1]?.[0].key;
+                expect(keyObj2?.get()).toBe("b");
             });
         });
         describe("method: getAndRemove", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.getAndRemove("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                await cache.getAndRemove(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
-            test("Should dispatch FoundCacheEvent when key exists", async () => {
-                let event_ = null as FoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.getAndRemove("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                await unsubscribe();
+            test("Should not dispatch FoundCacheEvent when key exists", async () => {
+                const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.getAndRemove(key);
+
+                expect(handlerFn).not.toHaveBeenCalled();
             });
             test("Should dispatch RemovedCacheEvent when key exists", async () => {
-                let event_ = null as RemovedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "removed") {
-                            event_ = event;
-                        }
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.getAndRemove("a");
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: RemovedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.REMOVED, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.getAndRemove(key);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies RemovedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: getOrAdd", () => {
-            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.getOrAdd("a", 1);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+            test("Should not dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.getOrAdd(key, value);
+
+                expect(handlerFn).not.toHaveBeenCalled();
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
-                let event_ = null as FoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.getOrAdd("a", 1);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.add(key, value);
+                await cache.getOrAdd(key, value);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                } satisfies FoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
             test("Should dispatch AddedCacheEvent when key exists", async () => {
-                let event_ = null as AddedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "added") {
-                            event_ = event;
-                        }
-                    },
-                );
-                const ttl = TimeSpan.fromMilliseconds(50);
-                await cache.getOrAdd("a", 1, ttl);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                expect(event_?.ttl?.toMilliseconds()).toBe(
-                    ttl.toMilliseconds(),
-                );
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: AddedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.ADDED, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.getOrAdd(key, value, { ttl: TTL });
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value,
+                    ttl: expect.any(TimeSpan) as TimeSpan,
+                } satisfies AddedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+
+                const ttl = handlerFn.mock.calls[0]?.[0].ttl;
+                expect(ttl?.toMilliseconds()).toBe(TTL.toMilliseconds());
             });
         });
         describe("method: increment", () => {
-            test("Should dispatch IncrementedCacheEvent when key exists", async () => {
-                let event_ = null as IncrementedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "incremented") {
-                            event_ = event;
-                        }
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.increment("a", 1);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                await unsubscribe();
-            });
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.increment("a", 1);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.increment(key, value);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+            test("Should dispatch IncrementedCacheEvent when key exists", async () => {
+                const handlerFn = vi.fn((_event: IncrementedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.INCREMENTED, handlerFn);
+
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1);
+                const value2 = 2;
+                await cache.increment(key, value2);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value: value2,
+                } satisfies IncrementedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+        });
+        describe("method: incrementOrFail", () => {
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                try {
+                    await cache.incrementOrFail(key, value);
+                } catch {
+                    /* EMPTY */
+                }
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+            test("Should dispatch IncrementedCacheEvent when key exists", async () => {
+                const handlerFn = vi.fn((_event: IncrementedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.INCREMENTED, handlerFn);
+
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1);
+                const value2 = 2;
+                await cache.incrementOrFail(key, value2);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value: value2,
+                } satisfies IncrementedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: decrement", () => {
-            test("Should dispatch DecrementedCacheEvent when key exists", async () => {
-                let event_ = null as DecrementedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.WRITTEN,
-                    (event) => {
-                        if (event.type === "decremented") {
-                            event_ = event;
-                        }
-                    },
-                );
-                await cache.add("a", 1);
-                await cache.decrement("a", 1);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                expect(event_?.value).toBe(1);
-                await unsubscribe();
-            });
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
-                let event_ = null as NotFoundCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.NOT_FOUND,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
-                await cache.decrement("a", 1);
-                await Task.delay(DELAY_TIME);
-                expect(event_?.key).toBe("a");
-                await unsubscribe();
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                await cache.decrement(key, value);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+            test("Should dispatch DecrementedCacheEvent when key exists", async () => {
+                const handlerFn = vi.fn((_event: DecrementedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.DECREMENTED, handlerFn);
+
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1);
+                const value2 = 2;
+                await cache.decrement(key, value2);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value: value2,
+                } satisfies DecrementedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+        });
+        describe("method: decrementOrFail", () => {
+            test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
+                const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+
+                const key = "a";
+                const value = 1;
+                try {
+                    await cache.decrementOrFail(key, value);
+                } catch {
+                    /* EMPTY */
+                }
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                } satisfies NotFoundCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
+            });
+            test("Should dispatch DecrementedCacheEvent when key exists", async () => {
+                const handlerFn = vi.fn((_event: DecrementedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.DECREMENTED, handlerFn);
+
+                const key = "a";
+                const value1 = 1;
+                await cache.add(key, value1);
+                const value2 = 2;
+                await cache.decrementOrFail(key, value2);
+
+                expect(handlerFn).toHaveBeenCalledOnce();
+                expect(handlerFn).toHaveBeenCalledWith({
+                    key: expect.any(Key) as Key,
+                    value: value2,
+                } satisfies DecrementedCacheEvent);
+
+                const keyObj = handlerFn.mock.calls[0]?.[0].key;
+                expect(keyObj?.get()).toBe(key);
             });
         });
         describe("method: clear", () => {
             test("Should dispatch ClearedCacheEvent when key doesnt exists", async () => {
-                let event_ = null as ClearedCacheEvent | null;
-                const unsubscribe = await cache.subscribe(
-                    CACHE_EVENTS.CLEARED,
-                    (event) => {
-                        event_ = event;
-                    },
-                );
+                const handler = vi.fn((_event: ClearedCacheEvent) => {});
+                await cache.addListener(CACHE_EVENTS.CLEARED, handler);
+
                 await cache.add("a", 1);
                 await cache.add("b", 2);
                 await cache.add("c", 3);
                 await cache.clear();
-                await Task.delay(DELAY_TIME);
-                await unsubscribe();
-                expect(event_).toStrictEqual({});
+
+                expect(handler).toHaveBeenCalledOnce();
+                expect(handler).toHaveBeenCalledWith({});
             });
         });
     });

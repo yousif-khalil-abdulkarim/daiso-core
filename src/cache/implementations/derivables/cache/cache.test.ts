@@ -19,6 +19,7 @@ describe("class: Cache", () => {
                     namespace: new Namespace("event-bus"),
                     adapter: new MemoryEventBusAdapter(),
                 }),
+                defaultJitter: null,
             }),
         test,
         beforeEach,
@@ -44,6 +45,12 @@ describe("class: Cache", () => {
                 const promise = cache.add("a", invalidInput);
                 await expect(promise).rejects.toBeInstanceOf(ValidationError);
             });
+            test("method: addOrFail", async () => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const invalidInput: string = 0 as any;
+                const promise = cache.addOrFail("a", invalidInput);
+                await expect(promise).rejects.toBeInstanceOf(ValidationError);
+            });
             test("method: getOrAdd", async () => {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 const invalidInput: string = 0 as any;
@@ -54,6 +61,12 @@ describe("class: Cache", () => {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 const invalidInput: string = 0 as any;
                 const promise = cache.update("a", invalidInput);
+                await expect(promise).rejects.toBeInstanceOf(ValidationError);
+            });
+            test("method: updateOrFail", async () => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const invalidInput: string = 0 as any;
+                const promise = cache.updateOrFail("a", invalidInput);
                 await expect(promise).rejects.toBeInstanceOf(ValidationError);
             });
             test("method: put", async () => {

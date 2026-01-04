@@ -117,6 +117,13 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
         );
     }
 
+    setJitter(jitter: number): CacheFactory<TAdapters, TType> {
+        return new CacheFactory({
+            ...this.settings,
+            defaultJitter: jitter,
+        });
+    }
+
     /**
      * @example
      * ```ts

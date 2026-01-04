@@ -3,7 +3,6 @@
  */
 
 import {
-    withJitter,
     type BackoffPolicy,
     type DynamicBackoffPolicy,
 } from "@/backoff-policies/_shared.js";
@@ -12,7 +11,7 @@ import {
     type ITimeSpan,
 } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
-import { callInvokable, isInvokable } from "@/utilities/_module.js";
+import { callInvokable, isInvokable, withJitter } from "@/utilities/_module.js";
 
 /**
  *
@@ -85,7 +84,7 @@ export function constantBackoff(
             withJitter({
                 jitter,
                 value: delay[TO_MILLISECONDS](),
-                mathRandom: _mathRandom,
+                randomValue: _mathRandom(),
             }),
         );
     };
