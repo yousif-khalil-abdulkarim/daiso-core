@@ -2,6 +2,8 @@
  * @module Cache
  */
 
+import { type Key } from "@/namespace/_module.js";
+
 /**
  * The error is thrown when a key is not found
  *
@@ -9,9 +11,46 @@
  * @group Errors
  */
 export class KeyNotFoundCacheError extends Error {
+    static create(key: Key, cause?: unknown): KeyNotFoundCacheError {
+        return new KeyNotFoundCacheError(
+            `Key "${key.get()}" is not found`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `KeyNotFoundCacheError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
     constructor(message: string, cause?: unknown) {
         super(message, { cause });
         this.name = KeyNotFoundCacheError.name;
+    }
+}
+
+/**
+ * The error is thrown when a key is not found
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
+ * @group Errors
+ */
+export class KeyExistsCacheError extends Error {
+    static create(key: Key, cause?: unknown): KeyExistsCacheError {
+        return new KeyExistsCacheError(
+            `Key "${key.get()}" already exists`,
+            cause,
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `KeyExistsCacheError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
+    constructor(message: string, cause?: unknown) {
+        super(message, { cause });
+        this.name = KeyExistsCacheError.name;
     }
 }
 
