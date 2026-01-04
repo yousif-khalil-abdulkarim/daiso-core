@@ -19,6 +19,7 @@ describe("class: Cache", () => {
                     namespace: new Namespace("event-bus"),
                     adapter: new MemoryEventBusAdapter(),
                 }),
+                defaultJitter: null,
             }),
         test,
         beforeEach,
