@@ -47,26 +47,6 @@ export type DynamicBackoffPolicy<TSettings> =
 /**
  * @internal
  */
-export type WithJitterArgs = {
-    jitter: number | null;
-    value: number;
-    mathRandom: () => number;
-};
-
-/**
- * @internal
- */
-export function withJitter(args: WithJitterArgs): number {
-    const { jitter, value, mathRandom } = args;
-    if (jitter !== null) {
-        return (1 - jitter * mathRandom()) * value;
-    }
-    return value;
-}
-
-/**
- * @internal
- */
 export function resolveBackoffSettingsEnum(
     settings: BackoffSettingsEnum,
 ): Required<BackoffSettingsEnum> {
