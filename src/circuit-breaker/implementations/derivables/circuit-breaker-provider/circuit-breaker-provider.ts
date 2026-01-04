@@ -234,10 +234,10 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
-    asPromise<TEventName extends keyof CircuitBreakerEventMap>(
+    asTask<TEventName extends keyof CircuitBreakerEventMap>(
         eventName: TEventName,
     ): ITask<CircuitBreakerEventMap[TEventName]> {
-        return this.eventBus.asPromise(eventName);
+        return this.eventBus.asTask(eventName);
     }
 
     subscribeOnce<TEventName extends keyof CircuitBreakerEventMap>(

@@ -113,7 +113,7 @@ describe("class: EventBus", () => {
                     },
                 });
 
-                eventBus.asPromise("add").detach();
+                eventBus.asTask("add").detach();
                 await adapter.dispatch(
                     namespace.create("add").toString(),
                     invalidInput,

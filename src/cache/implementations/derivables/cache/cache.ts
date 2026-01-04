@@ -213,10 +213,10 @@ export class Cache<TType = unknown> implements ICache<TType> {
      * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
      * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
      */
-    asPromise<TEventName extends keyof CacheEventMap<TType>>(
+    asTask<TEventName extends keyof CacheEventMap<TType>>(
         eventName: TEventName,
     ): ITask<CacheEventMap<TType>[TEventName]> {
-        return this.eventBus.asPromise(eventName);
+        return this.eventBus.asTask(eventName);
     }
 
     /**

@@ -260,14 +260,14 @@ export function eventBusTestSuite(settings: EventBusTestSuiteSettings): void {
             test("Should not call onfulfilled handler when event is not triggered", () => {
                 const listener = vi.fn((_event: AddEvent) => {});
 
-                eventBus.asPromise("add").then(listener);
+                eventBus.asTask("add").then(listener);
 
                 expect(listener).toHaveBeenCalledTimes(0);
             });
             test("Should call onfulfilled with AddEvent when event is triggered", async () => {
                 const listener = vi.fn((_event: AddEvent) => {});
 
-                eventBus.asPromise("add").then(listener);
+                eventBus.asTask("add").then(listener);
                 const event: AddEvent = {
                     a: 1,
                     b: 2,

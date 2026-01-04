@@ -171,10 +171,10 @@ export class RateLimiterProvider implements IRateLimiterProvider {
         return this.eventBus.listenOnce(eventName, listener);
     }
 
-    asPromise<TEventName extends keyof RateLimiterEventMap>(
+    asTask<TEventName extends keyof RateLimiterEventMap>(
         eventName: TEventName,
     ): ITask<RateLimiterEventMap[TEventName]> {
-        return this.eventBus.asPromise(eventName);
+        return this.eventBus.asTask(eventName);
     }
 
     subscribeOnce<TEventName extends keyof RateLimiterEventMap>(
