@@ -212,9 +212,9 @@ await eventBus.dispatch("add", {
 });
 ```
 
-### Promise-based event handling
+### Task-based event handling
 
-Wait for events using promises:
+Wait for events using [tasks](../task.md):
 
 ```ts
 import { Task } from "@daiso-tech/core/task";
@@ -231,7 +231,7 @@ import { TimeSpan } from "@daiso-tech/core/time-span";
 })();
 
 // The promise will resolve after one second, when the event is dispatched.
-const event = await eventBus.asPromise("add");
+const event = await eventBus.asTask("add");
 console.log(event);
 ```
 
