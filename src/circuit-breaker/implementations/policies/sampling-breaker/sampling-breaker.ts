@@ -52,7 +52,7 @@ export type SamplingBreakerSettings = {
     timeSpan?: ITimeSpan;
 
     /**
-     * Length of time over which to sample.
+     * The sample length time.
      *
      * @default
      * ```ts
@@ -177,6 +177,8 @@ type ProccesedMetricData = {
 };
 
 /**
+ * The `SamplingBreaker` breaks after a proportion of requests over a time period fail.
+ *
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */

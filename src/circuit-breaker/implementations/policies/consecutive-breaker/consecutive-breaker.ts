@@ -77,6 +77,8 @@ export function resolveConsecutiveBreakerSettings(
 }
 
 /**
+ * The `ConsecutiveBreaker` breaks after n requests in a row fail.
+ *
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */
