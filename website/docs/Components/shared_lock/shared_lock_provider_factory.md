@@ -1,3 +1,8 @@
+---
+sidebar_position: 2
+sidebar_label: Factory classes
+---
+
 # SharedLockProviderFactory
 
 The `SharedLockProviderFactory` class provides a flexible way to configure and switch between different shared-lock adapters at runtime.

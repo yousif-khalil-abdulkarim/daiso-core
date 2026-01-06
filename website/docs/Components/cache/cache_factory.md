@@ -1,3 +1,8 @@
+---
+sidebar_position: 2
+sidebar_label: Factory classes
+---
+
 # CacheFactory
 
 The `CacheFactory` class provides a flexible way to configure and switch between different cache adapters at runtime.

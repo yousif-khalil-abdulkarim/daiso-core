@@ -1,3 +1,8 @@
+---
+sidebar_position: 2
+sidebar_label: Factory classes
+---
+
 # EventBusFactory
 
 The `EventBusFactory` class provides a flexible way to configure and switch between different event bus adapters at runtime.

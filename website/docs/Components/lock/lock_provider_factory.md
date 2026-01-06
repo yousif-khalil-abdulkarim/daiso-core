@@ -1,3 +1,8 @@
+---
+sidebar_position: 2
+sidebar_label: Factory classes
+---
+
 # LockProviderFactory
 
 The `LockProviderFactory` class provides a flexible way to configure and switch between different lock adapters at runtime.
