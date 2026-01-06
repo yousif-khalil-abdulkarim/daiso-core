@@ -14,7 +14,6 @@ In order to create an adapter you need to implement the [`IEventBusAdapter`](htt
 We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`eventBusAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/EventBus.eventBusAdapterTestSuite.html) function:
 
 - Preconfigured Vitest test cases
-- Standardized event bus behavior validation
 - Common edge case coverage
 
 Usage example:

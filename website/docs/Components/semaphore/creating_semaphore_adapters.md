@@ -11,10 +11,9 @@ In order to create an adapter you need to implement the [`ISemaphoreAdapter`](ht
 
 ## Testing your custom ISemaphoreAdapter
 
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`semaphoreAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Semaphore.semaphoreAdapterTestSuite.htmll) function:
+We provide a complete test suite to test your semaphore adapter implementation. Simply use the [`semaphoreAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Semaphore.semaphoreAdapterTestSuite.htmll) function:
 
 - Preconfigured Vitest test cases
-- Standardized event bus behavior validation
 - Common edge case coverage
 
 Usage example:
@@ -43,10 +42,9 @@ We provide an additional contract [`IDatabaseSemaphoreAdapter`](https://yousif-k
 
 ## Testing your custom IDatabaseSemaphoreAdapter
 
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`databaseSemaphoreAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Semaphore.databaseSemaphoreAdapterTestSuite.html) function:
+We provide a complete test suite to test your database semaphore adapter implementation. Simply use the [`databaseSemaphoreAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Semaphore.databaseSemaphoreAdapterTestSuite.html) function:
 
 - Preconfigured Vitest test cases
-- Standardized event bus behavior validation
 - Common edge case coverage
 
 Usage example:

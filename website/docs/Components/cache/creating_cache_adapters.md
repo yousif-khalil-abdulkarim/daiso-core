@@ -11,10 +11,9 @@ In order to create an adapter you need to implement the [`ICacheAdapter`](https:
 
 ## Testing your custom ICacheAdapter
 
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`cacheAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Cache.cacheAdapterTestSuite.html) function:
+We provide a complete test suite to test your cache adapter implementation. Simply use the [`cacheAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Cache.cacheAdapterTestSuite.html) function:
 
 -   Preconfigured Vitest test cases
--   Standardized event bus behavior validation
 -   Common edge case coverage
 
 Usage example:
@@ -43,10 +42,9 @@ We provide an additional contract [`IDatabaseCacheAdapter`](https://yousif-khali
 
 ## Testing your custom IDatabaseCacheAdapter
 
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`databaseCacheAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Cache.databaseCacheAdapterTestSuite.html) function:
+We provide a complete test suite to test your database cache adapter implementation. Simply use the [`databaseCacheAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Cache.databaseCacheAdapterTestSuite.html) function:
 
 -   Preconfigured Vitest test cases
--   Standardized event bus behavior validation
 -   Common edge case coverage
 
 Usage example:

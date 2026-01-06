@@ -587,7 +587,7 @@ await eventBus.addListener("sending-semaphore-over-network", ({ semaphore }) => 
 
 ### Semaphore events
 
-You can listen to different [semaphore events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Semaphore.html) that are triggered by the `Semaphore`.
+You can listen to different [semaphore events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Semaphore.html) that are triggered by the `Semaphore` instance.
 Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
@@ -614,6 +614,7 @@ await semaphoreProvider.create("a").acquire();
 If multiple semaphore adapters (e.g., `RedisSemaphoreAdapter` and `MemorySemaphoreAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
+import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
 import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
@@ -634,7 +635,7 @@ const memorySemaphoreProvider = new SemaphoreProvider({
     adapter: memorySemaphoreAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemorySemaphoreAdapter and RedisSemaphoreAdapter to isolate their events.
-        namespace: new Namespace(["memory-cache", "event-bus"]),
+        namespace: new Namespace(["memory", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -647,7 +648,7 @@ const redisSemaphoreProvider = new SemaphoreProvider({
     adapter: redisSemaphoreAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemorySemaphoreAdapter and RedisSemaphoreAdapter to isolate their events.
-        namespace: new Namespace(["redis-cache", "event-bus"]),
+        namespace: new Namespace(["redis", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -668,6 +669,9 @@ The library includes 3 additional contracts:
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 
 ```ts
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
+import { SemaphoreProvider } from "@daiso-tech/core/semaphore";
 import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";
 import {
     type ISemaphore,
@@ -706,6 +710,12 @@ async function semaphoreListenableFunc(
     });
 }
 
+const semaphoreProvider = new SemaphoreProvider({
+    adapter: new MemorySemaphoreAdapter(),
+    eventBus: new EventBus({
+        adapter: new MemoryEventBusAdapter(),
+    })
+})
 await semaphoreListenableFunc(semaphoreProvider);
 await semaphoreProviderFunc(semaphoreProvider);
 ```

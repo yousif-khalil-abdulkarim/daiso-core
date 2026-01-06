@@ -187,7 +187,6 @@ The library includes 4 additional contracts:
 
 This seperation makes it easy to visually distinguish the 4 contracts, making it immediately obvious that they serve different purposes.
 
-
 ## Further information
 
 For further information refer to [`@daiso-tech/core/serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html) API docs.

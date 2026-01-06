@@ -11,10 +11,9 @@ In order to create an adapter you need to implement the [`ILockAdapter`](https:/
 
 ## Testing your custom ILockAdapter
 
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`lockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.lockAdapterTestSuite.html) function:
+We provide a complete test suite to test your lock adapter implementation. Simply use the [`lockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.lockAdapterTestSuite.html) function:
 
 - Preconfigured Vitest test cases
-- Standardized event bus behavior validation
 - Common edge case coverage
 
 Usage example:
@@ -43,10 +42,9 @@ We provide an additional contract [`IDatabaseLockAdapter`](https://yousif-khalil
 
 ## Testing your custom IDatabaseLockAdapter
 
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`databaseLockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.databaseLockAdapterTestSuite.html) function:
+We provide a complete test suite to test your database lock adapter implementation. Simply use the [`databaseLockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.databaseLockAdapterTestSuite.html) function:
 
 - Preconfigured Vitest test cases
-- Standardized event bus behavior validation
 - Common edge case coverage
 
 Usage example:

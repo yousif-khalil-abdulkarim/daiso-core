@@ -36,7 +36,7 @@ Note the `MemorySemaphoreAdapter` is limited to single process usage and cannot 
 
 To use the `MongodbSemaphoreAdapter`, you'll need to:
 
-1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package
+1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package:
 
 ```ts
 import { MongodbSemaphoreAdapter } from "@daiso-tech/core/semaphore/mongodb-semaphore-adapter";
@@ -94,7 +94,7 @@ Note in order to use `MongodbSemaphoreAdapter` correctly, ensure you use a singl
 
 To use the `RedisSemaphoreAdapter`, you'll need to:
 
-1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package
+1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
 
 ```ts
 import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
@@ -112,11 +112,11 @@ Note in order to use `RedisSemaphoreAdapter` correctly, ensure you use a single,
 
 To use the `KyselySemaphoreAdapter`, you'll need to:
 
-1. Use database provider that support for transactions.
+1. Use database provider that has support for transactions.
 
-2. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package
+2. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package:
 
-### Usage with Sqlite
+### With Sqlite
 
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
@@ -145,7 +145,7 @@ await kyselySemaphoreAdapter.init();
 Note using `KyselySemaphoreAdapter` with `sqlite` is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes. To use it correctly, ensure all process instances access the same persisted database.
 :::
 
-### Usage with Postgres
+### With Postgres
 
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
@@ -182,7 +182,7 @@ await kyselySemaphoreAdapter.init();
 Note in order to use `KyselySemaphoreAdapter` with `postgres` correctly, ensure you use a single, consistent database across all server instances. This means you can't use replication.
 :::
 
-### Usage with Mysql
+### With Mysql
 
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
@@ -219,7 +219,7 @@ await kyselySemaphoreAdapter.init();
 Note in order to use `KyselySemaphoreAdapter` with `mysql` correctly, ensure you use a single, consistent database across all server instances. This means you can't use replication.
 :::
 
-### Usage with Libsql
+### With Libsql
 
 You will need to install `@libsql/kysely-libsql` package:
 

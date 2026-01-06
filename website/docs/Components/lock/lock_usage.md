@@ -500,7 +500,7 @@ await eventBus.addListener("sending-lock-over-network", ({ lock }) => {
 
 ### Lock events
 
-You can listen to different [lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) that are triggered by the `Lock`.
+You can listen to different [lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) that are triggered by the `Lock` instance.
 Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
@@ -527,6 +527,7 @@ await lockProvider.create("a").acquire();
 If multiple lock adapters (e.g., `RedisLockAdapter` and `MemoryLockAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
+import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
@@ -547,7 +548,7 @@ const memoryLockProvider = new LockProvider({
     adapter: memoryLockAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryLockAdapter and RedisLockAdapter to isolate their events.
-        namespace: new Namespace(["memory-cache", "event-bus"]),
+        namespace: new Namespace(["memory", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -560,7 +561,7 @@ const redisLockProvider = new LockProvider({
     adapter: redisLockAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryLockAdapter and RedisLockAdapter to isolate their events.
-        namespace: new Namespace(["redis-cache", "event-bus"]),
+        namespace: new Namespace(["redis", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -581,6 +582,9 @@ The library includes 3 additional contracts:
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 
 ```ts
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
+import { LockProvider } from "@daiso-tech/core/lock";
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
 import {
     type ILock,
@@ -617,6 +621,12 @@ async function lockListenableFunc(
     });
 }
 
+const lockProvider = new LockProvider({
+    adapter: new MemoryLockAdapter(),
+    eventBus: new EventBus({
+        adapter: new MemoryEventBusAdapter(),
+    })
+})
 await lockListenableFunc(lockProvider);
 await lockProviderFunc(lockProvider);
 ```

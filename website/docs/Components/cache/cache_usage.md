@@ -336,7 +336,7 @@ console.log(await cacheA.get("key"));
 
 ### Cache events
 
-You can listen to different [cache events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) that are triggered by the `Cache` class.
+You can listen to different [cache events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) that are triggered by the `Cache` instance.
 Refer to the [`@daiso-tech/core/event-bus`](../event_bus/event_bus_usage.md) documentation to learn how to use events.
 
 ```ts
@@ -379,14 +379,11 @@ const cache = new Cache({
 
 :::
 
-:::info
-Note you can disable dispatching `Cache` events by passing an `EventBus` that uses `NoOpEventBusAdapter`.
-:::
-
 :::warning
 If multiple cache adapters (e.g., `RedisCacheAdapter` and `MemoryCacheAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
+import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 import { EventBus } from "@daiso-tech/core/event-bus";
@@ -408,7 +405,7 @@ const memoryCache = new Cache({
     adapter: memoryCacheAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryCacheAdapter and RedisCacheAdapter to isolate their events.
-        namespace: new Namespace(["memory-cache", "event-bus"]),
+        namespace: new Namespace(["memory", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -421,7 +418,7 @@ const redisCache = new Cache({
     adapter: redisCacheAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryCacheAdapter and RedisCacheAdapter to isolate their events.
-        namespace: new Namespace(["redis-cache", "event-bus"]),
+        namespace: new Namespace(["redis", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -446,6 +443,10 @@ import type {
     ICacheListenable,
     CACHE_EVENTS,
 } from "@daiso-tech/core/cache/contracts";
+import { Cache } from "@daiso-tech/core/cache";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapter/memory-cache-adapter";
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { MemoryEventBus } from "@daiso-tech/core/event-bus/memory-event-bus";
 
 function manipulatingFunc(cache: ICahceBase): Promise<void> {
     // You cannot access the listener methods
@@ -462,6 +463,12 @@ function listenerFunc(cacheListenable: ICacheListenable): Promise<void> {
     });
 }
 
+const cache = new Cache({
+    adapter: new MemoryCacheAdapter(),
+    eventBus: new EventBus({
+        adapter: new MemoryEventBus()
+    })
+})
 await listenerFunc(cache);
 await manipulatingFunc(cache);
 ```

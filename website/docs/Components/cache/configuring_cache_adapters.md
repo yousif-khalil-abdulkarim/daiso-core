@@ -32,10 +32,11 @@ const memoryCacheAdapter = new MemoryCacheAdapter(map);
 
 To use the `MongodbCacheAdapter`, you'll need to:
 
-1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package
-2. Provide a string serializer ([`ISerde`](../serde.md))
+1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package:
 
--   We recommend using `SuperJsonSerdeAdapter` for this purpose
+2. Provide a string serializer ([`ISerde`](../serde.md)):
+
+-We recommend using `SuperJsonSerdeAdapter` for this purpose
 
 ```ts
 import { MongodbCacheAdapter } from "@daiso-tech/core/cache/mongodb-cache-adapter";
@@ -95,8 +96,8 @@ await mongodbCacheAdapter.deInit();
 
 To use the `RedisCacheAdapter`, you'll need to:
 
-1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package
-2. Provide a string serializer ([`ISerde`](../serde.md))
+1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
+2. Provide a string serializer ([`ISerde`](../serde.md)):
 
 -   We recommend using `SuperJsonSerdeAdapter` for this purpose
 
@@ -118,8 +119,8 @@ const redisCacheAdapter = new RedisCacheAdapter({
 
 To use the `KyselyCacheAdapter`, you'll need to:
 
-1. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package
-2. Provide a string serializer ([`ISerde`](../serde.md))
+1. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package:
+2. Provide a string serializer ([`ISerde`](../serde.md)):
 
 -   We recommend using `SuperJsonSerdeAdapter` for this purpose
 

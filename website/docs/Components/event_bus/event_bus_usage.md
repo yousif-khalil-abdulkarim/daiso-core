@@ -255,11 +255,6 @@ import type {
 import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 
-const eventBus: IEventBus = new EventBus({
-    // You can choose the adapter to use
-    adapter: new MemoryEventBusAdapter(),
-});
-
 type AddEvent = {
     a: number;
     b: number;
@@ -290,6 +285,11 @@ async function dispatchingFunc(
         b: 5,
     });
 }
+
+const eventBus: IEventBus<any> = new EventBus({
+    // You can choose the adapter to use
+    adapter: new MemoryEventBusAdapter(),
+});
 
 await listenerFunc(eventBus);
 await dispatchingFunc(eventBus);

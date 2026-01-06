@@ -33,8 +33,8 @@ const eventBusAdapter = new MemoryEventBusAdapter(eventEmitter);
 
 To use the `RedisPubSubEventBusAdapter`, you'll need to:
 
-1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package
-2. Provide a string serializer ([`ISerde`](../serde.md))
+1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
+2. Provide a string serializer ([`ISerde`](../serde.md)):
 
 - We recommend using `SuperJsonSerdeAdapter` for this purpose
 
