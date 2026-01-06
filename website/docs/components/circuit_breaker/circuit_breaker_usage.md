@@ -51,6 +51,15 @@ await circuitBreaker.runOrFail(async () => {
 Note the method throws an error when the circuit breaker is in open state or isolated state.
 :::
 
+:::info
+You can provide [`Task<TValue>`](../task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../utilities/invokable.md) as values for `runOrFail` method.
+:::
+
+:::danger
+Note `CircuitBreaker` class instance uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
+Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
+:::
+
 ### Applying on circuit-breaker on certiain errors
 
 ```ts
