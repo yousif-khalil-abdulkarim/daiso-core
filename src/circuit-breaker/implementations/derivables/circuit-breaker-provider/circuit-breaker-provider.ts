@@ -31,7 +31,6 @@ import {
     CORE,
     resolveOneOrMore,
     type ErrorPolicy,
-    type ErrorPolicySettings,
     type OneOrMore,
 } from "@/utilities/_module.js";
 
@@ -40,7 +39,7 @@ import {
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker"`
  * @group Derivables
  */
-export type CircuitBreakerProviderSettingsBase = ErrorPolicySettings & {
+export type CircuitBreakerProviderSettingsBase = {
     /**
      * @default
      * ```ts
@@ -65,6 +64,18 @@ export type CircuitBreakerProviderSettingsBase = ErrorPolicySettings & {
     eventBus?: IEventBus;
 
     /**
+     * You can set the default `ErrorPolicy`
+     *
+     * @default
+     * ```ts
+     * (_error: unknown) => true
+     * ```
+     */
+    defaultErrorPolicy?: ErrorPolicy;
+
+    /**
+     * You can set the default slow call threshold.
+     *
      * @default
      * ```ts
      * import { TimeSpan } from "@daiso-tech/core/time-span";
@@ -75,7 +86,8 @@ export type CircuitBreakerProviderSettingsBase = ErrorPolicySettings & {
     defaultSlowCallTime?: ITimeSpan;
 
     /**
-     * You can decide to track only errors, only slow calls or both as failures.
+     * You set the default trigger.
+     *
      * @default
      * ```ts
      * import { CIRCUIT_BREAKER_TRIGGER} from "@daiso-tech/core/circuit-breaker/contracts";
@@ -180,7 +192,7 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
             adapter,
             defaultSlowCallTime = TimeSpan.fromSeconds(10),
             defaultTrigger = CIRCUIT_BREAKER_TRIGGER.BOTH,
-            errorPolicy = () => true,
+            defaultErrorPolicy = () => true,
             serde = new Serde(new NoOpSerdeAdapter()),
             serdeTransformerName = "",
         } = settings;
@@ -191,7 +203,7 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
         this.adapter = adapter;
         this.defaultSlowCallTime = TimeSpan.fromTimeSpan(defaultSlowCallTime);
         this.defaultTrigger = defaultTrigger;
-        this.defaultErrorPolicy = errorPolicy;
+        this.defaultErrorPolicy = defaultErrorPolicy;
         this.serde = serde;
         this.serdeTransformerName = serdeTransformerName;
         this.registerToSerde();

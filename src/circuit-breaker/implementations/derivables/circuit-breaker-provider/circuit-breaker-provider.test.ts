@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import {
+    IsolatedCircuitBreakerError,
     OpenCircuitBreakerError,
     type ICircuitBreakerStateMethods,
     type IsolatedCircuitBreakerEvent,
@@ -190,6 +191,27 @@ describe("class: CircuitBreakerProvider", () => {
                         OpenCircuitBreakerError,
                     );
                 });
+                test("Should throw IsolatedCircuitBreakerError when in IsolatedState", async () => {
+                    vi.spyOn(adapter, "updateState").mockImplementation(() =>
+                        Promise.resolve({
+                            from: CIRCUIT_BREAKER_STATE.CLOSED,
+                            to: CIRCUIT_BREAKER_STATE.ISOLATED,
+                        }),
+                    );
+                    vi.spyOn(adapter, "trackFailure").mockImplementation(() =>
+                        Promise.resolve(),
+                    );
+
+                    const circuitBreaker = circuitBreakerProvider.create(KEY, {
+                        trigger: CIRCUIT_BREAKER_TRIGGER.BOTH,
+                    });
+                    const promise = circuitBreaker.runOrFail(() => {
+                        return Promise.reject(new Error("UNEXPECTED ERROR"));
+                    });
+                    await expect(promise).rejects.toBeInstanceOf(
+                        IsolatedCircuitBreakerError,
+                    );
+                });
             });
             describe("CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR:", () => {
                 test("Should call ICircuitBreakerAdapter.trackFailure when the function throws an error", async () => {
@@ -331,6 +353,27 @@ describe("class: CircuitBreakerProvider", () => {
                         OpenCircuitBreakerError,
                     );
                 });
+                test("Should throw IsolatedCircuitBreakerError when in IsolatedState", async () => {
+                    vi.spyOn(adapter, "updateState").mockImplementation(() =>
+                        Promise.resolve({
+                            from: CIRCUIT_BREAKER_STATE.CLOSED,
+                            to: CIRCUIT_BREAKER_STATE.ISOLATED,
+                        }),
+                    );
+                    vi.spyOn(adapter, "trackFailure").mockImplementation(() =>
+                        Promise.resolve(),
+                    );
+
+                    const circuitBreaker = circuitBreakerProvider.create(KEY, {
+                        trigger: CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR,
+                    });
+                    const promise = circuitBreaker.runOrFail(() => {
+                        return Promise.reject(new Error("UNEXPECTED ERROR"));
+                    });
+                    await expect(promise).rejects.toBeInstanceOf(
+                        IsolatedCircuitBreakerError,
+                    );
+                });
             });
             describe("CIRCUIT_BREAKER_TRIGGER.ONLY_SLOW_CALL:", () => {
                 test("Should not call ICircuitBreakerAdapter.trackFailure when the function throws an error", async () => {
@@ -444,6 +487,27 @@ describe("class: CircuitBreakerProvider", () => {
                     });
                     await expect(promise).rejects.toBeInstanceOf(
                         OpenCircuitBreakerError,
+                    );
+                });
+                test("Should throw IsolatedCircuitBreakerError when in IsolatedState", async () => {
+                    vi.spyOn(adapter, "updateState").mockImplementation(() =>
+                        Promise.resolve({
+                            from: CIRCUIT_BREAKER_STATE.CLOSED,
+                            to: CIRCUIT_BREAKER_STATE.ISOLATED,
+                        }),
+                    );
+                    vi.spyOn(adapter, "trackFailure").mockImplementation(() =>
+                        Promise.resolve(),
+                    );
+
+                    const circuitBreaker = circuitBreakerProvider.create(KEY, {
+                        trigger: CIRCUIT_BREAKER_TRIGGER.ONLY_SLOW_CALL,
+                    });
+                    const promise = circuitBreaker.runOrFail(() => {
+                        return Promise.reject(new Error("UNEXPECTED ERROR"));
+                    });
+                    await expect(promise).rejects.toBeInstanceOf(
+                        IsolatedCircuitBreakerError,
                     );
                 });
             });

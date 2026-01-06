@@ -148,16 +148,16 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
         });
     }
 
-    setErrorPolicy(
-        errorPolicy: ErrorPolicy,
+    setDefaultErrorPolicy(
+        defaultErrorPolicy: ErrorPolicy,
     ): DatabaseCircuitBreakerProviderFactory<TAdapters> {
         return new DatabaseCircuitBreakerProviderFactory({
             ...this.settings,
-            errorPolicy,
+            defaultErrorPolicy,
         });
     }
 
-    setBackoffPolicy(
+    setDefaultBackoffPolicy(
         backoffPolicy?: BackoffPolicy,
     ): DatabaseCircuitBreakerProviderFactory<TAdapters> {
         return new DatabaseCircuitBreakerProviderFactory({
@@ -166,7 +166,7 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
         });
     }
 
-    setCircuitBreakerPolicy(
+    setDefaultCircuitBreakerPolicy(
         circuitBreakerPolicy?: ICircuitBreakerPolicy,
     ): DatabaseCircuitBreakerProviderFactory<TAdapters> {
         return new DatabaseCircuitBreakerProviderFactory({

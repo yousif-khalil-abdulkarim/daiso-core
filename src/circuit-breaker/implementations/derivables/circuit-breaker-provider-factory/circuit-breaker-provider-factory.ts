@@ -119,11 +119,11 @@ export class CircuitBreakerProviderFactory<TAdapters extends string>
     }
 
     setDefaultErrorPolicy(
-        errorPolicy: ErrorPolicy,
+        defaultErrorPolicy: ErrorPolicy,
     ): CircuitBreakerProviderFactory<TAdapters> {
         return new CircuitBreakerProviderFactory({
             ...this.settings,
-            errorPolicy,
+            defaultErrorPolicy,
         });
     }
 
