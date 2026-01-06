@@ -34,7 +34,7 @@ const cacheFactory = new CacheFactory({
 ### 1. Using the default adapter
 
 ```ts
-await cacheFactory.use().add(["user", "jose@gmail.com"], {
+await cacheFactory.use().add("user/jose@gmail.com", {
     name: "Jose",
     age: 20,
 });
@@ -47,7 +47,7 @@ Note that if you dont set a default adapter, an error will be thrown.
 ### 2. Specifying an adapter explicitly
 
 ```ts
-await cacheFactory.use("redis").add(["user", "jose@gmail.com"], {
+await cacheFactory.use("redis").add("user/jose@gmail.com", {
     name: "Jose",
     age: 20,
 });
@@ -73,7 +73,7 @@ await eventBusFactory
         }),
     )
     .use("redis")
-    .add(["user", "jose@gmail.com"], {
+    .add("user/jose@gmail.com", {
         name: "Jose",
         age: 20,
     });
