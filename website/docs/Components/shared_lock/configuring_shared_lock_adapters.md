@@ -112,7 +112,9 @@ Note in order to use `RedisSharedLockAdapter` correctly, ensure you use a single
 
 To use the `KyselySharedLockAdapter`, you'll need to:
 
-1. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package
+1. Use database provider that support for transactions.
+
+2. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package
 
 ### Usage with Sqlite
 
