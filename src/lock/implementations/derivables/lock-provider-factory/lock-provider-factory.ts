@@ -155,7 +155,7 @@ export class LockProviderFactory<TAdapters extends string>
      *   .create("a")
      *   .acquire();
      *
-     * // Will acquire key using the redis adapter which is RedisLockAdapter
+     * // Will acquire key using the redis adapter
      * await lockProviderFactory
      *   .use("redis")
      *   .create("a")

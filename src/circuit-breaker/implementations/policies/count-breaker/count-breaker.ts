@@ -123,6 +123,8 @@ export type CountBreakerState = {
 };
 
 /**
+ * The `CountBreaker` breaks after a proportion of requests in a count based sliding window fail.
+ *
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/policies"`
  * @group Policies
  */

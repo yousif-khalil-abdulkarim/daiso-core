@@ -153,7 +153,7 @@ export class EventBusFactory<
      *   .use<EventMap>()
      *   .dispatch("add", { a: 1, b: 2 });
      *
-     * // Will dispatch AddEvent using the redis adapter which is RedisPubSubEventBusAdapter
+     * // Will dispatch AddEvent using the redis adapter
      * await eventBusFactory
      *   .use<EventMap>("redis")
      *   .dispatch("add", { a: 1, b: 2 });

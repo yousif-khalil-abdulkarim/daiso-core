@@ -1,3 +1,7 @@
+---
+"sidebar_position": 14
+---
+
 # TimeSpan
 
 The `@daiso-tech/core/time-span` component provides an easy way for defining, manipulating, and comparing durations. Furthermore, it is designed for easy integration with external time libraries like Luxon and Dayjs.

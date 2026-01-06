@@ -1,3 +1,7 @@
+---
+"sidebar_position": 13
+---
+
 # Task
 
 The `@daiso-tech/core/task` component provides a better alternative to `Promise`.
@@ -46,7 +50,7 @@ await Task.delay(TimeSpan.fromSeconds(2));
 
 ### Adding middlewares
 
-You can add `middlewares` to a `Task`. Refer to the [`@daiso-tech/core/hooks`](./Hooks.md) documentation for further information.
+You can add `middlewares` to a `Task`. Refer to the [`@daiso-tech/core/hooks`](./hooks.md) documentation for further information.
 
 Through the constructor:
 
@@ -95,7 +99,7 @@ const task = new Task(async () => {
 await task;
 ```
 :::info
-You can provide [`Task<boolean>`](./Task.md), synchronous and asynchronous [`Invokable<[], boolean>`](../Utilities/Invokable.md) as values for `pipeWhen` method.
+You can provide [`Task<boolean>`](./task.md), synchronous and asynchronous [`Invokable<[], boolean>`](../utilities/invokable.md) as values for `pipeWhen` method.
 :::
 
 ### Static methods

@@ -1,3 +1,7 @@
+---
+"sidebar_position": 10
+---
+
 # Namespace
 
 The `@daiso-tech/core/namespace` component provides seamless way to group data by prefixing and suffixing keys.

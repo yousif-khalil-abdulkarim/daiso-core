@@ -159,7 +159,7 @@ export class SharedLockProviderFactory<TAdapters extends string>
      *   .create("a")
      *   .acquireWriter();
      *
-     * // Will acquire key using the redis adapter which is RedisSharedLockAdapter
+     * // Will acquire key using the redis adapter
      * await lockProviderFactory
      *   .use("redis")
      *   .create("a")

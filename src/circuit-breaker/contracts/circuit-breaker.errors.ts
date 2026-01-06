@@ -13,7 +13,7 @@ import { type Key } from "@/namespace/_module.js";
 export class OpenCircuitBreakerError extends Error {
     static create(key: Key, cause?: unknown): OpenCircuitBreakerError {
         return new OpenCircuitBreakerError(
-            `Blocked by circuit breaker with key of "${key.get()}"`,
+            `Circuit breaker for key "${key.get()}" in opened state. All calls are being blocked until transitioned to half opened state.`,
             cause,
         );
     }
@@ -29,6 +29,26 @@ export class OpenCircuitBreakerError extends Error {
     }
 }
 
+export class IsolatedCircuitBreakerError extends Error {
+    static create(key: Key, cause?: unknown): IsolatedCircuitBreakerError {
+        return new IsolatedCircuitBreakerError(
+            `Circuit breaker for key "${key.get()}" is manually isolated. All calls are being blocked until reseted.`,
+            cause,
+            // Circuit breaker "a" is manually isolated; all requests are being blocked.
+        );
+    }
+
+    /**
+     * Note: Do not instantiate `IsolatedCircuitBreakerError` directly via the constructor. Use the static `create()` factory method instead.
+     * The constructor remains public only to maintain compatibility with errorPolicy types and prevent type errors.
+     * @internal
+     */
+    constructor(message: string, cause?: unknown) {
+        super(message, { cause });
+        this.name = IsolatedCircuitBreakerError.name;
+    }
+}
+
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/contracts"`
@@ -36,6 +56,7 @@ export class OpenCircuitBreakerError extends Error {
  */
 export const CIRCUIT_BREAKER_ERRORS = {
     Open: OpenCircuitBreakerError,
+    Isolated: IsolatedCircuitBreakerError,
 } as const;
 
 /**

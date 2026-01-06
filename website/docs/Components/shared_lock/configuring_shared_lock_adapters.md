@@ -1,8 +1,11 @@
-# SharedLock adapters
+---
+sidebar_position: 3
+sidebar_label: Configuring adapters
+---
 
-## Using shared-lock adapters
+# Configuring shared-lock adapters
 
-### MemorySharedLockAdapter
+## MemorySharedLockAdapter
 
 To use the `MemorySharedLockAdapter` you only need to create instance of it:
 
@@ -29,11 +32,11 @@ const memorySharedLockAdapter = new MemorySharedLockAdapter(map);
 Note the `MemorySharedLockAdapter` is limited to single process usage and cannot be shared across multiple servers or processes.
 :::
 
-### MongodbSharedLockAdapter
+## MongodbSharedLockAdapter
 
 To use the `MongodbSharedLockAdapter`, you'll need to:
 
-1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package
+1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package:
 
 ```ts
 import { MongodbSharedLockAdapter } from "@daiso-tech/core/shared-lock/mongodb-shared-lock-adapter";
@@ -87,11 +90,11 @@ await mongodbSharedLockAdapter.deInit();
 Note in order to use `MongodbSharedLockAdapter` correctly, ensure you use a single, consistent database across all server instances or processes.
 :::
 
-### RedisSharedLockAdapter
+## RedisSharedLockAdapter
 
 To use the `RedisSharedLockAdapter`, you'll need to:
 
-1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package
+1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
 
 ```ts
 import { RedisSharedLockAdapter } from "@daiso-tech/core/shared-lock/redis-shared-lock-adapter";
@@ -105,13 +108,15 @@ const redisSharedLockAdapter = new RedisSharedLockAdapter(database);
 Note in order to use `RedisSharedLockAdapter` correctly, ensure you use a single, consistent database across all server instances or processes.
 :::
 
-### KyselySharedLockAdapter
+## KyselySharedLockAdapter
 
 To use the `KyselySharedLockAdapter`, you'll need to:
 
-1. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package
+1. Use database provider that has support for transactions.
 
-#### Usage with Sqlite
+2. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package:
+
+### With Sqlite
 
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
@@ -140,7 +145,7 @@ await kyselySharedLockAdapter.init();
 Note using `KyselySharedLockAdapter` with `sqlite` is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes. To use it correctly, ensure all process instances access the same persisted database.
 :::
 
-#### Usage with Postgres
+### With Postgres
 
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
@@ -177,7 +182,7 @@ await kyselySharedLockAdapter.init();
 Note in order to use `KyselySharedLockAdapter` with `postgres` correctly, ensure you use a single, consistent database across all server instances. This means you can't use replication.
 :::
 
-#### Usage with Mysql
+### With Mysql
 
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
@@ -214,7 +219,7 @@ await kyselySharedLockAdapter.init();
 Note in order to use `KyselySharedLockAdapter` with `mysql` correctly, ensure you use a single, consistent database across all server instances. This means you can't use replication.
 :::
 
-#### Usage with Libsql
+### With Libsql
 
 You will need to install `@libsql/kysely-libsql` package:
 
@@ -242,7 +247,7 @@ await kyselySharedLockAdapter.init();
 Note in order to use `KyselySharedLockAdapter` with `libsql` correctly, ensure you use a single, consistent database across all server instances. This means you can't use libsql embedded replicas.
 :::
 
-#### Settings
+### Settings
 
 Expired keys are cleared at regular intervals and you can change the interval time:
 
@@ -282,7 +287,7 @@ await kyselySharedLockAdapter.deInit();
 ```
 :::
 
-### NoOpSharedLockAdapter
+## NoOpSharedLockAdapter
 
 The `NoOpSharedLockAdapter` is a no-operation implementation, it performs no actions when called:
 
@@ -295,104 +300,6 @@ const noOpSharedLockAdapter = new NoOpSharedLockAdapter();
 :::info
 The `NoOpSharedLockAdapter` is useful when you want to mock out or disable your `SharedLockProvider` instance.
 :::
-
-## Creating shared-lock adapters
-
-### Implementing your custom ISharedLockAdapter
-
-In order to create an adapter you need to implement the [`ISharedLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/SharedLock.ISharedLockAdapter.html) contract.
-
-### Testing your custom ISharedLockAdapter
-
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`sharedLockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.lockAdapterTestSuite.html) function:
-
-- Preconfigured Vitest test cases
-- Standardized event bus behavior validation
-- Common edge case coverage
-
-Usage example:
-
-```ts
-// filename: MySharedLockAdapter.test.ts
-
-import { beforeEach, describe, expect, test } from "vitest";
-import { sharedLockAdapterTestSuite } from "@daiso-tech/core/shared-lock/test-utilities";
-import { MemorySharedLockAdapter } from "./MemorySharedLockAdapter.js";
-
-describe("class: MySharedLockAdapter", () => {
-    sharedLockAdapterTestSuite({
-        createAdapter: () => new MemorySharedLockAdapter(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
-```
-
-### Implementing your custom IDatabaseSharedLockAdapter
-
-We provide an additional contract [`IDatabaseSharedLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/SharedLock.IDatabaseSharedLockAdapter.html) for building custom shared-lock adapters tailored to databases.
-
-### Testing your custom IDatabaseSharedLockAdapter
-
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`databaseSharedLockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/SharedLock.databaseSharedLockAdapterTestSuite.html) function:
-
-- Preconfigured Vitest test cases
-- Standardized event bus behavior validation
-- Common edge case coverage
-
-Usage example:
-
-```ts
-import { beforeEach, describe, expect, test } from "vitest";
-import { databaseSharedLockAdapterTestSuite } from "@daiso-tech/core/shared-lock/test-utilities";
-import { MyDatabaseSharedLockAdapter } from "./MyDatabaseSharedLockAdapter.js";
-
-describe("class: MyDatabaseSharedLockAdapter", () => {
-    databaseSharedLockAdapterTestSuite({
-        createAdapter: async () => {
-            return new MyDatabaseSharedLockAdapter(),
-        },
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
-```
-
-### Implementing your custom ISharedLockProvider class
-
-In some cases, you may need to implement a custom [`SharedLockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/SharedLock.SharedLockProvider.html) class to optimize performance for your specific technology stack. You can then directly implement the [`ISharedLockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/SharedLock.ISharedLockProvider.html) contract.
-
-### Testing your custom ISharedLockProvider class
-
-We provide a complete test suite to verify your custom event bus class implementation. Simply use the [`sharedLockProviderTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/SharedLock.sharedLockProviderTestSuite.html) function:
-
-- Preconfigured Vitest test cases
-- Standardized event bus behavior validation
-- Common edge case coverage
-
-Usage example:
-
-```ts
-// filename: MySharedLockProvider.test.ts
-
-import { beforeEach, describe, expect, test } from "vitest";
-import { sharedLockProviderTestSuite } from "@daiso-tech/core/shared-lock/test-utilities";
-import { MySharedLockProvider } from "./MySharedLockProvider.js";
-
-describe("class: MySharedLockProvider", () => {
-    sharedLockProviderTestSuite({
-        createSharedLockProvider: () => new MySharedLockProvider(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
-```
 
 ## Further information
 

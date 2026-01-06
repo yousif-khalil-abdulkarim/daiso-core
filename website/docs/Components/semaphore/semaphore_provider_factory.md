@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+sidebar_label: Factory classes
+---
 # SemaphoreProviderFactory
 
 The `SemaphoreProviderFactory` class provides a flexible way to configure and switch between different semaphore adapters at runtime.

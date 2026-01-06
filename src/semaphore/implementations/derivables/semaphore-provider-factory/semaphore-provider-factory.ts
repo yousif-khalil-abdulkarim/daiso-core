@@ -148,7 +148,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
      *   .create("a")
      *   .acquire();
      *
-     * // Will acquire key using the redis adapter which is RedisSemaphoreAdapter
+     * // Will acquire key using the redis adapter
      * await semaphoreProviderFactory
      *   .use("redis")
      *   .create("a")

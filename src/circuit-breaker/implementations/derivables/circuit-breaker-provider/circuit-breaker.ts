@@ -7,6 +7,7 @@ import {
     type CircuitBreakerTrigger,
     type ICircuitBreaker,
     OpenCircuitBreakerError,
+    IsolatedCircuitBreakerError,
     CIRCUIT_BREAKER_TRIGGER,
     type ICircuitBreakerAdapter,
     CIRCUIT_BREAKER_STATE,
@@ -241,6 +242,11 @@ export class CircuitBreaker implements ICircuitBreaker {
         const isInOpenState = transition.to === CIRCUIT_BREAKER_STATE.OPEN;
         if (isInOpenState) {
             throw OpenCircuitBreakerError.create(this._key);
+        }
+        const isIsolatedState =
+            transition.to === CIRCUIT_BREAKER_EVENTS.ISOLATED;
+        if (isIsolatedState) {
+            throw IsolatedCircuitBreakerError.create(this._key);
         }
     }
 

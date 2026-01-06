@@ -1,4 +1,9 @@
-# Cache
+---
+sidebar_position: 1
+sidebar_label: Usage
+---
+
+# Cache usage
 
 The `@daiso-tech/core/cache` component provides a way for storing key-value pairs with expiration independent of data storage
 
@@ -32,12 +37,12 @@ Here is a complete list of settings for the `Cache` class.
 You can add a key and provide a optional TTL to overide the default:
 
 ```ts
-await cache.add("a", "value", TimeSpan.fromSeconds("1"));
+await cache.add("a", "value", { ttl: TimeSpan.fromSeconds("1") });
 ```
 
 :::danger
 Note `Cache` class instance uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
-Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
+Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
 :::
 
 ### Retrieving keys
@@ -86,7 +91,7 @@ You can replace the key value with a given TTL if the key exists otherwise the k
 
 ```ts
 await cache.put("a", 2);
-await cache.put("a", 2, TimeSpan.fromSeconds(3));
+await cache.put("a", 2, { ttl: TimeSpan.fromSeconds(3) });
 ```
 
 ### Removing keys
@@ -239,7 +244,7 @@ await cache.getOrAdd("ab", 1);
 ```
 
 :::info
-You can provide [`Task<TValue>`](../Task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../Utilities/Invokable.md) as default values for both `getOr` and `getOrAdd` methods.
+You can provide [`Task<TValue>`](../task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../utilities/invokable.md) as default values for both `getOr` and `getOrAdd` methods.
 :::
 
 You can retrieve the key and afterwards remove it and will return true if the value was found:
@@ -248,12 +253,42 @@ You can retrieve the key and afterwards remove it and will return true if the va
 await cache.getAndRemove("ab");
 ```
 
+You can add key and if it does exist an error will be thrown:
+
+```ts
+await cache.addOrFail("ab", 1);
+```
+
+You can update the key and if it does not exist an error will be thrown:
+
+```ts
+await cache.updateOrFail("ab", 1);
+```
+
+You can increment the key and if it does not exist an error will be thrown:
+
+```ts
+await cache.incrementOrFail("ab", 1);
+```
+
+You can decrement the key and if it does not exist an error will be thrown:
+
+```ts
+await cache.decrementOrFail("ab", 1);
+```
+
+You can remove the key and if it does not exist an error will be thrown:
+
+```ts
+await cache.removeOrFail("ab");
+```
+
 ### Namespacing
 
 You can use the `Namespace` class to group related data without conflicts.
 
 :::info
-For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
 :::
 
 ```ts
@@ -301,21 +336,18 @@ console.log(await cacheA.get("key"));
 
 ### Cache events
 
-You can listen to different [cache events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) that are triggered by the `Cache` class.
-Refer to the [`@daiso-tech/core/event-bus`](../EventBus/index.md) documentation to learn how to use events.
+You can listen to different [cache events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) that are triggered by the `Cache` instance.
+Refer to the [`@daiso-tech/core/event-bus`](../event_bus/event_bus_usage.md) documentation to learn how to use events.
 
 ```ts
 import { CACHE_EVENTS } from "@daiso-tech/core/cache/contracts";
 
 // Will log whenever an item is added, updated and removed
-await cache.subscribe(CACHE_EVENTS.WRITTEN, (event) => {
+await cache.subscribe(CACHE_EVENTS.ADDED, (event) => {
     console.log(event);
 });
 
 await cache.add("a", "b");
-await cache.update("a", 1);
-await cache.increment("a", 1);
-await cache.remove("a");
 ```
 
 :::info
@@ -347,14 +379,11 @@ const cache = new Cache({
 
 :::
 
-:::info
-Note you can disable dispatching `Cache` events by passing an `EventBus` that uses `NoOpEventBusAdapter`.
-:::
-
 :::warning
 If multiple cache adapters (e.g., `RedisCacheAdapter` and `MemoryCacheAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
+import { RedisCacheAdapter } from "@daiso-tech/core/cache/redis-cache-adapter";
 import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
 import { Cache } from "@daiso-tech/core/cache";
 import { EventBus } from "@daiso-tech/core/event-bus";
@@ -376,7 +405,7 @@ const memoryCache = new Cache({
     adapter: memoryCacheAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryCacheAdapter and RedisCacheAdapter to isolate their events.
-        namespace: new Namespace(["memory-cache", "event-bus"]),
+        namespace: new Namespace(["memory", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -389,7 +418,7 @@ const redisCache = new Cache({
     adapter: redisCacheAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryCacheAdapter and RedisCacheAdapter to isolate their events.
-        namespace: new Namespace(["redis-cache", "event-bus"]),
+        namespace: new Namespace(["redis", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -414,6 +443,10 @@ import type {
     ICacheListenable,
     CACHE_EVENTS,
 } from "@daiso-tech/core/cache/contracts";
+import { Cache } from "@daiso-tech/core/cache";
+import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapter/memory-cache-adapter";
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { MemoryEventBus } from "@daiso-tech/core/event-bus/memory-event-bus";
 
 function manipulatingFunc(cache: ICahceBase): Promise<void> {
     // You cannot access the listener methods
@@ -425,11 +458,17 @@ function listenerFunc(cacheListenable: ICacheListenable): Promise<void> {
     // You cannot access the cache methods
     // You will get typescript error if you try
 
-    await cacheListenable.addListener(CACHE_EVENTS.WRITTEN, (event) => {
+    await cacheListenable.addListener(CACHE_EVENTS.ADDED, (event) => {
         console.log("EVENT:", event);
     });
 }
 
+const cache = new Cache({
+    adapter: new MemoryCacheAdapter(),
+    eventBus: new EventBus({
+        adapter: new MemoryEventBus()
+    })
+})
 await listenerFunc(cache);
 await manipulatingFunc(cache);
 ```

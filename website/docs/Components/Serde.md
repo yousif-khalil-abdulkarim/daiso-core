@@ -1,3 +1,7 @@
+---
+"sidebar_position": 12
+---
+
 # Serde
 
 The `@daiso-tech/core/serde` component provides seamless way to serialize/deserialize data and adding custom serialization/deserialization logic for custom data types.
@@ -182,7 +186,6 @@ The library includes 4 additional contracts:
 -   `IFlexibleSerde` – Allows for both serialization, deserialization and for regestering custom serialization/deserialization and deserialization logic.
 
 This seperation makes it easy to visually distinguish the 4 contracts, making it immediately obvious that they serve different purposes.
-
 
 ## Further information
 

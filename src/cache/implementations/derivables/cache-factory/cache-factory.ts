@@ -153,7 +153,7 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
      *   .use()
      *   .add("a", 1);
      *
-     * // Will add key to cache using the redis adapter which is RedisCacheAdapter
+     * // Will add key to cache using the redis adapter
      * await cacheFactory
      *   .use("redis")
      *   .add("a", 1);

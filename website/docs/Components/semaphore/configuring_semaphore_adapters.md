@@ -1,8 +1,11 @@
-# Semaphore adapters
+---
+sidebar_position: 3
+sidebar_label: Configuring adapters
+---
 
-## Using semaphore adapters
+# Configuring semaphore adapters
 
-### MemorySemaphoreAdapter
+## MemorySemaphoreAdapter
 
 To use the `MemorySemaphoreAdapter` you only need to create instance of it:
 
@@ -29,11 +32,11 @@ const memorySemaphoreAdapter = new MemorySemaphoreAdapter(map);
 Note the `MemorySemaphoreAdapter` is limited to single process usage and cannot be shared across multiple servers or processes.
 :::
 
-### MongodbSemaphoreAdapter
+## MongodbSemaphoreAdapter
 
 To use the `MongodbSemaphoreAdapter`, you'll need to:
 
-1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package
+1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package:
 
 ```ts
 import { MongodbSemaphoreAdapter } from "@daiso-tech/core/semaphore/mongodb-semaphore-adapter";
@@ -87,11 +90,11 @@ await mongodbSemaphoreAdapter.deInit();
 Note in order to use `MongodbSemaphoreAdapter` correctly, ensure you use a single, consistent database across all server instances or processes.
 :::
 
-### RedisSemaphoreAdapter
+## RedisSemaphoreAdapter
 
 To use the `RedisSemaphoreAdapter`, you'll need to:
 
-1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package
+1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
 
 ```ts
 import { RedisSemaphoreAdapter } from "@daiso-tech/core/semaphore/redis-semaphore-adapter";
@@ -105,13 +108,15 @@ const redisSemaphoreAdapter = new RedisSemaphoreAdapter(database);
 Note in order to use `RedisSemaphoreAdapter` correctly, ensure you use a single, consistent database across all server instances or processes.
 :::
 
-### KyselySemaphoreAdapter
+## KyselySemaphoreAdapter
 
 To use the `KyselySemaphoreAdapter`, you'll need to:
 
-1. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package
+1. Use database provider that has support for transactions.
 
-#### Usage with Sqlite
+2. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package:
+
+### With Sqlite
 
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
@@ -140,7 +145,7 @@ await kyselySemaphoreAdapter.init();
 Note using `KyselySemaphoreAdapter` with `sqlite` is limited to single server usage and cannot be shared across multiple servers but it can be shared between different processes. To use it correctly, ensure all process instances access the same persisted database.
 :::
 
-#### Usage with Postgres
+### With Postgres
 
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
@@ -177,7 +182,7 @@ await kyselySemaphoreAdapter.init();
 Note in order to use `KyselySemaphoreAdapter` with `postgres` correctly, ensure you use a single, consistent database across all server instances. This means you can't use replication.
 :::
 
-#### Usage with Mysql
+### With Mysql
 
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
@@ -214,7 +219,7 @@ await kyselySemaphoreAdapter.init();
 Note in order to use `KyselySemaphoreAdapter` with `mysql` correctly, ensure you use a single, consistent database across all server instances. This means you can't use replication.
 :::
 
-#### Usage with Libsql
+### With Libsql
 
 You will need to install `@libsql/kysely-libsql` package:
 
@@ -242,7 +247,7 @@ await kyselySemaphoreAdapter.init();
 Note in order to use `KyselySemaphoreAdapter` with `libsql` correctly, ensure you use a single, consistent database across all server instances. This means you can't use libsql embedded replicas.
 :::
 
-#### Settings
+### Settings
 
 Expired keys are cleared at regular intervals and you can change the interval time:
 
@@ -283,7 +288,7 @@ await kyselySemaphoreAdapter.deInit();
 
 :::
 
-### NoOpSemaphoreAdapter
+## NoOpSemaphoreAdapter
 
 The `NoOpSemaphoreAdapter` is a no-operation implementation, it performs no actions when called:
 
@@ -297,103 +302,6 @@ const noOpSemaphoreAdapter = new NoOpSemaphoreAdapter();
 The `NoOpSemaphoreAdapter` is useful when you want to mock out or disable your `SemaphoreProvider` instance.
 :::
 
-## Creating semaphore adapters
-
-### Implementing your custom ISemaphoreAdapter
-
-In order to create an adapter you need to implement the [`ISemaphoreAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Semaphore.ISemaphoreAdapter.html) contract.
-
-### Testing your custom ISemaphoreAdapter
-
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`semaphoreAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Semaphore.semaphoreAdapterTestSuite.htmll) function:
-
-- Preconfigured Vitest test cases
-- Standardized event bus behavior validation
-- Common edge case coverage
-
-Usage example:
-
-```ts
-// filename: MySemaphoreAdapter.test.ts
-
-import { beforeEach, describe, expect, test } from "vitest";
-import { semaphoreAdapterTestSuite } from "@daiso-tech/core/semaphore/test-utilities";
-import { MemorySemaphoreAdapter } from "./MemorySemaphoreAdapter.js";
-
-describe("class: MySemaphoreAdapter", () => {
-    semaphoreAdapterTestSuite({
-        createAdapter: () => new MemorySemaphoreAdapter(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
-```
-
-### Implementing your custom IDatabaseSemaphoreAdapter
-
-We provide an additional contract [`IDatabaseSemaphoreAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Semaphore.IDatabaseSemaphoreAdapter.html) for building custom semaphore adapters tailored to databases.
-
-### Testing your custom IDatabaseSemaphoreAdapter
-
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`databaseSemaphoreAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Semaphore.databaseSemaphoreAdapterTestSuite.html) function:
-
-- Preconfigured Vitest test cases
-- Standardized event bus behavior validation
-- Common edge case coverage
-
-Usage example:
-
-```ts
-import { beforeEach, describe, expect, test } from "vitest";
-import { databaseSemaphoreAdapterTestSuite } from "@daiso-tech/core/semaphore/test-utilities";
-import { MyDatabaseSemaphoreAdapter } from "./MyDatabaseSemaphoreAdapter.js";
-
-describe("class: MyDatabaseSemaphoreAdapter", () => {
-    databaseSemaphoreAdapterTestSuite({
-        createAdapter: async () => {
-            return new MyDatabaseSemaphoreAdapter(),
-        },
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
-```
-
-### Implementing your custom ISemaphoreProvider class
-
-In some cases, you may need to implement a custom [`SemaphoreProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Semaphore.SemaphoreProvider.html) class to optimize performance for your specific technology stack. You can then directly implement the [`ISemaphoreProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Semaphore.ISemaphoreProvider.html) contract.
-
-### Testing your custom ISemaphoreProvider class
-
-We provide a complete test suite to verify your custom event bus class implementation. Simply use the [`semaphoreProviderTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Semaphore.semaphoreProviderTestSuite.html) function:
-
-- Preconfigured Vitest test cases
-- Standardized event bus behavior validation
-- Common edge case coverage
-
-Usage example:
-
-```ts
-// filename: MySemaphoreProvider.test.ts
-
-import { beforeEach, describe, expect, test } from "vitest";
-import { semaphoreProviderTestSuite } from "@daiso-tech/core/semaphore/test-utilities";
-import { MySemaphoreProvider } from "./MySemaphoreProvider.js";
-
-describe("class: MySemaphoreProvider", () => {
-    semaphoreProviderTestSuite({
-        createSemaphoreProvider: () => new MySemaphoreProvider(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
-```
 
 ## Further information
 

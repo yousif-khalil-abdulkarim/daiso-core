@@ -1,8 +1,11 @@
-# Cache adapters
+---
+sidebar_position: 3
+sidebar_label: Configuring adapters
+---
 
-## Using Cache adapters
+# Configuring Cache adapters
 
-### MemoryCacheAdapter
+## MemoryCacheAdapter
 
 To use the `MemoryCacheAdapter` you only need to create instance of it:
 
@@ -25,14 +28,15 @@ const memoryCacheAdapter = new MemoryCacheAdapter(map);
 `MemoryCacheAdapter` lets you test your app without external dependencies like `Redis`, ideal for local development, unit tests, integration tests and fast E2E test for the backend application.
 :::
 
-### MongodbCacheAdapter
+## MongodbCacheAdapter
 
 To use the `MongodbCacheAdapter`, you'll need to:
 
-1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package
-2. Provide a string serializer ([`ISerde`](../Serde.md))
+1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package:
 
--   We recommend using `SuperJsonSerdeAdapter` for this purpose
+2. Provide a string serializer ([`ISerde`](../serde.md)):
+
+-We recommend using `SuperJsonSerdeAdapter` for this purpose
 
 ```ts
 import { MongodbCacheAdapter } from "@daiso-tech/core/cache/mongodb-cache-adapter";
@@ -88,12 +92,12 @@ await mongodbCacheAdapter.deInit();
 
 :::
 
-### RedisCacheAdapter
+## RedisCacheAdapter
 
 To use the `RedisCacheAdapter`, you'll need to:
 
-1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package
-2. Provide a string serializer ([`ISerde`](../Serde.md))
+1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
+2. Provide a string serializer ([`ISerde`](../serde.md)):
 
 -   We recommend using `SuperJsonSerdeAdapter` for this purpose
 
@@ -111,16 +115,16 @@ const redisCacheAdapter = new RedisCacheAdapter({
 });
 ```
 
-### KyselyCacheAdapter
+## KyselyCacheAdapter
 
 To use the `KyselyCacheAdapter`, you'll need to:
 
-1. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package
-2. Provide a string serializer ([`ISerde`](../Serde.md))
+1. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package:
+2. Provide a string serializer ([`ISerde`](../serde.md)):
 
 -   We recommend using `SuperJsonSerdeAdapter` for this purpose
 
-#### Usage with Sqlite
+### Usage with Sqlite
 
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
@@ -149,7 +153,7 @@ const kyselyCacheAdapter = new KyselyCacheAdapter({
 await kyselyCacheAdapter.init();
 ```
 
-#### Usage with Postgres
+### Usage with Postgres
 
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
@@ -186,7 +190,7 @@ const kyselyCacheAdapter = new KyselyCacheAdapter({
 await kyselyCacheAdapter.init();
 ```
 
-#### Usage with Mysql
+### Usage with Mysql
 
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
@@ -223,7 +227,7 @@ const kyselyCacheAdapter = new KyselyCacheAdapter({
 await kyselyCacheAdapter.init();
 ```
 
-#### Usage with Libsql
+### Usage with Libsql
 
 You will need to install [`@libsql/kysely-libsql`](https://www.npmjs.com/package/@libsql/kysely-libsql) package:
 
@@ -251,7 +255,7 @@ const kyselyCacheAdapter = new KyselyCacheAdapter({
 await kyselyCacheAdapter.init();
 ```
 
-#### Usage with other databases
+### Usage with other databases
 
 Note [`kysely`](https://www.npmjs.com/package/kysely) has support for multiple [databases](https://github.com/kysely-org/awesome-kysely?tab=readme-ov-file#dialects).
 
@@ -260,7 +264,7 @@ Before choose a database, ensure it supports transactions. Without transaction s
 you won't be able to use following methods `put` and `increment`, as they require transactional functionality.
 :::
 
-#### Settings
+### Settings
 
 Expired keys are cleared at regular intervals and you can change the interval time:
 
@@ -303,7 +307,7 @@ await kyselyCacheAdapter.deInit();
 
 :::
 
-### NoOpCacheAdapter
+## NoOpCacheAdapter
 
 The `NoOpCacheAdapter` is a no-operation implementation, it performs no actions when called:
 
@@ -321,104 +325,6 @@ The `NoOpCacheAdapter` is useful when you want to mock out or disable your `Cach
 Note `NoOpCacheAdapter` returns always null when retrieving items and return true when adding, updating, and removing items.
 :::
 
-
-## Creating cache adapters
-
-### Implementing your custom ICacheAdapter
-
-In order to create an adapter you need to implement the [`ICacheAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.ICacheAdapter.html) contract.
-
-### Testing your custom ICacheAdapter
-
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`cacheAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Cache.cacheAdapterTestSuite.html) function:
-
--   Preconfigured Vitest test cases
--   Standardized event bus behavior validation
--   Common edge case coverage
-
-Usage example:
-
-```ts
-// filename: MyCacheAdapter.test.ts
-
-import { beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "@daiso-tech/core/cache/test-utilities";
-import { MemoryCacheAdapter } from "./MemoryCacheAdapter.js";
-
-describe("class: MyCacheAdapter", () => {
-    cacheAdapterTestSuite({
-        createAdapter: () => new MemoryCacheAdapter(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
-```
-
-### Implementing your custom IDatabaseCacheAdapter
-
-We provide an additional contract [`IDatabaseCacheAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.IDatabaseCacheAdapter.html) for building custom cache adapters tailored to databases.
-
-### Testing your custom IDatabaseCacheAdapter
-
-We provide a complete test suite to verify your event bus adapter implementation. Simply use the [`databaseCacheAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Cache.databaseCacheAdapterTestSuite.html) function:
-
--   Preconfigured Vitest test cases
--   Standardized event bus behavior validation
--   Common edge case coverage
-
-Usage example:
-
-```ts
-import { beforeEach, describe, expect, test } from "vitest";
-import { databaseCacheAdapterTestSuite } from "@daiso-tech/core/cache/test-utilities";
-import { MyDatabaseCacheAdapter } from "./MyDatabaseCacheAdapter.js";
-
-describe("class: MyDatabaseCacheAdapter", () => {
-    databaseCacheAdapterTestSuite({
-        createAdapter: async () => {
-            return new MyDatabaseCacheAdapter(),
-        },
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
-```
-
-### Implementing your custom ICache class
-
-In some cases, you may need to implement a custom [`Cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Cache.Cache.html) class to optimize performance for your specific technology stack. You can then directly implement the [`ICache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Cache.ICache.html) contract.
-
-### Testing your custom ICache class
-
-We provide a complete test suite to verify your custom event bus class implementation. Simply use the [`cacheTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Cache.cacheTestSuite.html) function:
-
--   Preconfigured Vitest test cases
--   Standardized event bus behavior validation
--   Common edge case coverage
-
-Usage example:
-
-```ts
-// filename: MyCache.test.ts
-
-import { beforeEach, describe, expect, test } from "vitest";
-import { cacheTestSuite } from "@daiso-tech/core/cache/test-utilities";
-import { MyCache } from "./MyCache.js";
-
-describe("class: MyCache", () => {
-    cacheTestSuite({
-        createCache: () => new MyCache(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
-```
 
 ## Further information
 

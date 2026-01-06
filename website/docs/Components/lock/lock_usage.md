@@ -1,4 +1,9 @@
-# Lock
+---
+sidebar_position: 1
+sidebar_label: Usage
+---
+
+# Lock usage
 
 The `@daiso-tech/core/lock` component provides a way for managing locks independent of underlying platform or storage.
 
@@ -64,7 +69,7 @@ You need always to wrap the critical section with `try-finally` so the lock get 
 
 :::danger
 Note `Lock` class uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
-Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
+Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
 :::
 
 ### Locks with custom TTL
@@ -249,7 +254,7 @@ Note the method throws an error when the lock cannot be acquired.
 :::
 
 :::info
-You can provide [`Task<TValue>`](../Task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../Utilities/Invokable.md) as values for `runOrFail`, and `runBlockingOrFail` methods.
+You can provide [`Task<TValue>`](../task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../utilities/invokable.md) as values for `runOrFail`, and `runBlockingOrFail` methods.
 :::
 
 ### Lock instance variables
@@ -300,7 +305,7 @@ In most cases, setting a custom lock id is unnecessary. Misusing this feature co
 You can use the `Namespace` class to group related locks without conflicts.
 
 :::info
-For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
 :::
 
 ```ts
@@ -344,7 +349,7 @@ console.log(await lockB.getState());
 
 ### Retrying acquiring lock
 
-To retry acquiring lock you can use the [`retry`](../Resilience.md) middleware with [`Task.pipe`](../Task.md) method.
+To retry acquiring lock you can use the [`retry`](../resilience.md) middleware with [`Task.pipe`](../task.md) method.
 
 Retrying acquiring lock with `acquireOrFail` method:
 
@@ -415,7 +420,7 @@ await lock
 
 Locks can be serialized, allowing them to be transmitted over the network to another server and later deserialized for reuse.
 This means you can, for example, acquire the lock on the main server, transfer it to a queue worker server, and release it there.
-In order to serialize or deserialize a lock you need pass an object that implements [`ISerderRegister`](../Serde.md) contract like the [`Serde`](../Serde.md) class to `LockProvider`. 
+In order to serialize or deserialize a lock you need pass an object that implements [`ISerderRegister`](../serde.md) contract like the [`Serde`](../serde.md) class to `LockProvider`. 
 
 Manually serializing and deserializing the lock:
 
@@ -495,8 +500,8 @@ await eventBus.addListener("sending-lock-over-network", ({ lock }) => {
 
 ### Lock events
 
-You can listen to different [lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) that are triggered by the `Lock`.
-Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
+You can listen to different [lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) that are triggered by the `Lock` instance.
+Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
@@ -522,6 +527,7 @@ await lockProvider.create("a").acquire();
 If multiple lock adapters (e.g., `RedisLockAdapter` and `MemoryLockAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
 
 ```ts
+import { RedisLockAdapter } from "@daiso-tech/core/lock/redis-lock-adapter";
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
@@ -542,7 +548,7 @@ const memoryLockProvider = new LockProvider({
     adapter: memoryLockAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryLockAdapter and RedisLockAdapter to isolate their events.
-        namespace: new Namespace(["memory-cache", "event-bus"]),
+        namespace: new Namespace(["memory", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -555,7 +561,7 @@ const redisLockProvider = new LockProvider({
     adapter: redisLockAdapter,
     eventBus: new EventBus({
         // We assign distinct namespaces to MemoryLockAdapter and RedisLockAdapter to isolate their events.
-        namespace: new Namespace(["redis-cache", "event-bus"]),
+        namespace: new Namespace(["redis", "event-bus"]),
         adapter: redisPubSubEventBusAdapter,
     }),
 });
@@ -576,6 +582,9 @@ The library includes 3 additional contracts:
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 
 ```ts
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
+import { LockProvider } from "@daiso-tech/core/lock";
 import { MemoryLockAdapter } from "@daiso-tech/core/lock/memory-lock-adapter";
 import {
     type ILock,
@@ -612,6 +621,12 @@ async function lockListenableFunc(
     });
 }
 
+const lockProvider = new LockProvider({
+    adapter: new MemoryLockAdapter(),
+    eventBus: new EventBus({
+        adapter: new MemoryEventBusAdapter(),
+    })
+})
 await lockListenableFunc(lockProvider);
 await lockProviderFunc(lockProvider);
 ```

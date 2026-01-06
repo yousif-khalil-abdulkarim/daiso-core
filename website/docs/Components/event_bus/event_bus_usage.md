@@ -1,4 +1,9 @@
-# EventBus
+---
+sidebar_position: 1
+sidebar_label: Usage
+---
+
+# EventBus usage
 
 The `@daiso-tech/core/event-bus` component provides a way for dispatching and listening to events independent of underlying technology.
 
@@ -40,7 +45,7 @@ await eventBus.dispatch("add", {
 
 :::danger
 Note `EventBus` class instance uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
-Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
+Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
 :::
 
 ### Listener management
@@ -208,9 +213,9 @@ await eventBus.dispatch("add", {
 });
 ```
 
-### Promise-based event handling
+### Task-based event handling
 
-Wait for events using promises:
+Wait for events using [tasks](../task.md):
 
 ```ts
 import { Task } from "@daiso-tech/core/task";
@@ -227,7 +232,7 @@ import { TimeSpan } from "@daiso-tech/core/time-span";
 })();
 
 // The promise will resolve after one second, when the event is dispatched.
-const event = await eventBus.asPromise("add");
+const event = await eventBus.asTask("add");
 console.log(event);
 ```
 
@@ -249,11 +254,6 @@ import type {
 } from "@daiso-tech/core/event-bus/contracts";
 import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
 import { EventBus } from "@daiso-tech/core/event-bus";
-
-const eventBus: IEventBus = new EventBus({
-    // You can choose the adapter to use
-    adapter: new MemoryEventBusAdapter(),
-});
 
 type AddEvent = {
     a: number;
@@ -286,6 +286,11 @@ async function dispatchingFunc(
     });
 }
 
+const eventBus: IEventBus<any> = new EventBus({
+    // You can choose the adapter to use
+    adapter: new MemoryEventBusAdapter(),
+});
+
 await listenerFunc(eventBus);
 await dispatchingFunc(eventBus);
 ```
@@ -295,7 +300,7 @@ await dispatchingFunc(eventBus);
 An event listener are `Invokable` meaning you can also pass in an object (class instance or object literal) as listener:
 
 :::info
-For further information refer the [`Invokable`](../../Utilities/Invokable.md) docs.
+For further information refer the [`Invokable`](../../utilities/invokable.md) docs.
 :::
 
 ```ts
@@ -329,7 +334,7 @@ await eventBus.dispatch("add", {
 You can use the `Namespace` class to group related without conflicts.
 
 :::info
-For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
 :::
 
 ```ts
