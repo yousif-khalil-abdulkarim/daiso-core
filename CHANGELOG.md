@@ -1,5 +1,51 @@
 # @daiso-tech/core
 
+## 0.43.0
+
+### Minor Changes
+
+- 2e300d5: Updated the backoff policies so the jitter can be disabled by passing null as value.
+- 512063a: You can now pass in `boolean`, `Task<boolean>`, `Invokable<[], Promiseable<boolean>>` to the `pipeWhen` method of an `Task` and `AsyncHooks`.
+- 3caa433: Added new methods to `ICache` contract:
+
+    - `addOrFail` same as the `add` method but throws an error if key already exists
+    - `updateOrFail` same as `update` method but throws an error if key is not found
+    - `incrementOrFail` same as `increment` method but throws an error if key is not found
+    - `decrementOrFail` same as `decrement` method but throws an error if key is not found
+    - `removeOrFail` same as `remove` method but throws an error if key is not found
+
+    Seperated `WrittenCacheEvent` to multiple events:
+
+    - `AddedCacheEvent`
+    - `UpdatedCacheEvent`
+    - `RemovedCacheEvent`
+    - `IncrementedCacheEvent`
+    - `DecrementedCacheEvent`
+
+    Removed `TypeCollectionError` of the Collection component.
+
+- d58a233: Removed runReader, runReaderBlock, runWriter and runWriterBlocking from ISharedLock contract
+- fa85e84: Added rate limiter component
+- a944e5f: Added new event bus adapter contracts:
+
+    - `IEventBusDispatcherAdapter`
+    - `IEventBusListenableAdapter`
+
+- f90e497: Now you can pass an array of Error classes as error policy.
+- d58a233: Removed run and runBlocking methods from ISemaphore contract
+- d58a233: Removed run and runBlocking methods from ILock contract
+- a944e5f: Renamed `IEventBus.asPromise` to `IEventBus.asTask`
+- 30cbe23: Update ICollection, IAsyncCollection, ListCollection, IterableCollection and AsyncIterableCollection to work with ArrayLike types.
+
+    **Feature**: Enhance collection interfaces/classes to support `ArrayLike` types.
+
+    **Details**: Updates `ICollection`, `IAsyncCollection`, `ListCollection` contracats and `IterableCollection`, `AsyncIterableCollection` classes to correctly handle `ArrayLike` inputs, improving interoperability.
+
+- 16be35d: Added new circuit-breaker component
+- d58a233: Removed Result type
+- b0cf7e8: Added new `ITask` contract
+- b7a4d46: Renamed backoff policies to not use the "Policy" as suffix.
+
 ## 0.42.0
 
 ### Minor Changes
@@ -584,8 +630,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                            - `AsyncFactoryable`
-                            - `Factoryable`
+                              - `AsyncFactoryable`
+                              - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
