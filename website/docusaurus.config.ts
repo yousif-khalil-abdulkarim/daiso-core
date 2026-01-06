@@ -26,7 +26,11 @@ const config: Config = {
     projectName: "daiso-core", // Usually your repo name.
 
     onBrokenLinks: "throw",
-    onBrokenMarkdownLinks: "throw",
+    markdown: {
+        hooks: {
+            onBrokenMarkdownLinks: "throw",
+        },
+    },
 
     // Even if you don't use internationalization, you can use this field to set
     // useful metadata like html lang. For example, if your site is Chinese, you
@@ -68,6 +72,15 @@ const config: Config = {
                     customCss: "./src/css/custom.css",
                 },
             } satisfies Preset.Options,
+        ],
+        [
+            "@signalwire/docusaurus-plugin-llms-txt",
+            {
+                // Plugin options (optional)
+                outputDir: "llms-txt",
+                includePatterns: ["**/*.html"],
+                excludePatterns: ["**/404.html"],
+            },
         ],
     ],
 
@@ -112,6 +125,14 @@ const config: Config = {
             theme: prismThemes.github,
             darkTheme: prismThemes.dracula,
         },
+        metadata: [
+            {
+                name: "Descriptions",
+                content:
+                    "Node Js, JavaScript, TypeScript backend component library",
+            },
+            { name: "robots", content: "index, follow" },
+        ],
     } satisfies Preset.ThemeConfig,
 };
 

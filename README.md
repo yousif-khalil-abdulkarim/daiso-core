@@ -31,14 +31,17 @@
 - **EventBus:**
   Easily send events accross different applications or in-memory.
 
-- **Distributed lock:**
+- **Circuit-breaker:**
+  A circuit-breaker is a resilience primitive preventing cascading failures from external services by stopping calls to a failing service.
+
+- **Lock:**
   Synchronize the access to a shared resource to prevents several processes, or concurrent code, from executing a section of code at the same time.
 
-- **Distributed semaphore:**
+- **Semaphore:**
   A semaphore is a concurrency control primitive used to limit the number of processes or systems that can access a shared resource of code concurrently.
 
-- **Distributed shared lock:**
-  A shared lock (a.k.a reader writer lock) is a concurrency primitive offering better concurrency than a lock by coordinating a reader semaphore for concurrent access and an writer lock for mutual exclusion, strictly preventing conflicting simultaneous access and maintaining data consistency.
+- **Shared-lock:**
+  A shared-lock (a.k.a reader writer lock) is a concurrency primitive offering better concurrency than a lock by coordinating a reader semaphore for concurrent access and an writer lock for mutual exclusion, strictly preventing conflicting simultaneous access and maintaining data consistency.
 
 - **Serde:**
   Add custom serialization and deserialization logic that seamlessly integrates with all other components.
