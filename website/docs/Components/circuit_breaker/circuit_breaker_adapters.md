@@ -1,1 +1,0 @@
-# CircuitBreaker adapters

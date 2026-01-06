@@ -1,5 +1,427 @@
 ---
 sidebar_position: 1
+sidebar_label: Usage
 ---
 
-# CircuitBreaker usage
+# Circuit-breaker usage
+
+The `@daiso-tech/core/circuit-breaker` component provides a way for managing circuit-breaker independent of underlying platform or storage.
+
+## Initial configuration
+
+To begin using the `CircuitBreakerProvider` class, you'll need to create and configure an instance:
+
+```ts
+import { TimeSpan } from "@daiso-tech/core/time-span";
+import { MemoryCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/memory-circuit-breaker-storage-adapter";
+import { DatabaseCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter";
+import { CircuitBreakerProvider } from "@daiso-tech/core/circuit-breaker";
+
+const circuitBreakerProvider = new CircuitBreakerProvider({
+    // You can provide default settings
+    // You can choose the adapter to use
+    adapter: new DatabaseCircuitBreakerAdapter({
+        adapter: new MemoryCircuitBreakerStorageAdapter()
+    }),
+});
+```
+
+:::info
+Here is a complete list of settings for the [`CircuitBreakerProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/CircuitBreaker.CircuitBreakerProviderSettingsBase.html) class.
+:::
+
+## Circuit-breaker basics
+
+### Creating a circuit-breaker
+
+```ts
+const circuitBreaker = circuitBreakerProvider.create("resource");
+```
+
+### Using the circuit-breaker
+
+```ts
+// The function will only be called when the circuit breaker is in closed state or half open state.
+await circuitBreaker.runOrFail(async () => {
+    // Call the external service
+})
+```
+
+:::info
+Note the method throws an error when the circuit breaker is in open state or isolated state.
+:::
+
+### Applying on circuit-breaker on certiain errors
+
+```ts
+class ErrorA extends Error {}
+
+const circuitBreaker = circuitBreakerProvider.create("resource", {
+    errorPolicy: ErrorA
+});
+await circuitBreaker.runOrFail(async () => {
+    // Call the external service
+})
+```
+
+### Setting circuit-breaker triggers
+
+By default the the circuit-breaker will treat errors and slow calls as failures. You can explicitly set ths option.
+
+The `CIRCUIT_BREAKER_TRIGGER.BOTH` will treat error and slow calls as failures.
+
+```ts
+import { CIRCUIT_BREAKER_TRIGGER } from "@daiso-tech/core/circuit-breaker/contracts";
+
+const circuitBreaker = circuitBreakerProvider.create("resource", {
+    trigger: CIRCUIT_BREAKER_TRIGGER.BOTH
+});
+await circuitBreaker.runOrFail(async () => {
+    // Call the external service
+})
+```
+
+The `CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR` will treat only errors as failures.
+
+```ts
+import { CIRCUIT_BREAKER_TRIGGER } from "@daiso-tech/core/circuit-breaker/contracts";
+
+const circuitBreaker = circuitBreakerProvider.create("resource", {
+    trigger: CIRCUIT_BREAKER_TRIGGER.ONLY_ERROR
+});
+await circuitBreaker.runOrFail(async () => {
+    // Call the external service
+})
+```
+
+The `CIRCUIT_BREAKER_TRIGGER.ONLY_SLOW_CALL` will treat slow calls as failures.
+
+```ts
+import { CIRCUIT_BREAKER_TRIGGER } from "@daiso-tech/core/circuit-breaker/contracts";
+
+const circuitBreaker = circuitBreakerProvider.create("resource", {
+    trigger: CIRCUIT_BREAKER_TRIGGER.ONLY_SLOW_CALL
+});
+await circuitBreaker.runOrFail(async () => {
+    // Call the external service
+})
+```
+
+### Setting the slow call threshold
+
+You can set custom slow call threshold that will be used when treating slow calls as failures.
+
+```ts
+import { TimeSpan } from "@daiso-tech/core/time-span";
+
+const circuitBreaker = circuitBreakerProvider.create("resource", {
+    trigger: TimeSpan.fromSeconds(1)
+});
+await circuitBreaker.runOrFail(async () => {
+    // Call the external service
+})
+```
+
+### Reseting the circuit-breaker
+
+You can reset circuit breaker state to the closed state manually.
+
+```ts
+await circuitBreaker.reset();
+```
+
+### Isolating the circuit-breaker
+
+You can manually hold circuit breaker in open state until reseted.
+
+```ts
+await circuitBreaker.isolate();
+```
+
+### Checking circuit-breaker state
+
+You can get the circuit-breaker state by using the `getState` method, it returns [`CircuitBreakerState`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/CircuitBreaker.CircuitBreakerState.html).
+
+```ts
+import { CIRCUIT_BREAKER_STATE } from "@daiso-tech/core/circuit-breaker/contracts";
+
+const state = await circuitBreaker.getState();
+
+if (state === CIRCUIT_BREAKER_STATE.CLOSED) {
+    console.log("The service is up and running without problems")
+}
+if (state === CIRCUIT_BREAKER_STATE.OPEN) {
+    console.log("The service is down or degraded and you need to wait")
+}
+if (state === CIRCUIT_BREAKER_STATE.HALF_OPEN) {
+    console.log("Proping to check if the server is up and running or down / degraded")
+}
+if (state === CIRCUIT_BREAKER_STATE.ISOLATED) {
+    console.log("The service is held in open state manually until reseted")
+}
+```
+
+## Patterns
+
+### Namespacing
+
+You can use the `Namespace` class to group related circuit-breakers without conflicts.
+
+:::info
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
+:::
+
+```ts
+import { Namespace } from "@daiso-tech/core/namespace";
+import { RedisCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/redis-circuit-breaker-adapter";
+import { CircuitBreakerProvider } from "@daiso-tech/core/circuit-breaker";
+import Redis from "ioredis";
+
+const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
+
+const circuitBreakerProviderA = new CircuitBreakerProvider({
+    namespace: new Namespace("@circuit-breaker-a"),
+    adapter: new RedisCircuitBreakerAdapter({ database }),
+});
+const circuitBreakerProviderB = new CircuitBreakerProvider({
+    namespace: new Namespace("@circuit-breaker-b"),
+    adapter: new RedisCircuitBreakerAdapter({ database }),
+});
+
+const circuitBreakerA = await circuitBreakerProviderA.create("key", { ttl: null });
+const circuitBreakerB = await circuitBreakerProviderB.create("key", { ttl: null });
+
+await circuitBreakerA.isolate();
+
+// Will log ISOLATED
+console.log(await circuitBreakerA.getState())
+
+// Will log CLOSED
+console.log(await circuitBreakerB.getState())
+```
+
+### Serialization and deserialization of circuit-breakers
+
+circuit-breakers can be serialized, allowing them to be transmitted over the network to another server and later deserialized for reuse.
+This means you can, for example, acquire the circuit-breaker on the main server, transfer it to a queue worker server, and release it there.
+In order to serialize or deserialize a circuit-breaker you need pass an object that implements [`ISerderRegister`](../serde.md) contract like the [`Serde`](../serde.md) class to `CircuitBreakerProvider`. 
+
+Manually serializing and deserializing the circuit-breaker:
+
+```ts
+import { RedisCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/redis-circuit-breaker-adapter";
+import { CircuitBreakerProvider } from "@daiso-tech/core/circuit-breaker";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
+
+const serde = new Serde(new SuperJsonSerdeAdapter());
+
+const redisClient = new Redis("YOUR_REDIS_CONNECTION");
+
+const circuitBreakerProvider = new CircuitBreakerProvider({
+    // You can laso pass in an array of Serde class instances
+    serde,
+    adapter: new RedisCircuitBreakerAdapter({ database: redisClient }),
+});
+
+const circuitBreaker = circuitBreakerProvider.create("resource");
+const serializedCircuitBreaker = serde.serialize(circuitBreaker);
+const deserializedCircuitBreaker = serde.deserialize(circuitBreaker);
+```
+
+:::danger
+When serializing or deserializing a circuit-breaker, you must use the same `Serde` instances that were provided to the `CircuitBreakerProvider`. This is required because the `CircuitBreakerProvider` injects custom serialization logic for `ICircuitBreaker` instance into `Serde` instances.
+:::
+
+:::info
+Note you only need manuall serialization and deserialization when integrating with external libraries.
+:::
+
+As long you pass the same `Serde` instances with all other components you dont need to serialize and deserialize the circuit-breaker manually.
+
+```ts
+import { RedisCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/redis-circuit-breaker-adapter";
+import type { ICircuitBreaker } from "@daiso-tech/core/circuit-breaker/contracts";
+import { CircuitBreakerProvider } from "@daiso-tech/core/circuit-breaker";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
+
+const serde = new Serde(new SuperJsonSerdeAdapter());
+const redis = new Redis("YOUR_REDIS_CONNECTION");
+
+type EventMap = {
+    "sending-circuit-breaker-over-network": {
+        circuitBreaker: ICircuitBreaker;
+    };
+};
+const eventBus = new EventBus<EventMap>({
+    adapter: new RedisPubSubEventBusAdapter({
+        client: redis,
+        serde,
+    }),
+});
+
+const circuitBreakerProvider = new CircuitBreakerProvider({
+    serde,
+    adapter: new RedisCircuitBreakerAdapter({ databsae: redis }),
+    eventBus,
+});
+const circuitBreaker = circuitBreakerProvider.create("resource");
+
+// We are sending the circuitBreaker over the network to other servers.
+await eventBus.dispatch("sending-circuit-breaker-over-network", {
+    circuitBreaker,
+});
+
+// The other servers will recieve the serialized circuitBreaker and automattically deserialize it.
+await eventBus.addListener("sending-circuit-breaker-over-network", ({ circuitBreaker }) => {
+    // The circuitBreaker is serialized and can be used
+    console.log("LOCK:", circuitBreaker);
+});
+```
+
+
+### Circuit-breaker events
+
+You can listen to different [circuit-breaker events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/CircuitBreaker.html) that are triggered by the `CircuitBreaker` instance.
+Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
+
+```ts
+import { MemoryCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/memory-circuit-breaker-storage-adapter";
+import { DatabaseCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter";
+import { CircuitBreakerProvider, CIRCUIT_BREAKER_EVENTS } from "@daiso-tech/core/circuit-breaker";
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
+
+const circuitBreakerProvider = new CircuitBreakerProvider({
+    adapter: new DatabaseCircuitBreakerAdapter({ 
+        adapter: new MemoryCircuitBreakerStorageAdapter()
+    }),
+    eventBus: new EventBus({
+        adapter: new MemoryEventBusAdapter(),
+    }),
+});
+
+await circuitBreakerProvider.addListener(CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED, (event) => {
+    console.log(`State transitioned occured. from ${event.from} to ${event.to}`);
+});
+
+await circuitBreakerProvider.create("a").isolate();
+```
+
+:::warning
+If multiple circuit-breaker adapters (e.g., `RedisCircuitBreakerAdapter` and `DatabaseCircuitBreakerAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.
+
+```ts
+import { RedisCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/redis-circuit-breaker-adapter";
+import { MemoryCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/memory-circuit-breaker-storage-adapter";
+import { DatabaseCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter";
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
+import Redis from "ioredis";
+import { Namespace } from "@daiso-tech/core/namespace";
+
+const serde = new Serde(new SuperJsonSerdeAdapter());
+
+const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
+    client: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+    serde,
+});
+
+const memoryCircuitBreakerProvider = new CircuitBreakerProvider({
+    adapter: new DatabaseCircuitBreakerAdapter({ 
+        adapter: new MemoryCircuitBreakerStorageAdapter()
+    }),
+    eventBus: new EventBus({
+        // We assign distinct namespaces to DatabaseCircuitBreakerAdapter and RedisCircuitBreakerAdapter to isolate their events.
+        namespace: new Namespace(["memory", "event-bus"]),
+        adapter: redisPubSubEventBusAdapter,
+    }),
+});
+
+const redisCircuitBreakerAdapter = new RedisCircuitBreakerAdapter({
+    serde,
+    database: new Redis("YOUR_REDIS_CONNECTION_STRING"),
+});
+const redisCircuitBreakerProvider = new CircuitBreakerProvider({
+    adapter: redisCircuitBreakerAdapter,
+    eventBus: new EventBus({
+        // We assign distinct namespaces to DatabaseCircuitBreakerAdapter and RedisCircuitBreakerAdapter to isolate their events.
+        namespace: new Namespace(["redis", "event-bus"]),
+        adapter: redisPubSubEventBusAdapter,
+    }),
+});
+```
+
+:::
+
+### Seperating creating, listening to and using circuit-breakers
+
+The library includes 3 additional contracts:
+
+- `ICircuitBreaker` - Allows only manipulation of the lock.
+
+- `ICircuitBreakerProviderBase` - Allows only creation of locks.
+
+- `ICircuitBreakerListenable` – Allows only to listening to lock events.
+
+This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
+
+```ts
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
+import { CircuitBreakerProvider } from "@daiso-tech/core/circuit-breaker";
+import { MemoryCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/memory-circuit-breaker-storage-adapter";
+import { DatabaseCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter";
+import {
+    type ICircuitBreaker,
+    type ICircuitBreakerProvider,
+    type ICircuitBreakerListenable,
+    CIRCUIT_BREAKER_EVENTS,
+} from "@daiso-tech/core/circuit-breaker/contracts";
+
+async function circuitBreakerFunc(circuitBreaker: ICircuitBreaker): Promise<void> {
+    await circuitBreaker.runOrFail(async () => {
+        await doWork();
+    });
+}
+
+async function circuitBreakerProviderFunc(circuitBreakerProvider: ICircuitBreakerProvider): Promise<void> {
+    // You cannot access the listener methods
+    // You will get typescript error if you try
+
+    const circuitBreaker = circuitBreakerProvider.create("resource");
+    await circuitBreakerFunc(circuitBreaker);
+}
+
+async function circuitBreakerListenableFunc(
+    circuitBreakerListenable: ICircuitBreakerListenable,
+): Promise<void> {
+    // You cannot access the circuitBreakerProvider methods
+    // You will get typescript error if you try
+
+    await circuitBreakerListenable.addListener(CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED, (event) => {
+        console.log(`State transitioned occured. from ${event.from} to ${event.to}`);
+    });
+}
+
+const circuitBreakerProvider = new CircuitBreakerProvider({
+    adapter: new DatabaseCircuitBreakerAdapter({
+        adapter: new MemoryCircuitBreakerStorageAdapter(),
+    }),
+    eventBus: new EventBus({
+        adapter: new MemoryEventBusAdapter()
+    })
+})
+await circuitBreakerListenableFunc(circuitBreakerProvider);
+await circuitBreakerProviderFunc(circuitBreakerProvider);
+```
+
+
+## Further information
+
+For further information refer to [`@daiso-tech/core/circuit-breaker`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/CircuitBreaker.html) API docs.
