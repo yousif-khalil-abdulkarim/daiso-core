@@ -72,7 +72,7 @@ export type CircuitBreakerProviderSettingsBase = ErrorPolicySettings & {
      * TimeSpan.fromSeconds(10);
      * ```
      */
-    slowCallTime?: ITimeSpan;
+    defaultSlowCallTime?: ITimeSpan;
 
     /**
      * You can decide to track only errors, only slow calls or both as failures.
@@ -83,7 +83,7 @@ export type CircuitBreakerProviderSettingsBase = ErrorPolicySettings & {
      * CIRCUIT_BREAKER_TRIGGER.BOTH
      * ```
      */
-    trigger?: CircuitBreakerTrigger;
+    defaultTrigger?: CircuitBreakerTrigger;
 
     /**
      * If true, metric tracking will run asynchronously in the background and won't block the function utilizing the circuit breaker logic.
@@ -132,9 +132,9 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
     private readonly namespace: Namespace;
     private readonly eventBus: IEventBus<CircuitBreakerEventMap>;
     private readonly adapter: ICircuitBreakerAdapter;
-    private readonly slowCallTime: TimeSpan;
-    private readonly trigger: CircuitBreakerTrigger;
-    private readonly errorPolicy: ErrorPolicy;
+    private readonly defaultSlowCallTime: TimeSpan;
+    private readonly defaultTrigger: CircuitBreakerTrigger;
+    private readonly defaultErrorPolicy: ErrorPolicy;
     private readonly serde: OneOrMore<ISerderRegister>;
     private readonly serdeTransformerName: string;
     private readonly enableAsyncTracking: boolean;
@@ -178,8 +178,8 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
                 adapter: new NoOpEventBusAdapter(),
             }),
             adapter,
-            slowCallTime = TimeSpan.fromSeconds(10),
-            trigger = CIRCUIT_BREAKER_TRIGGER.BOTH,
+            defaultSlowCallTime = TimeSpan.fromSeconds(10),
+            defaultTrigger = CIRCUIT_BREAKER_TRIGGER.BOTH,
             errorPolicy = () => true,
             serde = new Serde(new NoOpSerdeAdapter()),
             serdeTransformerName = "",
@@ -189,9 +189,9 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
         this.namespace = namespace;
         this.eventBus = eventBus;
         this.adapter = adapter;
-        this.slowCallTime = TimeSpan.fromTimeSpan(slowCallTime);
-        this.trigger = trigger;
-        this.errorPolicy = errorPolicy;
+        this.defaultSlowCallTime = TimeSpan.fromTimeSpan(defaultSlowCallTime);
+        this.defaultTrigger = defaultTrigger;
+        this.defaultErrorPolicy = errorPolicy;
         this.serde = serde;
         this.serdeTransformerName = serdeTransformerName;
         this.registerToSerde();
@@ -201,9 +201,9 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
         const transformer = new CircuitBreakerSerdeTransformer({
             enableAsyncTracking: this.enableAsyncTracking,
             adapter: this.adapter,
-            slowCallTime: this.slowCallTime,
-            errorPolicy: this.errorPolicy,
-            trigger: this.trigger,
+            slowCallTime: this.defaultSlowCallTime,
+            errorPolicy: this.defaultErrorPolicy,
+            trigger: this.defaultTrigger,
             eventBus: this.eventBus,
             namespace: this.namespace,
             serdeTransformerName: this.serdeTransformerName,
@@ -258,15 +258,18 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
         key: string,
         settings: CircuitBreakerProviderCreateSettings = {},
     ): ICircuitBreaker {
-        const { errorPolicy = this.errorPolicy, trigger = this.trigger } =
-            settings;
+        const {
+            errorPolicy = this.defaultErrorPolicy,
+            trigger = this.defaultTrigger,
+            slowCallTime = this.defaultSlowCallTime,
+        } = settings;
 
         return new CircuitBreaker({
             enableAsyncTracking: this.enableAsyncTracking,
             eventDispatcher: this.eventBus,
             adapter: this.adapter,
             key: this.namespace.create(key),
-            slowCallTime: this.slowCallTime,
+            slowCallTime: TimeSpan.fromTimeSpan(slowCallTime),
             errorPolicy,
             trigger,
             serdeTransformerName: this.serdeTransformerName,

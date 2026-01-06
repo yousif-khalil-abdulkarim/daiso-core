@@ -100,25 +100,25 @@ export class CircuitBreakerProviderFactory<TAdapters extends string>
         });
     }
 
-    setSlowCallTime(
+    setDefaultSlowCallTime(
         slowCallTime?: ITimeSpan,
     ): CircuitBreakerProviderFactory<TAdapters> {
         return new CircuitBreakerProviderFactory({
             ...this.settings,
-            slowCallTime,
+            defaultSlowCallTime: slowCallTime,
         });
     }
 
-    setTrigger(
+    setDefaultTrigger(
         trigger?: CircuitBreakerTrigger,
     ): CircuitBreakerProviderFactory<TAdapters> {
         return new CircuitBreakerProviderFactory({
             ...this.settings,
-            trigger,
+            defaultTrigger: trigger,
         });
     }
 
-    setErrorPolicy(
+    setDefaultErrorPolicy(
         errorPolicy: ErrorPolicy,
     ): CircuitBreakerProviderFactory<TAdapters> {
         return new CircuitBreakerProviderFactory({
@@ -160,7 +160,7 @@ export class CircuitBreakerProviderFactory<TAdapters extends string>
      *     // ... code to apply circuit breaker logic
      *   });
      *
-     * // Will apply circuit breaker logic the default adapter which is RedisCircuitBreakerAdapter
+     * // Will apply circuit breaker logic using the RedisCircuitBreakerAdapter
      * await circuitBreakerProviderFactory
      *   .use("redis")
      *   .create("a")

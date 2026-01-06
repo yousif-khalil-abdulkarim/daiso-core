@@ -81,7 +81,7 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
     /**
      * @example
      * ```ts
-     * import { CircuitBreakerProviderFactory } from "@daiso-tech/core/circuit-breaker";
+     * import { DatabaseCircuitBreakerProviderFactory } from "@daiso-tech/core/circuit-breaker";
      * import { MemoryCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/memory-circuit-breaker-storate-adapter";
      * import { KyselyCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storate-adapter";
      * import { DatabaseCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter";
@@ -91,7 +91,7 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
      * import { Kysely, SqliteDialect } from "kysely";
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const circuitBreakerProviderFactory = new CircuitBreakerProviderFactory({
+     * const circuitBreakerProviderFactory = new DatabaseCircuitBreakerProviderFactory({
      *   serde,
      *   adapters: {
      *     memory: new MemoryCircuitBreakerStorageAdapter(),
@@ -135,7 +135,7 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
     ): DatabaseCircuitBreakerProviderFactory<TAdapters> {
         return new DatabaseCircuitBreakerProviderFactory({
             ...this.settings,
-            slowCallTime,
+            defaultSlowCallTime: slowCallTime,
         });
     }
 
@@ -144,7 +144,7 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
     ): DatabaseCircuitBreakerProviderFactory<TAdapters> {
         return new DatabaseCircuitBreakerProviderFactory({
             ...this.settings,
-            trigger,
+            defaultTrigger: trigger,
         });
     }
 
@@ -178,7 +178,7 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
     /**
      * @example
      * ```ts
-     * import { CircuitBreakerProviderFactory } from "@daiso-tech/core/circuit-breaker";
+     * import { DatabaseCircuitBreakerProviderFactory } from "@daiso-tech/core/circuit-breaker";
      * import { MemoryCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/memory-circuit-breaker-storate-adapter";
      * import { KyselyCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storate-adapter";
      * import { DatabaseCircuitBreakerAdapter } from "@daiso-tech/core/circuit-breaker/database-circuit-breaker-adapter";
@@ -188,7 +188,7 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
      * import { Kysely, SqliteDialect } from "kysely";
      *
      * const serde = new Serde(new SuperJsonSerdeAdapter());
-     * const circuitBreakerProviderFactory = new CircuitBreakerProviderFactory({
+     * const circuitBreakerProviderFactory = new DatabaseCircuitBreakerProviderFactory({
      *   serde,
      *   adapters: {
      *     memory: new MemoryCircuitBreakerStorageAdapter(),
@@ -212,7 +212,7 @@ export class DatabaseCircuitBreakerProviderFactory<TAdapters extends string>
      *     // ... code to apply circuit breaker logic
      *   });
      *
-     * // Will apply circuit breaker logic the default adapter which is KyselyCircuitBreakerStorageAdapter
+     * // Will apply circuit breaker logic using the KyselyCircuitBreakerStorageAdapter
      * await circuitBreakerProviderFactory
      *   .use("sqlite")
      *   .create("a")

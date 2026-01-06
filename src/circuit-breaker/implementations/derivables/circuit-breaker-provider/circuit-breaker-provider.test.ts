@@ -69,7 +69,7 @@ describe("class: CircuitBreakerProvider", () => {
                 adapter: new MemoryEventBusAdapter(),
             }),
             serde: new Serde(new SuperJsonSerdeAdapter()),
-            slowCallTime,
+            defaultSlowCallTime: slowCallTime,
             enableAsyncTracking: false,
         });
     });

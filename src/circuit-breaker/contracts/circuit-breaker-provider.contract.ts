@@ -5,6 +5,7 @@
 import { type ICircuitBreaker } from "@/circuit-breaker/contracts/circuit-breaker.contract.js";
 import { type CircuitBreakerEventMap } from "@/circuit-breaker/contracts/circuit-breaker.events.js";
 import { type IEventListenable } from "@/event-bus/contracts/_module.js";
+import { type ITimeSpan } from "@/time-span/contracts/time-span.contract.js";
 import { type ErrorPolicySettings } from "@/utilities/_module.js";
 
 /**
@@ -34,14 +35,13 @@ export type CircuitBreakerTrigger =
 export type CircuitBreakerProviderCreateSettings = ErrorPolicySettings & {
     /**
      * You can decide to track only errors, only slow calls or both as failures.
-     * @default
-     * ```ts
-     * import { CIRCUIT_BREAKER_TRIGGER} from "@daiso-tech/core/circuit-breaker/contracts";
-     *
-     * CIRCUIT_BREAKER_TRIGGER.BOTH
-     * ```
      */
     trigger?: CircuitBreakerTrigger;
+
+    /**
+     * You can set slow call threshold.
+     */
+    slowCallTime?: ITimeSpan;
 };
 
 /**
