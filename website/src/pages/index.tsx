@@ -7,6 +7,7 @@ import {
     Library,
     Webhook,
     Binary,
+    CircuitBoard
 } from "lucide-react";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import type { ReactNode } from "react";
@@ -172,6 +173,15 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         ),
     },
     {
+        icon: <CircuitBoard size="2.5rem" />,
+        title: "Circuit-breaker",
+        description: (
+            <>
+               A circuit-breaker is a resilience primitive preventing cascading failures from external services by stopping calls to a failing service.
+            </>
+        ),
+    },
+    {
         icon: <Lock size="2.5rem" />,
         title: "Lock",
         description: (
@@ -195,7 +205,7 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         title: "Shared lock",
         description: (
             <>
-               A shared lock (a.k.a reader writer lock) is a concurrency primitive offering better concurrency than a lock by coordinating a reader semaphore for concurrent access and an writer lock for mutual exclusion, strictly preventing conflicting simultaneous access and maintaining data consistency.
+               A shared-lock (a.k.a reader writer lock) is a concurrency primitive offering better concurrency than a lock by coordinating a reader semaphore for concurrent access and an writer lock for mutual exclusion, strictly preventing conflicting simultaneous access and maintaining data consistency.
             </>
         ),
     },
