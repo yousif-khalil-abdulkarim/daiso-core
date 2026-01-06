@@ -7,12 +7,14 @@ import {
     Library,
     Webhook,
     Binary,
-    CircuitBoard
+    CircuitBoard,
 } from "lucide-react";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import type { ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
+import MDXContent from "@theme/MDXContent";
+import IntroMdx from "./intro.mdx";
 
 type FeatureItemProps = {
     icon?: ReactNode;
@@ -94,7 +96,7 @@ function ComponentItems(props: ComponentItemsProps) {
     return (
         <section>
             <div className="container padding-horiz--xl">
-                <h3 className="hero__title text--primary margin-bottom--xl col col--8">
+                <h3 className="hero__subtitle text--primary margin-bottom--xl col col--8">
                     A growing collection of officially maintained components
                 </h3>
                 <div className="row">
@@ -169,7 +171,10 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         icon: <CalendarCheck size="2.5rem" />,
         title: "EventBus",
         description: (
-            <>Easily send events accross different server applications or in-memory.</>
+            <>
+                Easily send events accross different server applications or
+                in-memory.
+            </>
         ),
     },
     {
@@ -177,7 +182,9 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         title: "Circuit-breaker",
         description: (
             <>
-               A circuit-breaker is a resilience primitive preventing cascading failures from external services by stopping calls to a failing service.
+                A circuit-breaker is a resilience primitive preventing cascading
+                failures from external services by stopping calls to a failing
+                service.
             </>
         ),
     },
@@ -186,7 +193,9 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         title: "Lock",
         description: (
             <>
-               A lock ensures mutual exclusion for a shared resource across multiple process, allowing only one process to access it at a time to prevent race conditions.
+                A lock ensures mutual exclusion for a shared resource across
+                multiple process, allowing only one process to access it at a
+                time to prevent race conditions.
             </>
         ),
     },
@@ -195,8 +204,9 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         title: "Semaphore",
         description: (
             <>
-                A semaphore is a concurrency control primitive used to limit the number of processes or 
-                systems that can access a shared resource of code concurrently.
+                A semaphore is a concurrency control primitive used to limit the
+                number of processes or systems that can access a shared resource
+                of code concurrently.
             </>
         ),
     },
@@ -205,7 +215,12 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         title: "Shared lock",
         description: (
             <>
-               A shared-lock (a.k.a reader writer lock) is a concurrency primitive offering better concurrency than a lock by coordinating a reader semaphore for concurrent access and an writer lock for mutual exclusion, strictly preventing conflicting simultaneous access and maintaining data consistency.
+                A shared-lock (a.k.a reader writer lock) is a concurrency
+                primitive offering better concurrency than a lock by
+                coordinating a reader semaphore for concurrent access and an
+                writer lock for mutual exclusion, strictly preventing
+                conflicting simultaneous access and maintaining data
+                consistency.
             </>
         ),
     },
@@ -235,8 +250,8 @@ const componentItems = (projectName: ReactNode): ComponentItemProps[] => [
         description: (
             <>
                 Extend any sync and async function with agnostic hooks.
-                {projectName} includes predefined retry, fallback, timeout and
-                hedging hooks to easily allow handling transient failures.
+                {projectName} includes predefined retry, fallback, and timeout
+                hooks to easily allow handling transient failures.
             </>
         ),
     },
@@ -253,15 +268,15 @@ export default function Home(): ReactNode {
             <header className="hero hero--primary">
                 <div className="container">
                     <h1 className="hero__title">{siteConfig.title}</h1>
-                    <p className="hero__subtitle col col--8">
-                        is a TypeScript-first backend library for building web
-                        apps and API servers. It includes an ecosystem of
-                        official packages designed to work seamlessly together.
-                    </p>
+                    <div className="container">
+                        <MDXContent>
+                            <IntroMdx />
+                        </MDXContent>
+                    </div>
                     <div>
                         <Link
                             className="button button--secondary button--lg"
-                            to="/docs/Installation"
+                            to="./docs/installation"
                         >
                             Get started ⏱️
                         </Link>
