@@ -1,4 +1,8 @@
-# Cache
+---
+sidebar_position: 1
+---
+
+# Cache usage
 
 The `@daiso-tech/core/cache` component provides a way for storing key-value pairs with expiration independent of data storage
 
@@ -37,7 +41,7 @@ await cache.add("a", "value", TimeSpan.fromSeconds("1"));
 
 :::danger
 Note `Cache` class instance uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
-Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
+Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
 :::
 
 ### Retrieving keys
@@ -239,7 +243,7 @@ await cache.getOrAdd("ab", 1);
 ```
 
 :::info
-You can provide [`Task<TValue>`](../Task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../Utilities/Invokable.md) as default values for both `getOr` and `getOrAdd` methods.
+You can provide [`Task<TValue>`](../task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../utilities/invokable.md) as default values for both `getOr` and `getOrAdd` methods.
 :::
 
 You can retrieve the key and afterwards remove it and will return true if the value was found:
@@ -253,7 +257,7 @@ await cache.getAndRemove("ab");
 You can use the `Namespace` class to group related data without conflicts.
 
 :::info
-For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
 :::
 
 ```ts
@@ -302,7 +306,7 @@ console.log(await cacheA.get("key"));
 ### Cache events
 
 You can listen to different [cache events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) that are triggered by the `Cache` class.
-Refer to the [`@daiso-tech/core/event-bus`](../EventBus/index.md) documentation to learn how to use events.
+Refer to the [`@daiso-tech/core/event-bus`](../event_bus/event_bus_usage.md) documentation to learn how to use events.
 
 ```ts
 import { CACHE_EVENTS } from "@daiso-tech/core/cache/contracts";

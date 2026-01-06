@@ -1,4 +1,8 @@
-# SharedLock
+---
+sidebar_position: 1
+---
+
+# SharedLock usage
 
 The `@daiso-tech/core/shared-lock` component provides a way for managing shared-locks (a.k.a reader writer locks) independent of underlying platform or storage.
 
@@ -111,7 +115,7 @@ You need always to wrap the concurrent section with `try-finally` so the shared-
 
 :::danger
 Note `SharedLock` class uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
-Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
+Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
 :::
 
 ### Acquiring and releasing the shared-lock as writer
@@ -411,7 +415,7 @@ Note the method throws an error when a shared-lock cannot be acquired as writer.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous [`Invokable`](../../Utilities/Invokable.md) as values for `runWriterOrFail`, and `runWriterBlockingOrFail` methods.
+You can provide [`Task`](../task.md), synchronous and asynchronous [`Invokable`](../../utilities/invokable.md) as values for `runWriterOrFail`, and `runWriterBlockingOrFail` methods.
 :::
 
 ### Additional reader methods
@@ -494,7 +498,7 @@ Note the method throws an error when a shared-lock cannot be acquired as reader.
 :::
 
 :::info
-You can provide [`Task`](../Task.md), synchronous and asynchronous [`Invokable`](../../Utilities/Invokable.md) as values for `runReaderOrFail`, and `runReaderBlockingOrFail` methods.
+You can provide [`Task`](../task.md), synchronous and asynchronous [`Invokable`](../../utilities/invokable.md) as values for `runReaderOrFail`, and `runReaderBlockingOrFail` methods.
 :::
 
 ### Additional methods
@@ -556,7 +560,7 @@ In most cases, setting a shared-lock id is unnecessary.
 You can use the `Namespace` class to group related shared-locks without conflicts.
 
 :::info
-For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
 :::
 
 ```ts
@@ -606,7 +610,7 @@ console.log(await sharedLockB.getState());
 
 ### Retrying acquiring shared-lock as writer
 
-To retry acquiring shared-lock you can use the [`retry`](../Resilience.md) middleware with [`Task.pipe`](../Task.md) method.
+To retry acquiring shared-lock you can use the [`retry`](../resilience.md) middleware with [`Task.pipe`](../task.md) method.
 
 Retrying acquiring shared-lock with `acquireWriterOrFail` method:
 
@@ -756,7 +760,7 @@ await sharedLock
 
 Shared-locks can be serialized, allowing them to be transmitted over the network to another server and later deserialized for reuse.
 This means you can, for example, acquire the shared-lock on the main server, transfer it to a queue worker server, and release it there.
-In order to serialize or deserialize a shared-lock you need pass an object that implements [`ISerderRegister`](../Serde.md) contract like the [`Serde`](../Serde.md) class to `SharedLockProvider`. 
+In order to serialize or deserialize a shared-lock you need pass an object that implements [`ISerderRegister`](../serde.md) contract like the [`Serde`](../serde.md) class to `SharedLockProvider`. 
 
 Manually serializing and deserializing the shared-lock:
 
@@ -841,7 +845,7 @@ await eventBus.addListener("sending-shared-lock-over-network", ({ sharedLock }) 
 ### SharedLock events
 
 You can listen to different [shared-lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/SharedLock.html) that are triggered by the `SharedLock`.
-Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
+Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
 import { MemorySharedLockAdapter } from "@daiso-tech/core/shared-lock/memory-shared-lock-adapter";

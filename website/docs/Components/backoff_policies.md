@@ -1,3 +1,7 @@
+---
+"sidebar_position": 6
+---
+
 # Backoff policies
 
 The `@daiso-tech/core/backoff-policies` component

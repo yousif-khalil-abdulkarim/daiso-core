@@ -1,4 +1,8 @@
-# EventBus
+---
+sidebar_position: 1
+---
+
+# EventBus usage
 
 The `@daiso-tech/core/event-bus` component provides a way for dispatching and listening to events independent of underlying technology.
 
@@ -40,7 +44,7 @@ await eventBus.dispatch("add", {
 
 :::danger
 Note `EventBus` class instance uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
-Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
+Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
 :::
 
 ### Listener management
@@ -295,7 +299,7 @@ await dispatchingFunc(eventBus);
 An event listener are `Invokable` meaning you can also pass in an object (class instance or object literal) as listener:
 
 :::info
-For further information refer the [`Invokable`](../../Utilities/Invokable.md) docs.
+For further information refer the [`Invokable`](../../utilities/invokable.md) docs.
 :::
 
 ```ts
@@ -329,7 +333,7 @@ await eventBus.dispatch("add", {
 You can use the `Namespace` class to group related without conflicts.
 
 :::info
-For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
 :::
 
 ```ts

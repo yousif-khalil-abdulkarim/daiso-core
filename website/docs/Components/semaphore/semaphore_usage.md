@@ -1,4 +1,8 @@
-# Semaphore
+---
+sidebar_position: 1
+---
+
+# Semaphore usage
 
 The `@daiso-tech/core/semaphore` component provides a way for managing semaphores independent of underlying platform or storage.
 
@@ -111,7 +115,7 @@ You need always to wrap the concurrent section with `try-finally` so the semapho
 
 :::danger
 Note `Semaphore` class uses `Task` instead of a regular `Promise`. This means you must either await the `Task` or call its `detach` method to run it.
-Refer to the [`@daiso-tech/core/task`](../Task.md) documentation for further information.
+Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
 :::
 
 ### Semaphore with custom TTL
@@ -316,7 +320,7 @@ Note the method throws an error when a semaphore cannot be acquired.
 :::
 
 :::info
-You can provide [`Task<TValue>`](../Task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../Utilities/Invokable.md) as values for `runOrFail`, and `runBlockingOrFail` methods.
+You can provide [`Task<TValue>`](../task.md), synchronous and asynchronous [`Invokable<[], TValue>`](../../utilities/invokable.md) as values for `runOrFail`, and `runBlockingOrFail` methods.
 :::
 
 ### Semaphore instance variables
@@ -368,7 +372,7 @@ In most cases, setting a slot id is unnecessary.
 You can use the `Namespace` class to group related semaphores without conflicts.
 
 :::info
-For further information about namespacing refer to [`@daiso-tech/core/namespace`](../Namespace.md) documentation.
+For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
 :::
 
 ```ts
@@ -421,7 +425,7 @@ console.log(await semaphoreB.getState());
 
 ### Retrying acquiring semaphore
 
-To retry acquiring semaphore you can use the [`retry`](../Resilience.md) middleware with [`Task.pipe`](../Task.md) method.
+To retry acquiring semaphore you can use the [`retry`](../resilience.md) middleware with [`Task.pipe`](../task.md) method.
 
 Retrying acquiring semaphore with `acquireOrFail` method:
 
@@ -498,7 +502,7 @@ await semaphore
 
 Semaphores can be serialized, allowing them to be transmitted over the network to another server and later deserialized for reuse.
 This means you can, for example, acquire the semaphore on the main server, transfer it to a queue worker server, and release it there.
-In order to serialize or deserialize a semaphore you need pass an object that implements [`ISerderRegister`](../Serde.md) contract like the [`Serde`](../Serde.md) class to `SemaphoreProvider`. 
+In order to serialize or deserialize a semaphore you need pass an object that implements [`ISerderRegister`](../serde.md) contract like the [`Serde`](../serde.md) class to `SemaphoreProvider`. 
 
 Manually serializing and deserializing the semaphore:
 
@@ -583,7 +587,7 @@ await eventBus.addListener("sending-semaphore-over-network", ({ semaphore }) => 
 ### Semaphore events
 
 You can listen to different [semaphore events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Semaphore.html) that are triggered by the `Semaphore`.
-Refer to the [`EventBus`](../EventBus/index.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
+Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
 import { MemorySemaphoreAdapter } from "@daiso-tech/core/semaphore/memory-semaphore-adapter";

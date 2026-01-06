@@ -1,3 +1,7 @@
+---
+"sidebar_position": 11
+---
+
 # Serde
 
 The `@daiso-tech/core/serde` component provides seamless way to serialize/deserialize data and adding custom serialization/deserialization logic for custom data types.

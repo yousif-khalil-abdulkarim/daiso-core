@@ -1,3 +1,7 @@
+---
+"sidebar_position": 8
+---
+
 # Hooks
 
 The `@daiso-tech/core/hooks` component provides seamleas way to add middlewares/hooks to any sync and async functions without any hassle.
