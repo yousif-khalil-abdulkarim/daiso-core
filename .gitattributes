@@ -3,3 +3,4 @@
 core.longpaths=true
 hooks.protected-branch.refs=main
 push.autoSetupRemote=true
+core.ignorecase=false
