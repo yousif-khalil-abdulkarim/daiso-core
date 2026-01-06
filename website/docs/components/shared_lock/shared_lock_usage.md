@@ -31,7 +31,7 @@ const sharedLockProvider = new SharedLockProvider({
 Here is a complete list of settings for the [`SharedLockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/SharedLock.SharedLockProviderSettingsBase.html) class.
 :::
 
-## Shared-lock basics
+## Shared lock basics
 
 ### Creating a shared-lock
 ```ts
@@ -148,7 +148,7 @@ try {
 You need always to wrap the critical section with `try-finally` so the shared-lock get released when error occurs.
 :::
 
-### Shared-lock with custom TTL
+### Shared lock with custom TTL
 
 You can provide a custom TTL for the shared-lock.
 
