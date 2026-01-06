@@ -393,7 +393,7 @@
         "publint": "npm run build && npx publint",
         "check:all": "npm run check && npm run lint && npm run test && npm run publint",
         "docs": "npx typedoc",
-        "release": "npm run build && npx changeset publish"
+        "release": "npm run build && npx changeset publish --provenance"
     },
     "devDependencies": {
         "@changesets/cli": "^2.27.7",
