@@ -36,7 +36,7 @@ Here is a complete list of settings for the `Cache` class.
 You can add a key and provide a optional TTL to overide the default:
 
 ```ts
-await cache.add("a", "value", TimeSpan.fromSeconds("1"));
+await cache.add("a", "value", { ttl: TimeSpan.fromSeconds("1") });
 ```
 
 :::danger
@@ -90,7 +90,7 @@ You can replace the key value with a given TTL if the key exists otherwise the k
 
 ```ts
 await cache.put("a", 2);
-await cache.put("a", 2, TimeSpan.fromSeconds(3));
+await cache.put("a", 2, { ttl: TimeSpan.fromSeconds(3) });
 ```
 
 ### Removing keys
@@ -252,6 +252,36 @@ You can retrieve the key and afterwards remove it and will return true if the va
 await cache.getAndRemove("ab");
 ```
 
+You can add key and if it does exist an error will be thrown:
+
+```ts
+await cache.addOrFail("ab", 1);
+```
+
+You can update the key and if it does not exist an error will be thrown:
+
+```ts
+await cache.updateOrFail("ab", 1);
+```
+
+You can increment the key and if it does not exist an error will be thrown:
+
+```ts
+await cache.incrementOrFail("ab", 1);
+```
+
+You can decrement the key and if it does not exist an error will be thrown:
+
+```ts
+await cache.decrementOrFail("ab", 1);
+```
+
+You can remove the key and if it does not exist an error will be thrown:
+
+```ts
+await cache.removeOrFail("ab");
+```
+
 ### Namespacing
 
 You can use the `Namespace` class to group related data without conflicts.
@@ -312,14 +342,11 @@ Refer to the [`@daiso-tech/core/event-bus`](../event_bus/event_bus_usage.md) doc
 import { CACHE_EVENTS } from "@daiso-tech/core/cache/contracts";
 
 // Will log whenever an item is added, updated and removed
-await cache.subscribe(CACHE_EVENTS.WRITTEN, (event) => {
+await cache.subscribe(CACHE_EVENTS.ADDED, (event) => {
     console.log(event);
 });
 
 await cache.add("a", "b");
-await cache.update("a", 1);
-await cache.increment("a", 1);
-await cache.remove("a");
 ```
 
 :::info
@@ -429,7 +456,7 @@ function listenerFunc(cacheListenable: ICacheListenable): Promise<void> {
     // You cannot access the cache methods
     // You will get typescript error if you try
 
-    await cacheListenable.addListener(CACHE_EVENTS.WRITTEN, (event) => {
+    await cacheListenable.addListener(CACHE_EVENTS.ADDED, (event) => {
         console.log("EVENT:", event);
     });
 }
