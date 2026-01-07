@@ -11,6 +11,9 @@
         "type": "git",
         "url": "git+https://github.com/yousif-khalil-abdulkarim/daiso-core.git"
     },
+    "files": [
+        "./dist"
+    ],
     "keywords": [
         "Async collection",
         "Collection",
@@ -77,9 +80,6 @@
         "Time",
         "TimeSpan",
         "Duration"
-    ],
-    "files": [
-        "./dist"
     ],
     "exports": {
         "./backoff-policies": {
@@ -383,6 +383,10 @@
             "import": "./dist/utilities/_module-exports.js"
         }
     },
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
     "scripts": {
         "test": "npx vitest run",
         "test:watch": "npm run test -- watch",
@@ -393,7 +397,7 @@
         "publint": "npm run build && npx publint",
         "check:all": "npm run check && npm run lint && npm run test && npm run publint",
         "docs": "npx typedoc",
-        "release": "npm run build && npx changeset publish --provenance"
+        "release": "npm run build && npx changeset publish"
     },
     "devDependencies": {
         "@changesets/cli": "^2.27.7",

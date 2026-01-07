@@ -10,8 +10,7 @@ jobs:
         name: Release
         runs-on: ubuntu-latest
         permissions:
-          contents: write
-          pull-requests: write
+          contents: read
           id-token: write
         steps:
             - name: Checkout
@@ -24,6 +23,9 @@ jobs:
                   # Ensure the registry is defined
                   registry-url: 'https://registry.npmjs.org'
 
+            - name: Update npm
+              run: npm install -g npm
+              
             - name: Install Dependencies
               run: npm ci
 
@@ -34,3 +36,4 @@ jobs:
                   publish: npm run release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
