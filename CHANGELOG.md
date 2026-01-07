@@ -1,5 +1,13 @@
 # @daiso-tech/core
 
+## 0.43.2
+
+### Patch Changes
+
+- 48d0b06: Update ci-cd release.yaml workflow
+- 8db5b00: Updated relase.yaml file
+- 32bab22: Update gh actions relase.yaml
+
 ## 0.43.1
 
 ### Patch Changes
@@ -636,8 +644,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                                - `AsyncFactoryable`
-                                - `Factoryable`
+                                  - `AsyncFactoryable`
+                                  - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
