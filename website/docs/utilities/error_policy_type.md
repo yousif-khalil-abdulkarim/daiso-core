@@ -8,7 +8,7 @@ A predicate function can be used to dynamically determine if an error should be 
 
 ```ts
 import { fallback } from "@daiso-tech/core/resilience";
-import { AsyncHooks } from "@daiso-tech/core/utilities";
+import { AsyncHooks } from "@daiso-tech/core/hooks";
 
 class CustomError extends Error {
     constructor(
@@ -83,7 +83,7 @@ const func = new AsyncHooks((): string => {
 You can treat false return values as errors. This useful when you want to retry functions that return boolean.
 
 ```ts
-import { AsyncHooks } from "@daiso-tech/core/utilities";
+import { AsyncHooks } from "@daiso-tech/core/hooks";
 import { retry } from "@daiso-tech/core/resilience";
 
 await new AsyncHooks((): Promise<boolean> => {

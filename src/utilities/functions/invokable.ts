@@ -35,42 +35,6 @@ export type IInvokableObject<
 export type Invokable<TArgs extends unknown[] = unknown[], TReturn = unknown> =
     | InvokableFn<TArgs, TReturn>
     | IInvokableObject<TArgs, TReturn>;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- */
-export type FactoryFn<TInput, TOutput> = InvokableFn<
-    [value: TInput],
-    NoneFunc<TOutput>
->;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- */
-export type IFactoryObject<TInput, TOutput> = IInvokableObject<
-    [value: TInput],
-    NoneFunc<TOutput>
->;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- */
-export type Factory<TInput, TOutput> =
-    | FactoryFn<TInput, TOutput>
-    | IFactoryObject<TInput, TOutput>;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- */
-export type AsyncFactoryFn<TInput, TOutput> = InvokableFn<
-    [value: TInput],
-    Promisable<NoneFunc<TOutput>>
->;
-
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
@@ -79,14 +43,6 @@ export type IAsyncFactoryObject<TInput, TOutput> = IInvokableObject<
     [value: TInput],
     Promisable<NoneFunc<TOutput>>
 >;
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/utilities"`
- */
-export type AsyncFactory<TInput, TOutput> =
-    | AsyncFactoryFn<TInput, TOutput>
-    | IAsyncFactoryObject<TInput, TOutput>;
 
 /**
  * @internal

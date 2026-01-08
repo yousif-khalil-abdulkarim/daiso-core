@@ -121,7 +121,7 @@ To use the `KyselySharedLockAdapter`, you'll need to:
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
@@ -150,7 +150,7 @@ Note using `KyselySharedLockAdapter` with `sqlite` is limited to single server u
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
@@ -187,7 +187,7 @@ Note in order to use `KyselySharedLockAdapter` with `postgres` correctly, ensure
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
 import { createPool } from "mysql2";
 import { Kysely, MysqlDialect } from "kysely";
@@ -224,7 +224,7 @@ Note in order to use `KyselySharedLockAdapter` with `mysql` correctly, ensure yo
 You will need to install `@libsql/kysely-libsql` package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselySharedLockAdapter } from "@daiso-tech/core/shared-lock/kysely-shared-lock-adapter";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
 import { Kysely } from "kysely";
@@ -252,7 +252,7 @@ Note in order to use `KyselySharedLockAdapter` with `libsql` correctly, ensure y
 Expired keys are cleared at regular intervals and you can change the interval time:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 
 const kyselySharedLockAdapter = new KyselySharedLockAdapter({
     database,
@@ -266,7 +266,7 @@ await kyselySharedLockAdapter.init();
 Disabling scheduled interval cleanup of expired keys:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 
 const kyselySharedLockAdapter = new KyselySharedLockAdapter({
     database,
