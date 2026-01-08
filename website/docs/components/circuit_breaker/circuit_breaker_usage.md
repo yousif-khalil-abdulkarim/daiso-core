@@ -60,7 +60,7 @@ Note `CircuitBreaker` class instance uses `Task` instead of a regular `Promise`.
 Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
 :::
 
-### Applying on circuit-breaker on certiain errors
+### Applying circuit-breaker on certiain errors
 
 ```ts
 class ErrorA extends Error {}
@@ -168,6 +168,17 @@ if (state === CIRCUIT_BREAKER_STATE.HALF_OPEN) {
 if (state === CIRCUIT_BREAKER_STATE.ISOLATED) {
     console.log("The service is held in open state manually until reseted")
 }
+```
+
+### Circuit-breaker instance variables
+
+The `CircuitBreaker` class exposes instance variables such as:
+
+```ts
+const circuitBreaker = circuitBreakerProvider.create("resource");
+
+// Will return the key of the circuit-breaker which is "resource"
+console.log(circuitBreaker.key);
 ```
 
 ## Patterns

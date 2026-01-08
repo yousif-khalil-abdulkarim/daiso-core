@@ -283,6 +283,21 @@ You can remove the key and if it does not exist an error will be thrown:
 await cache.removeOrFail("ab");
 ```
 
+### Adding jitter to ttl
+
+You can enable TTL jitter (adding a small random offset) is beneficial because it prevents keys from expiring simultaneously. This avoids 'thundering herd' issues by spreading out the load on your data source over time.
+
+```ts
+await cache.add("a", 1, { 
+    ttl: TimeSpan.fromMinutes(1),
+    jitter: 0.2
+})
+```
+
+:::info
+You can enable jitter in the following methods: `addOrFail`, `put` and `getOrAdd`.
+:::
+
 ### Namespacing
 
 You can use the `Namespace` class to group related data without conflicts.
