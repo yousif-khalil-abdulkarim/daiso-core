@@ -71,7 +71,7 @@ const func = new AsyncHooks((): string => {
     fallback({
         fallbackValue: "DEFAULT_VALUE",
         errorPolicy: z.object({
-            code: z.liter("e20"),
+            code: z.literal("e20"),
             message: z.string(),
         }),
     }),
@@ -83,7 +83,7 @@ const func = new AsyncHooks((): string => {
 You can treat false return values as errors. This useful when you want to retry functions that return boolean.
 
 ```ts
-import { AsyncHooks } from "@daiso-tech/core/utillities";
+import { AsyncHooks } from "@daiso-tech/core/utilities";
 import { retry } from "@daiso-tech/async";
 
 await new AsyncHooks((): Promise<boolean> => {

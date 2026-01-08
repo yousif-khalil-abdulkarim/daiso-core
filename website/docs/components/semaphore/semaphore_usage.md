@@ -656,7 +656,7 @@ const redisSemaphoreProvider = new SemaphoreProvider({
 
 :::
 
-### Seperating creating, listening to and manipulating semaphore
+### Separating creating, listening to and manipulating semaphore
 
 The library includes 3 additional contracts:
 

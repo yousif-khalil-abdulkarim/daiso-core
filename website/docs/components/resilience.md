@@ -23,7 +23,7 @@ import { AsyncHooks } from "@daiso-tech/core/hooks";
 function unstableFn(): number {
     // We simulate a function that can throw unexpected errors
     if (Math.round(Math.random() * 1.5) === 0) {
-        throw new Error("Unexpected error occured");
+        throw new Error("Unexpected error occurred");
     }
     return Math.round((Math.random() + 1) * 99);
 }
@@ -85,7 +85,7 @@ import { AsyncHooks } from "@daiso-tech/core/hooks";
 function unstableFn(): number {
     // We simulate a function that can throw unexpected errors
     if (Math.round(Math.random() * 1.5) === 0) {
-        throw new Error("Unexpected error occured");
+        throw new Error("Unexpected error occurred");
     }
     return Math.round((Math.random() + 1) * 99);
 }
@@ -198,7 +198,7 @@ import { timeout } from "@daiso-tech/core/resilience";
 import { TimeSpan } from "@daiso-tech/core/time-span";
 import { AsyncHooks } from "@daiso-tech/core/hooks";
 
-function fetchData(signal?: AbortSginal): Promise<Response> {
+function fetchData(signal?: AbortSignal): Promise<Response> {
     const response = await fetch("ENDPOINT", {
         signal,
     });
@@ -268,7 +268,7 @@ import { AsyncHooks } from "@daiso-tech/core/hooks";
 function unstableFn(): Promise<number> {
     // We simulate a function that can throw unexpected errors
     if (Math.round(Math.random() * 1.5) === 0) {
-        throw new Error("Unexpected error occured");
+        throw new Error("Unexpected error occurred");
     }
     return Math.round((Math.random() + 1) * 99);
 }

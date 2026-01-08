@@ -325,7 +325,7 @@ const circuitBreakerProvider = new CircuitBreakerProvider({
 });
 
 await circuitBreakerProvider.addListener(CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED, (event) => {
-    console.log(`State transitioned occured. from ${event.from} to ${event.to}`);
+    console.log(`State transitioned occurred. from ${event.from} to ${event.to}`);
 });
 
 await circuitBreakerProvider.create("a").isolate();
@@ -379,7 +379,7 @@ const redisCircuitBreakerProvider = new CircuitBreakerProvider({
 
 :::
 
-### Seperating creating, listening to and using circuit-breakers
+### Separating creating, listening to and using circuit-breakers
 
 The library includes 3 additional contracts:
 
@@ -425,7 +425,7 @@ async function circuitBreakerListenableFunc(
     // You will get typescript error if you try
 
     await circuitBreakerListenable.addListener(CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED, (event) => {
-        console.log(`State transitioned occured. from ${event.from} to ${event.to}`);
+        console.log(`State transitioned occurred. from ${event.from} to ${event.to}`);
     });
 }
 

@@ -252,19 +252,19 @@ The library includes 3 types of collections:
 
 The `ListCollection` and `IterableCollection` classes supports serialization and deserialization, allowing you to easily convert instances to and from serialized formats. However, registration is required first:
 
-Serialiazing and deserializing `ListCollection`:
+Serializing and deserializing `ListCollection`:
 ```ts
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import {
     ListCollection,
-    IteralbeCollection,
+    IterableCollection,
 } from "@daiso-tech/core/collection";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
 serde.registerClass(ListCollection);
-serde.registerClass(IteralbeCollection);
+serde.registerClass(IterableCollection);
 
 const listCollection = new ListCollection([1, 2, 3, 4, 5]);
 const serializedListCollection = serde.serialize(listCollection);
@@ -276,19 +276,19 @@ console.log(serializedListCollection === deserializedListCollection);
 console.log(listCollection.toArray(), deserializedListCollection.toArray());
 ```
 
-Serialiazing and deserializing `IterableCollection`:
+Serializing and deserializing `IterableCollection`:
 ```ts
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import {
     ListCollection,
-    IteralbeCollection,
+    IterableCollection,
 } from "@daiso-tech/core/collection";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
 serde.registerClass(ListCollection);
-serde.registerClass(IteralbeCollection);
+serde.registerClass(IterableCollection);
 
 const listCollection = new ListCollection([1, 2, 3, 4, 5]);
 const serializedListCollection = serde.serialize(listCollection);
@@ -873,7 +873,7 @@ new ListCollection([]).isEmpty();
 
 ### join
 
-The `join` method joins the collection's items with `separator`. An error will be thrown when if a none string item is encounterd.
+The `join` method joins the collection's items with `separator`. An error will be thrown when if a non-string item is encountered.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";

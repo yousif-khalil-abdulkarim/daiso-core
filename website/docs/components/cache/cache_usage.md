@@ -134,7 +134,7 @@ const cache = new Cache<IUser>({
     adapter: new MemoryCacheAdapter(),
 });
 
-// A typescript error will occur because the type is not mathcing.
+// A typescript error will occur because the type is not matching.
 await cache.add("a", "asd");
 ```
 
@@ -219,7 +219,7 @@ const cache = new Cache({
     schema: userSchema
 });
 
-// A typescript and runtime error will occur because the type is not mathcing.
+// A typescript and runtime error will occur because the type is not matching.
 await cache.add("a", "asd")
 ```
 
@@ -441,7 +441,7 @@ const redisCache = new Cache({
 
 :::
 
-### Seperating manipulating cache and listening
+### Separating manipulating cache and listening
 
 The library includes two additional contracts:
 

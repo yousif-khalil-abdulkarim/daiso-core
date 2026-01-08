@@ -4,7 +4,7 @@
 
 # Hooks
 
-The `@daiso-tech/core/hooks` component provides seamleas way to add middlewares/hooks to any sync and async functions without any hassle.
+The `@daiso-tech/core/hooks` component provides seamless way to add middlewares/hooks to any sync and async functions without any hassle.
 
 ## Synchronous hooks
 
@@ -294,17 +294,17 @@ function timeout<TParameters extends unknown[], TReturn>(
             throw signal.reason;
         }
 
-        // We abort the function when it execdes 2 seconds.
+        // We abort the function when it exceeds 2 seconds.
         const id = setTimeout(() => abort("Timed out"), 2000);
         const clear = () => clearTimeout(id);
         try {
-            // We clear the timeout if function is aborted before it execdes 2 seconds.
+            // We clear the timeout if function is aborted before it exceeds 2 seconds.
             signal.addEventListener("abort", clear, {
                 once: true,
             });
             return await next(...args);
         } finally {
-            // We de cleanup work
+            // We do cleanup work
 
             // Remove the listener
             signal.removeEventListener("abort", clear);

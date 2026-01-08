@@ -569,7 +569,7 @@ const redisLockProvider = new LockProvider({
 
 :::
 
-### Seperating creating, listening to and manipulating locks
+### Separating creating, listening to and manipulating locks
 
 The library includes 3 additional contracts:
 

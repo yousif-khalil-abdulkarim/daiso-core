@@ -119,7 +119,7 @@ The are additional static method, `delay` and `fromCallback`.
     console.log("DONE");
     ```
 
-    You can provide an `AbortSignal` to aborat the delay:
+    You can provide an `AbortSignal` to abort the delay:
 
     ```ts
     import { Task } from "@daiso-tech/core/task";

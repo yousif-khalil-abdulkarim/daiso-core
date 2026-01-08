@@ -138,14 +138,14 @@ timeSpan.subtractTimeSpan(TimeSpan.fromDays(14).addHours(20));
 Dividing a timespan:
 
 ```ts
-// Will be now 100 miliseconds
+// Will be now 100 milliseconds
 TimeSpan.fromMilliseconds(200).divide(2);
 ```
 
 Multiplying a timespan:
 
 ```ts
-// Will be now 400 miliseconds
+// Will be now 400 milliseconds
 TimeSpan.fromMilliseconds(200).multiply(2);
 ```
 

@@ -916,7 +916,7 @@ const redisSharedLockProvider = new SharedLockProvider({
 ```
 :::
 
-### Seperating creating, listening to and manipulating shared-lock
+### Separating creating, listening to and manipulating shared-lock
 
 The library includes 3 additional contracts:
 

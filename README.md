@@ -8,7 +8,7 @@
 
 `@daiso-tech/core` is a TypeScript-first backend library for building web apps and API servers. It includes an ecosystem of official packages designed to work seamlessly together.
 
-**@daiso-tech/core** is a libary of backend server components designed for maximum flexibility. While each component is fully functional on its own, they are written to work seamlessly together to build robust server-side logic.
+**@daiso-tech/core** is a library of backend server components designed for maximum flexibility. While each component is fully functional on its own, they are written to work seamlessly together to build robust server-side logic.
 
 Key Features:
 - **Framework Agnostic:** Built without a dependency injection (DI) container, the library integrates effortlessly into any framework / library. Whether you use Express.js, backend frameworks like AdonisJS or NestJS, or full-stack frameworks like Next.js, Nuxt, or TanStack Start, these components "just work."
@@ -26,7 +26,7 @@ Key Features:
   @daiso-tech/core leverages modern JavaScript primitives, including ES modules
 
 - **Supports standard schema:**
-  Integrated seamlessly with [standard schema](https://standardschema.dev/) allowing you to use libraries like zod to ensure both compile time and runtimte typesafety.
+  Integrated seamlessly with [standard schema](https://standardschema.dev/) allowing you to use libraries like zod to ensure both compile time and runtime typesafety.
 
 [Get started now](https://daiso-core.vercel.app/docs/Installation)
 
