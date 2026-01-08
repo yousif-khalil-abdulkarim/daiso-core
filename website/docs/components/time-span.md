@@ -203,7 +203,7 @@ TimeSpan.fromMinutes(1).toSeconds();
 You can get amount of minutes contained in the `TimeSpan`:
 
 ```ts
-TimeSpan.fromHour(1).toMinutes();
+TimeSpan.fromHours(1).toMinutes();
 ```
 
 You can get amount of hours contained in the `TimeSpan`:
@@ -215,7 +215,7 @@ TimeSpan.fromDays(1).toHours();
 You can get amount of days contained in the `TimeSpan`:
 
 ```ts
-TimeSpan.fromHour(48).toDays();
+TimeSpan.fromHours(48).toDays();
 ```
 
 You can get end date relative to a start date:

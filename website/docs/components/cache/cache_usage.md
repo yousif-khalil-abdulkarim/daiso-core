@@ -208,9 +208,9 @@ import { Cache } from "@daiso-tech/core/cache";
 import { z } from "zod";
 
 const userSchema = z.object({
-    name: z.string();
-    email: z.string();
-    age: z.number();
+    name: z.string(),
+    email: z.string(),
+    age: z.number(),
 });
 
 // The type will be infered
@@ -454,7 +454,7 @@ This seperation makes it easy to visually distinguish the two contracts, making 
 ```ts
 import type {
     ICache,
-    ICahceBase,
+    ICacheBase,
     ICacheListenable,
     CACHE_EVENTS,
 } from "@daiso-tech/core/cache/contracts";
@@ -463,7 +463,7 @@ import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapter/memory-cache-
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { MemoryEventBus } from "@daiso-tech/core/event-bus/memory-event-bus";
 
-function manipulatingFunc(cache: ICahceBase): Promise<void> {
+function manipulatingFunc(cache: ICacheBase): Promise<void> {
     // You cannot access the listener methods
     // You will get typescript error if you try
 

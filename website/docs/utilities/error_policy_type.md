@@ -7,7 +7,7 @@ The `ErrorPolicy` type determines which errors should be handled for example in 
 A predicate function can be used to dynamically determine if an error should be handled:
 
 ```ts
-import { fallback } from "@daiso-tech/core/async";
+import { fallback } from "@daiso-tech/core/resilience";
 import { AsyncHooks } from "@daiso-tech/core/utilities";
 
 class CustomError extends Error {
@@ -84,7 +84,7 @@ You can treat false return values as errors. This useful when you want to retry 
 
 ```ts
 import { AsyncHooks } from "@daiso-tech/core/utilities";
-import { retry } from "@daiso-tech/async";
+import { retry } from "@daiso-tech/core/resilience";
 
 await new AsyncHooks((): Promise<boolean> => {
     // Will be

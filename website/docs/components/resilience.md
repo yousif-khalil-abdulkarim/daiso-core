@@ -92,7 +92,7 @@ function unstableFn(): number {
 const fn = new AsyncHooks(unstableFn, [
     retry({
         // Will retry 4 times
-        maxAttemps: 4,
+        maxAttempts: 4,
     }),
 ]);
 
@@ -106,7 +106,7 @@ You can define an [`ErrorPolicy`](../utilities/error_policy_type.md) to retry sp
 ```ts
 const fn = new AsyncHooks(unstableFn, [
     retry({
-        maxAttemps: 4,
+        maxAttempts: 4,
         // Will only retry errors that are not TypeError
         errorPolicy: (error) => !(error instanceof TypeError),
     }),
@@ -122,7 +122,7 @@ import { TimeSpan } from "@daiso-tech/core/time-span";
 
 const fn = new AsyncHooks(unstableFn, [
     retry({
-        maxAttemps: 4,
+        maxAttempts: 4,
         // By default a exponential policy is used
         backoffPolicy: (attempt: number, _error: unknown) =>
             TimeSpan.fromMilliseconds(attempt * 100),
@@ -137,7 +137,7 @@ You can add callback [`Invokable`](../utilities/invokable.md) that will be calle
 ```ts
 const fn = new AsyncHooks(unstableFn, [
     retry({
-        maxAttemps: 4,
+        maxAttempts: 4,
         onExecutionAttempt: (data) => console.log(data),
     }),
 ]);
@@ -152,7 +152,7 @@ For more details about `onExecutionAttempt` callback data, see the `OnRetryAttem
 ```ts
 const fn = new AsyncHooks(unstableFn, [
     retry({
-        maxAttemps: 4,
+        maxAttempts: 4,
         onRetryDelay: (data) => console.log(data),
     }),
 ]);
