@@ -16,7 +16,6 @@ import { callInvokable } from "@/utilities/_module.js";
 export type AllowedState<TMetrics = unknown> = {
     type: (typeof RATE_LIMITER_STATE)["ALLOWED"];
     metrics: TMetrics;
-    attempt: number;
 };
 
 /**
@@ -58,10 +57,6 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         const currentMetrics =
             this.rateLimiterPolicy.initialMetrics(currentDate);
         return {
-            attempt: this.rateLimiterPolicy.getAttempts(
-                currentMetrics,
-                currentDate,
-            ),
             type: RATE_LIMITER_STATE.ALLOWED,
             metrics: currentMetrics,
         };
@@ -105,10 +100,6 @@ export class RateLimiterPolicy<TMetrics = unknown> {
                 settings.currentDate,
             );
             return {
-                attempt: this.rateLimiterPolicy.getAttempts(
-                    currentMetrics,
-                    settings.currentDate,
-                ),
                 type: RATE_LIMITER_STATE.ALLOWED,
                 metrics: currentMetrics,
             };
@@ -123,7 +114,6 @@ export class RateLimiterPolicy<TMetrics = unknown> {
     ): AllRateLimiterState<TMetrics> {
         return {
             type: currentState.type,
-            attempt: currentState.attempt,
             metrics: this.rateLimiterPolicy.updateMetrics(
                 currentState.metrics,
                 currentDate,
@@ -153,5 +143,18 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         return TimeSpan.fromTimeSpan(
             callInvokable(settings.backoffPolicy, currentState.attempt, null),
         ).toEndDate(settings.currentDate);
+    }
+
+    getAttempts(
+        currentState: AllRateLimiterState<TMetrics>,
+        currentDate: Date,
+    ): number {
+        if (currentState.type === RATE_LIMITER_STATE.ALLOWED) {
+            return this.rateLimiterPolicy.getAttempts(
+                currentState.metrics,
+                currentDate,
+            );
+        }
+        return currentState.attempt;
     }
 }

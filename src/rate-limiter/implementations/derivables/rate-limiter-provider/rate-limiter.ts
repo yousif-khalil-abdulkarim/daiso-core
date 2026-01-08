@@ -18,11 +18,9 @@ import {
 } from "@/rate-limiter/contracts/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
-import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
     callErrorPolicyOnThrow,
     resolveAsyncLazyable,
-    UnexpectedError,
     type AsyncLazy,
     type ErrorPolicy,
 } from "@/utilities/_module.js";
@@ -77,10 +75,7 @@ export class RateLimiter implements IRateLimiter {
     ): RateLimiterState {
         if (state === null) {
             return {
-                type: RATE_LIMITER_STATE.ALLOWED,
-                usedAttempts: 0,
-                reaminingAttemps: this.limit,
-                limit: this.limit,
+                type: RATE_LIMITER_STATE.EXPIRED,
             };
         }
         if (state.success) {
@@ -89,20 +84,17 @@ export class RateLimiter implements IRateLimiter {
                 usedAttempts: state.attempt,
                 reaminingAttemps: this.limit - state.attempt,
                 limit: this.limit,
+                resetAfter: state.resetTime,
             } satisfies RateLimiterAllowedState;
         }
 
-        if (state.resetTime !== null) {
-            return {
-                type: RATE_LIMITER_STATE.BLOCKED,
-                limit: this.limit,
-                totalAttempts: state.attempt,
-                exceedAttempts: state.attempt - this.limit,
-                resetTime: TimeSpan.fromTimeSpan(state.resetTime),
-            } satisfies RateLimiterBlockedState;
-        }
-
-        throw new UnexpectedError("1_!!__MESSAGE__!!");
+        return {
+            type: RATE_LIMITER_STATE.BLOCKED,
+            limit: this.limit,
+            totalAttempts: state.attempt,
+            exceedAttempts: state.attempt - this.limit,
+            retryAfter: state.resetTime,
+        } satisfies RateLimiterBlockedState;
     }
 
     getState(): ITask<RateLimiterState> {

@@ -116,7 +116,7 @@ export class FixedWindowLimiter
             currentDate.getTime() - currentMetrics.lastAttemptAt;
         return (
             timeSinceLastAttempt < this.window.toMilliseconds() &&
-            currentMetrics.attempt >= limit
+            currentMetrics.attempt > limit
         );
     }
 

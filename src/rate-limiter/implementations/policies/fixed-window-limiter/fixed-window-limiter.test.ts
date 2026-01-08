@@ -43,7 +43,7 @@ describe("class: FixedWindowLimiter", () => {
 
             expect(result).toBe(false);
         });
-        test("Should return false when attempt is greater than or equal to limit and window time has exceeded", () => {
+        test("Should return false when attempt is equal to limit and window time has exceeded", () => {
             const window = TimeSpan.fromMinutes(1);
             const limiter = new FixedWindowLimiter({
                 window,
@@ -54,7 +54,7 @@ describe("class: FixedWindowLimiter", () => {
             const currentDate = window.addSeconds(30).toEndDate(lastAttemptAt);
             const result = limiter.shouldBlock(
                 {
-                    attempt: 3,
+                    attempt: limit,
                     lastAttemptAt: lastAttemptAt.getTime(),
                 },
                 limit,
@@ -63,7 +63,7 @@ describe("class: FixedWindowLimiter", () => {
 
             expect(result).toBe(false);
         });
-        test("Should return true when attempt is greater than or equal to limit and window time has not exceeded", () => {
+        test("Should return true when attempt is greater than to limit and window time has not exceeded", () => {
             const window = TimeSpan.fromMinutes(1);
             const limiter = new FixedWindowLimiter({
                 window,

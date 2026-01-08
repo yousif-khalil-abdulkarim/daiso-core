@@ -104,13 +104,10 @@ export function slidingWindowLimiterTestSuite(
         describe("method: getState", () => {
             test.todo("Write tests!!!");
         });
-        describe("method: updateState / trackFailure / trackSuccess", () => {
+        describe("method: updateState / updateState", () => {
             test.todo("Write tests!!!");
         });
-        describe("method: updateState / trackFailure / isolate / getState", () => {
-            test.todo("Write tests!!!");
-        });
-        describe("method: updateState / trackFailure / reset", () => {
+        describe("method: updateState / reset", () => {
             test.todo("Write tests!!!");
         });
     });

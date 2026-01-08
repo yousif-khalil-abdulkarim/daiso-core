@@ -101,13 +101,11 @@ export class DatabaseRateLimiterAdapter<TMetrics = unknown>
             return null;
         }
         return {
-            ...state,
-            resetTime:
-                state.resetTime === null
-                    ? null
-                    : TimeSpan.fromDateRange({
-                          end: state.resetTime,
-                      }),
+            success: state.success,
+            attempt: state.attempt,
+            resetTime: TimeSpan.fromDateRange({
+                end: state.resetTime,
+            }),
         };
     }
 
@@ -118,21 +116,19 @@ export class DatabaseRateLimiterAdapter<TMetrics = unknown>
         const currentDate = new Date();
         const state = await this.rateLimiterStorage.atomicUpdate({
             key,
-            update: (state) => {
+            update: (prevState) => {
                 return this.rateLimiterStateManager.updateState(
                     limit,
                     currentDate,
-                )(this.rateLimiterStateManager.track(currentDate)(state));
+                )(this.rateLimiterStateManager.track(currentDate)(prevState));
             },
         });
         return {
-            ...state,
-            resetTime:
-                state.resetTime === null
-                    ? null
-                    : TimeSpan.fromDateRange({
-                          end: state.resetTime,
-                      }),
+            success: state.success,
+            attempt: state.attempt,
+            resetTime: TimeSpan.fromDateRange({
+                end: state.resetTime,
+            }),
         };
     }
 
