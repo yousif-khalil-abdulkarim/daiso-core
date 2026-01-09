@@ -6,7 +6,6 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 // @ts-ignore
-import docusaurusLunrSearch from "docusaurus-lunr-search";
 import docusaurusPluginLlmsTxt, {
     type PluginOptions,
 } from "@signalwire/docusaurus-plugin-llms-txt";
@@ -48,7 +47,6 @@ const config: Config = {
     },
 
     plugins: [
-        docusaurusLunrSearch,
         [
             docusaurusPluginLlmsTxt,
             {
@@ -109,6 +107,11 @@ const config: Config = {
     ],
 
     themeConfig: {
+        algolia: {
+            appId: process.env["ALGOLIA_ID"],
+            apiKey: process.env["ALGOLIA_KEY"],
+            indexName: process.env["ALGOLIA_INDEX"],
+        },
         // Replace with your project's social card
         image: "img/docusaurus-social-card.jpg",
         navbar: {
