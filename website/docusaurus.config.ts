@@ -3,6 +3,9 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 // @ts-ignore
 import docusaurusLunrSearch from "docusaurus-lunr-search";
+import docusaurusPluginLlmsTxt, {
+    type PluginOptions,
+} from "@signalwire/docusaurus-plugin-llms-txt";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -40,7 +43,27 @@ const config: Config = {
         locales: ["en"],
     },
 
-    plugins: [docusaurusLunrSearch],
+    plugins: [
+        docusaurusLunrSearch,
+        [
+            docusaurusPluginLlmsTxt,
+            {
+                siteTitle: "@daiso-tech/core",
+                siteDescription:
+                    "Mastering @daiso-tech/core: Comprehensive Guides for the Backend Server Component Library",
+                enableDescriptions: true,
+                content: {
+                    relativePaths: true,
+                    includeDocs: true,
+                    includeVersionedDocs: false,
+                    includeBlog: false,
+                    includePages: false,
+                    includeGeneratedIndex: false,
+                    enableLlmsFullTxt: true,
+                },
+            } satisfies PluginOptions,
+        ],
+    ],
 
     presets: [
         [
@@ -72,15 +95,6 @@ const config: Config = {
                     customCss: "./src/css/custom.css",
                 },
             } satisfies Preset.Options,
-        ],
-        [
-            "@signalwire/docusaurus-plugin-llms-txt",
-            {
-                // Plugin options (optional)
-                outputDir: "llms-txt",
-                includePatterns: ["**/*.html"],
-                excludePatterns: ["**/404.html"],
-            },
         ],
     ],
 
@@ -129,7 +143,7 @@ const config: Config = {
             {
                 name: "Descriptions",
                 content:
-                    "Node Js, JavaScript, TypeScript backend component library",
+                    "Node Js, JavaScript, TypeScript backend server component library",
             },
             { name: "robots", content: "index, follow" },
         ],
