@@ -107,11 +107,16 @@ const config: Config = {
     ],
 
     themeConfig: {
-        algolia: {
-            appId: process.env["ALGOLIA_ID"],
-            apiKey: process.env["ALGOLIA_KEY"],
-            indexName: process.env["ALGOLIA_INDEX"],
-        },
+        algolia:
+            process.env["ALGOLIA_ID"] &&
+            process.env["ALGOLIA_KEY"] &&
+            process.env["ALGOLIA_INDEX"]
+                ? {
+                      appId: process.env["ALGOLIA_ID"],
+                      apiKey: process.env["ALGOLIA_KEY"],
+                      indexName: process.env["ALGOLIA_INDEX"],
+                  }
+                : undefined,
         // Replace with your project's social card
         image: "img/docusaurus-social-card.jpg",
         navbar: {
