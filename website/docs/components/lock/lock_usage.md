@@ -4,6 +4,9 @@ sidebar_label: Usage
 tags:
  - Lock
  - Usage
+keywords:
+ - Lock
+ - Usage
 ---
 
 # Lock usage

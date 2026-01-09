@@ -4,6 +4,9 @@ sidebar_label: Usage
 tags:
  - Semaphore
  - Usage
+keywords:
+ - Semaphore
+ - Usage
 ---
 
 # Semaphore usage

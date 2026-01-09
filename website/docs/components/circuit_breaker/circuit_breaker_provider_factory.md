@@ -4,6 +4,9 @@ sidebar_label: Factory classes
 tags:
  - CircuitBreaker
  - Factories
+keywords:
+ - CircuitBreaker
+ - Factories
 ---
 
 # Circuit-breaker provider factory classes

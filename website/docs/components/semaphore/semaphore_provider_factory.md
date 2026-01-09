@@ -4,6 +4,9 @@ sidebar_label: Factory classes
 tags:
  - Semaphore
  - Factories
+keywords:
+ - Semaphore
+ - Factories
 ---
 # SemaphoreProviderFactory
 

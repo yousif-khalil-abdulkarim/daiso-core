@@ -4,6 +4,9 @@ sidebar_label: Factory classes
 tags:
  - EventBus
  - Factories
+keywords:
+ - EventBus
+ - Factories
 ---
 
 # EventBusFactory

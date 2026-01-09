@@ -4,6 +4,9 @@ sidebar_label: Usage
 tags:
  - EventBus
  - Usage
+keywords:
+ - EventBus
+ - Usage
 ---
 
 # EventBus usage

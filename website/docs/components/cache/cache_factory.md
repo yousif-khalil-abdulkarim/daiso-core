@@ -4,6 +4,9 @@ sidebar_label: Factory classes
 tags:
  - Cache
  - Factories
+keywords:
+ - Cache
+ - Factories
 ---
 
 # CacheFactory

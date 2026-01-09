@@ -4,6 +4,9 @@ sidebar_label: Creating adapters
 tags:
  - EventBus
  - Creating adapters
+keywords:
+ - EventBus
+ - Creating adapters
 ---
 
 # Creating EventBus adapters

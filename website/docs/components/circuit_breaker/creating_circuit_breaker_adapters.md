@@ -5,6 +5,10 @@ tags:
  - CircuitBreaker
  - Creating adapters
  - Creating database adapters
+keywords:
+ - CircuitBreaker
+ - Creating adapters
+ - Creating database adapters
 ---
 
 # Creating circuit-breaker adapters

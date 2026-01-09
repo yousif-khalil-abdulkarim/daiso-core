@@ -14,6 +14,19 @@ tags:
  - Sqlite
  - Libsql
  - NoOp
+keywords:
+ - SharedLock
+ - Configuring adapters
+ - In-memory
+ - Mongodb
+ - Redis
+ - Kysely
+ - Sqlite
+ - Mysql
+ - Postgres
+ - Sqlite
+ - Libsql
+ - NoOp
 ---
 
 # Configuring shared-lock adapters

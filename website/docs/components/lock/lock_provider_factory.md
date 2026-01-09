@@ -4,6 +4,9 @@ sidebar_label: Factory classes
 tags:
  - Lock
  - Factories
+keywords:
+ - Lock
+ - Factories
 ---
 
 # LockProviderFactory

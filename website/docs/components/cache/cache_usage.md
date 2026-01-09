@@ -4,6 +4,9 @@ sidebar_label: Usage
 tags:
  - Cache
  - Usage
+keywords:
+ - Cache
+ - Usage
 ---
 
 # Cache usage

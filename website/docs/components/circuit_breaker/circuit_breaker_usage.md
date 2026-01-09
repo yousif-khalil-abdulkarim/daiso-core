@@ -4,6 +4,9 @@ sidebar_label: Usage
 tags:
  - CircuitBreaker
  - Usage
+keywords:
+ - CircuitBreaker
+ - Usage
 ---
 
 # Circuit-breaker usage

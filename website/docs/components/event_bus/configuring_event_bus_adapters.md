@@ -7,6 +7,12 @@ tags:
  - In-memory
  - Redis
  - NoOp
+keywords:
+ - EventBus
+ - Configuring adapters
+ - In-memory
+ - Redis
+ - NoOp
 ---
 
 ## Configuring EventBus adapters

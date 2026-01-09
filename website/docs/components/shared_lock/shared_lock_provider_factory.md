@@ -4,6 +4,9 @@ sidebar_label: Factory classes
 tags:
  - SharedLock
  - Factories
+keywords:
+ - SharedLock
+ - Factories
 ---
 
 # SharedLockProviderFactory

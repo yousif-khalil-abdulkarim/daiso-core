@@ -5,6 +5,10 @@ tags:
  - Cache
  - Creating adapters
  - Creating database adapters
+keywords:
+ - Cache
+ - Creating adapters
+ - Creating database adapters
 ---
 
 # Creating cache adapters

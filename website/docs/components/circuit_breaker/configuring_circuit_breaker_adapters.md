@@ -14,6 +14,19 @@ tags:
  - Sqlite
  - Libsql
  - NoOp
+keywords:
+ - CircuitBreaker
+ - Configuring adapters
+ - In-memory
+ - Mongodb
+ - Redis
+ - Kysely
+ - Sqlite
+ - Mysql
+ - Postgres
+ - Sqlite
+ - Libsql
+ - NoOp
 ---
 
 # Configuring circuit-breaker adapters

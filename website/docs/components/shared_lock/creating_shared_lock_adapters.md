@@ -5,6 +5,10 @@ tags:
  - SharedLock
  - Creating adapters
  - Creating database adapters
+keywords:
+ - SharedLock
+ - Creating adapters
+ - Creating database adapters
 ---
 
 # Creating shared-lock adapters

@@ -5,6 +5,10 @@ tags:
  - Semaphore
  - Creating adapters
  - Creating database adapters
+keywords:
+ - Semaphore
+ - Creating adapters
+ - Creating database adapters
 ---
 
 # Creating semaphore adapters

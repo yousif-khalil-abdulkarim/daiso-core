@@ -5,6 +5,10 @@ tags:
  - Lock
  - Creating adapters
  - Creating database adapters
+keywords:
+ - Lock
+ - Creating adapters
+ - Creating database adapters
 ---
 
 # Creating lock adapters

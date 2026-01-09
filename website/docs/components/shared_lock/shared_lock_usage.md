@@ -4,6 +4,9 @@ sidebar_label: Usage
 tags:
  - SharedLock
  - Usage
+keywords:
+ - SharedLock
+ - Usage
 ---
 
 # SharedLock usage
