@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+pagination_label: Lock usage
 tags:
  - Lock
  - Usage

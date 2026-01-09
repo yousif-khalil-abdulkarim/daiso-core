@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 sidebar_label: Creating adapters
+pagination_label: Creating semaphore adapters
 tags:
  - Semaphore
  - Creating adapters

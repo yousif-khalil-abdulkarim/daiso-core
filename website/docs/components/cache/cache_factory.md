@@ -1,6 +1,7 @@
 ---
 sidebar_position: 2
 sidebar_label: Factory classes
+pagination_label: Cache factory classes
 tags:
  - Cache
  - Factories

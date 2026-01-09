@@ -1,11 +1,12 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+pagination_label: Shared-lock usage
 tags:
- - SharedLock
+ - Shared-lock
  - Usage
 keywords:
- - SharedLock
+ - Shared-lock
  - Usage
 ---
 

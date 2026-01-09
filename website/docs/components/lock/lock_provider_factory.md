@@ -1,6 +1,7 @@
 ---
 sidebar_position: 2
 sidebar_label: Factory classes
+pagination_label: Lock factory classes
 tags:
  - Lock
  - Factories

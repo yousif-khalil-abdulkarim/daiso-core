@@ -1,11 +1,12 @@
 ---
 sidebar_position: 2
 sidebar_label: Factory classes
+pagination_label: Event-bus factory classes
 tags:
- - EventBus
+ - Event-bus
  - Factories
 keywords:
- - EventBus
+ - Event-bus
  - Factories
 ---
 

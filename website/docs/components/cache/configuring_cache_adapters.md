@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 sidebar_label: Configuring adapters
+pagination_label: Configuring cache adapters
 tags:
  - Cache
  - Configuring adapters

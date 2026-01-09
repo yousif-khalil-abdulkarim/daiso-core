@@ -1,8 +1,9 @@
 ---
 sidebar_position: 3
 sidebar_label: Configuring adapters
+pagination_label: Configuring circuit-breaker adapters
 tags:
- - CircuitBreaker
+ - Circuit-breaker
  - Configuring adapters
  - In-memory
  - Mongodb
@@ -15,7 +16,7 @@ tags:
  - Libsql
  - NoOp
 keywords:
- - CircuitBreaker
+ - Circuit-breaker
  - Configuring adapters
  - In-memory
  - Mongodb

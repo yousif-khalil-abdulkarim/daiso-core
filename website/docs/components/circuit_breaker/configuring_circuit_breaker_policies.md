@@ -1,6 +1,7 @@
 ---
 sidebar_position: 5
 sidebar_label: Configuring policies
+pagination_label: Configuring circuit-breaker policies
 ---
 
 # Configuring circuit-breaker policies

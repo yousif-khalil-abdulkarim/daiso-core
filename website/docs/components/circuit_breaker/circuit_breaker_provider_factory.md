@@ -1,11 +1,12 @@
 ---
 sidebar_position: 2
 sidebar_label: Factory classes
+pagination_label: Circuit-breaker factory classes
 tags:
- - CircuitBreaker
+ - Circuit-breaker
  - Factories
 keywords:
- - CircuitBreaker
+ - Circuit-breaker
  - Factories
 ---
 

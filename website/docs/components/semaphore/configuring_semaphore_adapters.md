@@ -1,6 +1,7 @@
 ---
 sidebar_position: 3
 sidebar_label: Configuring adapters
+pagination_label: Configuring semaphore adapters
 tags:
  - Semaphore
  - Configuring adapters

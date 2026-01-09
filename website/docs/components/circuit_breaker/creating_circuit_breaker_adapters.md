@@ -1,12 +1,13 @@
 ---
 sidebar_position: 4
 sidebar_label: Creating adapters
+pagination_label: Creating circuit-breaker adapters
 tags:
- - CircuitBreaker
+ - Circuit-breaker
  - Creating adapters
  - Creating database adapters
 keywords:
- - CircuitBreaker
+ - Circuit-breaker
  - Creating adapters
  - Creating database adapters
 ---

@@ -1,11 +1,12 @@
 ---
 sidebar_position: 2
 sidebar_label: Factory classes
+pagination_label: Shared-lock factory classes
 tags:
- - SharedLock
+ - Shared-lock
  - Factories
 keywords:
- - SharedLock
+ - Shared-lock
  - Factories
 ---
 

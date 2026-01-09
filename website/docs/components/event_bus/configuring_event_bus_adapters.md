@@ -1,14 +1,15 @@
 ---
 sidebar_position: 3
 sidebar_label: Configuring adapters
+pagination_label: Configuring event-bus adapters
 tags:
- - EventBus
+ - Event-bus
  - Configuring adapters
  - In-memory
  - Redis
  - NoOp
 keywords:
- - EventBus
+ - Event-bus
  - Configuring adapters
  - In-memory
  - Redis

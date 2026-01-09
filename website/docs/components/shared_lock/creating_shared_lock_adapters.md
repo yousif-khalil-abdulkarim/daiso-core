@@ -1,12 +1,13 @@
 ---
 sidebar_position: 4
 sidebar_label: Creating adapters
+pagination_label: Creating shared-lock adapters
 tags:
- - SharedLock
+ - Shared-lock
  - Creating adapters
  - Creating database adapters
 keywords:
- - SharedLock
+ - Shared-lock
  - Creating adapters
  - Creating database adapters
 ---

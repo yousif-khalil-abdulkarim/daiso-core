@@ -1,6 +1,7 @@
 ---
 sidebar_position: 4
 sidebar_label: Creating adapters
+pagination_label: Creating lock adapters
 tags:
  - Lock
  - Creating adapters

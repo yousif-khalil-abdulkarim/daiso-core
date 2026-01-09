@@ -1,11 +1,12 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+pagination_label: Event-bus usage
 tags:
- - EventBus
+ - Event-bus
  - Usage
 keywords:
- - EventBus
+ - Event-bus
  - Usage
 ---
 
