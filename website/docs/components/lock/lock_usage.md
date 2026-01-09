@@ -1,6 +1,13 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+pagination_label: Lock usage
+tags:
+ - Lock
+ - Usage
+keywords:
+ - Lock
+ - Usage
 ---
 
 # Lock usage
@@ -569,7 +576,7 @@ const redisLockProvider = new LockProvider({
 
 :::
 
-### Seperating creating, listening to and manipulating locks
+### Separating creating, listening to and manipulating locks
 
 The library includes 3 additional contracts:
 

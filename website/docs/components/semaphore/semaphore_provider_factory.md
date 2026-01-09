@@ -1,6 +1,13 @@
 ---
 sidebar_position: 2
 sidebar_label: Factory classes
+pagination_label: Semaphore factory classes
+tags:
+ - Semaphore
+ - Factories
+keywords:
+ - Semaphore
+ - Factories
 ---
 # SemaphoreProviderFactory
 

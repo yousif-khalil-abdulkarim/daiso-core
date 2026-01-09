@@ -1,5 +1,9 @@
 ---
-"sidebar_position": 11
+sidebar_position: 11
+tags:
+ - Utilities
+keywords:
+ - Utilities
 ---
 
 # Resilience
@@ -23,7 +27,7 @@ import { AsyncHooks } from "@daiso-tech/core/hooks";
 function unstableFn(): number {
     // We simulate a function that can throw unexpected errors
     if (Math.round(Math.random() * 1.5) === 0) {
-        throw new Error("Unexpected error occured");
+        throw new Error("Unexpected error occurred");
     }
     return Math.round((Math.random() + 1) * 99);
 }
@@ -85,14 +89,14 @@ import { AsyncHooks } from "@daiso-tech/core/hooks";
 function unstableFn(): number {
     // We simulate a function that can throw unexpected errors
     if (Math.round(Math.random() * 1.5) === 0) {
-        throw new Error("Unexpected error occured");
+        throw new Error("Unexpected error occurred");
     }
     return Math.round((Math.random() + 1) * 99);
 }
 const fn = new AsyncHooks(unstableFn, [
     retry({
         // Will retry 4 times
-        maxAttemps: 4,
+        maxAttempts: 4,
     }),
 ]);
 
@@ -106,7 +110,7 @@ You can define an [`ErrorPolicy`](../utilities/error_policy_type.md) to retry sp
 ```ts
 const fn = new AsyncHooks(unstableFn, [
     retry({
-        maxAttemps: 4,
+        maxAttempts: 4,
         // Will only retry errors that are not TypeError
         errorPolicy: (error) => !(error instanceof TypeError),
     }),
@@ -122,7 +126,7 @@ import { TimeSpan } from "@daiso-tech/core/time-span";
 
 const fn = new AsyncHooks(unstableFn, [
     retry({
-        maxAttemps: 4,
+        maxAttempts: 4,
         // By default a exponential policy is used
         backoffPolicy: (attempt: number, _error: unknown) =>
             TimeSpan.fromMilliseconds(attempt * 100),
@@ -137,7 +141,7 @@ You can add callback [`Invokable`](../utilities/invokable.md) that will be calle
 ```ts
 const fn = new AsyncHooks(unstableFn, [
     retry({
-        maxAttemps: 4,
+        maxAttempts: 4,
         onExecutionAttempt: (data) => console.log(data),
     }),
 ]);
@@ -152,7 +156,7 @@ For more details about `onExecutionAttempt` callback data, see the `OnRetryAttem
 ```ts
 const fn = new AsyncHooks(unstableFn, [
     retry({
-        maxAttemps: 4,
+        maxAttempts: 4,
         onRetryDelay: (data) => console.log(data),
     }),
 ]);
@@ -198,7 +202,7 @@ import { timeout } from "@daiso-tech/core/resilience";
 import { TimeSpan } from "@daiso-tech/core/time-span";
 import { AsyncHooks } from "@daiso-tech/core/hooks";
 
-function fetchData(signal?: AbortSginal): Promise<Response> {
+function fetchData(signal?: AbortSignal): Promise<Response> {
     const response = await fetch("ENDPOINT", {
         signal,
     });
@@ -268,7 +272,7 @@ import { AsyncHooks } from "@daiso-tech/core/hooks";
 function unstableFn(): Promise<number> {
     // We simulate a function that can throw unexpected errors
     if (Math.round(Math.random() * 1.5) === 0) {
-        throw new Error("Unexpected error occured");
+        throw new Error("Unexpected error occurred");
     }
     return Math.round((Math.random() + 1) * 99);
 }

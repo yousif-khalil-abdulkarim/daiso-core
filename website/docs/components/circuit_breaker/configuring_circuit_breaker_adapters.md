@@ -1,6 +1,33 @@
 ---
 sidebar_position: 3
 sidebar_label: Configuring adapters
+pagination_label: Configuring circuit-breaker adapters
+tags:
+ - Circuit-breaker
+ - Configuring adapters
+ - In-memory
+ - Mongodb
+ - Redis
+ - Kysely
+ - Sqlite
+ - Mysql
+ - Postgres
+ - Sqlite
+ - Libsql
+ - NoOp
+keywords:
+ - Circuit-breaker
+ - Configuring adapters
+ - In-memory
+ - Mongodb
+ - Redis
+ - Kysely
+ - Sqlite
+ - Mysql
+ - Postgres
+ - Sqlite
+ - Libsql
+ - NoOp
 ---
 
 # Configuring circuit-breaker adapters
@@ -149,7 +176,7 @@ const serde = new Serde(new SuperJsonSerdeAdapter());
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
@@ -175,7 +202,7 @@ await kyselyCircuitBreakerStorageAdapter.init();
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter";
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
@@ -209,7 +236,7 @@ await kyselyCircuitBreakerStorageAdapter.init();
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter";
 import { createPool } from "mysql2";
 import { Kysely, MysqlDialect } from "kysely";
@@ -243,7 +270,7 @@ await kyselyCircuitBreakerStorageAdapter.init();
 You will need to install `@libsql/kysely-libsql` package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyCircuitBreakerStorageAdapter } from "@daiso-tech/core/circuit-breaker/kysely-circuit-breaker-storage-adapter";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
 import { Kysely } from "kysely";

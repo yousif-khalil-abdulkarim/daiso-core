@@ -1,6 +1,13 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+pagination_label: Shared-lock usage
+tags:
+ - Shared-lock
+ - Usage
+keywords:
+ - Shared-lock
+ - Usage
 ---
 
 # SharedLock usage
@@ -916,7 +923,7 @@ const redisSharedLockProvider = new SharedLockProvider({
 ```
 :::
 
-### Seperating creating, listening to and manipulating shared-lock
+### Separating creating, listening to and manipulating shared-lock
 
 The library includes 3 additional contracts:
 

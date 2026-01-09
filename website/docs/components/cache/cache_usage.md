@@ -1,6 +1,13 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+pagination_label: Cache usage
+tags:
+ - Cache
+ - Usage
+keywords:
+ - Cache
+ - Usage
 ---
 
 # Cache usage
@@ -134,7 +141,7 @@ const cache = new Cache<IUser>({
     adapter: new MemoryCacheAdapter(),
 });
 
-// A typescript error will occur because the type is not mathcing.
+// A typescript error will occur because the type is not matching.
 await cache.add("a", "asd");
 ```
 
@@ -208,9 +215,9 @@ import { Cache } from "@daiso-tech/core/cache";
 import { z } from "zod";
 
 const userSchema = z.object({
-    name: z.string();
-    email: z.string();
-    age: z.number();
+    name: z.string(),
+    email: z.string(),
+    age: z.number(),
 });
 
 // The type will be infered
@@ -219,7 +226,7 @@ const cache = new Cache({
     schema: userSchema
 });
 
-// A typescript and runtime error will occur because the type is not mathcing.
+// A typescript and runtime error will occur because the type is not matching.
 await cache.add("a", "asd")
 ```
 
@@ -282,6 +289,21 @@ You can remove the key and if it does not exist an error will be thrown:
 ```ts
 await cache.removeOrFail("ab");
 ```
+
+### Adding jitter to ttl
+
+You can enable TTL jitter (adding a small random offset) is beneficial because it prevents keys from expiring simultaneously. This avoids 'thundering herd' issues by spreading out the load on your data source over time.
+
+```ts
+await cache.add("a", 1, { 
+    ttl: TimeSpan.fromMinutes(1),
+    jitter: 0.2
+})
+```
+
+:::info
+You can enable jitter in the following methods: `addOrFail`, `put` and `getOrAdd`.
+:::
 
 ### Namespacing
 
@@ -426,7 +448,7 @@ const redisCache = new Cache({
 
 :::
 
-### Seperating manipulating cache and listening
+### Separating manipulating cache and listening
 
 The library includes two additional contracts:
 
@@ -439,7 +461,7 @@ This seperation makes it easy to visually distinguish the two contracts, making 
 ```ts
 import type {
     ICache,
-    ICahceBase,
+    ICacheBase,
     ICacheListenable,
     CACHE_EVENTS,
 } from "@daiso-tech/core/cache/contracts";
@@ -448,7 +470,7 @@ import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapter/memory-cache-
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { MemoryEventBus } from "@daiso-tech/core/event-bus/memory-event-bus";
 
-function manipulatingFunc(cache: ICahceBase): Promise<void> {
+function manipulatingFunc(cache: ICacheBase): Promise<void> {
     // You cannot access the listener methods
     // You will get typescript error if you try
 

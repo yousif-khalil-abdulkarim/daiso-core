@@ -1,6 +1,13 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+pagination_label: Semaphore usage
+tags:
+ - Semaphore
+ - Usage
+keywords:
+ - Semaphore
+ - Usage
 ---
 
 # Semaphore usage
@@ -656,7 +663,7 @@ const redisSemaphoreProvider = new SemaphoreProvider({
 
 :::
 
-### Seperating creating, listening to and manipulating semaphore
+### Separating creating, listening to and manipulating semaphore
 
 The library includes 3 additional contracts:
 

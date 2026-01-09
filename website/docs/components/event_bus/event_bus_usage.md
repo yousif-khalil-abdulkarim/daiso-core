@@ -1,6 +1,13 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+pagination_label: Event-bus usage
+tags:
+ - Event-bus
+ - Usage
+keywords:
+ - Event-bus
+ - Usage
 ---
 
 # EventBus usage
@@ -236,7 +243,7 @@ const event = await eventBus.asTask("add");
 console.log(event);
 ```
 
-### Seperating dispatching and listening
+### Separating dispatching and listening
 
 The library includes two additional contracts:
 
@@ -297,7 +304,7 @@ await dispatchingFunc(eventBus);
 
 ### Invokable listeners
 
-An event listener are `Invokable` meaning you can also pass in an object (class instance or object literal) as listener:
+An event listener is `Invokable` meaning you can also pass in an object (class instance or object literal) as listener:
 
 :::info
 For further information refer the [`Invokable`](../../utilities/invokable.md) docs.

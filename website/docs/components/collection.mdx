@@ -1,6 +1,10 @@
 ---
 sidebar_position: 8
 sidebar_label: Collection
+tags:
+ - Utilities
+keywords:
+ - Utilities
 ---
 
 # Collection
@@ -9,7 +13,7 @@ The `@daiso-tech/core/collection` component provides a fluent, convenient wrappe
 
 ## Creating a collection
 
-You can create a collection from an any object thats implements the `Iterable` contract.
+You can create a collection from an any object thats implements the `Iterable` or `ArrayLike` contract.
 
 Create a collection from an `Array`:
 
@@ -69,6 +73,24 @@ const fromIterable: ListCollection<number> = new ListCollection(
 console.log(fromIterable.toArray());
 ```
 
+Create collection from your own object that implements `ArrayLike` contract:
+
+```ts
+const myArrayLike: ArrayLike<number> = {
+    0: 1,
+    1: 2,
+    2: -3,
+    3: -1,
+    length: 4
+}
+
+const fromArrayLike: ListCollection<number> = new ListCollection(
+    myArrayLike,
+);
+// Logs [1, 2, 3]
+console.log(fromArrayLike.toArray());
+```
+
 ## Immutability
 
 The collection is imutable, meaning that all methods will return a new collection and not modify the original collection.
@@ -108,6 +130,7 @@ you can use the [`getOr`](#getor) method.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
+
 const collection = new ListCollection([1, 2, 3]);
 const value = collection.getOr(1, -1);
 // Logs 2
@@ -123,6 +146,7 @@ you can use the [`getOrFail`](#getorfail) method.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";
+
 const collection = new ListCollection([1, 2, 3]);
 const value = collection.getOrFail(1);
 // Logs 2
@@ -232,18 +256,19 @@ The library includes 3 types of collections:
 
 The `ListCollection` and `IterableCollection` classes supports serialization and deserialization, allowing you to easily convert instances to and from serialized formats. However, registration is required first:
 
+Serializing and deserializing `ListCollection`:
 ```ts
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import {
     ListCollection,
-    IteralbeCollection,
+    IterableCollection,
 } from "@daiso-tech/core/collection";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 
 serde.registerClass(ListCollection);
-serde.registerClass(IteralbeCollection);
+serde.registerClass(IterableCollection);
 
 const listCollection = new ListCollection([1, 2, 3, 4, 5]);
 const serializedListCollection = serde.serialize(listCollection);
@@ -253,18 +278,30 @@ const deserializedListCollection = serde.deserialize(serializedListCollection);
 console.log(serializedListCollection === deserializedListCollection);
 // Logs [1, 2, 3, 4, 5] [1, 2, 3, 4, 5]
 console.log(listCollection.toArray(), deserializedListCollection.toArray());
+```
 
-const iterableCollection = new IteralbeCollection([1, 2, 3, 4, 5]);
-const serializedIteralbeCollection = serde.serialize(iterableCollection);
-const deserializedIteralbeCollection = serde.deserialize(serializedIteralbeCollection);
+Serializing and deserializing `IterableCollection`:
+```ts
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
+import {
+    ListCollection,
+    IterableCollection,
+} from "@daiso-tech/core/collection";
+
+const serde = new Serde(new SuperJsonSerdeAdapter());
+
+serde.registerClass(ListCollection);
+serde.registerClass(IterableCollection);
+
+const listCollection = new ListCollection([1, 2, 3, 4, 5]);
+const serializedListCollection = serde.serialize(listCollection);
+const deserializedListCollection = serde.deserialize(serializedListCollection);
 
 // Logs false
-console.log(serializedIteralbeCollection === deserializedIteralbeCollection);
+console.log(serializedListCollection === deserializedListCollection);
 // Logs [1, 2, 3, 4, 5] [1, 2, 3, 4, 5]
-console.log(
-    iterableCollection.toArray(),
-    deserializedIteralbeCollection.toArray(),
-);
+console.log(listCollection.toArray(), deserializedListCollection.toArray());
 ```
 
 ## Available Methods
@@ -664,7 +701,7 @@ const isAllNumberLessThan6 = new ListCollection([0, 1, 2, 3, 4, 5]).every(
 The `filter` method filters the collection using `predicateFn`, keeping only those items that pass `predicateFn`.
 
 ```ts
-import { ListCollection } from "@daiso-tech/core/collection/collection";
+import { ListCollection } from "@daiso-tech/core/collection";
 
 new ListCollection([0, 1, 2, 3, 4, 5, 6])
     .filter((item) => 2 < item && item < 5)
@@ -678,7 +715,7 @@ The `validate` method filters all items that matches the `schema` and transforms
 The `schema` can be any [standard schema](https://standardschema.dev/).
 
 ```ts
-import { ListCollection } from "@daiso-tech/core/collection/collection";
+import { ListCollection } from "@daiso-tech/core/collection";
 import { z } from "zod";
 
 new ListCollection(["a", "1.2", "3", "null"])
@@ -840,7 +877,7 @@ new ListCollection([]).isEmpty();
 
 ### join
 
-The `join` method joins the collection's items with `separator`. An error will be thrown when if a none string item is encounterd.
+The `join` method joins the collection's items with `separator`. An error will be thrown when if a non-string item is encountered.
 
 ```ts
 import { ListCollection } from "@daiso-tech/core/collection";

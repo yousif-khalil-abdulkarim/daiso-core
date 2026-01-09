@@ -1,6 +1,7 @@
 ---
 sidebar_position: 5
 sidebar_label: Configuring policies
+pagination_label: Configuring circuit-breaker policies
 ---
 
 # Configuring circuit-breaker policies
@@ -94,3 +95,7 @@ new SamplingBreaker({
     minimumRps: 5
 })
 ```
+
+## Further information
+
+For further information refer to [`@daiso-tech/core/circuit-breaker`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/CircuitBreaker.html) API docs.

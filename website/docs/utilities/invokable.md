@@ -35,14 +35,14 @@ import type { IInvokableObject } from "@daiso-tech/core/utilities";
 class InvokableObject
     implements IInvokableObject<[arg1: number, arg2: number], number>
 {
-    invoke(arg1: number, arg: number2): number {
+    invoke(arg1: number, arg2: number): number {
         throw new Error("Method not implemented.");
     }
 }
 
 const invokableObject: IInvokableObject<[arg1: number, arg2: number], number> =
     {
-        invoke(arg1: number, arg: number2): number {
+        invoke(arg1: number, arg2: number): number {
             throw new Error("Method not implemented.");
         },
     };

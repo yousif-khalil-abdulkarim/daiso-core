@@ -1,5 +1,9 @@
 ---
-"sidebar_position": 14
+sidebar_position: 14
+tags:
+ - Utilities
+keywords:
+ - Utilities
 ---
 
 # TimeSpan
@@ -138,14 +142,14 @@ timeSpan.subtractTimeSpan(TimeSpan.fromDays(14).addHours(20));
 Dividing a timespan:
 
 ```ts
-// Will be now 100 miliseconds
+// Will be now 100 milliseconds
 TimeSpan.fromMilliseconds(200).divide(2);
 ```
 
 Multiplying a timespan:
 
 ```ts
-// Will be now 400 miliseconds
+// Will be now 400 milliseconds
 TimeSpan.fromMilliseconds(200).multiply(2);
 ```
 
@@ -203,7 +207,7 @@ TimeSpan.fromMinutes(1).toSeconds();
 You can get amount of minutes contained in the `TimeSpan`:
 
 ```ts
-TimeSpan.fromHour(1).toMinutes();
+TimeSpan.fromHours(1).toMinutes();
 ```
 
 You can get amount of hours contained in the `TimeSpan`:
@@ -215,7 +219,7 @@ TimeSpan.fromDays(1).toHours();
 You can get amount of days contained in the `TimeSpan`:
 
 ```ts
-TimeSpan.fromHour(48).toDays();
+TimeSpan.fromHours(48).toDays();
 ```
 
 You can get end date relative to a start date:

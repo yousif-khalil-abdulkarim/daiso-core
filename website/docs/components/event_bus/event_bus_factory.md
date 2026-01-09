@@ -1,6 +1,13 @@
 ---
 sidebar_position: 2
 sidebar_label: Factory classes
+pagination_label: Event-bus factory classes
+tags:
+ - Event-bus
+ - Factories
+keywords:
+ - Event-bus
+ - Factories
 ---
 
 # EventBusFactory
@@ -19,7 +26,6 @@ import {
 import { EventBusFactory } from "@daiso-tech/core/event-bus";
 import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
 import { MemoryEventBusAdapter } from "@daiso-tech/core/event-bus/memory-event-bus-adapter";
-import { type FactoryFn } from "@daiso-tech/core/utilities";
 import { Serde } from "@daiso-tech/core/serde";
 import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
 import Redis from "ioredis";

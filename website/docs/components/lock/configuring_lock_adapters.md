@@ -1,6 +1,33 @@
 ---
 sidebar_position: 3
 sidebar_label: Configuring adapters
+pagination_label: Configuring lock adapters
+tags:
+ - Lock
+ - Configuring adapters
+ - In-memory
+ - Mongodb
+ - Redis
+ - Kysely
+ - Sqlite
+ - Mysql
+ - Postgres
+ - Sqlite
+ - Libsql
+ - NoOp
+keywords:
+ - Lock
+ - Configuring adapters
+ - In-memory
+ - Mongodb
+ - Redis
+ - Kysely
+ - Sqlite
+ - Mysql
+ - Postgres
+ - Sqlite
+ - Libsql
+ - NoOp
 ---
 
 # Configuring lock adapters
@@ -121,7 +148,7 @@ To use the `KyselyLockAdapter`, you'll need to:
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyLockAdapter } from "@daiso-tech/core/lock/kysely-lock-adapter";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
@@ -150,7 +177,7 @@ Note using `KyselyLockAdapter` with `sqlite` is limited to single server usage a
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyLockAdapter } from "@daiso-tech/core/lock/kysely-lock-adapter";
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
@@ -187,7 +214,7 @@ Note in order to use `KyselyLockAdapter` with `postgres` correctly, ensure you u
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyLockAdapter } from "@daiso-tech/core/lock/kysely-lock-adapter";
 import { createPool } from "mysql2";
 import { Kysely, MysqlDialect } from "kysely";
@@ -224,7 +251,7 @@ Note in order to use `KyselyLockAdapter` with `mysql` correctly, ensure you use 
 You will need to install `@libsql/kysely-libsql` package:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 import { KyselyLockAdapter } from "@daiso-tech/core/lock/kysely-lock-adapter";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
 import { Kysely } from "kysely";
@@ -252,7 +279,7 @@ Note in order to use `KyselyLockAdapter` with `libsql` correctly, ensure you use
 Expired keys are cleared at regular intervals and you can change the interval time:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 
 const kyselyLockAdapter = new KyselyLockAdapter({
     database,
@@ -266,7 +293,7 @@ await kyselyLockAdapter.init();
 Disabling scheduled interval cleanup of expired keys:
 
 ```ts
-import { TimeSpan } from "@daiso-tech/core/utilities";
+import { TimeSpan } from "@daiso-tech/core/time-span";
 
 const kyselyLockAdapter = new KyselyLockAdapter({
     database,

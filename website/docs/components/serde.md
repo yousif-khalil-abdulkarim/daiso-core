@@ -1,5 +1,9 @@
 ---
-"sidebar_position": 12
+sidebar_position: 12
+tags:
+ - Utilities
+keywords:
+ - Utilities
 ---
 
 # Serde
@@ -121,11 +125,11 @@ user.logInfo();
 ```
 
 :::danger
-Note you need to register the class before serialzing or deserialzing any class instances.
+Note you need to register the class before serializing or deserializing any class instances.
 :::
 
 :::warning
-To ensure correct serialization and deserialization, class names must be unique. If multiple classes share the same name, conflicts may occur when serialzing and deserialzing the objects. To resolve this, you can assign a unique prefix to differentiate between them during the process.
+To ensure correct serialization and deserialization, class names must be unique. If multiple classes share the same name, conflicts may occur when serializing and deserializing the objects. To resolve this, you can assign a unique prefix to differentiate between them during the process.
 
 ```ts
 serde.registerClass(User, "my-library");
@@ -171,7 +175,7 @@ if (deserializedListCollection) {
 Note you should use one `Serde` class instance accross all components and register all serializable objects before component usage.
 :::
 
-## Seperating serialization, deserialization and registering custom serialization/deserialization logic
+## Separating serialization, deserialization and registering custom serialization/deserialization logic
 
 The library includes 4 additional contracts:
 
@@ -181,9 +185,9 @@ The library includes 4 additional contracts:
 
 -   `ISerde` - Allows for both serialization and deserialization.
 
--   `ISerderRegister` - Allows only for regestering custom serialization/deserialization logic.
+-   `ISerderRegister` - Allows only for registering custom serialization/deserialization logic.
 
--   `IFlexibleSerde` – Allows for both serialization, deserialization and for regestering custom serialization/deserialization and deserialization logic.
+-   `IFlexibleSerde` – Allows for both serialization, deserialization and for registering custom serialization/deserialization and deserialization logic.
 
 This seperation makes it easy to visually distinguish the 4 contracts, making it immediately obvious that they serve different purposes.
 

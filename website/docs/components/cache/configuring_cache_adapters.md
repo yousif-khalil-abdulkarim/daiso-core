@@ -1,6 +1,33 @@
 ---
 sidebar_position: 3
 sidebar_label: Configuring adapters
+pagination_label: Configuring cache adapters
+tags:
+ - Cache
+ - Configuring adapters
+ - In-memory
+ - Mongodb
+ - Redis
+ - Kysely
+ - Sqlite
+ - Mysql
+ - Postgres
+ - Sqlite
+ - Libsql
+ - NoOp
+keywords:
+ - Cache
+ - Configuring adapters
+ - In-memory
+ - Mongodb
+ - Redis
+ - Kysely
+ - Sqlite
+ - Mysql
+ - Postgres
+ - Sqlite
+ - Libsql
+ - NoOp
 ---
 
 # Configuring Cache adapters

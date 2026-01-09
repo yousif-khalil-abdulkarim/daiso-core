@@ -1,20 +1,27 @@
+/**
+ * The code is taken from [signalwire docs](https://github.com/signalwire/docs/blob/main/website/config/ogImages/signalwireOgGenerator.ts)
+ */
+
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 // @ts-ignore
 import docusaurusLunrSearch from "docusaurus-lunr-search";
+import docusaurusPluginLlmsTxt, {
+    type PluginOptions,
+} from "@signalwire/docusaurus-plugin-llms-txt";
+import { ogGenerator } from "./utilities/og-generator";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
     title: "@daiso-tech/core",
     tagline:
-        "A flexible full featured backend library - build faster and worry less.",
-    // "Build faster. Worry less. A flexible library for core backend functionalities.",
+        "@daiso-tech/core is a library of backend server components designed for maximum flexibility.",
     favicon: "img/favicon.ico",
 
     // Set the production url of your site here
-    url: "https://your-docusaurus-site.example.com",
+    url: "https://daiso-core.vercel.app/",
 
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
@@ -40,7 +47,33 @@ const config: Config = {
         locales: ["en"],
     },
 
-    plugins: [docusaurusLunrSearch],
+    plugins: [
+        docusaurusLunrSearch,
+        [
+            docusaurusPluginLlmsTxt,
+            {
+                siteTitle: "@daiso-tech/core",
+                siteDescription:
+                    "Mastering @daiso-tech/core: Comprehensive Guides for the Backend Server Component Library",
+                enableDescriptions: true,
+                content: {
+                    relativePaths: true,
+                    includeDocs: true,
+                    includeVersionedDocs: false,
+                    includeBlog: false,
+                    includePages: false,
+                    includeGeneratedIndex: false,
+                    enableLlmsFullTxt: true,
+                },
+            } satisfies PluginOptions,
+        ],
+        [
+            require.resolve("./plugins/og-plugin/index.ts"),
+            {
+                canvasGenerator: ogGenerator,
+            },
+        ],
+    ],
 
     presets: [
         [
@@ -50,8 +83,8 @@ const config: Config = {
                     sidebarPath: "./sidebars.ts",
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
-                    // editUrl:
-                    //     "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+                    editUrl:
+                        "https://github.com/yousif-khalil-abdulkarim/daiso-core/tree/main/website/",
                 },
                 blog: {
                     showReadingTime: true,
@@ -65,22 +98,13 @@ const config: Config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     // editUrl:
-                    //     "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+                    //     "https://github.com/yousif-khalil-abdulkarim/daiso-core/tree/main/website/",
                     // Useful options to enforce blogging best practices
                 },
                 theme: {
                     customCss: "./src/css/custom.css",
                 },
             } satisfies Preset.Options,
-        ],
-        [
-            "@signalwire/docusaurus-plugin-llms-txt",
-            {
-                // Plugin options (optional)
-                outputDir: "llms-txt",
-                includePatterns: ["**/*.html"],
-                excludePatterns: ["**/404.html"],
-            },
         ],
     ],
 
@@ -129,7 +153,7 @@ const config: Config = {
             {
                 name: "Descriptions",
                 content:
-                    "Node Js, JavaScript, TypeScript backend component library",
+                    "Node Js, JavaScript, TypeScript backend server component library",
             },
             { name: "robots", content: "index, follow" },
         ],

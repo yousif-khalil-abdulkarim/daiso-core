@@ -1,6 +1,15 @@
 ---
 sidebar_position: 4
 sidebar_label: Creating adapters
+pagination_label: Creating cache adapters
+tags:
+ - Cache
+ - Creating adapters
+ - Creating database adapters
+keywords:
+ - Cache
+ - Creating adapters
+ - Creating database adapters
 ---
 
 # Creating cache adapters

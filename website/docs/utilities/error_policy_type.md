@@ -7,8 +7,8 @@ The `ErrorPolicy` type determines which errors should be handled for example in 
 A predicate function can be used to dynamically determine if an error should be handled:
 
 ```ts
-import { fallback } from "@daiso-tech/core/async";
-import { AsyncHooks } from "@daiso-tech/core/utilities";
+import { fallback } from "@daiso-tech/core/resilience";
+import { AsyncHooks } from "@daiso-tech/core/hooks";
 
 class CustomError extends Error {
     constructor(
@@ -71,7 +71,7 @@ const func = new AsyncHooks((): string => {
     fallback({
         fallbackValue: "DEFAULT_VALUE",
         errorPolicy: z.object({
-            code: z.liter("e20"),
+            code: z.literal("e20"),
             message: z.string(),
         }),
     }),
@@ -83,8 +83,8 @@ const func = new AsyncHooks((): string => {
 You can treat false return values as errors. This useful when you want to retry functions that return boolean.
 
 ```ts
-import { AsyncHooks } from "@daiso-tech/core/utillities";
-import { retry } from "@daiso-tech/async";
+import { AsyncHooks } from "@daiso-tech/core/hooks";
+import { retry } from "@daiso-tech/core/resilience";
 
 await new AsyncHooks((): Promise<boolean> => {
     // Will be

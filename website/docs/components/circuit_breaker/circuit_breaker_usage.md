@@ -1,6 +1,13 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+pagination_label: Circuit-breaker Usage
+tags:
+ - Circuit-breaker
+ - Usage
+keywords:
+ - Circuit-breaker
+ - Usage
 ---
 
 # Circuit-breaker usage
@@ -60,7 +67,7 @@ Note `CircuitBreaker` class instance uses `Task` instead of a regular `Promise`.
 Refer to the [`@daiso-tech/core/task`](../task.md) documentation for further information.
 :::
 
-### Applying on circuit-breaker on certiain errors
+### Applying circuit-breaker on certiain errors
 
 ```ts
 class ErrorA extends Error {}
@@ -168,6 +175,17 @@ if (state === CIRCUIT_BREAKER_STATE.HALF_OPEN) {
 if (state === CIRCUIT_BREAKER_STATE.ISOLATED) {
     console.log("The service is held in open state manually until reseted")
 }
+```
+
+### Circuit-breaker instance variables
+
+The `CircuitBreaker` class exposes instance variables such as:
+
+```ts
+const circuitBreaker = circuitBreakerProvider.create("resource");
+
+// Will return the key of the circuit-breaker which is "resource"
+console.log(circuitBreaker.key);
 ```
 
 ## Patterns
@@ -314,7 +332,7 @@ const circuitBreakerProvider = new CircuitBreakerProvider({
 });
 
 await circuitBreakerProvider.addListener(CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED, (event) => {
-    console.log(`State transitioned occured. from ${event.from} to ${event.to}`);
+    console.log(`State transitioned occurred. from ${event.from} to ${event.to}`);
 });
 
 await circuitBreakerProvider.create("a").isolate();
@@ -368,7 +386,7 @@ const redisCircuitBreakerProvider = new CircuitBreakerProvider({
 
 :::
 
-### Seperating creating, listening to and using circuit-breakers
+### Separating creating, listening to and using circuit-breakers
 
 The library includes 3 additional contracts:
 
@@ -414,7 +432,7 @@ async function circuitBreakerListenableFunc(
     // You will get typescript error if you try
 
     await circuitBreakerListenable.addListener(CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED, (event) => {
-        console.log(`State transitioned occured. from ${event.from} to ${event.to}`);
+        console.log(`State transitioned occurred. from ${event.from} to ${event.to}`);
     });
 }
 
