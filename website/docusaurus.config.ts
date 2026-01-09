@@ -1,3 +1,7 @@
+/**
+ * The code is taken from [signalwire docs](https://github.com/signalwire/docs/blob/main/website/config/ogImages/signalwireOgGenerator.ts) 
+ */
+
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
@@ -12,12 +16,11 @@ import docusaurusPluginLlmsTxt, {
 const config: Config = {
     title: "@daiso-tech/core",
     tagline:
-        "A flexible full featured backend library - build faster and worry less.",
-    // "Build faster. Worry less. A flexible library for core backend functionalities.",
+        "@daiso-tech/core is a library of backend server components designed for maximum flexibility.",
     favicon: "img/favicon.ico",
 
     // Set the production url of your site here
-    url: "https://your-docusaurus-site.example.com",
+    url: "https://daiso-core.vercel.app/",
 
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
@@ -73,8 +76,8 @@ const config: Config = {
                     sidebarPath: "./sidebars.ts",
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
-                    // editUrl:
-                    //     "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+                    editUrl:
+                        "https://github.com/yousif-khalil-abdulkarim/daiso-core/tree/main/website/",
                 },
                 blog: {
                     showReadingTime: true,
@@ -88,7 +91,7 @@ const config: Config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     // editUrl:
-                    //     "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+                    //     "https://github.com/yousif-khalil-abdulkarim/daiso-core/tree/main/website/",
                     // Useful options to enforce blogging best practices
                 },
                 theme: {
