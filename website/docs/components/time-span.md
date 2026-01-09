@@ -1,5 +1,7 @@
 ---
 "sidebar_position": 14
+tags:
+ - Utilities
 ---
 
 # TimeSpan

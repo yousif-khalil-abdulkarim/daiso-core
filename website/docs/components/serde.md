@@ -1,5 +1,7 @@
 ---
 "sidebar_position": 12
+tags:
+ - Utilities
 ---
 
 # Serde

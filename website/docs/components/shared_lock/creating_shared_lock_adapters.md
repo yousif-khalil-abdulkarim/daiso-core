@@ -1,6 +1,10 @@
 ---
 sidebar_position: 4
 sidebar_label: Creating adapters
+tags:
+ - SharedLock
+ - Creating adapters
+ - Creating database adapters
 ---
 
 # Creating shared-lock adapters

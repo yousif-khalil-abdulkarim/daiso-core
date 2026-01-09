@@ -1,6 +1,9 @@
 ---
 sidebar_position: 4
 sidebar_label: Creating adapters
+tags:
+ - EventBus
+ - Creating adapters
 ---
 
 # Creating EventBus adapters

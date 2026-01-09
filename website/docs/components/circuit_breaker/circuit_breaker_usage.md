@@ -1,6 +1,9 @@
 ---
 sidebar_position: 1
 sidebar_label: Usage
+tags:
+ - CircuitBreaker
+ - Usage
 ---
 
 # Circuit-breaker usage

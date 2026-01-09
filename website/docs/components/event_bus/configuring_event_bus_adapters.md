@@ -1,6 +1,12 @@
 ---
 sidebar_position: 3
 sidebar_label: Configuring adapters
+tags:
+ - EventBus
+ - Configuring adapters
+ - In-memory
+ - Redis
+ - NoOp
 ---
 
 ## Configuring EventBus adapters
