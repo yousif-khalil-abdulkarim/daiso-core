@@ -1,5 +1,5 @@
 /**
- * The code is taken from [signalwire docs](https://github.com/signalwire/docs/blob/main/website/config/ogImages/signalwireOgGenerator.ts) 
+ * The code is taken from [signalwire docs](https://github.com/signalwire/docs/blob/main/website/config/ogImages/signalwireOgGenerator.ts)
  */
 
 import { themes as prismThemes } from "prism-react-renderer";
@@ -10,6 +10,7 @@ import docusaurusLunrSearch from "docusaurus-lunr-search";
 import docusaurusPluginLlmsTxt, {
     type PluginOptions,
 } from "@signalwire/docusaurus-plugin-llms-txt";
+import { ogGenerator } from "./utilities/og-generator";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -65,6 +66,12 @@ const config: Config = {
                     enableLlmsFullTxt: true,
                 },
             } satisfies PluginOptions,
+        ],
+        [
+            require.resolve("./plugins/og-plugin/index.ts"),
+            {
+                canvasGenerator: ogGenerator,
+            },
         ],
     ],
 
