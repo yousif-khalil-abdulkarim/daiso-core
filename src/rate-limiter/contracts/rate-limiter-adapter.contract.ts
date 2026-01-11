@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { type IRateLimiterProvider } from "@/rate-limiter/contracts/rate-limiter-provider.contract.js";
-import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  *
@@ -14,7 +14,7 @@ import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 export type IRateLimiterAdapterState = {
     success: boolean;
     attempt: number;
-    resetTime: ITimeSpan | null;
+    resetTime: TimeSpan;
 };
 
 /**
