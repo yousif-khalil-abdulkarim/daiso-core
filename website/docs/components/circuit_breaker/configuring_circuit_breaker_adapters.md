@@ -51,7 +51,7 @@ import { POLICIES } from "@daiso-tech/core/circuit-breaker/policies";
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
 const redisCircuitBreakerAdapter = new RedisCircuitBreakerAdapter({
     database,
-    backoffPolicy: {
+    circuitBreakerPolicy: {
         type: POLICIES.CONSECUTIVE,
         failureThreshold: 5,
         successThreshold: 5,
