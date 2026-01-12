@@ -1,5 +1,39 @@
 # @daiso-tech/core
 
+## 0.44.0
+
+### Minor Changes
+
+- fd9f21d: Added a new rate-limiter component
+
+### Patch Changes
+
+- 670763b: Updated `RedisCircuitBreakerAdapterSettings`:
+
+    before:
+
+    ```ts
+    export type RedisCircuitBreakerAdapterSettings = {
+        database: Redis;
+
+        backoff?: BackoffSettingsEnum;
+
+        policy?: CircuitBreakerPolicySettingsEnum;
+    };
+    ```
+
+    now:
+
+    ```ts
+    export type RedisCircuitBreakerAdapterSettings = {
+        database: Redis;
+
+        backoffPolicy?: BackoffSettingsEnum;
+
+        circuitBreakerPolicy?: CircuitBreakerPolicySettingsEnum;
+    };
+    ```
+
 ## 0.43.2
 
 ### Patch Changes
@@ -644,8 +678,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                                  - `AsyncFactoryable`
-                                  - `Factoryable`
+                                    - `AsyncFactoryable`
+                                    - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
