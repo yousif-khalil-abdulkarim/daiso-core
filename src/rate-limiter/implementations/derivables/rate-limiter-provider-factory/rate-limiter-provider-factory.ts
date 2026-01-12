@@ -103,12 +103,12 @@ export class RateLimiterProviderFactory<TAdapters extends string>
         });
     }
 
-    setErrorPolicy(
+    setDefaultErrorPolicy(
         errorPolicy: ErrorPolicy,
     ): RateLimiterProviderFactory<TAdapters> {
         return new RateLimiterProviderFactory({
             ...this.settings,
-            errorPolicy,
+            defaultErrorPolicy: errorPolicy,
         });
     }
 

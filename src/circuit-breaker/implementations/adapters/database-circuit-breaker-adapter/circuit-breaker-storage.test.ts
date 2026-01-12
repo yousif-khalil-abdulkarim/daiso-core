@@ -9,12 +9,12 @@ import {
     type CircuitBreakerStateTransition,
     CIRCUIT_BREAKER_STATE,
 } from "@/circuit-breaker/contracts/_module.js";
+import { CircuitBreakerStorage } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-storage.js";
 import {
-    CircuitBreakerPolicy,
+    InternalCircuitBreakerPolicy,
     type HalfOpenedState,
     type OpenedState,
-} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
-import { CircuitBreakerStorage } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-storage.js";
+} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/internal-circuit-breaker-policy.js";
 import { MemoryCircuitBreakerStorageAdapter } from "@/circuit-breaker/implementations/adapters/memory-circuit-breaker-storage-adapter/_module.js";
 
 describe("class: CircuitBreakerStorage", () => {
@@ -52,7 +52,7 @@ describe("class: CircuitBreakerStorage", () => {
             return metricsA === metricsB;
         },
     };
-    const internalPolicy = new CircuitBreakerPolicy(policy);
+    const internalPolicy = new InternalCircuitBreakerPolicy(policy);
     beforeEach(() => {
         vi.resetAllMocks();
         storage = new CircuitBreakerStorage(
@@ -114,7 +114,7 @@ describe("class: CircuitBreakerStorage", () => {
                 to: CIRCUIT_BREAKER_STATE.OPEN,
             } satisfies CircuitBreakerStateTransition);
         });
-        test("Should call CircuitBreakerPolicy.initialState when key doesnt exists", async () => {
+        test("Should call InternalCircuitBreakerPolicy.initialState when key doesnt exists", async () => {
             const key = "a";
 
             const initialStateSpy = vi.spyOn(internalPolicy, "initialState");
@@ -129,7 +129,7 @@ describe("class: CircuitBreakerStorage", () => {
 
             expect(initialStateSpy).toHaveBeenCalledOnce();
         });
-        test("Should call CircuitBreakerPolicy.isEqual when key doesnt exists", async () => {
+        test("Should call InternalCircuitBreakerPolicy.isEqual when key doesnt exists", async () => {
             const key = "a";
 
             await storage.atomicUpdate(key, (_currentState) => {
@@ -160,7 +160,7 @@ describe("class: CircuitBreakerStorage", () => {
 
             expect(state).toEqual(internalPolicy.initialState());
         });
-        test("Should call CircuitBreakerPolicy.initialState when key doesnt exists", async () => {
+        test("Should call InternalCircuitBreakerPolicy.initialState when key doesnt exists", async () => {
             const noneExistingKey = "a";
 
             const intitialStateSpy = vi.spyOn(internalPolicy, "initialState");

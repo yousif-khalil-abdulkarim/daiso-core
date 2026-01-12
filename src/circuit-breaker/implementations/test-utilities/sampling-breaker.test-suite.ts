@@ -15,7 +15,10 @@ import {
     type ConstantBackoffSettingsEnum,
 } from "@/backoff-policies/_module.js";
 import { type ICircuitBreakerAdapter } from "@/circuit-breaker/contracts/_module.js";
-import { type SamplingBreakerSettings } from "@/circuit-breaker/implementations/policies/_module.js";
+import {
+    BREAKER_POLICIES,
+    type SamplingBreakerSettingsEnum,
+} from "@/circuit-breaker/implementations/policies/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
@@ -36,7 +39,8 @@ export type SamplingBreakerTestSuiteSettings = {
 /**
  * @group TestUtilities
  */
-const circuitBreakerPolicySettings: Required<SamplingBreakerSettings> = {
+const circuitBreakerPolicySettings: Required<SamplingBreakerSettingsEnum> = {
+    type: BREAKER_POLICIES.SAMPLING,
     failureThreshold: 0.2,
     successThreshold: 0.8,
     timeSpan: TimeSpan.fromMinutes(1),

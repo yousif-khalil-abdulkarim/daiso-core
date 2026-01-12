@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @module RateLimiter
  */
@@ -14,8 +13,14 @@ import {
     BACKOFFS,
     type ConstantBackoffSettingsEnum,
 } from "@/backoff-policies/_module.js";
-import { type IRateLimiterAdapter } from "@/rate-limiter/contracts/_module.js";
-import { type FixedWindowLimiterSettings } from "@/rate-limiter/implementations/policies/_module.js";
+import {
+    type IRateLimiterAdapter,
+    type IRateLimiterAdapterState,
+} from "@/rate-limiter/contracts/_module.js";
+import {
+    LIMITER_POLICIES,
+    type FixedWindowLimiterSettingsEnum,
+} from "@/rate-limiter/implementations/policies/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
@@ -36,7 +41,8 @@ export type FixedWindowLimiterTestSuiteSettings = {
 /**
  * @group TestUtilities
  */
-const rateLimiterPolicySettings: Required<FixedWindowLimiterSettings> = {
+const rateLimiterPolicySettings: Required<FixedWindowLimiterSettingsEnum> = {
+    type: LIMITER_POLICIES.FIXED_WINDOW,
     window: TimeSpan.fromMilliseconds(100),
 };
 
@@ -89,28 +95,217 @@ export function fixedWindowLimiterTestSuite(
 ): void {
     const { expect, test, createAdapter, describe, beforeEach } = settings;
     let adapter: IRateLimiterAdapter;
-    const waitTime = TimeSpan.fromTimeSpan(backoffPolicySettings.delay);
     describe("Reusable tests:", () => {
         beforeEach(async () => {
             adapter = await createAdapter();
         });
 
         const KEY = "a";
+        const LIMIT = 4;
         async function delay(timeSpan: TimeSpan): Promise<void> {
             await Task.delay(timeSpan);
         }
 
         describe("method: getState", () => {
-            test.todo("Write tests!!!");
+            test("Should return null when updateState method have not been called", async () => {
+                const state = await adapter.getState(KEY);
+
+                expect(state).toBeNull();
+            });
+            test("Should return AllowedState attempt when 3 attempts occurs during window time", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state = await adapter.getState(KEY);
+
+                expect(state).toEqual({
+                    success: true,
+                    attempt: 3,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
+            test("Should return AllowedState attempt when 4 attempts occurs during window time", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state = await adapter.getState(KEY);
+
+                expect(state).toEqual({
+                    success: true,
+                    attempt: 4,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
+            test("Should return null when 4 attempts occurs during window time and resetTime is awaited", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state1 = await adapter.updateState(KEY, LIMIT);
+                await delay(state1.resetTime.addMilliseconds(10));
+
+                const state2 = await adapter.getState(KEY);
+                expect(state2).toBeNull();
+            });
+            test("Should return BlockedState when 5 attempts occurs during window time", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state = await adapter.getState(KEY);
+
+                expect(state).toEqual({
+                    success: false,
+                    attempt: 1,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
+            test("Should return BlockedState attempt when 6 attempts occurs during window time", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state = await adapter.getState(KEY);
+
+                expect(state).toEqual({
+                    success: false,
+                    attempt: 2,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
+            test("Should return null when 6 attempts occurs during window time and resetTime is awaited", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state1 = await adapter.updateState(KEY, LIMIT);
+                await delay(state1.resetTime.addMilliseconds(10));
+
+                const state2 = await adapter.getState(KEY);
+                expect(state2).toBeNull();
+            });
         });
-        describe("method: updateState / trackFailure / trackSuccess", () => {
-            test.todo("Write tests!!!");
+        describe("method: updateState", () => {
+            test("Should return AllowedState with incremented attempt when 3 attempts occurs during window time", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state = await adapter.updateState(KEY, LIMIT);
+
+                expect(state).toEqual({
+                    success: true,
+                    attempt: 3,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
+            test("Should return AllowedState with incremented attempt when 4 attempts occurs during window time", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state = await adapter.updateState(KEY, LIMIT);
+
+                expect(state).toEqual({
+                    success: true,
+                    attempt: 4,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
+            test("Should return reseted AllowedState when 4 attempts occurs during window time and resetTime is awaited", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state1 = await adapter.updateState(KEY, LIMIT);
+                await delay(state1.resetTime.addMilliseconds(10));
+
+                const state2 = await adapter.updateState(KEY, LIMIT);
+                expect(state2).toEqual({
+                    success: true,
+                    attempt: 1,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
+            test("Should return BlockedState when 5 attempts occurs during window time", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state = await adapter.updateState(KEY, LIMIT);
+
+                expect(state).toEqual({
+                    success: false,
+                    attempt: 1,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
+            test("Should return BlockedState with incremented attempt when 6 attempts occurs during window time", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state = await adapter.updateState(KEY, LIMIT);
+
+                expect(state).toEqual({
+                    success: false,
+                    attempt: 2,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
+            test("Should return reseted AllowedState when 6 attempts occurs during window time and resetTime is awaited", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                const state1 = await adapter.updateState(KEY, LIMIT);
+                await delay(state1.resetTime.addMilliseconds(10));
+
+                const state2 = await adapter.updateState(KEY, LIMIT);
+                expect(state2).toEqual({
+                    success: true,
+                    attempt: 1,
+                    resetTime: expect.any(TimeSpan) as TimeSpan,
+                } satisfies IRateLimiterAdapterState);
+            });
         });
-        describe("method: updateState / trackFailure / isolate / getState", () => {
-            test.todo("Write tests!!!");
-        });
-        describe("method: updateState / trackFailure / reset", () => {
-            test.todo("Write tests!!!");
+        describe("method: reset", () => {
+            test("Should return null when reseted in AllowedState", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                await adapter.reset(KEY);
+                const state = await adapter.getState(KEY);
+
+                expect(state).toBeNull();
+            });
+            test("Should return null when reseted in BlockedState", async () => {
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+                await adapter.updateState(KEY, LIMIT);
+
+                await adapter.reset(KEY);
+                const state = await adapter.getState(KEY);
+
+                expect(state).toBeNull();
+            });
         });
     });
 }

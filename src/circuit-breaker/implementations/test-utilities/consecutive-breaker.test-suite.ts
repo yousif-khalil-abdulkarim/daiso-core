@@ -18,7 +18,10 @@ import {
     type CircuitBreakerStateTransition,
     type ICircuitBreakerAdapter,
 } from "@/circuit-breaker/contracts/_module.js";
-import { type ConsecutiveBreakerSettings } from "@/circuit-breaker/implementations/policies/_module.js";
+import {
+    BREAKER_POLICIES,
+    type ConsecutiveBreakerSettingsEnum,
+} from "@/circuit-breaker/implementations/policies/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
@@ -39,7 +42,8 @@ export type ConsecutiveBreakerTestSuiteSettings = {
 /**
  * @group TestUtilities
  */
-const circuitBreakerPolicySettings: Required<ConsecutiveBreakerSettings> = {
+const circuitBreakerPolicySettings: Required<ConsecutiveBreakerSettingsEnum> = {
+    type: BREAKER_POLICIES.CONSECUTIVE,
     failureThreshold: 5,
     successThreshold: 5,
 };

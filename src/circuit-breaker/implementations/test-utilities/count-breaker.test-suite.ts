@@ -18,7 +18,10 @@ import {
     type CircuitBreakerStateTransition,
     type ICircuitBreakerAdapter,
 } from "@/circuit-breaker/contracts/_module.js";
-import { type CountBreakerSettings } from "@/circuit-breaker/implementations/policies/_module.js";
+import {
+    BREAKER_POLICIES,
+    type CountBreakerSettingsEnum,
+} from "@/circuit-breaker/implementations/policies/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
@@ -39,7 +42,8 @@ export type CountBreakerTestSuiteSettings = {
 /**
  * @group TestUtilities
  */
-const circuitBreakerPolicySettings: Required<CountBreakerSettings> = {
+const circuitBreakerPolicySettings: Required<CountBreakerSettingsEnum> = {
+    type: BREAKER_POLICIES.COUNT,
     failureThreshold: 0.2,
     successThreshold: 0.8,
     size: 10,

@@ -19,17 +19,14 @@ import {
 } from "@/rate-limiter/contracts/_module.js";
 import { RateLimiter } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/rate-limiter.js";
 import { type ITask } from "@/task/contracts/_module.js";
-import {
-    type ErrorPolicy,
-    type ErrorPolicySettings,
-} from "@/utilities/_module.js";
+import { type ErrorPolicy } from "@/utilities/_module.js";
 
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter"`
  * @group Derivables
  */
-export type RateLimiterProviderSettingsBase = ErrorPolicySettings & {
+export type RateLimiterProviderSettingsBase = {
     /**
      * @default
      * ```ts
@@ -52,6 +49,16 @@ export type RateLimiterProviderSettingsBase = ErrorPolicySettings & {
      * ```
      */
     eventBus?: IEventBus;
+
+    /**
+     * You can set the default `ErrorPolicy`
+     *
+     * @default
+     * ```ts
+     * (_error: unknown) => true
+     * ```
+     */
+    defaultErrorPolicy?: ErrorPolicy;
 
     /**
      * If true will only apply rate limiting when function errors and not when function is called.
@@ -96,7 +103,7 @@ export class RateLimiterProvider implements IRateLimiterProvider {
     private readonly eventBus: IEventBus<RateLimiterEventMap>;
     private readonly adapter: IRateLimiterAdapter;
     private readonly onlyError: boolean;
-    private readonly errorPolicy: ErrorPolicy;
+    private readonly defaultErrorPolicy: ErrorPolicy;
     private readonly enableAsyncTracking: boolean;
 
     /**
@@ -139,7 +146,7 @@ export class RateLimiterProvider implements IRateLimiterProvider {
             }),
             adapter,
             onlyError = false,
-            errorPolicy = () => true,
+            defaultErrorPolicy = () => true,
         } = settings;
 
         this.enableAsyncTracking = enableAsyncTracking;
@@ -147,7 +154,7 @@ export class RateLimiterProvider implements IRateLimiterProvider {
         this.eventBus = eventBus;
         this.adapter = adapter;
         this.onlyError = onlyError;
-        this.errorPolicy = errorPolicy;
+        this.defaultErrorPolicy = defaultErrorPolicy;
     }
 
     addListener<TEventName extends keyof RateLimiterEventMap>(
@@ -196,7 +203,7 @@ export class RateLimiterProvider implements IRateLimiterProvider {
         settings: RateLimiterProviderCreateSettings,
     ): IRateLimiter {
         const {
-            errorPolicy = this.errorPolicy,
+            errorPolicy = this.defaultErrorPolicy,
             onlyError = this.onlyError,
             limit,
         } = settings;

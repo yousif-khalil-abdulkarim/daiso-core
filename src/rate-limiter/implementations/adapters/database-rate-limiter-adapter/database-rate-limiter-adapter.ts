@@ -13,9 +13,9 @@ import {
     type IRateLimiterStorageAdapter,
 } from "@/rate-limiter/contracts/_module.js";
 import {
-    RateLimiterPolicy,
+    InternalRateLimiterPolicy,
     type AllRateLimiterState,
-} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-policy.js";
+} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/internal-rate-limiter-policy.js";
 import { RateLimiterStateManager } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-state-manager.js";
 import { RateLimiterStorage } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-storage.js";
 import { FixedWindowLimiter } from "@/rate-limiter/implementations/policies/_module.js";
@@ -79,7 +79,7 @@ export class DatabaseRateLimiterAdapter<TMetrics = unknown>
             backoffPolicy = exponentialBackoff(),
             rateLimiterPolicy = new FixedWindowLimiter(),
         } = settings;
-        const internalRateLimiterPolicy = new RateLimiterPolicy(
+        const internalRateLimiterPolicy = new InternalRateLimiterPolicy(
             rateLimiterPolicy as IRateLimiterPolicy<TMetrics>,
         );
         this.rateLimiterStorage = new RateLimiterStorage({
@@ -101,13 +101,11 @@ export class DatabaseRateLimiterAdapter<TMetrics = unknown>
             return null;
         }
         return {
-            ...state,
-            resetTime:
-                state.resetTime === null
-                    ? null
-                    : TimeSpan.fromDateRange({
-                          end: state.resetTime,
-                      }),
+            success: state.success,
+            attempt: state.attempt,
+            resetTime: TimeSpan.fromDateRange({
+                end: state.resetTime,
+            }),
         };
     }
 
@@ -116,23 +114,25 @@ export class DatabaseRateLimiterAdapter<TMetrics = unknown>
         limit: number,
     ): Promise<IRateLimiterAdapterState> {
         const currentDate = new Date();
+        const track = this.rateLimiterStateManager.track(currentDate);
+        const updateState = this.rateLimiterStateManager.updateState(
+            limit,
+            currentDate,
+        );
         const state = await this.rateLimiterStorage.atomicUpdate({
             key,
-            update: (state) => {
-                return this.rateLimiterStateManager.updateState(
-                    limit,
-                    currentDate,
-                )(this.rateLimiterStateManager.track(currentDate)(state));
+            update: (prevState) => {
+                const newState1 = track(prevState);
+                const newState2 = updateState(newState1);
+                return newState2;
             },
         });
         return {
-            ...state,
-            resetTime:
-                state.resetTime === null
-                    ? null
-                    : TimeSpan.fromDateRange({
-                          end: state.resetTime,
-                      }),
+            success: state.success,
+            attempt: state.attempt,
+            resetTime: TimeSpan.fromDateRange({
+                end: state.resetTime,
+            }),
         };
     }
 

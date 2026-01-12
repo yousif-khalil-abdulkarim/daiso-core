@@ -16,7 +16,7 @@ import {
     type CircuitBreakerState,
     CIRCUIT_BREAKER_STATE,
 } from "@/circuit-breaker/contracts/_module.js";
-import { type AllCircuitBreakerState } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
+import { type AllCircuitBreakerState } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/internal-circuit-breaker-policy.js";
 import { circuitBreakerFactoryLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/_module.js";
 import {
     BREAKER_POLICIES,
@@ -39,7 +39,7 @@ export type RedisCircuitBreakerAdapterSettings = {
      * { type: BACKOFFS.EXPONENTIAL }
      * ```
      */
-    backoff?: BackoffSettingsEnum;
+    backoffPolicy?: BackoffSettingsEnum;
 
     /**
      * You can choose between different types of predefined circuit breaker policies.
@@ -48,7 +48,7 @@ export type RedisCircuitBreakerAdapterSettings = {
      * { type: POLICIES.CONSECUTIVE }
      * ```
      */
-    policy?: CircuitBreakerPolicySettingsEnum;
+    circuitBreakerPolicy?: CircuitBreakerPolicySettingsEnum;
 };
 
 declare module "ioredis" {
@@ -102,17 +102,17 @@ export class RedisCircuitBreakerAdapter implements ICircuitBreakerAdapter {
     constructor(settings: RedisCircuitBreakerAdapterSettings) {
         const {
             database,
-            backoff = {
+            backoffPolicy = {
                 type: BACKOFFS.EXPONENTIAL,
             },
-            policy = {
+            circuitBreakerPolicy = {
                 type: BREAKER_POLICIES.CONSECUTIVE,
             },
         } = settings;
 
         this.database = database;
-        this.backoff = resolveBackoffSettingsEnum(backoff);
-        this.policy = resolveCircuitBreakerPolicySettings(policy);
+        this.backoff = resolveBackoffSettingsEnum(backoffPolicy);
+        this.policy = resolveCircuitBreakerPolicySettings(circuitBreakerPolicy);
 
         this.initUpdateStateCommmand();
         this.initTrackFailureCommmand();

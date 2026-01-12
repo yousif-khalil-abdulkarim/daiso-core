@@ -5,18 +5,20 @@ import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import {
     BlockedRateLimiterError,
     RATE_LIMITER_EVENTS,
+    RATE_LIMITER_STATE,
     type AllowedRateLimiterEvent,
     type BlockedRateLimiterEvent,
     type IRateLimiterProvider,
     type IRateLimiterStateMethods,
+    type RateLimiterExpiredState,
     type ResetedRateLimiterEvent,
     type TrackedFailureRateLimiterEvent,
     type UntrackedFailureRateLimiterEvent,
-} from "@/rate-limiter/contracts/_module.js";
-import {
     type IRateLimiterAdapter,
     type IRateLimiterAdapterState,
-} from "@/rate-limiter/contracts/rate-limiter-adapter.contract.js";
+    type RateLimiterAllowedState,
+    type RateLimiterBlockedState,
+} from "@/rate-limiter/contracts/_module.js";
 import { RateLimiterProvider } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/rate-limiter-provider.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
@@ -59,7 +61,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     const updateStateSpy = vi
                         .spyOn(adapter, "updateState")
@@ -87,7 +89,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     const updateStateSpy = vi
                         .spyOn(adapter, "updateState")
@@ -109,7 +111,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "updateState").mockImplementation(() =>
                         Promise.resolve(state),
@@ -137,7 +139,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "updateState").mockImplementation(() =>
                         Promise.resolve(state),
@@ -185,7 +187,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     const updateStateSpy = vi
                         .spyOn(adapter, "updateState")
@@ -213,7 +215,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     const updateStateSpy = vi
                         .spyOn(adapter, "updateState")
@@ -235,7 +237,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "updateState").mockImplementation(() =>
                         Promise.resolve(state),
@@ -263,7 +265,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "updateState").mockImplementation(() =>
                         Promise.resolve(state),
@@ -319,6 +321,88 @@ describe("class: RateLimiterProvider", () => {
                 expect(resetSpy).toHaveBeenCalledOnce();
             });
         });
+        describe("method: getState", () => {
+            test("Should call IRateLimiterAdapter.getState", async () => {
+                const getStateSpy = vi
+                    .spyOn(adapter, "getState")
+                    .mockImplementation(() => Promise.resolve(null));
+
+                const rateLimiter = rateLimiterProvider.create(KEY, {
+                    limit: 10,
+                });
+
+                await rateLimiter.getState();
+
+                expect(getStateSpy).toHaveBeenCalledOnce();
+            });
+            test("Should return RateLimiterExpiredState when IRateLimiterAdapter.getState returns null", async () => {
+                vi.spyOn(adapter, "getState").mockImplementation(() =>
+                    Promise.resolve(null),
+                );
+
+                const rateLimiter = rateLimiterProvider.create(KEY, {
+                    limit: 10,
+                });
+
+                const state = await rateLimiter.getState();
+
+                expect(state).toEqual({
+                    type: RATE_LIMITER_STATE.EXPIRED,
+                } satisfies RateLimiterExpiredState);
+            });
+            test("Should return RateLimiterAllowedState when IRateLimiterAdapter.getState returns success state", async () => {
+                const limit = 5;
+                const resetTime = TimeSpan.fromMilliseconds(1);
+                const attempt = 1;
+                vi.spyOn(adapter, "getState").mockImplementation(() =>
+                    Promise.resolve({
+                        success: true,
+                        attempt,
+                        resetTime,
+                    } satisfies IRateLimiterAdapterState),
+                );
+
+                const rateLimiter = rateLimiterProvider.create(KEY, {
+                    limit,
+                });
+
+                const state = await rateLimiter.getState();
+
+                expect(state).toEqual({
+                    type: RATE_LIMITER_STATE.ALLOWED,
+                    usedAttempts: attempt,
+                    reaminingAttemps: limit - attempt,
+                    limit,
+                    resetAfter: resetTime,
+                } satisfies RateLimiterAllowedState);
+            });
+            test("Should return RateLimiterBlockedState when IRateLimiterAdapter.getState returns failure state", async () => {
+                const limit = 5;
+                const resetTime = TimeSpan.fromMilliseconds(1);
+                const attempt = 6;
+                vi.spyOn(adapter, "getState").mockImplementation(() =>
+                    Promise.resolve({
+                        success: false,
+                        attempt,
+                        resetTime,
+                    } satisfies IRateLimiterAdapterState),
+                );
+
+                const rateLimiter = rateLimiterProvider.create(KEY, {
+                    limit,
+                });
+
+                const state = await rateLimiter.getState();
+
+                expect(state).toEqual({
+                    type: RATE_LIMITER_STATE.BLOCKED,
+                    limit,
+                    retryAfter: resetTime,
+                    totalAttempts: attempt,
+                    exceedAttempts: attempt - limit,
+                } satisfies RateLimiterBlockedState);
+            });
+        });
     });
     describe("Event tests:", () => {
         describe("method: runOrFail", () => {
@@ -327,7 +411,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "getState").mockImplementation(() => {
                         return Promise.resolve(state);
@@ -377,7 +461,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "getState").mockImplementation(() => {
                         return Promise.resolve(state);
@@ -416,7 +500,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: 1,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "getState").mockImplementation(() => {
                         return Promise.resolve(state);
@@ -469,7 +553,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: limit,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "getState").mockImplementation(() => {
                         return Promise.resolve(state);
@@ -611,7 +695,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: limit - 2,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "getState").mockImplementation(() => {
                         return Promise.resolve(state);
@@ -709,7 +793,7 @@ describe("class: RateLimiterProvider", () => {
                     const state: IRateLimiterAdapterState = {
                         success: true,
                         attempt: limit - 2,
-                        resetTime: null,
+                        resetTime: TimeSpan.fromMilliseconds(1),
                     };
                     vi.spyOn(adapter, "getState").mockImplementation(() => {
                         return Promise.resolve(state);

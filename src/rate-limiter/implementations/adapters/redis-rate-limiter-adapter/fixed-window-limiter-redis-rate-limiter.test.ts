@@ -5,12 +5,12 @@ import {
 import { Redis } from "ioredis";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
-import { RedisCircuitBreakerAdapter } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/_module.js";
-import { consecutiveBreakerTestSuite } from "@/circuit-breaker/implementations/test-utilities/_module.js";
+import { RedisRateLimiterAdapter } from "@/rate-limiter/implementations/adapters/redis-rate-limiter-adapter/redis-rate-limiter-adapter.js";
+import { fixedWindowLimiterTestSuite } from "@/rate-limiter/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
 const timeout = TimeSpan.fromMinutes(2);
-describe("consecutive-breaker class: RedisCircuitBreakerAdapter", () => {
+describe("fixed-window-limiter class: RedisRateLimiterAdapter", () => {
     let client: Redis;
     let startedContainer: StartedRedisContainer;
     beforeEach(async () => {
@@ -22,14 +22,14 @@ describe("consecutive-breaker class: RedisCircuitBreakerAdapter", () => {
         await startedContainer.stop();
     }, timeout.toMilliseconds());
 
-    consecutiveBreakerTestSuite({
+    fixedWindowLimiterTestSuite({
         createAdapter: () => {
-            const adapter = new RedisCircuitBreakerAdapter({
+            const adapter = new RedisRateLimiterAdapter({
                 database: client,
                 backoffPolicy:
-                    consecutiveBreakerTestSuite.backoffPolicySettings,
-                circuitBreakerPolicy:
-                    consecutiveBreakerTestSuite.circuitBreakerPolicySettings,
+                    fixedWindowLimiterTestSuite.backoffPolicySettings,
+                rateLimiterPolicy:
+                    fixedWindowLimiterTestSuite.rateLimiterPolicySettings,
             });
             return adapter;
         },

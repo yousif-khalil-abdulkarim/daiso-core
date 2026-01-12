@@ -6,6 +6,7 @@ import {
     type IRateLimiterAdapter,
     type IRateLimiterAdapterState,
 } from "@/rate-limiter/contracts/_module.js";
+import { TimeSpan } from "@/time-span/implementations/time-span.js";
 
 /**
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/no-op-rate-limiter-adapter"`
@@ -16,7 +17,7 @@ export class NoOpRateLimiterAdapter implements IRateLimiterAdapter {
         return Promise.resolve({
             success: true,
             attempt: 1,
-            resetTime: null,
+            resetTime: TimeSpan.fromMilliseconds(1),
         });
     }
 
@@ -28,7 +29,7 @@ export class NoOpRateLimiterAdapter implements IRateLimiterAdapter {
             success: true,
             attempt: 1,
             limit,
-            resetTime: null,
+            resetTime: TimeSpan.fromMilliseconds(1),
         });
     }
 

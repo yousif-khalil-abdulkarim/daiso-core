@@ -7,7 +7,7 @@
  */
 export const circuitBreakerStorageLua = `
 -- @template TMetrics
--- @param circuitBreakerPolicy CircuitBreakerPolicy<TMetrics>
+-- @param circuitBreakerPolicy InternalCircuitBreakerPolicy<TMetrics>
 -- @param currentDate number
 local function CircuitBreakerStorage(circuitBreakerPolicy, currentDate)    
     -- @param key string

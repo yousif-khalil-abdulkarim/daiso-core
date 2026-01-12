@@ -68,7 +68,7 @@ export type AllCircuitBreakerState<TMetrics = unknown> =
 /**
  * @internal
  */
-export class CircuitBreakerPolicy<TMetrics = unknown> {
+export class InternalCircuitBreakerPolicy<TMetrics = unknown> {
     constructor(
         private readonly circuitBreakerPolicy: ICircuitBreakerPolicy<TMetrics>,
     ) {}

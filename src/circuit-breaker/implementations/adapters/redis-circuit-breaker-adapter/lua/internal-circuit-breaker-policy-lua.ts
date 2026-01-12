@@ -14,7 +14,7 @@ import {
 export const circuitBreakerPolicyLua = `
 -- @template TMetrics
 -- @param circuitBreakerPolicy ICircuitBreakerPolicy<TMetrics>
-local function CircuitBreakerPolicy(circuitBreakerPolicy)
+local function InternalCircuitBreakerPolicy(circuitBreakerPolicy)
     return {   
         initialState = function()
             return {

@@ -2,7 +2,7 @@
  * @module RateLimiter
  */
 
-import { type ITimeSpan } from "@/time-span/contracts/_module.js";
+import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
  *
@@ -12,6 +12,7 @@ import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 export const RATE_LIMITER_STATE = {
     BLOCKED: "BLOCKED",
     ALLOWED: "ALLOWED",
+    EXPIRED: "EXPIRED",
 } as const;
 
 /**
@@ -27,11 +28,21 @@ export type RateLimiterStateLiterals =
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
  * @group Contracts
  */
+export type RateLimiterExpiredState = {
+    type: (typeof RATE_LIMITER_STATE)["EXPIRED"];
+};
+
+/**
+ *
+ * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
+ * @group Contracts
+ */
 export type RateLimiterAllowedState = {
     type: (typeof RATE_LIMITER_STATE)["ALLOWED"];
     usedAttempts: number;
     reaminingAttemps: number;
     limit: number;
+    resetAfter: TimeSpan;
 };
 
 /**
@@ -44,7 +55,7 @@ export type RateLimiterBlockedState = {
     limit: number;
     totalAttempts: number;
     exceedAttempts: number;
-    resetTime: ITimeSpan;
+    retryAfter: TimeSpan;
 };
 
 /**
@@ -53,5 +64,6 @@ export type RateLimiterBlockedState = {
  * @group Contracts
  */
 export type RateLimiterState =
+    | RateLimiterExpiredState
     | RateLimiterBlockedState
     | RateLimiterAllowedState;

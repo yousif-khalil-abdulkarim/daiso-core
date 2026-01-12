@@ -13,12 +13,12 @@ import {
     type CircuitBreakerStateTransition,
     type ICircuitBreakerPolicy,
 } from "@/circuit-breaker/contracts/_module.js";
-import {
-    CircuitBreakerPolicy,
-    type AllCircuitBreakerState,
-} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
 import { CircuitBreakerStateManager } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-state-manager.js";
 import { CircuitBreakerStorage } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-storage.js";
+import {
+    InternalCircuitBreakerPolicy,
+    type AllCircuitBreakerState,
+} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/internal-circuit-breaker-policy.js";
 import { ConsecutiveBreaker } from "@/circuit-breaker/implementations/policies/_module.js";
 
 /**
@@ -82,7 +82,7 @@ export class DatabaseCircuitBreakerAdapter<TMetrics = unknown>
             }),
         } = settings;
 
-        const internalCircuitBreakerPolicy = new CircuitBreakerPolicy(
+        const internalCircuitBreakerPolicy = new InternalCircuitBreakerPolicy(
             circuitBreakerPolicy as ICircuitBreakerPolicy<TMetrics>,
         );
         this.circuitBreakerStorage = new CircuitBreakerStorage(

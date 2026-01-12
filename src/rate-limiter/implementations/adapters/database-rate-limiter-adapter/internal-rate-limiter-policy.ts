@@ -16,7 +16,6 @@ import { callInvokable } from "@/utilities/_module.js";
 export type AllowedState<TMetrics = unknown> = {
     type: (typeof RATE_LIMITER_STATE)["ALLOWED"];
     metrics: TMetrics;
-    attempt: number;
 };
 
 /**
@@ -49,21 +48,15 @@ export type BackoffPolicySettings = {
 /**
  * @internal
  */
-export class RateLimiterPolicy<TMetrics = unknown> {
+export class InternalRateLimiterPolicy<TMetrics = unknown> {
     constructor(
         private readonly rateLimiterPolicy: IRateLimiterPolicy<TMetrics>,
     ) {}
 
     initialState(currentDate: Date): AllowedState<TMetrics> {
-        const currentMetrics =
-            this.rateLimiterPolicy.initialMetrics(currentDate);
         return {
-            attempt: this.rateLimiterPolicy.getAttempts(
-                currentMetrics,
-                currentDate,
-            ),
             type: RATE_LIMITER_STATE.ALLOWED,
-            metrics: currentMetrics,
+            metrics: this.rateLimiterPolicy.initialMetrics(currentDate),
         };
     }
 
@@ -101,16 +94,11 @@ export class RateLimiterPolicy<TMetrics = unknown> {
             endDate.getTime() <= settings.currentDate.getTime();
 
         if (isWaitTimeOver) {
-            const currentMetrics = this.rateLimiterPolicy.initialMetrics(
-                settings.currentDate,
-            );
             return {
-                attempt: this.rateLimiterPolicy.getAttempts(
-                    currentMetrics,
+                type: RATE_LIMITER_STATE.ALLOWED,
+                metrics: this.rateLimiterPolicy.initialMetrics(
                     settings.currentDate,
                 ),
-                type: RATE_LIMITER_STATE.ALLOWED,
-                metrics: currentMetrics,
             };
         }
 
@@ -120,10 +108,9 @@ export class RateLimiterPolicy<TMetrics = unknown> {
     trackWhenAllowed(
         currentState: AllowedState<TMetrics>,
         currentDate: Date,
-    ): AllRateLimiterState<TMetrics> {
+    ): AllowedState<TMetrics> {
         return {
             type: currentState.type,
-            attempt: currentState.attempt,
             metrics: this.rateLimiterPolicy.updateMetrics(
                 currentState.metrics,
                 currentDate,
@@ -153,5 +140,18 @@ export class RateLimiterPolicy<TMetrics = unknown> {
         return TimeSpan.fromTimeSpan(
             callInvokable(settings.backoffPolicy, currentState.attempt, null),
         ).toEndDate(settings.currentDate);
+    }
+
+    getAttempts(
+        currentState: AllRateLimiterState<TMetrics>,
+        currentDate: Date,
+    ): number {
+        if (currentState.type === RATE_LIMITER_STATE.ALLOWED) {
+            return this.rateLimiterPolicy.getAttempts(
+                currentState.metrics,
+                currentDate,
+            );
+        }
+        return currentState.attempt;
     }
 }
