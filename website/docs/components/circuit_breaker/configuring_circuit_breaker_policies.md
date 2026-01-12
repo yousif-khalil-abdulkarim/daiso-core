@@ -11,6 +11,8 @@ pagination_label: Configuring circuit-breaker policies
 The `ConsecutiveBreaker` breaks after n requests in a row fail.
 
 ```ts
+import { ConsecutiveBreaker } from "@daiso-tech/core/circuit-breaker/policies"
+
 new ConsecutiveBreaker({
     /**
      * Amount of consecutive failures before going from closed -> open.
@@ -31,6 +33,8 @@ new ConsecutiveBreaker({
 The `CountBreaker` breaks after a proportion of requests in a count based sliding window fail.
 
 ```ts
+import { CountBreaker } from "@daiso-tech/core/circuit-breaker/policies"
+
 new CountBreaker({
     /**
      * Percentage (from 0 to 1) failures before going from closed -> open.
@@ -63,6 +67,9 @@ new CountBreaker({
 The `SamplingBreaker` breaks after a proportion of requests over a time period fail.
 
 ```ts
+import { SamplingBreaker } from "@daiso-tech/core/circuit-breaker/policies"
+import { TimeSpan } from "@daiso-tech/core/time-span"
+
 new SamplingBreaker({
     /**
      * Percentage (from 0 to 1) failures before going from closed -> open.

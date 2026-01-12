@@ -48,14 +48,14 @@ const circuitBreaker = circuitBreakerProvider.create("resource");
 ### Using the circuit-breaker
 
 ```ts
-// The function will only be called when the circuit breaker is in closed state or half open state.
+// The function will only be called when the circuit-breaker is in closed state or half open state.
 await circuitBreaker.runOrFail(async () => {
     // Call the external service
 })
 ```
 
 :::info
-Note the method throws an error when the circuit breaker is in open state or isolated state.
+Note the method throws an error when the circuit-breaker is in open state or isolated state.
 :::
 
 :::info
@@ -140,7 +140,7 @@ await circuitBreaker.runOrFail(async () => {
 
 ### Reseting the circuit-breaker
 
-You can reset circuit breaker state to the closed state manually.
+You can reset circuit-breaker state to the closed state manually.
 
 ```ts
 await circuitBreaker.reset();
@@ -148,7 +148,7 @@ await circuitBreaker.reset();
 
 ### Isolating the circuit-breaker
 
-You can manually hold circuit breaker in open state until reseted.
+You can manually hold circuit-breaker in open state until reseted.
 
 ```ts
 await circuitBreaker.isolate();
