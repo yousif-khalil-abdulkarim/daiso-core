@@ -6,7 +6,6 @@ import { Redis } from "ioredis";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
 import { RedisCircuitBreakerAdapter } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/_module.js";
-import { BREAKER_POLICIES } from "@/circuit-breaker/implementations/policies/_module.js";
 import { countBreakerTestSuite } from "@/circuit-breaker/implementations/test-utilities/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
@@ -27,11 +26,9 @@ describe("count-breaker class: RedisCircuitBreakerAdapter", () => {
         createAdapter: () => {
             const adapter = new RedisCircuitBreakerAdapter({
                 database: client,
-                backoff: countBreakerTestSuite.backoffPolicySettings,
-                policy: {
-                    type: BREAKER_POLICIES.COUNT,
-                    ...countBreakerTestSuite.circuitBreakerPolicySettings,
-                },
+                backoffPolicy: countBreakerTestSuite.backoffPolicySettings,
+                circuitBreakerPolicy:
+                    countBreakerTestSuite.circuitBreakerPolicySettings,
             });
             return adapter;
         },
