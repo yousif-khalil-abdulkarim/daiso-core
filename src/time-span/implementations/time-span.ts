@@ -2,12 +2,14 @@
  * @module TimeSpan
  */
 
+import { parse, format } from "@lukeed/ms";
+
 import { type ISerializable } from "@/serde/contracts/_module.js";
 import {
     TO_MILLISECONDS,
     type ITimeSpan,
 } from "@/time-span/contracts/_module.js";
-import { type IComparable } from "@/utilities/_module.js";
+import { UnexpectedError, type IComparable } from "@/utilities/_module.js";
 
 /**
  *
@@ -95,6 +97,13 @@ export class TimeSpan
         };
     }
 
+    /**
+     * Converts it to readable string
+     */
+    toString(): string {
+        return format(this.milliseconds);
+    }
+
     static fromMilliseconds(milliseconds: number): TimeSpan {
         return new TimeSpan().addMilliseconds(milliseconds);
     }
@@ -124,6 +133,28 @@ export class TimeSpan
         end = new Date(),
     }: TimeSpanFromDateRangeSettings): TimeSpan {
         return new TimeSpan().addMilliseconds(end.getTime() - start.getTime());
+    }
+
+    /**
+     * Create a `TimeSpan` from `string`
+     *
+     * @example
+     * ```ts
+     * // Will be 5000 milliseconds.
+     * TimeSpan.fromStr("5s").toMilliseconds()
+     * ```
+     *
+     * Under the hood, this method leverages [@lukeed/ms](https://www.npmjs.com/package/@lukeed/ms) package to convert various time formats into milliseconds.
+     * Refer to its documentation for a complete list of supported time formats and units.
+     */
+    static fromStr(timeAsStr: string): TimeSpan {
+        const timeInMs = parse(timeAsStr);
+        if (timeInMs === undefined) {
+            throw new UnexpectedError(
+                "Passed in invalid string format to TimeSpan.fromStr",
+            );
+        }
+        return new TimeSpan().addMilliseconds(timeInMs);
     }
 
     addMilliseconds(milliseconds: number): TimeSpan {
