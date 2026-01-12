@@ -16,7 +16,7 @@ import {
     type CircuitBreakerState,
     CIRCUIT_BREAKER_STATE,
 } from "@/circuit-breaker/contracts/_module.js";
-import { type AllCircuitBreakerState } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
+import { type AllCircuitBreakerState } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/internal-circuit-breaker-policy.js";
 import { circuitBreakerFactoryLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/_module.js";
 import {
     BREAKER_POLICIES,

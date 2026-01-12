@@ -3,11 +3,11 @@
  */
 import { BACKOFFS, backoffsLua } from "@/backoff-policies/_module.js";
 import { circuitBreakerLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/circuit-breaker-lua.js";
-import { circuitBreakerPolicyLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/circuit-breaker-policy-lua.js";
 import { circuitBreakerStateManagerLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/circuit-breaker-state-manager-lua.js";
 import { circuitBreakerStorageLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/circuit-breaker-storage-lua.js";
 import { consecutiveBreakerLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/consecutive-breaker-lua.js";
 import { countBreakerLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/count-breaker-lua.js";
+import { circuitBreakerPolicyLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/internal-circuit-breaker-policy-lua.js";
 import { samplingBreakerLua } from "@/circuit-breaker/implementations/adapters/redis-circuit-breaker-adapter/lua/sampling-breaker-lua.js";
 import { BREAKER_POLICIES } from "@/circuit-breaker/implementations/policies/_module.js";
 
@@ -67,7 +67,7 @@ ${circuitBreakerLua}
 -- @param currentDate number
 -- @return ICircuitBreakerAdapter
 local function circuitBreakerFactory(backoffSettings, policySettings, currentDate)
-    local policy = CircuitBreakerPolicy(circuitBreakerPolicyFactory(policySettings))
+    local policy = InternalCircuitBreakerPolicy(circuitBreakerPolicyFactory(policySettings))
     local storage = CircuitBreakerStorage(policy, currentDate)
     local backoff = backoffPolicyFactory(backoffSettings)
     local stateManager = CircuitBreakerStateManager(policy, backoff)

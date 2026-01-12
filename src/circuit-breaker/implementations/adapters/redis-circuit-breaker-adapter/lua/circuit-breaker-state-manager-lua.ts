@@ -9,7 +9,7 @@ import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module.js";
  */
 export const circuitBreakerStateManagerLua = `
 -- @template TMetrics
--- @param circuitBreakerPolicy CircuitBreakerPolicy<TMetrics>
+-- @param circuitBreakerPolicy InternalCircuitBreakerPolicy<TMetrics>
 -- @param backoffPolicy BackoffPolicy
 local function CircuitBreakerStateManager(circuitBreakerPolicy, backoffPolicy)
     return {
