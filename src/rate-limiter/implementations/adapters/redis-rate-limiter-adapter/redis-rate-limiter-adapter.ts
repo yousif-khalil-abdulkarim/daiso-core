@@ -35,11 +35,21 @@ type IRedisJsonRateLimiterState = {
 declare module "ioredis" {
     interface RedisCommander<Context> {
         /**
-         * @returns {string} {@link IRedisJsonRateLimiterState | `IRedisJsonRateLimiterState | null`} as json string.
+         * @returns {string} {@link IRedisJsonRateLimiterState | `IRedisJsonRateLimiterState`} as json string.
          */
         daiso_rate_limiter_update_state(
             key: string,
             limit: number,
+            backoffSettings: string,
+            policySettings: string,
+            currentDate: number,
+        ): Result<string, Context>;
+
+        /**
+         * @returns {string} {@link IRedisJsonRateLimiterState | `IRedisJsonRateLimiterState | null`} as json string.
+         */
+        daiso_rate_limiter_get_state(
+            key: string,
             backoffSettings: string,
             policySettings: string,
             currentDate: number,
@@ -61,7 +71,7 @@ export type RedisRateLimiterAdapterSettings = {
      * { type: BACKOFFS.EXPONENTIAL }
      * ```
      */
-    backoff?: BackoffSettingsEnum;
+    backoffPolicy?: BackoffSettingsEnum;
 
     /**
      * You can choose between different types of predefined circuit breaker policies.
@@ -70,7 +80,7 @@ export type RedisRateLimiterAdapterSettings = {
      * { type: LIMITER.FIXED_WINDOW }
      * ```
      */
-    policy?: RateLimiterPolicySettingsEnum;
+    rateLimiterPolicy?: RateLimiterPolicySettingsEnum;
 };
 
 /**
@@ -99,18 +109,41 @@ export class RedisRateLimiterAdapter implements IRateLimiterAdapter {
     constructor(settings: RedisRateLimiterAdapterSettings) {
         const {
             database,
-            backoff = {
+            backoffPolicy = {
                 type: BACKOFFS.EXPONENTIAL,
             },
-            policy = {
+            rateLimiterPolicy = {
                 type: LIMITER_POLICIES.FIXED_WINDOW,
             },
         } = settings;
 
         this.database = database;
-        this.backoff = resolveBackoffSettingsEnum(backoff);
-        this.policy = resolveRateLimiterPolicySettings(policy);
+        this.backoff = resolveBackoffSettingsEnum(backoffPolicy);
+        this.policy = resolveRateLimiterPolicySettings(rateLimiterPolicy);
+        this.initGetStateCommand();
         this.initUpdateStateCommmand();
+    }
+
+    private initGetStateCommand(): void {
+        if (typeof this.database.daiso_rate_limiter_get_state === "function") {
+            return;
+        }
+
+        this.database.defineCommand("daiso_rate_limiter_get_state", {
+            numberOfKeys: 1,
+            lua: `
+            ${rateLimiterFactoryLua}
+
+            local key = KEYS[1];
+            local backoffSettings = cjson.decode(ARGV[1]);
+            local policySettings = cjson.decode(ARGV[2]);
+            local currentDate = tonumber(ARGV[3]);
+
+            local rateLimiter = rateLimiterFactory(backoffSettings, policySettings, currentDate)
+            local state = rateLimiter.getState(key)
+            return cjson.encode(state)
+            `,
+        });
     }
 
     private initUpdateStateCommmand(): void {
@@ -139,20 +172,22 @@ export class RedisRateLimiterAdapter implements IRateLimiterAdapter {
     }
 
     async getState(key: string): Promise<IRateLimiterAdapterState | null> {
-        const json = await this.database.get(key);
-        if (json === null) {
+        const json = await this.database.daiso_rate_limiter_get_state(
+            key,
+            JSON.stringify(serializeBackoffSettingsEnum(this.backoff)),
+            JSON.stringify(serializeRateLimiterPolicySettingsEnum(this.policy)),
+            Date.now(),
+        );
+        const state = JSON.parse(json) as IRedisJsonRateLimiterState | null;
+        if (state === null) {
             return null;
         }
-        const state = JSON.parse(json) as IRedisJsonRateLimiterState;
         return {
             success: state.success,
             attempt: state.attempt,
-            resetTime:
-                state.resetTime === -1
-                    ? null
-                    : TimeSpan.fromDateRange({
-                          end: new Date(state.resetTime),
-                      }),
+            resetTime: TimeSpan.fromDateRange({
+                end: new Date(state.resetTime),
+            }),
         };
     }
 
@@ -171,12 +206,9 @@ export class RedisRateLimiterAdapter implements IRateLimiterAdapter {
         return {
             success: state.success,
             attempt: state.attempt,
-            resetTime:
-                state.resetTime === -1
-                    ? null
-                    : TimeSpan.fromDateRange({
-                          end: new Date(state.resetTime),
-                      }),
+            resetTime: TimeSpan.fromDateRange({
+                end: new Date(state.resetTime),
+            }),
         };
     }
 

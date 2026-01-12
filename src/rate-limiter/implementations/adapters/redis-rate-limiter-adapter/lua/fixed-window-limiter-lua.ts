@@ -23,8 +23,8 @@ local function FixedWindowLimiter(settings)
         -- @param limit number
         -- @param currentDate number
         shouldBlock = function(currentMetrics, limit, currentDate)
-            local timeSinceLastAttempt = currentDate + currentMetrics.lastAttemptAt
-            return timeSinceLastAttempt < settings.window and currentMetrics.attempt >= limit
+            local timeSinceLastAttempt = currentDate - currentMetrics.lastAttemptAt
+            return timeSinceLastAttempt < settings.window and currentMetrics.attempt > limit
         end,
 
         -- @param currentMetrics FixedWindowLimiterState

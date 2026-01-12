@@ -12,12 +12,21 @@ export const rateLimiterPolicyLua = `
 -- @param rateLimiterPolicy IRateLimiterPolicy
 local function RateLimiterPolicy(rateLimiterPolicy)
     return {
-        -- @param currentState AllowedRateLimiterState<TMetrics>
+        -- @param currentDate number
+        -- @return AllowedState<TMetrics>
+        initialState = function(currentDate)
+            return {
+                type = "${RATE_LIMITER_STATE.ALLOWED}",
+                metrics = rateLimiterPolicy.initialMetrics(currentDate)
+            }
+        end,
+
+        -- @param currentState AllowedState<TMetrics>
         -- @param limit number
         -- @param currentDate number
-        -- @return AllowedRateLimiterState<TMetrics>
+        -- @return AllRateLimiterState<TMetrics>
         whenAllowed = function(currentState, limit, currentDate)
-            if rateLimiterPolicy.shouldBlock(currentState, limit, currentDate) then
+            if rateLimiterPolicy.shouldBlock(currentState.metrics, limit, currentDate) then
                 return {
                     type = "${RATE_LIMITER_STATE.BLOCKED}",
                     attempt = 1,
@@ -28,55 +37,64 @@ local function RateLimiterPolicy(rateLimiterPolicy)
             return currentState
         end,
 
-        -- @param currentState BlockedRateLimiterState
+        -- @param currentState BlockedState
         -- @param settings BackoffPolicySettings
         -- @return AllRateLimiterState<TMetrics>
         whenBlocked = function(currentState, settings)
-            local endDate = settings.backoffPolicy(currentState.attempt, nil) + currentState.startedAt
+            local waitTime = settings.backoffPolicy(currentState.attempt, nil)
+            local endDate = currentState.startedAt + waitTime
             local isWaitTimeOver = endDate <= settings.currentDate
 
             if isWaitTimeOver then
-                local currentMetrics = rateLimiterPolicy.initialMetrics(settings.currentDate)
                 return {
-                    attempt = rateLimiterPolicy.getAttempts(currentMetrics, settings.currentDate),
                     type = "${RATE_LIMITER_STATE.ALLOWED}",
-                    metrics = currentMetrics
+                    metrics = rateLimiterPolicy.initialMetrics(settings.currentDate),
                 }
             end
 
             return currentState
         end,
 
-        -- @param currentState AllowedRateLimiterState<TMetrics>
+        -- @param currentState AllowedState<TMetrics>
         -- @param currentDate number
-        -- @return AllowedRateLimiterState<TMetrics>
+        -- @return AllowedState<TMetrics>
         trackWhenAllowed = function(currentState, currentDate)
             return {
                 type = currentState.type,
-                attempt = currentState.attempt,
-                metrics = rateLimiterPolicy.updateMetrics(currentState.metrics, currentDate)
+                metrics = rateLimiterPolicy.updateMetrics(currentState.metrics, currentDate),
             }
         end,
 
-        -- @param currentState BlockedRateLimiterState
-        -- @return BlockedRateLimiterState
+        -- @param currentState BlockedState
+        -- @return BlockedState
         trackWhenBlocked = function(currentState)
             return {
                 type = currentState.type,
                 startedAt = currentState.startedAt,
-                attempt = currentState.attempt + 1
-            }
+                attempt = currentState.attempt + 1,
+            };
         end,
 
-        -- @param AllRateLimiterState<TMetrics>
+        -- @param currentState AllRateLimiterState<TMetrics>
         -- @param settings BackoffPolicySettings
         -- @return number
         getExpiration = function(currentState, settings)
             if currentState.type == "${RATE_LIMITER_STATE.ALLOWED}" then
-                return rateLimiterPolicy.getExpiration(currentState.metrics, settings.currentDate)
+                return rateLimiterPolicy.getExpiration(currentState.metrics, settings.currentDate);
             end
 
             return settings.backoffPolicy(currentState.attempt, nil) + settings.currentDate
+        end,
+
+        -- @param currentState AllRateLimiterState<TMetrics>
+        -- @param currentDate number
+        -- @return number
+        getAttempts = function(currentState, currentDate)
+            if currentState.type == "${RATE_LIMITER_STATE.ALLOWED}" then
+                return rateLimiterPolicy.getAttempts(currentState.metrics, currentDate);
+            end
+
+            return currentState.attempt
         end
     }
 end

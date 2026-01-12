@@ -66,6 +66,6 @@ local function rateLimiterFactory(backoffSettings, policySettings, currentDate)
     local backoffPolicy = backoffPolicyFactory(backoffSettings)
     local storage = RateLimiterStorage(rateLimiterPolicy, backoffPolicy, currentDate)
     local stateManager = RateLimiterStateManager(rateLimiterPolicy, backoffPolicy)
-    return RateLimiter(storage, stateManager)
+    return RateLimiter(storage, stateManager, currentDate)
 end
 `;
