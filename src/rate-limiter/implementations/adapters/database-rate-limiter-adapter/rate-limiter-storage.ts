@@ -10,8 +10,8 @@ import {
 } from "@/rate-limiter/contracts/_module.js";
 import {
     type AllRateLimiterState,
-    type RateLimiterPolicy,
-} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-policy.js";
+    type InternalRateLimiterPolicy,
+} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/internal-rate-limiter-policy.js";
 import { type InvokableFn } from "@/utilities/_module.js";
 
 /**
@@ -19,7 +19,7 @@ import { type InvokableFn } from "@/utilities/_module.js";
  */
 export type RateLimiterStorageSettings<TMetrics> = {
     adapter: IRateLimiterStorageAdapter<AllRateLimiterState<TMetrics>>;
-    rateLimiterPolicy: RateLimiterPolicy<TMetrics>;
+    rateLimiterPolicy: InternalRateLimiterPolicy<TMetrics>;
     backoffPolicy: BackoffPolicy;
 };
 
@@ -50,7 +50,7 @@ export class RateLimiterStorage<TMetrics = unknown> {
     private readonly adapter: IRateLimiterStorageAdapter<
         AllRateLimiterState<TMetrics>
     >;
-    private readonly rateLimiterPolicy: RateLimiterPolicy<TMetrics>;
+    private readonly rateLimiterPolicy: InternalRateLimiterPolicy<TMetrics>;
     private readonly backoffPolicy: BackoffPolicy;
 
     constructor(settings: RateLimiterStorageSettings<TMetrics>) {

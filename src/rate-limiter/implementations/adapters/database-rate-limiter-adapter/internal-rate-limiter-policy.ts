@@ -48,7 +48,7 @@ export type BackoffPolicySettings = {
 /**
  * @internal
  */
-export class RateLimiterPolicy<TMetrics = unknown> {
+export class InternalRateLimiterPolicy<TMetrics = unknown> {
     constructor(
         private readonly rateLimiterPolicy: IRateLimiterPolicy<TMetrics>,
     ) {}

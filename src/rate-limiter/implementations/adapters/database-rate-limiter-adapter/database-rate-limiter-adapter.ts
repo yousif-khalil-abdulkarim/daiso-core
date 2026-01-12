@@ -13,9 +13,9 @@ import {
     type IRateLimiterStorageAdapter,
 } from "@/rate-limiter/contracts/_module.js";
 import {
-    RateLimiterPolicy,
+    InternalRateLimiterPolicy,
     type AllRateLimiterState,
-} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-policy.js";
+} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/internal-rate-limiter-policy.js";
 import { RateLimiterStateManager } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-state-manager.js";
 import { RateLimiterStorage } from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-storage.js";
 import { FixedWindowLimiter } from "@/rate-limiter/implementations/policies/_module.js";
@@ -79,7 +79,7 @@ export class DatabaseRateLimiterAdapter<TMetrics = unknown>
             backoffPolicy = exponentialBackoff(),
             rateLimiterPolicy = new FixedWindowLimiter(),
         } = settings;
-        const internalRateLimiterPolicy = new RateLimiterPolicy(
+        const internalRateLimiterPolicy = new InternalRateLimiterPolicy(
             rateLimiterPolicy as IRateLimiterPolicy<TMetrics>,
         );
         this.rateLimiterStorage = new RateLimiterStorage({

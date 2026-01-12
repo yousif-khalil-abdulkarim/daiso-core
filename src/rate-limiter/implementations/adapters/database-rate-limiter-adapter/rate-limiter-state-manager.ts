@@ -6,15 +6,15 @@ import { type BackoffPolicy } from "@/backoff-policies/_module.js";
 import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/_module.js";
 import {
     type AllRateLimiterState,
-    type RateLimiterPolicy,
-} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/rate-limiter-policy.js";
+    type InternalRateLimiterPolicy,
+} from "@/rate-limiter/implementations/adapters/database-rate-limiter-adapter/internal-rate-limiter-policy.js";
 
 /**
  * @internal
  */
 export class RateLimiterStateManager<TMetrics = unknown> {
     constructor(
-        private readonly rateLimiterPolicy: RateLimiterPolicy<TMetrics>,
+        private readonly rateLimiterPolicy: InternalRateLimiterPolicy<TMetrics>,
         private readonly backoffPolicy: BackoffPolicy,
     ) {}
 
