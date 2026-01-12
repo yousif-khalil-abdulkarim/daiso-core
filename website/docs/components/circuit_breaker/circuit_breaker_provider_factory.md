@@ -49,12 +49,12 @@ const circuitBreakerProviderFactory = new CircuitBreakerProviderFactory({
 #### 1. Using the default adapter
 
 ```ts
-// Will apply circuit breaker logic the default adapter which is MemoryCircuitBreakerStorageAdapter
+// Will apply circuit-breaker logic the default adapter which is MemoryCircuitBreakerStorageAdapter
 await circuitBreakerProviderFactory
   .use()
   .create("a")
   .runOrFail(async () => {
-    // ... code to apply circuit breaker logic
+    // ... code to apply circuit-breaker logic
   });
 ```
 
@@ -65,12 +65,12 @@ Note that if you dont set a default adapter, an error will be thrown.
 #### 2. Specifying an adapter explicitly
 
 ```ts
-// Will apply circuit breaker logic using the redis adapter
+// Will apply circuit-breaker logic using the redis adapter
 await circuitBreakerProviderFactory
   .use("redis")
   .create("a")
   .runOrFail(async () => {
-    // ... code to apply circuit breaker logic
+    // ... code to apply circuit-breaker logic
   });
 ```
 
@@ -86,7 +86,7 @@ await circuitBreakerProviderFactory
   .create("a")
   .setNamespace(new Namespace(["@", "test"]))
   .runOrFail(async () => {
-    // ... code to apply circuit breaker logic
+    // ... code to apply circuit-breaker logic
   });
 ```
 
@@ -129,20 +129,20 @@ const circuitBreakerProviderFactory = new DatabaseCircuitBreakerProviderFactory(
   defaultAdapter: "memory",
 });
 
-// Will apply circuit breaker logic the default adapter which is MemoryCircuitBreakerStorageAdapter
+// Will apply circuit-breaker logic the default adapter which is MemoryCircuitBreakerStorageAdapter
 await circuitBreakerProviderFactory
   .use()
   .create("a")
   .runOrFail(async () => {
-    // ... code to apply circuit breaker logic
+    // ... code to apply circuit-breaker logic
   });
 
-// Will apply circuit breaker logic using the KyselyCircuitBreakerStorageAdapter
+// Will apply circuit-breaker logic using the KyselyCircuitBreakerStorageAdapter
 await circuitBreakerProviderFactory
   .use("sqlite")
   .create("a")
   .runOrFail(async () => {
-    // ... code to apply circuit breaker logic
+    // ... code to apply circuit-breaker logic
   });
 ```
 
@@ -151,12 +151,12 @@ await circuitBreakerProviderFactory
 #### 1. Using the default adapter
 
 ```ts
-// Will apply circuit breaker logic the default adapter which is MemoryCircuitBreakerStorageAdapter
+// Will apply circuit-breaker logic the default adapter which is MemoryCircuitBreakerStorageAdapter
 await circuitBreakerProviderFactory
   .use()
   .create("a")
   .runOrFail(async () => {
-    // ... code to apply circuit breaker logic
+    // ... code to apply circuit-breaker logic
   });
 ```
 
@@ -167,12 +167,12 @@ Note that if you dont set a default adapter, an error will be thrown.
 #### 2. Specifying an adapter explicitly
 
 ```ts
-// Will apply circuit breaker logic using the sqlite adapter
+// Will apply circuit-breaker logic using the sqlite adapter
 await circuitBreakerProviderFactory
   .use("sqlite")
   .create("a")
   .runOrFail(async () => {
-    // ... code to apply circuit breaker logic
+    // ... code to apply circuit-breaker logic
   });
 ```
 
@@ -192,7 +192,7 @@ await circuitBreakerProviderFactory
   .setBackoffPolicy(constantBackoff())
   .setCircuitBreakerPolicy(new CountBreaker())
   .runOrFail(async () => {
-    // ... code to apply circuit breaker logic
+    // ... code to apply circuit-breaker logic
   });
 ```
 

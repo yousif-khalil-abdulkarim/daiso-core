@@ -68,7 +68,7 @@ const redisCircuitBreakerAdapter = new RedisCircuitBreakerAdapter({
 
 The settings are the same as [backoff policies](../backoff_policies.md) settings. 
 
-### Configuring circuit breaker policy
+### Configuring circuit-breaker policy
 
 The `type` field is the only required field. All other fields are optional.
 
@@ -86,7 +86,7 @@ const redisCircuitBreakerAdapter = new RedisCircuitBreakerAdapter({
 });
 ```
 
-The settings are the same as [circuit breaker policies](./configuring_circuit_breaker_policies.md) settings. 
+The settings are the same as [circuit-breaker policies](./configuring_circuit_breaker_policies.md) settings. 
 
 ## DatabaseCircuitBreakerAdapter
 
@@ -124,7 +124,7 @@ const circuitBreakerAdapter = new DatabaseCircuitBreakerAdapter({
 });
 ```
 
-### Configuring circuit breaker policy
+### Configuring circuit-breaker policy
 
 You can use any of defined [circuit-breaker policies](./configuring_circuit_breaker_policies.md) or [create your own](./creating_circuit_breaker_policies.md).
 
