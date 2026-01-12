@@ -61,6 +61,17 @@ const timeSpan = TimeSpan.fromDateRange({
 });
 ```
 
+Creating `TimeSpan` from `string`:
+
+```ts
+const timeSpan = TimeSpan.fromStr("5s")
+```
+
+:::info
+Under the hood, this method leverages [@lukeed/ms](https://www.npmjs.com/package/@lukeed/ms) package to convert various time formats into milliseconds.
+Refer to its documentation for a complete list of supported time formats and units.
+:::
+
 ### Adding time to TimeSpan
 
 You can add milliseconds to a `TimeSpan`:

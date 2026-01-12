@@ -401,6 +401,7 @@
     },
     "devDependencies": {
         "@changesets/cli": "^2.27.7",
+        "@lukeed/ms": "^2.0.2",
         "@standard-schema/spec": "^1.0.0",
         "@testcontainers/mongodb": "^10.13.2",
         "@testcontainers/mysql": "^11.0.0",
