@@ -20,7 +20,7 @@ In order to create an adapter you need to implement the [`ISharedLockAdapter`](h
 
 ## Testing your custom ISharedLockAdapter
 
-We provide a complete test suite to test your shared lock adapter implementation. Simply use the [`sharedLockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.lockAdapterTestSuite.html) function:
+We provide a complete test suite to test your shared-lock adapter implementation. Simply use the [`sharedLockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.lockAdapterTestSuite.html) function:
 
 - Preconfigured Vitest test cases
 - Common edge case coverage
@@ -51,7 +51,7 @@ We provide an additional contract [`IDatabaseSharedLockAdapter`](https://yousif-
 
 ## Testing your custom IDatabaseSharedLockAdapter
 
-We provide a complete test suite to test your database shared lock adapter implementation. Simply use the [`databaseSharedLockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/SharedLock.databaseSharedLockAdapterTestSuite.html) function:
+We provide a complete test suite to test your database shared-lock adapter implementation. Simply use the [`databaseSharedLockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/SharedLock.databaseSharedLockAdapterTestSuite.html) function:
 
 - Preconfigured Vitest test cases
 - Common edge case coverage
