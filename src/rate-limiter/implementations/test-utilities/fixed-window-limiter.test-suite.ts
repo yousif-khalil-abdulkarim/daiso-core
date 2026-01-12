@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @module RateLimiter
  */
@@ -14,12 +13,14 @@ import {
     BACKOFFS,
     type ConstantBackoffSettingsEnum,
 } from "@/backoff-policies/_module.js";
-import { range } from "@/collection/implementations/_shared.js";
 import {
     type IRateLimiterAdapter,
     type IRateLimiterAdapterState,
 } from "@/rate-limiter/contracts/_module.js";
-import { type FixedWindowLimiterSettings } from "@/rate-limiter/implementations/policies/_module.js";
+import {
+    LIMITER_POLICIES,
+    type FixedWindowLimiterSettingsEnum,
+} from "@/rate-limiter/implementations/policies/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { type Promisable } from "@/utilities/_module.js";
@@ -40,7 +41,8 @@ export type FixedWindowLimiterTestSuiteSettings = {
 /**
  * @group TestUtilities
  */
-const rateLimiterPolicySettings: Required<FixedWindowLimiterSettings> = {
+const rateLimiterPolicySettings: Required<FixedWindowLimiterSettingsEnum> = {
+    type: LIMITER_POLICIES.FIXED_WINDOW,
     window: TimeSpan.fromMilliseconds(100),
 };
 
