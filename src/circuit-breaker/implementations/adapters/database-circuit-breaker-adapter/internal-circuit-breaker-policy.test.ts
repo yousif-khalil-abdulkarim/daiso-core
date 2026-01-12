@@ -11,14 +11,14 @@ import {
 } from "@/circuit-breaker/contracts/circuit-breaker-policy.contract.js";
 import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
 import {
-    CircuitBreakerPolicy,
+    InternalCircuitBreakerPolicy,
     type ClosedState,
     type HalfOpenedState,
     type OpenedState,
-} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
+} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/internal-circuit-breaker-policy.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
-describe("class: CircuitBreakerPolicy", () => {
+describe("class: InternalCircuitBreakerPolicy", () => {
     const basePolicy: Required<ICircuitBreakerPolicy<string>> = {
         initialMetrics: function (): string {
             throw new Error("Function not implemented.");
@@ -57,14 +57,14 @@ describe("class: CircuitBreakerPolicy", () => {
 
     describe("method: isEqual", () => {
         describe("when ICircuitBreakerPolicy.isEqual is not defined", () => {
-            let internalPolicy: CircuitBreakerPolicy<string>;
+            let internalPolicy: InternalCircuitBreakerPolicy<string>;
             beforeEach(() => {
                 const { isEqual: _isEqual, ...rest } = basePolicy;
                 const policy: Omit<
                     ICircuitBreakerPolicy<string>,
                     "isEqual"
                 > = rest;
-                internalPolicy = new CircuitBreakerPolicy(policy);
+                internalPolicy = new InternalCircuitBreakerPolicy(policy);
             });
 
             test("Should return false when stateA is ClosedState and stateB is OpenState", () => {
@@ -282,7 +282,7 @@ describe("class: CircuitBreakerPolicy", () => {
             });
         });
         describe("when ICircuitBreakerPolicy.isEqual is defined", () => {
-            let internalPolicy: CircuitBreakerPolicy<string>;
+            let internalPolicy: InternalCircuitBreakerPolicy<string>;
             let policy: Required<ICircuitBreakerPolicy<string>>;
             beforeEach(() => {
                 policy = {
@@ -291,7 +291,7 @@ describe("class: CircuitBreakerPolicy", () => {
                         return metricsA === metricsB;
                     },
                 };
-                internalPolicy = new CircuitBreakerPolicy(policy);
+                internalPolicy = new InternalCircuitBreakerPolicy(policy);
             });
 
             test("Should return false when stateA is ClosedState and stateB is OpenState", () => {
@@ -532,7 +532,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(
                 () => "INITIAL_METRICS",
             );
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             const state = internalPolicy.initialState();
 
@@ -545,7 +545,7 @@ describe("class: CircuitBreakerPolicy", () => {
             const initialMetricsSpy = vi
                 .spyOn(basePolicy, "initialMetrics")
                 .mockImplementation(() => "INITIAL_METRICS");
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             internalPolicy.initialState();
 
@@ -557,7 +557,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "whenClosed").mockImplementation(
                 () => CLOSED_TRANSITIONS.NONE,
             );
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
             const currentState: ClosedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.CLOSED,
                 metrics: "metrics",
@@ -574,7 +574,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "whenClosed").mockImplementation(
                 () => CLOSED_TRANSITIONS.TO_OPEN,
             );
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
             const currentState: ClosedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.CLOSED,
                 metrics: "metrics",
@@ -596,7 +596,7 @@ describe("class: CircuitBreakerPolicy", () => {
             const whenClosedSpy = vi
                 .spyOn(basePolicy, "whenClosed")
                 .mockImplementation(() => CLOSED_TRANSITIONS.NONE);
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
             const currentMetrics = "metrics";
             const currentState: ClosedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.CLOSED,
@@ -614,7 +614,7 @@ describe("class: CircuitBreakerPolicy", () => {
     });
     describe("method: whenOpened", () => {
         test("Should return OpenedState when wait time is not over", () => {
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
             const waitTime = TimeSpan.fromMilliseconds(50);
             const currentDate = new Date();
 
@@ -635,7 +635,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(
                 () => "INITIAL_METRICS",
             );
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
             const waitTime = TimeSpan.fromMilliseconds(50);
             const currentDate = new Date();
             const currentState: OpenedState = {
@@ -661,7 +661,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "whenHalfOpened").mockImplementation(
                 () => HALF_OPEN_TRANSITIONS.NONE,
             );
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
             const currentState: HalfOpenedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.HALF_OPEN,
                 attempt: 1,
@@ -679,7 +679,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "whenHalfOpened").mockImplementation(
                 () => HALF_OPEN_TRANSITIONS.TO_OPEN,
             );
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
             const currentState: HalfOpenedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.HALF_OPEN,
                 attempt: 1,
@@ -705,7 +705,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(
                 () => "INITIAL_METRICS",
             );
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
             const currentState: HalfOpenedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.HALF_OPEN,
                 attempt: 1,
@@ -727,7 +727,7 @@ describe("class: CircuitBreakerPolicy", () => {
             const whenHalfOpened = vi
                 .spyOn(basePolicy, "whenHalfOpened")
                 .mockImplementation(() => HALF_OPEN_TRANSITIONS.NONE);
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
             const currentMetrics = "metrics";
             const currentState: HalfOpenedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.HALF_OPEN,
@@ -752,7 +752,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(() => {
                 return "INITIAL";
             });
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             internalPolicy.trackSuccessWhenClosed(
                 {
@@ -772,7 +772,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(() => {
                 return "INITIAL";
             });
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             const currentState: ClosedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.CLOSED,
@@ -797,7 +797,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(() => {
                 return "INITIAL";
             });
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             internalPolicy.trackFailureWhenClosed(
                 {
@@ -817,7 +817,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(() => {
                 return "INITIAL";
             });
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             const currentState: ClosedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.CLOSED,
@@ -842,7 +842,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(() => {
                 return "INITIAL";
             });
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             internalPolicy.trackSuccessWhenHalfOpened(
                 {
@@ -863,7 +863,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(() => {
                 return "INITIAL";
             });
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             const currentState: HalfOpenedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.HALF_OPEN,
@@ -889,7 +889,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(() => {
                 return "INITIAL";
             });
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             internalPolicy.trackFailureWhenHalfOpened(
                 {
@@ -910,7 +910,7 @@ describe("class: CircuitBreakerPolicy", () => {
             vi.spyOn(basePolicy, "initialMetrics").mockImplementation(() => {
                 return "INITIAL";
             });
-            const internalPolicy = new CircuitBreakerPolicy(basePolicy);
+            const internalPolicy = new InternalCircuitBreakerPolicy(basePolicy);
 
             const currentState: HalfOpenedState<string> = {
                 type: CIRCUIT_BREAKER_STATE.HALF_OPEN,

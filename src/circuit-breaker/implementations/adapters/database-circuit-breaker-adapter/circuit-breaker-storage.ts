@@ -8,8 +8,8 @@ import {
 } from "@/circuit-breaker/contracts/_module.js";
 import {
     type AllCircuitBreakerState,
-    type CircuitBreakerPolicy,
-} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
+    type InternalCircuitBreakerPolicy,
+} from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/internal-circuit-breaker-policy.js";
 import { type DatabaseCircuitBreakerUpdateStateFn } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/types.js";
 
 /**
@@ -20,7 +20,7 @@ export class CircuitBreakerStorage<TMetrics = unknown> {
         private readonly adapter: ICircuitBreakerStorageAdapter<
             AllCircuitBreakerState<TMetrics>
         >,
-        private readonly circuitBreakerPolicy: CircuitBreakerPolicy<TMetrics>,
+        private readonly circuitBreakerPolicy: InternalCircuitBreakerPolicy<TMetrics>,
     ) {}
 
     async atomicUpdate(

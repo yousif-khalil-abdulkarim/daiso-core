@@ -4,7 +4,7 @@
 
 import { type BackoffPolicy } from "@/backoff-policies/_module.js";
 import { CIRCUIT_BREAKER_STATE } from "@/circuit-breaker/contracts/_module.js";
-import { type CircuitBreakerPolicy } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/circuit-breaker-policy.js";
+import { type InternalCircuitBreakerPolicy } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/internal-circuit-breaker-policy.js";
 import { type DatabaseCircuitBreakerUpdateStateFn } from "@/circuit-breaker/implementations/adapters/database-circuit-breaker-adapter/types.js";
 
 /**
@@ -12,7 +12,7 @@ import { type DatabaseCircuitBreakerUpdateStateFn } from "@/circuit-breaker/impl
  */
 export class CircuitBreakerStateManager<TMetrics = unknown> {
     constructor(
-        private readonly circuitBreakerPolicy: CircuitBreakerPolicy<TMetrics>,
+        private readonly circuitBreakerPolicy: InternalCircuitBreakerPolicy<TMetrics>,
         private readonly backoffPolicy: BackoffPolicy,
     ) {}
 
