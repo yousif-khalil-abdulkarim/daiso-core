@@ -54,11 +54,9 @@ export class RateLimiterPolicy<TMetrics = unknown> {
     ) {}
 
     initialState(currentDate: Date): AllowedState<TMetrics> {
-        const currentMetrics =
-            this.rateLimiterPolicy.initialMetrics(currentDate);
         return {
             type: RATE_LIMITER_STATE.ALLOWED,
-            metrics: currentMetrics,
+            metrics: this.rateLimiterPolicy.initialMetrics(currentDate),
         };
     }
 
@@ -96,12 +94,11 @@ export class RateLimiterPolicy<TMetrics = unknown> {
             endDate.getTime() <= settings.currentDate.getTime();
 
         if (isWaitTimeOver) {
-            const currentMetrics = this.rateLimiterPolicy.initialMetrics(
-                settings.currentDate,
-            );
             return {
                 type: RATE_LIMITER_STATE.ALLOWED,
-                metrics: currentMetrics,
+                metrics: this.rateLimiterPolicy.initialMetrics(
+                    settings.currentDate,
+                ),
             };
         }
 
@@ -111,7 +108,7 @@ export class RateLimiterPolicy<TMetrics = unknown> {
     trackWhenAllowed(
         currentState: AllowedState<TMetrics>,
         currentDate: Date,
-    ): AllRateLimiterState<TMetrics> {
+    ): AllowedState<TMetrics> {
         return {
             type: currentState.type,
             metrics: this.rateLimiterPolicy.updateMetrics(

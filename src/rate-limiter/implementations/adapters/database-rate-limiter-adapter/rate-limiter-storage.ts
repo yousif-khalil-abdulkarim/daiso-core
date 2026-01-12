@@ -77,14 +77,13 @@ export class RateLimiterStorage<TMetrics = unknown> {
         state: AllRateLimiterState<TMetrics>,
     ): IRateLimiterStorageState {
         const currentDate = new Date();
-        const resetTime = this.rateLimiterPolicy.getExpiration(state, {
-            backoffPolicy: this.backoffPolicy,
-            currentDate,
-        });
         return {
             success: state.type === RATE_LIMITER_STATE.ALLOWED,
             attempt: this.rateLimiterPolicy.getAttempts(state, currentDate),
-            resetTime,
+            resetTime: this.rateLimiterPolicy.getExpiration(state, {
+                backoffPolicy: this.backoffPolicy,
+                currentDate,
+            }),
         };
     }
 

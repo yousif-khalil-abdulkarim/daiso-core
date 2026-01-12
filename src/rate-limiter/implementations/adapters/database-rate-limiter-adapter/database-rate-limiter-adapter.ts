@@ -114,13 +114,17 @@ export class DatabaseRateLimiterAdapter<TMetrics = unknown>
         limit: number,
     ): Promise<IRateLimiterAdapterState> {
         const currentDate = new Date();
+        const track = this.rateLimiterStateManager.track(currentDate);
+        const updateState = this.rateLimiterStateManager.updateState(
+            limit,
+            currentDate,
+        );
         const state = await this.rateLimiterStorage.atomicUpdate({
             key,
             update: (prevState) => {
-                return this.rateLimiterStateManager.updateState(
-                    limit,
-                    currentDate,
-                )(this.rateLimiterStateManager.track(currentDate)(prevState));
+                const newState1 = track(prevState);
+                const newState2 = updateState(newState1);
+                return newState2;
             },
         });
         return {
