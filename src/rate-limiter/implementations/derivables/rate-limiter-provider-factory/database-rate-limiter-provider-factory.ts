@@ -137,12 +137,12 @@ export class DatabaseRateLimiterProviderFactory<TAdapters extends string>
         });
     }
 
-    setErrorPolicy(
+    setDefaultErrorPolicy(
         errorPolicy: ErrorPolicy,
     ): DatabaseRateLimiterProviderFactory<TAdapters> {
         return new DatabaseRateLimiterProviderFactory({
             ...this.settings,
-            errorPolicy,
+            defaultErrorPolicy: errorPolicy,
         });
     }
 
