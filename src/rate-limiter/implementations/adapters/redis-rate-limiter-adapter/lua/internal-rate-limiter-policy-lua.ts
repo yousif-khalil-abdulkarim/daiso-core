@@ -10,7 +10,7 @@ import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/_module.js";
 export const rateLimiterPolicyLua = `
 -- @template TMetrics
 -- @param rateLimiterPolicy IRateLimiterPolicy
-local function RateLimiterPolicy(rateLimiterPolicy)
+local function InternalRateLimiterPolicy(rateLimiterPolicy)
     return {
         -- @param currentDate number
         -- @return AllowedState<TMetrics>

@@ -9,7 +9,7 @@ import { RATE_LIMITER_STATE } from "@/rate-limiter/contracts/_module.js";
  */
 export const rateLimterStorageLua = `
 -- @template TMetrics
--- @param rateLimiterPolicy RateLimiterPolicy<TMetrics>
+-- @param rateLimiterPolicy InternalRateLimiterPolicy<TMetrics>
 -- @param backoffPolicy BackoffPolicy
 -- @param currentDate number
 local function RateLimiterStorage(rateLimiterPolicy, backoffPolicy, currentDate)
