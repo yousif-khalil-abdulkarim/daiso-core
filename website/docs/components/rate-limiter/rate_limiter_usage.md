@@ -177,6 +177,88 @@ console.log(await rateLimiterA.getState())
 console.log(await rateLimiterB.getState())
 ```
 
+### Serialization and deserialization of rate-limiters
+
+rate-limiters can be serialized, allowing them to be transmitted over the network to another server and later deserialized for reuse.
+This means you can, for example, acquire the rate-limiter on the main server, transfer it to a queue worker server, and release it there.
+In order to serialize or deserialize a rate-limiter you need pass an object that implements [`ISerderRegister`](../serde.md) contract like the [`Serde`](../serde.md) class to `RateLimiterProvider`. 
+
+Manually serializing and deserializing the rate-limiter:
+
+```ts
+import { RedisRateLimiterAdapter } from "@daiso-tech/core/rate-limiter/redis-rate-limiter-adapter";
+import { RateLimiterProvider } from "@daiso-tech/core/rate-limiter";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
+
+const serde = new Serde(new SuperJsonSerdeAdapter());
+
+const redisClient = new Redis("YOUR_REDIS_CONNECTION");
+
+const rateLimiterProvider = new RateLimiterProvider({
+    // You can laso pass in an array of Serde class instances
+    serde,
+    adapter: new RedisRateLimiterAdapter({ database: redisClient }),
+});
+
+const rateLimiter = rateLimiterProvider.create("resource");
+const serializedRateLimiter = serde.serialize(rateLimiter);
+const deserializedRateLimiter = serde.deserialize(rateLimiter);
+```
+
+:::danger
+When serializing or deserializing a rate-limiter, you must use the same `Serde` instances that were provided to the `RateLimiterProvider`. This is required because the `RateLimiterProvider` injects custom serialization logic for `IRateLimiter` instance into `Serde` instances.
+:::
+
+:::info
+Note you only need manuall serialization and deserialization when integrating with external libraries.
+:::
+
+As long you pass the same `Serde` instances with all other components you dont need to serialize and deserialize the rate-limiter manually.
+
+```ts
+import { RedisRateLimiterAdapter } from "@daiso-tech/core/rate-limiter/redis-rate-limiter-adapter";
+import type { IRateLimiter } from "@daiso-tech/core/rate-limiter/contracts";
+import { RateLimiterProvider } from "@daiso-tech/core/rate-limiter";
+import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
+import { EventBus } from "@daiso-tech/core/event-bus";
+import { Serde } from "@daiso-tech/core/serde";
+import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
+
+const serde = new Serde(new SuperJsonSerdeAdapter());
+const redis = new Redis("YOUR_REDIS_CONNECTION");
+
+type EventMap = {
+    "sending-rate-limiter-over-network": {
+        rateLimiter: IRateLimiter;
+    };
+};
+const eventBus = new EventBus<EventMap>({
+    adapter: new RedisPubSubEventBusAdapter({
+        client: redis,
+        serde,
+    }),
+});
+
+const rateLimiterProvider = new RateLimiterProvider({
+    serde,
+    adapter: new RedisRateLimiterAdapter({ databsae: redis }),
+    eventBus,
+});
+const rateLimiter = rateLimiterProvider.create("resource");
+
+// We are sending the rateLimiter over the network to other servers.
+await eventBus.dispatch("sending-rate-limiter-over-network", {
+    rateLimiter,
+});
+
+// The other servers will recieve the serialized rateLimiter and automattically deserialize it.
+await eventBus.addListener("sending-rate-limiter-over-network", ({ rateLimiter }) => {
+    // The rateLimiter is serialized and can be used
+    console.log("RATE_LIMITER:", rateLimiter);
+});
+```
+
 ### Rate-limiter events
 
 You can listen to different [rate-limiter events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/RateLimiter.html) that are triggered by the `RateLimiter` instance.

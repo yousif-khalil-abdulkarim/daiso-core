@@ -305,7 +305,7 @@ await eventBus.dispatch("sending-circuit-breaker-over-network", {
 // The other servers will recieve the serialized circuitBreaker and automattically deserialize it.
 await eventBus.addListener("sending-circuit-breaker-over-network", ({ circuitBreaker }) => {
     // The circuitBreaker is serialized and can be used
-    console.log("LOCK:", circuitBreaker);
+    console.log("CIRCUIT_BREAKER:", circuitBreaker);
 });
 ```
 
