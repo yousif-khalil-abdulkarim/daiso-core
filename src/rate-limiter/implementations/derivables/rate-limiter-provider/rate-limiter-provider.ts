@@ -17,9 +17,18 @@ import {
     type RateLimiterEventMap,
     type RateLimiterProviderCreateSettings,
 } from "@/rate-limiter/contracts/_module.js";
+import { RateLimiterSerdeTransformer } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/rate-limiter-serde-transformer.js";
 import { RateLimiter } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/rate-limiter.js";
+import { type ISerderRegister } from "@/serde/contracts/_module.js";
+import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
+import { Serde } from "@/serde/implementations/derivables/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
-import { type ErrorPolicy } from "@/utilities/_module.js";
+import {
+    CORE,
+    resolveOneOrMore,
+    type ErrorPolicy,
+    type OneOrMore,
+} from "@/utilities/_module.js";
 
 /**
  *
@@ -72,6 +81,22 @@ export type RateLimiterProviderSettingsBase = {
      * @default true
      */
     enableAsyncTracking?: boolean;
+
+    /**
+     * @default
+     * ```ts
+     * import { Serde } from "@daiso-tech/serde";
+     * import { NoOpSerdeAdapter } from "@daiso-tech/serde/no-op-serde-adapter";
+     *
+     * new Serde(new NoOpSerdeAdapter())
+     * ```
+     */
+    serde?: OneOrMore<ISerderRegister>;
+
+    /**
+     * @default ""
+     */
+    serdeTransformerName?: string;
 };
 
 /**
@@ -105,6 +130,8 @@ export class RateLimiterProvider implements IRateLimiterProvider {
     private readonly onlyError: boolean;
     private readonly defaultErrorPolicy: ErrorPolicy;
     private readonly enableAsyncTracking: boolean;
+    private readonly serde: OneOrMore<ISerderRegister>;
+    private readonly serdeTransformerName: string;
 
     /**
      * @example
@@ -147,14 +174,34 @@ export class RateLimiterProvider implements IRateLimiterProvider {
             adapter,
             onlyError = false,
             defaultErrorPolicy = () => true,
+            serde = new Serde(new NoOpSerdeAdapter()),
+            serdeTransformerName = "",
         } = settings;
 
+        this.serdeTransformerName = serdeTransformerName;
         this.enableAsyncTracking = enableAsyncTracking;
         this.namespace = namespace;
         this.eventBus = eventBus;
         this.adapter = adapter;
         this.onlyError = onlyError;
         this.defaultErrorPolicy = defaultErrorPolicy;
+        this.serde = serde;
+        this.registerToSerde();
+    }
+
+    private registerToSerde(): void {
+        const transformer = new RateLimiterSerdeTransformer({
+            enableAsyncTracking: this.enableAsyncTracking,
+            namespace: this.namespace,
+            eventBus: this.eventBus,
+            adapter: this.adapter,
+            onlyError: this.onlyError,
+            errorPolicy: this.defaultErrorPolicy,
+            serdeTransformerName: this.serdeTransformerName,
+        });
+        for (const serde of resolveOneOrMore(this.serde)) {
+            serde.registerCustom(transformer, CORE);
+        }
     }
 
     addListener<TEventName extends keyof RateLimiterEventMap>(
@@ -215,6 +262,8 @@ export class RateLimiterProvider implements IRateLimiterProvider {
             key: this.namespace.create(key),
             errorPolicy,
             onlyError,
+            serdeTransformerName: this.serdeTransformerName,
+            namespace: this.namespace,
         });
     }
 }

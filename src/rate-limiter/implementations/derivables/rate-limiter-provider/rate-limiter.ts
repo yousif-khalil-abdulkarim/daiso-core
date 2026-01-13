@@ -3,7 +3,7 @@
  */
 
 import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
-import { type Key } from "@/namespace/_module.js";
+import { type Namespace, type Key } from "@/namespace/_module.js";
 import {
     BlockedRateLimiterError,
     RATE_LIMITER_EVENTS,
@@ -36,12 +36,36 @@ export type RateLimiterSettings = {
     key: Key;
     errorPolicy: ErrorPolicy;
     onlyError: boolean;
+    namespace: Namespace;
+    serdeTransformerName: string;
+};
+
+/**
+ * @internal
+ */
+export type ISerializedRateLimiter = {
+    version: "1";
+    key: string;
+    limit: number;
 };
 
 /**
  * @internal
  */
 export class RateLimiter implements IRateLimiter {
+    /**
+     * @internal
+     */
+    static _internal_serialize(
+        deserializedValue: RateLimiter,
+    ): ISerializedRateLimiter {
+        return {
+            version: "1",
+            key: deserializedValue._key.get(),
+            limit: deserializedValue._limit,
+        };
+    }
+
     private readonly _key: Key;
     private readonly _limit: number;
     private readonly errorPolicy: ErrorPolicy;
@@ -49,6 +73,8 @@ export class RateLimiter implements IRateLimiter {
     private readonly adapter: IRateLimiterAdapter;
     private readonly eventDispatcher: IEventDispatcher<RateLimiterEventMap>;
     private readonly enableAsyncTracking: boolean;
+    private readonly serdeTransformerName: string;
+    private readonly namespace: Namespace;
 
     constructor(settings: RateLimiterSettings) {
         const {
@@ -59,8 +85,12 @@ export class RateLimiter implements IRateLimiter {
             errorPolicy,
             onlyError,
             adapter,
+            serdeTransformerName,
+            namespace,
         } = settings;
 
+        this.namespace = namespace;
+        this.serdeTransformerName = serdeTransformerName;
         this._limit = limit;
         this.enableAsyncTracking = enableAsyncTracking;
         this.eventDispatcher = eventDispatcher;
@@ -68,6 +98,18 @@ export class RateLimiter implements IRateLimiter {
         this.errorPolicy = errorPolicy;
         this.onlyError = onlyError;
         this.adapter = adapter;
+    }
+
+    _internal_getNamespace(): Namespace {
+        return this.namespace;
+    }
+
+    _internal_getSerdeTransformerName(): string {
+        return this.serdeTransformerName;
+    }
+
+    _internal_getAdapter(): IRateLimiterAdapter {
+        return this.adapter;
     }
 
     private toRateLimiterState(
