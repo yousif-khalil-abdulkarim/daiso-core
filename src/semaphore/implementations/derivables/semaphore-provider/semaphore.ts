@@ -4,7 +4,8 @@
 
 import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
 import { type AsyncMiddlewareFn } from "@/hooks/_module.js";
-import { type Key, type Namespace } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import {
     type IDatabaseSemaphoreAdapter,
     type ISemaphoreAdapter,
@@ -47,7 +48,7 @@ export type SemaphoreSettings = {
     adapter: ISemaphoreAdapter;
     originalAdapter: SemaphoreAdapterVariants;
     eventDispatcher: IEventDispatcher<SemaphoreEventMap>;
-    key: Key;
+    key: IKey;
     ttl: TimeSpan | null;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
@@ -81,7 +82,7 @@ export class Semaphore implements ISemaphore {
         | ISemaphoreAdapter
         | IDatabaseSemaphoreAdapter;
     private readonly eventDispatcher: IEventDispatcher<SemaphoreEventMap>;
-    private readonly _key: Key;
+    private readonly _key: IKey;
     private _ttl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;

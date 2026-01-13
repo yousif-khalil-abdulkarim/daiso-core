@@ -24,7 +24,7 @@ import {
     CACHE_EVENTS,
     KeyExistsCacheError,
 } from "@/cache/contracts/_module.js";
-import { Key } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/time-span.contract.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
@@ -1509,7 +1509,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1526,7 +1529,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
 
@@ -1544,7 +1550,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1561,7 +1570,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
 
@@ -1579,7 +1591,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1596,7 +1611,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
 
@@ -1614,7 +1632,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1631,7 +1652,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
 
@@ -1653,7 +1677,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1670,7 +1697,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
 
@@ -1689,7 +1719,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                     ttl: expect.any(TimeSpan) as TimeSpan,
                 } satisfies AddedCacheEvent);
@@ -1712,7 +1745,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1730,7 +1766,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies UpdatedCacheEvent);
 
@@ -1753,7 +1792,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1771,7 +1813,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies UpdatedCacheEvent);
 
@@ -1790,7 +1835,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                     ttl: expect.any(TimeSpan) as TimeSpan,
                 } satisfies AddedCacheEvent);
@@ -1812,7 +1860,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                 } satisfies UpdatedCacheEvent);
 
@@ -1830,7 +1881,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1847,7 +1901,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies RemovedCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1868,7 +1925,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1885,7 +1945,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies RemovedCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1906,7 +1969,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledTimes(2);
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies RemovedCacheEvent);
 
                 const keyObj1 = handlerFn.mock.calls[0]?.[0].key;
@@ -1925,7 +1991,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledTimes(2);
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj1 = handlerFn.mock.calls[0]?.[0].key;
@@ -1945,7 +2014,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -1973,7 +2045,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies RemovedCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -2002,7 +2077,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
 
@@ -2019,7 +2097,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value,
                     ttl: expect.any(TimeSpan) as TimeSpan,
                 } satisfies AddedCacheEvent);
@@ -2042,7 +2123,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -2060,7 +2144,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies IncrementedCacheEvent);
 
@@ -2083,7 +2170,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -2101,7 +2191,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies IncrementedCacheEvent);
 
@@ -2120,7 +2213,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -2138,7 +2234,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies DecrementedCacheEvent);
 
@@ -2161,7 +2260,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
                 const keyObj = handlerFn.mock.calls[0]?.[0].key;
@@ -2179,7 +2281,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
 
                 expect(handlerFn).toHaveBeenCalledOnce();
                 expect(handlerFn).toHaveBeenCalledWith({
-                    key: expect.any(Key) as Key,
+                    key: expect.objectContaining({
+                        get: expect.any(Function) as IKey["get"],
+                        toString: expect.any(Function) as IKey["toString"],
+                    } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies DecrementedCacheEvent);
 

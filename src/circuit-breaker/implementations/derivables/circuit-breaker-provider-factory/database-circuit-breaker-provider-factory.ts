@@ -17,7 +17,7 @@ import {
     type CircuitBreakerProviderSettingsBase,
 } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/_module.js";
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -4,7 +4,8 @@
 
 import { type IEventDispatcher } from "@/event-bus/contracts/event-bus.contract.js";
 import { type AsyncMiddlewareFn } from "@/hooks/_module.js";
-import { type Key, type Namespace } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import {
     FailedAcquireWriterLockError,
     FailedRefreshReaderSemaphoreError,
@@ -59,7 +60,7 @@ export type SharedLockSettings = {
     originalAdapter: IDatabaseSharedLockAdapter | ISharedLockAdapter;
     eventDispatcher: IEventDispatcher<SharedLockEventMap>;
     limit: number;
-    key: Key;
+    key: IKey;
     lockId: string;
     ttl: TimeSpan | null;
     defaultBlockingInterval: TimeSpan;
@@ -92,7 +93,7 @@ export class SharedLock implements ISharedLock {
         | IDatabaseSharedLockAdapter
         | ISharedLockAdapter;
     private readonly eventDispatcher: IEventDispatcher<SharedLockEventMap>;
-    private readonly _key: Key;
+    private readonly _key: IKey;
     private readonly lockId: string;
     private _ttl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;

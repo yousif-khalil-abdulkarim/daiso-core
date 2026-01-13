@@ -12,7 +12,7 @@ import {
     type ISerializedCircuitBreaker,
 } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker.js";
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import { type ISerdeTransformer } from "@/serde/contracts/_module.js";
 import { type TimeSpan } from "@/time-span/implementations/_module.js";
 import {

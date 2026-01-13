@@ -14,7 +14,7 @@ import {
     type EventBusSettingsBase,
     type EventMapSchema,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,

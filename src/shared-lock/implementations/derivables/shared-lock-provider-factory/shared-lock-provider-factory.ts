@@ -2,7 +2,7 @@
  * @module SharedLock
  */
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import {
     type ISharedLockProviderFactory,
     type ISharedLockProvider,

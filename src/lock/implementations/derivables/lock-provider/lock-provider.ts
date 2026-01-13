@@ -27,7 +27,7 @@ import {
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
 import { resolveLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-lock-adapter.js";
-import { Namespace } from "@/namespace/_module.js";
+import { Namespace } from "@/namespace/implementations/_module.js";
 import { type ISerderRegister } from "@/serde/contracts/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/_module.js";

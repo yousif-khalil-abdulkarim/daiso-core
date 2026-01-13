@@ -21,7 +21,8 @@ import {
     type ILockAcquiredState,
     type ILockUnavailableState,
 } from "@/lock/contracts/_module.js";
-import { type Key, type Namespace } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
@@ -47,7 +48,7 @@ export type LockSettings = {
     adapter: ILockAdapter;
     originalAdapter: IDatabaseLockAdapter | ILockAdapter;
     eventDispatcher: IEventDispatcher<LockEventMap>;
-    key: Key;
+    key: IKey;
     lockId: string;
     ttl: TimeSpan | null;
     defaultBlockingInterval: TimeSpan;
@@ -75,7 +76,7 @@ export class Lock implements ILock {
     private readonly adapter: ILockAdapter;
     private readonly originalAdapter: IDatabaseLockAdapter | ILockAdapter;
     private readonly eventDispatcher: IEventDispatcher<LockEventMap>;
-    private readonly _key: Key;
+    private readonly _key: IKey;
     private readonly lockId: string;
     private _ttl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;

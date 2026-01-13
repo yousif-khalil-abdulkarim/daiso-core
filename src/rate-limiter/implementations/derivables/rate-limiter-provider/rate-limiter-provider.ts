@@ -9,7 +9,7 @@ import {
 } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { Namespace } from "@/namespace/_module.js";
+import { Namespace } from "@/namespace/implementations/_module.js";
 import {
     type IRateLimiter,
     type IRateLimiterAdapter,

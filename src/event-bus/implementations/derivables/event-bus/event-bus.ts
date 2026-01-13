@@ -14,7 +14,7 @@ import {
     type Unsubscribe,
 } from "@/event-bus/contracts/_module.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
-import { Namespace } from "@/namespace/_module.js";
+import { Namespace } from "@/namespace/implementations/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import {

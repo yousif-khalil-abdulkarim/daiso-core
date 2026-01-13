@@ -12,7 +12,7 @@ import {
     Lock,
     type ISerializedLock,
 } from "@/lock/implementations/derivables/lock-provider/lock.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import { type ISerdeTransformer } from "@/serde/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { getConstructorName, type OneOrMore } from "@/utilities/_module.js";

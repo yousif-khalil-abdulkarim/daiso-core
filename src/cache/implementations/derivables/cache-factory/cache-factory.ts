@@ -15,7 +15,7 @@ import {
     DEFAULT_CACHE_NAMESPACE,
 } from "@/cache/implementations/derivables/cache/_module.js";
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import {
     DefaultAdapterNotDefinedError,

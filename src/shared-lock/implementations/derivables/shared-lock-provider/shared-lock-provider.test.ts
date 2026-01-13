@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test } from "vitest";
 
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { Namespace } from "@/namespace/_module.js";
+import { Namespace } from "@/namespace/implementations/_module.js";
 import { SuperJsonSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/_module.js";
 import { type ISharedLock } from "@/shared-lock/contracts/_module.js";

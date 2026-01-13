@@ -12,7 +12,7 @@ import {
     LockProvider,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import {
     DefaultAdapterNotDefinedError,

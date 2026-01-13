@@ -15,7 +15,8 @@ import {
     CIRCUIT_BREAKER_EVENTS,
 } from "@/circuit-breaker/contracts/_module.js";
 import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
-import { type Key, type Namespace } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
@@ -34,7 +35,7 @@ export type CircuitBreakerSettings = {
     enableAsyncTracking: boolean;
     eventDispatcher: IEventDispatcher<CircuitBreakerEventMap>;
     adapter: ICircuitBreakerAdapter;
-    key: Key;
+    key: IKey;
     slowCallTime: TimeSpan;
     errorPolicy: ErrorPolicy;
     trigger: CircuitBreakerTrigger;
@@ -66,7 +67,7 @@ export class CircuitBreaker implements ICircuitBreaker {
         };
     }
 
-    private readonly _key: Key;
+    private readonly _key: IKey;
     private readonly errorPolicy: ErrorPolicy;
     private readonly trigger: CircuitBreakerTrigger;
     private readonly slowCallTime: TimeSpan;

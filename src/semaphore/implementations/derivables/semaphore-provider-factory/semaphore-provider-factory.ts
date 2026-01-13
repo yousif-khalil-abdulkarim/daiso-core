@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type Namespace } from "@/namespace/implementations/_module.js";
 import {
     type ISemaphoreProviderFactory,
     type ISemaphoreProvider,

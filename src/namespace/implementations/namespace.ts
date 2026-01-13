@@ -2,7 +2,7 @@
  * @module Namespace
  */
 
-import { type INamespace } from "@/namespace/contracts/_module.js";
+import { type IKey, type INamespace } from "@/namespace/contracts/_module.js";
 import {
     resolveOneOrMoreStr,
     resolveOneOrMore,
@@ -162,7 +162,7 @@ export class Namespace implements INamespace {
         return resolveOneOrMoreStr(this.getKeyPrefixArray(), this.delimeter);
     }
 
-    create(key: string): Key {
+    create(key: string): IKey {
         this.validate(key);
         return new Key({
             key,

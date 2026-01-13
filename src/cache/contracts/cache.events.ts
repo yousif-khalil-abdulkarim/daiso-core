@@ -3,7 +3,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { type Key } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
 import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
 /**
@@ -13,7 +13,7 @@ import { type TimeSpan } from "@/time-span/implementations/_module.js";
  * @group Events
  */
 export type FoundCacheEvent<TType = unknown> = {
-    key: Key;
+    key: IKey;
     value: TType;
 };
 
@@ -24,7 +24,7 @@ export type FoundCacheEvent<TType = unknown> = {
  * @group Events
  */
 export type NotFoundCacheEvent = {
-    key: Key;
+    key: IKey;
 };
 
 /**
@@ -34,7 +34,7 @@ export type NotFoundCacheEvent = {
  * @group Events
  */
 export type AddedCacheEvent<TType = unknown> = {
-    key: Key;
+    key: IKey;
     value: TType;
     ttl: TimeSpan | null;
 };
@@ -46,7 +46,7 @@ export type AddedCacheEvent<TType = unknown> = {
  * @group Events
  */
 export type UpdatedCacheEvent<TType = unknown> = {
-    key: Key;
+    key: IKey;
     value: TType;
 };
 
@@ -57,7 +57,7 @@ export type UpdatedCacheEvent<TType = unknown> = {
  * @group Events
  */
 export type RemovedCacheEvent = {
-    key: Key;
+    key: IKey;
 };
 
 /**
@@ -67,7 +67,7 @@ export type RemovedCacheEvent = {
  * @group Events
  */
 export type IncrementedCacheEvent = {
-    key: Key;
+    key: IKey;
     value: number;
 };
 
@@ -78,7 +78,7 @@ export type IncrementedCacheEvent = {
  * @group Events
  */
 export type DecrementedCacheEvent = {
-    key: Key;
+    key: IKey;
     value: number;
 };
 
