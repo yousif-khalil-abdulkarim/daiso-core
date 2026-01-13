@@ -1265,4 +1265,7 @@ describe("class: CircuitBreakerProvider", () => {
             });
         });
     });
+    describe("Serde tests:", () => {
+        test.todo("Write tests!!!");
+    });
 });
