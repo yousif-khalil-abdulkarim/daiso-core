@@ -2,6 +2,7 @@
  * @module Namespace
  */
 
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import {
     resolveOneOrMoreStr,
     resolveOneOrMore,
@@ -19,10 +20,9 @@ type KeySettings = {
 };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/namespace"`
+ * @internal
  */
-export class Key {
+class Key {
     private readonly prefixArr: Array<string>;
     private readonly key: string;
     private readonly delimeter: string;
@@ -51,7 +51,6 @@ export class Key {
 }
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/namespace"`
  */
 export type NamespaceSettings = {
@@ -70,6 +69,7 @@ export type NamespaceSettings = {
  * The `Namespace` class adds prefixes/suffixes to keys to avoid conflicts and group related items.
  *
  * IMPORT_PATH: `"@daiso-tech/core/namespace"`
+ * @group Adapters
  *
  * @example
  * ```ts
@@ -96,7 +96,7 @@ export type NamespaceSettings = {
  *
  * ```
  */
-export class Namespace {
+export class Namespace implements INamespace {
     private readonly delimeter: string;
     private readonly rootIdentifier: string;
 
