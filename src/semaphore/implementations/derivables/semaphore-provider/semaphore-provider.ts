@@ -57,6 +57,15 @@ export type SemaphoreProviderSettingsBase = {
      */
     namespace?: Namespace;
 
+    /**
+     * @default
+     * ```ts
+     * import { Serde } from "@daiso-tech/serde";
+     * import { NoOpSerdeAdapter } from "@daiso-tech/serde/no-op-serde-adapter";
+     *
+     * new Serde(new NoOpSerdeAdapter())
+     * ```
+     */
     serde?: OneOrMore<ISerderRegister>;
 
     /**
