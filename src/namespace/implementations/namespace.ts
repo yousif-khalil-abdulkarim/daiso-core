@@ -109,21 +109,21 @@ export class Namespace implements INamespace {
         this.rootIdentifier = rootIdentifier;
     }
 
-    setDelimeter(delimeter: string): Namespace {
+    setDelimeter(delimeter: string): INamespace {
         return new Namespace(this.root, {
             rootIdentifier: this.rootIdentifier,
             delimeter,
         });
     }
 
-    setRootIdentifier(identifier: string): Namespace {
+    setRootIdentifier(identifier: string): INamespace {
         return new Namespace(this.root, {
             rootIdentifier: identifier,
             delimeter: this.delimeter,
         });
     }
 
-    appendRoot(str: OneOrMore<string>): Namespace {
+    appendRoot(str: OneOrMore<string>): INamespace {
         return new Namespace(
             [...resolveOneOrMore(this.root), ...resolveOneOrMore(str)],
             {
@@ -133,7 +133,7 @@ export class Namespace implements INamespace {
         );
     }
 
-    prependRoot(str: OneOrMore<string>): Namespace {
+    prependRoot(str: OneOrMore<string>): INamespace {
         return new Namespace(
             [...resolveOneOrMore(str), ...resolveOneOrMore(this.root)],
             {

@@ -9,12 +9,11 @@ import {
     type IEventBusAdapter,
 } from "@/event-bus/contracts/_module.js";
 import {
-    DEFAULT_EVENT_BUS_NAMESPACE,
     EventBus,
     type EventBusSettingsBase,
     type EventMapSchema,
 } from "@/event-bus/implementations/derivables/event-bus/_module.js";
-import { type Namespace } from "@/namespace/implementations/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import {
     DefaultAdapterNotDefinedError,
     UnregisteredAdapterError,
@@ -89,7 +88,7 @@ export class EventBusFactory<
         >,
     ) {}
 
-    setNamespace(namespace: Namespace): EventBusFactory<TAdapters, TEventMap> {
+    setNamespace(namespace: INamespace): EventBusFactory<TAdapters, TEventMap> {
         return new EventBusFactory({
             ...this.settings,
             namespace,
@@ -167,11 +166,9 @@ export class EventBusFactory<
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = DEFAULT_EVENT_BUS_NAMESPACE } = this.settings;
         return new EventBus({
             ...this.settings,
             adapter,
-            namespace: namespace.appendRoot(adapterName),
         });
     }
 }

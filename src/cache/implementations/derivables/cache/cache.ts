@@ -27,7 +27,8 @@ import {
 } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { Namespace } from "@/namespace/implementations/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
+import { NoOpNamespace } from "@/namespace/implementations/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
@@ -65,7 +66,7 @@ export type CacheSettingsBase<TType = unknown> = {
      * new Namespace("@cache")
      * ```
      */
-    namespace?: Namespace;
+    namespace?: INamespace;
 
     /**
      * @default
@@ -108,18 +109,11 @@ export type CacheSettings<TType = unknown> = CacheSettingsBase<TType> & {
  * IMPORT_PATH: `"@daiso-tech/core/cache"`
  * @group Derivables
  */
-export const DEFAULT_CACHE_NAMESPACE = new Namespace("@cache");
-
-/**
- *
- * IMPORT_PATH: `"@daiso-tech/core/cache"`
- * @group Derivables
- */
 export class Cache<TType = unknown> implements ICache<TType> {
     private readonly eventBus: IEventBus<CacheEventMap<TType>>;
     private readonly adapter: ICacheAdapter<TType>;
     private readonly defaultTtl: TimeSpan | null;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly schema: StandardSchemaV1<TType> | undefined;
     private readonly shouldValidateOutput: boolean;
     private readonly defaultJitter: number | null;
@@ -157,7 +151,7 @@ export class Cache<TType = unknown> implements ICache<TType> {
         const {
             shouldValidateOutput = true,
             schema,
-            namespace = DEFAULT_CACHE_NAMESPACE,
+            namespace = new NoOpNamespace(),
             adapter,
             eventBus = new EventBus<any>({
                 adapter: new NoOpEventBusAdapter(),

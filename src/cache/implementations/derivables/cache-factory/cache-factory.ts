@@ -12,10 +12,9 @@ import {
 import {
     Cache,
     type CacheSettingsBase,
-    DEFAULT_CACHE_NAMESPACE,
 } from "@/cache/implementations/derivables/cache/_module.js";
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/implementations/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import {
     DefaultAdapterNotDefinedError,
@@ -81,7 +80,7 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
         private readonly settings: CacheFactorySettings<TAdapters, TType>,
     ) {}
 
-    setNamespace(namespace: Namespace): CacheFactory<TAdapters, TType> {
+    setNamespace(namespace: INamespace): CacheFactory<TAdapters, TType> {
         return new CacheFactory({
             ...this.settings,
             namespace,
@@ -175,11 +174,9 @@ export class CacheFactory<TAdapters extends string = string, TType = unknown>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = DEFAULT_CACHE_NAMESPACE } = this.settings;
         return new Cache({
             ...this.settings,
             adapter,
-            namespace: namespace.appendRoot(adapterName),
         });
     }
 }

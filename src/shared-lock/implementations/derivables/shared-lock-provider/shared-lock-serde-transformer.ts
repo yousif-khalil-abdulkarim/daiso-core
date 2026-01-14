@@ -3,7 +3,7 @@
  */
 
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/implementations/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import { type ISerdeTransformer } from "@/serde/contracts/_module.js";
 import {
     type IDatabaseSharedLockAdapter,
@@ -24,7 +24,7 @@ import { getConstructorName, type OneOrMore } from "@/utilities/_module.js";
 export type SharedLockSerdeTransformerSettings = {
     adapter: ISharedLockAdapter;
     originalAdapter: SharedLockAdapterVariants;
-    namespace: Namespace;
+    namespace: INamespace;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
@@ -42,7 +42,7 @@ export class SharedLockSerdeTransformer
     private readonly originalAdapter:
         | ISharedLockAdapter
         | IDatabaseSharedLockAdapter;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;

@@ -27,7 +27,8 @@ import {
 import { LockSerdeTransformer } from "@/lock/implementations/derivables/lock-provider/lock-serde-transformer.js";
 import { Lock } from "@/lock/implementations/derivables/lock-provider/lock.js";
 import { resolveLockAdapter } from "@/lock/implementations/derivables/lock-provider/resolve-lock-adapter.js";
-import { Namespace } from "@/namespace/implementations/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
+import { NoOpNamespace } from "@/namespace/implementations/_module.js";
 import { type ISerderRegister } from "@/serde/contracts/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/_module.js";
@@ -56,7 +57,7 @@ export type LockProviderSettingsBase = {
      * new Namespace("@lock")
      * ```
      */
-    namespace?: Namespace;
+    namespace?: INamespace;
 
     /**
      * @default
@@ -151,13 +152,6 @@ export type LockProviderSettings = LockProviderSettingsBase & {
 };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/lock"`
- * @group Derivables
- */
-export const DEFAULT_LOCK_PROVIDER_NAMESPACE = new Namespace("@lock");
-
-/**
  * `LockProvider` class can be derived from any {@link ILockAdapter | `ILockAdapter`} or {@link IDatabaseLockAdapter | `IDatabaseLockAdapter`}.
  *
  * Note the {@link ILock | `ILock`} instances created by the `LockProvider` class are serializable and deserializable,
@@ -171,7 +165,7 @@ export class LockProvider implements ILockProvider {
     private readonly eventBus: IEventBus<LockEventMap>;
     private readonly originalAdapter: LockAdapterVariants;
     private readonly adapter: ILockAdapter;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly creatLockId: Invokable<[], string>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
@@ -215,7 +209,7 @@ export class LockProvider implements ILockProvider {
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             createLockId = () => v4(),
             serde = new Serde(new NoOpSerdeAdapter()),
-            namespace = DEFAULT_LOCK_PROVIDER_NAMESPACE,
+            namespace = new NoOpNamespace(),
             adapter,
             eventBus = new EventBus<any>({
                 adapter: new NoOpEventBusAdapter(),

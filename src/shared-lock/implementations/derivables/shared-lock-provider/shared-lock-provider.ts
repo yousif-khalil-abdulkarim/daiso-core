@@ -13,7 +13,8 @@ import {
 } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { Namespace } from "@/namespace/implementations/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
+import { NoOpNamespace } from "@/namespace/implementations/_module.js";
 import { type ISerderRegister } from "@/serde/contracts/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/_module.js";
@@ -53,7 +54,7 @@ export type SharedLockProviderSettingsBase = {
      * new Namespace("@shared-lock")
      * ```
      */
-    namespace?: Namespace;
+    namespace?: INamespace;
 
     /**
      * @default
@@ -148,13 +149,6 @@ export type SharedLockProviderSettings = SharedLockProviderSettingsBase & {
 };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/shared-lock"`
- * @group Derivables
- */
-export const DEFAULT_SHARED_LOCK_NAMESPACE = new Namespace("@shared-lock");
-
-/**
  * `SharedLockProvider` class can be derived from any {@link ISharedLockAdapter | `ISharedLockAdapter`} or {@link IDatabaseSharedLockAdapter | `IDatabaseSharedLockAdapter`}.
  *
  * Note the {@link ISharedLock | `ISharedLock`} instances created by the `SharedLockProvider` class are serializable and deserializable,
@@ -168,7 +162,7 @@ export class SharedLockProvider implements ISharedLockProvider {
     private readonly eventBus: IEventBus<SharedLockEventMap>;
     private readonly originalAdapter: SharedLockAdapterVariants;
     private readonly adapter: ISharedLockAdapter;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly creatLockId: Invokable<[], string>;
     private readonly defaultTtl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
@@ -212,7 +206,7 @@ export class SharedLockProvider implements ISharedLockProvider {
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             createLockId = () => v4(),
             serde = new Serde(new NoOpSerdeAdapter()),
-            namespace = DEFAULT_SHARED_LOCK_NAMESPACE,
+            namespace = new NoOpNamespace(),
             adapter,
             eventBus = new EventBus<any>({
                 adapter: new NoOpEventBusAdapter(),

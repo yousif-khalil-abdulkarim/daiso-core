@@ -3,8 +3,7 @@
  */
 
 import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
-import { type IKey } from "@/namespace/contracts/_module.js";
-import { type Namespace } from "@/namespace/implementations/_module.js";
+import { type IKey, type INamespace } from "@/namespace/contracts/_module.js";
 import {
     BlockedRateLimiterError,
     RATE_LIMITER_EVENTS,
@@ -37,7 +36,7 @@ export type RateLimiterSettings = {
     key: IKey;
     errorPolicy: ErrorPolicy;
     onlyError: boolean;
-    namespace: Namespace;
+    namespace: INamespace;
     serdeTransformerName: string;
 };
 
@@ -75,7 +74,7 @@ export class RateLimiter implements IRateLimiter {
     private readonly eventDispatcher: IEventDispatcher<RateLimiterEventMap>;
     private readonly enableAsyncTracking: boolean;
     private readonly serdeTransformerName: string;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
 
     constructor(settings: RateLimiterSettings) {
         const {
@@ -101,7 +100,7 @@ export class RateLimiter implements IRateLimiter {
         this.adapter = adapter;
     }
 
-    _internal_getNamespace(): Namespace {
+    _internal_getNamespace(): INamespace {
         return this.namespace;
     }
 
