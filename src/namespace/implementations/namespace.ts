@@ -3,6 +3,7 @@
  */
 
 import { type IKey, type INamespace } from "@/namespace/contracts/_module.js";
+import { type ISerializable } from "@/serde/contracts/flexible-serde.contract.js";
 import {
     resolveOneOrMoreStr,
     resolveOneOrMore,
@@ -65,6 +66,13 @@ export type NamespaceSettings = {
     rootIdentifier?: string;
 };
 
+export type SerializedNamespace = {
+    version: "1";
+    root: string | string[];
+    delimiter: string;
+    rootIdentifier: string;
+};
+
 /**
  * The `Namespace` class adds prefixes/suffixes to keys to avoid conflicts and group related items.
  *
@@ -96,7 +104,16 @@ export type NamespaceSettings = {
  *
  * ```
  */
-export class Namespace implements INamespace {
+export class Namespace
+    implements INamespace, ISerializable<SerializedNamespace>
+{
+    static deserialize(serialized: SerializedNamespace): Namespace {
+        return new Namespace(serialized.root, {
+            delimeter: serialized.delimiter,
+            rootIdentifier: serialized.rootIdentifier,
+        });
+    }
+
     private readonly delimeter: string;
     private readonly rootIdentifier: string;
 
@@ -107,6 +124,15 @@ export class Namespace implements INamespace {
         const { delimeter = ":", rootIdentifier = "_rt" } = settings;
         this.delimeter = delimeter;
         this.rootIdentifier = rootIdentifier;
+    }
+
+    serialize(): SerializedNamespace {
+        return {
+            root: typeof this.root === "string" ? this.root : [...this.root],
+            delimiter: this.delimeter,
+            rootIdentifier: this.rootIdentifier,
+            version: "1",
+        };
     }
 
     setDelimeter(delimeter: string): INamespace {

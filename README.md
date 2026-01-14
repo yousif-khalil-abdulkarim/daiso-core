@@ -41,6 +41,9 @@ Key Features:
 - **Circuit-breaker:**
   A circuit-breaker is a resilience primitive preventing cascading failures from external services by stopping calls to a failing service.
 
+- **Rate-limiter:**
+  A Rate-limiter is a resilience primitive used to control the rate of traffic sent or received by a network interface or a service.
+
 - **Lock:**
   Synchronize the access to a shared resource to prevents several processes, or concurrent code, from executing a section of code at the same time.
 
