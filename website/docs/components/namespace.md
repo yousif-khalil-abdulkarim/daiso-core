@@ -10,7 +10,7 @@ keywords:
 
 The `@daiso-tech/core/namespace` component provides seamless way to group data by prefixing and suffixing keys.
 
-## Usage
+## Namespace class
 
 The `Namespace` class provides a foundational way to prefix or suffix keys. This mechanism is vital for avoiding key conflicts and logically grouping related items, making it a useful primitive block for features like multi-tenancy. Components such as `Cache` and `Lock` utilize it to ensure data isolation.
 
@@ -39,6 +39,10 @@ console.log(newNamespace.toString());
 // Logs "@my-namespace:sub:_rt:my-key"
 console.log(namespace.create("my-key").toString());
 ```
+
+:::info
+Note that the `Namespace` class is serializable. See the [`Serde`](./serde.md#custom-serialization-and-deserialization-logic-of-classes) component for serialization instructions.
+:::
 
 ## NoOpNamespace class
 
