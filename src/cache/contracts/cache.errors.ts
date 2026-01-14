@@ -2,7 +2,7 @@
  * @module Cache
  */
 
-import { type Key } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
 
 /**
  * The error is thrown when a key is not found
@@ -11,7 +11,7 @@ import { type Key } from "@/namespace/_module.js";
  * @group Errors
  */
 export class KeyNotFoundCacheError extends Error {
-    static create(key: Key, cause?: unknown): KeyNotFoundCacheError {
+    static create(key: IKey, cause?: unknown): KeyNotFoundCacheError {
         return new KeyNotFoundCacheError(
             `Key "${key.get()}" is not found`,
             cause,
@@ -36,7 +36,7 @@ export class KeyNotFoundCacheError extends Error {
  * @group Errors
  */
 export class KeyExistsCacheError extends Error {
-    static create(key: Key, cause?: unknown): KeyExistsCacheError {
+    static create(key: IKey, cause?: unknown): KeyExistsCacheError {
         return new KeyExistsCacheError(
             `Key "${key.get()}" already exists`,
             cause,

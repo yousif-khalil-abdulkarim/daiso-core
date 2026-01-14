@@ -3,7 +3,7 @@
  */
 
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import {
     type IDatabaseSemaphoreAdapter,
     type ISemaphoreAdapter,
@@ -24,7 +24,7 @@ import { type OneOrMore, getConstructorName } from "@/utilities/_module.js";
 export type SemaphoreSerdeTransformerSettings = {
     adapter: ISemaphoreAdapter;
     originalAdapter: SemaphoreAdapterVariants;
-    namespace: Namespace;
+    namespace: INamespace;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
@@ -42,7 +42,7 @@ export class SemaphoreSerdeTransformer
     private readonly originalAdapter:
         | ISemaphoreAdapter
         | IDatabaseSemaphoreAdapter;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;

@@ -2,7 +2,7 @@
  * @module CircuitBreaker
  */
 
-import { type Key } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
 
 /**
  * The error is thrown when circuit breaker is in open state and will not allow any attempts.
@@ -11,7 +11,7 @@ import { type Key } from "@/namespace/_module.js";
  * @group Errors
  */
 export class OpenCircuitBreakerError extends Error {
-    static create(key: Key, cause?: unknown): OpenCircuitBreakerError {
+    static create(key: IKey, cause?: unknown): OpenCircuitBreakerError {
         return new OpenCircuitBreakerError(
             `Circuit breaker for key "${key.get()}" in opened state. All calls are being blocked until transitioned to half opened state.`,
             cause,
@@ -30,7 +30,7 @@ export class OpenCircuitBreakerError extends Error {
 }
 
 export class IsolatedCircuitBreakerError extends Error {
-    static create(key: Key, cause?: unknown): IsolatedCircuitBreakerError {
+    static create(key: IKey, cause?: unknown): IsolatedCircuitBreakerError {
         return new IsolatedCircuitBreakerError(
             `Circuit breaker for key "${key.get()}" is manually isolated. All calls are being blocked until reseted.`,
             cause,

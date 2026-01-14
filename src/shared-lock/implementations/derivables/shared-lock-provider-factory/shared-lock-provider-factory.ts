@@ -2,14 +2,13 @@
  * @module SharedLock
  */
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import {
     type ISharedLockProviderFactory,
     type ISharedLockProvider,
     type SharedLockAdapterVariants,
 } from "@/shared-lock/contracts/_module.js";
 import {
-    DEFAULT_SHARED_LOCK_NAMESPACE,
     SharedLockProvider,
     type SharedLockProviderSettingsBase,
 } from "@/shared-lock/implementations/derivables/shared-lock-provider/_module.js";
@@ -75,7 +74,7 @@ export class SharedLockProviderFactory<TAdapters extends string>
         private readonly settings: SharedLockProviderFactorySettings<TAdapters>,
     ) {}
 
-    setNamespace(namespace: Namespace): SharedLockProviderFactory<TAdapters> {
+    setNamespace(namespace: INamespace): SharedLockProviderFactory<TAdapters> {
         return new SharedLockProviderFactory({
             ...this.settings,
             namespace,
@@ -178,11 +177,9 @@ export class SharedLockProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = DEFAULT_SHARED_LOCK_NAMESPACE } = this.settings;
         return new SharedLockProvider({
             ...this.settings,
             adapter,
-            namespace: namespace.appendRoot(adapterName),
             serdeTransformerName: adapterName,
         });
     }

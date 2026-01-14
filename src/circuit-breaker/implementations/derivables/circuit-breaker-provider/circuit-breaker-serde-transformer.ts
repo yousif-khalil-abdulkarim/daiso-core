@@ -12,7 +12,7 @@ import {
     type ISerializedCircuitBreaker,
 } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker.js";
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import { type ISerdeTransformer } from "@/serde/contracts/_module.js";
 import { type TimeSpan } from "@/time-span/implementations/_module.js";
 import {
@@ -26,7 +26,7 @@ import {
  */
 export type CircuitBreakerSerdeTransformerSettings = {
     adapter: ICircuitBreakerAdapter;
-    namespace: Namespace;
+    namespace: INamespace;
     slowCallTime: TimeSpan;
     errorPolicy: ErrorPolicy;
     trigger: CircuitBreakerTrigger;
@@ -42,7 +42,7 @@ export class CircuitBreakerSerdeTransformer
     implements ISerdeTransformer<CircuitBreaker, ISerializedCircuitBreaker>
 {
     private readonly adapter: ICircuitBreakerAdapter;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly slowCallTime: TimeSpan;
     private readonly errorPolicy: ErrorPolicy;
     private readonly trigger: CircuitBreakerTrigger;

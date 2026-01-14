@@ -6,7 +6,7 @@ import { Cache } from "@/cache/implementations/derivables/_module.js";
 import { cacheTestSuite } from "@/cache/implementations/test-utilities/_module.js";
 import { MemoryEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { Namespace } from "@/namespace/_module.js";
+import { Namespace } from "@/namespace/implementations/_module.js";
 import { ValidationError } from "@/utilities/_module.js";
 
 describe("class: Cache", () => {

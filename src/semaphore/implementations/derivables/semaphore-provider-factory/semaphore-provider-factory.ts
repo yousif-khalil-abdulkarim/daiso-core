@@ -2,14 +2,13 @@
  * @module Semaphore
  */
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import {
     type ISemaphoreProviderFactory,
     type ISemaphoreProvider,
     type SemaphoreAdapterVariants,
 } from "@/semaphore/contracts/_module.js";
 import {
-    DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE,
     SemaphoreProvider,
     type SemaphoreProviderSettingsBase,
 } from "@/semaphore/implementations/derivables/semaphore-provider/_module.js";
@@ -74,7 +73,7 @@ export class SemaphoreProviderFactory<TAdapters extends string>
         private readonly settings: SemaphoreProviderFactorySettings<TAdapters>,
     ) {}
 
-    setNamespace(namespace: Namespace): SemaphoreProviderFactory<TAdapters> {
+    setNamespace(namespace: INamespace): SemaphoreProviderFactory<TAdapters> {
         return new SemaphoreProviderFactory({
             ...this.settings,
             namespace,
@@ -167,12 +166,9 @@ export class SemaphoreProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE } =
-            this.settings;
         return new SemaphoreProvider({
             ...this.settings,
             adapter,
-            namespace: namespace.appendRoot(adapterName),
             serdeTransformerName: adapterName,
         });
     }

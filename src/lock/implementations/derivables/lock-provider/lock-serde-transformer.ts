@@ -12,7 +12,7 @@ import {
     Lock,
     type ISerializedLock,
 } from "@/lock/implementations/derivables/lock-provider/lock.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import { type ISerdeTransformer } from "@/serde/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import { getConstructorName, type OneOrMore } from "@/utilities/_module.js";
@@ -23,7 +23,7 @@ import { getConstructorName, type OneOrMore } from "@/utilities/_module.js";
 export type LockSerdeTransformerSettings = {
     adapter: ILockAdapter;
     originalAdapter: LockAdapterVariants;
-    namespace: Namespace;
+    namespace: INamespace;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
@@ -39,7 +39,7 @@ export class LockSerdeTransformer
 {
     private readonly adapter: ILockAdapter;
     private readonly originalAdapter: LockAdapterVariants;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;

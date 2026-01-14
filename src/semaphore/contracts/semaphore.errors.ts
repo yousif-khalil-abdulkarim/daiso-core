@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import { type Key } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
 
 /**
  * The error is thrown when trying to acquire a semaphore slot, but all slots are already taken.
@@ -11,7 +11,7 @@ import { type Key } from "@/namespace/_module.js";
  * @group Errors
  */
 export class LimitReachedSemaphoreError extends Error {
-    static create(key: Key, cause?: unknown): LimitReachedSemaphoreError {
+    static create(key: IKey, cause?: unknown): LimitReachedSemaphoreError {
         return new LimitReachedSemaphoreError(
             `Key "${key.get()}" has reached the limit`,
             cause,
@@ -37,7 +37,7 @@ export class LimitReachedSemaphoreError extends Error {
  */
 export class FailedRefreshSemaphoreError extends Error {
     static create(
-        key: Key,
+        key: IKey,
         slotId: string,
         cause?: unknown,
     ): FailedRefreshSemaphoreError {
@@ -66,7 +66,7 @@ export class FailedRefreshSemaphoreError extends Error {
  */
 export class FailedReleaseSemaphoreError extends Error {
     static create(
-        key: Key,
+        key: IKey,
         slotId: string,
         cause?: unknown,
     ): FailedReleaseSemaphoreError {

@@ -2,7 +2,7 @@
  * @module Task
  */
 import { AsyncHooks, type AsyncMiddleware } from "@/hooks/_module.js";
-import { type ITask } from "@/task/contracts/_module-exports.js";
+import { type ITask } from "@/task/contracts/_module.js";
 import { abortAndFail } from "@/task/implementations/abort-and-fail.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";

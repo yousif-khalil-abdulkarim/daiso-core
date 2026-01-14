@@ -4,7 +4,7 @@
 
 import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
 import { type AsyncMiddlewareFn } from "@/hooks/_module.js";
-import { type Key, type Namespace } from "@/namespace/_module.js";
+import { type IKey, type INamespace } from "@/namespace/contracts/_module.js";
 import {
     type IDatabaseSemaphoreAdapter,
     type ISemaphoreAdapter,
@@ -47,12 +47,12 @@ export type SemaphoreSettings = {
     adapter: ISemaphoreAdapter;
     originalAdapter: SemaphoreAdapterVariants;
     eventDispatcher: IEventDispatcher<SemaphoreEventMap>;
-    key: Key;
+    key: IKey;
     ttl: TimeSpan | null;
     defaultBlockingInterval: TimeSpan;
     defaultBlockingTime: TimeSpan;
     defaultRefreshTime: TimeSpan;
-    namespace: Namespace;
+    namespace: INamespace;
 };
 
 /**
@@ -81,13 +81,13 @@ export class Semaphore implements ISemaphore {
         | ISemaphoreAdapter
         | IDatabaseSemaphoreAdapter;
     private readonly eventDispatcher: IEventDispatcher<SemaphoreEventMap>;
-    private readonly _key: Key;
+    private readonly _key: IKey;
     private _ttl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
     private readonly defaultRefreshTime: TimeSpan;
     private readonly serdeTransformerName: string;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
 
     constructor(settings: SemaphoreSettings) {
         const {
@@ -118,7 +118,7 @@ export class Semaphore implements ISemaphore {
         this.originalAdapter = originalAdapter;
     }
 
-    _internal_getNamespace(): Namespace {
+    _internal_getNamespace(): INamespace {
         return this.namespace;
     }
 

@@ -8,11 +8,10 @@ import {
     type LockAdapterVariants,
 } from "@/lock/contracts/_module.js";
 import {
-    DEFAULT_LOCK_PROVIDER_NAMESPACE,
     LockProvider,
     type LockProviderSettingsBase,
 } from "@/lock/implementations/derivables/lock-provider/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import {
     DefaultAdapterNotDefinedError,
@@ -75,7 +74,7 @@ export class LockProviderFactory<TAdapters extends string>
         private readonly settings: LockProviderFactorySettings<TAdapters>,
     ) {}
 
-    setNamespace(namespace: Namespace): LockProviderFactory<TAdapters> {
+    setNamespace(namespace: INamespace): LockProviderFactory<TAdapters> {
         return new LockProviderFactory({
             ...this.settings,
             namespace,
@@ -172,11 +171,9 @@ export class LockProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = DEFAULT_LOCK_PROVIDER_NAMESPACE } = this.settings;
         return new LockProvider({
             ...this.settings,
             adapter,
-            namespace: namespace.appendRoot(adapterName),
             serdeTransformerName: adapterName,
         });
     }

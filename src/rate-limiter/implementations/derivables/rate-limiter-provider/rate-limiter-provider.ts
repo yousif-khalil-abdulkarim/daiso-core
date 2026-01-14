@@ -9,7 +9,8 @@ import {
 } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
+import { NoOpNamespace } from "@/namespace/implementations/_module.js";
 import {
     type IRateLimiter,
     type IRateLimiterAdapter,
@@ -44,7 +45,7 @@ export type RateLimiterProviderSettingsBase = {
      * new Namespace("@rate-limiter")
      * ```
      */
-    namespace?: Namespace;
+    namespace?: INamespace;
 
     /**
      * @default
@@ -109,22 +110,13 @@ export type RateLimiterProviderSettings = RateLimiterProviderSettingsBase & {
 };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/rate-limiter"`
- * @group Derivables
- */
-export const DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE = new Namespace(
-    "@rate-limiter",
-);
-
-/**
  * The `RateLimiterProvider` class can be derived from any {@link IRateLimiterAdapter | `IRateLimiterAdapter`}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter"`
  * @group Derivables
  */
 export class RateLimiterProvider implements IRateLimiterProvider {
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly eventBus: IEventBus<RateLimiterEventMap>;
     private readonly adapter: IRateLimiterAdapter;
     private readonly onlyError: boolean;
@@ -167,7 +159,7 @@ export class RateLimiterProvider implements IRateLimiterProvider {
     constructor(settings: RateLimiterProviderSettings) {
         const {
             enableAsyncTracking = true,
-            namespace = DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE,
+            namespace = new NoOpNamespace(),
             eventBus = new EventBus({
                 adapter: new NoOpEventBusAdapter(),
             }),

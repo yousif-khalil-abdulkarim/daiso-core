@@ -5,9 +5,11 @@ pagination_label: Cache usage
 tags:
  - Cache
  - Usage
+ - Namespace
 keywords:
  - Cache
  - Usage
+ - Namespace
 ---
 
 # Cache usage
@@ -307,7 +309,7 @@ You can enable jitter in the following methods: `addOrFail`, `put` and `getOrAdd
 
 ### Namespacing
 
-You can use the `Namespace` class to group related data without conflicts.
+You can use the `Namespace` class to group related data without conflicts. Since namespacing is not used be default, you need to pass an obeject that implements `INamespace`.
 
 :::info
 For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
@@ -359,7 +361,8 @@ console.log(await cacheA.get("key"));
 ### Cache events
 
 You can listen to different [cache events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) that are triggered by the `Cache` instance.
-Refer to the [`@daiso-tech/core/event-bus`](../event_bus/event_bus_usage.md) documentation to learn how to use events.
+Refer to the [`@daiso-tech/core/event-bus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements IEventBus contract.
+
 
 ```ts
 import { CACHE_EVENTS } from "@daiso-tech/core/cache/contracts";
@@ -371,35 +374,6 @@ await cache.subscribe(CACHE_EVENTS.ADDED, (event) => {
 
 await cache.add("a", "b");
 ```
-
-:::info
-Note the `Cache` class uses `MemoryEventBusAdapter` by default. You can choose what event bus adapter to use:
-
-```ts
-import { MemoryCacheAdapter } from "@daiso-tech/core/cache/memory-cache-adapter";
-import { Cache } from "@daiso-tech/core/cache";
-import { EventBus } from "@daiso-tech/core/event-bus";
-import { RedisPubSubEventBusAdapter } from "@daiso-tech/core/event-bus/redis-pub-sub-event-bus-adapter";
-import { Serde } from "@daiso-tech/core/serde";
-import { SuperJsonSerdeAdapter } from "@daiso-tech/core/serde/super-json-serde-adapter";
-import Redis from "ioredis";
-
-const serde = new Serde(new SuperJsonSerdeAdapter());
-
-const redisPubSubEventBusAdapter = new RedisPubSubEventBusAdapter({
-    client: new Redis("YOUR_REDIS_CONNECTION_STRING"),
-    serde,
-});
-
-const cache = new Cache({
-    adapter: new MemoryCacheAdapter(),
-    eventBus: new EventBus({
-        adapter: redisPubSubEventBusAdapter,
-    }),
-});
-```
-
-:::
 
 :::warning
 If multiple cache adapters (e.g., `RedisCacheAdapter` and `MemoryCacheAdapter`) are used at the same time, you need to isolate their events by assigning separate namespaces. This prevents listeners from unintentionally capturing events across adapters.

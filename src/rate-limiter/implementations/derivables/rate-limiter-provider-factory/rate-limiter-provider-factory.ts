@@ -3,7 +3,7 @@
  */
 
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import {
     type IRateLimiterProviderFactory,
     type IRateLimiterProvider,
@@ -11,7 +11,6 @@ import {
 } from "@/rate-limiter/contracts/_module.js";
 import {
     RateLimiterProvider,
-    DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE,
     type RateLimiterProviderSettingsBase,
 } from "@/rate-limiter/implementations/derivables/rate-limiter-provider/_module.js";
 import {
@@ -82,7 +81,7 @@ export class RateLimiterProviderFactory<TAdapters extends string>
         private readonly settings: RateLimiterProviderFactorySettings<TAdapters>,
     ) {}
 
-    setNamespace(namespace: Namespace): RateLimiterProviderFactory<TAdapters> {
+    setNamespace(namespace: INamespace): RateLimiterProviderFactory<TAdapters> {
         return new RateLimiterProviderFactory({
             ...this.settings,
             namespace,
@@ -166,12 +165,9 @@ export class RateLimiterProviderFactory<TAdapters extends string>
         if (adapter === undefined) {
             throw new UnregisteredAdapterError(adapterName);
         }
-        const { namespace = DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE } =
-            this.settings;
         return new RateLimiterProvider({
             ...this.settings,
             adapter,
-            namespace: namespace.appendRoot(adapterName),
         });
     }
 }

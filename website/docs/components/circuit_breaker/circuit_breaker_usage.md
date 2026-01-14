@@ -5,9 +5,11 @@ pagination_label: Circuit-breaker Usage
 tags:
  - Circuit-breaker
  - Usage
+ - Namespace
 keywords:
  - Circuit-breaker
  - Usage
+ - Namespace
 ---
 
 # Circuit-breaker usage
@@ -34,7 +36,7 @@ const circuitBreakerProvider = new CircuitBreakerProvider({
 ```
 
 :::info
-Here is a complete list of settings for the [`CircuitBreakerProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/CircuitBreaker.CircuitBreakerProviderSettingsBase.html) class.
+Here is a complete list of settings for the [`CircuitBreakerProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/CircuitBreaker.CircuitBreakerProviderSettingsBase.html) class. 
 :::
 
 ## Circuit-breaker basics
@@ -192,7 +194,7 @@ console.log(circuitBreaker.key);
 
 ### Namespacing
 
-You can use the `Namespace` class to group related circuit-breakers without conflicts.
+You can use the `Namespace` class to group related circuit-breakers without conflicts. Since namespacing is not used be default, you need to pass an obeject that implements `INamespace`.
 
 :::info
 For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.

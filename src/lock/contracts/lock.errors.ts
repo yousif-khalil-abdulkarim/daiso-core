@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import { type Key } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
 
 /**
  * The error is thrown when trying to acquire a lock that is owned by a different owner.
@@ -11,7 +11,7 @@ import { type Key } from "@/namespace/_module.js";
  * @group Errors
  */
 export class FailedAcquireLockError extends Error {
-    static create(key: Key, cause?: unknown): FailedAcquireLockError {
+    static create(key: IKey, cause?: unknown): FailedAcquireLockError {
         return new FailedAcquireLockError(
             `Key "${key.get()}" already acquired`,
             cause,
@@ -37,7 +37,7 @@ export class FailedAcquireLockError extends Error {
  */
 export class FailedReleaseLockError extends Error {
     static create(
-        key: Key,
+        key: IKey,
         lockId: string,
         cause?: unknown,
     ): FailedReleaseLockError {
@@ -66,7 +66,7 @@ export class FailedReleaseLockError extends Error {
  */
 export class FailedRefreshLockError extends Error {
     static create(
-        key: Key,
+        key: IKey,
         lockId: string,
         cause?: unknown,
     ): FailedRefreshLockError {

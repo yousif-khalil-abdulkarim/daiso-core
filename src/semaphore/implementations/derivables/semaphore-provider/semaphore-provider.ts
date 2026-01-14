@@ -13,7 +13,8 @@ import {
 } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
+import { NoOpNamespace } from "@/namespace/implementations/_module.js";
 import {
     type IDatabaseSemaphoreAdapter,
     type ISemaphore,
@@ -55,7 +56,7 @@ export type SemaphoreProviderSettingsBase = {
      * new Namespace("@semaphore")
      * ```
      */
-    namespace?: Namespace;
+    namespace?: INamespace;
 
     /**
      * @default
@@ -150,13 +151,6 @@ export type SemaphoreProviderSettings = SemaphoreProviderSettingsBase & {
 };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/semaphore"`
- * @group Derivables
- */
-export const DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE = new Namespace("@semaphore");
-
-/**
  * `SemaphoreProvider` class can be derived from any {@link ISemaphoreAdapter | `ISemaphoreAdapter`} or {@link IDatabaseSemaphoreAdapter | `IDatabaseSemaphoreAdapter`}.
  *
  * Note the {@link ISemaphore | `ISemaphore`} instances created by the `SemaphoreProvider` class are serializable and deserializable,
@@ -172,7 +166,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
     private readonly originalAdapter:
         | ISemaphoreAdapter
         | IDatabaseSemaphoreAdapter;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly defaultTtl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
     private readonly defaultBlockingTime: TimeSpan;
@@ -216,7 +210,7 @@ export class SemaphoreProvider implements ISemaphoreProvider {
             defaultBlockingTime = TimeSpan.fromMinutes(1),
             defaultRefreshTime = TimeSpan.fromMinutes(5),
             serde = new Serde(new NoOpSerdeAdapter()),
-            namespace = DEFAULT_SEMAPHORE_PROVIDER_NAMESPACE,
+            namespace = new NoOpNamespace(),
             adapter,
             eventBus = new EventBus<any>({
                 adapter: new NoOpEventBusAdapter(),

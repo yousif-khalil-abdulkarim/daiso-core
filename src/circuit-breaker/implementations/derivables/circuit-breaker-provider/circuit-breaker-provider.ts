@@ -20,7 +20,8 @@ import {
 } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
-import { Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
+import { NoOpNamespace } from "@/namespace/implementations/_module.js";
 import { type ISerderRegister } from "@/serde/contracts/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/serde.js";
@@ -48,7 +49,7 @@ export type CircuitBreakerProviderSettingsBase = {
      * new Namespace("@circuit-breaker")
      * ```
      */
-    namespace?: Namespace;
+    namespace?: INamespace;
 
     /**
      * @default
@@ -131,15 +132,6 @@ export type CircuitBreakerProviderSettings =
     };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker"`
- * @group Derivables
- */
-export const DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE = new Namespace(
-    "@circuit-breaker",
-);
-
-/**
  * `CircuitBreakerProvider` class can be derived from any {@link ICircuitBreakerAdapter | `ICircuitBreakerAdapter`}.
  *
  * Note the {@link ICircuitBreaker | `ICircuitBreaker`} instances created by the `CircuitBreakerProvider` class are serializable and deserializable,
@@ -150,7 +142,7 @@ export const DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE = new Namespace(
  * @group Derivables
  */
 export class CircuitBreakerProvider implements ICircuitBreakerProvider {
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly eventBus: IEventBus<CircuitBreakerEventMap>;
     private readonly adapter: ICircuitBreakerAdapter;
     private readonly defaultSlowCallTime: TimeSpan;
@@ -194,7 +186,7 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
     constructor(settings: CircuitBreakerProviderSettings) {
         const {
             enableAsyncTracking = true,
-            namespace = DEFAULT_CIRCUIT_BREAKER_PROVIDER_NAMESPACE,
+            namespace = new NoOpNamespace(),
             eventBus = new EventBus({
                 adapter: new NoOpEventBusAdapter(),
             }),

@@ -2,6 +2,7 @@
  * @module Namespace
  */
 
+import { type IKey, type INamespace } from "@/namespace/contracts/_module.js";
 import {
     resolveOneOrMoreStr,
     resolveOneOrMore,
@@ -19,10 +20,9 @@ type KeySettings = {
 };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/namespace"`
+ * @internal
  */
-export class Key {
+class Key {
     private readonly prefixArr: Array<string>;
     private readonly key: string;
     private readonly delimeter: string;
@@ -51,7 +51,6 @@ export class Key {
 }
 
 /**
- *
  * IMPORT_PATH: `"@daiso-tech/core/namespace"`
  */
 export type NamespaceSettings = {
@@ -70,6 +69,7 @@ export type NamespaceSettings = {
  * The `Namespace` class adds prefixes/suffixes to keys to avoid conflicts and group related items.
  *
  * IMPORT_PATH: `"@daiso-tech/core/namespace"`
+ * @group Adapters
  *
  * @example
  * ```ts
@@ -96,7 +96,7 @@ export type NamespaceSettings = {
  *
  * ```
  */
-export class Namespace {
+export class Namespace implements INamespace {
     private readonly delimeter: string;
     private readonly rootIdentifier: string;
 
@@ -109,21 +109,21 @@ export class Namespace {
         this.rootIdentifier = rootIdentifier;
     }
 
-    setDelimeter(delimeter: string): Namespace {
+    setDelimeter(delimeter: string): INamespace {
         return new Namespace(this.root, {
             rootIdentifier: this.rootIdentifier,
             delimeter,
         });
     }
 
-    setRootIdentifier(identifier: string): Namespace {
+    setRootIdentifier(identifier: string): INamespace {
         return new Namespace(this.root, {
             rootIdentifier: identifier,
             delimeter: this.delimeter,
         });
     }
 
-    appendRoot(str: OneOrMore<string>): Namespace {
+    appendRoot(str: OneOrMore<string>): INamespace {
         return new Namespace(
             [...resolveOneOrMore(this.root), ...resolveOneOrMore(str)],
             {
@@ -133,7 +133,7 @@ export class Namespace {
         );
     }
 
-    prependRoot(str: OneOrMore<string>): Namespace {
+    prependRoot(str: OneOrMore<string>): INamespace {
         return new Namespace(
             [...resolveOneOrMore(str), ...resolveOneOrMore(this.root)],
             {
@@ -162,7 +162,7 @@ export class Namespace {
         return resolveOneOrMoreStr(this.getKeyPrefixArray(), this.delimeter);
     }
 
-    create(key: string): Key {
+    create(key: string): IKey {
         this.validate(key);
         return new Key({
             key,

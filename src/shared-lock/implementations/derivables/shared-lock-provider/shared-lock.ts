@@ -4,7 +4,7 @@
 
 import { type IEventDispatcher } from "@/event-bus/contracts/event-bus.contract.js";
 import { type AsyncMiddlewareFn } from "@/hooks/_module.js";
-import { type Key, type Namespace } from "@/namespace/_module.js";
+import { type IKey, type INamespace } from "@/namespace/contracts/_module.js";
 import {
     FailedAcquireWriterLockError,
     FailedRefreshReaderSemaphoreError,
@@ -54,12 +54,12 @@ export type ISerializedSharedLock = {
  */
 export type SharedLockSettings = {
     serdeTransformerName: string;
-    namespace: Namespace;
+    namespace: INamespace;
     adapter: ISharedLockAdapter;
     originalAdapter: IDatabaseSharedLockAdapter | ISharedLockAdapter;
     eventDispatcher: IEventDispatcher<SharedLockEventMap>;
     limit: number;
-    key: Key;
+    key: IKey;
     lockId: string;
     ttl: TimeSpan | null;
     defaultBlockingInterval: TimeSpan;
@@ -86,13 +86,13 @@ export class SharedLock implements ISharedLock {
         };
     }
 
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly adapter: ISharedLockAdapter;
     private readonly originalAdapter:
         | IDatabaseSharedLockAdapter
         | ISharedLockAdapter;
     private readonly eventDispatcher: IEventDispatcher<SharedLockEventMap>;
-    private readonly _key: Key;
+    private readonly _key: IKey;
     private readonly lockId: string;
     private _ttl: TimeSpan | null;
     private readonly defaultBlockingInterval: TimeSpan;
@@ -130,7 +130,7 @@ export class SharedLock implements ISharedLock {
         this.defaultRefreshTime = defaultRefreshTime;
     }
 
-    _internal_getNamespace(): Namespace {
+    _internal_getNamespace(): INamespace {
         return this.namespace;
     }
 

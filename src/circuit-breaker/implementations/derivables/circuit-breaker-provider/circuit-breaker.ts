@@ -15,7 +15,7 @@ import {
     CIRCUIT_BREAKER_EVENTS,
 } from "@/circuit-breaker/contracts/_module.js";
 import { type IEventDispatcher } from "@/event-bus/contracts/_module.js";
-import { type Key, type Namespace } from "@/namespace/_module.js";
+import { type IKey, type INamespace } from "@/namespace/contracts/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
@@ -34,12 +34,12 @@ export type CircuitBreakerSettings = {
     enableAsyncTracking: boolean;
     eventDispatcher: IEventDispatcher<CircuitBreakerEventMap>;
     adapter: ICircuitBreakerAdapter;
-    key: Key;
+    key: IKey;
     slowCallTime: TimeSpan;
     errorPolicy: ErrorPolicy;
     trigger: CircuitBreakerTrigger;
     serdeTransformerName: string;
-    namespace: Namespace;
+    namespace: INamespace;
 };
 
 /**
@@ -66,14 +66,14 @@ export class CircuitBreaker implements ICircuitBreaker {
         };
     }
 
-    private readonly _key: Key;
+    private readonly _key: IKey;
     private readonly errorPolicy: ErrorPolicy;
     private readonly trigger: CircuitBreakerTrigger;
     private readonly slowCallTime: TimeSpan;
     private readonly adapter: ICircuitBreakerAdapter;
     private readonly eventDispatcher: IEventDispatcher<CircuitBreakerEventMap>;
     private readonly serdeTransformerName: string;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly enableAsyncTracking: boolean;
 
     constructor(settings: CircuitBreakerSettings) {
@@ -100,7 +100,7 @@ export class CircuitBreaker implements ICircuitBreaker {
         this.namespace = namespace;
     }
 
-    _internal_getNamespace(): Namespace {
+    _internal_getNamespace(): INamespace {
         return this.namespace;
     }
 

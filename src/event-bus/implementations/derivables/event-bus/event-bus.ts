@@ -14,7 +14,8 @@ import {
     type Unsubscribe,
 } from "@/event-bus/contracts/_module.js";
 import { ListenerStore } from "@/event-bus/implementations/derivables/event-bus/listener-store.js";
-import { Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
+import { NoOpNamespace } from "@/namespace/implementations/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
 import { Task } from "@/task/implementations/_module.js";
 import {
@@ -59,7 +60,7 @@ export type EventBusSettingsBase<
      * new Namespace("@event-bus")
      * ```
      */
-    namespace?: Namespace;
+    namespace?: INamespace;
 };
 
 /**
@@ -79,13 +80,6 @@ export type EventBusSettings<TEventMap extends BaseEventMap = BaseEventMap> =
     };
 
 /**
- *
- * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
- * @group Derivables
- */
-export const DEFAULT_EVENT_BUS_NAMESPACE = new Namespace("@event-bus");
-
-/**
  * `EventBus` class can be derived from any {@link IEventBusAdapter | `IEventBusAdapter`}.
  *
  * IMPORT_PATH: `"@daiso-tech/core/event-bus"`
@@ -97,7 +91,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
     private readonly shouldValidateOutput: boolean;
     private readonly store = new ListenerStore();
     private readonly adapter: IEventBusAdapter;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly eventMapSchema: EventMapSchema<TEventMap> | undefined;
 
     /**
@@ -121,7 +115,7 @@ export class EventBus<TEventMap extends BaseEventMap = BaseEventMap>
             __onUncaughtRejection,
             shouldValidateOutput = true,
             eventMapSchema,
-            namespace = DEFAULT_EVENT_BUS_NAMESPACE,
+            namespace = new NoOpNamespace(),
             adapter,
         } = settings;
         this.shouldValidateOutput = shouldValidateOutput;

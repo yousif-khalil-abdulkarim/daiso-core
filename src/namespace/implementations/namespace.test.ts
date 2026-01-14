@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { Namespace } from "@/namespace/namespace.js";
+import { Namespace } from "@/namespace/implementations/namespace.js";
 
 describe("class: Namespace", () => {
     const BASE_SETTINGS = {

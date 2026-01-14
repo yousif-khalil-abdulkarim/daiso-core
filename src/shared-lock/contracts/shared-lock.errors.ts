@@ -2,7 +2,7 @@
  * @module SharedLock
  */
 
-import { type Key } from "@/namespace/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
 
 /**
  * The error is thrown when trying to acquire a semaphore slot, but all slots are already taken.
@@ -11,7 +11,10 @@ import { type Key } from "@/namespace/_module.js";
  * @group Errors
  */
 export class LimitReachedReaderSemaphoreError extends Error {
-    static create(key: Key, cause?: unknown): LimitReachedReaderSemaphoreError {
+    static create(
+        key: IKey,
+        cause?: unknown,
+    ): LimitReachedReaderSemaphoreError {
         return new LimitReachedReaderSemaphoreError(
             `Key "${key.get()}" has reached the limit`,
             cause,
@@ -37,7 +40,7 @@ export class LimitReachedReaderSemaphoreError extends Error {
  */
 export class FailedRefreshReaderSemaphoreError extends Error {
     static create(
-        key: Key,
+        key: IKey,
         slotId: string,
         cause?: unknown,
     ): FailedRefreshReaderSemaphoreError {
@@ -66,7 +69,7 @@ export class FailedRefreshReaderSemaphoreError extends Error {
  */
 export class FailedReleaseReaderSemaphoreError extends Error {
     static create(
-        key: Key,
+        key: IKey,
         slotId: string,
         cause?: unknown,
     ): FailedReleaseReaderSemaphoreError {
@@ -131,7 +134,7 @@ export function isReaderSemaphoreError(
  * @group Errors
  */
 export class FailedAcquireWriterLockError extends Error {
-    static create(key: Key, cause?: unknown): FailedAcquireWriterLockError {
+    static create(key: IKey, cause?: unknown): FailedAcquireWriterLockError {
         return new FailedAcquireWriterLockError(
             `Key "${key.get()}" already acquired`,
             cause,
@@ -157,7 +160,7 @@ export class FailedAcquireWriterLockError extends Error {
  */
 export class FailedReleaseWriterLockError extends Error {
     static create(
-        key: Key,
+        key: IKey,
         lockId: string,
         cause?: unknown,
     ): FailedReleaseWriterLockError {
@@ -186,7 +189,7 @@ export class FailedReleaseWriterLockError extends Error {
  */
 export class FailedRefreshWriterLockError extends Error {
     static create(
-        _key: Key,
+        _key: IKey,
         lockId: string,
         cause?: unknown,
     ): FailedRefreshWriterLockError {

@@ -3,7 +3,7 @@
  */
 
 import { type IEventBus } from "@/event-bus/contracts/_module.js";
-import { type Namespace } from "@/namespace/_module.js";
+import { type INamespace } from "@/namespace/contracts/_module.js";
 import {
     type IRateLimiterAdapter,
     type RateLimiterEventMap,
@@ -24,7 +24,7 @@ import {
  */
 export type RateLimiterSerdeTransformerSettings = {
     adapter: IRateLimiterAdapter;
-    namespace: Namespace;
+    namespace: INamespace;
     errorPolicy: ErrorPolicy;
     onlyError: boolean;
     eventBus: IEventBus<RateLimiterEventMap>;
@@ -39,7 +39,7 @@ export class RateLimiterSerdeTransformer
     implements ISerdeTransformer<RateLimiter, ISerializedRateLimiter>
 {
     private readonly adapter: IRateLimiterAdapter;
-    private readonly namespace: Namespace;
+    private readonly namespace: INamespace;
     private readonly errorPolicy: ErrorPolicy;
     private readonly eventBus: IEventBus<RateLimiterEventMap>;
     private readonly serdeTransformerName: string;
