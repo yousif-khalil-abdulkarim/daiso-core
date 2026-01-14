@@ -1,5 +1,22 @@
 # @daiso-tech/core
 
+## 0.45.0
+
+### Minor Changes
+
+- 58ed80b: Added `INamespace` contract and `NoOpNamespace` class for disabling namespacing
+- bce1f55: Update `Namespace` class to be serializable.
+- c0e55b3: Now `RateLimiter` objects created by `RateLimiterProvider` class is serializable and deserializable
+- e690f13: Added a new static method, `TimeSpan.fromStr`, which parses a time-formatted string to create a new `TimeSpan` instance.
+
+    Example:
+
+    ```ts
+    import { TimeSpan } from "@daiso-tech/core/time-span";
+
+    TimeSpan.fromStr("5s");
+    ```
+
 ## 0.44.0
 
 ### Minor Changes
@@ -678,8 +695,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                                    - `AsyncFactoryable`
-                                    - `Factoryable`
+                                      - `AsyncFactoryable`
+                                      - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
