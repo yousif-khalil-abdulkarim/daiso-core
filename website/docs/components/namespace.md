@@ -40,6 +40,47 @@ console.log(newNamespace.toString());
 console.log(namespace.create("my-key").toString());
 ```
 
+## NoOpNamespace class
+
+The `NoOpNamespace` class is used for disabling namespacing.
+
+```ts
+import { NoOpNamespace } from "@daiso-tech/core/namspace";
+
+const namespace = new NoOpNamespace();
+
+// Logs ""
+console.log(namespace.toString());
+
+const key = namespace.create("my-key");
+
+// Logs "my-key"
+console.log(key.get());
+
+// Logs "my-key"
+console.log(key.toString());
+```
+
+## INamespace contract
+
+Bothe `Namespace` and `INoOpNamepace` implement `INamespace` contract.
+The `INamespace` contract used for easily swaping between `Namespace` and `NoOpNamespace` class without changing your code.
+
+```ts
+export type IKey = {
+    get(): string;
+
+    toString(): string;
+};
+
+export type INamespace = {
+    toString(): string;
+
+    create(key: string): IKey;
+};
+
+```
+
 ## Further information
 
 For further information refer to [`@daiso-tech/core/namespace`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Namespace.html) API docs.

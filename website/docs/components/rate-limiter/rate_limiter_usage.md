@@ -5,9 +5,11 @@ pagination_label: Rate-limiter Usage
 tags:
  - Rate-limiter
  - Usage
+ - Namespace
 keywords:
  - Rate-limiter
  - Usage
+ - Namespace
 ---
 
 # Rate-limiter usage
@@ -142,7 +144,7 @@ console.log(rateLimiter.key);
 
 ### Namespacing
 
-You can use the `Namespace` class to group related rate-limiters without conflicts.
+You can use the `Namespace` class to group related rate-limiters without conflicts. Since namespacing is not used be default, you need to pass an obeject that implements `INamespace`.
 
 :::info
 For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.

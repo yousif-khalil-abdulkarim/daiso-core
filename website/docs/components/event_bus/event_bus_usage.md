@@ -5,9 +5,11 @@ pagination_label: Event-bus usage
 tags:
  - Event-bus
  - Usage
+ - Namespace
 keywords:
  - Event-bus
  - Usage
+ - Namespace
 ---
 
 # EventBus usage
@@ -338,7 +340,7 @@ await eventBus.dispatch("add", {
 
 ### Namespacing
 
-You can use the `Namespace` class to group related without conflicts.
+You can use the `Namespace` class to group related without conflicts. Since namespacing is not used be default, you need to pass an obeject that implements `INamespace`.
 
 :::info
 For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.

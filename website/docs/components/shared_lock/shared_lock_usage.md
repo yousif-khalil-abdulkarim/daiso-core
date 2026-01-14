@@ -5,9 +5,11 @@ pagination_label: Shared-lock usage
 tags:
  - Shared-lock
  - Usage
+ - Namespace
 keywords:
  - Shared-lock
  - Usage
+ - Namespace
 ---
 
 # Shared-lock usage
@@ -565,7 +567,7 @@ In most cases, setting a shared-lock id is unnecessary.
 
 ### Namespacing
 
-You can use the `Namespace` class to group related shared-locks without conflicts.
+You can use the `Namespace` class to group related shared-locks without conflicts. Since namespacing is not used be default, you need to pass an obeject that implements `INamespace`.
 
 :::info
 For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.

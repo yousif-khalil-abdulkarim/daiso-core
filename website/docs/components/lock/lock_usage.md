@@ -5,9 +5,11 @@ pagination_label: Lock usage
 tags:
  - Lock
  - Usage
+ - Namespace
 keywords:
  - Lock
  - Usage
+ - Namespace
 ---
 
 # Lock usage
@@ -309,7 +311,7 @@ In most cases, setting a custom lock id is unnecessary. Misusing this feature co
 
 ### Namespacing
 
-You can use the `Namespace` class to group related locks without conflicts.
+You can use the `Namespace` class to group related locks without conflicts. Since namespacing is not used be default, you need to pass an obeject that implements `INamespace`.
 
 :::info
 For further information about namespacing refer to [`@daiso-tech/core/namespace`](../namespace.md) documentation.
