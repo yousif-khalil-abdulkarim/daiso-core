@@ -4,12 +4,12 @@ import {
     type ICacheAdapter,
     type ICacheData,
     type ICacheDataExpiration,
-    type ICacheInsert,
-    type ICacheUpdate,
     type IDatabaseCacheAdapter,
+    type IDatabaseCacheTransaction,
 } from "@/cache/contracts/_module.js";
 import { isDatabaseCacheAdapter } from "@/cache/implementations/derivables/cache/is-database-cache-adapter.js";
 import { type TimeSpan } from "@/time-span/implementations/_module.js";
+import { type InvokableFn } from "@/utilities/_module.js";
 
 describe("function: isDatabaseCacheAdapter", () => {
     test("Should return true when is IDatabaseCacheAdapter", () => {
@@ -17,29 +17,23 @@ describe("function: isDatabaseCacheAdapter", () => {
             find: function (_key: string): Promise<ICacheData | null> {
                 throw new Error("Function not implemented.");
             },
-            insert: function (_data: ICacheInsert): Promise<void> {
+            transaction: function <TValue>(
+                _trxFn: InvokableFn<
+                    [trx: IDatabaseCacheTransaction],
+                    Promise<TValue>
+                >,
+            ): Promise<TValue> {
                 throw new Error("Function not implemented.");
             },
-            upsert: function (
-                _data: ICacheInsert,
+            update: function (
+                _key: string,
+                _value: unknown,
             ): Promise<ICacheDataExpiration | null> {
                 throw new Error("Function not implemented.");
             },
-            updateExpired: function (_data: ICacheInsert): Promise<number> {
-                throw new Error("Function not implemented.");
-            },
-            updateUnexpired: function (_data: ICacheUpdate): Promise<number> {
-                throw new Error("Function not implemented.");
-            },
-            incrementUnexpired: function (
-                _data: ICacheUpdate<number>,
-            ): Promise<number> {
-                throw new Error("Function not implemented.");
-            },
-            removeExpiredMany: function (_keys: string[]): Promise<number> {
-                throw new Error("Function not implemented.");
-            },
-            removeUnexpiredMany: function (_keys: string[]): Promise<number> {
+            removeMany: function (
+                _keys: string[],
+            ): Promise<ICacheDataExpiration[]> {
                 throw new Error("Function not implemented.");
             },
             removeAll: function (): Promise<void> {
