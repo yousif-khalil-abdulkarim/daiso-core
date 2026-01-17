@@ -62,6 +62,16 @@ export type KyselyCacheAdapterSettings = {
      * @default true
      */
     shouldRemoveExpiredKeys?: boolean;
+
+    /**
+     * @default
+     * ```ts
+     * import { Transaction } from "kysely"
+     *
+     * !(settings.kysely instanceof Transaction)
+     * ```
+     */
+    enableTransactions?: boolean;
 };
 
 /**
@@ -158,7 +168,7 @@ export class KyselyCacheAdapter<TType = unknown>
     private readonly shouldRemoveExpiredKeys: boolean;
     private readonly expiredKeysRemovalInterval: TimeSpan;
     private timeoutId: NodeJS.Timeout | string | number | null = null;
-    private readonly disableTransaction: boolean;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -188,8 +198,9 @@ export class KyselyCacheAdapter<TType = unknown>
             serde,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
+            enableTransactions = !(settings.kysely instanceof Transaction),
         } = settings;
-        this.disableTransaction = kysely instanceof Transaction;
+        this.enableTransactions = enableTransactions;
         this.kysely = kysely;
         this.serde = serde;
         this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
@@ -288,12 +299,12 @@ export class KyselyCacheAdapter<TType = unknown>
     private _transaction<TValue>(
         trxFn: InvokableFn<[trx: Kysely<KyselyCacheTables>], Promise<TValue>>,
     ): Promise<TValue> {
-        if (this.disableTransaction) {
-            return trxFn(this.kysely);
+        if (this.enableTransactions) {
+            return this.kysely.transaction().execute(async (trx) => {
+                return await trxFn(trx);
+            });
         }
-        return this.kysely.transaction().execute(async (trx) => {
-            return await trxFn(trx);
-        });
+        return trxFn(this.kysely);
     }
 
     async transaction<TValue>(

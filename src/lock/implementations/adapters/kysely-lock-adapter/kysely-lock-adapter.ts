@@ -64,6 +64,16 @@ export type KyselyLockAdapterSettings = {
      * @default true
      */
     shouldRemoveExpiredKeys?: boolean;
+
+    /**
+     * @default
+     * ```ts
+     * import { Transaction } from "kysely"
+     *
+     * !(settings.kysely instanceof Transaction)
+     * ```
+     */
+    enableTransactions?: boolean;
 };
 
 async function find(
@@ -156,7 +166,7 @@ export class KyselyLockAdapter
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
     private readonly isMysql: boolean;
-    private readonly disableTransaction: boolean;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -181,6 +191,7 @@ export class KyselyLockAdapter
             kysely,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
+            enableTransactions = !(settings.kysely instanceof Transaction),
         } = settings;
         this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
             expiredKeysRemovalInterval,
@@ -189,21 +200,21 @@ export class KyselyLockAdapter
         this.kysely = kysely;
         this.isMysql =
             this.kysely.getExecutor().adapter instanceof MysqlAdapter;
-        this.disableTransaction = kysely instanceof Transaction;
+        this.enableTransactions = enableTransactions;
     }
 
     private _transaction<TValue>(
         trxFn: InvokableFn<[trx: Kysely<KyselyLockTables>], Promise<TValue>>,
     ): Promise<TValue> {
-        if (this.disableTransaction) {
-            return trxFn(this.kysely);
+        if (this.enableTransactions) {
+            return this.kysely
+                .transaction()
+                .setIsolationLevel("serializable")
+                .execute(async (trx) => {
+                    return await trxFn(trx);
+                });
         }
-        return this.kysely
-            .transaction()
-            .setIsolationLevel("serializable")
-            .execute(async (trx) => {
-                return await trxFn(trx);
-            });
+        return trxFn(this.kysely);
     }
 
     /**

@@ -102,6 +102,16 @@ export type KyselySharedLockAdapterSettings = {
      * ```
      */
     currentDate?: () => Date;
+
+    /**
+     * @default
+     * ```ts
+     * import { Transaction } from "kysely"
+     *
+     * !(settings.kysely instanceof Transaction)
+     * ```
+     */
+    enableTransactions?: boolean;
 };
 
 /**
@@ -486,7 +496,7 @@ export class KyselySharedLockAdapter
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
     private readonly currentDate: () => Date;
-    private readonly disableTransaction: boolean;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -512,6 +522,7 @@ export class KyselySharedLockAdapter
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
             currentDate = () => new Date(),
+            enableTransactions = !(settings.kysely instanceof Transaction),
         } = settings;
         this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
             expiredKeysRemovalInterval,
@@ -519,7 +530,7 @@ export class KyselySharedLockAdapter
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.kysely = kysely;
         this.currentDate = currentDate;
-        this.disableTransaction = kysely instanceof Transaction;
+        this.enableTransactions = enableTransactions;
     }
 
     private _transaction<TValue>(
@@ -528,15 +539,15 @@ export class KyselySharedLockAdapter
             Promise<TValue>
         >,
     ): Promise<TValue> {
-        if (this.disableTransaction) {
-            return trxFn(this.kysely);
+        if (this.enableTransactions) {
+            return this.kysely
+                .transaction()
+                .setIsolationLevel("serializable")
+                .execute(async (trx) => {
+                    return await trxFn(trx);
+                });
         }
-        return this.kysely
-            .transaction()
-            .setIsolationLevel("serializable")
-            .execute(async (trx) => {
-                return await trxFn(trx);
-            });
+        return trxFn(this.kysely);
     }
 
     async init(): Promise<void> {

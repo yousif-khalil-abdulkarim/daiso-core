@@ -134,6 +134,16 @@ export type KyselyRateLimiterStorageAdapterSettings = {
      * @default true
      */
     shouldRemoveExpiredKeys?: boolean;
+
+    /**
+     * @default
+     * ```ts
+     * import { Transaction } from "kysely"
+     *
+     * !(settings.kysely instanceof Transaction)
+     * ```
+     */
+    enableTransactions?: boolean;
 };
 
 /**
@@ -153,7 +163,7 @@ export class KyselyRateLimiterStorageAdapter<TType>
     private readonly shouldRemoveExpiredKeys: boolean;
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
-    private readonly disableTransaction: boolean;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -183,6 +193,7 @@ export class KyselyRateLimiterStorageAdapter<TType>
             serde,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
+            enableTransactions = !(settings.kysely instanceof Transaction),
         } = settings;
 
         this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
@@ -191,7 +202,7 @@ export class KyselyRateLimiterStorageAdapter<TType>
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.kysely = kysely;
         this.serde = serde;
-        this.disableTransaction = kysely instanceof Transaction;
+        this.enableTransactions = enableTransactions;
     }
     private _transaction<TValue>(
         trxFn: InvokableFn<
@@ -199,12 +210,12 @@ export class KyselyRateLimiterStorageAdapter<TType>
             Promise<TValue>
         >,
     ): Promise<TValue> {
-        if (this.disableTransaction) {
-            return trxFn(this.kysely);
+        if (this.enableTransactions) {
+            return this.kysely.transaction().execute(async (trx) => {
+                return await trxFn(trx);
+            });
         }
-        return this.kysely.transaction().execute(async (trx) => {
-            return await trxFn(trx);
-        });
+        return trxFn(this.kysely);
     }
 
     /**
