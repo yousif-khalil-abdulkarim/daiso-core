@@ -35,6 +35,11 @@ export type MongodbRateLimiterStorageAdapterSettings = {
     collectionName?: string;
     collectionSettings?: CollectionOptions;
     serde: ISerde<string>;
+
+    /**
+     * @default true
+     */
+    enableTransactions?: boolean;
 };
 
 /**
@@ -58,6 +63,7 @@ export class MongodbRateLimiterStorageAdapter<TType>
     private readonly client: MongoClient;
     private readonly collection: Collection<MongodbRateLimiterDocument>;
     private readonly serde: ISerde<string>;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -86,6 +92,7 @@ export class MongodbRateLimiterStorageAdapter<TType>
             collectionSettings,
             database,
             serde,
+            enableTransactions = true,
         } = settings;
         this.client = client;
         this.collection = database.collection(
@@ -93,6 +100,7 @@ export class MongodbRateLimiterStorageAdapter<TType>
             collectionSettings,
         );
         this.serde = serde;
+        this.enableTransactions = enableTransactions;
     }
 
     /**
@@ -165,13 +173,26 @@ export class MongodbRateLimiterStorageAdapter<TType>
         );
     }
 
+    private async _transaction<TValue>(
+        trxFn: InvokableFn<[], Promise<TValue>>,
+    ): Promise<TValue> {
+        if (this.enableTransactions) {
+            return await this.client
+                .startSession()
+                .withTransaction(async () => {
+                    return await trxFn();
+                });
+        }
+        return trxFn();
+    }
+
     async transaction<TValue>(
         fn: InvokableFn<
             [transaction: IRateLimiterStorageAdapterTransaction<TType>],
             Promise<TValue>
         >,
     ): Promise<TValue> {
-        return await this.client.startSession().withTransaction(async () => {
+        return await this._transaction(async () => {
             return await fn({
                 upsert: (key, state, exiration) =>
                     this.upsert(key, state, exiration),
