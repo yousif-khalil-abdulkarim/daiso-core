@@ -2,7 +2,7 @@
  * @module RateLimiter
  */
 
-import { MysqlAdapter, type Kysely } from "kysely";
+import { MysqlAdapter, Transaction, type Kysely } from "kysely";
 
 import {
     type IRateLimiterData,
@@ -153,6 +153,7 @@ export class KyselyRateLimiterStorageAdapter<TType>
     private readonly shouldRemoveExpiredKeys: boolean;
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
+    private readonly disableTransaction: boolean;
 
     /**
      * @example
@@ -190,6 +191,20 @@ export class KyselyRateLimiterStorageAdapter<TType>
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.kysely = kysely;
         this.serde = serde;
+        this.disableTransaction = kysely instanceof Transaction;
+    }
+    private _transaction<TValue>(
+        trxFn: InvokableFn<
+            [trx: Kysely<KyselyRateLimiterStorageTables>],
+            Promise<TValue>
+        >,
+    ): Promise<TValue> {
+        if (this.disableTransaction) {
+            return trxFn(this.kysely);
+        }
+        return this.kysely.transaction().execute(async (trx) => {
+            return await trxFn(trx);
+        });
     }
 
     /**
@@ -269,7 +284,7 @@ export class KyselyRateLimiterStorageAdapter<TType>
             Promise<TValue>
         >,
     ): Promise<TValue> {
-        return await this.kysely.transaction().execute(async (trx) => {
+        return await this._transaction(async (trx) => {
             return await fn(
                 new KyselyRateLimiterStorageAdapterTransaction(trx, this.serde),
             );

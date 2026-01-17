@@ -2,7 +2,7 @@
  * @module CircuitBreaker
  */
 
-import { MysqlAdapter, type Kysely } from "kysely";
+import { MysqlAdapter, Transaction, type Kysely } from "kysely";
 
 import {
     type ICircuitBreakerStorageAdapter,
@@ -123,6 +123,7 @@ export class KyselyCircuitBreakerStorageAdapter<TType>
 {
     private readonly kysely: Kysely<KyselyCircuitBreakerStorageTables>;
     private readonly serde: ISerde<string>;
+    private readonly disableTransaction: boolean;
 
     /**
      * @example
@@ -151,6 +152,20 @@ export class KyselyCircuitBreakerStorageAdapter<TType>
 
         this.kysely = kysely;
         this.serde = serde;
+        this.disableTransaction = kysely instanceof Transaction;
+    }
+    private _transaction<TValue>(
+        trxFn: InvokableFn<
+            [trx: Kysely<KyselyCircuitBreakerStorageTables>],
+            Promise<TValue>
+        >,
+    ): Promise<TValue> {
+        if (this.disableTransaction) {
+            return trxFn(this.kysely);
+        }
+        return this.kysely.transaction().execute(async (trx) => {
+            return await trxFn(trx);
+        });
     }
 
     /**
@@ -191,7 +206,7 @@ export class KyselyCircuitBreakerStorageAdapter<TType>
             Promise<TValue>
         >,
     ): Promise<TValue> {
-        return await this.kysely.transaction().execute(async (trx) => {
+        return await this._transaction(async (trx) => {
             return await fn(
                 new KyselyCircuitBreakerStorageAdapterTransaction({
                     kysely: trx,
