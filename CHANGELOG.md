@@ -1,5 +1,15 @@
 # @daiso-tech/core
 
+## 0.46.0
+
+### Minor Changes
+
+- f1eb8eb: Updated and simplified the `IDatabaseCacheAdapter` contract.
+
+### Patch Changes
+
+- f1eb8eb: Fixed a bug where MongoDB was imported from an incorrect file, causing a 'module not found' error.
+
 ## 0.45.0
 
 ### Minor Changes
@@ -695,8 +705,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                                      - `AsyncFactoryable`
-                                      - `Factoryable`
+                                        - `AsyncFactoryable`
+                                        - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
