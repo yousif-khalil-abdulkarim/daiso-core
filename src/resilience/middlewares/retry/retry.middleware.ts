@@ -54,7 +54,7 @@ import {
  * ```
  */
 export function retry<
-    TParameters extends unknown[],
+    TParameters extends Array<unknown>,
     TReturn,
     TContext extends HookContext,
 >(
@@ -69,7 +69,7 @@ export function retry<
     } = settings;
     return async (args, next, { context, signal }) => {
         let result: Option<TReturn> = optionNone();
-        const allErrors: unknown[] = [];
+        const allErrors: Array<unknown> = [];
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
                 callInvokable(onExecutionAttempt, { attempt, args, context });

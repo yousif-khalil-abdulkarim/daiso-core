@@ -97,7 +97,7 @@ export type ClearedCacheEvent = {};
  * @group Events
  */
 export type UnexpectedErrorCacheEvent = {
-    keys?: string[];
+    keys?: Array<string>;
     value?: unknown;
     method: string;
     error: unknown;

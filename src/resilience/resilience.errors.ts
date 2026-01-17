@@ -20,7 +20,7 @@ export class TimeoutResilienceError extends Error {
  * @group Errors
  */
 export class RetryResilienceError extends AggregateError {
-    constructor(errors: unknown[], message: string) {
+    constructor(errors: Array<unknown>, message: string) {
         super(errors, message);
         this.name = RetryResilienceError.name;
     }

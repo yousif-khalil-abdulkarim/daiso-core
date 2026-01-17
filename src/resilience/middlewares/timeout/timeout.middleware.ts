@@ -45,7 +45,7 @@ import { callInvokable } from "@/utilities/_module.js";
  * ```
  */
 export function timeout<
-    TParameters extends unknown[],
+    TParameters extends Array<unknown>,
     TReturn,
     TContext extends HookContext,
 >(

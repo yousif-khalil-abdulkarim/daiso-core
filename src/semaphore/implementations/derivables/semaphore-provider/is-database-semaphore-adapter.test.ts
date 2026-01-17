@@ -31,7 +31,7 @@ describe("function: isDatabaseSemaphoreAdapter", () => {
             },
             removeAllSlots: function (
                 _key: string,
-            ): Promise<ISemaphoreSlotExpirationData[]> {
+            ): Promise<Array<ISemaphoreSlotExpirationData>> {
                 throw new Error("Function not implemented.");
             },
             updateExpiration: function (

@@ -186,7 +186,7 @@ export class RedisCacheAdapter<TType = unknown>
         }
     }
 
-    async removeMany(keys: string[]): Promise<boolean> {
+    async removeMany(keys: Array<string>): Promise<boolean> {
         const deleteResult = await this.database.del(...keys);
         return deleteResult > 0;
     }

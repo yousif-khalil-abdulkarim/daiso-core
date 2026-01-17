@@ -17,7 +17,7 @@ export class ChunkIterable<TInput> implements Iterable<ICollection<TInput>> {
     ) {}
 
     *[Symbol.iterator](): Iterator<ICollection<TInput>> {
-        const array: TInput[] = [];
+        const array: Array<TInput> = [];
         let currentChunkSize = 0;
         let isFirstIteration = true;
         for (const item of this.collection) {

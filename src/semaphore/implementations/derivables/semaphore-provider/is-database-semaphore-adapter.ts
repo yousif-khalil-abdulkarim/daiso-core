@@ -13,7 +13,7 @@ export function isDatabaseSemaphoreAdapter(
     adapter: SemaphoreAdapterVariants,
 ): adapter is IDatabaseSemaphoreAdapter {
     const adapter_ = adapter as Partial<
-        Record<string, (...args_: unknown[]) => unknown>
+        Record<string, (...args_: Array<unknown>) => unknown>
     >;
     return (
         typeof adapter_["transaction"] === "function" &&

@@ -18,7 +18,7 @@ import {
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type NextFunc<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
 > = InvokableFn<TParameters, TReturn>;
 
@@ -36,7 +36,7 @@ export type Context<TContext extends HookContext = HookContext> = {
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type MiddlewareFn<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = InvokableFn<
@@ -53,7 +53,7 @@ export type MiddlewareFn<
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type IMiddlewareObject<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = IInvokableObject<
@@ -70,7 +70,7 @@ export type IMiddlewareObject<
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type Middleware<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > =
@@ -103,13 +103,13 @@ export type HooksSettings<TContext extends HookContext = HookContext> = {
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export class Hooks<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > implements IInvokableObject<TParameters, TReturn>
 {
     private static init<
-        TParameters extends unknown[],
+        TParameters extends Array<unknown>,
         TReturn,
         TContext extends HookContext,
     >(

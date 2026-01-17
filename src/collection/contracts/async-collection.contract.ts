@@ -2340,7 +2340,7 @@ export type IAsyncCollection<TInput = unknown> = AsyncIterable<TInput> & {
     /**
      * The `toArray` method converts the collection to a new {@link Array | `Array`}.
      */
-    toArray(): ITask<TInput[]>;
+    toArray(): ITask<Array<TInput>>;
 
     /**
      * The `toRecord` method converts the collection to a new {@link Record | `Record`}.

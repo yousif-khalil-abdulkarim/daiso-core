@@ -157,7 +157,7 @@ export class Semaphore implements ISemaphore {
     }
 
     private handleUnexpectedError = <
-        TParameters extends unknown[],
+        TParameters extends Array<unknown>,
         TReturn,
     >(): AsyncMiddlewareFn<TParameters, TReturn> => {
         return async (args, next) => {
@@ -181,7 +181,7 @@ export class Semaphore implements ISemaphore {
     };
 
     private handleDispatch = <
-        TParameters extends unknown[],
+        TParameters extends Array<unknown>,
         TEventName extends keyof SemaphoreEventMap,
         TEvent extends SemaphoreEventMap[TEventName],
     >(settings: {

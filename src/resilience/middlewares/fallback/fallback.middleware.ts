@@ -38,7 +38,7 @@ import {
  * ```
  */
 export function fallback<
-    TParameters extends unknown[],
+    TParameters extends Array<unknown>,
     TReturn,
     TContext extends HookContext,
 >(

@@ -172,7 +172,7 @@ export class MongodbSharedLockAdapter
         }
     }
 
-    private updateSemaphoreExpiration(): Document[] {
+    private updateSemaphoreExpiration(): Array<Document> {
         const hasUnexpireableSlotQuery = {
             $in: [
                 null,
@@ -238,7 +238,7 @@ export class MongodbSharedLockAdapter
         ];
     }
 
-    private removeWriterWhenReaderIsActive(): Document[] {
+    private removeWriterWhenReaderIsActive(): Array<Document> {
         return [
             {
                 $set: {

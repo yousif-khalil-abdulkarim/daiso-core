@@ -350,8 +350,10 @@ export class KyselyCacheAdapter<TType = unknown>
         };
     }
 
-    async removeMany(keys: string[]): Promise<ICacheDataExpiration[]> {
-        let rows: Pick<KyselyCacheTable, "expiration">[];
+    async removeMany(
+        keys: Array<string>,
+    ): Promise<Array<ICacheDataExpiration>> {
+        let rows: Array<Pick<KyselyCacheTable, "expiration">>;
         if (this.isMysql) {
             rows = await this._transaction(async (trx) => {
                 const rows = await trx

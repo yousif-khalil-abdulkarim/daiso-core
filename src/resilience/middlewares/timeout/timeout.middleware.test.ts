@@ -7,7 +7,7 @@ import { TimeoutResilienceError } from "@/resilience/resilience.errors.js";
 import { Task } from "@/task/implementations/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 
-function createDelayedFn<TParameters extends unknown[], TReturn>(
+function createDelayedFn<TParameters extends Array<unknown>, TReturn>(
     time: TimeSpan,
     fn: (...args: [...TParameters, sigal?: AbortSignal]) => TReturn,
 ) {

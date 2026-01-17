@@ -6,4 +6,7 @@
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  */
-export type NoneFunc<TType> = Exclude<TType, (...args: unknown[]) => unknown>;
+export type NoneFunc<TType> = Exclude<
+    TType,
+    (...args: Array<unknown>) => unknown
+>;

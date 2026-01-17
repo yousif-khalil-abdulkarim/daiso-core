@@ -11,7 +11,7 @@ describe("class: AsyncHooks", () => {
         expect(value).toBe(2);
     });
     test("Should call function and middleware with correct order when passed through constructor", async () => {
-        const array: number[] = [];
+        const array: Array<number> = [];
 
         await new AsyncHooks(() => {
             array.push(4);
@@ -33,7 +33,7 @@ describe("class: AsyncHooks", () => {
         expect(array).toStrictEqual([1, 2, 3, 4]);
     });
     test("Should call function and middleware with correct order when passed through pipe", async () => {
-        const array: number[] = [];
+        const array: Array<number> = [];
 
         await new AsyncHooks(() => {
             array.push(4);
@@ -57,7 +57,7 @@ describe("class: AsyncHooks", () => {
         expect(array).toStrictEqual([1, 2, 3, 4]);
     });
     test("Should call function and middleware with correct order when passed through constructor and pipe", async () => {
-        const array: number[] = [];
+        const array: Array<number> = [];
 
         await new AsyncHooks(() => {
             array.push(4);
@@ -85,7 +85,7 @@ describe("class: AsyncHooks", () => {
         function fn(nbr: number): number {
             return nbr + 1;
         }
-        let args: unknown[] = [];
+        let args: Array<unknown> = [];
         await new AsyncHooks(fn, [
             async (args_, next) => {
                 args = args_;
@@ -98,7 +98,7 @@ describe("class: AsyncHooks", () => {
         function fn(a: number, b: number): number {
             return a + b;
         }
-        let args: unknown[] = [];
+        let args: Array<unknown> = [];
         await new AsyncHooks(fn, [
             async (args_, next) => {
                 args = args_;
@@ -111,7 +111,7 @@ describe("class: AsyncHooks", () => {
         function fn(nbr: number): number {
             return nbr + 1;
         }
-        let args: unknown[] = [];
+        let args: Array<unknown> = [];
         await new AsyncHooks(fn, [
             async (args_, next) => {
                 return await next(...args_);
@@ -127,7 +127,7 @@ describe("class: AsyncHooks", () => {
         function fn(nbr: number): number {
             return nbr + 1;
         }
-        let args: unknown[] = [];
+        let args: Array<unknown> = [];
         await new AsyncHooks(fn, [
             async (_args, next) => {
                 return await next(-1);

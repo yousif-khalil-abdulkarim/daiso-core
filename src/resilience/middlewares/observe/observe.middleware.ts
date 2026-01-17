@@ -48,7 +48,7 @@ import { callInvokable } from "@/utilities/_module.js";
  * ```
  */
 export function observe<
-    TParameters extends unknown[],
+    TParameters extends Array<unknown>,
     TReturn,
     TContext extends HookContext,
 >(

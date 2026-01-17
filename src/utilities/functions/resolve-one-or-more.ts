@@ -13,7 +13,7 @@ export type OneOrMore<TItem> = TItem | Iterable<TItem>;
 /**
  * @internal
  */
-export function resolveOneOrMore<TType>(value: OneOrMore<TType>): TType[] {
+export function resolveOneOrMore<TType>(value: OneOrMore<TType>): Array<TType> {
     if (isIterable(value)) {
         return [...value];
     }

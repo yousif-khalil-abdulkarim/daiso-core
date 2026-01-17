@@ -13,7 +13,7 @@ import { type Invokable } from "@/utilities/_module.js";
  * @group Middlewares
  */
 export type OnTimeoutData<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = {
     waitTime: TimeSpan;
@@ -27,7 +27,7 @@ export type OnTimeoutData<
  * @group Middlewares
  */
 export type OnTimeout<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = Invokable<[data: OnTimeoutData<TParameters, TContext>]>;
 
@@ -37,7 +37,7 @@ export type OnTimeout<
  * @group Middlewares
  */
 export type TimeoutCallbacks<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = {
     /**
@@ -52,7 +52,7 @@ export type TimeoutCallbacks<
  * @group Middlewares
  */
 export type TimeoutSettings<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = TimeoutCallbacks<TParameters, TContext> & {
     /**

@@ -110,7 +110,7 @@ export type ISharedLockReaderUnacquiredState = {
     limit: number;
     freeSlotsCount: number;
     acquiredSlotsCount: number;
-    acquiredSlots: string[];
+    acquiredSlots: Array<string>;
 };
 
 /**
@@ -124,7 +124,7 @@ export type ISharedLockReaderAcquiredState = {
     remainingTime: TimeSpan | null;
     freeSlotsCount: number;
     acquiredSlotsCount: number;
-    acquiredSlots: string[];
+    acquiredSlots: Array<string>;
 };
 
 /**
@@ -135,7 +135,7 @@ export type ISharedLockReaderAcquiredState = {
 export type ISharedLockReaderLimitReachedState = {
     type: (typeof SHARED_LOCK_READER_STATE)["READER_LIMIT_REACHED"];
     limit: number;
-    acquiredSlots: string[];
+    acquiredSlots: Array<string>;
 };
 
 /**

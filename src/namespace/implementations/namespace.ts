@@ -68,7 +68,7 @@ export type NamespaceSettings = {
 
 export type SerializedNamespace = {
     version: "1";
-    root: string | string[];
+    root: string | Array<string>;
     delimiter: string;
     rootIdentifier: string;
 };

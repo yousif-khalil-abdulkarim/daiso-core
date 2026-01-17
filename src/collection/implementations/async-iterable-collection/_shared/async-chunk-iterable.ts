@@ -20,7 +20,7 @@ export class AsyncChunkIterable<TInput>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
-        const array: TInput[] = [];
+        const array: Array<TInput> = [];
         let currentChunkSize = 0;
         let isFirstIteration = true;
         for await (const item of this.collection) {

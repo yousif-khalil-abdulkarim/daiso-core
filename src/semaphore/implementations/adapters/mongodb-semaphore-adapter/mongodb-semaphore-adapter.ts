@@ -183,7 +183,7 @@ export class MongodbSemaphoreAdapter
         };
     }
 
-    private updateSemaphoreExpiration(): Document[] {
+    private updateSemaphoreExpiration(): Array<Document> {
         const hasUnexpireableSlotQuery = {
             $in: [
                 null,

@@ -26,8 +26,8 @@ export class AsyncPartionIterable<TInput>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
-        const arrayA: TInput[] = [];
-        const arrayB: TInput[] = [];
+        const arrayA: Array<TInput> = [];
+        const arrayB: Array<TInput> = [];
         for await (const [index, item] of this.collection.entries()) {
             if (
                 await resolveInvokable(this.predicateFn)(

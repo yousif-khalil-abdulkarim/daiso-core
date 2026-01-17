@@ -149,7 +149,7 @@ export class Lock implements ILock {
     }
 
     private handleUnexpectedError = <
-        TParameters extends unknown[],
+        TParameters extends Array<unknown>,
         TReturn,
     >(): AsyncMiddlewareFn<TParameters, TReturn> => {
         return async (args, next) => {
@@ -173,7 +173,7 @@ export class Lock implements ILock {
     };
 
     private handleDispatch = <
-        TParameters extends unknown[],
+        TParameters extends Array<unknown>,
         TEventName extends keyof LockEventMap,
         TEvent extends LockEventMap[TEventName],
     >(settings: {

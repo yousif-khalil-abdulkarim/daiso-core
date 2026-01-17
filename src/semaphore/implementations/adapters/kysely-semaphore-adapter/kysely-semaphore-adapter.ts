@@ -88,7 +88,7 @@ class DatabaseSemaphoreTransaction implements IDatabaseSemaphoreTransaction {
             this.kysely.getExecutor().adapter instanceof MysqlAdapter;
     }
 
-    async findSlots(key: string): Promise<ISemaphoreSlotData[]> {
+    async findSlots(key: string): Promise<Array<ISemaphoreSlotData>> {
         const rows = await this.kysely
             .selectFrom("semaphoreSlot")
             .where("semaphoreSlot.key", "=", key)
@@ -392,8 +392,10 @@ export class KyselySemaphoreAdapter
         };
     }
 
-    async removeAllSlots(key: string): Promise<ISemaphoreSlotExpirationData[]> {
-        let rows: Pick<KyselySemaphoreSlotTable, "expiration">[];
+    async removeAllSlots(
+        key: string,
+    ): Promise<Array<ISemaphoreSlotExpirationData>> {
+        let rows: Array<Pick<KyselySemaphoreSlotTable, "expiration">>;
 
         if (this.isMysql) {
             rows = await this.kysely

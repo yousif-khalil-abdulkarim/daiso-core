@@ -21,10 +21,8 @@ import {
  *
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
-export type GetSignal<TParameters extends unknown[] = unknown[]> = Invokable<
-    [arguments_: TParameters],
-    AbortSignal | undefined
->;
+export type GetSignal<TParameters extends Array<unknown> = Array<unknown>> =
+    Invokable<[arguments_: TParameters], AbortSignal | undefined>;
 
 /**
  *
@@ -74,7 +72,9 @@ export type ForwardSignal<TParameters> = Invokable<
  * console.log("DATA:", data)
  * ```
  */
-export type AbortSignalBinder<TParameters extends unknown[] = unknown[]> = {
+export type AbortSignalBinder<
+    TParameters extends Array<unknown> = Array<unknown>,
+> = {
     getSignal: GetSignal<TParameters>;
     forwardSignal: ForwardSignal<TParameters>;
 };
@@ -84,7 +84,7 @@ export type AbortSignalBinder<TParameters extends unknown[] = unknown[]> = {
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncNextFunc<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
 > = InvokableFn<TParameters, PromiseLike<TReturn>>;
 
@@ -93,7 +93,7 @@ export type AsyncNextFunc<
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncContext<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = {
     name: string;
@@ -108,7 +108,7 @@ export type AsyncContext<
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncMiddlewareFn<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = InvokableFn<
@@ -125,7 +125,7 @@ export type AsyncMiddlewareFn<
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type IAsyncMiddlewareObject<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = IInvokableObject<
@@ -142,7 +142,7 @@ export type IAsyncMiddlewareObject<
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncMiddleware<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > =
@@ -154,7 +154,7 @@ export type AsyncMiddleware<
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export type AsyncHooksSettings<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = {
     /**
@@ -184,13 +184,13 @@ export type AsyncHooksSettings<
  * IMPORT_PATH: `"@daiso-tech/core/hooks"`
  */
 export class AsyncHooks<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > implements IInvokableObject<TParameters, Promise<TReturn>>
 {
     private static defaultAbortSignalBinder<
-        TParameters extends unknown[],
+        TParameters extends Array<unknown>,
     >(): AbortSignalBinder<TParameters> {
         return {
             forwardSignal: (args) => args,
@@ -198,7 +198,7 @@ export class AsyncHooks<
         };
     }
 
-    private static resolveSignalBinder<TParameters extends unknown[]>(
+    private static resolveSignalBinder<TParameters extends Array<unknown>>(
         signalBinder: AbortSignalBinder<TParameters>,
         args: TParameters,
     ) {
@@ -222,7 +222,7 @@ export class AsyncHooks<
     }
 
     private static init<
-        TParameters extends unknown[],
+        TParameters extends Array<unknown>,
         TReturn,
         TContext extends HookContext,
     >(

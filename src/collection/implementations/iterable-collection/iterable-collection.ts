@@ -1106,7 +1106,7 @@ export class IterableCollection<TInput = unknown>
         }
     }
 
-    toArray(): TInput[] {
+    toArray(): Array<TInput> {
         return [...this];
     }
 

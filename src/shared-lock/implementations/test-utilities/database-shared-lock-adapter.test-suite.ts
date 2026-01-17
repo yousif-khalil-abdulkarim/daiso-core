@@ -658,7 +658,7 @@ export function databaseSharedLockAdapterTestSuite(
                         id: slotId2,
                         expiration: expiration2,
                     },
-                ] as IReaderSemaphoreSlotData[]);
+                ] as Array<IReaderSemaphoreSlotData>);
             });
         });
         describe("method: transaction reader.upsertSemaphore", () => {
@@ -938,7 +938,7 @@ export function databaseSharedLockAdapterTestSuite(
                     {
                         expiration: expiration2,
                     },
-                ] as IReaderSemaphoreSlotExpirationData[]);
+                ] as Array<IReaderSemaphoreSlotExpirationData>);
             });
             test("Should remove all items when key exists and has slots", async () => {
                 const key = "a";

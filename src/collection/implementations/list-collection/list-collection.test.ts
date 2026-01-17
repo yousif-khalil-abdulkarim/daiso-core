@@ -25,7 +25,7 @@ describe("class: ListCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -53,7 +53,7 @@ describe("class: ListCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -72,7 +72,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to map function", () => {
             const collection = new ListCollection([2, 3, 4, 5]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 mapFunction = (item: number, index: number): number => {
                     indexes.push(index);
                     return item ** 2;
@@ -104,7 +104,7 @@ describe("class: ListCollection", () => {
             const arr = ["a", "b", "c", "d"],
                 collection = new ListCollection(arr),
                 initialValue = "!",
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.reduce((initialValue, item, index) => {
                 indexes.push(index);
                 return initialValue + item;
@@ -183,7 +183,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to map function", () => {
             const collection = new ListCollection(["a", "ab", "b", "ba"]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 mapFunction = (
                     item: string,
                     index: number,
@@ -227,7 +227,7 @@ describe("class: ListCollection", () => {
                     "c",
                     "cccc",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .change(
                     (item, index) => {
@@ -248,7 +248,7 @@ describe("class: ListCollection", () => {
                     "c",
                     "cccc",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .change(
                     (item) => item.length >= 2,
@@ -501,7 +501,7 @@ describe("class: ListCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -539,7 +539,7 @@ describe("class: ListCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -564,7 +564,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c", "c", "aa"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.every((item, index) => {
                 indexes.push(index);
                 return item.length === 1;
@@ -605,7 +605,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .takeUntil((item, index) => {
                     indexes.push(index);
@@ -623,7 +623,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .takeWhile((item, index) => {
                     indexes.push(index);
@@ -661,7 +661,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .skipUntil((item, index) => {
                     indexes.push(index);
@@ -679,7 +679,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .skipWhile((item, index) => {
                     indexes.push(index);
@@ -866,7 +866,7 @@ describe("class: ListCollection", () => {
         test("Should input correct indexes to predicate function", () => {
             const arr = ["a", 1, "b", 2, "c", 3, "d", 4, "e", 5],
                 collection = new ListCollection(arr),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .partition((item, index) => {
                     indexes.push(index);
@@ -1063,7 +1063,7 @@ describe("class: ListCollection", () => {
                 newCollection = collection.groupBy();
             expect(
                 newCollection
-                    .map(([key, item]): [string, string[]] => [
+                    .map(([key, item]): [string, Array<string>] => [
                         key,
                         item.toArray(),
                     ])
@@ -1080,7 +1080,7 @@ describe("class: ListCollection", () => {
                 name: string;
                 age: number;
             };
-            const arr: Person[] = [
+            const arr: Array<Person> = [
                     {
                         name: "Abra",
                         age: 20,
@@ -1112,7 +1112,7 @@ describe("class: ListCollection", () => {
                 });
             expect(
                 newCollection
-                    .map(([key, item]): [string, Person[]] => [
+                    .map(([key, item]): [string, Array<Person>] => [
                         key,
                         item.toArray(),
                     ])
@@ -1134,7 +1134,7 @@ describe("class: ListCollection", () => {
                     "b",
                     "d",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .groupBy((item, index) => {
                     indexes.push(index);
@@ -1161,7 +1161,7 @@ describe("class: ListCollection", () => {
                 name: string;
                 age: number;
             };
-            const arr: Person[] = [
+            const arr: Array<Person> = [
                     {
                         name: "Abra",
                         age: 20,
@@ -1208,7 +1208,7 @@ describe("class: ListCollection", () => {
                     "b",
                     "d",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .countBy((item, index) => {
                     indexes.push(index);
@@ -1256,7 +1256,7 @@ describe("class: ListCollection", () => {
                     "b",
                     "d",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .unique((item, index) => {
                     indexes.push(index);
@@ -1278,7 +1278,7 @@ describe("class: ListCollection", () => {
                 brand: string;
                 type: string;
             };
-            const items: Product[] = [
+            const items: Array<Product> = [
                 { name: "iPhone 6", brand: "Apple", type: "phone" },
                 { name: "iPhone 5", brand: "Apple", type: "phone" },
                 { name: "Apple Watch", brand: "Apple", type: "watch" },
@@ -1568,7 +1568,7 @@ describe("class: ListCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1602,7 +1602,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.first((item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -1621,7 +1621,7 @@ describe("class: ListCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1670,7 +1670,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.firstOr(null, (item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -1697,7 +1697,7 @@ describe("class: ListCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1734,7 +1734,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 collection.firstOrFail((item, index) => {
                     indexes.push(index);
@@ -1757,7 +1757,7 @@ describe("class: ListCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1791,7 +1791,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.last((item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -1810,7 +1810,7 @@ describe("class: ListCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1859,7 +1859,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.lastOr(null, (item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -1886,7 +1886,7 @@ describe("class: ListCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1921,7 +1921,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 collection.lastOrFail((item, index) => {
                     indexes.push(index);
@@ -1961,7 +1961,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.before((item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2017,7 +2017,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.beforeOr(null, (item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2049,7 +2049,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 collection.beforeOrFail((item, index) => {
                     indexes.push(index);
@@ -2089,7 +2089,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.after((item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2145,7 +2145,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.afterOr(null, (item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2177,7 +2177,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 collection.afterOrFail((item, index) => {
                     indexes.push(index);
@@ -2213,7 +2213,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "a", "b", "c", "b"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.sole((item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2251,7 +2251,7 @@ describe("class: ListCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection(["a", "a", "b", "c", "b"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.count((_item, index) => {
                 indexes.push(index);
                 return true;
@@ -2347,13 +2347,13 @@ describe("class: ListCollection", () => {
         test("Should iterate all items", () => {
             const arr1 = [1, 2, 3],
                 collection = new ListCollection(arr1),
-                arr2: number[] = [];
+                arr2: Array<number> = [];
             collection.forEach((item) => arr2.push(item));
             expect(arr2).toEqual(arr1);
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new ListCollection([1, 2, 3]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.forEach((_item, index) => {
                 indexes.push(index);
             });
@@ -2362,7 +2362,7 @@ describe("class: ListCollection", () => {
         test("Should return the same value when called more than 1 times", () => {
             const arr1 = [1, 2, 3],
                 collection = new ListCollection(arr1),
-                arr2: number[] = [];
+                arr2: Array<number> = [];
             collection.forEach((item) => arr2.push(item));
             expect(arr2).toEqual(arr1);
             expect(arr2).toEqual(arr1);

@@ -23,7 +23,7 @@ export class ChunkWhileIterable<TInput>
     ) {}
 
     *[Symbol.iterator](): Iterator<ICollection<TInput>> {
-        const array: TInput[] = [];
+        const array: Array<TInput> = [];
         for (const [index, item] of this.collection.entries()) {
             if (index === 0) {
                 array.push(item);
