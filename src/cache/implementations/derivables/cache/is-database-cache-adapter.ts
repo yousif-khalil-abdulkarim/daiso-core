@@ -17,16 +17,11 @@ export function isDatabaseCacheAdapter<TType>(
     return (
         typeof adapter_["find"] === "function" &&
         adapter_["find"].length === 1 &&
-        typeof adapter_["insert"] === "function" &&
-        adapter_["insert"].length === 1 &&
-        typeof adapter_["updateExpired"] === "function" &&
-        adapter_["updateExpired"].length === 1 &&
-        typeof adapter_["updateUnexpired"] === "function" &&
-        adapter_["updateUnexpired"].length === 1 &&
-        typeof adapter_["incrementUnexpired"] === "function" &&
-        adapter_["incrementUnexpired"].length === 1 &&
-        typeof adapter_["removeExpiredMany"] === "function" &&
-        typeof adapter_["removeUnexpiredMany"] === "function" &&
+        typeof adapter_["transaction"] === "function" &&
+        adapter_["transaction"].length === 1 &&
+        typeof adapter_["update"] === "function" &&
+        adapter_["update"].length === 2 &&
+        typeof adapter_["removeMany"] === "function" &&
         typeof adapter_["removeAll"] === "function" &&
         adapter_["removeAll"].length === 0 &&
         typeof adapter_["removeByKeyPrefix"] === "function" &&

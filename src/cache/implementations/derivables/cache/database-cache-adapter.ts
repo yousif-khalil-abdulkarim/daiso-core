@@ -5,6 +5,8 @@
 import {
     type IDatabaseCacheAdapter,
     type ICacheAdapter,
+    type ICacheData,
+    type ICacheDataExpiration,
 } from "@/cache/contracts/_module.js";
 import { type TimeSpan } from "@/time-span/implementations/_module.js";
 
@@ -16,21 +18,35 @@ export class DatabaseCacheAdapter<TType = unknown>
 {
     constructor(private readonly adapter: IDatabaseCacheAdapter<TType>) {}
 
-    async get(key: string): Promise<TType | null> {
-        const data = await this.adapter.find(key);
+    private static handleData<TType>(
+        data: ICacheData<TType> | null,
+    ): TType | null {
         if (data === null) {
             return null;
         }
-        const { expiration, value } = data;
-        if (expiration === null) {
-            return value;
+        if (data.expiration === null) {
+            return data.value;
         }
-        const hasExpired = expiration.getTime() <= new Date().getTime();
-        if (hasExpired) {
-            await this.adapter.removeExpiredMany([key]);
+        if (data.expiration <= new Date()) {
             return null;
         }
-        return value;
+        return data.value;
+    }
+
+    private static isExpired(
+        cacheExpiration: ICacheDataExpiration | null,
+    ): boolean {
+        if (cacheExpiration === null) {
+            return true;
+        }
+        if (cacheExpiration.expiration === null) {
+            return false;
+        }
+        return cacheExpiration.expiration <= new Date();
+    }
+
+    async get(key: string): Promise<TType | null> {
+        return DatabaseCacheAdapter.handleData(await this.adapter.find(key));
     }
 
     async getAndRemove(key: string): Promise<TType | null> {
@@ -46,21 +62,19 @@ export class DatabaseCacheAdapter<TType = unknown>
         value: TType,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
-        try {
-            await this.adapter.insert({
-                key,
-                value,
-                expiration: ttl?.toEndDate() ?? null,
-            });
+        const expiration = ttl?.toEndDate() ?? null;
+        return await this.adapter.transaction(async (trx) => {
+            const storedValue = DatabaseCacheAdapter.handleData(
+                await trx.find(key),
+            );
+            if (storedValue !== null) {
+                return false;
+            }
+
+            await trx.upsert(key, value, expiration);
+
             return true;
-        } catch {
-            const result = await this.adapter.updateExpired({
-                expiration: ttl?.toEndDate() ?? null,
-                key,
-                value,
-            });
-            return result > 0;
-        }
+        });
     }
 
     async put(
@@ -68,62 +82,53 @@ export class DatabaseCacheAdapter<TType = unknown>
         value: TType,
         ttl: TimeSpan | null,
     ): Promise<boolean> {
-        const data = await this.adapter.upsert({
-            key,
-            value,
-            expiration: ttl?.toEndDate() ?? null,
+        const expiration = ttl?.toEndDate() ?? null;
+        return await this.adapter.transaction(async (trx) => {
+            const storedValue = DatabaseCacheAdapter.handleData(
+                await trx.find(key),
+            );
+            await trx.upsert(key, value, expiration);
+            return storedValue !== null;
         });
-        if (data === null) {
-            return false;
-        }
-        const { expiration } = data;
-        if (expiration === null) {
-            return true;
-        }
-        const hasExpired = expiration.getTime() <= new Date().getTime();
-        return !hasExpired;
     }
 
     async update(key: string, value: TType): Promise<boolean> {
-        const result = await this.adapter.updateUnexpired({
-            key,
-            value,
-        });
-        return result > 0;
+        return !DatabaseCacheAdapter.isExpired(
+            await this.adapter.update(key, value),
+        );
     }
 
     async increment(key: string, value: number): Promise<boolean> {
-        try {
-            const result = await this.adapter.incrementUnexpired({
-                key,
-                value,
-            });
-            return result > 0;
-        } catch (error: unknown) {
-            if (error instanceof TypeError) {
-                throw error;
-            }
-            throw new TypeError(
-                `Unable to increment or decrement none number type key "${key}"`,
-                { cause: error },
+        return await this.adapter.transaction(async (trx) => {
+            const storedValue = DatabaseCacheAdapter.handleData(
+                await trx.find(key),
             );
+            if (storedValue === null) {
+                return false;
+            }
+
+            if (typeof storedValue !== "number") {
+                throw new TypeError("!!__MESSAGE__!!");
+            }
+
+            await trx.upsert(key, (storedValue + value) as TType);
+
+            return true;
+        });
+    }
+
+    async removeMany(keys: string[]): Promise<boolean> {
+        const results = await this.adapter.removeMany(keys);
+        for (const result of results) {
+            if (!DatabaseCacheAdapter.isExpired(result)) {
+                return true;
+            }
         }
+        return false;
     }
 
     async removeAll(): Promise<void> {
         await this.adapter.removeAll();
-    }
-
-    async removeMany(keys: string[]): Promise<boolean> {
-        const [promiseResult] = await Promise.allSettled([
-            this.adapter.removeUnexpiredMany(keys),
-            this.adapter.removeExpiredMany(keys),
-        ]);
-        if (promiseResult.status === "rejected") {
-            throw promiseResult.reason;
-        }
-        const { value: result } = promiseResult;
-        return result > 0;
     }
 
     async removeByKeyPrefix(prefix: string): Promise<void> {
