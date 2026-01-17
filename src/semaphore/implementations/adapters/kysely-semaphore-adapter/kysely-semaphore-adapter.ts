@@ -2,7 +2,7 @@
  * @module Semaphore
  */
 
-import { MysqlAdapter, type Kysely } from "kysely";
+import { MysqlAdapter, Transaction, type Kysely } from "kysely";
 
 import {
     type IDatabaseSemaphoreTransaction,
@@ -75,6 +75,16 @@ export type KyselySemaphoreAdapterSettings = {
      * @default true
      */
     shouldRemoveExpiredKeys?: boolean;
+
+    /**
+     * @default
+     * ```ts
+     * import { Transaction } from "kysely"
+     *
+     * !(settings.kysely instanceof Transaction)
+     * ```
+     */
+    enableTransactions?: boolean;
 };
 
 /**
@@ -192,6 +202,7 @@ export class KyselySemaphoreAdapter
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
     private readonly isMysql: boolean;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -216,6 +227,7 @@ export class KyselySemaphoreAdapter
             kysely,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
+            enableTransactions = !(settings.kysely instanceof Transaction),
         } = settings;
         this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
             expiredKeysRemovalInterval,
@@ -224,6 +236,24 @@ export class KyselySemaphoreAdapter
         this.kysely = kysely;
         this.isMysql =
             this.kysely.getExecutor().adapter instanceof MysqlAdapter;
+        this.enableTransactions = enableTransactions;
+    }
+
+    private _transaction<TValue>(
+        trxFn: InvokableFn<
+            [trx: Kysely<KyselySemaphoreTables>],
+            Promise<TValue>
+        >,
+    ): Promise<TValue> {
+        if (this.enableTransactions) {
+            return this.kysely
+                .transaction()
+                .setIsolationLevel("serializable")
+                .execute(async (trx) => {
+                    return await trxFn(trx);
+                });
+        }
+        return trxFn(this.kysely);
     }
 
     async init(): Promise<void> {
@@ -338,12 +368,9 @@ export class KyselySemaphoreAdapter
             Promise<TValue>
         >,
     ): Promise<TValue> {
-        return await this.kysely
-            .transaction()
-            .setIsolationLevel("serializable")
-            .execute(async (trx) => {
-                return await fn(new DatabaseSemaphoreTransaction(trx));
-            });
+        return await this._transaction(async (trx) => {
+            return await fn(new DatabaseSemaphoreTransaction(trx));
+        });
     }
 
     async removeSlot(
@@ -353,23 +380,20 @@ export class KyselySemaphoreAdapter
         let row: Pick<KyselySemaphoreSlotTable, "expiration"> | undefined;
 
         if (this.isMysql) {
-            row = await this.kysely
-                .transaction()
-                .setIsolationLevel("serializable")
-                .execute(async (trx) => {
-                    const row = await trx
-                        .selectFrom("semaphoreSlot")
-                        .select("semaphoreSlot.expiration")
-                        .where("semaphoreSlot.key", "=", key)
-                        .where("semaphoreSlot.id", "=", slotId)
-                        .executeTakeFirst();
-                    await trx
-                        .deleteFrom("semaphoreSlot")
-                        .where("semaphoreSlot.key", "=", key)
-                        .where("semaphoreSlot.id", "=", slotId)
-                        .executeTakeFirst();
-                    return row;
-                });
+            row = await this._transaction(async (trx) => {
+                const row = await trx
+                    .selectFrom("semaphoreSlot")
+                    .select("semaphoreSlot.expiration")
+                    .where("semaphoreSlot.key", "=", key)
+                    .where("semaphoreSlot.id", "=", slotId)
+                    .executeTakeFirst();
+                await trx
+                    .deleteFrom("semaphoreSlot")
+                    .where("semaphoreSlot.key", "=", key)
+                    .where("semaphoreSlot.id", "=", slotId)
+                    .executeTakeFirst();
+                return row;
+            });
         } else {
             row = await this.kysely
                 .deleteFrom("semaphoreSlot")
@@ -398,21 +422,18 @@ export class KyselySemaphoreAdapter
         let rows: Array<Pick<KyselySemaphoreSlotTable, "expiration">>;
 
         if (this.isMysql) {
-            rows = await this.kysely
-                .transaction()
-                .setIsolationLevel("serializable")
-                .execute(async (trx) => {
-                    const rows = trx
-                        .selectFrom("semaphoreSlot")
-                        .where("semaphoreSlot.key", "=", key)
-                        .select("semaphoreSlot.expiration")
-                        .execute();
-                    await trx
-                        .deleteFrom("semaphoreSlot")
-                        .where("semaphoreSlot.key", "=", key)
-                        .execute();
-                    return rows;
-                });
+            rows = await this._transaction(async (trx) => {
+                const rows = trx
+                    .selectFrom("semaphoreSlot")
+                    .where("semaphoreSlot.key", "=", key)
+                    .select("semaphoreSlot.expiration")
+                    .execute();
+                await trx
+                    .deleteFrom("semaphoreSlot")
+                    .where("semaphoreSlot.key", "=", key)
+                    .execute();
+                return rows;
+            });
         } else {
             rows = await this.kysely
                 .deleteFrom("semaphoreSlot")

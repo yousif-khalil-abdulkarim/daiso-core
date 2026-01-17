@@ -2,7 +2,7 @@
  * @module RateLimiter
  */
 
-import { MysqlAdapter, type Kysely } from "kysely";
+import { MysqlAdapter, Transaction, type Kysely } from "kysely";
 
 import {
     type IRateLimiterData,
@@ -134,6 +134,16 @@ export type KyselyRateLimiterStorageAdapterSettings = {
      * @default true
      */
     shouldRemoveExpiredKeys?: boolean;
+
+    /**
+     * @default
+     * ```ts
+     * import { Transaction } from "kysely"
+     *
+     * !(settings.kysely instanceof Transaction)
+     * ```
+     */
+    enableTransactions?: boolean;
 };
 
 /**
@@ -153,6 +163,7 @@ export class KyselyRateLimiterStorageAdapter<TType>
     private readonly shouldRemoveExpiredKeys: boolean;
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -182,6 +193,7 @@ export class KyselyRateLimiterStorageAdapter<TType>
             serde,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
+            enableTransactions = !(settings.kysely instanceof Transaction),
         } = settings;
 
         this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
@@ -190,6 +202,20 @@ export class KyselyRateLimiterStorageAdapter<TType>
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.kysely = kysely;
         this.serde = serde;
+        this.enableTransactions = enableTransactions;
+    }
+    private _transaction<TValue>(
+        trxFn: InvokableFn<
+            [trx: Kysely<KyselyRateLimiterStorageTables>],
+            Promise<TValue>
+        >,
+    ): Promise<TValue> {
+        if (this.enableTransactions) {
+            return this.kysely.transaction().execute(async (trx) => {
+                return await trxFn(trx);
+            });
+        }
+        return trxFn(this.kysely);
     }
 
     /**
@@ -269,7 +295,7 @@ export class KyselyRateLimiterStorageAdapter<TType>
             Promise<TValue>
         >,
     ): Promise<TValue> {
-        return await this.kysely.transaction().execute(async (trx) => {
+        return await this._transaction(async (trx) => {
             return await fn(
                 new KyselyRateLimiterStorageAdapterTransaction(trx, this.serde),
             );

@@ -2,7 +2,7 @@
  * @module Lock
  */
 
-import { MysqlAdapter, type Kysely } from "kysely";
+import { MysqlAdapter, Transaction, type Kysely } from "kysely";
 
 import {
     type IDatabaseLockAdapter,
@@ -64,6 +64,16 @@ export type KyselyLockAdapterSettings = {
      * @default true
      */
     shouldRemoveExpiredKeys?: boolean;
+
+    /**
+     * @default
+     * ```ts
+     * import { Transaction } from "kysely"
+     *
+     * !(settings.kysely instanceof Transaction)
+     * ```
+     */
+    enableTransactions?: boolean;
 };
 
 async function find(
@@ -156,6 +166,7 @@ export class KyselyLockAdapter
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
     private readonly isMysql: boolean;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -180,6 +191,7 @@ export class KyselyLockAdapter
             kysely,
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
+            enableTransactions = !(settings.kysely instanceof Transaction),
         } = settings;
         this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
             expiredKeysRemovalInterval,
@@ -188,6 +200,21 @@ export class KyselyLockAdapter
         this.kysely = kysely;
         this.isMysql =
             this.kysely.getExecutor().adapter instanceof MysqlAdapter;
+        this.enableTransactions = enableTransactions;
+    }
+
+    private _transaction<TValue>(
+        trxFn: InvokableFn<[trx: Kysely<KyselyLockTables>], Promise<TValue>>,
+    ): Promise<TValue> {
+        if (this.enableTransactions) {
+            return this.kysely
+                .transaction()
+                .setIsolationLevel("serializable")
+                .execute(async (trx) => {
+                    return await trxFn(trx);
+                });
+        }
+        return trxFn(this.kysely);
     }
 
     /**
@@ -267,32 +294,26 @@ export class KyselyLockAdapter
             Promise<TReturn>
         >,
     ): Promise<TReturn> {
-        return await this.kysely
-            .transaction()
-            .setIsolationLevel("serializable")
-            .execute(async (trx) => {
-                return await fn(new DatabaseLockTransaction(trx));
-            });
+        return await this._transaction(async (trx) => {
+            return await fn(new DatabaseLockTransaction(trx));
+        });
     }
 
     async remove(key: string): Promise<ILockExpirationData | null> {
         let result: Pick<KyselyLockTable, "expiration"> | undefined;
         if (this.isMysql) {
-            result = await this.kysely
-                .transaction()
-                .setIsolationLevel("serializable")
-                .execute(async (trx) => {
-                    const row = await trx
-                        .selectFrom("lock")
-                        .where("lock.key", "=", key)
-                        .select("lock.expiration")
-                        .executeTakeFirst();
-                    await trx
-                        .deleteFrom("lock")
-                        .where("lock.key", "=", key)
-                        .executeTakeFirst();
-                    return row;
-                });
+            result = await this._transaction(async (trx) => {
+                const row = await trx
+                    .selectFrom("lock")
+                    .where("lock.key", "=", key)
+                    .select("lock.expiration")
+                    .executeTakeFirst();
+                await trx
+                    .deleteFrom("lock")
+                    .where("lock.key", "=", key)
+                    .executeTakeFirst();
+                return row;
+            });
         } else {
             result = await this.kysely
                 .deleteFrom("lock")
@@ -319,23 +340,20 @@ export class KyselyLockAdapter
     ): Promise<ILockData | null> {
         let row: Pick<KyselyLockTable, "owner" | "expiration"> | undefined;
         if (this.isMysql) {
-            row = await this.kysely
-                .transaction()
-                .setIsolationLevel("serializable")
-                .execute(async (trx) => {
-                    const row = await trx
-                        .selectFrom("lock")
-                        .where("lock.key", "=", key)
-                        .where("lock.owner", "=", lockId)
-                        .select(["lock.expiration", "lock.owner"])
-                        .executeTakeFirst();
-                    await trx
-                        .deleteFrom("lock")
-                        .where("lock.key", "=", key)
-                        .where("lock.owner", "=", lockId)
-                        .execute();
-                    return row;
-                });
+            row = await this._transaction(async (trx) => {
+                const row = await trx
+                    .selectFrom("lock")
+                    .where("lock.key", "=", key)
+                    .where("lock.owner", "=", lockId)
+                    .select(["lock.expiration", "lock.owner"])
+                    .executeTakeFirst();
+                await trx
+                    .deleteFrom("lock")
+                    .where("lock.key", "=", key)
+                    .where("lock.owner", "=", lockId)
+                    .execute();
+                return row;
+            });
         } else {
             row = await this.kysely
                 .deleteFrom("lock")

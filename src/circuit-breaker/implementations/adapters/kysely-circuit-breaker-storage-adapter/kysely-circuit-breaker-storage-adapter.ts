@@ -2,7 +2,7 @@
  * @module CircuitBreaker
  */
 
-import { MysqlAdapter, type Kysely } from "kysely";
+import { MysqlAdapter, Transaction, type Kysely } from "kysely";
 
 import {
     type ICircuitBreakerStorageAdapter,
@@ -39,6 +39,16 @@ export type KyselyCircuitBreakerStorageTables = {
 export type KyselyCircuitBreakerStorageAdapterSettings = {
     kysely: Kysely<KyselyCircuitBreakerStorageTables>;
     serde: ISerde<string>;
+
+    /**
+     * @default
+     * ```ts
+     * import { Transaction } from "kysely"
+     *
+     * !(settings.kysely instanceof Transaction)
+     * ```
+     */
+    enableTransactions?: boolean;
 };
 
 /**
@@ -123,6 +133,7 @@ export class KyselyCircuitBreakerStorageAdapter<TType>
 {
     private readonly kysely: Kysely<KyselyCircuitBreakerStorageTables>;
     private readonly serde: ISerde<string>;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -147,10 +158,28 @@ export class KyselyCircuitBreakerStorageAdapter<TType>
      * ```
      */
     constructor(settings: KyselyCircuitBreakerStorageAdapterSettings) {
-        const { kysely, serde } = settings;
+        const {
+            kysely,
+            serde,
+            enableTransactions = !(settings.kysely instanceof Transaction),
+        } = settings;
 
         this.kysely = kysely;
         this.serde = serde;
+        this.enableTransactions = enableTransactions;
+    }
+    private _transaction<TValue>(
+        trxFn: InvokableFn<
+            [trx: Kysely<KyselyCircuitBreakerStorageTables>],
+            Promise<TValue>
+        >,
+    ): Promise<TValue> {
+        if (this.enableTransactions) {
+            return this.kysely.transaction().execute(async (trx) => {
+                return await trxFn(trx);
+            });
+        }
+        return trxFn(this.kysely);
     }
 
     /**
@@ -191,7 +220,7 @@ export class KyselyCircuitBreakerStorageAdapter<TType>
             Promise<TValue>
         >,
     ): Promise<TValue> {
-        return await this.kysely.transaction().execute(async (trx) => {
+        return await this._transaction(async (trx) => {
             return await fn(
                 new KyselyCircuitBreakerStorageAdapterTransaction({
                     kysely: trx,

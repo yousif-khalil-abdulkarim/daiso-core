@@ -2,7 +2,7 @@
  * @module SharedLock
  */
 
-import { MysqlAdapter, type Kysely } from "kysely";
+import { MysqlAdapter, Transaction, type Kysely } from "kysely";
 
 import {
     type IDatabaseReaderSemaphoreTransaction,
@@ -102,6 +102,16 @@ export type KyselySharedLockAdapterSettings = {
      * ```
      */
     currentDate?: () => Date;
+
+    /**
+     * @default
+     * ```ts
+     * import { Transaction } from "kysely"
+     *
+     * !(settings.kysely instanceof Transaction)
+     * ```
+     */
+    enableTransactions?: boolean;
 };
 
 /**
@@ -486,6 +496,7 @@ export class KyselySharedLockAdapter
     private intervalId: string | number | NodeJS.Timeout | undefined | null =
         null;
     private readonly currentDate: () => Date;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -511,6 +522,7 @@ export class KyselySharedLockAdapter
             expiredKeysRemovalInterval = TimeSpan.fromMinutes(1),
             shouldRemoveExpiredKeys = true,
             currentDate = () => new Date(),
+            enableTransactions = !(settings.kysely instanceof Transaction),
         } = settings;
         this.expiredKeysRemovalInterval = TimeSpan.fromTimeSpan(
             expiredKeysRemovalInterval,
@@ -518,6 +530,24 @@ export class KyselySharedLockAdapter
         this.shouldRemoveExpiredKeys = shouldRemoveExpiredKeys;
         this.kysely = kysely;
         this.currentDate = currentDate;
+        this.enableTransactions = enableTransactions;
+    }
+
+    private _transaction<TValue>(
+        trxFn: InvokableFn<
+            [trx: Kysely<KyselySharedLockTables>],
+            Promise<TValue>
+        >,
+    ): Promise<TValue> {
+        if (this.enableTransactions) {
+            return this.kysely
+                .transaction()
+                .setIsolationLevel("serializable")
+                .execute(async (trx) => {
+                    return await trxFn(trx);
+                });
+        }
+        return trxFn(this.kysely);
     }
 
     async init(): Promise<void> {
@@ -700,14 +730,11 @@ export class KyselySharedLockAdapter
             Promise<TReturn>
         >,
     ): Promise<TReturn> {
-        return await this.kysely
-            .transaction()
-            .setIsolationLevel("serializable")
-            .execute(async (trx) => {
-                return await fn({
-                    reader: new DatabaseReaderSemaphoreTransaction(trx),
-                    writer: new DatabaseWriterLockTransaction(trx),
-                });
+        return await this._transaction(async (trx) => {
+            return await fn({
+                reader: new DatabaseReaderSemaphoreTransaction(trx),
+                writer: new DatabaseWriterLockTransaction(trx),
             });
+        });
     }
 }
