@@ -44,6 +44,11 @@ export type MongodbCircuitBreakerStorageAdapterSettings = {
     collectionName?: string;
     collectionSettings?: CollectionOptions;
     serde: ISerde<string>;
+
+    /**
+     * @default true
+     */
+    enableTransactions?: boolean;
 };
 
 /**
@@ -60,6 +65,7 @@ export class MongodbCircuitBreakerStorageAdapter<TType = unknown>
     private readonly collection: Collection<MongodbCircuitBreakerStorageDocument>;
     private readonly client: MongoClient;
     private readonly serde: ISerde<string>;
+    private readonly enableTransactions: boolean;
 
     /**
      * @example
@@ -88,6 +94,7 @@ export class MongodbCircuitBreakerStorageAdapter<TType = unknown>
             collectionSettings,
             database,
             serde,
+            enableTransactions = true,
         } = settings;
         this.client = client;
         this.collection = database.collection(
@@ -95,6 +102,7 @@ export class MongodbCircuitBreakerStorageAdapter<TType = unknown>
             collectionSettings,
         );
         this.serde = serde;
+        this.enableTransactions = enableTransactions;
     }
 
     /**
@@ -153,13 +161,26 @@ export class MongodbCircuitBreakerStorageAdapter<TType = unknown>
         );
     }
 
+    private async _transaction<TValue>(
+        trxFn: InvokableFn<[], Promise<TValue>>,
+    ): Promise<TValue> {
+        if (this.enableTransactions) {
+            return await this.client
+                .startSession()
+                .withTransaction(async () => {
+                    return await trxFn();
+                });
+        }
+        return trxFn();
+    }
+
     async transaction<TValue>(
         fn: InvokableFn<
             [transaction: ICircuitBreakerStorageAdapterTransaction<TType>],
             Promise<TValue>
         >,
     ): Promise<TValue> {
-        return await this.client.startSession().withTransaction(async () => {
+        return await this._transaction(async () => {
             return await fn({
                 upsert: (key, state) => this.upsert(key, state),
                 find: (key) => this.find(key),
