@@ -22,6 +22,12 @@
 
 ---
 
+## 🛠 Quick Start
+
+```bash
+npm install @daiso-tech/core
+```
+
 ## 📦 Core Components
 
 The `@daiso-tech/core` ecosystem provides a growing collection of officially maintained primitives for building robust systems:
@@ -54,9 +60,11 @@ The `@daiso-tech/core` ecosystem provides a growing collection of officially mai
 | **Hooks** | Agnostic sync/async middleware that integrates with all components. |
 | **Serde** | Custom serialization/deserialization logic that integrates with all components. |
 | **Collection** | Precision filtering and transformation for Arrays, Iterables, AsyncIterables and ArrayLike objects. |
+| **TimeSpan** | A duration class offering seamless time manipulation while integrating with all components. |
 ---
 
 ## 🛠 Quick Start
 
 ```bash
 npm install @daiso-tech/core
+```
