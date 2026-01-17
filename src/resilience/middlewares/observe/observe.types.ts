@@ -12,7 +12,7 @@ import { type Invokable } from "@/utilities/_module.js";
  * @group Middlewares
  */
 export type OnObserveStartData<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = {
     args: TParameters;
@@ -25,7 +25,7 @@ export type OnObserveStartData<
  * @group Middlewares
  */
 export type OnObserveStart<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = Invokable<[data: OnObserveStartData<TParameters, TContext>]>;
 
@@ -35,7 +35,7 @@ export type OnObserveStart<
  * @group Middlewares
  */
 export type OnObserveSuccessData<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = {
@@ -50,7 +50,7 @@ export type OnObserveSuccessData<
  * @group Middlewares
  */
 export type OnObserveSuccess<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = Invokable<[data: OnObserveSuccessData<TParameters, TReturn, TContext>]>;
@@ -61,7 +61,7 @@ export type OnObserveSuccess<
  * @group Middlewares
  */
 export type OnObserveErrorData<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = {
     error: unknown;
@@ -85,7 +85,7 @@ export type OnObserveFinallyData<TContext extends HookContext = HookContext> = {
  * @group Middlewares
  */
 export type OnObserveError<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = Invokable<[data: OnObserveErrorData<TParameters, TContext>]>;
 
@@ -103,7 +103,7 @@ export type OnObserveFinally<TContext extends HookContext = HookContext> =
  * @group Middlewares
  */
 export type ObserveCallbacks<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = {

@@ -43,7 +43,7 @@ export type ISemaphoreUnacquiredState = {
     limit: number;
     freeSlotsCount: number;
     acquiredSlotsCount: number;
-    acquiredSlots: string[];
+    acquiredSlots: Array<string>;
 };
 
 /**
@@ -57,7 +57,7 @@ export type ISemaphoreAcquiredState = {
     remainingTime: TimeSpan | null;
     freeSlotsCount: number;
     acquiredSlotsCount: number;
-    acquiredSlots: string[];
+    acquiredSlots: Array<string>;
 };
 
 /**
@@ -68,7 +68,7 @@ export type ISemaphoreAcquiredState = {
 export type ISemaphoreLimitReachedState = {
     type: (typeof SEMAPHORE_STATE)["LIMIT_REACHED"];
     limit: number;
-    acquiredSlots: string[];
+    acquiredSlots: Array<string>;
 };
 
 /**

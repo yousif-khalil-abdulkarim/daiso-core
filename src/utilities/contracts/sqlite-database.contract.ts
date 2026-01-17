@@ -9,7 +9,7 @@
  */
 export type ISqliteStatement = {
     readonly reader: boolean;
-    all(parameters: ReadonlyArray<unknown>): unknown[];
+    all(parameters: ReadonlyArray<unknown>): Array<unknown>;
     run(parameters: ReadonlyArray<unknown>): {
         changes: number | bigint;
         lastInsertRowid: number | bigint;

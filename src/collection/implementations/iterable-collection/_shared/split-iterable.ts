@@ -33,7 +33,7 @@ export class SplitIterable<TInput> implements Iterable<ICollection<TInput>> {
         }
 
         const iterator = this.collection.toIterator();
-        const array: TInput[] = [];
+        const array: Array<TInput> = [];
         for (const chunkSize of chunkSizes) {
             for (let i = 0; i < chunkSize; i++) {
                 const item = iterator.next();

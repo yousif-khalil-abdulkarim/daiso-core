@@ -50,7 +50,7 @@ export type IDatabaseCacheAdapter<TType = unknown> = {
 
     update(key: string, value: TType): Promise<ICacheDataExpiration | null>;
 
-    removeMany(keys: string[]): Promise<ICacheDataExpiration[]>;
+    removeMany(keys: Array<string>): Promise<Array<ICacheDataExpiration>>;
 
     /**
      * The `removeAll` method removes all keys from the cache.

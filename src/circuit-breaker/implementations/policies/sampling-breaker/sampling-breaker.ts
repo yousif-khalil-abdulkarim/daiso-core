@@ -164,7 +164,7 @@ export type Sample = {
  * @group Policies
  */
 export type SamplingBreakerState = {
-    samples: Sample[];
+    samples: Array<Sample>;
 };
 
 /**

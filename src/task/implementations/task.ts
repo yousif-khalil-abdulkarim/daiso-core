@@ -46,7 +46,7 @@ export type TaskCallback<TValue> = InvokableFn<
  * IMPORT_PATH: `"@daiso-tech/core/task"`
  * @group Derivables
  */
-export type TaskAllResult<T extends readonly unknown[]> = {
+export type TaskAllResult<T extends ReadonlyArray<unknown>> = {
     -readonly [P in keyof T]: Awaited<T[P]>;
 };
 
@@ -54,7 +54,7 @@ export type TaskAllResult<T extends readonly unknown[]> = {
  * IMPORT_PATH: `"@daiso-tech/core/task"`
  * @group Derivables
  */
-export type TaskAllSettledResult<T extends readonly unknown[]> = {
+export type TaskAllSettledResult<T extends ReadonlyArray<unknown>> = {
     -readonly [P in keyof T]: PromiseSettledResult<Awaited<T[P]>>;
 };
 
@@ -79,7 +79,7 @@ export class Task<TValue> implements ITask<TValue> {
      * const file = await readFile("none_existing_file.txt");
      * ```
      */
-    static wrapFn<TArgs extends unknown[], TReturn>(
+    static wrapFn<TArgs extends Array<unknown>, TReturn>(
         fn: Invokable<TArgs, Promisable<TReturn>>,
     ): InvokableFn<TArgs, ITask<TReturn>> {
         return (...parameters) =>
@@ -168,8 +168,8 @@ export class Task<TValue> implements ITask<TValue> {
     private static toTasks<TValue>(
         promises: Iterable<TValue | PromiseLike<TValue>>,
         errorMessage: string,
-    ): ITask<TValue>[] {
-        const tasks: ITask<TValue>[] = [];
+    ): Array<ITask<TValue>> {
+        const tasks: Array<ITask<TValue>> = [];
         for (const promise of promises) {
             if (promise instanceof Task) {
                 tasks.push(promise as Task<TValue>);
@@ -185,7 +185,7 @@ export class Task<TValue> implements ITask<TValue> {
     /**
      * The `all` method works similarly to {@link Promise.all | `Promise.all`} with the key distinction that it operates lazily.
      */
-    static all<TValue extends readonly unknown[] | []>(
+    static all<TValue extends ReadonlyArray<unknown> | []>(
         tasks: TValue,
     ): ITask<TaskAllResult<TValue>>;
 
@@ -194,15 +194,15 @@ export class Task<TValue> implements ITask<TValue> {
      */
     static all<TValue>(
         tasks: Iterable<TValue | ITask<TValue>>,
-    ): ITask<Awaited<TValue>[]>;
+    ): ITask<Array<Awaited<TValue>>>;
 
     /**
      * The `all` method works similarly to {@link Promise.all | `Promise.all`} with the key distinction that it operates lazily.
      */
     static all<TValue>(
         tasks: Iterable<TValue | PromiseLike<TValue>>,
-    ): ITask<TValue[]> {
-        return new Task<TValue[]>(async () =>
+    ): ITask<Array<TValue>> {
+        return new Task<Array<TValue>>(async () =>
             Promise.all(
                 Task.toTasks(tasks, "You cant pass in a Promise to Task.all"),
             ),
@@ -212,7 +212,7 @@ export class Task<TValue> implements ITask<TValue> {
     /**
      * The `allSettled` method works similarly to {@link Promise.allSettled | `Promise.allSettled`} with the key distinction that it operates lazily.
      */
-    static allSettled<TValues extends readonly unknown[] | []>(
+    static allSettled<TValues extends ReadonlyArray<unknown> | []>(
         tasks: TValues,
     ): ITask<TaskAllSettledResult<TValues>>;
 
@@ -221,15 +221,15 @@ export class Task<TValue> implements ITask<TValue> {
      */
     static allSettled<TValue>(
         tasks: Iterable<ITask<TValue>>,
-    ): ITask<PromiseSettledResult<TValue>[]>;
+    ): ITask<Array<PromiseSettledResult<TValue>>>;
 
     /**
      * The `allSettled` method works similarly to {@link Promise.allSettled | `Promise.allSettled`} with the key distinction that it operates lazily.
      */
     static allSettled<TValue>(
         tasks: Iterable<TValue | PromiseLike<TValue>>,
-    ): ITask<PromiseSettledResult<TValue>[]> {
-        return new Task<PromiseSettledResult<TValue>[]>(async () =>
+    ): ITask<Array<PromiseSettledResult<TValue>>> {
+        return new Task<Array<PromiseSettledResult<TValue>>>(async () =>
             Promise.allSettled(
                 Task.toTasks(
                     tasks,
@@ -242,7 +242,7 @@ export class Task<TValue> implements ITask<TValue> {
     /**
      * The `race` method works similarly to {@link Promise.race | `Promise.race`} with the key distinction that it operates lazily.
      */
-    static race<T extends readonly unknown[] | []>(
+    static race<T extends ReadonlyArray<unknown> | []>(
         tasks: T,
     ): ITask<Awaited<T[number]>>;
 
@@ -267,7 +267,7 @@ export class Task<TValue> implements ITask<TValue> {
     /**
      * The `any` method works similarly to {@link Promise.any | `Promise.any`} with the key distinction that it operates lazily.
      */
-    static any<T extends readonly unknown[] | []>(
+    static any<T extends ReadonlyArray<unknown> | []>(
         tasks: T,
     ): ITask<Awaited<T[number]>>;
 

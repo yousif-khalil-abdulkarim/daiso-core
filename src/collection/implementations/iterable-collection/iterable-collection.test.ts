@@ -25,7 +25,7 @@ describe("class: IterableCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -53,7 +53,7 @@ describe("class: IterableCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -72,7 +72,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to map function", () => {
             const collection = new IterableCollection([2, 3, 4, 5]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 mapFunction = (item: number, index: number): number => {
                     indexes.push(index);
                     return item ** 2;
@@ -104,7 +104,7 @@ describe("class: IterableCollection", () => {
             const arr = ["a", "b", "c", "d"],
                 collection = new IterableCollection(arr),
                 initialValue = "!",
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.reduce((initialValue, item, index) => {
                 indexes.push(index);
                 return initialValue + item;
@@ -183,7 +183,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to map function", () => {
             const collection = new IterableCollection(["a", "ab", "b", "ba"]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 mapFunction = (
                     item: string,
                     index: number,
@@ -227,7 +227,7 @@ describe("class: IterableCollection", () => {
                     "c",
                     "cccc",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .change(
                     (item, index) => {
@@ -248,7 +248,7 @@ describe("class: IterableCollection", () => {
                     "c",
                     "cccc",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .change(
                     (item) => item.length >= 2,
@@ -503,7 +503,7 @@ describe("class: IterableCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -553,7 +553,7 @@ describe("class: IterableCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -602,7 +602,7 @@ describe("class: IterableCollection", () => {
                     "c",
                     "aa",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.every((item, index) => {
                 indexes.push(index);
                 return item.length === 1;
@@ -649,7 +649,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .takeUntil((item, index) => {
                     indexes.push(index);
@@ -667,7 +667,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .takeWhile((item, index) => {
                     indexes.push(index);
@@ -705,7 +705,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .skipUntil((item, index) => {
                     indexes.push(index);
@@ -723,7 +723,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .skipWhile((item, index) => {
                     indexes.push(index);
@@ -915,7 +915,7 @@ describe("class: IterableCollection", () => {
         test("Should input correct indexes to predicate function", () => {
             const arr = ["a", 1, "b", 2, "c", 3, "d", 4, "e", 5],
                 collection = new IterableCollection(arr),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .partition((item, index) => {
                     indexes.push(index);
@@ -1112,7 +1112,7 @@ describe("class: IterableCollection", () => {
                 newCollection = collection.groupBy();
             expect(
                 newCollection
-                    .map(([key, item]): [string, string[]] => [
+                    .map(([key, item]): [string, Array<string>] => [
                         key,
                         item.toArray(),
                     ])
@@ -1129,7 +1129,7 @@ describe("class: IterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const arr: Person[] = [
+            const arr: Array<Person> = [
                     {
                         name: "Abra",
                         age: 20,
@@ -1161,7 +1161,7 @@ describe("class: IterableCollection", () => {
                 });
             expect(
                 newCollection
-                    .map(([key, item]): [string, Person[]] => [
+                    .map(([key, item]): [string, Array<Person>] => [
                         key,
                         item.toArray(),
                     ])
@@ -1183,7 +1183,7 @@ describe("class: IterableCollection", () => {
                     "b",
                     "d",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .groupBy((item, index) => {
                     indexes.push(index);
@@ -1210,7 +1210,7 @@ describe("class: IterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const arr: Person[] = [
+            const arr: Array<Person> = [
                     {
                         name: "Abra",
                         age: 20,
@@ -1257,7 +1257,7 @@ describe("class: IterableCollection", () => {
                     "b",
                     "d",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .countBy((item, index) => {
                     indexes.push(index);
@@ -1305,7 +1305,7 @@ describe("class: IterableCollection", () => {
                     "b",
                     "d",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection
                 .unique((item, index) => {
                     indexes.push(index);
@@ -1327,7 +1327,7 @@ describe("class: IterableCollection", () => {
                 brand: string;
                 type: string;
             };
-            const items: Product[] = [
+            const items: Array<Product> = [
                 { name: "iPhone 6", brand: "Apple", type: "phone" },
                 { name: "iPhone 5", brand: "Apple", type: "phone" },
                 { name: "Apple Watch", brand: "Apple", type: "watch" },
@@ -1627,7 +1627,7 @@ describe("class: IterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1661,7 +1661,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.first((item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -1680,7 +1680,7 @@ describe("class: IterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1729,7 +1729,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.firstOr(null, (item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -1756,7 +1756,7 @@ describe("class: IterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1793,7 +1793,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 collection.firstOrFail((item, index) => {
                     indexes.push(index);
@@ -1816,7 +1816,7 @@ describe("class: IterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1850,7 +1850,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.last((item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -1869,7 +1869,7 @@ describe("class: IterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1915,7 +1915,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.lastOr(null, (item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -1942,7 +1942,7 @@ describe("class: IterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -1977,7 +1977,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 collection.lastOrFail((item, index) => {
                     indexes.push(index);
@@ -2017,7 +2017,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.before((item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2073,7 +2073,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.beforeOr(null, (item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2105,7 +2105,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 collection.beforeOrFail((item, index) => {
                     indexes.push(index);
@@ -2145,7 +2145,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.after((item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2201,7 +2201,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.afterOr(null, (item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2233,7 +2233,7 @@ describe("class: IterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 collection.afterOrFail((item, index) => {
                     indexes.push(index);
@@ -2293,7 +2293,7 @@ describe("class: IterableCollection", () => {
                     "c",
                     "b",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.sole((item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2349,7 +2349,7 @@ describe("class: IterableCollection", () => {
                     "c",
                     "b",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.count((_item, index) => {
                 indexes.push(index);
                 return true;
@@ -2451,13 +2451,13 @@ describe("class: IterableCollection", () => {
         test("Should iterate all items", () => {
             const arr1 = [1, 2, 3],
                 collection = new IterableCollection(arr1),
-                arr2: number[] = [];
+                arr2: Array<number> = [];
             collection.forEach((item) => arr2.push(item));
             expect(arr2).toEqual(arr1);
         });
         test("Should input correct indexes to predicate function", () => {
             const collection = new IterableCollection([1, 2, 3]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             collection.forEach((_item, index) => {
                 indexes.push(index);
             });
@@ -2466,7 +2466,7 @@ describe("class: IterableCollection", () => {
         test("Should return the same value when called more than 1 times", () => {
             const arr1 = [1, 2, 3],
                 collection = new IterableCollection(arr1),
-                arr2: number[] = [];
+                arr2: Array<number> = [];
             collection.forEach((item) => arr2.push(item));
             expect(arr2).toEqual(arr1);
             expect(arr2).toEqual(arr1);

@@ -49,7 +49,7 @@ export type ICacheAdapter<TType = unknown> = {
     /**
      * The `removeMany` method removes many keys. Returns true if one of the keys where deleted otherwise false is returned.
      */
-    removeMany(keys: string[]): Promise<boolean>;
+    removeMany(keys: Array<string>): Promise<boolean>;
 
     /**
      * The `removeAll` method removes all keys from the cache.

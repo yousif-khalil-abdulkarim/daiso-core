@@ -13,7 +13,7 @@ import {
 export function isDatabaseCacheAdapter<TType>(
     adapter: CacheAdapterVariants<TType>,
 ): adapter is IDatabaseCacheAdapter<TType> {
-    const adapter_ = adapter as Record<string, (...args: any[]) => any>;
+    const adapter_ = adapter as Record<string, (...args: Array<any>) => any>;
     return (
         typeof adapter_["find"] === "function" &&
         adapter_["find"].length === 1 &&

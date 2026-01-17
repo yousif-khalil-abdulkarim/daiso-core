@@ -41,7 +41,7 @@ export class NoOpCacheAdapter<TType = unknown> implements ICacheAdapter<TType> {
         return Promise.resolve(true);
     }
 
-    removeMany(_keys: string[]): Promise<boolean> {
+    removeMany(_keys: Array<string>): Promise<boolean> {
         return Promise.resolve(true);
     }
 

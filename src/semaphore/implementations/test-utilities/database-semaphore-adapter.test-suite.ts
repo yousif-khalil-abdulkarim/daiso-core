@@ -171,7 +171,7 @@ export function databaseSemaphoreAdapterTestSuite(
                         id: slotId2,
                         expiration: expiration2,
                     },
-                ] as ISemaphoreSlotData[]);
+                ] as Array<ISemaphoreSlotData>);
             });
         });
         describe("method: transaction upsertSemaphore", () => {
@@ -437,7 +437,7 @@ export function databaseSemaphoreAdapterTestSuite(
                     {
                         expiration: expiration2,
                     },
-                ] as ISemaphoreSlotExpirationData[]);
+                ] as Array<ISemaphoreSlotExpirationData>);
             });
             test("Should remove all items when key exists and has slots", async () => {
                 const key = "a";

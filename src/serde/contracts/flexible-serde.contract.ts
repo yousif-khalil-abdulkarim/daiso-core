@@ -21,7 +21,7 @@ export type SerializedValueBase = {
  * @group Contracts
  */
 export type SerializableClass<TSerializedValue extends SerializedValueBase> = {
-    new (...arguments_: any[]): ISerializable<TSerializedValue>;
+    new (...arguments_: Array<any>): ISerializable<TSerializedValue>;
     deserialize(
         serializedValue: TSerializedValue,
     ): ISerializable<TSerializedValue>;

@@ -22,8 +22,8 @@ export class PartionIterable<TInput> implements Iterable<ICollection<TInput>> {
     ) {}
 
     *[Symbol.iterator](): Iterator<ICollection<TInput>> {
-        const arrayA: TInput[] = [];
-        const arrayB: TInput[] = [];
+        const arrayA: Array<TInput> = [];
+        const arrayB: Array<TInput> = [];
         for (const [index, item] of this.collection.entries()) {
             if (
                 resolveInvokable(this.predicateFn)(item, index, this.collection)

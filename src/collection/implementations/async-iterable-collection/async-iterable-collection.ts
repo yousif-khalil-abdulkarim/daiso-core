@@ -1212,9 +1212,9 @@ export class AsyncIterableCollection<TInput = unknown>
         });
     }
 
-    toArray(): ITask<TInput[]> {
+    toArray(): ITask<Array<TInput>> {
         return new Task(async () => {
-            const items: TInput[] = [];
+            const items: Array<TInput> = [];
             for await (const item of this) {
                 items.push(item);
             }

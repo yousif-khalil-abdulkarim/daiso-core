@@ -32,8 +32,8 @@ describe("function: isDatabaseCacheAdapter", () => {
                 throw new Error("Function not implemented.");
             },
             removeMany: function (
-                _keys: string[],
-            ): Promise<ICacheDataExpiration[]> {
+                _keys: Array<string>,
+            ): Promise<Array<ICacheDataExpiration>> {
                 throw new Error("Function not implemented.");
             },
             removeAll: function (): Promise<void> {
@@ -76,7 +76,7 @@ describe("function: isDatabaseCacheAdapter", () => {
             ): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
-            removeMany: function (_keys: string[]): Promise<boolean> {
+            removeMany: function (_keys: Array<string>): Promise<boolean> {
                 throw new Error("Function not implemented.");
             },
             removeAll: function (): Promise<void> {

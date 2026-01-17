@@ -129,7 +129,7 @@ class DatabaseReaderSemaphoreTransaction
         return row;
     }
 
-    async findSlots(key: string): Promise<IReaderSemaphoreSlotData[]> {
+    async findSlots(key: string): Promise<Array<IReaderSemaphoreSlotData>> {
         const rows = await this.kysely
             .selectFrom("readerSemaphoreSlot")
             .where("readerSemaphoreSlot.key", "=", key)
@@ -247,8 +247,8 @@ class DatabaseReaderSemaphoreTransaction
 
     async removeAllSlots(
         key: string,
-    ): Promise<IReaderSemaphoreSlotExpirationData[]> {
-        let rows: Pick<KyselyReaderSemaphoreSlotTable, "expiration">[];
+    ): Promise<Array<IReaderSemaphoreSlotExpirationData>> {
+        let rows: Array<Pick<KyselyReaderSemaphoreSlotTable, "expiration">>;
 
         if (this.isMysql) {
             rows = await this.kysely

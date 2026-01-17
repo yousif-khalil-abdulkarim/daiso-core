@@ -117,7 +117,7 @@ export class DatabaseCacheAdapter<TType = unknown>
         });
     }
 
-    async removeMany(keys: string[]): Promise<boolean> {
+    async removeMany(keys: Array<string>): Promise<boolean> {
         const results = await this.adapter.removeMany(keys);
         for (const result of results) {
             if (!DatabaseCacheAdapter.isExpired(result)) {

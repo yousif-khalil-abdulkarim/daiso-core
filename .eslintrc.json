@@ -69,6 +69,13 @@
                         "prefer-inline": true
                     }
                 ],
+                "@typescript-eslint/array-type": [
+                    "error",
+                    {
+                        "default": "generic",
+                        "readonly": "generic"
+                    }
+                ],
                 "@typescript-eslint/consistent-generic-constructors": "error",
                 "@typescript-eslint/consistent-indexed-object-style": [
                     "error",

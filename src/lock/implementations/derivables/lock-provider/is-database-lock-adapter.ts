@@ -13,7 +13,7 @@ export function isDatabaseLockAdapter(
     adapter: LockAdapterVariants,
 ): adapter is IDatabaseLockAdapter {
     const adapter_ = adapter as Partial<
-        Record<string, (...args_: unknown[]) => unknown>
+        Record<string, (...args_: Array<unknown>) => unknown>
     >;
 
     return (

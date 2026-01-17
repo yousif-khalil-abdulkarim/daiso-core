@@ -61,7 +61,7 @@ export class MongodbCacheAdapter<TType = unknown>
     implements ICacheAdapter<TType>, IInitizable, IDeinitizable
 {
     private static filterUnexpiredKeys(
-        keys: string[],
+        keys: Array<string>,
     ): Filter<MongodbCacheDocument> {
         const hasNoExpiration: Filter<MongodbCacheDocument> = {
             expiration: {
@@ -367,7 +367,7 @@ export class MongodbCacheAdapter<TType = unknown>
         }
     }
 
-    async removeMany(keys: string[]): Promise<boolean> {
+    async removeMany(keys: Array<string>): Promise<boolean> {
         const deleteResult = await this.collection.deleteMany(
             MongodbCacheAdapter.filterUnexpiredKeys(keys),
         );

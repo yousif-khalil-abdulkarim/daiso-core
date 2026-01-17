@@ -102,7 +102,7 @@ export class MemoryCacheAdapter<TType = unknown>
         return this.map.delete(key);
     }
 
-    async removeMany(keys: string[]): Promise<boolean> {
+    async removeMany(keys: Array<string>): Promise<boolean> {
         let deleteCount = 0;
         for (const key of keys) {
             clearTimeout(this.timeoutMap.get(key));

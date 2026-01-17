@@ -47,7 +47,7 @@ export type Collapse<TValue> = TValue extends
  */
 export type SerializedCollection<TInput = unknown> = {
     version: "1";
-    items: TInput[];
+    items: Array<TInput>;
 };
 
 /**
@@ -2334,7 +2334,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
         /**
          * The `toArray` method converts the collection to a new {@link Array | `Array`}.
          */
-        toArray(): TInput[];
+        toArray(): Array<TInput>;
 
         /**
          * The `toRecord` method converts the collection to a new {@link Record | `Record`}.

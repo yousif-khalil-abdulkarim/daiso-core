@@ -27,7 +27,7 @@ export class AsyncChunkWhileIterable<TInput>
     ) {}
 
     async *[Symbol.asyncIterator](): AsyncIterator<IAsyncCollection<TInput>> {
-        const array: TInput[] = [];
+        const array: Array<TInput> = [];
         for await (const [index, item] of this.collection.entries()) {
             if (index === 0) {
                 array.push(item);

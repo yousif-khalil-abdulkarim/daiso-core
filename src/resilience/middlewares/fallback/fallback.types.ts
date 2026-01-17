@@ -15,7 +15,7 @@ import {
  * @group Middlewares
  */
 export type OnFallbackData<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TFallbackValue = unknown,
     TContext extends HookContext = HookContext,
 > = {
@@ -31,7 +31,7 @@ export type OnFallbackData<
  * @group Middlewares
  */
 export type OnFallback<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TFallbackValue = unknown,
     TContext extends HookContext = HookContext,
 > = Invokable<[data: OnFallbackData<TParameters, TFallbackValue, TContext>]>;
@@ -42,7 +42,7 @@ export type OnFallback<
  * @group Middlewares
  */
 export type FallbackCallbacks<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = {
@@ -58,7 +58,7 @@ export type FallbackCallbacks<
  * @group Middlewares
  */
 export type FallbackSettings<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
     TContext extends HookContext = HookContext,
 > = FallbackCallbacks<TParameters, TReturn, TContext> &

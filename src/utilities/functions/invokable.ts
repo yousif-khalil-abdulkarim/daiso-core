@@ -13,7 +13,7 @@ import { type Promisable } from "@/utilities/types/promiseable.type.js";
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  */
 export type InvokableFn<
-    TArgs extends unknown[] = unknown[],
+    TArgs extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
 > = (...args: TArgs) => TReturn;
 
@@ -22,7 +22,7 @@ export type InvokableFn<
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  */
 export type IInvokableObject<
-    TArgs extends unknown[] = unknown[],
+    TArgs extends Array<unknown> = Array<unknown>,
     TReturn = unknown,
 > = {
     invoke(...args: TArgs): TReturn;
@@ -32,9 +32,10 @@ export type IInvokableObject<
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
  */
-export type Invokable<TArgs extends unknown[] = unknown[], TReturn = unknown> =
-    | InvokableFn<TArgs, TReturn>
-    | IInvokableObject<TArgs, TReturn>;
+export type Invokable<
+    TArgs extends Array<unknown> = Array<unknown>,
+    TReturn = unknown,
+> = InvokableFn<TArgs, TReturn> | IInvokableObject<TArgs, TReturn>;
 /**
  *
  * IMPORT_PATH: `"@daiso-tech/core/utilities"`
@@ -49,7 +50,7 @@ export type IAsyncFactoryObject<TInput, TOutput> = IInvokableObject<
  */
 export function isInvokableObject<
     TValue,
-    TParameters extends unknown[],
+    TParameters extends Array<unknown>,
     TReturn,
 >(
     invokable: TValue | Invokable<TParameters, TReturn>,
@@ -61,7 +62,11 @@ export function isInvokableObject<
 /**
  * @internal
  */
-export function isInvokableFn<TValue, TParameters extends unknown[], TReturn>(
+export function isInvokableFn<
+    TValue,
+    TParameters extends Array<unknown>,
+    TReturn,
+>(
     invokable: TValue | Invokable<TParameters, TReturn>,
 ): invokable is InvokableFn<TParameters, TReturn> {
     return typeof invokable === "function";
@@ -70,7 +75,11 @@ export function isInvokableFn<TValue, TParameters extends unknown[], TReturn>(
 /**
  * @internal
  */
-export function isInvokable<TValue, TParameters extends unknown[], TReturn>(
+export function isInvokable<
+    TValue,
+    TParameters extends Array<unknown>,
+    TReturn,
+>(
     invokable: TValue | Invokable<TParameters, TReturn>,
 ): invokable is Invokable<TParameters, TReturn> {
     return (
@@ -82,7 +91,7 @@ export function isInvokable<TValue, TParameters extends unknown[], TReturn>(
 /**
  * @internal
  */
-export function resolveInvokable<TParameters extends unknown[], TReturn>(
+export function resolveInvokable<TParameters extends Array<unknown>, TReturn>(
     invokable: Invokable<TParameters, TReturn>,
 ): InvokableFn<TParameters, TReturn> {
     if (isInvokableObject(invokable)) {
@@ -94,7 +103,7 @@ export function resolveInvokable<TParameters extends unknown[], TReturn>(
 /**
  * @internal
  */
-export function callInvokable<TParameters extends unknown[], TReturn>(
+export function callInvokable<TParameters extends Array<unknown>, TReturn>(
     invokable: Invokable<TParameters, TReturn>,
     ...args: TParameters
 ): TReturn {
@@ -107,7 +116,7 @@ export function callInvokable<TParameters extends unknown[], TReturn>(
 /**
  * @internal
  */
-export function getInvokableName<TParameters extends unknown[], TReturn>(
+export function getInvokableName<TParameters extends Array<unknown>, TReturn>(
     invokable: Invokable<TParameters, TReturn>,
 ): string {
     if (isInvokableFn(invokable)) {

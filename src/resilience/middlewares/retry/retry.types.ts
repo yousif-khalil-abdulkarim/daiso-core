@@ -16,7 +16,7 @@ import {
  * @group Middlewares
  */
 export type OnRetryAttemptData<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = {
     attempt: number;
@@ -30,7 +30,7 @@ export type OnRetryAttemptData<
  * @group Middlewares
  */
 export type OnExecutionAttempt<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = Invokable<[data: OnRetryAttemptData<TParameters, TContext>]>;
 
@@ -40,7 +40,7 @@ export type OnExecutionAttempt<
  * @group Middlewares
  */
 export type OnRetryDelayData<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = {
     error: unknown;
@@ -56,7 +56,7 @@ export type OnRetryDelayData<
  * @group Middlewares
  */
 export type OnRetryDelay<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = Invokable<[data: OnRetryDelayData<TParameters, TContext>]>;
 
@@ -66,7 +66,7 @@ export type OnRetryDelay<
  * @group Middlewares
  */
 export type RetryCallbacks<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = {
     /**
@@ -86,7 +86,7 @@ export type RetryCallbacks<
  * @group Middlewares
  */
 export type RetrySettings<
-    TParameters extends unknown[] = unknown[],
+    TParameters extends Array<unknown> = Array<unknown>,
     TContext extends HookContext = HookContext,
 > = RetryCallbacks<TParameters, TContext> &
     ErrorPolicySettings & {

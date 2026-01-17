@@ -112,7 +112,7 @@ export type IDatabaseReaderSemaphoreTransaction = {
      * The `findSlots` returns the semaphore slot if it exists otherwise `null` is returned.
      *
      */
-    findSlots(key: string): Promise<IReaderSemaphoreSlotData[]>;
+    findSlots(key: string): Promise<Array<IReaderSemaphoreSlotData>>;
 
     /**
      * The `upsertSemaphore` inserts a semaphore if it doesnt exist otherwise it will be updated.
@@ -143,7 +143,9 @@ export type IDatabaseReaderSemaphoreTransaction = {
      *
      * @returns Returns the slot expiration.
      */
-    removeAllSlots(key: string): Promise<IReaderSemaphoreSlotExpirationData[]>;
+    removeAllSlots(
+        key: string,
+    ): Promise<Array<IReaderSemaphoreSlotExpirationData>>;
 
     /**
      * The `updateExpiration` updates the specified slot expiration as long as it is expireable and unexpired of the given semaphore.

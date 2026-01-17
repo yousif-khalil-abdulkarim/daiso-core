@@ -14,7 +14,7 @@ export function isDatabaseSharedLockAdapter(
     adapter: SharedLockAdapterVariants,
 ): adapter is IDatabaseSharedLockAdapter {
     const adapter_ = adapter as Partial<
-        Record<string, (...args_: unknown[]) => unknown>
+        Record<string, (...args_: Array<unknown>) => unknown>
     >;
 
     return (

@@ -70,7 +70,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     static concat<TValue>(
         iterables: IterableValue<IterableValue<TValue>>,
     ): ICollection<TValue> {
-        let array: TValue[] = [];
+        let array: Array<TValue> = [];
         for (const iterable of resolveIterableValue(iterables)) {
             array = [...array, ...resolveIterableValue(iterable)];
         }
@@ -164,7 +164,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return new ListCollection(serializedValue.items);
     }
 
-    private array: TInput[];
+    private array: Array<TInput>;
 
     /**
      * The `constructor` takes an {@link Iterable | `Iterable`}.
@@ -253,14 +253,14 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         return new ListCollection(
             this.array.filter((item, index) =>
                 resolveInvokable(predicateFn)(item, index, this),
-            ) as TOutput[],
+            ) as Array<TOutput>,
         );
     }
 
     validate<TOutput>(
         schema: StandardSchemaV1<TInput, TOutput>,
     ): ICollection<TOutput> {
-        const validatedItems: TOutput[] = [];
+        const validatedItems: Array<TOutput> = [];
         for (const item of this.array) {
             const result = schema["~standard"].validate(item);
             if (isPromiseLike(result)) {
@@ -280,7 +280,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
             this.array.filter(
                 (item, index) =>
                     !resolveInvokable(predicateFn)(item, index, this),
-            ) as Exclude<TInput, TOutput>[],
+            ) as Array<Exclude<TInput, TOutput>>,
         );
     }
 
@@ -340,7 +340,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     collapse(): ICollection<Collapse<TInput>> {
-        const items: TInput[] = [];
+        const items: Array<TInput> = [];
         for (const item of this.array) {
             if (isIterable<TInput>(item)) {
                 items.push(...item);
@@ -348,7 +348,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
                 items.push(item);
             }
         }
-        return new ListCollection(items as Collapse<TInput>[]);
+        return new ListCollection(items as Array<Collapse<TInput>>);
     }
 
     flatMap<TOutput>(
@@ -543,7 +543,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     takeUntil(
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<TInput> {
-        const items: TInput[] = [];
+        const items: Array<TInput> = [];
         for (const [index, item] of this.array.entries()) {
             if (resolveInvokable(predicateFn)(item, index, this)) {
                 break;
@@ -569,7 +569,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<TInput> {
         let hasMatched = false;
-        const items: TInput[] = [];
+        const items: Array<TInput> = [];
         for (const [index, item] of this.array.entries()) {
             if (!hasMatched) {
                 hasMatched = resolveInvokable(predicateFn)(item, index, this);
@@ -632,7 +632,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     }
 
     chunk(chunkSize: number): ICollection<ICollection<TInput>> {
-        const chunks: ICollection<TInput>[] = [];
+        const chunks: Array<ICollection<TInput>> = [];
         for (let index = 0; index < this.size(); index += chunkSize) {
             chunks.push(
                 new ListCollection(this.array.slice(index, index + chunkSize)),
@@ -645,7 +645,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<ICollection<TInput>> {
         let currentChunk: ICollection<TInput> = new ListCollection<TInput>([]);
-        const chunks: ICollection<TInput>[] = [];
+        const chunks: Array<ICollection<TInput>> = [];
         for (const [index, item] of this.array.entries()) {
             if (index === 0) {
                 currentChunk = currentChunk.append([item]);
@@ -679,7 +679,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
 
         let end = 0,
             start = 0;
-        const chunks: ICollection<TInput>[] = [];
+        const chunks: Array<ICollection<TInput>> = [];
         for (const chunkSize of chunkSizes) {
             end += chunkSize;
             chunks.push(new ListCollection(this.array.slice(start, end)));
@@ -692,8 +692,8 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     partition(
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
     ): ICollection<ICollection<TInput>> {
-        const chunkA: TInput[] = [],
-            chunkB: TInput[] = [];
+        const chunkA: Array<TInput> = [],
+            chunkB: Array<TInput> = [];
         for (const [index, item] of this.array.entries()) {
             if (resolveInvokable(predicateFn)(item, index, this)) {
                 chunkA.push(item);
@@ -772,7 +772,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
             item as unknown as TOutput,
     ): ICollection<TInput> {
         const set = new Set<TOutput>([]),
-            items: TInput[] = [];
+            items: Array<TInput> = [];
         for (const [index, item] of this.array.entries()) {
             const item_ = resolveInvokable(selectFn)(item, index, this);
             if (!set.has(item_)) {
@@ -1126,7 +1126,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
     sole<TOutput extends TInput>(
         predicateFn: PredicateInvokable<TInput, ICollection<TInput>, TOutput>,
     ): TOutput {
-        const matchedItems: TInput[] = [];
+        const matchedItems: Array<TInput> = [];
         for (const [index, item] of this.array.entries()) {
             if (resolveInvokable(predicateFn)(item, index, this)) {
                 matchedItems.push(item);
@@ -1190,7 +1190,7 @@ export class ListCollection<TInput = unknown> implements ICollection<TInput> {
         }
     }
 
-    toArray(): TInput[] {
+    toArray(): Array<TInput> {
         return [...this.array];
     }
 

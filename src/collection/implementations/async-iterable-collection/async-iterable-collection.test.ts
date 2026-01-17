@@ -28,7 +28,7 @@ describe("class: AsyncIterableCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -68,7 +68,7 @@ describe("class: AsyncIterableCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -99,7 +99,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to map function", async () => {
             const collection = new AsyncIterableCollection([2, 3, 4, 5]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 mapFunction = (item: number, index: number): number => {
                     indexes.push(index);
                     return item ** 2;
@@ -141,7 +141,7 @@ describe("class: AsyncIterableCollection", () => {
             const arr = ["a", "b", "c", "d"],
                 collection = new AsyncIterableCollection(arr),
                 initialValue = "!",
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.reduce((initialValue, item, index) => {
                 indexes.push(index);
                 return initialValue + item;
@@ -271,7 +271,7 @@ describe("class: AsyncIterableCollection", () => {
                     "b",
                     "ba",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 mapFunction = (
                     item: string,
                     index: number,
@@ -343,7 +343,7 @@ describe("class: AsyncIterableCollection", () => {
                     "c",
                     "cccc",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .change(
                     (item, index) => {
@@ -364,7 +364,7 @@ describe("class: AsyncIterableCollection", () => {
                     "c",
                     "cccc",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .change(
                     (item) => item.length >= 2,
@@ -663,7 +663,7 @@ describe("class: AsyncIterableCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -733,7 +733,7 @@ describe("class: AsyncIterableCollection", () => {
                     "d",
                     "a",
                 ]),
-                indexes: number[] = [],
+                indexes: Array<number> = [],
                 predicateFn = (item: string, index: number): boolean => {
                     indexes.push(index);
                     return item === "a";
@@ -799,7 +799,7 @@ describe("class: AsyncIterableCollection", () => {
                     "c",
                     "aa",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.every((item, index) => {
                 indexes.push(index);
                 return item.length === 1;
@@ -863,7 +863,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .takeUntil((item, index) => {
                     indexes.push(index);
@@ -887,7 +887,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .takeWhile((item, index) => {
                     indexes.push(index);
@@ -931,7 +931,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .skipUntil((item, index) => {
                     indexes.push(index);
@@ -955,7 +955,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .skipWhile((item, index) => {
                     indexes.push(index);
@@ -1211,7 +1211,7 @@ describe("class: AsyncIterableCollection", () => {
         test("Should input correct indexes to predicate function", async () => {
             const arr = ["a", 1, "b", 2, "c", 3, "d", 4, "e", 5],
                 collection = new AsyncIterableCollection(arr),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .partition((item, index) => {
                     indexes.push(index);
@@ -1423,10 +1423,9 @@ describe("class: AsyncIterableCollection", () => {
             expect(
                 await newCollection
                     .map(
-                        async ([key, item]): Promise<[string, string[]]> => [
-                            key,
-                            await item.toArray(),
-                        ],
+                        async ([key, item]): Promise<
+                            [string, Array<string>]
+                        > => [key, await item.toArray()],
                     )
                     .toArray(),
             ).toEqual([
@@ -1441,7 +1440,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const arr: Person[] = [
+            const arr: Array<Person> = [
                     {
                         name: "Abra",
                         age: 20,
@@ -1474,10 +1473,9 @@ describe("class: AsyncIterableCollection", () => {
             expect(
                 await newCollection
                     .map(
-                        async ([key, item]): Promise<[string, Person[]]> => [
-                            key,
-                            await item.toArray(),
-                        ],
+                        async ([key, item]): Promise<
+                            [string, Array<Person>]
+                        > => [key, await item.toArray()],
                     )
                     .toArray(),
             ).toEqual([
@@ -1497,7 +1495,7 @@ describe("class: AsyncIterableCollection", () => {
                     "b",
                     "d",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .groupBy((item, index) => {
                     indexes.push(index);
@@ -1511,7 +1509,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const arr: Person[] = [
+            const arr: Array<Person> = [
                     {
                         name: "Abra",
                         age: 20,
@@ -1547,10 +1545,9 @@ describe("class: AsyncIterableCollection", () => {
             expect(
                 await newCollection
                     .map(
-                        async ([key, item]): Promise<[string, Person[]]> => [
-                            key,
-                            await item.toArray(),
-                        ],
+                        async ([key, item]): Promise<
+                            [string, Array<Person>]
+                        > => [key, await item.toArray()],
                     )
                     .toArray(),
             ).toEqual([
@@ -1577,7 +1574,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const arr: Person[] = [
+            const arr: Array<Person> = [
                     {
                         name: "Abra",
                         age: 20,
@@ -1624,7 +1621,7 @@ describe("class: AsyncIterableCollection", () => {
                     "b",
                     "d",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .countBy((item, index) => {
                     indexes.push(index);
@@ -1677,7 +1674,7 @@ describe("class: AsyncIterableCollection", () => {
                     "b",
                     "d",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection
                 .unique((item, index) => {
                     indexes.push(index);
@@ -1721,7 +1718,7 @@ describe("class: AsyncIterableCollection", () => {
                 brand: string;
                 type: string;
             };
-            const items: Product[] = [
+            const items: Array<Product> = [
                 { name: "iPhone 6", brand: "Apple", type: "phone" },
                 { name: "iPhone 5", brand: "Apple", type: "phone" },
                 { name: "Apple Watch", brand: "Apple", type: "watch" },
@@ -2171,7 +2168,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2207,7 +2204,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.first((item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -2224,7 +2221,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2256,7 +2253,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2317,7 +2314,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.firstOr(null, (item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -2334,7 +2331,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2364,7 +2361,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2395,7 +2392,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2428,7 +2425,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2465,7 +2462,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 await collection.firstOrFail((item, index) => {
                     indexes.push(index);
@@ -2486,7 +2483,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2518,7 +2515,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2552,7 +2549,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.last((item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -2569,7 +2566,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2601,7 +2598,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2666,7 +2663,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.lastOr(null, (item, index) => {
                 indexes.push(index);
                 return item === 6;
@@ -2683,7 +2680,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2716,7 +2713,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2753,7 +2750,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3, 4, 5]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 await collection.lastOrFail((item, index) => {
                     indexes.push(index);
@@ -2774,7 +2771,7 @@ describe("class: AsyncIterableCollection", () => {
                 name: string;
                 age: number;
             };
-            const persons: Person[] = [
+            const persons: Array<Person> = [
                     {
                         name: "Joe",
                         age: 20,
@@ -2823,7 +2820,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.before((item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2927,7 +2924,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.beforeOr(null, (item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -2972,7 +2969,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 await collection.beforeOrFail((item, index) => {
                     indexes.push(index);
@@ -3024,7 +3021,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.after((item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -3122,7 +3119,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.afterOr(null, (item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -3167,7 +3164,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection(["a", "b", "c"]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             try {
                 await collection.afterOrFail((item, index) => {
                     indexes.push(index);
@@ -3239,7 +3236,7 @@ describe("class: AsyncIterableCollection", () => {
                     "c",
                     "b",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.sole((item, index) => {
                 indexes.push(index);
                 return item === "c";
@@ -3308,7 +3305,7 @@ describe("class: AsyncIterableCollection", () => {
                     "c",
                     "b",
                 ]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.count((_item, index) => {
                 indexes.push(index);
                 return true;
@@ -3481,7 +3478,7 @@ describe("class: AsyncIterableCollection", () => {
         test("Should iterate all items", async () => {
             const arr1 = [1, 2, 3],
                 collection = new AsyncIterableCollection(arr1),
-                arr2: number[] = [];
+                arr2: Array<number> = [];
             await collection.forEach((item) => {
                 arr2.push(item);
             });
@@ -3489,7 +3486,7 @@ describe("class: AsyncIterableCollection", () => {
         });
         test("Should input correct indexes to predicate function", async () => {
             const collection = new AsyncIterableCollection([1, 2, 3]),
-                indexes: number[] = [];
+                indexes: Array<number> = [];
             await collection.forEach((_item, index) => {
                 indexes.push(index);
             });
@@ -3498,7 +3495,7 @@ describe("class: AsyncIterableCollection", () => {
         test("Should return the same value when called more than 1 times", async () => {
             const arr1 = [1, 2, 3],
                 collection = new AsyncIterableCollection(arr1),
-                arr2: number[] = [];
+                arr2: Array<number> = [];
             await collection.forEach((item) => {
                 arr2.push(item);
             });
@@ -3508,7 +3505,7 @@ describe("class: AsyncIterableCollection", () => {
         test("Should work with async predicate function", async () => {
             const arr1 = [1, 2, 3],
                 collection = new AsyncIterableCollection(arr1),
-                arr2: number[] = [];
+                arr2: Array<number> = [];
             // eslint-disable-next-line @typescript-eslint/require-await
             await collection.forEach(async (item) => {
                 arr2.push(item);
