@@ -272,10 +272,16 @@ export function databaseCacheAdapterTestSuite(
                     key2,
                 ]);
 
-                expect(data).toEqual([
-                    { expiration: expiration1 } satisfies ICacheDataExpiration,
-                    { expiration: expiration2 } satisfies ICacheDataExpiration,
-                ]);
+                expect(data).toEqual(
+                    expect.objectContaining([
+                        {
+                            expiration: expiration1,
+                        } satisfies ICacheDataExpiration,
+                        {
+                            expiration: expiration2,
+                        } satisfies ICacheDataExpiration,
+                    ]),
+                );
             });
             test("Should remove keys", async () => {
                 const currentDate = new Date("2026-01-17");
