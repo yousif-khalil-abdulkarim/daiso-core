@@ -1,5 +1,12 @@
 # @daiso-tech/core
 
+## 0.47.0
+
+### Minor Changes
+
+- 4f3a8c1: Added new setting to `KyselyRateLimiterStorageAdapter`, `KyselyCircuitBreakerStorageAdapter`, `KyselyLockAdapter`, `KyselySemaphoreAdapter` and `KyselySharedLockAdapter`that allows for disabling transactions.
+- 49c470c: Added new setting to all `MongodbRateLimiterStorageAdapter` and `MongodbCircuitBreakerStorageAdapter` that allows for disabling transactions.
+
 ## 0.46.0
 
 ### Minor Changes
@@ -705,8 +712,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                                        - `AsyncFactoryable`
-                                        - `Factoryable`
+                                          - `AsyncFactoryable`
+                                          - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
