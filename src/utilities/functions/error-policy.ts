@@ -3,7 +3,6 @@
  */
 
 import { type StandardSchemaV1 } from "@standard-schema/spec";
-import { type OneOrMore } from "mongodb";
 
 import {
     callInvokable,
@@ -11,7 +10,10 @@ import {
     type Invokable,
 } from "@/utilities/functions/invokable.js";
 import { isStandardSchema } from "@/utilities/functions/is-standard-schema.js";
-import { resolveOneOrMore } from "@/utilities/functions/resolve-one-or-more.js";
+import {
+    resolveOneOrMore,
+    type OneOrMore,
+} from "@/utilities/functions/resolve-one-or-more.js";
 import { type AnyClass } from "@/utilities/types/_module.js";
 
 /**
