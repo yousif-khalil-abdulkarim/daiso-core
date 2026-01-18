@@ -273,7 +273,7 @@ export function databaseCacheAdapterTestSuite(
                 ]);
 
                 expect(data).toEqual(
-                    expect.objectContaining([
+                    expect.arrayContaining([
                         {
                             expiration: expiration1,
                         } satisfies ICacheDataExpiration,
