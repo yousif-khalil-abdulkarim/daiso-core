@@ -556,7 +556,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedFailureCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_FAILURE,
                         handlerFn,
                     );
@@ -600,7 +600,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedSlowCallCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_SLOW_CALL,
                         handlerFn,
                     );
@@ -641,7 +641,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedSuccessCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_SUCCESS,
                         handlerFn,
                     );
@@ -680,7 +680,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedFailureCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_FAILURE,
                         handlerFn,
                     );
@@ -714,7 +714,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: UntrackedFailureCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.UNTRACKED_FAILURE,
                         handlerFn,
                     );
@@ -750,7 +750,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedFailureCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_FAILURE,
                         handlerFn,
                     );
@@ -794,7 +794,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedSlowCallCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_SLOW_CALL,
                         handlerFn,
                     );
@@ -825,7 +825,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedSuccessCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_SUCCESS,
                         handlerFn,
                     );
@@ -864,7 +864,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedSuccessCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_SUCCESS,
                         handlerFn,
                     );
@@ -905,7 +905,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedFailureCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_FAILURE,
                         handlerFn,
                     );
@@ -939,7 +939,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: UntrackedFailureCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.UNTRACKED_FAILURE,
                         handlerFn,
                     );
@@ -975,7 +975,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedFailureCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_FAILURE,
                         handlerFn,
                     );
@@ -1008,7 +1008,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedSlowCallCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_SLOW_CALL,
                         handlerFn,
                     );
@@ -1045,7 +1045,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedSuccessCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_SUCCESS,
                         handlerFn,
                     );
@@ -1082,7 +1082,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedFailureCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_FAILURE,
                         handlerFn,
                     );
@@ -1116,7 +1116,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedSuccessCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.TRACKED_SUCCESS,
                         handlerFn,
                     );
@@ -1150,7 +1150,7 @@ describe("class: CircuitBreakerProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: UntrackedFailureCircuitBreakerEvent) => {},
                     );
-                    await circuitBreakerProvider.addListener(
+                    await circuitBreakerProvider.events.addListener(
                         CIRCUIT_BREAKER_EVENTS.UNTRACKED_FAILURE,
                         handlerFn,
                     );
@@ -1186,7 +1186,7 @@ describe("class: CircuitBreakerProvider", () => {
                 const handlerFn = vi.fn(
                     (_event: StateTransitionCircuitBreakerEvent) => {},
                 );
-                await circuitBreakerProvider.addListener(
+                await circuitBreakerProvider.events.addListener(
                     CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED,
                     handlerFn,
                 );
@@ -1218,7 +1218,7 @@ describe("class: CircuitBreakerProvider", () => {
                     Promise.resolve(),
                 );
                 const handlerFn = vi.fn(() => {});
-                await circuitBreakerProvider.addListener(
+                await circuitBreakerProvider.events.addListener(
                     CIRCUIT_BREAKER_EVENTS.ISOLATED,
                     handlerFn,
                 );
@@ -1244,7 +1244,7 @@ describe("class: CircuitBreakerProvider", () => {
                     Promise.resolve(),
                 );
                 const handlerFn = vi.fn(() => {});
-                await circuitBreakerProvider.addListener(
+                await circuitBreakerProvider.events.addListener(
                     CIRCUIT_BREAKER_EVENTS.RESETED,
                     handlerFn,
                 );
