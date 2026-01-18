@@ -45,5 +45,6 @@ export type IRateLimiterListenable = IEventListenable<RateLimiterEventMap>;
  * IMPORT_PATH: `"@daiso-tech/core/rate-limiter/contracts"`
  * @group Contracts
  */
-export type IRateLimiterProvider = IRateLimiterListenable &
-    IRateLimiterProviderBase;
+export type IRateLimiterProvider = IRateLimiterProviderBase & {
+    readonly events: IRateLimiterListenable;
+};

@@ -56,5 +56,6 @@ export type ISharedLockProviderBase = {
  * IMPORT_PATH: `"@daiso-tech/core/shared-lock/contracts"`
  * @group Contracts
  */
-export type ISharedLockProvider = ISharedLockListenable &
-    ISharedLockProviderBase;
+export type ISharedLockProvider = ISharedLockProviderBase & {
+    readonly events: ISharedLockListenable;
+};

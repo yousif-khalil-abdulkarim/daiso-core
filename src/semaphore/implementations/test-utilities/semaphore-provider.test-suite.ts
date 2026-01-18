@@ -979,7 +979,7 @@ export function semaphoreProviderTestSuite(
 
                     await lock1.acquire();
                     let index = 0;
-                    await semaphoreProvider.addListener(
+                    await semaphoreProvider.events.addListener(
                         SEMAPHORE_EVENTS.LIMIT_REACHED,
                         (_event) => {
                             index++;
@@ -1641,7 +1641,7 @@ export function semaphoreProviderTestSuite(
 
                     await semaphore1.acquire();
                     let index = 0;
-                    await semaphoreProvider.addListener(
+                    await semaphoreProvider.events.addListener(
                         SEMAPHORE_EVENTS.LIMIT_REACHED,
                         (_event) => {
                             index++;
@@ -1900,7 +1900,7 @@ export function semaphoreProviderTestSuite(
 
                     await semaphore1.acquire();
                     let index = 0;
-                    await semaphoreProvider.addListener(
+                    await semaphoreProvider.events.addListener(
                         SEMAPHORE_EVENTS.LIMIT_REACHED,
                         (_event) => {
                             index++;
@@ -3086,7 +3086,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3126,7 +3126,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3163,7 +3163,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3202,7 +3202,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: LimitReachedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.LIMIT_REACHED,
                             handlerFn,
                         );
@@ -3248,7 +3248,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3280,7 +3280,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3313,7 +3313,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3348,7 +3348,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3388,7 +3388,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3425,7 +3425,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3464,7 +3464,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: LimitReachedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.LIMIT_REACHED,
                             handlerFn,
                         );
@@ -3514,7 +3514,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3546,7 +3546,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3579,7 +3579,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3614,7 +3614,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3657,7 +3657,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3697,7 +3697,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3739,7 +3739,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: LimitReachedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.LIMIT_REACHED,
                             handlerFn,
                         );
@@ -3788,7 +3788,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3823,7 +3823,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3859,7 +3859,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3897,7 +3897,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3940,7 +3940,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -3980,7 +3980,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -4022,7 +4022,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: LimitReachedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.LIMIT_REACHED,
                             handlerFn,
                         );
@@ -4075,7 +4075,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -4110,7 +4110,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -4146,7 +4146,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -4199,7 +4199,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -4240,7 +4240,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -4279,7 +4279,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -4314,7 +4314,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -4348,7 +4348,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: ReleasedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.RELEASED,
                             handlerFn,
                         );
@@ -4382,7 +4382,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: ReleasedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.RELEASED,
                             handlerFn,
                         );
@@ -4427,7 +4427,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -4472,7 +4472,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -4515,7 +4515,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -4554,7 +4554,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -4592,7 +4592,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: ReleasedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.RELEASED,
                             handlerFn,
                         );
@@ -4626,7 +4626,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: ReleasedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.RELEASED,
                             handlerFn,
                         );
@@ -4678,7 +4678,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AllForceReleasedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ALL_FORCE_RELEASED,
                             handlerFn,
                         );
@@ -4721,7 +4721,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AllForceReleasedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.ALL_FORCE_RELEASED,
                             handlerFn,
                         );
@@ -4768,7 +4768,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -4809,7 +4809,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -4843,7 +4843,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -4879,7 +4879,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -4914,7 +4914,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -4949,7 +4949,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: RefreshedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.REFRESHED,
                             handlerFn,
                         );
@@ -4995,7 +4995,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -5040,7 +5040,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -5078,7 +5078,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -5118,7 +5118,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -5157,7 +5157,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -5196,7 +5196,7 @@ export function semaphoreProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: RefreshedSemaphoreEvent) => {},
                         );
-                        await semaphoreProvider.addListener(
+                        await semaphoreProvider.events.addListener(
                             SEMAPHORE_EVENTS.REFRESHED,
                             handlerFn,
                         );

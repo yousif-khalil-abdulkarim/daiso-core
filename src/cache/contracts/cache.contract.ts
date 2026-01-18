@@ -239,5 +239,6 @@ export type ICacheBase<TType = unknown> = {
  * IMPORT_PATH: `"@daiso-tech/core/cache/contracts"`
  * @group Contracts
  */
-export type ICache<TType = unknown> = ICacheListenable<TType> &
-    ICacheBase<TType>;
+export type ICache<TType = unknown> = ICacheBase<TType> & {
+    readonly events: ICacheListenable<TType>;
+};

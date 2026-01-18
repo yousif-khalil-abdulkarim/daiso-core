@@ -333,7 +333,7 @@ const circuitBreakerProvider = new CircuitBreakerProvider({
     }),
 });
 
-await circuitBreakerProvider.addListener(CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED, (event) => {
+await circuitBreakerProvider.events.addListener(CIRCUIT_BREAKER_EVENTS.STATE_TRANSITIONED, (event) => {
     console.log(`State transitioned occurred. from ${event.from} to ${event.to}`);
 });
 
@@ -446,7 +446,7 @@ const circuitBreakerProvider = new CircuitBreakerProvider({
         adapter: new MemoryEventBusAdapter()
     })
 })
-await circuitBreakerListenableFunc(circuitBreakerProvider);
+await circuitBreakerListenableFunc(circuitBreakerProvider.events);
 await circuitBreakerProviderFunc(circuitBreakerProvider);
 ```
 

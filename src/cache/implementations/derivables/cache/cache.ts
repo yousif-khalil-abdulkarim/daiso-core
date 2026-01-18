@@ -15,16 +15,11 @@ import {
     type RemovedCacheEvent,
     KeyExistsCacheError,
     type CacheWriteSettings,
+    type ICacheListenable,
 } from "@/cache/contracts/_module.js";
 import { type CacheAdapterVariants } from "@/cache/contracts/types.js";
 import { resolveCacheAdapter } from "@/cache/implementations/derivables/cache/resolve-cache-adapter.js";
-import {
-    type IEventBus,
-    type Unsubscribe,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IEventListenable,
-    type EventListener,
-} from "@/event-bus/contracts/_module.js";
+import { type IEventBus } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { type INamespace } from "@/namespace/contracts/_module.js";
@@ -170,69 +165,8 @@ export class Cache<TType = unknown> implements ICache<TType> {
         this.defaultJitter = defaultJitter;
     }
 
-    /**
-     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    addListener<TEventName extends keyof CacheEventMap<TType>>(
-        eventName: TEventName,
-        listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.addListener(eventName, listener);
-    }
-
-    /**
-     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    removeListener<TEventName extends keyof CacheEventMap<TType>>(
-        eventName: TEventName,
-        listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.removeListener(eventName, listener);
-    }
-
-    /**
-     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    listenOnce<TEventName extends keyof CacheEventMap<TType>>(
-        eventName: TEventName,
-        listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.listenOnce(eventName, listener);
-    }
-
-    /**
-     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    asTask<TEventName extends keyof CacheEventMap<TType>>(
-        eventName: TEventName,
-    ): ITask<CacheEventMap<TType>[TEventName]> {
-        return this.eventBus.asTask(eventName);
-    }
-
-    /**
-     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    subscribeOnce<TEventName extends keyof CacheEventMap<TType>>(
-        eventName: TEventName,
-        listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): ITask<Unsubscribe> {
-        return this.eventBus.subscribeOnce(eventName, listener);
-    }
-
-    /**
-     * You can listen to the following {@link CacheEventMap | `CacheEventMap`} of the {@link ICache | `ICache`} instance.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    subscribe<TEventName extends keyof CacheEventMap<TType>>(
-        eventName: TEventName,
-        listener: EventListener<CacheEventMap<TType>[TEventName]>,
-    ): ITask<Unsubscribe> {
-        return this.eventBus.subscribe(eventName, listener);
+    get events(): ICacheListenable<TType> {
+        return this.eventBus;
     }
 
     exists(key: string): ITask<boolean> {

@@ -50,4 +50,6 @@ export type ISemaphoreProviderBase = {
  * IMPORT_PATH: `"@daiso-tech/core/semaphore/contracts"`
  * @group Contracts
  */
-export type ISemaphoreProvider = ISemaphoreListenable & ISemaphoreProviderBase;
+export type ISemaphoreProvider = ISemaphoreProviderBase & {
+    readonly events: ISemaphoreListenable;
+};

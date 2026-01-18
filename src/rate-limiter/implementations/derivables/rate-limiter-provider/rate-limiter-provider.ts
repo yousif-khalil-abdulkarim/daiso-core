@@ -2,11 +2,7 @@
  * @module RateLimiter
  */
 
-import {
-    type EventListener,
-    type IEventBus,
-    type Unsubscribe,
-} from "@/event-bus/contracts/_module.js";
+import { type IEventBus } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { type INamespace } from "@/namespace/contracts/_module.js";
@@ -14,6 +10,7 @@ import { NoOpNamespace } from "@/namespace/implementations/_module.js";
 import {
     type IRateLimiter,
     type IRateLimiterAdapter,
+    type IRateLimiterListenable,
     type IRateLimiterProvider,
     type RateLimiterEventMap,
     type RateLimiterProviderCreateSettings,
@@ -23,7 +20,6 @@ import { RateLimiter } from "@/rate-limiter/implementations/derivables/rate-limi
 import { type ISerderRegister } from "@/serde/contracts/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/_module.js";
-import { type ITask } from "@/task/contracts/_module.js";
 import {
     CORE,
     resolveOneOrMore,
@@ -196,45 +192,8 @@ export class RateLimiterProvider implements IRateLimiterProvider {
         }
     }
 
-    addListener<TEventName extends keyof RateLimiterEventMap>(
-        eventName: TEventName,
-        listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.addListener(eventName, listener);
-    }
-
-    removeListener<TEventName extends keyof RateLimiterEventMap>(
-        eventName: TEventName,
-        listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.removeListener(eventName, listener);
-    }
-
-    listenOnce<TEventName extends keyof RateLimiterEventMap>(
-        eventName: TEventName,
-        listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.listenOnce(eventName, listener);
-    }
-
-    asTask<TEventName extends keyof RateLimiterEventMap>(
-        eventName: TEventName,
-    ): ITask<RateLimiterEventMap[TEventName]> {
-        return this.eventBus.asTask(eventName);
-    }
-
-    subscribeOnce<TEventName extends keyof RateLimiterEventMap>(
-        eventName: TEventName,
-        listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): ITask<Unsubscribe> {
-        return this.eventBus.subscribeOnce(eventName, listener);
-    }
-
-    subscribe<TEventName extends keyof RateLimiterEventMap>(
-        eventName: TEventName,
-        listener: EventListener<RateLimiterEventMap[TEventName]>,
-    ): ITask<Unsubscribe> {
-        return this.eventBus.subscribe(eventName, listener);
+    get events(): IRateLimiterListenable {
+        return this.eventBus;
     }
 
     create(

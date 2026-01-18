@@ -1015,7 +1015,7 @@ export function sharedLockProviderTestSuite(
 
                     await sharedLock1.acquireWriter();
                     const handlerFn = vi.fn(() => {});
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -1050,7 +1050,7 @@ export function sharedLockProviderTestSuite(
 
                     await sharedLock1.acquireReader();
                     const handlerFn = vi.fn(() => {});
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -1543,7 +1543,7 @@ export function sharedLockProviderTestSuite(
 
                     await sharedLock1.acquireWriter();
                     const handlerFn = vi.fn(() => {});
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -1570,7 +1570,7 @@ export function sharedLockProviderTestSuite(
 
                     await sharedLock1.acquireReader();
                     const handlerFn = vi.fn(() => {});
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -1772,7 +1772,7 @@ export function sharedLockProviderTestSuite(
 
                     await sharedLock1.acquireWriter();
                     const handlerFn = vi.fn(() => {});
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -1803,7 +1803,7 @@ export function sharedLockProviderTestSuite(
 
                     await sharedLock1.acquireReader();
                     const handlerFn = vi.fn(() => {});
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -3855,7 +3855,7 @@ export function sharedLockProviderTestSuite(
 
                     await sharedLock1.acquireWriter();
                     const handlerFn = vi.fn(() => {});
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -3890,7 +3890,7 @@ export function sharedLockProviderTestSuite(
 
                     await sharedLock1.acquireReader();
                     const handlerFn = vi.fn(() => {});
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -6323,7 +6323,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -6365,7 +6365,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                             handlerFn,
                         );
@@ -6399,7 +6399,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -6432,7 +6432,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -6467,7 +6467,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -6502,7 +6502,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -6536,7 +6536,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -6578,7 +6578,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                             handlerFn,
                         );
@@ -6612,7 +6612,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -6645,7 +6645,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -6680,7 +6680,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -6719,7 +6719,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -6757,7 +6757,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -6802,7 +6802,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                             handlerFn,
                         );
@@ -6839,7 +6839,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -6875,7 +6875,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -6913,7 +6913,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -6951,7 +6951,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -6988,7 +6988,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -7033,7 +7033,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                             handlerFn,
                         );
@@ -7070,7 +7070,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -7106,7 +7106,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_ACQUIRED,
                         handlerFn,
                     );
@@ -7144,7 +7144,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -7186,7 +7186,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -7227,7 +7227,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -7263,7 +7263,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -7299,7 +7299,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -7340,7 +7340,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                             handlerFn,
                         );
@@ -7379,7 +7379,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                             handlerFn,
                         );
@@ -7415,7 +7415,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ReleasedWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_RELEASED,
                         handlerFn,
                     );
@@ -7449,7 +7449,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ReleasedWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_RELEASED,
                         handlerFn,
                     );
@@ -7485,7 +7485,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -7525,7 +7525,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -7565,7 +7565,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -7610,7 +7610,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                             handlerFn,
                         );
@@ -7653,7 +7653,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_FAILED_RELEASE,
                             handlerFn,
                         );
@@ -7693,7 +7693,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ReleasedWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_RELEASED,
                         handlerFn,
                     );
@@ -7727,7 +7727,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ReleasedWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_RELEASED,
                         handlerFn,
                     );
@@ -7764,7 +7764,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -7803,7 +7803,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -7842,7 +7842,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -7887,7 +7887,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                             handlerFn,
                         );
@@ -7929,7 +7929,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                             handlerFn,
                         );
@@ -7965,7 +7965,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -8005,7 +8005,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: RefreshedWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_REFRESHED,
                             handlerFn,
                         );
@@ -8041,7 +8041,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -8084,7 +8084,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -8127,7 +8127,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -8176,7 +8176,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                             handlerFn,
                         );
@@ -8222,7 +8222,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                             handlerFn,
                         );
@@ -8262,7 +8262,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -8306,7 +8306,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: RefreshedWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_REFRESHED,
                             handlerFn,
                         );
@@ -8341,7 +8341,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ForceReleasedWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FORCE_RELEASED,
                         handlerFn,
                     );
@@ -8379,7 +8379,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: ForceReleasedWriterLockEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.WRITER_FORCE_RELEASED,
                             handlerFn,
                         );
@@ -8415,7 +8415,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ForceReleasedWriterLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.WRITER_FORCE_RELEASED,
                         handlerFn,
                     );
@@ -8447,7 +8447,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -8492,7 +8492,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_ACQUIRED,
                             handlerFn,
                         );
@@ -8530,7 +8530,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -8569,7 +8569,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -8620,7 +8620,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_ACQUIRED,
                             handlerFn,
                         );
@@ -8653,7 +8653,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -8686,7 +8686,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -8721,7 +8721,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -8766,7 +8766,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_ACQUIRED,
                             handlerFn,
                         );
@@ -8804,7 +8804,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -8843,7 +8843,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -8898,7 +8898,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_ACQUIRED,
                             handlerFn,
                         );
@@ -8931,7 +8931,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -8964,7 +8964,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -8999,7 +8999,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -9047,7 +9047,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_ACQUIRED,
                             handlerFn,
                         );
@@ -9088,7 +9088,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -9130,7 +9130,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -9184,7 +9184,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_ACQUIRED,
                             handlerFn,
                         );
@@ -9220,7 +9220,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -9256,7 +9256,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -9294,7 +9294,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -9342,7 +9342,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_ACQUIRED,
                             handlerFn,
                         );
@@ -9383,7 +9383,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -9425,7 +9425,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableSharedLockEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -9483,7 +9483,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_ACQUIRED,
                             handlerFn,
                         );
@@ -9519,7 +9519,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -9555,7 +9555,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AcquiredReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ACQUIRED,
                         handlerFn,
                     );
@@ -9608,7 +9608,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -9649,7 +9649,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -9693,7 +9693,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_FAILED_RELEASE,
                             handlerFn,
                         );
@@ -9734,7 +9734,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_FAILED_RELEASE,
                             handlerFn,
                         );
@@ -9769,7 +9769,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ReleasedReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_RELEASED,
                         handlerFn,
                     );
@@ -9803,7 +9803,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ReleasedReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_RELEASED,
                         handlerFn,
                     );
@@ -9848,7 +9848,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -9893,7 +9893,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_RELEASE,
                         handlerFn,
                     );
@@ -9941,7 +9941,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_FAILED_RELEASE,
                             handlerFn,
                         );
@@ -9986,7 +9986,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_FAILED_RELEASE,
                             handlerFn,
                         );
@@ -10025,7 +10025,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ReleasedReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_RELEASED,
                         handlerFn,
                     );
@@ -10059,7 +10059,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ReleasedReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_RELEASED,
                         handlerFn,
                     );
@@ -10104,7 +10104,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -10145,7 +10145,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -10184,7 +10184,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                             handlerFn,
                         );
@@ -10226,7 +10226,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                             handlerFn,
                         );
@@ -10262,7 +10262,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -10297,7 +10297,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: RefreshedReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_REFRESHED,
                         handlerFn,
                     );
@@ -10343,7 +10343,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -10388,7 +10388,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -10431,7 +10431,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                             handlerFn,
                         );
@@ -10477,7 +10477,7 @@ export function sharedLockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshReaderSemaphoreEvent) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                             handlerFn,
                         );
@@ -10517,7 +10517,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_FAILED_REFRESH,
                         handlerFn,
                     );
@@ -10556,7 +10556,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: RefreshedReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_REFRESHED,
                         handlerFn,
                     );
@@ -10616,7 +10616,7 @@ export function sharedLockProviderTestSuite(
                                 _event: AllForceReleasedReaderSemaphoreEvent,
                             ) => {},
                         );
-                        await sharedLockProvider.addListener(
+                        await sharedLockProvider.events.addListener(
                             SHARED_LOCK_EVENTS.READER_ALL_FORCE_RELEASED,
                             handlerFn,
                         );
@@ -10660,7 +10660,7 @@ export function sharedLockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: AllForceReleasedReaderSemaphoreEvent) => {},
                     );
-                    await sharedLockProvider.addListener(
+                    await sharedLockProvider.events.addListener(
                         SHARED_LOCK_EVENTS.READER_ALL_FORCE_RELEASED,
                         handlerFn,
                     );

@@ -368,7 +368,7 @@ Refer to the [`@daiso-tech/core/event-bus`](../event_bus/event_bus_usage.md) doc
 import { CACHE_EVENTS } from "@daiso-tech/core/cache/contracts";
 
 // Will log whenever an item is added, updated and removed
-await cache.subscribe(CACHE_EVENTS.ADDED, (event) => {
+await cache.events.subscribe(CACHE_EVENTS.ADDED, (event) => {
     console.log(event);
 });
 
@@ -465,7 +465,7 @@ const cache = new Cache({
         adapter: new MemoryEventBus()
     })
 })
-await listenerFunc(cache);
+await listenerFunc(cache.events);
 await manipulatingFunc(cache);
 ```
 

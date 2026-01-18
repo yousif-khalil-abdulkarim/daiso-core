@@ -1502,7 +1502,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: exists", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 await cache.exists(key);
@@ -1520,7 +1523,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.FOUND, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1543,7 +1546,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: missing", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 await cache.missing(key);
@@ -1561,7 +1567,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.FOUND, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1584,7 +1590,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: get", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 await cache.get(key);
@@ -1602,7 +1611,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.FOUND, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1625,7 +1634,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: getOr", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 await cache.getOr(key, -1);
@@ -1643,7 +1655,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.FOUND, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1666,7 +1678,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: getOrFail", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 try {
@@ -1688,7 +1703,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.FOUND, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1711,7 +1726,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: add", () => {
             test("Should dispatch AddedCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: AddedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.ADDED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.ADDED, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1737,7 +1752,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: update", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value = 1;
@@ -1756,7 +1774,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch UpdatedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: UpdatedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.UPDATED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.UPDATED, handlerFn);
 
                 const key = "a";
                 const value1 = 1;
@@ -1780,7 +1798,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: updateOrFail", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value = 1;
@@ -1803,7 +1824,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch UpdatedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: UpdatedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.UPDATED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.UPDATED, handlerFn);
 
                 const key = "a";
                 const value1 = 1;
@@ -1827,7 +1848,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: put", () => {
             test("Should dispatch AddedCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: AddedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.ADDED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.ADDED, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1851,7 +1872,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch UpdatedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: UpdatedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.UPDATED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.UPDATED, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1874,7 +1895,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: remove", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 await cache.remove(key);
@@ -1892,7 +1916,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch RemovedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: RemovedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.REMOVED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.REMOVED, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1914,7 +1938,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: removeOrFail", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 try {
@@ -1936,7 +1963,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch RemovedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: RemovedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.REMOVED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.REMOVED, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -1958,7 +1985,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: removeMany", () => {
             test("Should dispatch RemovedCacheEvent when one key exists", async () => {
                 const handlerFn = vi.fn((_event: RemovedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.REMOVED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.REMOVED, handlerFn);
 
                 const key1 = "a";
                 const key2 = "b";
@@ -1983,7 +2010,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch NotFoundCacheEvent when all keys doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key1 = "a";
                 const key2 = "b";
@@ -2007,7 +2037,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: getAndRemove", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 await cache.getAndRemove(key);
@@ -2025,7 +2058,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should not dispatch FoundCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.FOUND, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -2036,7 +2069,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch RemovedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: RemovedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.REMOVED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.REMOVED, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -2058,7 +2091,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: getOrAdd", () => {
             test("Should not dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value = 1;
@@ -2068,7 +2104,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch FoundCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: FoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.FOUND, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.FOUND, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -2089,7 +2125,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch AddedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: AddedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.ADDED, handlerFn);
+                await cache.events.addListener(CACHE_EVENTS.ADDED, handlerFn);
 
                 const key = "a";
                 const value = 1;
@@ -2115,7 +2151,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: increment", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value = 1;
@@ -2134,7 +2173,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch IncrementedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: IncrementedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.INCREMENTED, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.INCREMENTED,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value1 = 1;
@@ -2158,7 +2200,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: incrementOrFail", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value = 1;
@@ -2181,7 +2226,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch IncrementedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: IncrementedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.INCREMENTED, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.INCREMENTED,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value1 = 1;
@@ -2205,7 +2253,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: decrement", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value = 1;
@@ -2224,7 +2275,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch DecrementedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: DecrementedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.DECREMENTED, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.DECREMENTED,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value1 = 1;
@@ -2248,7 +2302,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: decrementOrFail", () => {
             test("Should dispatch NotFoundCacheEvent when key doesnt exists", async () => {
                 const handlerFn = vi.fn((_event: NotFoundCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.NOT_FOUND, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.NOT_FOUND,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value = 1;
@@ -2271,7 +2328,10 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
             });
             test("Should dispatch DecrementedCacheEvent when key exists", async () => {
                 const handlerFn = vi.fn((_event: DecrementedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.DECREMENTED, handlerFn);
+                await cache.events.addListener(
+                    CACHE_EVENTS.DECREMENTED,
+                    handlerFn,
+                );
 
                 const key = "a";
                 const value1 = 1;
@@ -2295,7 +2355,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
         describe("method: clear", () => {
             test("Should dispatch ClearedCacheEvent when key doesnt exists", async () => {
                 const handler = vi.fn((_event: ClearedCacheEvent) => {});
-                await cache.addListener(CACHE_EVENTS.CLEARED, handler);
+                await cache.events.addListener(CACHE_EVENTS.CLEARED, handler);
 
                 await cache.add("a", 1);
                 await cache.add("b", 2);
