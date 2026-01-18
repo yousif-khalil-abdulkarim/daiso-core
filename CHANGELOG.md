@@ -1,5 +1,35 @@
 # @daiso-tech/core
 
+## 0.48.0
+
+### Minor Changes
+
+- 313375a: The method for listening to events dispatched by various components, such as the cache, has changed.
+
+    Before update:
+
+    ```ts
+    import { ICache, CACHE_EVENTS.FOUND } from "@daiso-tech/core/cache/contracts";
+
+    declare const cache: ICache
+
+    await cache.addListener(CACHE_EVENTS.FOUND, event => {
+        console.log(event);
+    })
+    ```
+
+    After update:
+
+    ```ts
+    import { ICache, CACHE_EVENTS.FOUND } from "@daiso-tech/core/cache/contracts";
+
+    declare const cache: ICache
+
+    await cache.events.addListener(CACHE_EVENTS.FOUND, event => {
+        console.log(event);
+    })
+    ```
+
 ## 0.47.0
 
 ### Minor Changes
@@ -712,8 +742,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                                          - `AsyncFactoryable`
-                                          - `Factoryable`
+                                            - `AsyncFactoryable`
+                                            - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
