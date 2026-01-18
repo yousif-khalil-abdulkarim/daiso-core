@@ -10,14 +10,11 @@ import {
     type ICircuitBreakerProvider,
     type ICircuitBreakerAdapter,
     type CircuitBreakerTrigger,
+    type ICircuitBreakerListenable,
 } from "@/circuit-breaker/contracts/_module.js";
 import { CircuitBreakerSerdeTransformer } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker-serde-transformer.js";
 import { CircuitBreaker } from "@/circuit-breaker/implementations/derivables/circuit-breaker-provider/circuit-breaker.js";
-import {
-    type EventListener,
-    type IEventBus,
-    type Unsubscribe,
-} from "@/event-bus/contracts/_module.js";
+import { type IEventBus } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { type INamespace } from "@/namespace/contracts/_module.js";
@@ -25,7 +22,6 @@ import { NoOpNamespace } from "@/namespace/implementations/_module.js";
 import { type ISerderRegister } from "@/serde/contracts/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/serde.js";
-import { type ITask } from "@/task/contracts/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
@@ -226,45 +222,8 @@ export class CircuitBreakerProvider implements ICircuitBreakerProvider {
         }
     }
 
-    addListener<TEventName extends keyof CircuitBreakerEventMap>(
-        eventName: TEventName,
-        listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.addListener(eventName, listener);
-    }
-
-    removeListener<TEventName extends keyof CircuitBreakerEventMap>(
-        eventName: TEventName,
-        listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.removeListener(eventName, listener);
-    }
-
-    listenOnce<TEventName extends keyof CircuitBreakerEventMap>(
-        eventName: TEventName,
-        listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.listenOnce(eventName, listener);
-    }
-
-    asTask<TEventName extends keyof CircuitBreakerEventMap>(
-        eventName: TEventName,
-    ): ITask<CircuitBreakerEventMap[TEventName]> {
-        return this.eventBus.asTask(eventName);
-    }
-
-    subscribeOnce<TEventName extends keyof CircuitBreakerEventMap>(
-        eventName: TEventName,
-        listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): ITask<Unsubscribe> {
-        return this.eventBus.subscribeOnce(eventName, listener);
-    }
-
-    subscribe<TEventName extends keyof CircuitBreakerEventMap>(
-        eventName: TEventName,
-        listener: EventListener<CircuitBreakerEventMap[TEventName]>,
-    ): ITask<Unsubscribe> {
-        return this.eventBus.subscribe(eventName, listener);
+    get events(): ICircuitBreakerListenable {
+        return this.eventBus;
     }
 
     create(
