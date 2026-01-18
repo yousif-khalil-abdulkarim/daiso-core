@@ -814,7 +814,7 @@ export function lockProviderTestSuite(
 
                     await lock1.acquire();
                     const handlerFn = vi.fn(() => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -1097,7 +1097,7 @@ export function lockProviderTestSuite(
 
                     await lock1.acquire();
                     const handlerFn = vi.fn(() => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -1219,7 +1219,7 @@ export function lockProviderTestSuite(
 
                     await lock1.acquire();
                     const handlerFn = vi.fn(() => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -2105,7 +2105,7 @@ export function lockProviderTestSuite(
                         ttl,
                     });
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2141,7 +2141,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -2169,7 +2169,7 @@ export function lockProviderTestSuite(
                     const lock = lockProvider.create(key, { ttl });
                     await lock.acquire();
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2198,7 +2198,7 @@ export function lockProviderTestSuite(
                     });
                     await lock.acquire();
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2229,7 +2229,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -2258,7 +2258,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -2288,7 +2288,7 @@ export function lockProviderTestSuite(
                         ttl,
                     });
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2324,7 +2324,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -2352,7 +2352,7 @@ export function lockProviderTestSuite(
                     const lock = lockProvider.create(key, { ttl });
                     await lock.acquire();
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2381,7 +2381,7 @@ export function lockProviderTestSuite(
                     });
                     await lock.acquire();
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2412,7 +2412,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -2445,7 +2445,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -2479,7 +2479,7 @@ export function lockProviderTestSuite(
                         ttl,
                     });
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2518,7 +2518,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -2549,7 +2549,7 @@ export function lockProviderTestSuite(
                     const lock = lockProvider.create(key, { ttl });
                     await lock.acquire();
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2581,7 +2581,7 @@ export function lockProviderTestSuite(
                     });
                     await lock.acquire();
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2615,7 +2615,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -2647,7 +2647,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -2680,7 +2680,7 @@ export function lockProviderTestSuite(
                         ttl,
                     });
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2719,7 +2719,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: AcquiredLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.ACQUIRED,
                             handlerFn,
                         );
@@ -2750,7 +2750,7 @@ export function lockProviderTestSuite(
                     const lock = lockProvider.create(key, { ttl });
                     await lock.acquire();
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2782,7 +2782,7 @@ export function lockProviderTestSuite(
                     });
                     await lock.acquire();
                     const handlerFn = vi.fn((_event: AcquiredLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.ACQUIRED,
                         handlerFn,
                     );
@@ -2816,7 +2816,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -2852,7 +2852,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: UnavailableLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.UNAVAILABLE,
                         handlerFn,
                     );
@@ -2891,7 +2891,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ForceReleasedLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FORCE_RELEASED,
                         handlerFn,
                     );
@@ -2925,7 +2925,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: ForceReleasedLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.FORCE_RELEASED,
                             handlerFn,
                         );
@@ -2957,7 +2957,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: ForceReleasedLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FORCE_RELEASED,
                         handlerFn,
                     );
@@ -2991,7 +2991,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_RELEASE,
                         handlerFn,
                     );
@@ -3020,7 +3020,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_RELEASE,
                         handlerFn,
                     );
@@ -3049,7 +3049,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_RELEASE,
                         handlerFn,
                     );
@@ -3083,7 +3083,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -3112,7 +3112,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_RELEASE,
                         handlerFn,
                     );
@@ -3140,7 +3140,7 @@ export function lockProviderTestSuite(
                     const ttl = null;
                     const lock = lockProvider.create(key, { ttl });
                     const handlerFn = vi.fn((_event: ReleasedLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.RELEASED,
                         handlerFn,
                     );
@@ -3167,7 +3167,7 @@ export function lockProviderTestSuite(
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const lock = lockProvider.create(key, { ttl });
                     const handlerFn = vi.fn((_event: ReleasedLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.RELEASED,
                         handlerFn,
                     );
@@ -3201,7 +3201,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_RELEASE,
                         handlerFn,
                     );
@@ -3234,7 +3234,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_RELEASE,
                         handlerFn,
                     );
@@ -3267,7 +3267,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedReleaseLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_RELEASE,
                         handlerFn,
                     );
@@ -3305,7 +3305,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -3343,7 +3343,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedReleaseLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.FAILED_RELEASE,
                             handlerFn,
                         );
@@ -3376,7 +3376,7 @@ export function lockProviderTestSuite(
                     const ttl = null;
                     const lock = lockProvider.create(key, { ttl });
                     const handlerFn = vi.fn((_event: ReleasedLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.RELEASED,
                         handlerFn,
                     );
@@ -3403,7 +3403,7 @@ export function lockProviderTestSuite(
                     const ttl = TimeSpan.fromMilliseconds(50);
                     const lock = lockProvider.create(key, { ttl });
                     const handlerFn = vi.fn((_event: ReleasedLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.RELEASED,
                         handlerFn,
                     );
@@ -3438,7 +3438,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_REFRESH,
                         handlerFn,
                     );
@@ -3469,7 +3469,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_REFRESH,
                         handlerFn,
                     );
@@ -3500,7 +3500,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_REFRESH,
                         handlerFn,
                     );
@@ -3537,7 +3537,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -3576,7 +3576,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -3607,7 +3607,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_REFRESH,
                         handlerFn,
                     );
@@ -3635,7 +3635,7 @@ export function lockProviderTestSuite(
 
                     const newTtl = TimeSpan.fromMinutes(1);
                     const handlerFn = vi.fn((_event: RefreshedLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.REFRESHED,
                         handlerFn,
                     );
@@ -3668,7 +3668,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_REFRESH,
                         handlerFn,
                     );
@@ -3703,7 +3703,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_REFRESH,
                         handlerFn,
                     );
@@ -3738,7 +3738,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_REFRESH,
                         handlerFn,
                     );
@@ -3779,7 +3779,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -3822,7 +3822,7 @@ export function lockProviderTestSuite(
                         const handlerFn = vi.fn(
                             (_event: FailedRefreshLockEvent) => {},
                         );
-                        await lockProvider.addListener(
+                        await lockProvider.events.addListener(
                             LOCK_EVENTS.FAILED_REFRESH,
                             handlerFn,
                         );
@@ -3857,7 +3857,7 @@ export function lockProviderTestSuite(
                     const handlerFn = vi.fn(
                         (_event: FailedRefreshLockEvent) => {},
                     );
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.FAILED_REFRESH,
                         handlerFn,
                     );
@@ -3889,7 +3889,7 @@ export function lockProviderTestSuite(
 
                     const newTtl = TimeSpan.fromMinutes(1);
                     const handlerFn = vi.fn((_event: RefreshedLockEvent) => {});
-                    await lockProvider.addListener(
+                    await lockProvider.events.addListener(
                         LOCK_EVENTS.REFRESHED,
                         handlerFn,
                     );
