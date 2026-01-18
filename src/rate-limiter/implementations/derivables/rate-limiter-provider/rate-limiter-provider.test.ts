@@ -423,7 +423,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedFailureRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.TRACKED_FAILURE,
                         handlerFn,
                     );
@@ -473,7 +473,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: TrackedFailureRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.TRACKED_FAILURE,
                         handlerFn,
                     );
@@ -512,7 +512,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: UntrackedFailureRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.UNTRACKED_FAILURE,
                         handlerFn,
                     );
@@ -565,7 +565,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: AllowedRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.ALLOWED,
                         handlerFn,
                     );
@@ -614,7 +614,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: BlockedRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.BLOCKED,
                         handlerFn,
                     );
@@ -663,7 +663,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: AllowedRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.ALLOWED,
                         handlerFn,
                     );
@@ -707,7 +707,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: AllowedRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.ALLOWED,
                         handlerFn,
                     );
@@ -756,7 +756,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: BlockedRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.BLOCKED,
                         handlerFn,
                     );
@@ -805,7 +805,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: AllowedRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.ALLOWED,
                         handlerFn,
                     );
@@ -847,7 +847,7 @@ describe("class: RateLimiterProvider", () => {
                     const handlerFn = vi.fn(
                         (_event: BlockedRateLimiterEvent) => {},
                     );
-                    await rateLimiterProvider.addListener(
+                    await rateLimiterProvider.events.addListener(
                         RATE_LIMITER_EVENTS.BLOCKED,
                         handlerFn,
                     );
@@ -884,7 +884,7 @@ describe("class: RateLimiterProvider", () => {
                     Promise.resolve(),
                 );
                 const handlerFn = vi.fn(() => {});
-                await rateLimiterProvider.addListener(
+                await rateLimiterProvider.events.addListener(
                     RATE_LIMITER_EVENTS.RESETED,
                     handlerFn,
                 );
