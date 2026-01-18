@@ -282,7 +282,7 @@ const rateLimiterProvider = new RateLimiterProvider({
     }),
 });
 
-await rateLimiterProvider.addListener(RATE_LIMITER_EVENTS.BLOCKED, (_event) => {
+await rateLimiterProvider.events.addListener(RATE_LIMITER_EVENTS.BLOCKED, (_event) => {
     console.log("Got blocked:", event);
 });
 
@@ -395,7 +395,7 @@ const rateLimiterProvider = new RateLimiterProvider({
         adapter: new MemoryEventBusAdapter()
     })
 })
-await rateLimiterListenableFunc(rateLimiterProvider);
+await rateLimiterListenableFunc(rateLimiterProvider.events);
 await rateLimiterProviderFunc(rateLimiterProvider);
 ```
 

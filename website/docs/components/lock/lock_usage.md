@@ -525,7 +525,7 @@ const lockProvider = new LockProvider({
     }),
 });
 
-await lockProvider.addListener(LOCK_EVENTS.ACQUIRED, () => {
+await lockProvider.events.addListener(LOCK_EVENTS.ACQUIRED, () => {
     console.log("Lock acquired");
 });
 
@@ -636,7 +636,7 @@ const lockProvider = new LockProvider({
         adapter: new MemoryEventBusAdapter(),
     })
 })
-await lockListenableFunc(lockProvider);
+await lockListenableFunc(lockProvider.events);
 await lockProviderFunc(lockProvider);
 ```
 

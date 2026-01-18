@@ -873,7 +873,7 @@ const sharedLock = new SharedLockProvider({
     }),
 });
 
-await sharedLockProvider.addListener(SHARED_LOCK_EVENTS.WRITER_ACQUIRED, () => {
+await sharedLockProvider.events.addListener(SHARED_LOCK_EVENTS.WRITER_ACQUIRED, () => {
     console.log("Lock acquired");
 });
 
@@ -1018,7 +1018,7 @@ const sharedLockProvider = new SharedLockProvider({
         adapter: new MemoryEventBusAdapter(),
     })
 })
-await sharedLockListenableFunc(sharedLockProvider);
+await sharedLockListenableFunc(sharedLockProvider.events);
 await sharedLockProviderFunc(sharedLockProvider);
 ```
 

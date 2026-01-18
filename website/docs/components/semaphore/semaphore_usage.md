@@ -612,7 +612,7 @@ const semaphoreProvider = new SemaphoreProvider({
     }),
 });
 
-await semaphoreProvider.addListener(SEMAPHORE_EVENTS.ACQUIRED, () => {
+await semaphoreProvider.events.addListener(SEMAPHORE_EVENTS.ACQUIRED, () => {
     console.log("Lock acquired");
 });
 
@@ -725,7 +725,7 @@ const semaphoreProvider = new SemaphoreProvider({
         adapter: new MemoryEventBusAdapter(),
     })
 })
-await semaphoreListenableFunc(semaphoreProvider);
+await semaphoreListenableFunc(semaphoreProvider.events);
 await semaphoreProviderFunc(semaphoreProvider);
 ```
 
