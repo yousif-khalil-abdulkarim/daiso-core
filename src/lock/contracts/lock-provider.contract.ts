@@ -51,4 +51,6 @@ export type ILockProviderBase = {
  * IMPORT_PATH: `"@daiso-tech/core/lock/contracts"`
  * @group Contracts
  */
-export type ILockProvider = ILockListenable & ILockProviderBase;
+export type ILockProvider = ILockProviderBase & {
+    readonly events: ILockListenable;
+};
