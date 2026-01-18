@@ -4,13 +4,7 @@
 
 import { v4 } from "uuid";
 
-import {
-    type EventListener,
-    type IEventBus,
-    type Unsubscribe,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type IEventListenable,
-} from "@/event-bus/contracts/_module.js";
+import { type IEventBus } from "@/event-bus/contracts/_module.js";
 import { NoOpEventBusAdapter } from "@/event-bus/implementations/adapters/_module.js";
 import { EventBus } from "@/event-bus/implementations/derivables/_module.js";
 import { type INamespace } from "@/namespace/contracts/_module.js";
@@ -23,6 +17,7 @@ import {
     type SemaphoreEventMap,
     type SemaphoreProviderCreateSettings,
     type ISemaphoreProvider,
+    type ISemaphoreListenable,
 } from "@/semaphore/contracts/_module.js";
 import { resolveSemaphoreAdapter } from "@/semaphore/implementations/derivables/semaphore-provider/resolve-semaphore-adapter.js";
 import { SemaphoreSerdeTransformer } from "@/semaphore/implementations/derivables/semaphore-provider/semaphore-serde-transformer.js";
@@ -30,7 +25,6 @@ import { Semaphore } from "@/semaphore/implementations/derivables/semaphore-prov
 import { type ISerderRegister } from "@/serde/contracts/_module.js";
 import { NoOpSerdeAdapter } from "@/serde/implementations/adapters/_module.js";
 import { Serde } from "@/serde/implementations/derivables/_module.js";
-import { type ITask } from "@/task/contracts/_module.js";
 import { type ITimeSpan } from "@/time-span/contracts/_module.js";
 import { TimeSpan } from "@/time-span/implementations/_module.js";
 import {
@@ -253,69 +247,8 @@ export class SemaphoreProvider implements ISemaphoreProvider {
         }
     }
 
-    /**
-     * You can listen to the following {@link SemaphoreEventMap | `SemaphoreEventMap`} of all {@link ISemaphore | `ISemaphore`} instances created by the {@link ISemaphoreProvider | `ISemaphoreProvider`}.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    addListener<TEventName extends keyof SemaphoreEventMap>(
-        eventName: TEventName,
-        listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.addListener(eventName, listener);
-    }
-
-    /**
-     * You can listen to the following {@link SemaphoreEventMap | `SemaphoreEventMap`} of all {@link ISemaphore | `ISemaphore`} instances created by the {@link ISemaphoreProvider | `ISemaphoreProvider`}.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    removeListener<TEventName extends keyof SemaphoreEventMap>(
-        eventName: TEventName,
-        listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.removeListener(eventName, listener);
-    }
-
-    /**
-     * You can listen to the following {@link SemaphoreEventMap | `SemaphoreEventMap`} of all {@link ISemaphore | `ISemaphore`} instances created by the {@link ISemaphoreProvider | `ISemaphoreProvider`}.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    listenOnce<TEventName extends keyof SemaphoreEventMap>(
-        eventName: TEventName,
-        listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): ITask<void> {
-        return this.eventBus.listenOnce(eventName, listener);
-    }
-
-    /**
-     * You can listen to the following {@link SemaphoreEventMap | `SemaphoreEventMap`} of all {@link ISemaphore | `ISemaphore`} instances created by the {@link ISemaphoreProvider | `ISemaphoreProvider`}.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    asTask<TEventName extends keyof SemaphoreEventMap>(
-        eventName: TEventName,
-    ): ITask<SemaphoreEventMap[TEventName]> {
-        return this.eventBus.asTask(eventName);
-    }
-
-    /**
-     * You can listen to the following {@link SemaphoreEventMap | `SemaphoreEventMap`} of all {@link ISemaphore | `ISemaphore`} instances created by the {@link ISemaphoreProvider | `ISemaphoreProvider`}.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    subscribeOnce<TEventName extends keyof SemaphoreEventMap>(
-        eventName: TEventName,
-        listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): ITask<Unsubscribe> {
-        return this.eventBus.subscribeOnce(eventName, listener);
-    }
-
-    /**
-     * You can listen to the following {@link SemaphoreEventMap | `SemaphoreEventMap`} of all {@link ISemaphore | `ISemaphore`} instances created by the {@link ISemaphoreProvider | `ISemaphoreProvider`}.
-     * To understand how this method works, refer to {@link IEventListenable | `IEventListenable `}.
-     */
-    subscribe<TEventName extends keyof SemaphoreEventMap>(
-        eventName: TEventName,
-        listener: EventListener<SemaphoreEventMap[TEventName]>,
-    ): ITask<Unsubscribe> {
-        return this.eventBus.subscribe(eventName, listener);
+    get events(): ISemaphoreListenable {
+        return this.eventBus;
     }
 
     create(key: string, settings: SemaphoreProviderCreateSettings): ISemaphore {
