@@ -73,5 +73,6 @@ export type ICircuitBreakerListenable =
  * IMPORT_PATH: `"@daiso-tech/core/circuit-breaker/contracts"`
  * @group Contracts
  */
-export type ICircuitBreakerProvider = ICircuitBreakerListenable &
-    ICircuitBreakerProviderBase;
+export type ICircuitBreakerProvider = ICircuitBreakerProviderBase & {
+    readonly events: ICircuitBreakerListenable;
+};
