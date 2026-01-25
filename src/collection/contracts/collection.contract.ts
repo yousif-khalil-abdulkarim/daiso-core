@@ -26,7 +26,7 @@ import {
     type EmptyCollectionError,
 } from "@/collection/contracts/collection.errors.js";
 import { type ISerializable } from "@/serde/contracts/_module.js";
-import { type Lazyable } from "@/utilities/_module.js";
+import { type IterableValue, type Lazyable } from "@/utilities/_module.js";
 
 /**
  *
@@ -35,7 +35,7 @@ import { type Lazyable } from "@/utilities/_module.js";
  */
 export type Collapse<TValue> = TValue extends
     | Array<infer TItem>
-    | Iterable<infer TItem>
+    | IterableValue<infer TItem>
     | ICollection<infer TItem>
     ? TItem
     : TValue;
@@ -269,7 +269,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         flatMap<TOutput>(
-            mapFn: Map<TInput, ICollection<TInput>, Iterable<TOutput>>,
+            mapFn: Map<TInput, ICollection<TInput>, IterableValue<TOutput>>,
         ): ICollection<TOutput>;
 
         /**
@@ -1182,7 +1182,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         difference<TOutput = TInput>(
-            iterable: Iterable<TInput>,
+            iterable: IterableValue<TInput>,
             selectFn?: Map<TInput, ICollection<TInput>, TOutput>,
         ): ICollection<TInput>;
 
@@ -1253,7 +1253,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         padStart<TExtended = TInput>(
             maxLength: number,
-            fillItems: Iterable<TExtended>,
+            fillItems: IterableValue<TExtended>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -1315,7 +1315,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         padEnd<TExtended = TInput>(
             maxLength: number,
-            fillItems: Iterable<TExtended>,
+            fillItems: IterableValue<TExtended>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -1419,7 +1419,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         prepend<TExtended = TInput>(
-            iterable: Iterable<TInput | TExtended>,
+            iterable: IterableValue<TInput | TExtended>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -1439,7 +1439,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         append<TExtended = TInput>(
-            iterable: Iterable<TInput | TExtended>,
+            iterable: IterableValue<TInput | TExtended>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -1460,7 +1460,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         insertBefore<TExtended = TInput>(
             predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
-            iterable: Iterable<TInput | TExtended>,
+            iterable: IterableValue<TInput | TExtended>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -1481,7 +1481,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          */
         insertAfter<TExtended = TInput>(
             predicateFn: PredicateInvokable<TInput, ICollection<TInput>>,
-            iterable: Iterable<TInput | TExtended>,
+            iterable: IterableValue<TInput | TExtended>,
         ): ICollection<TInput | TExtended>;
 
         /**
@@ -1529,7 +1529,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         crossJoin<TExtended>(
-            iterable: Iterable<TExtended>,
+            iterable: IterableValue<TExtended>,
         ): ICollection<CrossJoinResult<TInput, TExtended>>;
 
         /**
@@ -1576,7 +1576,7 @@ export type ICollection<TInput = unknown> = Iterable<TInput> &
          * ```
          */
         zip<TExtended>(
-            iterable: Iterable<TExtended>,
+            iterable: IterableValue<TExtended>,
         ): ICollection<[TInput, TExtended]>;
 
         /**
