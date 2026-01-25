@@ -1,5 +1,11 @@
 # @daiso-tech/core
 
+## 0.48.1
+
+### Patch Changes
+
+- a7ae31c: Updated `ICollection` contract to `IterableValue` type instead of `Iterable` type.
+
 ## 0.48.0
 
 ### Minor Changes
@@ -742,8 +748,8 @@
 - 3ca9190: Renamed `FallbackSettings.fallbackPolicy` to `FallbackSettings.errorPolicy`
 - 3ca9190: - Removed the following types:
 
-                                            - `AsyncFactoryable`
-                                            - `Factoryable`
+                                              - `AsyncFactoryable`
+                                              - `Factoryable`
 
     - Updated remaining factory types to use the new `InvokableFn` and `InvokableObject` contracts:
         - Synchronous factories:
