@@ -1,6 +1,6 @@
 # Invokable
 
-An [`Invokable`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.Invokable.html) represents a callable entity, which can be either:
+An [`Invokable`](https://daiso-tech.github.io/daiso-core/types/Utilities.Invokable.html) represents a callable entity, which can be either:
 
 1. A function `InvokableFn`
 2. An object with a specific invocation signature (`IInvokableObject`)
@@ -50,4 +50,4 @@ const invokableObject: IInvokableObject<[arg1: number, arg2: number], number> =
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/utilities`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.Invokable.html) API docs.
+For further information refer to [`@daiso-tech/core/utilities`](https://daiso-tech.github.io/daiso-core/types/Utilities.Invokable.html) API docs.

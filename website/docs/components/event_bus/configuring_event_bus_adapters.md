@@ -81,4 +81,4 @@ The `NoOpEventBusAdapter` is useful when you want to mock out or disable your `E
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/event-bus`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/EventBus.html) API docs.
+For further information refer to [`@daiso-tech/core/event-bus`](https://daiso-tech.github.io/daiso-core/modules/EventBus.html) API docs.

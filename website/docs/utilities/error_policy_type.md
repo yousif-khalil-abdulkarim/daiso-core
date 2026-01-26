@@ -102,4 +102,4 @@ await new AsyncHooks((): Promise<boolean> => {
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/utilities`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Utilities.ErrorPolicy.html) API docs.
+For further information refer to [`@daiso-tech/core/utilities`](https://daiso-tech.github.io/daiso-core/types/Utilities.ErrorPolicy.html) API docs.

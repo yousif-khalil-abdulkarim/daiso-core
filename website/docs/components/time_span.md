@@ -297,4 +297,4 @@ export class Duration implements ITimeSpan {
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/time-span`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/TimeSpan.html) API docs.
+For further information refer to [`@daiso-tech/core/time-span`](https://daiso-tech.github.io/daiso-core/modules/TimeSpan.html) API docs.

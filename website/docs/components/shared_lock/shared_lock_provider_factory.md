@@ -84,4 +84,4 @@ Note that the `SharedLockProviderFactory` is immutable, meaning any configuratio
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/shared-lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/SharedLock.html) API docs.
+For further information refer to [`@daiso-tech/core/shared-lock`](https://daiso-tech.github.io/daiso-core/modules/SharedLock.html) API docs.

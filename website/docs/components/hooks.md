@@ -325,4 +325,4 @@ const fetchDataEnhanced = new AsyncHooks(fetchData, [timeout()], {
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/hooks`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Hooks.html) API docs.
+For further information refer to [`@daiso-tech/core/hooks`](https://daiso-tech.github.io/daiso-core/modules/Hooks.html) API docs.

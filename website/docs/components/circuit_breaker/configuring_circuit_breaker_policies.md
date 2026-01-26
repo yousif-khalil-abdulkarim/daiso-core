@@ -105,4 +105,4 @@ new SamplingBreaker({
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/circuit-breaker`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/CircuitBreaker.html) API docs.
+For further information refer to [`@daiso-tech/core/circuit-breaker`](https://daiso-tech.github.io/daiso-core/modules/CircuitBreaker.html) API docs.

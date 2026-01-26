@@ -193,4 +193,4 @@ This seperation makes it easy to visually distinguish the 4 contracts, making it
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/serde`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Serde.html) API docs.
+For further information refer to [`@daiso-tech/core/serde`](https://daiso-tech.github.io/daiso-core/modules/Serde.html) API docs.

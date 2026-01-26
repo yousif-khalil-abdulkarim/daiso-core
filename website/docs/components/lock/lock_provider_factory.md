@@ -84,4 +84,4 @@ Note that the `LockProviderFactory` is immutable, meaning any configuration over
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) API docs.
+For further information refer to [`@daiso-tech/core/lock`](https://daiso-tech.github.io/daiso-core/modules/Lock.html) API docs.

@@ -360,7 +360,7 @@ console.log(await cacheA.get("key"));
 
 ### Cache events
 
-You can listen to different [cache events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) that are triggered by the `Cache` instance.
+You can listen to different [cache events](https://daiso-tech.github.io/daiso-core/modules/Cache.html) that are triggered by the `Cache` instance.
 Refer to the [`@daiso-tech/core/event-bus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements IEventBus contract.
 
 
@@ -471,4 +471,4 @@ await manipulatingFunc(cache);
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) API docs.
+For further information refer to [`@daiso-tech/core/cache`](https://daiso-tech.github.io/daiso-core/modules/Cache.html) API docs.

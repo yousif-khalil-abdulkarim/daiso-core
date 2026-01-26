@@ -73,4 +73,4 @@ const backoff = linearBackoff({
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/backoff-policies`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/BackoffPolicy.html) API docs.
+For further information refer to [`@daiso-tech/core/backoff-policies`](https://daiso-tech.github.io/daiso-core/modules/BackoffPolicy.html) API docs.

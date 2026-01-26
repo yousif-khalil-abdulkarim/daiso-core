@@ -159,4 +159,4 @@ The are additional static method, `delay` and `fromCallback`.
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/task`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Task.html) API docs.
+For further information refer to [`@daiso-tech/core/task`](https://daiso-tech.github.io/daiso-core/modules/Task.html) API docs.

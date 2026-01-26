@@ -331,4 +331,4 @@ The `NoOpLockAdapter` is useful when you want to mock out or disable your `LockP
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) API docs.
+For further information refer to [`@daiso-tech/core/lock`](https://daiso-tech.github.io/daiso-core/modules/Lock.html) API docs.

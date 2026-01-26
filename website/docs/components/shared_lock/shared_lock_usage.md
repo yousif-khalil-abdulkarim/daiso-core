@@ -37,7 +37,7 @@ const sharedLockProvider = new SharedLockProvider({
 ```
 
 :::info
-Here is a complete list of settings for the [`SharedLockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/SharedLock.SharedLockProviderSettingsBase.html) class.
+Here is a complete list of settings for the [`SharedLockProvider`](https://daiso-tech.github.io/daiso-core/types/SharedLock.SharedLockProviderSettingsBase.html) class.
 :::
 
 ## Shared lock basics
@@ -172,7 +172,7 @@ const sharedLock = sharedLockProvider.create("shared-resource", {
 
 ### Checking shared-lock state
 
-You can get the shared-lock state by using the `getState` method, it returns [`ISharedLockState`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/SharedLock.ISharedLockState.html).
+You can get the shared-lock state by using the `getState` method, it returns [`ISharedLockState`](https://daiso-tech.github.io/daiso-core/types/SharedLock.ISharedLockState.html).
 
 ```ts
 import { SHARED_LOCK_STATE } from "@daiso-tech/core/shared-lock/contracts";
@@ -854,7 +854,7 @@ await eventBus.addListener("sending-shared-lock-over-network", ({ sharedLock }) 
 
 ### Shared-lock events
 
-You can listen to different [shared-lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/SharedLock.html) that are triggered by the `Shared-lock` instance.
+You can listen to different [shared-lock events](https://daiso-tech.github.io/daiso-core/modules/SharedLock.html) that are triggered by the `Shared-lock` instance.
 Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
@@ -1024,4 +1024,4 @@ await sharedLockProviderFunc(sharedLockProvider);
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/shared-lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/SharedLock.html) API docs.
+For further information refer to [`@daiso-tech/core/shared-lock`](https://daiso-tech.github.io/daiso-core/modules/SharedLock.html) API docs.

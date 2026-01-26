@@ -330,4 +330,4 @@ The `NoOpSharedLockAdapter` is useful when you want to mock out or disable your 
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/shared-lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/SharedLock.html) API docs.
+For further information refer to [`@daiso-tech/core/shared-lock`](https://daiso-tech.github.io/daiso-core/modules/SharedLock.html) API docs.

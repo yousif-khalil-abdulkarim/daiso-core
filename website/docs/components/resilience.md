@@ -302,4 +302,4 @@ await fn.invoke();
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/resilience`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Resilience.html) API docs.
+For further information refer to [`@daiso-tech/core/resilience`](https://daiso-tech.github.io/daiso-core/modules/Resilience.html) API docs.

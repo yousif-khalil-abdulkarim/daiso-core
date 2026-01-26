@@ -87,4 +87,4 @@ export type INamespace = {
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/namespace`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Namespace.html) API docs.
+For further information refer to [`@daiso-tech/core/namespace`](https://daiso-tech.github.io/daiso-core/modules/Namespace.html) API docs.
