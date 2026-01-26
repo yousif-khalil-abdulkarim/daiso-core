@@ -37,7 +37,7 @@ const semaphoreProvider = new SemaphoreProvider({
 ```
 
 :::info
-Here is a complete list of settings for the [`SemaphoreProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Semaphore.SemaphoreProviderSettingsBase.html) class.
+Here is a complete list of settings for the [`SemaphoreProvider`](https://daiso-tech.github.io/daiso-core/types/Semaphore.SemaphoreProviderSettingsBase.html) class.
 :::
 
 ## Semaphore basics
@@ -143,7 +143,7 @@ const semaphore = semaphoreProvider.create("shared-resource", {
 
 ### Checking semaphore state
 
-You can get the semaphore state by using the `getState` method, it returns [`ISemaphoreState`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Semaphore.ISemaphoreState.html).
+You can get the semaphore state by using the `getState` method, it returns [`ISemaphoreState`](https://daiso-tech.github.io/daiso-core/types/Semaphore.ISemaphoreState.html).
 
 ```ts
 import { SEMAPHORE_STATE } from "@daiso-tech/core/semaphore/contracts";
@@ -596,7 +596,7 @@ await eventBus.addListener("sending-semaphore-over-network", ({ semaphore }) => 
 
 ### Semaphore events
 
-You can listen to different [semaphore events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Semaphore.html) that are triggered by the `Semaphore` instance.
+You can listen to different [semaphore events](https://daiso-tech.github.io/daiso-core/modules/Semaphore.html) that are triggered by the `Semaphore` instance.
 Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
@@ -731,4 +731,4 @@ await semaphoreProviderFunc(semaphoreProvider);
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/semaphore`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Semaphore.html) API docs.
+For further information refer to [`@daiso-tech/core/semaphore`](https://daiso-tech.github.io/daiso-core/modules/Semaphore.html) API docs.

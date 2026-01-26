@@ -134,7 +134,7 @@ const config: Config = {
                 },
                 {
                     label: "API docs",
-                    href: "https://yousif-khalil-abdulkarim.github.io/daiso-core/modules.html",
+                    href: "https://daiso-tech.github.io/daiso-core/modules.html",
                     position: "left",
                 },
                 {

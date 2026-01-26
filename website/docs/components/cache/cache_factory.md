@@ -97,4 +97,4 @@ Note that the `CacheFactory` is immutable, meaning any configuration override re
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/cache`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Cache.html) API docs.
+For further information refer to [`@daiso-tech/core/cache`](https://daiso-tech.github.io/daiso-core/modules/Cache.html) API docs.

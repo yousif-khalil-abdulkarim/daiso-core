@@ -202,5 +202,5 @@ Note that the `DatabaseRateLimiterProviderFactory` is immutable, meaning any con
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/rate-limiter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/RateLimiter.html) API docs.
+For further information refer to [`@daiso-tech/core/rate-limiter`](https://daiso-tech.github.io/daiso-core/modules/RateLimiter.html) API docs.
 

@@ -84,4 +84,4 @@ Note that the `SemaphoreProviderFactory` is immutable, meaning any configuration
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/semaphore`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Semaphore.html) API docs.
+For further information refer to [`@daiso-tech/core/semaphore`](https://daiso-tech.github.io/daiso-core/modules/Semaphore.html) API docs.

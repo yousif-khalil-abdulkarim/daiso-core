@@ -99,4 +99,4 @@ Note that the `EventBusFactory` is immutable, meaning any configuration override
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/event-bus`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/EventBus.html) API docs.
+For further information refer to [`@daiso-tech/core/event-bus`](https://daiso-tech.github.io/daiso-core/modules/EventBus.html) API docs.

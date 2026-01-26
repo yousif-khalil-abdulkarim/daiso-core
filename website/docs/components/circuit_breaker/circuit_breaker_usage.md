@@ -36,7 +36,7 @@ const circuitBreakerProvider = new CircuitBreakerProvider({
 ```
 
 :::info
-Here is a complete list of settings for the [`CircuitBreakerProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/CircuitBreaker.CircuitBreakerProviderSettingsBase.html) class. 
+Here is a complete list of settings for the [`CircuitBreakerProvider`](https://daiso-tech.github.io/daiso-core/types/CircuitBreaker.CircuitBreakerProviderSettingsBase.html) class. 
 :::
 
 ## Circuit-breaker basics
@@ -158,7 +158,7 @@ await circuitBreaker.isolate();
 
 ### Checking circuit-breaker state
 
-You can get the circuit-breaker state by using the `getState` method, it returns [`CircuitBreakerState`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/CircuitBreaker.CircuitBreakerState.html).
+You can get the circuit-breaker state by using the `getState` method, it returns [`CircuitBreakerState`](https://daiso-tech.github.io/daiso-core/types/CircuitBreaker.CircuitBreakerState.html).
 
 ```ts
 import { CIRCUIT_BREAKER_STATE } from "@daiso-tech/core/circuit-breaker/contracts";
@@ -314,7 +314,7 @@ await eventBus.addListener("sending-circuit-breaker-over-network", ({ circuitBre
 
 ### Circuit-breaker events
 
-You can listen to different [circuit-breaker events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/CircuitBreaker.html) that are triggered by the `CircuitBreaker` instance.
+You can listen to different [circuit-breaker events](https://daiso-tech.github.io/daiso-core/modules/CircuitBreaker.html) that are triggered by the `CircuitBreaker` instance.
 Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
@@ -453,4 +453,4 @@ await circuitBreakerProviderFunc(circuitBreakerProvider);
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/circuit-breaker`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/CircuitBreaker.html) API docs.
+For further information refer to [`@daiso-tech/core/circuit-breaker`](https://daiso-tech.github.io/daiso-core/modules/CircuitBreaker.html) API docs.

@@ -36,7 +36,7 @@ const rateLimiterProvider = new RateLimiterProvider({
 ```
 
 :::info
-Here is a complete list of settings for the [`RateLimiterProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/RateLimiter.RateLimiterProviderSettingsBase.html) class.
+Here is a complete list of settings for the [`RateLimiterProvider`](https://daiso-tech.github.io/daiso-core/types/RateLimiter.RateLimiterProviderSettingsBase.html) class.
 :::
 
 ## Rate-limiter basics
@@ -111,7 +111,7 @@ await rateLimiter.reset();
 
 ### Checking rate-limiter state
 
-You can get the rate-limiter state by using the `getState` method, it returns [`RateLimiterState`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/RateLimiter.RateLimiterState.html).
+You can get the rate-limiter state by using the `getState` method, it returns [`RateLimiterState`](https://daiso-tech.github.io/daiso-core/types/RateLimiter.RateLimiterState.html).
 
 ```ts
 import { RATE_LIMITER_STATE } from "@daiso-tech/core/rate-limiter/contracts";
@@ -263,7 +263,7 @@ await eventBus.addListener("sending-rate-limiter-over-network", ({ rateLimiter }
 
 ### Rate-limiter events
 
-You can listen to different [rate-limiter events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/RateLimiter.html) that are triggered by the `RateLimiter` instance.
+You can listen to different [rate-limiter events](https://daiso-tech.github.io/daiso-core/modules/RateLimiter.html) that are triggered by the `RateLimiter` instance.
 Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
@@ -402,4 +402,4 @@ await rateLimiterProviderFunc(rateLimiterProvider);
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/rate-limiter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/RateLimiter.html) API docs.
+For further information refer to [`@daiso-tech/core/rate-limiter`](https://daiso-tech.github.io/daiso-core/modules/RateLimiter.html) API docs.

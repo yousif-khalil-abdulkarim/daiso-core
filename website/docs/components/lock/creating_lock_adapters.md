@@ -16,11 +16,11 @@ keywords:
 
 ## Implementing your custom ILockAdapter
 
-In order to create an adapter you need to implement the [`ILockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockAdapter.html) contract.
+In order to create an adapter you need to implement the [`ILockAdapter`](https://daiso-tech.github.io/daiso-core/types/Lock.ILockAdapter.html) contract.
 
 ## Testing your custom ILockAdapter
 
-We provide a complete test suite to test your lock adapter implementation. Simply use the [`lockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.lockAdapterTestSuite.html) function:
+We provide a complete test suite to test your lock adapter implementation. Simply use the [`lockAdapterTestSuite`](https://daiso-tech.github.io/daiso-core/functions/Lock.lockAdapterTestSuite.html) function:
 
 - Preconfigured Vitest test cases
 - Common edge case coverage
@@ -47,11 +47,11 @@ describe("class: MyLockAdapter", () => {
 
 ## Implementing your custom IDatabaseLockAdapter
 
-We provide an additional contract [`IDatabaseLockAdapter`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.IDatabaseLockAdapter.html) for building custom lock adapters tailored to databases.
+We provide an additional contract [`IDatabaseLockAdapter`](https://daiso-tech.github.io/daiso-core/types/Lock.IDatabaseLockAdapter.html) for building custom lock adapters tailored to databases.
 
 ## Testing your custom IDatabaseLockAdapter
 
-We provide a complete test suite to test your database lock adapter implementation. Simply use the [`databaseLockAdapterTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.databaseLockAdapterTestSuite.html) function:
+We provide a complete test suite to test your database lock adapter implementation. Simply use the [`databaseLockAdapterTestSuite`](https://daiso-tech.github.io/daiso-core/functions/Lock.databaseLockAdapterTestSuite.html) function:
 
 - Preconfigured Vitest test cases
 - Common edge case coverage
@@ -78,11 +78,11 @@ describe("class: MyDatabaseLockAdapter", () => {
 
 ## Implementing your custom ILockProvider class
 
-In some cases, you may need to implement a custom [`LockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/classes/Lock.LockProvider.html) class to optimize performance for your specific technology stack. You can then directly implement the [`ILockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockProvider.html) contract.
+In some cases, you may need to implement a custom [`LockProvider`](https://daiso-tech.github.io/daiso-core/classes/Lock.LockProvider.html) class to optimize performance for your specific technology stack. You can then directly implement the [`ILockProvider`](https://daiso-tech.github.io/daiso-core/types/Lock.ILockProvider.html) contract.
 
 ## Testing your custom ILockProvider class
 
-We provide a complete test suite to verify your custom event bus class implementation. Simply use the [`lockProviderTestSuite`](https://yousif-khalil-abdulkarim.github.io/daiso-core/functions/Lock.lockProviderTestSuite.html) function:
+We provide a complete test suite to verify your custom event bus class implementation. Simply use the [`lockProviderTestSuite`](https://daiso-tech.github.io/daiso-core/functions/Lock.lockProviderTestSuite.html) function:
 
 - Preconfigured Vitest test cases
 - Standardized event bus behavior validation
@@ -110,4 +110,4 @@ describe("class: MyLockProvider", () => {
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) API docs.
+For further information refer to [`@daiso-tech/core/lock`](https://daiso-tech.github.io/daiso-core/modules/Lock.html) API docs.

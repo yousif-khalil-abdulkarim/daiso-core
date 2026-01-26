@@ -36,7 +36,7 @@ const lockProvider = new LockProvider({
 ```
 
 :::info
-Here is a complete list of settings for the [`LockProvider`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.LockProviderSettingsBase.html) class.
+Here is a complete list of settings for the [`LockProvider`](https://daiso-tech.github.io/daiso-core/types/Lock.LockProviderSettingsBase.html) class.
 :::
 
 ## Lock basics
@@ -95,7 +95,7 @@ const lock = lockProvider.create("shared-resource", {
 
 ### Checking lock state
 
-You can get the lock state by using the `getState` method, it returns [`ILockState`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/Lock.ILockState.html).
+You can get the lock state by using the `getState` method, it returns [`ILockState`](https://daiso-tech.github.io/daiso-core/types/Lock.ILockState.html).
 
 ```ts
 import { LOCK_STATE } from "@daiso-tech/core/lock/contracts";
@@ -509,7 +509,7 @@ await eventBus.addListener("sending-lock-over-network", ({ lock }) => {
 
 ### Lock events
 
-You can listen to different [lock events](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) that are triggered by the `Lock` instance.
+You can listen to different [lock events](https://daiso-tech.github.io/daiso-core/modules/Lock.html) that are triggered by the `Lock` instance.
 Refer to the [`EventBus`](../event_bus/event_bus_usage.md) documentation to learn how to use events. Since no events are dispatched by default, you need to pass an object that implements `IEventBus` contract.
 
 ```ts
@@ -642,4 +642,4 @@ await lockProviderFunc(lockProvider);
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/lock`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Lock.html) API docs.
+For further information refer to [`@daiso-tech/core/lock`](https://daiso-tech.github.io/daiso-core/modules/Lock.html) API docs.

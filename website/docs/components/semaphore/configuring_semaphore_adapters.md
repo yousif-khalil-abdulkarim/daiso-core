@@ -332,4 +332,4 @@ The `NoOpSemaphoreAdapter` is useful when you want to mock out or disable your `
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/semaphore`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/Semaphore.html) API docs.
+For further information refer to [`@daiso-tech/core/semaphore`](https://daiso-tech.github.io/daiso-core/modules/Semaphore.html) API docs.

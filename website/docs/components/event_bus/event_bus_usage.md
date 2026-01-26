@@ -32,7 +32,7 @@ const eventBus: IEventBus = new EventBus({
 ```
 
 :::info
-Here is a complete list of settings for the [`EventBus`](https://yousif-khalil-abdulkarim.github.io/daiso-core/types/EventBus.EventBusSettingsBase.html) class.
+Here is a complete list of settings for the [`EventBus`](https://daiso-tech.github.io/daiso-core/types/EventBus.EventBusSettingsBase.html) class.
 :::
 
 ## Event handling basics
@@ -392,4 +392,4 @@ await eventBusB.dispatch("test", {
 
 ## Further information
 
-For further information refer to [`@daiso-tech/core/event-bus`](https://yousif-khalil-abdulkarim.github.io/daiso-core/modules/EventBus.html) API docs.
+For further information refer to [`@daiso-tech/core/event-bus`](https://daiso-tech.github.io/daiso-core/modules/EventBus.html) API docs.
