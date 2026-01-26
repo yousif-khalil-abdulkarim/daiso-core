@@ -82,7 +82,7 @@ const config: Config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        "https://github.com/yousif-khalil-abdulkarim/daiso-core/tree/main/website/",
+                        "https://github.com/daiso-tech/daiso-core/tree/main/website/",
                 },
                 blog: {
                     showReadingTime: true,
@@ -96,7 +96,7 @@ const config: Config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     // editUrl:
-                    //     "https://github.com/yousif-khalil-abdulkarim/daiso-core/tree/main/website/",
+                    //     "https://github.com/daiso-tech/daiso-core/daiso-core/tree/main/website/",
                     // Useful options to enforce blogging best practices
                 },
                 theme: {
@@ -138,7 +138,7 @@ const config: Config = {
                     position: "left",
                 },
                 {
-                    href: "https://github.com/yousif-khalil-abdulkarim/daiso-core/",
+                    href: "https://github.com/daiso-tech/daiso-core/daiso-core/",
                     label: "GitHub",
                     position: "right",
                 },
