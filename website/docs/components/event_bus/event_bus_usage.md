@@ -249,9 +249,9 @@ console.log(event);
 
 The library includes two additional contracts:
 
-- `IEventDispatcher` – Allows only event dispatching.
+- `IEventDispatcher` - Allows only for event dispatching.
 
-- `IEventListenable` – Allows only event listening.
+- `IEventListenable` - Allows only for event listening.
 
 This seperation makes it easy to visually distinguish the two contracts, making it immediately obvious that they serve different purposes.
 

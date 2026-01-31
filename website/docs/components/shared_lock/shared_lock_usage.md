@@ -932,15 +932,15 @@ const redisSharedLockProvider = new SharedLockProvider({
 
 The library includes 3 additional contracts:
 
-- `ISharedLock` - Allows only manipulation of the shared-lock.
+- `ISharedLock` - Allows only for manipulating of the shared-lock.
 
-- `IWriterLock` - Allows only manipulation of the shared-lock as writer.
+- `IWriterLock` - Allows only for manipulating of the shared-lock as writer.
 
-- `IReaderSemaphore` - Allows only manipulation of the shared-lock as reader.
+- `IReaderSemaphore` - Allows only for manipulating of the shared-lock as reader.
 
-- `ISharedLockProviderBase` - Allows only creation of shared-locks.
+- `ISharedLockProviderBase` - Allows only for creation of shared-locks.
 
-- `ISharedLockListenable` – Allows only to listening to shared-lock events.
+- `ISharedLockListenable` - Allows only to listening to shared-lock events.
 
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 

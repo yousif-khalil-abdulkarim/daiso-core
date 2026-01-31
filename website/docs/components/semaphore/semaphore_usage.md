@@ -672,11 +672,11 @@ const redisSemaphoreProvider = new SemaphoreProvider({
 
 The library includes 3 additional contracts:
 
-- `ISemaphore` - Allows only manipulation of the semaphore.
+- `ISemaphore` - Allows only for manipulating of the semaphore.
 
-- `ISemaphoreProviderBase` - Allows only creation of semaphores.
+- `ISemaphoreProviderBase` - Allows only for creation of semaphores.
 
-- `ISemaphoreListenable` – Allows only to listening to semaphore events.
+- `ISemaphoreListenable` - Allows only to listening to semaphore events.
 
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 

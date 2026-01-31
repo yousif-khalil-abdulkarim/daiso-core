@@ -586,11 +586,11 @@ const redisLockProvider = new LockProvider({
 
 The library includes 3 additional contracts:
 
-- `ILock` - Allows only manipulation of the lock.
+- `ILock` - Allows only for manipulating of the lock.
 
-- `ILockProviderBase` - Allows only creation of locks.
+- `ILockProviderBase` - Allows only for creation of locks.
 
-- `ILockListenable` – Allows only to listening to lock events.
+- `ILockListenable` - Allows only to listening to lock events.
 
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 

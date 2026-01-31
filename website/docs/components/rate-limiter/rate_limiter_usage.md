@@ -345,11 +345,11 @@ const redisRateLimiterProvider = new RateLimiterProvider({
 
 The library includes 3 additional contracts:
 
-- `IRateLimiter` - Allows only manipulation of the lock.
+- `IRateLimiter` - Allows only for manipulating of the lock.
 
-- `IRateLimiterProviderBase` - Allows only creation of locks.
+- `IRateLimiterProviderBase` - Allows only for creation of locks.
 
-- `IRateLimiterListenable` – Allows only to listening to lock events.
+- `IRateLimiterListenable` - Allows only to listening to lock events.
 
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 

@@ -396,11 +396,11 @@ const redisCircuitBreakerProvider = new CircuitBreakerProvider({
 
 The library includes 3 additional contracts:
 
-- `ICircuitBreaker` - Allows only manipulation of the lock.
+- `ICircuitBreaker` - Allows only for manipulating of the lock.
 
-- `ICircuitBreakerProviderBase` - Allows only creation of locks.
+- `ICircuitBreakerProviderBase` - Allows only for creation of locks.
 
-- `ICircuitBreakerListenable` – Allows only to listening to lock events.
+- `ICircuitBreakerListenable` - Allows only to listening to lock events.
 
 This seperation makes it easy to visually distinguish the 3 contracts, making it immediately obvious that they serve different purposes.
 
