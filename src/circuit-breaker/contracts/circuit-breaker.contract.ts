@@ -2,9 +2,12 @@
  * @module CircuitBreaker
  */
 
-import { type CircuitBreakerState } from "@/circuit-breaker/contracts/circuit-breaker-state.contract.js";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { type OpenCircuitBreakerError } from "@/circuit-breaker/contracts/circuit-breaker.errors.js";
+import {
+    type CircuitBreakerState,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type OpenCircuitBreakerError,
+} from "@/circuit-breaker/contracts/_module.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
 import { type ITask } from "@/task/contracts/_module.js";
 import { type AsyncLazy } from "@/utilities/_module.js";
 
@@ -19,7 +22,7 @@ export type ICircuitBreakerStateMethods = {
     /**
      * The `key` of the `ICircuitBreaker` instance.
      */
-    readonly key: string;
+    readonly key: IKey;
 };
 
 /**

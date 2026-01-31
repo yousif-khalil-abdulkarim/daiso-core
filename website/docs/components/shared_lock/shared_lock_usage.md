@@ -531,7 +531,7 @@ const sharedLock = sharedLockProvider.create("resource", {
 });
 
 // Will return the key of the shared-lock which is "resource"
-console.log(sharedLock.key);
+console.log(sharedLock.key.toString());
 
 // Will return the id of the shared-lock
 console.log(sharedLock.id);
@@ -540,6 +540,9 @@ console.log(sharedLock.id);
 console.log(sharedLock.ttl);
 ```
 
+:::info
+The `key` field is an object that implements [`IKey`](../namespace.md) contract.
+:::
 
 ### Shared-lock id
 

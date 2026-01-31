@@ -56,9 +56,9 @@ export type CacheSettingsBase<TType = unknown> = {
     /**
      * @default
      * ```ts
-     * import { Namespace } from "@daiso-tech/core/namespace";
+     * import { NoOpNamespace } from "@daiso-tech/core/namespace";
      *
-     * new Namespace("@cache")
+     * new NoOpNamespace()
      * ```
      */
     namespace?: INamespace;
@@ -623,6 +623,11 @@ export class Cache<TType = unknown> implements ICache<TType> {
 
     removeMany(keys: Iterable<string>): ITask<boolean> {
         return new Task(async () => {
+            if (typeof keys === "string") {
+                throw new TypeError(
+                    `You cannot pass a string as keys to "removeMany" method.`,
+                );
+            }
             const keysArr = [...keys];
             if (keysArr.length === 0) {
                 return true;

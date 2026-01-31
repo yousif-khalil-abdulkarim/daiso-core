@@ -343,7 +343,7 @@ const semaphore = semaphoreProvider.create("resource", {
 });
 
 // Will return the key of the semaphore which is "resource"
-console.log(semaphore.key);
+console.log(semaphore.key.toString());
 
 // Will return the id of the semaphore
 console.log(semaphore.id);
@@ -352,6 +352,9 @@ console.log(semaphore.id);
 console.log(semaphore.ttl);
 ```
 
+:::info
+The `key` field is an object that implements [`IKey`](../namespace.md) contract.
+:::
 
 ### Semaphore slot id
 

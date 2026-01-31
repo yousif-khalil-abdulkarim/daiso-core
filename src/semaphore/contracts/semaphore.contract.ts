@@ -2,7 +2,8 @@
  * @module Semaphore
  */
 
-import { type ISemaphoreState } from "@/semaphore/contracts/semaphore-state.contract.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
+import { type ISemaphoreState } from "@/semaphore/contracts/_module.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type LimitReachedSemaphoreError,
@@ -30,7 +31,7 @@ export type ISemaphoreStateMethods = {
     /**
      * The `key` of the `ISemaphore` instance.
      */
-    readonly key: string;
+    readonly key: IKey;
 
     /**
      * The `id` of the `ISemaphore` instance.

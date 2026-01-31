@@ -2,7 +2,8 @@
  * @module SharedLock
  */
 
-import { type ISharedLockState } from "@/shared-lock/contracts/shared-lock-state.contract.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
+import { type ISharedLockState } from "@/shared-lock/contracts/_module.js";
 import {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     FailedRefreshReaderSemaphoreError,
@@ -236,7 +237,7 @@ export type ISharedLockStateMethods = {
     /**
      * The `key` of the `ISharedLock` instance.
      */
-    readonly key: string;
+    readonly key: IKey;
 
     /**
      * The `id` of the `ISharedLock` instance.

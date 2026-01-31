@@ -46,9 +46,9 @@ export type LockProviderSettingsBase = {
     /**
      * @default
      * ```ts
-     * import { Namespace } from "@daiso-tech/core/namespace";
+     * import { NoOpNamespace } from "@daiso-tech/core/namespace";
      *
-     * new Namespace("@lock")
+     * new NoOpNamespace()
      * ```
      */
     namespace?: INamespace;

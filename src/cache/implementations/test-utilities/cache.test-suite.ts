@@ -1515,6 +1515,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -1535,6 +1536,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
@@ -1559,6 +1561,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -1579,6 +1582,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
@@ -1603,6 +1607,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -1623,6 +1628,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
@@ -1647,6 +1653,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -1667,6 +1674,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
@@ -1695,6 +1703,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -1715,6 +1724,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
@@ -1737,6 +1747,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                     ttl: expect.any(TimeSpan) as TimeSpan,
@@ -1766,6 +1777,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -1787,6 +1799,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies UpdatedCacheEvent);
@@ -1816,6 +1829,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -1837,6 +1851,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies UpdatedCacheEvent);
@@ -1859,6 +1874,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                     ttl: expect.any(TimeSpan) as TimeSpan,
@@ -1884,6 +1900,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                 } satisfies UpdatedCacheEvent);
@@ -1908,6 +1925,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -1928,6 +1946,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies RemovedCacheEvent);
 
@@ -1955,6 +1974,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -1975,6 +1995,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies RemovedCacheEvent);
 
@@ -1999,6 +2020,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies RemovedCacheEvent);
 
@@ -2024,6 +2046,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -2050,6 +2073,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -2081,6 +2105,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies RemovedCacheEvent);
 
@@ -2116,6 +2141,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                 } satisfies FoundCacheEvent);
@@ -2136,6 +2162,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value,
                     ttl: expect.any(TimeSpan) as TimeSpan,
@@ -2165,6 +2192,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -2189,6 +2217,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies IncrementedCacheEvent);
@@ -2218,6 +2247,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -2242,6 +2272,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies IncrementedCacheEvent);
@@ -2267,6 +2298,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -2291,6 +2323,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies DecrementedCacheEvent);
@@ -2320,6 +2353,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                 } satisfies NotFoundCacheEvent);
 
@@ -2344,6 +2378,7 @@ export function cacheTestSuite(settings: CacheTestSuiteSettings): void {
                     key: expect.objectContaining({
                         get: expect.any(Function) as IKey["get"],
                         toString: expect.any(Function) as IKey["toString"],
+                        equals: expect.any(Function) as IKey["equals"],
                     } satisfies IKey) as IKey,
                     value: value2,
                 } satisfies DecrementedCacheEvent);

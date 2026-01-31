@@ -2,14 +2,16 @@
  * @module Namespace
  */
 
+import { type IEquals } from "@/utilities/_module.js";
+
 /**
  * @group Contracts
  */
-export type IKey = {
+export interface IKey extends IEquals<IKey> {
     get(): string;
 
     toString(): string;
-};
+}
 
 /**
  * @group Contracts

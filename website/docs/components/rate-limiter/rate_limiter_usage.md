@@ -137,8 +137,12 @@ The `RateLimiter` class exposes instance variables such as:
 const rateLimiter = rateLimiterProvider.create("resource");
 
 // Will return the key of the rate-limiter which is "resource"
-console.log(rateLimiter.key);
+console.log(rateLimiter.key.toString());
 ```
+
+:::info
+The `key` field is an object that implements [`IKey`](../namespace.md) contract.
+:::
 
 ## Patterns
 

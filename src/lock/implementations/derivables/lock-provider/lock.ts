@@ -356,8 +356,8 @@ export class Lock implements ILock {
         });
     }
 
-    get key(): string {
-        return this._key.get();
+    get key(): IKey {
+        return this._key;
     }
 
     get id(): string {

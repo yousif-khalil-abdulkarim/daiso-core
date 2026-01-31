@@ -274,7 +274,7 @@ The `Lock` class exposes instance variables such as:
 const lock = lockProvider.create("resource");
 
 // Will return the key of the lock which is "resource"
-console.log(lock.key);
+console.log(lock.key.toString());
 
 // Will return the id of the lock
 console.log(lock.id);
@@ -282,6 +282,10 @@ console.log(lock.id);
 // Will return the ttl of the lock
 console.log(lock.ttl);
 ```
+
+:::info
+The `key` field is an object that implements [`IKey`](../namespace.md) contract.
+:::
 
 ### Lock id
 

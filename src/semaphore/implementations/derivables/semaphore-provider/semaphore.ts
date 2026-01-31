@@ -269,9 +269,7 @@ export class Semaphore implements ISemaphore {
         return new Task(async () => {
             const hasAquired = await this.acquireBlocking(settings);
             if (!hasAquired) {
-                throw new LimitReachedSemaphoreError(
-                    `Key "${this._key.get()}" has reached the limit`,
-                );
+                throw LimitReachedSemaphoreError.create(this._key);
             }
         });
     }
@@ -384,8 +382,8 @@ export class Semaphore implements ISemaphore {
         return this._ttl;
     }
 
-    get key(): string {
-        return this._key.get();
+    get key(): IKey {
+        return this._key;
     }
 
     getState(): ITask<ISemaphoreState> {

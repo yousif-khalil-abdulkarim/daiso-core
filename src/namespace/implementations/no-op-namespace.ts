@@ -17,6 +17,10 @@ class NoOpKey implements IKey {
     toString(): string {
         return this.key;
     }
+
+    equals(value: IKey): boolean {
+        return this.toString() === value.toString();
+    }
 }
 
 /**

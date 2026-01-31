@@ -187,8 +187,12 @@ The `CircuitBreaker` class exposes instance variables such as:
 const circuitBreaker = circuitBreakerProvider.create("resource");
 
 // Will return the key of the circuit-breaker which is "resource"
-console.log(circuitBreaker.key);
+console.log(circuitBreaker.key.toString());
 ```
+
+:::info
+The `key` field is an object that implements [`IKey`](../namespace.md) contract.
+:::
 
 ## Patterns
 

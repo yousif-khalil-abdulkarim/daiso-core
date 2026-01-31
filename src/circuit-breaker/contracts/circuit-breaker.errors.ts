@@ -13,7 +13,7 @@ import { type IKey } from "@/namespace/contracts/_module.js";
 export class OpenCircuitBreakerError extends Error {
     static create(key: IKey, cause?: unknown): OpenCircuitBreakerError {
         return new OpenCircuitBreakerError(
-            `Circuit breaker for key "${key.get()}" in opened state. All calls are being blocked until transitioned to half opened state.`,
+            `Circuit breaker for key "${key.get()}" is in opened state. All calls are being blocked until transitioned to half opened state.`,
             cause,
         );
     }

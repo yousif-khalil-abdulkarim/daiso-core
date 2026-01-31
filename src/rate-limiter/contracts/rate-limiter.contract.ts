@@ -2,7 +2,8 @@
  * @module RateLimiter
  */
 
-import { type RateLimiterState } from "@/rate-limiter/contracts/rate-limiter-state.contract.js";
+import { type IKey } from "@/namespace/contracts/_module.js";
+import { type RateLimiterState } from "@/rate-limiter/contracts/_module.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { BlockedRateLimiterError } from "@/rate-limiter/contracts/rate-limiter.errors.js";
 import { type ITask } from "@/task/contracts/_module.js";
@@ -20,7 +21,7 @@ export type IRateLimiterStateMethods = {
     /**
      * The `key` of the `IRateLimiter` instance.
      */
-    readonly key: string;
+    readonly key: IKey;
 
     /**
      * The `limit` of the `IRateLimiter` instance.
