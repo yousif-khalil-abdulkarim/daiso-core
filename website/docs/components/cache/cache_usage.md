@@ -422,13 +422,15 @@ const redisCache = new Cache({
 
 :::
 
-### Separating manipulating cache and listening
+### Separating reading cache, manipulating cache and listening
 
 The library includes two additional contracts:
 
-- `ICacheBase` - Allows only manipulate the cache.
+- `IReadableCache` - Allows only for reading from cache.
 
-- `ICacheListenable` – Allows only listening to cache events.
+- `ICacheBase` - Allows only for reading and manipulating the cache.
+
+- `ICacheListenable` - Allows only for listening to cache events.
 
 This seperation makes it easy to visually distinguish the two contracts, making it immediately obvious that they serve different purposes.
 
@@ -436,6 +438,7 @@ This seperation makes it easy to visually distinguish the two contracts, making 
 import type {
     ICache,
     ICacheBase,
+    IReadableCache,
     ICacheListenable,
     CACHE_EVENTS,
 } from "@daiso-tech/core/cache/contracts";
@@ -444,13 +447,21 @@ import { MemoryCacheAdapter } from "@daiso-tech/core/cache/adapter/memory-cache-
 import { EventBus } from "@daiso-tech/core/event-bus";
 import { MemoryEventBus } from "@daiso-tech/core/event-bus/memory-event-bus";
 
-function manipulatingFunc(cache: ICacheBase): Promise<void> {
+async function readingFunc(cache: IReadableCache): Promise<void> {
+    // You cannot access the listener methods
+    // You cannot access write methods like put, add and update
+    // You will get typescript error if you try
+
+    console.lolg("reading only:", await cache.get("a"))
+}
+async function manipulatingFunc(cache: ICacheBase): Promise<void> {
     // You cannot access the listener methods
     // You will get typescript error if you try
 
     await cache.add("a", 1);
+    console.lolg("writing and reading:", await cache.get("a"))
 }
-function listenerFunc(cacheListenable: ICacheListenable): Promise<void> {
+async function listenerFunc(cacheListenable: ICacheListenable): Promise<void> {
     // You cannot access the cache methods
     // You will get typescript error if you try
 
