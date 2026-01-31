@@ -172,6 +172,46 @@
             "types": "./dist/event-bus/implementations/test-utilities/_module-exports.d.ts",
             "import": "./dist/event-bus/implementations/test-utilities/_module-exports.js"
         },
+        "./file-size": {
+            "types": "./dist/file-size/implementations/_module-exports.d.ts",
+            "import": "./dist/file-size/implementations/_module-exports.js"
+        },
+        "./file-size/contracts": {
+            "types": "./dist/file-size/contracts/_module-exports.d.ts",
+            "import": "./dist/file-size/contracts/_module-exports.js"
+        },
+        "./file-storage": {
+            "types": "./dist/file-storage/implementations/derivables/_module-exports.d.ts",
+            "import": "./dist/file-storage/implementations/derivables/_module-exports.js"
+        },
+        "./file-storage/contracts": {
+            "types": "./dist/file-storage/contracts/_module-exports.d.ts",
+            "import": "./dist/file-storage/contracts/_module-exports.js"
+        },
+        "./file-storage/aws-s3-file-storage-adapter": {
+            "types": "./dist/file-storage/implementations/adapters/aws-s3-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/file-storage/implementations/adapters/aws-s3-storage-adapter/_module-exports.js"
+        },
+        "./file-storage/fs-file-storage-adapter": {
+            "types": "./dist/file-storage/implementations/adapters/fs-file-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/file-storage/implementations/adapters/fs-file-storage-adapter/_module-exports.js"
+        },
+        "./file-storage/memory-file-storage-adapter": {
+            "types": "./dist/file-storage/implementations/adapters/memory-file-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/file-storage/implementations/adapters/memory-file-storage-adapter/_module-exports.js"
+        },
+        "./file-storage/mongodb-file-storage-adapter": {
+            "types": "./dist/file-storage/implementations/adapters/mongodb-file-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/file-storage/implementations/adapters/mongodb-file-storage-adapter/_module-exports.js"
+        },
+        "./file-storage/no-op-file-storage-adapter": {
+            "types": "./dist/file-storage/implementations/adapters/no-op-file-storage-adapter/_module-exports.d.ts",
+            "import": "./dist/file-storage/implementations/adapters/no-op-file-storage-adapter/_module-exports.js"
+        },
+        "./file-storage/test-utilities": {
+            "types": "./dist/file-storage/implementations/test-utilities/_module-exports.d.ts",
+            "import": "./dist/file-storage/implementations/test-utilities/_module-exports.js"
+        },
         "./hooks": {
             "types": "./dist/hooks/_module-exports.d.ts",
             "import": "./dist/hooks/_module-exports.js"
