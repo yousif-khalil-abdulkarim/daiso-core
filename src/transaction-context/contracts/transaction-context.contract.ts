@@ -125,6 +125,17 @@ export type ITransactionContext<
     TTransactionClient = TClient,
 > = ITransactionContextBase<TClient, TTransactionClient> & {
     /**
+     * Runs the given invocable inside a transaction scope using
+     * {@link TRANSACTION_PROPAGATION.REQUIRED | `REQUIRED`} propagation: when a transaction is
+     * already active in this context it is reused, otherwise a new transaction is started.
+     *
+     * @typeParam TValue - The return type of the invocable. Defaults to `void`.
+     * @param asyncInvocable - The async invocable to run inside the transaction.
+     * @returns A promise that resolves with the invocable's result.
+     */
+    run<TValue = void>(asyncInvocable: AsyncLazy<TValue>): Promise<TValue>;
+
+    /**
      * Runs the given invocable within the transaction context according to the given
      * propagation mode.
      *

@@ -6,7 +6,7 @@ import {
     PropagationTransactionError,
     TRANSACTION_PROPAGATION,
 } from "@/transaction-context/contracts/_module.js";
-import { callInvocable } from "@/utilities/_module.js";
+import { callInvocable, UnexpectedError } from "@/utilities/_module.js";
 
 import type {
     ContextToken,
@@ -180,8 +180,7 @@ export class TransactionContext<
             return callInvocable(asyncInvocable);
         });
     }
-
-    run<TValue = void>(
+    private internalRun<TValue = void>(
         propagation: TransactionPropagation,
         asyncInvocable: AsyncLazy<TValue>,
     ): Promise<TValue> {
@@ -193,5 +192,27 @@ export class TransactionContext<
             return this.runWithRequiredPropagation(asyncInvocable);
         }
         return this.runWithSupportsPropagation(asyncInvocable);
+    }
+
+    run<TValue = void>(asyncInvocable: AsyncLazy<TValue>): Promise<TValue>;
+    run<TValue = void>(
+        propagation: TransactionPropagation,
+        asyncInvocable: AsyncLazy<TValue>,
+    ): Promise<TValue>;
+    run<TValue = void>(
+        propagation: TransactionPropagation | AsyncLazy<TValue>,
+        asyncInvocable?: AsyncLazy<TValue>,
+    ): Promise<TValue> {
+        if (typeof propagation === "string" && asyncInvocable !== undefined) {
+            return this.internalRun(propagation, asyncInvocable);
+        } else if (typeof propagation !== "string") {
+            return this.internalRun(
+                TRANSACTION_PROPAGATION.REQUIRED,
+                propagation,
+            );
+        }
+        throw new UnexpectedError(
+            "run() was called with a propagation mode but no asyncInvocable",
+        );
     }
 }

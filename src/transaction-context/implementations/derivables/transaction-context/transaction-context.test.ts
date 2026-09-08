@@ -97,271 +97,279 @@ describe("class: TransactionContext", () => {
             expect(abortSpy).not.toHaveBeenCalled();
         });
     });
-    describe("method: run (REQUIRED)", () => {
-        test("Should start a transaction and commit it after the invocable succeeds", async () => {
-            const commitSpy = vi.fn(() => Promise.resolve());
-            const abortSpy = vi.fn(() => Promise.resolve());
-            const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
-                client: transactionClient,
-                commit: commitSpy,
-                abort: abortSpy,
+    describe("method: run", () => {
+        describe("TRANSACTION_PROPAGATION.REQUIRED", () => {
+            test("Should start a transaction and commit it after the invocable succeeds", async () => {
+                const commitSpy = vi.fn(() => Promise.resolve());
+                const abortSpy = vi.fn(() => Promise.resolve());
+                const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
+                    client: transactionClient,
+                    commit: commitSpy,
+                    abort: abortSpy,
+                });
+                const invocable = (): Promise<string> =>
+                    Promise.resolve("value");
+
+                const result = await transactionContext.run(
+                    TRANSACTION_PROPAGATION.REQUIRED,
+                    invocable,
+                );
+
+                expect(result).toBe("value");
+                expect(startSpy).toHaveBeenCalledOnce();
+                expect(commitSpy).toHaveBeenCalledOnce();
+                expect(abortSpy).not.toHaveBeenCalled();
             });
-            const invocable = (): Promise<string> => Promise.resolve("value");
+            test("Should propagate an error when starting the transaction fails", async () => {
+                const commitSpy = vi.fn(() => Promise.resolve());
+                const abortSpy = vi.fn(() => Promise.resolve());
+                const startSpy = vi
+                    .spyOn(adapter, "start")
+                    .mockRejectedValue(new Error("start failed"));
+                const invocable = vi.fn(() => Promise.resolve("value"));
 
-            const result = await transactionContext.run(
-                TRANSACTION_PROPAGATION.REQUIRED,
-                invocable,
-            );
+                const promise = transactionContext.run(
+                    TRANSACTION_PROPAGATION.REQUIRED,
+                    invocable,
+                );
 
-            expect(result).toBe("value");
-            expect(startSpy).toHaveBeenCalledOnce();
-            expect(commitSpy).toHaveBeenCalledOnce();
-            expect(abortSpy).not.toHaveBeenCalled();
-        });
-        test("Should propagate an error when starting the transaction fails", async () => {
-            const commitSpy = vi.fn(() => Promise.resolve());
-            const abortSpy = vi.fn(() => Promise.resolve());
-            const startSpy = vi
-                .spyOn(adapter, "start")
-                .mockRejectedValue(new Error("start failed"));
-            const invocable = vi.fn(() => Promise.resolve("value"));
-
-            const promise = transactionContext.run(
-                TRANSACTION_PROPAGATION.REQUIRED,
-                invocable,
-            );
-
-            await expect(promise).rejects.toThrow("start failed");
-            expect(startSpy).toHaveBeenCalledOnce();
-            expect(invocable).not.toHaveBeenCalled();
-            expect(commitSpy).not.toHaveBeenCalled();
-            expect(abortSpy).not.toHaveBeenCalled();
-        });
-        test("Should propagate a commit failure and not abort", async () => {
-            const commitSpy = vi
-                .fn(() => Promise.resolve())
-                .mockRejectedValueOnce(new Error("commit failed"));
-            const abortSpy = vi.fn(() => Promise.resolve());
-            const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
-                client: transactionClient,
-                commit: commitSpy,
-                abort: abortSpy,
+                await expect(promise).rejects.toThrow("start failed");
+                expect(startSpy).toHaveBeenCalledOnce();
+                expect(invocable).not.toHaveBeenCalled();
+                expect(commitSpy).not.toHaveBeenCalled();
+                expect(abortSpy).not.toHaveBeenCalled();
             });
-            const invocable = (): Promise<string> => Promise.resolve("value");
+            test("Should propagate a commit failure and not abort", async () => {
+                const commitSpy = vi
+                    .fn(() => Promise.resolve())
+                    .mockRejectedValueOnce(new Error("commit failed"));
+                const abortSpy = vi.fn(() => Promise.resolve());
+                const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
+                    client: transactionClient,
+                    commit: commitSpy,
+                    abort: abortSpy,
+                });
+                const invocable = (): Promise<string> =>
+                    Promise.resolve("value");
 
-            const promise = transactionContext.run(
-                TRANSACTION_PROPAGATION.REQUIRED,
-                invocable,
-            );
+                const promise = transactionContext.run(
+                    TRANSACTION_PROPAGATION.REQUIRED,
+                    invocable,
+                );
 
-            await expect(promise).rejects.toThrow("commit failed");
-            expect(startSpy).toHaveBeenCalledOnce();
-            expect(commitSpy).toHaveBeenCalledOnce();
-            expect(abortSpy).not.toHaveBeenCalled();
-        });
-        test("Should abort and propagate the invocable error when the invocable fails", async () => {
-            const commitSpy = vi.fn(() => Promise.resolve());
-            const abortSpy = vi.fn(() => Promise.resolve());
-            const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
-                client: transactionClient,
-                commit: commitSpy,
-                abort: abortSpy,
+                await expect(promise).rejects.toThrow("commit failed");
+                expect(startSpy).toHaveBeenCalledOnce();
+                expect(commitSpy).toHaveBeenCalledOnce();
+                expect(abortSpy).not.toHaveBeenCalled();
             });
-            const invocable = (): Promise<string> =>
-                Promise.reject(new Error("callback failed"));
+            test("Should abort and propagate the invocable error when the invocable fails", async () => {
+                const commitSpy = vi.fn(() => Promise.resolve());
+                const abortSpy = vi.fn(() => Promise.resolve());
+                const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
+                    client: transactionClient,
+                    commit: commitSpy,
+                    abort: abortSpy,
+                });
+                const invocable = (): Promise<string> =>
+                    Promise.reject(new Error("callback failed"));
 
-            const promise = transactionContext.run(
-                TRANSACTION_PROPAGATION.REQUIRED,
-                invocable,
-            );
+                const promise = transactionContext.run(
+                    TRANSACTION_PROPAGATION.REQUIRED,
+                    invocable,
+                );
 
-            await expect(promise).rejects.toThrow("callback failed");
-            expect(startSpy).toHaveBeenCalledOnce();
-            expect(commitSpy).not.toHaveBeenCalled();
-            expect(abortSpy).toHaveBeenCalledOnce();
-        });
-        test("Should throw an AggregateError when the invocable and the abort both fail", async () => {
-            const commitSpy = vi.fn(() => Promise.resolve());
-            const abortSpy = vi
-                .fn(() => Promise.resolve())
-                .mockRejectedValueOnce(new Error("abort failed"));
-            const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
-                client: transactionClient,
-                commit: commitSpy,
-                abort: abortSpy,
+                await expect(promise).rejects.toThrow("callback failed");
+                expect(startSpy).toHaveBeenCalledOnce();
+                expect(commitSpy).not.toHaveBeenCalled();
+                expect(abortSpy).toHaveBeenCalledOnce();
             });
-            const invocable = (): Promise<string> =>
-                Promise.reject(new Error("callback failed"));
+            test("Should throw an AggregateError when the invocable and the abort both fail", async () => {
+                const commitSpy = vi.fn(() => Promise.resolve());
+                const abortSpy = vi
+                    .fn(() => Promise.resolve())
+                    .mockRejectedValueOnce(new Error("abort failed"));
+                const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
+                    client: transactionClient,
+                    commit: commitSpy,
+                    abort: abortSpy,
+                });
+                const invocable = (): Promise<string> =>
+                    Promise.reject(new Error("callback failed"));
 
-            const promise = transactionContext.run(
-                TRANSACTION_PROPAGATION.REQUIRED,
-                invocable,
-            );
+                const promise = transactionContext.run(
+                    TRANSACTION_PROPAGATION.REQUIRED,
+                    invocable,
+                );
 
-            await expect(promise).rejects.toThrow(AggregateError);
-            await expect(promise).rejects.toThrow(
-                "Transaction callback and abort both failed",
-            );
-            expect(startSpy).toHaveBeenCalledOnce();
-            expect(abortSpy).toHaveBeenCalledOnce();
-        });
-        test("Should run the invocable outside a transaction when the started transaction has no client", async () => {
-            const commitSpy = vi.fn(() => Promise.resolve());
-            const abortSpy = vi.fn(() => Promise.resolve());
-            const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
-                client: null,
-                commit: commitSpy,
-                abort: abortSpy,
+                await expect(promise).rejects.toThrow(AggregateError);
+                await expect(promise).rejects.toThrow(
+                    "Transaction callback and abort both failed",
+                );
+                expect(startSpy).toHaveBeenCalledOnce();
+                expect(abortSpy).toHaveBeenCalledOnce();
             });
+            test("Should run the invocable outside a transaction when the started transaction has no client", async () => {
+                const commitSpy = vi.fn(() => Promise.resolve());
+                const abortSpy = vi.fn(() => Promise.resolve());
+                const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
+                    client: null,
+                    commit: commitSpy,
+                    abort: abortSpy,
+                });
 
-            const result = await transactionContext.run(
-                TRANSACTION_PROPAGATION.REQUIRED,
-                () => {
-                    expect(transactionContext.isInTransaction).toBe(false);
-                    expect(transactionContext.transaction).toBeNull();
-                    return Promise.resolve("value");
-                },
-            );
+                const result = await transactionContext.run(
+                    TRANSACTION_PROPAGATION.REQUIRED,
+                    () => {
+                        expect(transactionContext.isInTransaction).toBe(false);
+                        expect(transactionContext.transaction).toBeNull();
+                        return Promise.resolve("value");
+                    },
+                );
 
-            expect(result).toBe("value");
-            expect(startSpy).toHaveBeenCalledOnce();
-            expect(commitSpy).not.toHaveBeenCalled();
-            expect(abortSpy).not.toHaveBeenCalled();
-            expect(transactionContext.isInTransaction).toBe(false);
-        });
-        test("Should reuse the active transaction and not start a new one", async () => {
-            const commitSpy = vi.fn(() => Promise.resolve());
-            const abortSpy = vi.fn(() => Promise.resolve());
-            const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
-                client: transactionClient,
-                commit: commitSpy,
-                abort: abortSpy,
+                expect(result).toBe("value");
+                expect(startSpy).toHaveBeenCalledOnce();
+                expect(commitSpy).not.toHaveBeenCalled();
+                expect(abortSpy).not.toHaveBeenCalled();
+                expect(transactionContext.isInTransaction).toBe(false);
             });
+            test("Should reuse the active transaction and not start a new one", async () => {
+                const commitSpy = vi.fn(() => Promise.resolve());
+                const abortSpy = vi.fn(() => Promise.resolve());
+                const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
+                    client: transactionClient,
+                    commit: commitSpy,
+                    abort: abortSpy,
+                });
 
-            await transactionContext.run(
-                TRANSACTION_PROPAGATION.REQUIRED,
-                async () => {
-                    const nestedResult = await transactionContext.run(
-                        TRANSACTION_PROPAGATION.REQUIRED,
-                        () => Promise.resolve("nested"),
-                    );
-                    expect(nestedResult).toBe("nested");
-                },
-            );
+                await transactionContext.run(
+                    TRANSACTION_PROPAGATION.REQUIRED,
+                    async () => {
+                        const nestedResult = await transactionContext.run(
+                            TRANSACTION_PROPAGATION.REQUIRED,
+                            () => Promise.resolve("nested"),
+                        );
+                        expect(nestedResult).toBe("nested");
+                    },
+                );
 
-            expect(startSpy).toHaveBeenCalledTimes(1);
-            expect(commitSpy).toHaveBeenCalledOnce();
-            expect(abortSpy).not.toHaveBeenCalled();
-        });
-    });
-    describe("method: run (SUPPORTS)", () => {
-        test("Should run the invocable without starting a transaction", async () => {
-            const startSpy = vi.spyOn(adapter, "start");
-            const invocable = (): Promise<string> => Promise.resolve("value");
-
-            const result = await transactionContext.run(
-                TRANSACTION_PROPAGATION.SUPPORTS,
-                invocable,
-            );
-
-            expect(result).toBe("value");
-            expect(startSpy).not.toHaveBeenCalled();
-        });
-        test("Should propagate the invocable error without starting a transaction", async () => {
-            const startSpy = vi.spyOn(adapter, "start");
-            const invocable = (): Promise<string> =>
-                Promise.reject(new Error("callback failed"));
-
-            const promise = transactionContext.run(
-                TRANSACTION_PROPAGATION.SUPPORTS,
-                invocable,
-            );
-
-            await expect(promise).rejects.toThrow("callback failed");
-            expect(startSpy).not.toHaveBeenCalled();
-        });
-    });
-    describe("method: run (MANDATORY)", () => {
-        test("Should throw a PropagationTransactionError when no transaction is active", async () => {
-            const startSpy = vi.spyOn(adapter, "start");
-            const invocable = vi.fn(() => Promise.resolve("value"));
-
-            const promise = transactionContext.run(
-                TRANSACTION_PROPAGATION.MANDATORY,
-                invocable,
-            );
-
-            await expect(promise).rejects.toThrow(PropagationTransactionError);
-            await expect(promise).rejects.toThrow(/MANDATORY/);
-            expect(startSpy).not.toHaveBeenCalled();
-            expect(invocable).not.toHaveBeenCalled();
-        });
-        test("Should run the invocable when a transaction is active", async () => {
-            const commitSpy = vi.fn(() => Promise.resolve());
-            const abortSpy = vi.fn(() => Promise.resolve());
-            const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
-                client: transactionClient,
-                commit: commitSpy,
-                abort: abortSpy,
+                expect(startSpy).toHaveBeenCalledTimes(1);
+                expect(commitSpy).toHaveBeenCalledOnce();
+                expect(abortSpy).not.toHaveBeenCalled();
             });
-
-            await transactionContext.run(
-                TRANSACTION_PROPAGATION.REQUIRED,
-                async () => {
-                    const result = await transactionContext.run(
-                        TRANSACTION_PROPAGATION.MANDATORY,
-                        () => Promise.resolve("mandatory"),
-                    );
-                    expect(result).toBe("mandatory");
-                },
-            );
-
-            expect(startSpy).toHaveBeenCalledTimes(1);
-            expect(commitSpy).toHaveBeenCalledOnce();
-            expect(abortSpy).not.toHaveBeenCalled();
         });
-    });
-    describe("method: run (NEVER)", () => {
-        test("Should run the invocable when no transaction is active", async () => {
-            const startSpy = vi.spyOn(adapter, "start");
-            const invocable = (): Promise<string> => Promise.resolve("value");
+        describe("TRANSACTION_PROPAGATION.SUPPORTS", () => {
+            test("Should run the invocable without starting a transaction", async () => {
+                const startSpy = vi.spyOn(adapter, "start");
+                const invocable = (): Promise<string> =>
+                    Promise.resolve("value");
 
-            const result = await transactionContext.run(
-                TRANSACTION_PROPAGATION.NEVER,
-                invocable,
-            );
+                const result = await transactionContext.run(
+                    TRANSACTION_PROPAGATION.SUPPORTS,
+                    invocable,
+                );
 
-            expect(result).toBe("value");
-            expect(startSpy).not.toHaveBeenCalled();
-        });
-        test("Should throw a PropagationTransactionError when a transaction is active", async () => {
-            const commitSpy = vi.fn(() => Promise.resolve());
-            const abortSpy = vi.fn(() => Promise.resolve());
-            const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
-                client: transactionClient,
-                commit: commitSpy,
-                abort: abortSpy,
+                expect(result).toBe("value");
+                expect(startSpy).not.toHaveBeenCalled();
             });
+            test("Should propagate the invocable error without starting a transaction", async () => {
+                const startSpy = vi.spyOn(adapter, "start");
+                const invocable = (): Promise<string> =>
+                    Promise.reject(new Error("callback failed"));
 
-            await transactionContext.run(
-                TRANSACTION_PROPAGATION.REQUIRED,
-                async () => {
-                    const innerInvocable = vi.fn(() => Promise.resolve());
-                    const promise = transactionContext.run(
-                        TRANSACTION_PROPAGATION.NEVER,
-                        innerInvocable,
-                    );
-                    await expect(promise).rejects.toThrow(
-                        PropagationTransactionError,
-                    );
-                    await expect(promise).rejects.toThrow(/NEVER/);
-                    expect(innerInvocable).not.toHaveBeenCalled();
-                },
-            );
+                const promise = transactionContext.run(
+                    TRANSACTION_PROPAGATION.SUPPORTS,
+                    invocable,
+                );
 
-            expect(startSpy).toHaveBeenCalledTimes(1);
-            expect(commitSpy).toHaveBeenCalledOnce();
-            expect(abortSpy).not.toHaveBeenCalled();
+                await expect(promise).rejects.toThrow("callback failed");
+                expect(startSpy).not.toHaveBeenCalled();
+            });
+        });
+        describe("TRANSACTION_PROPAGATION.MANDATORY", () => {
+            test("Should throw a PropagationTransactionError when no transaction is active", async () => {
+                const startSpy = vi.spyOn(adapter, "start");
+                const invocable = vi.fn(() => Promise.resolve("value"));
+
+                const promise = transactionContext.run(
+                    TRANSACTION_PROPAGATION.MANDATORY,
+                    invocable,
+                );
+
+                await expect(promise).rejects.toThrow(
+                    PropagationTransactionError,
+                );
+                await expect(promise).rejects.toThrow(/MANDATORY/);
+                expect(startSpy).not.toHaveBeenCalled();
+                expect(invocable).not.toHaveBeenCalled();
+            });
+            test("Should run the invocable when a transaction is active", async () => {
+                const commitSpy = vi.fn(() => Promise.resolve());
+                const abortSpy = vi.fn(() => Promise.resolve());
+                const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
+                    client: transactionClient,
+                    commit: commitSpy,
+                    abort: abortSpy,
+                });
+
+                await transactionContext.run(
+                    TRANSACTION_PROPAGATION.REQUIRED,
+                    async () => {
+                        const result = await transactionContext.run(
+                            TRANSACTION_PROPAGATION.MANDATORY,
+                            () => Promise.resolve("mandatory"),
+                        );
+                        expect(result).toBe("mandatory");
+                    },
+                );
+
+                expect(startSpy).toHaveBeenCalledTimes(1);
+                expect(commitSpy).toHaveBeenCalledOnce();
+                expect(abortSpy).not.toHaveBeenCalled();
+            });
+        });
+        describe("TRANSACTION_PROPAGATION.NEVER", () => {
+            test("Should run the invocable when no transaction is active", async () => {
+                const startSpy = vi.spyOn(adapter, "start");
+                const invocable = (): Promise<string> =>
+                    Promise.resolve("value");
+
+                const result = await transactionContext.run(
+                    TRANSACTION_PROPAGATION.NEVER,
+                    invocable,
+                );
+
+                expect(result).toBe("value");
+                expect(startSpy).not.toHaveBeenCalled();
+            });
+            test("Should throw a PropagationTransactionError when a transaction is active", async () => {
+                const commitSpy = vi.fn(() => Promise.resolve());
+                const abortSpy = vi.fn(() => Promise.resolve());
+                const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
+                    client: transactionClient,
+                    commit: commitSpy,
+                    abort: abortSpy,
+                });
+
+                await transactionContext.run(
+                    TRANSACTION_PROPAGATION.REQUIRED,
+                    async () => {
+                        const innerInvocable = vi.fn(() => Promise.resolve());
+                        const promise = transactionContext.run(
+                            TRANSACTION_PROPAGATION.NEVER,
+                            innerInvocable,
+                        );
+                        await expect(promise).rejects.toThrow(
+                            PropagationTransactionError,
+                        );
+                        await expect(promise).rejects.toThrow(/NEVER/);
+                        expect(innerInvocable).not.toHaveBeenCalled();
+                    },
+                );
+
+                expect(startSpy).toHaveBeenCalledTimes(1);
+                expect(commitSpy).toHaveBeenCalledOnce();
+                expect(abortSpy).not.toHaveBeenCalled();
+            });
         });
     });
 });
