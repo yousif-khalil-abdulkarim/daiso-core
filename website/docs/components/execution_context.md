@@ -11,13 +11,13 @@ The `eridu-tech/execution-context` module provides a type-safe, composable, and 
 
 ## Initial configuration
 
-To begin using the execution-context, you'll need to create and configure an instance:
+To begin using the `IExecutionContext`, you'll need to create and configure an instance:
 
 ```ts
 import { ExecutionContext, contextToken } from "eridu-tech/execution-context";
 import { AlsExecutionContextAdapter } from "eridu-tech/execution-context/als-execution-context-adapter";
 
-// Create an execution-context instance with an adapter
+// Create an IExecutionContext instance with an adapter
 const executionContext = new ExecutionContext(new AlsExecutionContextAdapter());
 ```
 
@@ -122,7 +122,7 @@ The library includes several contracts that separate concerns for different use 
 
 #### `IExecutionContextBase`
 
-- `run(invocable)` — Runs a function within the current execution-context. All context values are accessible during execution.
+- `run(invocable)` — Runs a function within the current `IExecutionContext`. All context values are accessible during execution.
 - `bind(fn)` — Returns a new function that, when called, executes the original function within the captured context.
 
 #### `IContext`

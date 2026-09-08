@@ -368,6 +368,7 @@ const UPCOMING_FOUNDATION_RUNTIME_RECORD = {
         name: "Transaction Context",
         icon: <ShieldCheck size="1.5rem" strokeWidth={1.5} />,
         title: <>Transaction Context</>,
+        link: "/docs/components/transaction-context/transaction_context_usage",
         description: (
             <>
                 Coordinate database transactions across components with the
