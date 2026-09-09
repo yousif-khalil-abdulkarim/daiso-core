@@ -70,7 +70,7 @@ const createUserInTransaction = use(
     withTransaction(TRANSACTION_PROPAGATION.MANDATORY),
 );
 
-// Throws PropagationTransactionError when no transaction is currently active.
+// Throws MandatoryPropagationError when no transaction is currently active.
 await createUserInTransaction("Alice");
 ```
 

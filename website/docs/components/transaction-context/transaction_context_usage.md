@@ -149,15 +149,18 @@ await transactionContext.run(TRANSACTION_PROPAGATION.REQUIRED, async () => {
 ```
 
 :::danger
-`getTransactionOrFail` throws a `PropagationTransactionError` when no transaction is currently active. This is
+`getTransactionOrFail` throws a `MandatoryPropagationError` when no transaction is currently active. This is
 equivalent to opting the surrounding code into `MANDATORY` propagation.
 :::
 
 ## Errors
 
-When a propagation mode cannot be honoured (for example `MANDATORY` without an active transaction, or `NEVER` while a
-transaction is active) a `PropagationTransactionError` is thrown. It can be imported from
-`eridu-tech/transaction-context/contracts`.
+When a propagation mode cannot be honoured a dedicated error is thrown:
+
+- `MandatoryPropagationError` when `MANDATORY` (or `getTransactionOrFail`) is used without an active transaction.
+- `NeverPropagationError` when `NEVER` is used while a transaction is active.
+
+Both errors can be imported from `eridu-tech/transaction-context/contracts`.
 
 ## Further information
 
