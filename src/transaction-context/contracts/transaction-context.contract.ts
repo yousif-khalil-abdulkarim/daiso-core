@@ -3,7 +3,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { PropagationTransactionError } from "@/transaction-context/contracts/transaction.errors.js";
+import type { MandatoryPropagationError } from "@/transaction-context/contracts/transaction.errors.js";
 import type { AsyncLazy } from "@/utilities/_module.js";
 
 /**
@@ -61,7 +61,7 @@ export type ITransactionContextBase<
      * assumes a transaction is already active and fails fast otherwise.
      *
      * @returns The active transaction-scoped client.
-     * @throws {PropagationTransactionError} When no transaction is currently active.
+     * @throws {MandatoryPropagationError} When no transaction is currently active.
      */
     getTransactionOrFail(): TTransactionClient;
 };

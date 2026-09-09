@@ -3,7 +3,8 @@
  */
 
 import {
-    PropagationTransactionError,
+    MandatoryPropagationError,
+    NeverPropagationError,
     TRANSACTION_PROPAGATION,
 } from "@/transaction-context/contracts/_module.js";
 import { callInvocable, UnexpectedError } from "@/utilities/_module.js";
@@ -104,9 +105,7 @@ export class TransactionContext<
     getTransactionOrFail(): TTransactionClient {
         const trx = this.transaction;
         if (trx === null) {
-            throw PropagationTransactionError.create(
-                TRANSACTION_PROPAGATION.MANDATORY,
-            );
+            throw MandatoryPropagationError.create();
         }
         return trx;
     }
@@ -173,9 +172,7 @@ export class TransactionContext<
     ): Promise<TValue> {
         return this.executionContext.run(async () => {
             if (this.isInTransaction) {
-                throw PropagationTransactionError.create(
-                    TRANSACTION_PROPAGATION.NEVER,
-                );
+                throw NeverPropagationError.create();
             }
             return callInvocable(asyncInvocable);
         });

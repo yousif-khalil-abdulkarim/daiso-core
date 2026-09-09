@@ -4,7 +4,8 @@ import { contextToken } from "@/execution-context/contracts/_module.js";
 import { AlsExecutionContextAdapter } from "@/execution-context/implementations/adapters/als-execution-context-adapter/_module.js";
 import { ExecutionContext } from "@/execution-context/implementations/derivables/_module.js";
 import {
-    PropagationTransactionError,
+    MandatoryPropagationError,
+    NeverPropagationError,
     TRANSACTION_PROPAGATION,
 } from "@/transaction-context/contracts/_module.js";
 import { NoOpTransactionAdapter } from "@/transaction-context/implementations/adapters/no-op-transaction-adapter/_module.js";
@@ -63,14 +64,14 @@ describe("class: TransactionContext", () => {
             expect(transactionContext.isInTransaction).toBe(false);
             expect(transactionContext.transaction).toBeNull();
             expect(() => transactionContext.getTransactionOrFail()).toThrow(
-                PropagationTransactionError,
+                MandatoryPropagationError,
             );
         });
     });
     describe("method: getTransactionOrFail", () => {
-        test("Should throw a PropagationTransactionError when no transaction is active", () => {
+        test("Should throw a MandatoryPropagationError when no transaction is active", () => {
             expect(() => transactionContext.getTransactionOrFail()).toThrow(
-                PropagationTransactionError,
+                MandatoryPropagationError,
             );
         });
         test("Should return the transaction client while a transaction is active", async () => {
@@ -286,7 +287,7 @@ describe("class: TransactionContext", () => {
             });
         });
         describe("TRANSACTION_PROPAGATION.MANDATORY", () => {
-            test("Should throw a PropagationTransactionError when no transaction is active", async () => {
+            test("Should throw a MandatoryPropagationError when no transaction is active", async () => {
                 const startSpy = vi.spyOn(adapter, "start");
                 const invocable = vi.fn(() => Promise.resolve("value"));
 
@@ -296,7 +297,7 @@ describe("class: TransactionContext", () => {
                 );
 
                 await expect(promise).rejects.toThrow(
-                    PropagationTransactionError,
+                    MandatoryPropagationError,
                 );
                 await expect(promise).rejects.toThrow(/MANDATORY/);
                 expect(startSpy).not.toHaveBeenCalled();
@@ -341,7 +342,7 @@ describe("class: TransactionContext", () => {
                 expect(result).toBe("value");
                 expect(startSpy).not.toHaveBeenCalled();
             });
-            test("Should throw a PropagationTransactionError when a transaction is active", async () => {
+            test("Should throw a NeverPropagationError when a transaction is active", async () => {
                 const commitSpy = vi.fn(() => Promise.resolve());
                 const abortSpy = vi.fn(() => Promise.resolve());
                 const startSpy = vi.spyOn(adapter, "start").mockResolvedValue({
@@ -359,7 +360,7 @@ describe("class: TransactionContext", () => {
                             innerInvocable,
                         );
                         await expect(promise).rejects.toThrow(
-                            PropagationTransactionError,
+                            NeverPropagationError,
                         );
                         await expect(promise).rejects.toThrow(/NEVER/);
                         expect(innerInvocable).not.toHaveBeenCalled();
