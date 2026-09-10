@@ -27,14 +27,17 @@ mkdir lambda
 ### 2. Create the handler
 
 ```ts file=./aws_lambda_edge-samples/create_handler.ts
+
 ```
 
 ### 3. Set up CDK deployment
 
 ```ts file=./aws_lambda_edge-samples/cdk_app.ts
+
 ```
 
 ```ts file=./aws_lambda_edge-samples/cdk_stack.ts
+
 ```
 
 ### 4. Deploy

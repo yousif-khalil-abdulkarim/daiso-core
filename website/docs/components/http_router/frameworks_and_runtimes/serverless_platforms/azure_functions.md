@@ -58,9 +58,11 @@ brew install azure-functions-core-tools@4
 ### 3. Create the application
 
 ```ts file=./azure_functions-samples/app.ts
+
 ```
 
 ```ts file=./azure_functions-samples/http_trigger.ts
+
 ```
 
 **File structure**

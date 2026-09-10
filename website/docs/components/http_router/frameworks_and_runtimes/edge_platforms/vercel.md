@@ -23,6 +23,7 @@ npm install eridu-tech hono
 ### 2. Create the handler
 
 ```ts file=./vercel-samples/create_handler.ts
+
 ```
 
 **File structure**

@@ -23,6 +23,7 @@ deno add npm:eridu-tech npm:hono
 ### 2. Create the handler
 
 ```ts file=./deno-samples/create_handler.ts
+
 ```
 
 **File structure**

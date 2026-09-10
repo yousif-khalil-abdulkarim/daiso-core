@@ -27,6 +27,7 @@ mkdir src
 ### 2. Create the handler
 
 ```ts file=./alibaba_cloud_function_compute-samples/create_handler.ts
+
 ```
 
 ### 3. Configure serverless-devs

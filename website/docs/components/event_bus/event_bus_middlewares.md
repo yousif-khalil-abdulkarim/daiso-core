@@ -25,6 +25,7 @@ This is useful for emitting lifecycle events such as "about to create a user" or
 ### Usage
 
 ```ts file=./event_bus_middlewares-samples/with_dispatch_before.ts
+
 ```
 
 :::info
@@ -47,6 +48,7 @@ This is useful for emitting completion events such as "user created" or for reco
 ### Usage
 
 ```ts file=./event_bus_middlewares-samples/with_dispatch_after.ts
+
 ```
 
 :::info
@@ -69,6 +71,7 @@ This is useful for emitting failure events such as "user creation failed" or for
 ### Usage
 
 ```ts file=./event_bus_middlewares-samples/with_dispatch_on_error.ts
+
 ```
 
 :::info

@@ -66,6 +66,7 @@ For the `copy`, `copyAndReplace`, `move`, and `moveAndReplace` methods, booth th
 ### Usage
 
 ```ts file=./file_storage_plugin-samples/with_file_storage_prefix.ts
+
 ```
 
 ### Before/after behavior
@@ -73,11 +74,13 @@ For the `copy`, `copyAndReplace`, `move`, and `moveAndReplace` methods, booth th
 **Before** — File keys are used as-is:
 
 ```ts file=./file_storage_plugin-samples/unprefixed_get_bytes.ts
+
 ```
 
 **After** — File keys are automatically prefixed:
 
 ```ts file=./file_storage_plugin-samples/prefixed_get_bytes.ts
+
 ```
 
 :::danger
@@ -93,6 +96,7 @@ For more information about the `withPlugin` function and applying plugins to ada
 The `removeMany` method receives an array of keys. The plugin maps over the array, prefixing each entry:
 
 ```ts file=./file_storage_plugin-samples/remove_many_prefix.ts
+
 ```
 
 ## withFileStorageLock plugin
@@ -139,11 +143,13 @@ All methods are protected by default:
 ### Usage
 
 ```ts file=./file_storage_plugin-samples/with_file_storage_lock.ts
+
 ```
 
 #### Restricting protected methods
 
 ```ts file=./file_storage_plugin-samples/file_storage_lock_only_methods.ts
+
 ```
 
 ### Settings
@@ -206,11 +212,13 @@ The plugin validates keys for the following methods:
 ### Usage
 
 ```ts file=./file_storage_plugin-samples/with_file_storage_key_validator.ts
+
 ```
 
 #### Custom validator
 
 ```ts file=./file_storage_plugin-samples/file_storage_key_validator_custom.ts
+
 ```
 
 :::danger
@@ -262,6 +270,7 @@ The plugin lowercases keys for the following methods:
 ### Usage
 
 ```ts file=./file_storage_plugin-samples/with_file_storage_lower_case.ts
+
 ```
 
 :::danger
@@ -302,11 +311,13 @@ The plugin infers the content type for the following methods:
 ### Usage
 
 ```ts file=./file_storage_plugin-samples/with_file_storage_infer_content_type_on_write.ts
+
 ```
 
 #### Disabling inference for signed URLs
 
 ```ts file=./file_storage_plugin-samples/file_storage_infer_content_type_disable_signed.ts
+
 ```
 
 ### Settings
@@ -342,6 +353,7 @@ The plugin only affects the `getMetaData` method.
 ### Usage
 
 ```ts file=./file_storage_plugin-samples/with_file_storage_infer_content_type_on_read.ts
+
 ```
 
 :::info
@@ -376,6 +388,7 @@ The plugin infers the content type for the following methods:
 ### Usage
 
 ```ts file=./file_storage_plugin-samples/with_file_storage_infer_file_type_on_write.ts
+
 ```
 
 :::danger
@@ -406,6 +419,7 @@ The plugin only affects the `getMetaData` method.
 ### Usage
 
 ```ts file=./file_storage_plugin-samples/with_file_storage_infer_file_type_on_read.ts
+
 ```
 
 :::info

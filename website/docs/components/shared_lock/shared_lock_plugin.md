@@ -43,6 +43,7 @@ The plugin prefixes keys for the following methods:
 ### Usage
 
 ```ts file=./shared_lock_plugin-samples/with_shared_lock_prefix.ts
+
 ```
 
 ### Before/after behavior
@@ -50,11 +51,13 @@ The plugin prefixes keys for the following methods:
 **Before** — Shared lock keys are used as-is:
 
 ```ts file=./shared_lock_plugin-samples/unprefixed_acquire_writer.ts
+
 ```
 
 **After** — Shared lock keys are automatically prefixed:
 
 ```ts file=./shared_lock_plugin-samples/prefixed_acquire_writer.ts
+
 ```
 
 :::danger

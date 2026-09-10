@@ -37,11 +37,13 @@ keywords:
 To use the `MemoryFileStorageAdapter` you only need to create instance of it:
 
 ```ts file=./configuring_file_storage_adapters-samples/memory_file_storage_adapter.ts
+
 ```
 
 You can also provide an `Map` that will be used for storing the files in memory:
 
 ```ts file=./configuring_file_storage_adapters-samples/memory_file_storage_adapter_with_map.ts
+
 ```
 
 :::info
@@ -57,16 +59,19 @@ Note this adapter doesnt have support for creating signed upload, signed downloa
 To use the `FsFileStorageAdapter` you only need to create instance of it:
 
 ```ts file=./configuring_file_storage_adapters-samples/fs_file_storage_adapter.ts
+
 ```
 
 You can configure the root folder:
 
 ```ts file=./configuring_file_storage_adapters-samples/fs_file_storage_adapter_custom_location.ts
+
 ```
 
 You can configure codec used for file names:
 
 ```ts file=./configuring_file_storage_adapters-samples/fs_file_storage_adapter_with_codec.ts
+
 ```
 
 :::warning
@@ -85,11 +90,13 @@ To use the `S3FileStorageAdapter`, you'll need to:
 1. Install the required dependency: [`@aws-sdk/client-s3`](https://www.npmjs.com/package/@aws-sdk/client-s3) package:
 
 ```ts file=./configuring_file_storage_adapters-samples/s3_file_storage_adapter.ts
+
 ```
 
 Other settings:
 
 ```ts file=./configuring_file_storage_adapters-samples/s3_file_storage_adapter_settings.ts
+
 ```
 
 :::info
@@ -118,11 +125,13 @@ To use the `SignedFileStorageAdapter` you need to provide:
 Basic usage:
 
 ```ts file=./configuring_file_storage_adapters-samples/signed_file_storage_adapter.ts
+
 ```
 
 You can provide the URL methods that your storage backend supports:
 
 ```ts file=./configuring_file_storage_adapters-samples/signed_file_storage_adapter_url_methods.ts
+
 ```
 
 :::info
@@ -138,6 +147,7 @@ Any omitted URL method falls back to a no-op implementation:
 The `NoOpFileStorageAdapter` is a no-operation implementation, it performs no actions when called:
 
 ```ts file=./configuring_file_storage_adapters-samples/no_op_file_storage_adapter.ts
+
 ```
 
 :::info

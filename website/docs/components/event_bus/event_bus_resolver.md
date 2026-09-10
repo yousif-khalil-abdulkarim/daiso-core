@@ -19,6 +19,7 @@ The `EventBusResolver` class provides a flexible way to configure and switch bet
 To begin using the `EventBusResolver` class, you will need to register all required adapters during initialization.
 
 ```ts file=./event_bus_resolver-samples/event_bus_resolver_initial_config.ts
+
 ```
 
 ## Usage
@@ -26,6 +27,7 @@ To begin using the `EventBusResolver` class, you will need to register all requi
 ### 1. Using the default adapter
 
 ```ts file=./event_bus_resolver-samples/event_bus_resolver_default_adapter.ts
+
 ```
 
 :::danger
@@ -35,6 +37,7 @@ Note that if you dont set a default adapter, an error will be thrown.
 ### 2. Specifying an adapter explicitly
 
 ```ts file=./event_bus_resolver-samples/event_bus_resolver_specific_adapter.ts
+
 ```
 
 :::danger
@@ -44,6 +47,7 @@ Note that if you specify a non-existent adapter, an error will be thrown.
 ### 3. Overriding default settings
 
 ```ts file=./event_bus_resolver-samples/event_bus_resolver_override_settings.ts
+
 ```
 
 :::info

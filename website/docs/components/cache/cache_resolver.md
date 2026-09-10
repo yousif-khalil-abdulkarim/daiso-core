@@ -19,6 +19,7 @@ The `CacheResolver` class provides a flexible way to configure and switch betwee
 To begin using the `CacheResolver`, you will need to register all required adapters during initialization.
 
 ```ts file=./cache_resolver-samples/cache_resolver_initial_config.ts
+
 ```
 
 ## Usage
@@ -26,6 +27,7 @@ To begin using the `CacheResolver`, you will need to register all required adapt
 ### 1. Using the default adapter
 
 ```ts file=./cache_resolver-samples/cache_resolver_default_adapter.ts
+
 ```
 
 :::danger
@@ -35,6 +37,7 @@ Note that if you dont set a default adapter, an error will be thrown.
 ### 2. Specifying an adapter explicitly
 
 ```ts file=./cache_resolver-samples/cache_resolver_specific_adapter.ts
+
 ```
 
 :::danger
@@ -46,11 +49,13 @@ Note that if you specify a non-existent adapter, an error will be thrown.
 The `CacheResolver` provides chainable methods to override the base configuration per-use:
 
 ```ts file=./cache_resolver-samples/cache_resolver_override_settings.ts
+
 ```
 
 You can also change the type parameter for compile-time type safety:
 
 ```ts file=./cache_resolver-samples/cache_resolver_set_type.ts
+
 ```
 
 :::info

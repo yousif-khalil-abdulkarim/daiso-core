@@ -39,6 +39,7 @@ The plugin prefixes keys for the following methods:
 ### Usage
 
 ```ts file=./rate_limiter_plugin-samples/with_rate_limiter_prefix.ts
+
 ```
 
 ### Before/after behavior
@@ -46,11 +47,13 @@ The plugin prefixes keys for the following methods:
 **Before** — Rate-limiter keys are used as-is:
 
 ```ts file=./rate_limiter_plugin-samples/unprefixed_get_state.ts
+
 ```
 
 **After** — Rate-limiter keys are automatically prefixed:
 
 ```ts file=./rate_limiter_plugin-samples/prefixed_get_state.ts
+
 ```
 
 :::danger

@@ -32,6 +32,7 @@ We provide a complete test suite to test your circuit-breaker storage adapter im
 Usage example:
 
 ```ts file=./creating_circuit_breaker_adapters-samples/circuit_breaker_storage_test_suite.ts
+
 ```
 
 ## Implementing your custom ICircuitBreakerProvider class

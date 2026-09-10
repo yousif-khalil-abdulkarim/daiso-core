@@ -32,6 +32,7 @@ We provide a complete test suite to test your rate-limiter storage adapter imple
 Usage example:
 
 ```ts file=./creating_rate_limiter_adapters-samples/rate_limiter_storage_test_suite.ts
+
 ```
 
 ## Implementing your custom IRateLimiterProvider class

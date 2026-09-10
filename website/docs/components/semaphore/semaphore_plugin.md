@@ -41,6 +41,7 @@ The plugin prefixes keys for the following methods:
 ### Usage
 
 ```ts file=./semaphore_plugin-samples/with_semaphore_prefix.ts
+
 ```
 
 ### Before/after behavior
@@ -48,11 +49,13 @@ The plugin prefixes keys for the following methods:
 **Before** — Semaphore keys are used as-is:
 
 ```ts file=./semaphore_plugin-samples/unprefixed_acquire.ts
+
 ```
 
 **After** — Semaphore keys are automatically prefixed:
 
 ```ts file=./semaphore_plugin-samples/prefixed_acquire.ts
+
 ```
 
 :::danger

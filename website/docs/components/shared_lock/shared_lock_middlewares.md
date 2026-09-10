@@ -21,6 +21,7 @@ The SharedLock middleware wraps function calls with a distributed shared lock (r
 ### Usage
 
 ```ts file=./shared_lock_middlewares-samples/with_shared_lock.ts
+
 ```
 
 :::info

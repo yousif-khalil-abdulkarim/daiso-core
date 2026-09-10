@@ -23,6 +23,7 @@ npm install eridu-tech hono
 ### 2. Create the handler
 
 ```ts file=./tanstack_start-samples/create_handler.ts
+
 ```
 
 **File structure**

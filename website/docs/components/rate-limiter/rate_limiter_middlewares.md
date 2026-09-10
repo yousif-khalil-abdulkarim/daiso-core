@@ -21,6 +21,7 @@ The RateLimiter middleware wraps function calls with a rate limiter, controlling
 ### Usage
 
 ```ts file=./rate_limiter_middlewares-samples/with_rate_limiter.ts
+
 ```
 
 :::info

@@ -19,6 +19,7 @@ The `eridu-tech/middleware` module provides a flexible middleware system for int
 A middleware is a function that receives middleware arguments (containing the original arguments, a next function, and the name of the function) and returns the result:
 
 ```ts file=./samples/simple_middleware.ts
+
 ```
 
 ### Applying middleware to a function
@@ -26,6 +27,7 @@ A middleware is a function that receives middleware arguments (containing the or
 Use the `use` function to apply one or more middlewares to a function:
 
 ```ts file=./samples/use_function.ts
+
 ```
 
 ### Applying multiple middlewares
@@ -33,6 +35,7 @@ Use the `use` function to apply one or more middlewares to a function:
 You can apply multiple middlewares, which are executed in order of their priority:
 
 ```ts file=./samples/multiple_middlewares.ts
+
 ```
 
 ## Middleware types
@@ -42,6 +45,7 @@ You can apply multiple middlewares, which are executed in order of their priorit
 A function that receives middleware arguments and returns a result:
 
 ```ts file=./samples/fn_type.ts
+
 ```
 
 ### IMiddlewareObject
@@ -49,6 +53,7 @@ A function that receives middleware arguments and returns a result:
 A middleware object with an optional priority property:
 
 ```ts file=./samples/object_type.ts
+
 ```
 
 ### MiddlewareArgs
@@ -56,6 +61,7 @@ A middleware object with an optional priority property:
 The argument passed to each middleware:
 
 ```ts file=./samples/args_type.ts
+
 ```
 
 ### defineMiddleware
@@ -63,6 +69,7 @@ The argument passed to each middleware:
 A helper function for defining middleware with accurate type inference. It ensures the provided handler conforms to the `MiddlewareFn` signature while preserving exact parameter and return types, without needing explicit generic annotations:
 
 ```ts file=./samples/define_middleware.ts
+
 ```
 
 ## Patterns
@@ -72,6 +79,7 @@ A helper function for defining middleware with accurate type inference. It ensur
 Set priority on middleware objects to control execution order (lower numbers execute first):
 
 ```ts file=./samples/priority_ordering.ts
+
 ```
 
 ### Async middleware
@@ -79,6 +87,7 @@ Set priority on middleware objects to control execution order (lower numbers exe
 Middleware can be asynchronous:
 
 ```ts file=./samples/async_middleware.ts
+
 ```
 
 ### Short-circuiting middleware
@@ -86,6 +95,7 @@ Middleware can be asynchronous:
 Skip calling `next()` to bypass subsequent middleware and the original function:
 
 ```ts file=./samples/caching_middleware.ts
+
 ```
 
 ### Error handling middleware
@@ -93,6 +103,7 @@ Skip calling `next()` to bypass subsequent middleware and the original function:
 Catch and handle errors in middleware:
 
 ```ts file=./samples/error_handling_middleware.ts
+
 ```
 
 ## Enhancing Methods with `enhance`
@@ -102,6 +113,7 @@ The `enhance` function provides a convenient way to apply middleware to methods 
 ### Usage Example
 
 ```ts file=./samples/enhance_greeter.ts
+
 ```
 
 ### Enhancing Object Literal Methods
@@ -109,6 +121,7 @@ The `enhance` function provides a convenient way to apply middleware to methods 
 You can enhance methods on plain object literals as well:
 
 ```ts file=./samples/enhance_object_literal.ts
+
 ```
 
 ### Enhancing Static Methods
@@ -116,6 +129,7 @@ You can enhance methods on plain object literals as well:
 Static methods on classes can also be enhanced:
 
 ```ts file=./samples/enhance_static.ts
+
 ```
 
 ### Enhancing Class Prototype Methods
@@ -123,6 +137,7 @@ Static methods on classes can also be enhanced:
 You can enhance all instances of a class by enhancing its prototype:
 
 ```ts file=./samples/enhance_prototype.ts
+
 ```
 
 ### How it Works
@@ -144,6 +159,7 @@ The `withPlugin` function provides a way to apply one or more plugins to a class
 ### Usage with Class Instances
 
 ```ts file=./samples/with_plugin_class.ts
+
 ```
 
 ### Usage with Object Literals
@@ -151,6 +167,7 @@ The `withPlugin` function provides a way to apply one or more plugins to a class
 `withPlugin` also works with plain object literals:
 
 ```ts file=./samples/with_plugin_object_literal.ts
+
 ```
 
 ### Applying Multiple Plugins
@@ -158,6 +175,7 @@ The `withPlugin` function provides a way to apply one or more plugins to a class
 You can apply multiple plugins at once by passing an array:
 
 ```ts file=./samples/with_plugin_multiple.ts
+
 ```
 
 ### Object-based Plugins
@@ -165,6 +183,7 @@ You can apply multiple plugins at once by passing an array:
 For plugins with state or configuration, use the object form:
 
 ```ts file=./samples/with_plugin_object_based.ts
+
 ```
 
 ### How it Works

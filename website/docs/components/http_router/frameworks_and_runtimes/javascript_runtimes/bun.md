@@ -23,6 +23,7 @@ bun add eridu-tech hono
 ### 2. Create the handler
 
 ```ts file=./bun-samples/create_handler.ts
+
 ```
 
 **File structure**

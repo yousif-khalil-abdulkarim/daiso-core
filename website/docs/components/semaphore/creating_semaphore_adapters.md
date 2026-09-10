@@ -27,6 +27,7 @@ testing.
 Usage example:
 
 ```ts file=./creating_semaphore_adapters-samples/semaphore_adapter_test_suite.ts
+
 ```
 
 ## Implementing your custom ISemaphoreFactory class
@@ -44,6 +45,7 @@ testing.
 Usage example:
 
 ```ts file=./creating_semaphore_adapters-samples/semaphore_factory_test_suite.ts
+
 ```
 
 ## Further information

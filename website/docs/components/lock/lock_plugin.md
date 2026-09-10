@@ -41,6 +41,7 @@ The plugin prefixes keys for the following methods:
 ### Usage
 
 ```ts file=./lock_plugin-samples/with_lock_prefix.ts
+
 ```
 
 ### Before/after behavior
@@ -48,11 +49,13 @@ The plugin prefixes keys for the following methods:
 **Before** — Lock keys are used as-is:
 
 ```ts file=./lock_plugin-samples/unprefixed_acquire.ts
+
 ```
 
 **After** — Lock keys are automatically prefixed:
 
 ```ts file=./lock_plugin-samples/prefixed_acquire.ts
+
 ```
 
 :::danger

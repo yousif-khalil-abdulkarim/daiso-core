@@ -21,6 +21,7 @@ The Semaphore middleware wraps function calls with a distributed semaphore, limi
 ### Usage
 
 ```ts file=./semaphore_middlewares-samples/with_semaphore.ts
+
 ```
 
 :::info

@@ -37,11 +37,13 @@ keywords:
 To use the `MemorySemaphoreAdapter` you only need to create instance of it:
 
 ```ts file=./configuring_semaphore_adapters-samples/memory_semaphore_adapter.ts
+
 ```
 
 You can also provide an `Map` that will be used for storing the data in memory:
 
 ```ts file=./configuring_semaphore_adapters-samples/memory_semaphore_adapter_with_map.ts
+
 ```
 
 :::info
@@ -57,12 +59,14 @@ Note the `MemorySemaphoreAdapter` is limited to single process usage and cannot 
 To clean up expired semaphore keys, call `removeAllExpired` at a regular interval (for example, using a cron job):
 
 ```ts file=./configuring_semaphore_adapters-samples/memory_semaphore_remove_all_expired.ts
+
 ```
 
 :::info
 To remove the semaphore map and all stored semaphore data, use `deInit` method:
 
 ```ts file=./configuring_semaphore_adapters-samples/memory_semaphore_adapter_deinit.ts
+
 ```
 
 :::
@@ -74,22 +78,26 @@ To use the `MongodbSemaphoreAdapter`, you'll need to:
 1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package:
 
 ```ts file=./configuring_semaphore_adapters-samples/mongodb_semaphore_adapter.ts
+
 ```
 
 You can change the collection name:
 
 ```ts file=./configuring_semaphore_adapters-samples/mongodb_semaphore_collection_name.ts
+
 ```
 
 You can change the collection settings:
 
 ```ts file=./configuring_semaphore_adapters-samples/mongodb_semaphore_collection_settings.ts
+
 ```
 
 :::info
 To remove the semaphore collection and all stored semaphore data, use `deInit` method:
 
 ```ts file=./configuring_semaphore_adapters-samples/mongodb_semaphore_adapter_deinit.ts
+
 ```
 
 :::
@@ -105,6 +113,7 @@ To use the `RedisSemaphoreAdapter`, you'll need to:
 1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
 
 ```ts file=./configuring_semaphore_adapters-samples/redis_semaphore_adapter.ts
+
 ```
 
 :::danger
@@ -124,6 +133,7 @@ To use the `KyselySemaphoreAdapter`, you'll need to:
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
 ```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_sqlite.ts
+
 ```
 
 :::danger
@@ -135,6 +145,7 @@ Note using `KyselySemaphoreAdapter` with `sqlite` is limited to single server us
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
 ```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_postgres.ts
+
 ```
 
 :::danger
@@ -146,6 +157,7 @@ Note in order to use `KyselySemaphoreAdapter` with `postgres` correctly, ensure 
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
 ```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_mysql.ts
+
 ```
 
 :::danger
@@ -157,6 +169,7 @@ Note in order to use `KyselySemaphoreAdapter` with `mysql` correctly, ensure you
 You will need to install `@libsql/kysely-libsql` package:
 
 ```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_libsql.ts
+
 ```
 
 :::danger
@@ -168,12 +181,14 @@ Note in order to use `KyselySemaphoreAdapter` with `libsql` correctly, ensure yo
 To clean up expired semaphore keys, call `removeAllExpired` at a regular interval (for example, using a cron job):
 
 ```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_remove_all_expired.ts
+
 ```
 
 :::info
 To remove the semaphore table and all stored semaphore data, use `deInit` method:
 
 ```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_adapter_deinit.ts
+
 ```
 
 :::
@@ -183,6 +198,7 @@ To remove the semaphore table and all stored semaphore data, use `deInit` method
 The `NoOpSemaphoreAdapter` is a no-operation implementation, it performs no actions when called:
 
 ```ts file=./configuring_semaphore_adapters-samples/no_op_semaphore_adapter.ts
+
 ```
 
 :::info

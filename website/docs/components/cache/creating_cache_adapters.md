@@ -27,6 +27,7 @@ testing.
 Usage example:
 
 ```ts file=./creating_cache_adapters-samples/cache_adapter_test_suite.ts
+
 ```
 
 ## Implementing your custom ICache class
@@ -43,6 +44,7 @@ case coverage and standardized cache contract conformance testing.
 Usage example:
 
 ```ts file=./creating_cache_adapters-samples/cache_test_suite.ts
+
 ```
 
 ## Further information

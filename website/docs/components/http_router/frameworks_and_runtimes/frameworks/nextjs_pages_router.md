@@ -23,6 +23,7 @@ npm install eridu-tech hono @hono/node-server
 ### 2. Create the handler
 
 ```ts file=./nextjs_pages_router-samples/create_handler.ts
+
 ```
 
 **File structure**

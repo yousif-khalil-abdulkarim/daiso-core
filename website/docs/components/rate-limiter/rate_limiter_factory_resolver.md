@@ -21,6 +21,7 @@ The `RateLimiterFactoryResolver` class provides a flexible way to configure and 
 To begin using the `RateLimiterFactoryResolver`, You will need to register all required adapters during initialization.
 
 ```ts file=./rate_limiter_factory_resolver-samples/rate_limiter_factory_resolver_initial_config.ts
+
 ```
 
 ### Usage
@@ -28,6 +29,7 @@ To begin using the `RateLimiterFactoryResolver`, You will need to register all r
 #### 1. Using the default adapter
 
 ```ts file=./rate_limiter_factory_resolver-samples/rate_limiter_factory_resolver_default_adapter.ts
+
 ```
 
 :::danger
@@ -37,6 +39,7 @@ Note that if you dont set a default adapter, an error will be thrown.
 #### 2. Specifying an adapter explicitly
 
 ```ts file=./rate_limiter_factory_resolver-samples/rate_limiter_factory_resolver_specific_adapter.ts
+
 ```
 
 :::danger
@@ -46,6 +49,7 @@ Note that if you specify a non-existent adapter, an error will be thrown.
 #### 3. Overriding default settings
 
 ```ts file=./rate_limiter_factory_resolver-samples/rate_limiter_factory_resolver_override_settings.ts
+
 ```
 
 :::info
@@ -61,6 +65,7 @@ The `DatabaseRateLimiterFactoryResolver` class provides a flexible way to config
 To begin using the `DatabaseRateLimiterFactoryResolver`, You will need to register all required adapters during initialization.
 
 ```ts file=./rate_limiter_factory_resolver-samples/database_rate_limiter_factory_resolver_initial_config.ts
+
 ```
 
 ### Usage
@@ -68,6 +73,7 @@ To begin using the `DatabaseRateLimiterFactoryResolver`, You will need to regist
 #### 1. Using the default adapter
 
 ```ts file=./rate_limiter_factory_resolver-samples/database_rate_limiter_factory_resolver_default_adapter.ts
+
 ```
 
 :::danger
@@ -77,6 +83,7 @@ Note that if you dont set a default adapter, an error will be thrown.
 #### 2. Specifying an adapter explicitly
 
 ```ts file=./rate_limiter_factory_resolver-samples/database_rate_limiter_factory_resolver_specific_adapter.ts
+
 ```
 
 :::danger
@@ -86,6 +93,7 @@ Note that if you specify a non-existent adapter, an error will be thrown.
 #### 3. Overriding default settings
 
 ```ts file=./rate_limiter_factory_resolver-samples/database_rate_limiter_factory_resolver_override_settings.ts
+
 ```
 
 :::info

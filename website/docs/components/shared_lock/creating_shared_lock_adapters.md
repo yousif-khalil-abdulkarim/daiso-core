@@ -27,6 +27,7 @@ testing.
 Usage example:
 
 ```ts file=./creating_shared_lock_adapters-samples/shared_lock_adapter_test_suite.ts
+
 ```
 
 ## Implementing your custom ISharedLockFactory class
@@ -44,6 +45,7 @@ testing.
 Usage example:
 
 ```ts file=./creating_shared_lock_adapters-samples/shared_lock_factory_test_suite.ts
+
 ```
 
 ## Further information

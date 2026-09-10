@@ -27,6 +27,7 @@ testing.
 Usage example:
 
 ```ts file=./creating_event_bus_adapters-samples/event_bus_adapter_test_suite.ts
+
 ```
 
 ## Implementing your custom IEventBus class
@@ -43,6 +44,7 @@ case coverage and standardized event-bus contract conformance testing.
 Usage example:
 
 ```ts file=./creating_event_bus_adapters-samples/event_bus_test_suite.ts
+
 ```
 
 ## Further information

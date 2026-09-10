@@ -21,6 +21,7 @@ The CircuitBreaker middleware wraps function calls with a circuit-breaker, provi
 ### Usage
 
 ```ts file=./circuit_breaker_middlewares-samples/with_circuit_breaker.ts
+
 ```
 
 :::info
