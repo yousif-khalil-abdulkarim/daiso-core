@@ -1,4 +1,4 @@
-import { sharedLock } from "./shared_lock_create";
+import { sharedLock } from "./shared_lock_create.js";
 
 // 1 slot will be acquired
 try {

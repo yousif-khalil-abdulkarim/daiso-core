@@ -1,4 +1,4 @@
-import { sharedLockFactory } from "./shared_lock_factory_initial_config";
+import { sharedLockFactory } from "./shared_lock_factory_initial_config.js";
 
 // Create a shared-lock with no expiration (non-refreshable)
 const sharedLock = sharedLockFactory.create("resource", {

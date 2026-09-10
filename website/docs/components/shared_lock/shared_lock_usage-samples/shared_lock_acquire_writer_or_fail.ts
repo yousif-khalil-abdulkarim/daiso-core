@@ -1,4 +1,4 @@
-import { sharedLock } from "./shared_lock_create";
+import { sharedLock } from "./shared_lock_create.js";
 
 try {
     // This method will throw if the shared-lock is not acquired

@@ -1,4 +1,4 @@
-import { sharedLockFactory } from "./shared_lock_factory_initial_config";
+import { sharedLockFactory } from "./shared_lock_factory_initial_config.js";
 
 const sharedLock = sharedLockFactory.create("shared-lock", {
     limit: 2,
