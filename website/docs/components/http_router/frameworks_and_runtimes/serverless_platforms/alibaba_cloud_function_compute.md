@@ -26,24 +26,8 @@ mkdir src
 
 ### 2. Create the handler
 
-```ts
-// src/index.ts
-import {
-    HttpRouter,
-    HttpRes,
-    defaultHttpRouterAdapter,
-} from "eridu-tech/http-router";
-import { handle } from "hono-alibaba-cloud-fc3-adapter";
+```ts file=./alibaba_cloud_function_compute-samples/create_handler.ts
 
-const router = new HttpRouter({ router: defaultHttpRouterAdapter });
-
-router.endpoint({
-    url: "/hello",
-    method: "GET",
-    handler: async () => HttpRes.text("Hello Alibaba Cloud!"),
-});
-
-export const handler = handle(router);
 ```
 
 ### 3. Configure serverless-devs

@@ -23,15 +23,8 @@ The `eridu-tech/event-bus` component provides a way for dispatching and listenin
 
 To begin using the `EventBus` class, you'll need to create and configure an instance:
 
-```ts
-import { MemoryEventBusAdapter } from "eridu-tech/event-bus/memory-event-bus-adapter";
-import type { IEventBus } from "eridu-tech/event-bus/contracts";
-import { EventBus } from "eridu-tech/event-bus";
+```ts file=./event_bus_usage-samples/event_bus_initial_config.ts
 
-const eventBus: IEventBus = new EventBus({
-    // You can choose the adapter to use
-    adapter: new MemoryEventBusAdapter(),
-});
 ```
 
 :::info
@@ -44,37 +37,16 @@ Here is a complete list of settings for the [`EventBus`](https://eridu-tech.gith
 
 Event listeners can be added to respond to specific events:
 
-```ts
-await eventBus.addListener("add", (event) => {
-    console.log(event);
-});
+```ts file=./event_bus_usage-samples/event_bus_listeners.ts
 
-await eventBus.dispatch("add", {
-    a: 5,
-    b: 5,
-});
 ```
 
 ### Listener management
 
 To properly remove a listener, you must use a named function:
 
-```ts
-import type { BaseEvent } from "eridu-tech/event-bus/contracts";
+```ts file=./event_bus_usage-samples/event_bus_listener_management.ts
 
-const listener = (event: BaseEvent) => {
-    console.log(event);
-};
-
-await eventBus.addListener("add", listener);
-
-await eventBus.removeListener("add", listener);
-
-// The listener is removed before dispatch and won't be triggered.
-await eventBus.dispatch("add", {
-    a: 5,
-    b: 5,
-});
 ```
 
 ## Patterns
@@ -83,40 +55,8 @@ await eventBus.dispatch("add", {
 
 An event map can be used to strictly type the events:
 
-```ts
-import { MemoryEventBusAdapter } from "eridu-tech/event-bus/memory-event-bus-adapter";
-import type { IEventBus } from "eridu-tech/event-bus/contracts";
-import { EventBus } from "eridu-tech/event-bus";
+```ts file=./event_bus_usage-samples/event_bus_type_safety.ts
 
-type AddEvent = {
-    a: number;
-    b: number;
-};
-
-type EventMap = {
-    add: AddEvent;
-};
-
-const eventBus = new EventBus<EventMap>({
-    adapter: new MemoryEventBusAdapter(),
-});
-
-// A typescript error will show up because the event name doesnt exist.
-await eventBus.dispatch("addd", {
-    a: 2,
-    b: 2,
-});
-
-// A typescript error will show up because the event fields doesnt match
-await eventBus.dispatch("add", {
-    nbr1: 1,
-    nbr2: 2,
-});
-
-// A typescript error will show up because the event name doesnt exist.
-await eventBus.addListener("addd", (event) => {
-    console.log(event);
-});
 ```
 
 ### Runtime type safety
@@ -130,192 +70,66 @@ When a schema map is provided, event data is validated:
 
 If no schema is defined for a particular event name, that event is passed through without validation. If validation fails, a `ValidationError` is thrown.
 
-```ts
-import { MemoryEventBusAdapter } from "eridu-tech/event-bus/memory-event-bus-adapter";
-import { EventBus } from "eridu-tech/event-bus";
-import { z } from "zod";
+```ts file=./event_bus_usage-samples/event_bus_runtime_validation.ts
 
-type UserCreatedEvent = {
-    userId: string;
-    name: string;
-};
-type EventMap = {
-    "user.created": UserCreatedEvent;
-};
-
-const eventBus = new EventBus<EventMap>({
-    adapter: new MemoryEventBusAdapter(),
-    eventMapSchema: {
-        "user.created": z.object({
-            userId: z.string(),
-            name: z.string(),
-        }),
-    },
-});
-
-await eventBus.dispatch("user.created", {
-    userId: "123",
-    name: "John",
-});
-
-// Throws a ValidationError because userId is missing
-await eventBus.dispatch("user.created", {
-    name: "Jane",
-});
 ```
 
 #### Disabling listener validation
 
 If you only want to validate event data on dispatch and skip validation when delivering to listeners, set `shouldValidateListeners` to `false`:
 
-```ts
-const eventBus = new EventBus<EventMap>({
-    adapter: new MemoryEventBusAdapter(),
-    eventMapSchema: {
-        "user.created": z.object({
-            userId: z.string(),
-            name: z.string(),
-        }),
-    },
-    shouldValidateListeners: false,
-});
+```ts file=./event_bus_usage-samples/event_bus_disable_listener_validation.ts
+
 ```
 
 ### Subscribe method
 
 The subscription pattern provides automatic cleanup through an unsubscribe function:
 
-```ts
-const unsubscribe = await eventBus.subscribe("add", (event) => {
-    console.log(event);
-});
-await eventBus.dispatch("add", {
-    a: 20,
-    b: 5,
-});
-await unsubscribe();
+```ts file=./event_bus_usage-samples/event_bus_subscribe.ts
+
 ```
 
 ### One-Time event handling
 
 For listeners that should only trigger once:
 
-```ts
-await eventBus.listenOnce("add", (event) => {
-    console.log(event);
-});
+```ts file=./event_bus_usage-samples/event_bus_listen_once.ts
 
-// Listener will be only triggered here
-await eventBus.dispatch("add", {
-    a: 5,
-    b: 5,
-});
-
-// Listener will not be triggered because it removed after the first dispatch.
-await eventBus.dispatch("add", {
-    a: 3,
-    b: 3,
-});
 ```
 
 You can also cancel one-time listeners before they trigger:
 
-```ts
-import type { BaseEvent } from "eridu-tech/event-bus/contracts";
+```ts file=./event_bus_usage-samples/event_bus_cancel_listen_once.ts
 
-const listener = (event: BaseEvent) => {
-    console.log(event);
-};
-
-await eventBus.listenOnce("add", listener);
-
-await eventBus.removeListener("add", listener);
-
-// The listener is removed before dispatch and won't be triggered.
-await eventBus.dispatch("add", {
-    a: 5,
-    b: 5,
-});
 ```
 
 The `subscribeOnce` method creates a one-time listener and returns an unsubscribe function:
 
-```ts
-const unsubscribe = await eventBus.subscribeOnce("add", (event) => {
-    console.log(event);
-});
+```ts file=./event_bus_usage-samples/event_bus_subscribe_once.ts
 
-await unsubscribe();
-
-await eventBus.dispatch("add", {
-    a: 5,
-    b: 5,
-});
 ```
 
 ### Promise-based event handling
 
 Wait for events using promises:
 
-```ts
-import { delay } from "eridu-tech/utilities";
-import { TimeSpan } from "eridu-tech/time-span";
+```ts file=./event_bus_usage-samples/event_bus_as_promise.ts
 
-// Register the promise before dispatching the event.
-const eventPromise = eventBus.asPromise("add");
-
-await delay(TimeSpan.fromSeconds(1));
-await eventBus.dispatch("add", {
-    a: 30,
-    b: 20,
-});
-
-const event = await eventPromise;
 ```
 
 ### Listening to multiple events
 
 The `addListener`, `removeListener`, and `subscribe` methods all accept either a single event name or an array of event names, allowing you to register one listener for multiple events at once:
 
-```ts
-type AddEvent = {
-    a: number;
-    b: number;
-};
-type RemoveEvent = {
-    id: number;
-};
-type EventMap = {
-    add: AddEvent;
-    remove: RemoveEvent;
-};
+```ts file=./event_bus_usage-samples/event_bus_multi_events.ts
 
-const eventBus = new EventBus<EventMap>({
-    adapter: new MemoryEventBusAdapter(),
-});
-
-// The same listener handles both "add" and "remove" events
-await eventBus.addListener(["add", "remove"], (event) => {
-    console.log("EVENT:", event);
-    // event.type will be "add" or "remove" depending on which was dispatched
-});
-
-await eventBus.dispatch("add", { a: 1, b: 2 });
-await eventBus.dispatch("remove", { id: 42 });
 ```
 
 You can also use `subscribe` to get a single cleanup function that unsubscribes from all listed events at once:
 
-```ts
-const unsubscribe = await eventBus.subscribe(["add", "remove"], (event) => {
-    console.log("EVENT:", event);
-});
+```ts file=./event_bus_usage-samples/event_bus_subscribe_multi.ts
 
-await eventBus.dispatch("add", { a: 1, b: 2 });
-await eventBus.dispatch("remove", { id: 42 });
-
-// Unsubscribes from both "add" and "remove" in one call
-await unsubscribe();
 ```
 
 ### Separating dispatching and listening
@@ -328,53 +142,8 @@ The library includes two additional contracts:
 
 This separation makes it easy to visually distinguish the two contracts, making it immediately obvious that they serve different purposes.
 
-```ts
-import type {
-    IEventBus,
-    IEventListenable,
-    IEventDispatcher,
-} from "eridu-tech/event-bus/contracts";
-import { MemoryEventBusAdapter } from "eridu-tech/event-bus/memory-event-bus-adapter";
-import { EventBus } from "eridu-tech/event-bus";
+```ts file=./event_bus_usage-samples/event_bus_contracts.ts
 
-type AddEvent = {
-    a: number;
-    b: number;
-};
-type EventMap = {
-    add: AddEvent;
-};
-
-async function listenerFunc(
-    eventListenable: IEventListenable<EventMap>,
-): Promise<void> {
-    // You cannot access the dispatch method
-    // You will get typescript error if you try
-
-    await eventListenable.addListener("add", (event) => {
-        console.log("EVENT:", event);
-    });
-}
-
-async function dispatchingFunc(
-    eventDispatcher: IEventDispatcher<EventMap>,
-): Promise<void> {
-    // You cannot access the listener methods
-    // You will get typescript error if you try
-
-    await eventDispatcher.dispatch("add", {
-        a: 20,
-        b: 5,
-    });
-}
-
-const eventBus: IEventBus<any> = new EventBus({
-    // You can choose the adapter to use
-    adapter: new MemoryEventBusAdapter(),
-});
-
-await listenerFunc(eventBus);
-await dispatchingFunc(eventBus);
 ```
 
 ### Invocable listeners
@@ -382,33 +151,11 @@ await dispatchingFunc(eventBus);
 An event listener is `Invocable` meaning you can also pass in an object (class instance or object literal) as listener:
 
 :::info
-For further information refer the [`Invocable`](../../utilities/invocable.md) docs.
+For further information refer the [`Invocable`](../../utilities/invocable/invocable.md) docs.
 :::
 
-```ts
-type AddEvent = {
-    a: number;
-    b: number;
-};
-class Listener implements IEventListenerObject<AddEvent> {
-    private count = 0;
+```ts file=./event_bus_usage-samples/event_bus_invocable_listener.ts
 
-    invoke(event: AddEvent): void {
-        console.log("EVENT:", event);
-        console.log("COUNT:", count);
-        this.count++;
-    }
-}
-
-await eventBus.addListener("add", new Listener());
-await eventBus.dispatch("add", {
-    a: 1,
-    b: 2,
-});
-await eventBus.dispatch("add", {
-    a: 3,
-    b: -1,
-});
 ```
 
 ## Further information

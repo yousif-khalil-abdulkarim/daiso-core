@@ -20,42 +20,16 @@ The `RateLimiterFactoryResolver` class provides a flexible way to configure and 
 
 To begin using the `RateLimiterFactoryResolver`, You will need to register all required adapters during initialization.
 
-```ts
-import { RateLimiterFactoryResolver } from "eridu-tech/rate-limiter";
-import { MemoryRateLimiterStorageAdapter } from "eridu-tech/rate-limiter/memory-rate-limiter-storate-adapter";
-import { DatabaseRateLimiterAdapter } from "eridu-tech/rate-limiter/database-rate-limiter-adapter";
-import { RedisRateLimiterAdapter } from "eridu-tech/rate-limiter/redis-rate-limiter-adapter";
-import { Serde } from "eridu-tech/serde";
-import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
-import Redis from "ioredis";
+```ts file=./rate_limiter_factory_resolver-samples/rate_limiter_factory_resolver_initial_config.ts
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
-const rateLimiterFactoryResolver = new RateLimiterFactoryResolver({
-    serde,
-    adapters: {
-        memory: new DatabaseRateLimiterAdapter({
-            adapter: new MemoryRateLimiterStorageAdapter(),
-        }),
-        redis: new RedisRateLimiterAdapter({
-            database: new Redis("YOUR_REDIS_CONNECTION"),
-        }),
-    },
-    defaultAdapter: "memory",
-});
 ```
 
 ### Usage
 
 #### 1. Using the default adapter
 
-```ts
-// Will apply rate-limiter logic the default adapter which is MemoryRateLimiterStorageAdapter
-await rateLimiterFactoryResolver
-    .use()
-    .create("a")
-    .runOrFail(async () => {
-        // ... code to apply rate-limiter logic
-    });
+```ts file=./rate_limiter_factory_resolver-samples/rate_limiter_factory_resolver_default_adapter.ts
+
 ```
 
 :::danger
@@ -64,14 +38,8 @@ Note that if you dont set a default adapter, an error will be thrown.
 
 #### 2. Specifying an adapter explicitly
 
-```ts
-// Will apply rate-limiter logic using the redis adapter
-await rateLimiterFactoryResolver
-    .use("redis")
-    .create("a")
-    .runOrFail(async () => {
-        // ... code to apply rate-limiter logic
-    });
+```ts file=./rate_limiter_factory_resolver-samples/rate_limiter_factory_resolver_specific_adapter.ts
+
 ```
 
 :::danger
@@ -80,14 +48,8 @@ Note that if you specify a non-existent adapter, an error will be thrown.
 
 #### 3. Overriding default settings
 
-```ts
-await rateLimiterFactoryResolver
-    .setNamespace(new Namespace(["@", "test"]))
-    .use("redis")
-    .create("a")
-    .runOrFail(async () => {
-        // ... code to apply rate-limiter logic
-    });
+```ts file=./rate_limiter_factory_resolver-samples/rate_limiter_factory_resolver_override_settings.ts
+
 ```
 
 :::info
@@ -102,62 +64,16 @@ The `DatabaseRateLimiterFactoryResolver` class provides a flexible way to config
 
 To begin using the `DatabaseRateLimiterFactoryResolver`, You will need to register all required adapters during initialization.
 
-```ts
-import { DatabaseRateLimiterFactoryResolver } from "eridu-tech/rate-limiter";
-import { MemoryRateLimiterStorageAdapter } from "eridu-tech/rate-limiter/memory-rate-limiter-storate-adapter";
-import { KyselyRateLimiterStorageAdapter } from "eridu-tech/rate-limiter/kysely-rate-limiter-storate-adapter";
-import { DatabaseRateLimiterAdapter } from "eridu-tech/rate-limiter/database-rate-limiter-adapter";
-import { Serde } from "eridu-tech/serde";
-import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
-import Sqlite from "better-sqlite3";
-import { Kysely, SqliteDialect } from "kysely";
+```ts file=./rate_limiter_factory_resolver-samples/database_rate_limiter_factory_resolver_initial_config.ts
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
-const rateLimiterFactoryResolver = new DatabaseRateLimiterFactoryResolver({
-    serde,
-    adapters: {
-        memory: new MemoryRateLimiterStorageAdapter(),
-        sqlite: new KyselyRateLimiterStorageAdapter({
-            kysely: new Kysely({
-                dialect: new SqliteDialect({
-                    database: new Sqlite("local.db"),
-                }),
-            }),
-            serde,
-        }),
-    },
-    defaultAdapter: "memory",
-});
-
-// Will apply rate-limiter logic the default adapter which is MemoryRateLimiterStorageAdapter
-await rateLimiterFactoryResolver
-    .use()
-    .create("a")
-    .runOrFail(async () => {
-        // ... code to apply rate-limiter logic
-    });
-
-// Will apply rate-limiter logic using the KyselyRateLimiterStorageAdapter
-await rateLimiterFactoryResolver
-    .use("sqlite")
-    .create("a")
-    .runOrFail(async () => {
-        // ... code to apply rate-limiter logic
-    });
 ```
 
 ### Usage
 
 #### 1. Using the default adapter
 
-```ts
-// Will apply rate-limiter logic the default adapter which is MemoryRateLimiterStorageAdapter
-await rateLimiterFactoryResolver
-    .use()
-    .create("a")
-    .runOrFail(async () => {
-        // ... code to apply rate-limiter logic
-    });
+```ts file=./rate_limiter_factory_resolver-samples/database_rate_limiter_factory_resolver_default_adapter.ts
+
 ```
 
 :::danger
@@ -166,14 +82,8 @@ Note that if you dont set a default adapter, an error will be thrown.
 
 #### 2. Specifying an adapter explicitly
 
-```ts
-// Will apply rate-limiter logic using the sqlite adapter
-await rateLimiterFactoryResolver
-    .use("sqlite")
-    .create("a")
-    .runOrFail(async () => {
-        // ... code to apply rate-limiter logic
-    });
+```ts file=./rate_limiter_factory_resolver-samples/database_rate_limiter_factory_resolver_specific_adapter.ts
+
 ```
 
 :::danger
@@ -182,18 +92,8 @@ Note that if you specify a non-existent adapter, an error will be thrown.
 
 #### 3. Overriding default settings
 
-```ts
-import { SlidingWindowLimiter } from "eridu-tech/rate-limiter/policies";
-import { constantBackoff } from "eridu-tech/backoff-policies";
+```ts file=./rate_limiter_factory_resolver-samples/database_rate_limiter_factory_resolver_override_settings.ts
 
-await rateLimiterFactoryResolver
-    .setBackoffPolicy(constantBackoff())
-    .setRateLimiterPolicy(new SlidingWindowLimiter())
-    .use("redis")
-    .create("a")
-    .runOrFail(async () => {
-        // ... code to apply rate-limiter logic
-    });
 ```
 
 :::info

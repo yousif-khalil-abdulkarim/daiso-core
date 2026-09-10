@@ -38,52 +38,26 @@ To use the `RedisCircuitBreakerAdapter`, you'll need to:
 
 1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
 
-```ts
-import { RedisCircuitBreakerAdapter } from "eridu-tech/circuit-breaker/redis-circuit-breaker-adapter";
-import Redis from "ioredis";
+```ts file=./configuring_circuit_breaker_adapters-samples/redis_circuit_breaker_adapter.ts
 
-const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
-const redisCircuitBreakerAdapter = new RedisCircuitBreakerAdapter({
-    database,
-});
 ```
 
 ### Configuring backoff policy
 
 The `type` field is the only required field. All other fields are optional.
 
-```ts
-import { BACKOFFS } from "eridu-tech/backoff-policies";
+```ts file=./configuring_circuit_breaker_adapters-samples/redis_circuit_breaker_backoff_policy.ts
 
-const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
-const redisCircuitBreakerAdapter = new RedisCircuitBreakerAdapter({
-    database,
-    backoffPolicy: {
-        type: BACKOFFS.CONSTANT,
-        delay: TimeSpan.fromSeconds(1),
-        jitter: 0.5,
-    },
-});
 ```
 
-The settings are the same as [backoff policies](../backoff_policies.md) settings.
+The settings are the same as [backoff policies](../backoff_policies/backoff_policies.md) settings.
 
 ### Configuring CircuitBreaker policy
 
 The `type` field is the only required field. All other fields are optional.
 
-```ts
-import { POLICIES } from "eridu-tech/circuit-breaker/policies";
+```ts file=./configuring_circuit_breaker_adapters-samples/redis_circuit_breaker_policy.ts
 
-const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
-const redisCircuitBreakerAdapter = new RedisCircuitBreakerAdapter({
-    database,
-    circuitBreakerPolicy: {
-        type: POLICIES.CONSECUTIVE,
-        failureThreshold: 5,
-        successThreshold: 5,
-    },
-});
 ```
 
 The settings are the same as [circuit-breaker policies](./configuring_circuit_breaker_policies.md) settings.
@@ -94,58 +68,38 @@ To use the `DatabaseCircuitBreakerAdapter`, you'll need to use `ICircuitBreakerS
 
 1. Creating `ICircuitBreakerStorageAdapter`:
 
-```ts
-import { MemoryCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/memory-circuit-breaker-storage-adapter";
+```ts file=./configuring_circuit_breaker_adapters-samples/circuit_breaker_storage_adapter.ts
 
-const circuitBreakerStorageAdapter = new MemoryCircuitBreakerStorageAdapter();
 ```
 
 2. Creating `DatabaseCircuitBreakerAdapter`:
 
-```ts
-import { DatabaseCircuitBreakerAdapter } from "eridu-tech/circuit-breaker/database-circuit-breaker-adapter";
+```ts file=./configuring_circuit_breaker_adapters-samples/database_circuit_breaker_adapter.ts
 
-const circuitBreakerAdapter = new DatabaseCircuitBreakerAdapter({
-    adapter: circuitBreakerStorageAdapter,
-});
 ```
 
 ### Configuring backoff policy
 
-You can use any of defined [backoff policies](../backoff_policies.md).
+You can use any of defined [backoff policies](../backoff_policies/backoff_policies.md).
 
-```ts
-import { DatabaseCircuitBreakerAdapter } from "eridu-tech/circuit-breaker/database-circuit-breaker-adapter";
-import { constantBackoff } from "eridu-tech/backoff-policies";
+```ts file=./configuring_circuit_breaker_adapters-samples/database_circuit_breaker_backoff_policy.ts
 
-const circuitBreakerAdapter = new DatabaseCircuitBreakerAdapter({
-    adapter: circuitBreakerStorageAdapter,
-    backoffPolicy: constantBackoff(),
-});
 ```
 
 ### Configuring CircuitBreaker policy
 
 You can use any of defined [circuit-breaker policies](./configuring_circuit_breaker_policies.md) or [create your own](./creating_circuit_breaker_policies.md).
 
-```ts
-import { DatabaseCircuitBreakerAdapter } from "eridu-tech/circuit-breaker/database-circuit-breaker-adapter";
-import { SamplingBreaker } from "eridu-tech/circuit-breaker/policies";
+```ts file=./configuring_circuit_breaker_adapters-samples/database_circuit_breaker_policy.ts
 
-const circuitBreakerAdapter = new DatabaseCircuitBreakerAdapter({
-    adapter: circuitBreakerStorageAdapter,
-    circuitBreakerPolicy: new SamplingBreaker(),
-});
 ```
 
 ## NoOpCircuitBreakerAdapter
 
 The `NoOpCircuitBreakerAdapter` is a no-operation implementation, it performs no actions when called:
 
-```ts
-import { NoOpCircuitBreakerAdapter } from "eridu-tech/circuit-breaker/no-op-circuit-breaker-adpater";
+```ts file=./configuring_circuit_breaker_adapters-samples/no_op_circuit_breaker_adapter.ts
 
-const noOpCircuitBreakerAdapter = new NoOpCircuitBreakerAdapter();
 ```
 
 :::info
@@ -160,112 +114,36 @@ To use the `KyselyCircuitBreakerStorageAdapter`, you'll need to:
 
 2. Install the required dependency: [`kysely`](https://www.npmjs.com/package/kysely) package:
 
-3. Provide a string serializer ([`ISerde`](../serde.md)):
+3. Provide a string serializer ([`ISerde`](../serde/serde.md)):
 
 - We recommend using `SuperJsonSerdeAdapter` for this purpose
 
-```ts
-import { Serde } from "eridu-tech/serde";
-import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
+```ts file=./configuring_circuit_breaker_adapters-samples/serde_instance.ts
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
 ```
 
 ### With Sqlite
 
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselyCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/kysely-circuit-breaker-storage-adapter";
-import Sqlite from "better-sqlite3";
-import { Kysely, SqliteDialect } from "kysely";
+```ts file=./configuring_circuit_breaker_adapters-samples/kysely_storage_sqlite.ts
 
-const database = new Sqlite("DATABASE_NAME.db");
-const kysely = new Kysely({
-    dialect: new SqliteDialect({
-        database,
-    }),
-});
-const kyselyCircuitBreakerStorageAdapter =
-    new KyselyCircuitBreakerStorageAdapter({
-        kysely,
-        serde,
-    });
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselyCircuitBreakerStorageAdapter.init();
 ```
 
 ### With Postgres
 
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselyCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/kysely-circuit-breaker-storage-adapter";
-import { Pool } from "pg";
-import { Kysely, PostgresDialect } from "kysely";
+```ts file=./configuring_circuit_breaker_adapters-samples/kysely_storage_postgres.ts
 
-const database = new Pool({
-    database: "DATABASE_NAME",
-    host: "DATABASE_HOST",
-    user: "DATABASE_USER",
-    // DATABASE port
-    port: 5432,
-    password: "DATABASE_PASSWORD",
-    max: 10,
-});
-const kysely = new Kysely({
-    dialect: new PostgresDialect({
-        pool: database,
-    }),
-});
-const kyselyCircuitBreakerStorageAdapter =
-    new KyselyCircuitBreakerStorageAdapter({
-        kysely,
-        serde,
-    });
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselyCircuitBreakerStorageAdapter.init();
 ```
 
 ### With Mysql and MariaDB
 
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselyCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/kysely-circuit-breaker-storage-adapter";
-import { createPool } from "mysql2";
-import { Kysely, MysqlDialect } from "kysely";
+```ts file=./configuring_circuit_breaker_adapters-samples/kysely_storage_mysql.ts
 
-const database = createPool({
-    host: "DATABASE_HOST",
-    // Database port
-    port: 3306,
-    database: "DATABASE_NAME",
-    user: "DATABASE_USER",
-    password: "DATABASE_PASSWORD",
-    connectionLimit: 10,
-});
-const kysely = new Kysely({
-    dialect: new MysqlDialect({
-        pool: database,
-    }),
-});
-const kyselyCircuitBreakerStorageAdapter =
-    new KyselyCircuitBreakerStorageAdapter({
-        kysely,
-        serde,
-    });
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselyCircuitBreakerStorageAdapter.init();
 ```
 
 :::info
@@ -276,47 +154,22 @@ Works with both MySQL and MariaDB.
 
 You will need to install `@libsql/kysely-libsql` package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselyCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/kysely-circuit-breaker-storage-adapter";
-import { LibsqlDialect } from "@libsql/kysely-libsql";
-import { Kysely } from "kysely";
+```ts file=./configuring_circuit_breaker_adapters-samples/kysely_storage_libsql.ts
 
-const kysely = new Kysely({
-    dialect: new LibsqlDialect({
-        url: "DATABASE_URL",
-    }),
-});
-const kyselyCircuitBreakerStorageAdapter =
-    new KyselyCircuitBreakerStorageAdapter({
-        kysely,
-        serde,
-    });
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselyCircuitBreakerStorageAdapter.init();
 ```
 
 ## MemoryCircuitBreakerStorageAdapter
 
 To use the `MemoryCircuitBreakerStorageAdapter` you only need to create instance of it:
 
-```ts
-import { MemoryCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/memory-circuit-breaker-storage-adapter";
+```ts file=./configuring_circuit_breaker_adapters-samples/memory_circuit_breaker_storage_adapter.ts
 
-const memoryCircuitBreakerStorageAdapter =
-    new MemoryCircuitBreakerStorageAdapter();
 ```
 
 You can also provide an `Map` that will be used for storing the data in memory:
 
-```ts
-import { MemoryCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/memory-circuit-breaker-storage-adapter";
+```ts file=./configuring_circuit_breaker_adapters-samples/memory_circuit_breaker_storage_with_map.ts
 
-const map = new Map<any, any>();
-const memoryCircuitBreakerStorageAdapter =
-    new MemoryCircuitBreakerStorageAdapter(map);
 ```
 
 :::info
@@ -331,36 +184,20 @@ To use the `MongodbCircuitBreakerStorageAdapter`, you'll need to:
 
 2. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package:
 
-3. Provide a string serializer ([`ISerde`](../serde.md)):
+3. Provide a string serializer ([`ISerde`](../serde/serde.md)):
 
 - We recommend using `SuperJsonSerdeAdapter` for this purpose
 
-```ts
-import { MongodbCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/mongodb-circuit-breaker-storage-adapter";
-import { MongoClient } from "mongodb";
+```ts file=./configuring_circuit_breaker_adapters-samples/mongodb_circuit_breaker_storage_adapter.ts
 
-const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
-const database = client.db("database");
-const mongodbCircuitBreakerStorageAdapter =
-    new MongodbCircuitBreakerStorageAdapter({
-        client,
-        database,
-        serde,
-    });
-
-// You need initialize the adapter once before using it.
-// During the initialization the indexes will be created
-await mongodbCircuitBreakerStorageAdapter.init();
 ```
 
 ## NoOpCircuitBreakerStorageAdapter
 
 The `NoOpCircuitBreakerStorageAdapter` is a no-operation implementation, it performs no actions when called:
 
-```ts
-import { NoOpCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/no-op-circuit-breaker-storage-adpater";
+```ts file=./configuring_circuit_breaker_adapters-samples/no_op_circuit_breaker_storage_adapter.ts
 
-const noOpCircuitBreakerStorageAdapter = new NoOpCircuitBreakerStorageAdapter();
 ```
 
 :::info

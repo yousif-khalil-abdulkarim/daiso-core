@@ -36,19 +36,14 @@ keywords:
 
 To use the `MemorySemaphoreAdapter` you only need to create instance of it:
 
-```ts
-import { MemorySemaphoreAdapter } from "eridu-tech/semaphore/memory-semaphore-adapter";
+```ts file=./configuring_semaphore_adapters-samples/memory_semaphore_adapter.ts
 
-const memorySemaphoreAdapter = new MemorySemaphoreAdapter();
 ```
 
 You can also provide an `Map` that will be used for storing the data in memory:
 
-```ts
-import { MemorySemaphoreAdapter } from "eridu-tech/semaphore/memory-semaphore-adapter";
+```ts file=./configuring_semaphore_adapters-samples/memory_semaphore_adapter_with_map.ts
 
-const map = new Map<any, any>();
-const memorySemaphoreAdapter = new MemorySemaphoreAdapter(map);
 ```
 
 :::info
@@ -63,20 +58,15 @@ Note the `MemorySemaphoreAdapter` is limited to single process usage and cannot 
 
 To clean up expired semaphore keys, call `removeAllExpired` at a regular interval (for example, using a cron job):
 
-```ts
-import { MemorySemaphoreAdapter } from "eridu-tech/semaphore/memory-semaphore-adapter";
+```ts file=./configuring_semaphore_adapters-samples/memory_semaphore_remove_all_expired.ts
 
-const memorySemaphoreAdapter = new MemorySemaphoreAdapter();
-
-// Remove all expired semaphore keys manually.
-await memorySemaphoreAdapter.removeAllExpired();
 ```
 
 :::info
 To remove the semaphore map and all stored semaphore data, use `deInit` method:
 
-```ts
-await memorySemaphoreAdapter.deInit();
+```ts file=./configuring_semaphore_adapters-samples/memory_semaphore_adapter_deinit.ts
+
 ```
 
 :::
@@ -87,50 +77,27 @@ To use the `MongodbSemaphoreAdapter`, you'll need to:
 
 1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package:
 
-```ts
-import { MongodbSemaphoreAdapter } from "eridu-tech/semaphore/mongodb-semaphore-adapter";
-import { MongoClient } from "mongodb";
+```ts file=./configuring_semaphore_adapters-samples/mongodb_semaphore_adapter.ts
 
-const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
-const database = client.db("database");
-const mongodbSemaphoreAdapter = new MongodbSemaphoreAdapter({
-    database,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the indexes will be created
-await mongodbSemaphoreAdapter.init();
 ```
 
 You can change the collection name:
 
-```ts
-const mongodbSemaphoreAdapter = new MongodbSemaphoreAdapter({
-    database,
-    // By default "semaphore" is used as collection name
-    collectionName: "my-semaphore",
-});
+```ts file=./configuring_semaphore_adapters-samples/mongodb_semaphore_collection_name.ts
 
-await mongodbSemaphoreAdapter.init();
 ```
 
 You can change the collection settings:
 
-```ts
-const mongodbSemaphoreAdapter = new MongodbSemaphoreAdapter({
-    database,
-    // You configure additional collection settings
-    collectionSettings: {},
-});
+```ts file=./configuring_semaphore_adapters-samples/mongodb_semaphore_collection_settings.ts
 
-await mongodbSemaphoreAdapter.init();
 ```
 
 :::info
 To remove the semaphore collection and all stored semaphore data, use `deInit` method:
 
-```ts
-await mongodbSemaphoreAdapter.deInit();
+```ts file=./configuring_semaphore_adapters-samples/mongodb_semaphore_adapter_deinit.ts
+
 ```
 
 :::
@@ -145,12 +112,8 @@ To use the `RedisSemaphoreAdapter`, you'll need to:
 
 1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
 
-```ts
-import { RedisSemaphoreAdapter } from "eridu-tech/semaphore/redis-semaphore-adapter";
-import Redis from "ioredis";
+```ts file=./configuring_semaphore_adapters-samples/redis_semaphore_adapter.ts
 
-const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
-const redisSemaphoreAdapter = new RedisSemaphoreAdapter(database);
 ```
 
 :::danger
@@ -169,25 +132,8 @@ To use the `KyselySemaphoreAdapter`, you'll need to:
 
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselySemaphoreAdapter } from "eridu-tech/semaphore/kysely-semaphore-adapter";
-import Sqlite from "better-sqlite3";
-import { Kysely, SqliteDialect } from "kysely";
+```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_sqlite.ts
 
-const database = new Sqlite("DATABASE_NAME.db");
-const kysely = new Kysely({
-    dialect: new SqliteDialect({
-        database,
-    }),
-});
-const kyselySemaphoreAdapter = new KyselySemaphoreAdapter({
-    kysely,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselySemaphoreAdapter.init();
 ```
 
 :::danger
@@ -198,33 +144,8 @@ Note using `KyselySemaphoreAdapter` with `sqlite` is limited to single server us
 
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselySemaphoreAdapter } from "eridu-tech/semaphore/kysely-semaphore-adapter";
-import { Pool } from "pg";
-import { Kysely, PostgresDialect } from "kysely";
+```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_postgres.ts
 
-const database = new Pool({
-    database: "DATABASE_NAME",
-    host: "DATABASE_HOST",
-    user: "DATABASE_USER",
-    // DATABASE port
-    port: 5432,
-    password: "DATABASE_PASSWORD",
-    max: 10,
-});
-const kysely = new Kysely({
-    dialect: new PostgresDialect({
-        pool: database,
-    }),
-});
-const kyselySemaphoreAdapter = new KyselySemaphoreAdapter({
-    kysely,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselySemaphoreAdapter.init();
 ```
 
 :::danger
@@ -235,33 +156,8 @@ Note in order to use `KyselySemaphoreAdapter` with `postgres` correctly, ensure 
 
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselySemaphoreAdapter } from "eridu-tech/semaphore/kysely-semaphore-adapter";
-import { createPool } from "mysql2";
-import { Kysely, MysqlDialect } from "kysely";
+```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_mysql.ts
 
-const database = createPool({
-    host: "DATABASE_HOST",
-    // Database port
-    port: 3306,
-    database: "DATABASE_NAME",
-    user: "DATABASE_USER",
-    password: "DATABASE_PASSWORD",
-    connectionLimit: 10,
-});
-const kysely = new Kysely({
-    dialect: new MysqlDialect({
-        pool: database,
-    }),
-});
-const kyselySemaphoreAdapter = new KyselySemaphoreAdapter({
-    kysely,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselySemaphoreAdapter.init();
 ```
 
 :::danger
@@ -272,24 +168,8 @@ Note in order to use `KyselySemaphoreAdapter` with `mysql` correctly, ensure you
 
 You will need to install `@libsql/kysely-libsql` package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselySemaphoreAdapter } from "eridu-tech/semaphore/kysely-semaphore-adapter";
-import { LibsqlDialect } from "@libsql/kysely-libsql";
-import { Kysely } from "kysely";
+```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_libsql.ts
 
-const kysely = new Kysely({
-    dialect: new LibsqlDialect({
-        url: "DATABASE_URL",
-    }),
-});
-const kyselySemaphoreAdapter = new KyselySemaphoreAdapter({
-    kysely,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselySemaphoreAdapter.init();
 ```
 
 :::danger
@@ -300,22 +180,15 @@ Note in order to use `KyselySemaphoreAdapter` with `libsql` correctly, ensure yo
 
 To clean up expired semaphore keys, call `removeAllExpired` at a regular interval (for example, using a cron job):
 
-```ts
-const kyselySemaphoreAdapter = new KyselySemaphoreAdapter({
-    database,
-});
+```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_remove_all_expired.ts
 
-await kyselySemaphoreAdapter.init();
-
-// Remove all expired semaphore keys manually.
-await kyselySemaphoreAdapter.removeAllExpired();
 ```
 
 :::info
 To remove the semaphore table and all stored semaphore data, use `deInit` method:
 
-```ts
-await kyselySemaphoreAdapter.deInit();
+```ts file=./configuring_semaphore_adapters-samples/kysely_semaphore_adapter_deinit.ts
+
 ```
 
 :::
@@ -324,10 +197,8 @@ await kyselySemaphoreAdapter.deInit();
 
 The `NoOpSemaphoreAdapter` is a no-operation implementation, it performs no actions when called:
 
-```ts
-import { NoOpSemaphoreAdapter } from "eridu-tech/semaphore/no-op-semaphore-adapter";
+```ts file=./configuring_semaphore_adapters-samples/no_op_semaphore_adapter.ts
 
-const noOpSemaphoreAdapter = new NoOpSemaphoreAdapter();
 ```
 
 :::info

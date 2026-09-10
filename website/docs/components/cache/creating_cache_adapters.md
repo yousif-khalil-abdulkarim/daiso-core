@@ -26,22 +26,8 @@ testing.
 
 Usage example:
 
-```ts
-// filename: MyCacheAdapter.test.ts
+```ts file=./creating_cache_adapters-samples/cache_adapter_test_suite.ts
 
-import { beforeEach, describe, expect, test } from "vitest";
-import { cacheAdapterTestSuite } from "eridu-tech/cache/test-utilities";
-import { MemoryCacheAdapter } from "./MemoryCacheAdapter.js";
-
-describe("class: MyCacheAdapter", () => {
-    cacheAdapterTestSuite({
-        createAdapter: () => new MemoryCacheAdapter(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
 ```
 
 ## Implementing your custom ICache class
@@ -57,22 +43,8 @@ case coverage and standardized cache contract conformance testing.
 
 Usage example:
 
-```ts
-// filename: MyCache.test.ts
+```ts file=./creating_cache_adapters-samples/cache_test_suite.ts
 
-import { beforeEach, describe, expect, test } from "vitest";
-import { cacheTestSuite } from "eridu-tech/cache/test-utilities";
-import { MyCache } from "./MyCache.js";
-
-describe("class: MyCache", () => {
-    cacheTestSuite({
-        createCache: () => new MyCache(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
 ```
 
 ## Further information

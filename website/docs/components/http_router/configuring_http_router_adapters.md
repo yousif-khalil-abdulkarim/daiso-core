@@ -22,31 +22,18 @@ keywords:
 
 `eridu-tech/http-router` exports [`defaultHttpRouterAdapter`](https://eridu-tech.github.io/eridu-tech-core/variables/HttpRouter.defaultHttpRouterAdapter.html) to reduce boilerplate. It is equivalent to:
 
-```ts
-new SmartRouter({
-    routers: [new RegExpRouter(), new TrieRouter()],
-});
+```ts file=./configuring_http_router_adapters-samples/smart_router_default_equivalent.ts
+
 ```
 
-```ts
-import { HttpRouter, defaultHttpRouterAdapter } from "eridu-tech/http-router";
+```ts file=./configuring_http_router_adapters-samples/smart_router_default.ts
 
-new HttpRouter({ router: defaultHttpRouterAdapter });
 ```
 
 You can also configure `SmartRouter` explicitly:
 
-```ts
-import { HttpRouter } from "eridu-tech/http-router";
-import { SmartRouter } from "hono/router/smart-router";
-import { RegExpRouter } from "hono/router/reg-exp-router";
-import { TrieRouter } from "hono/router/trie-router";
+```ts file=./configuring_http_router_adapters-samples/smart_router_explicit.ts
 
-new HttpRouter({
-    router: new SmartRouter({
-        routers: [new RegExpRouter(), new TrieRouter()],
-    }),
-});
 ```
 
 :::info
@@ -57,44 +44,32 @@ new HttpRouter({
 
 `RegExpRouter` compiles all routes into a single regular expression for fast matching. It is best suited for applications with many static routes.
 
-```ts
-import { HttpRouter } from "eridu-tech/http-router";
-import { RegExpRouter } from "hono/router/reg-exp-router";
+```ts file=./configuring_http_router_adapters-samples/regexp_router.ts
 
-new HttpRouter({ router: new RegExpRouter() });
 ```
 
 ## TrieRouter
 
 `TrieRouter` performs linear trie traversal for route matching. It is best suited for applications with many dynamic path parameters.
 
-```ts
-import { HttpRouter } from "eridu-tech/http-router";
-import { TrieRouter } from "hono/router/trie-router";
+```ts file=./configuring_http_router_adapters-samples/trie_router.ts
 
-new HttpRouter({ router: new TrieRouter() });
 ```
 
 ## LinearRouter
 
 `LinearRouter` registers routes very quickly, making it suitable for environments that initialize applications on every request.
 
-```ts
-import { HttpRouter } from "eridu-tech/http-router";
-import { LinearRouter } from "hono/router/linear-router";
+```ts file=./configuring_http_router_adapters-samples/linear_router.ts
 
-new HttpRouter({ router: new LinearRouter() });
 ```
 
 ## PatternRouter
 
 `PatternRouter` is the smallest router, simply adding and matching patterns. It is best suited for minimal footprint applications.
 
-```ts
-import { HttpRouter } from "eridu-tech/http-router";
-import { PatternRouter } from "hono/router/pattern-router";
+```ts file=./configuring_http_router_adapters-samples/pattern_router.ts
 
-new HttpRouter({ router: new PatternRouter() });
 ```
 
 ## Further information

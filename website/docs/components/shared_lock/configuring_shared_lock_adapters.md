@@ -36,19 +36,14 @@ keywords:
 
 To use the `MemorySharedLockAdapter` you only need to create instance of it:
 
-```ts
-import { MemorySharedLockAdapter } from "eridu-tech/shared-lock/memory-shared-lock-adapter";
+```ts file=./configuring_shared_lock_adapters-samples/memory_shared_lock_adapter.ts
 
-const memorySharedLockAdapter = new MemorySharedLockAdapter();
 ```
 
 You can also provide an `Map` that will be used for storing the data in memory:
 
-```ts
-import { MemorySharedLockAdapter } from "eridu-tech/shared-lock/memory-shared-lock-adapter";
+```ts file=./configuring_shared_lock_adapters-samples/memory_shared_lock_adapter_with_map.ts
 
-const map = new Map<any, any>();
-const memorySharedLockAdapter = new MemorySharedLockAdapter(map);
 ```
 
 :::info
@@ -63,23 +58,15 @@ Note the `MemorySharedLockAdapter` is limited to single process usage and cannot
 
 To clean up expired shared-lock keys, call `removeAllExpired` at a regular interval (for example, using a cron job):
 
-```ts
-import { MemorySharedLockAdapter } from "eridu-tech/shared-lock/memory-shared-lock-adapter";
+```ts file=./configuring_shared_lock_adapters-samples/memory_shared_lock_remove_all_expired.ts
 
-const memorySharedLockAdapter = new MemorySharedLockAdapter();
-
-// Remove all expired shared-lock keys manually.
-await memorySharedLockAdapter.removeAllExpired();
 ```
 
-:::info
 To remove the shared-lock map and all stored shared-lock data, use `deInit` method:
 
-```ts
-await memorySharedLockAdapter.deInit();
-```
+```ts file=./configuring_shared_lock_adapters-samples/memory_shared_lock_adapter_deinit.ts
 
-:::
+```
 
 ## MongodbSharedLockAdapter
 
@@ -87,50 +74,27 @@ To use the `MongodbSharedLockAdapter`, you'll need to:
 
 1. Install the required dependency: [`mongodb`](https://www.npmjs.com/package/mongodb) package:
 
-```ts
-import { MongodbSharedLockAdapter } from "eridu-tech/shared-lock/mongodb-shared-lock-adapter";
-import { MongoClient } from "mongodb";
+```ts file=./configuring_shared_lock_adapters-samples/mongodb_shared_lock_adapter.ts
 
-const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
-const database = client.db("database");
-const mongodbSharedLockAdapter = new MongodbSharedLockAdapter({
-    database,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the indexes will be created
-await mongodbSharedLockAdapter.init();
 ```
 
 You can change the collection name:
 
-```ts
-const mongodbSharedLockAdapter = new MongodbSharedLockAdapter({
-    database,
-    // By default "shared-lock" is used as collection name
-    collectionName: "my-shared-lock",
-});
+```ts file=./configuring_shared_lock_adapters-samples/mongodb_shared_lock_collection_name.ts
 
-await mongodbSharedLockAdapter.init();
 ```
 
 You can change the collection settings:
 
-```ts
-const mongodbSharedLockAdapter = new MongodbSharedLockAdapter({
-    database,
-    // You configure additional collection settings
-    collectionSettings: {},
-});
+```ts file=./configuring_shared_lock_adapters-samples/mongodb_shared_lock_collection_settings.ts
 
-await mongodbSharedLockAdapter.init();
 ```
 
 :::info
 To remove the shared-lock collection and all stored shared-lock data, use `deInit` method:
 
-```ts
-await mongodbSharedLockAdapter.deInit();
+```ts file=./configuring_shared_lock_adapters-samples/mongodb_shared_lock_adapter_deinit.ts
+
 ```
 
 :::
@@ -145,12 +109,8 @@ To use the `RedisSharedLockAdapter`, you'll need to:
 
 1. Install the required dependency: [`ioredis`](https://www.npmjs.com/package/ioredis) package:
 
-```ts
-import { RedisSharedLockAdapter } from "eridu-tech/shared-lock/redis-shared-lock-adapter";
-import Redis from "ioredis";
+```ts file=./configuring_shared_lock_adapters-samples/redis_shared_lock_adapter.ts
 
-const database = new Redis("YOUR_REDIS_CONNECTION_STRING");
-const redisSharedLockAdapter = new RedisSharedLockAdapter(database);
 ```
 
 :::danger
@@ -169,25 +129,8 @@ To use the `KyselySharedLockAdapter`, you'll need to:
 
 You will need to install [`better-sqlite3`](https://www.npmjs.com/package/better-sqlite3) package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselySharedLockAdapter } from "eridu-tech/shared-lock/kysely-shared-lock-adapter";
-import Sqlite from "better-sqlite3";
-import { Kysely, SqliteDialect } from "kysely";
+```ts file=./configuring_shared_lock_adapters-samples/kysely_shared_lock_sqlite.ts
 
-const database = new Sqlite("DATABASE_NAME.db");
-const kysely = new Kysely({
-    dialect: new SqliteDialect({
-        database,
-    }),
-});
-const kyselySharedLockAdapter = new KyselySharedLockAdapter({
-    kysely,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselySharedLockAdapter.init();
 ```
 
 :::danger
@@ -198,33 +141,8 @@ Note using `KyselySharedLockAdapter` with `sqlite` is limited to single server u
 
 You will need to install [`pg`](https://www.npmjs.com/package/pg) package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselySharedLockAdapter } from "eridu-tech/shared-lock/kysely-shared-lock-adapter";
-import { Pool } from "pg";
-import { Kysely, PostgresDialect } from "kysely";
+```ts file=./configuring_shared_lock_adapters-samples/kysely_shared_lock_postgres.ts
 
-const database = new Pool({
-    database: "DATABASE_NAME",
-    host: "DATABASE_HOST",
-    user: "DATABASE_USER",
-    // DATABASE port
-    port: 5432,
-    password: "DATABASE_PASSWORD",
-    max: 10,
-});
-const kysely = new Kysely({
-    dialect: new PostgresDialect({
-        pool: database,
-    }),
-});
-const kyselySharedLockAdapter = new KyselySharedLockAdapter({
-    kysely,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselySharedLockAdapter.init();
 ```
 
 :::danger
@@ -235,33 +153,8 @@ Note in order to use `KyselySharedLockAdapter` with `postgres` correctly, ensure
 
 You will need to install [`mysql2`](https://www.npmjs.com/package/mysql2) package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselySharedLockAdapter } from "eridu-tech/shared-lock/kysely-shared-lock-adapter";
-import { createPool } from "mysql2";
-import { Kysely, MysqlDialect } from "kysely";
+```ts file=./configuring_shared_lock_adapters-samples/kysely_shared_lock_mysql.ts
 
-const database = createPool({
-    host: "DATABASE_HOST",
-    // Database port
-    port: 3306,
-    database: "DATABASE_NAME",
-    user: "DATABASE_USER",
-    password: "DATABASE_PASSWORD",
-    connectionLimit: 10,
-});
-const kysely = new Kysely({
-    dialect: new MysqlDialect({
-        pool: database,
-    }),
-});
-const kyselySharedLockAdapter = new KyselySharedLockAdapter({
-    kysely,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselySharedLockAdapter.init();
 ```
 
 :::danger
@@ -272,24 +165,8 @@ Note in order to use `KyselySharedLockAdapter` with `mysql` correctly, ensure yo
 
 You will need to install `@libsql/kysely-libsql` package:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { KyselySharedLockAdapter } from "eridu-tech/shared-lock/kysely-shared-lock-adapter";
-import { LibsqlDialect } from "@libsql/kysely-libsql";
-import { Kysely } from "kysely";
+```ts file=./configuring_shared_lock_adapters-samples/kysely_shared_lock_libsql.ts
 
-const kysely = new Kysely({
-    dialect: new LibsqlDialect({
-        url: "DATABASE_URL",
-    }),
-});
-const kyselySharedLockAdapter = new KyselySharedLockAdapter({
-    kysely,
-});
-
-// You need initialize the adapter once before using it.
-// During the initialization the schema will be created
-await kyselySharedLockAdapter.init();
 ```
 
 :::danger
@@ -300,34 +177,22 @@ Note in order to use `KyselySharedLockAdapter` with `libsql` correctly, ensure y
 
 To clean up expired shared-lock keys, call `removeAllExpired` at a regular interval (for example, using a cron job):
 
-```ts
-const kyselySharedLockAdapter = new KyselySharedLockAdapter({
-    database,
-});
+```ts file=./configuring_shared_lock_adapters-samples/kysely_shared_lock_remove_all_expired.ts
 
-await kyselySharedLockAdapter.init();
-
-// Remove all expired shared-lock keys manually.
-await kyselySharedLockAdapter.removeAllExpired();
 ```
 
-:::info
 To remove the shared-lock table and all stored shared-lock data, use `deInit` method:
 
-```ts
-await kyselySharedLockAdapter.deInit();
-```
+```ts file=./configuring_shared_lock_adapters-samples/kysely_shared_lock_adapter_deinit.ts
 
-:::
+```
 
 ## NoOpSharedLockAdapter
 
 The `NoOpSharedLockAdapter` is a no-operation implementation, it performs no actions when called:
 
-```ts
-import { NoOpSharedLockAdapter } from "eridu-tech/shared-lock/no-op-shared-lock-adapter";
+```ts file=./configuring_shared_lock_adapters-samples/no_op_shared_lock_adapter.ts
 
-const noOpSharedLockAdapter = new NoOpSharedLockAdapter();
 ```
 
 :::info

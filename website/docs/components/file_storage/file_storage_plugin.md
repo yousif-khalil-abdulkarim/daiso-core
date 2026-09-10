@@ -65,34 +65,22 @@ For the `copy`, `copyAndReplace`, `move`, and `moveAndReplace` methods, booth th
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryFileStorageAdapter } from "eridu-tech/file-storage/memory-file-storage-adapter";
-import { withFileStoragePrefix } from "eridu-tech/file-storage/plugins";
+```ts file=./file_storage_plugin-samples/with_file_storage_prefix.ts
 
-const adapter = new MemoryFileStorageAdapter();
-
-// Apply the prefix plugin to the adapter
-const prefixedAdapter = withPlugin(
-    adapter,
-    withFileStoragePrefix("tenant-42/"),
-);
 ```
 
 ### Before/after behavior
 
 **Before** — File keys are used as-is:
 
-```ts
-adapter.getBytes("uploads/report.pdf");
-// -> retrieves "uploads/report.pdf"
+```ts file=./file_storage_plugin-samples/unprefixed_get_bytes.ts
+
 ```
 
 **After** — File keys are automatically prefixed:
 
-```ts
-prefixedAdapter.getBytes("uploads/report.pdf");
-// -> retrieves "tenant-42/uploads/report.pdf"
+```ts file=./file_storage_plugin-samples/prefixed_get_bytes.ts
+
 ```
 
 :::danger
@@ -107,9 +95,8 @@ For more information about the `withPlugin` function and applying plugins to ada
 
 The `removeMany` method receives an array of keys. The plugin maps over the array, prefixing each entry:
 
-```ts
-prefixedAdapter.removeMany(["a.pdf", "b.pdf"]);
-// -> prefixedAdapter.removeMany(["tenant-42/a.pdf", "tenant-42/b.pdf"])
+```ts file=./file_storage_plugin-samples/remove_many_prefix.ts
+
 ```
 
 ## withFileStorageLock plugin
@@ -155,29 +142,14 @@ All methods are protected by default:
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryFileStorageAdapter } from "eridu-tech/file-storage/memory-file-storage-adapter";
-import { withFileStorageLock } from "eridu-tech/file-storage/plugins";
-import { MemoryLockFactory } from "eridu-tech/lock/memory-lock-factory";
+```ts file=./file_storage_plugin-samples/with_file_storage_lock.ts
 
-const adapter = new MemoryFileStorageAdapter();
-const lockFactory = new MemoryLockFactory();
-
-// Apply the lock plugin to the adapter
-const lockedAdapter = withPlugin(adapter, withFileStorageLock({ lockFactory }));
 ```
 
 #### Restricting protected methods
 
-```ts
-const adapter = withPlugin(
-    adapter,
-    withFileStorageLock({
-        lockFactory,
-        onlyMethods: ["add", "update", "removeMany"],
-    }),
-);
+```ts file=./file_storage_plugin-samples/file_storage_lock_only_methods.ts
+
 ```
 
 ### Settings
@@ -239,29 +211,14 @@ The plugin validates keys for the following methods:
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryFileStorageAdapter } from "eridu-tech/file-storage/memory-file-storage-adapter";
-import { withFileStorageKeyValidator } from "eridu-tech/file-storage/plugins";
+```ts file=./file_storage_plugin-samples/with_file_storage_key_validator.ts
 
-const adapter = new MemoryFileStorageAdapter();
-
-// Apply the key validator plugin to the adapter
-const validatedAdapter = withPlugin(adapter, withFileStorageKeyValidator());
 ```
 
 #### Custom validator
 
-```ts
-const validatedAdapter = withPlugin(
-    adapter,
-    withFileStorageKeyValidator((key) => {
-        if (key.startsWith("temp/")) {
-            return "Keys under temp/ are not allowed";
-        }
-        return null;
-    }),
-);
+```ts file=./file_storage_plugin-samples/file_storage_key_validator_custom.ts
+
 ```
 
 :::danger
@@ -312,15 +269,8 @@ The plugin lowercases keys for the following methods:
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryFileStorageAdapter } from "eridu-tech/file-storage/memory-file-storage-adapter";
-import { withFileStorageLowerCase } from "eridu-tech/file-storage/plugins";
+```ts file=./file_storage_plugin-samples/with_file_storage_lower_case.ts
 
-const adapter = new MemoryFileStorageAdapter();
-
-// Apply the lowercase plugin to the adapter
-const loweredAdapter = withPlugin(adapter, withFileStorageLowerCase());
 ```
 
 :::danger
@@ -360,30 +310,14 @@ The plugin infers the content type for the following methods:
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryFileStorageAdapter } from "eridu-tech/file-storage/memory-file-storage-adapter";
-import { withFileStorageInferContentTypeOnWrite } from "eridu-tech/file-storage/plugins";
+```ts file=./file_storage_plugin-samples/with_file_storage_infer_content_type_on_write.ts
 
-const adapter = new MemoryFileStorageAdapter();
-
-// Apply the write content-type plugin to the adapter
-const contentTypeAdapter = withPlugin(
-    adapter,
-    withFileStorageInferContentTypeOnWrite(),
-);
 ```
 
 #### Disabling inference for signed URLs
 
-```ts
-const contentTypeAdapter = withPlugin(
-    adapter,
-    withFileStorageInferContentTypeOnWrite({
-        inferSignedDownloadUrl: false,
-        inferSignedUploadUrl: false,
-    }),
-);
+```ts file=./file_storage_plugin-samples/file_storage_infer_content_type_disable_signed.ts
+
 ```
 
 ### Settings
@@ -418,18 +352,8 @@ The plugin only affects the `getMetaData` method.
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryFileStorageAdapter } from "eridu-tech/file-storage/memory-file-storage-adapter";
-import { withFileStorageInferContentTypeOnRead } from "eridu-tech/file-storage/plugins";
+```ts file=./file_storage_plugin-samples/with_file_storage_infer_content_type_on_read.ts
 
-const adapter = new MemoryFileStorageAdapter();
-
-// Apply the read content-type plugin to the adapter
-const metadataAdapter = withPlugin(
-    adapter,
-    withFileStorageInferContentTypeOnRead(),
-);
 ```
 
 :::info
@@ -463,18 +387,8 @@ The plugin infers the content type for the following methods:
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryFileStorageAdapter } from "eridu-tech/file-storage/memory-file-storage-adapter";
-import { withFileStorageInferFileTypeOnWrite } from "eridu-tech/file-storage/plugins";
+```ts file=./file_storage_plugin-samples/with_file_storage_infer_file_type_on_write.ts
 
-const adapter = new MemoryFileStorageAdapter();
-
-// Apply the write file-type plugin to the adapter
-const fileTypeAdapter = withPlugin(
-    adapter,
-    withFileStorageInferFileTypeOnWrite(),
-);
 ```
 
 :::danger
@@ -504,18 +418,8 @@ The plugin only affects the `getMetaData` method.
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryFileStorageAdapter } from "eridu-tech/file-storage/memory-file-storage-adapter";
-import { withFileStorageInferFileTypeOnRead } from "eridu-tech/file-storage/plugins";
+```ts file=./file_storage_plugin-samples/with_file_storage_infer_file_type_on_read.ts
 
-const adapter = new MemoryFileStorageAdapter();
-
-// Apply the read file-type plugin to the adapter
-const fileTypeAdapter = withPlugin(
-    adapter,
-    withFileStorageInferFileTypeOnRead(),
-);
 ```
 
 :::info

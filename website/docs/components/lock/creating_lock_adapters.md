@@ -26,22 +26,8 @@ testing.
 
 Usage example:
 
-```ts
-// filename: MyLockAdapter.test.ts
+```ts file=./creating_lock_adapters-samples/lock_adapter_test_suite.ts
 
-import { beforeEach, describe, expect, test } from "vitest";
-import { lockAdapterTestSuite } from "eridu-tech/lock/test-utilities";
-import { MemoryLockAdapter } from "./MemoryLockAdapter.js";
-
-describe("class: MyLockAdapter", () => {
-    lockAdapterTestSuite({
-        createAdapter: () => new MemoryLockAdapter(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
 ```
 
 ## Implementing your custom ILockFactory class
@@ -58,22 +44,8 @@ testing.
 
 Usage example:
 
-```ts
-// filename: MyLockFactory.test.ts
+```ts file=./creating_lock_adapters-samples/lock_factory_test_suite.ts
 
-import { beforeEach, describe, expect, test } from "vitest";
-import { lockFactoryTestSuite } from "eridu-tech/lock/test-utilities";
-import { MyLockFactory } from "./MyLockFactory.js";
-
-describe("class: MyLockFactory", () => {
-    lockFactoryTestSuite({
-        createLockFactory: () => new MyLockFactory(),
-        test,
-        beforeEach,
-        expect,
-        describe,
-    });
-});
 ```
 
 ## Further information

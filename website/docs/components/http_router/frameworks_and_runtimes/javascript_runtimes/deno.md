@@ -22,23 +22,8 @@ deno add npm:eridu-tech npm:hono
 
 ### 2. Create the handler
 
-```ts
-// main.ts
-import {
-    HttpRouter,
-    HttpRes,
-    defaultHttpRouterAdapter,
-} from "eridu-tech/http-router";
+```ts file=./deno-samples/create_handler.ts
 
-const router = new HttpRouter({ router: defaultHttpRouterAdapter });
-
-router.endpoint({
-    url: "/hello",
-    method: "GET",
-    handler: async () => HttpRes.text("Hello Deno!"),
-});
-
-Deno.serve((request) => router.fetch(request));
 ```
 
 **File structure**

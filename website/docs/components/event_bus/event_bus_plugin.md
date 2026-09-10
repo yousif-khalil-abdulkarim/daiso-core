@@ -39,35 +39,22 @@ The plugin prefixes event names for the following methods:
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryEventBusAdapter } from "eridu-tech/event-bus/memory-event-bus-adapter";
-import { withEventBusPrefix } from "eridu-tech/event-bus/plugins";
+```ts file=./event_bus_plugin-samples/with_event_bus_prefix.ts
 
-const adapter = new MemoryEventBusAdapter();
-
-// Apply the prefix plugin to the adapter
-const prefixedAdapter = withPlugin(adapter, withEventBusPrefix("tenant-42:"));
 ```
 
 ### Before/after behavior
 
 **Before** — Event names are used as-is:
 
-```ts
-adapter.dispatch("user.created", data);
-// -> dispatches "user.created"
-adapter.addListener("user.created", listener);
-// -> listens to "user.created"
+```ts file=./event_bus_plugin-samples/unprefixed_dispatch.ts
+
 ```
 
 **After** — Event names are automatically prefixed:
 
-```ts
-prefixedAdapter.dispatch("user.created", data);
-// -> dispatches "tenant-42:user.created"
-prefixedAdapter.addListener("user.created", listener);
-// -> listens to "tenant-42:user.created"
+```ts file=./event_bus_plugin-samples/prefixed_dispatch.ts
+
 ```
 
 :::danger
@@ -77,118 +64,6 @@ Because `withPlugin` uses `enhance` under the hood, the same edge case applies: 
 :::info
 For more information about the `withPlugin` function and applying plugins to adapters, see the [Middleware plugin](/docs/components/middleware#plugin) documentation.
 :::
-
-<!-- ## withEventBusSchema plugin
-
-The EventBus schema plugin validates event data against a schema map before dispatching and, optionally, before delivering events to listeners. This ensures that only data conforming to the defined schema reaches the adapter and your event handlers.
-
-### Use cases
-
-- **Input validation** — Ensure dispatched event data matches the expected shape before it reaches the adapter
-- **Listener safety** — Validate event data before it reaches listeners, preventing malformed data from causing runtime errors
-- **Schema enforcement** — Enforce a contract between event producers and consumers at runtime
-- **Standard Schema compliance** — Works with any library that implements the `StandardSchemaV1` specification (Zod, ArkType, Valibot, etc.)
-
-### How it works
-
-The `withEventBusSchema` function returns a [`PluginFn`](/docs/components/middleware) that calls `enhance` on the `dispatch` method. When `dispatch` is invoked, the plugin intercepts the call, validates the event data against the schema associated with the event name, and forwards either the validated data (passthrough) or throws on validation failure.
-
-When `shouldValidateListeners` is `true` (default), the plugin also enhances `addListener` to wrap listener functions with validation logic. The wrapped listener validates incoming event data before passing it to the original listener.
-
-| Method        | Behaviour                                                 |
-| ------------- | --------------------------------------------------------- |
-| `dispatch`    | Validates event data against the schema before forwarding |
-| `addListener` | Wraps the listener to validate event data on each call    |
-
-### Usage
-
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryEventBusAdapter } from "eridu-tech/event-bus/memory-event-bus-adapter";
-import {
-    withEventBusSchema,
-    defineEventMapSchema,
-} from "eridu-tech/event-bus/plugins";
-import { EventBus } from "eridu-tech/event-bus";
-import { z } from "zod";
-
-const adapter = new MemoryEventBusAdapter();
-
-const eventMapSchema = defineEventMapSchema({
-    "user.created": z.object({ userId: z.string() }),
-});
-
-// Apply the schema plugin to the adapter
-const validatedAdapter = withPlugin(
-    adapter,
-    withEventBusSchema({
-        eventMapSchema,
-    }),
-);
-
-const eventBus = new EventBus<typeof eventMapSchema>({
-    adapter: validatedAdapter,
-});
-```
-
-#### Disabling listeners validation
-
-If you only want to validate event data on dispatch and skip listener validation, set `shouldValidateListeners` to `false`:
-
-```ts
-const enhanced = withPlugin(
-    adapter,
-    withEventBusSchema({
-        eventMapSchema: {
-            "user.created": z.object({
-                userId: z.string(),
-            }),
-        },
-        shouldValidateListeners: false,
-    }),
-);
-
-// Dispatch is still validated
-await enhanced.dispatch("user.created", { userId: "123" });
-
-// Listeners receive the raw event data without validation
-await enhanced.addListener("user.created", (event) => {
-    console.log(event);
-});
-```
-
-### Settings
-
-| Option                    | Type             | Default | Description                                                                   |
-| ------------------------- | ---------------- | ------- | ----------------------------------------------------------------------------- |
-| `eventMapSchema`          | `EventMapSchema` | —       | Map of event names to standard-schema-compliant schemas for validation        |
-| `shouldValidateListeners` | `boolean`        | `true`  | Whether to validate event data in listener functions when events are received |
-
-### Plugin ordering
-
-When combining `withEventBusSchema` with `withEventBusPrefix`, the schema must come **first** in the array so it validates the original event names before `withEventBusPrefix` transforms them:
-
-```ts
-// ✅ Correct: schema is first in array -> outermost -> validates original "user.created"
-const enhanced = withPlugin(adapter, [
-    withEventBusSchema({ eventMapSchema }),
-    withEventBusPrefix("app:"),
-]);
-
-// ❌ Wrong: prefix is first in array -> outermost -> schema receives "app:user.created"
-const enhanced = withPlugin(adapter, [
-    withEventBusPrefix("app:"),
-    withEventBusSchema({ eventMapSchema }),
-]);
-```
-
-:::danger
-Because `withPlugin` uses `enhance` under the hood, the same edge case applies: if one enhanced method internally calls another enhanced method via `this`, the middleware will apply **twice**. Be mindful of inter-method calls when applying plugins that enhance multiple methods on the same instance.
-:::
-
-:::info
-For more information about the `withPlugin` function and applying plugins to adapters, see the [Middleware plugin](/docs/components/middleware#plugin) documentation.
-::: -->
 
 ## withListenerTracking plugin
 
@@ -217,46 +92,16 @@ The plugin execution order is:
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryEventBusAdapter } from "eridu-tech/event-bus/memory-event-bus-adapter";
-import { withListenerTracking } from "eridu-tech/event-bus/plugins";
+```ts file=./event_bus_plugin-samples/with_listener_tracking.ts
 
-const adapter = new MemoryEventBusAdapter();
-
-// A plugin that wraps listeners, e.g. to add logging or validation
-const loggingPlugin = (instance, enhance) => {
-    enhance(
-        instance,
-        "addListener",
-        ({ args: [eventName, listener], next }) => {
-            return next([
-                eventName,
-                (event) => {
-                    console.log(`Received "${eventName}"`);
-                    return listener(event);
-                },
-            ]);
-        },
-    );
-};
-
-// Apply listener tracking around a plugin that wraps listeners
-const enhancedAdapter = withPlugin(
-    adapter,
-    withListenerTracking(loggingPlugin),
-);
 ```
 
 #### Chaining multiple tracking calls
 
 Multiple `withListenerTracking` calls can be composed together:
 
-```ts
-const enhancedAdapter = withPlugin(adapter, [
-    withListenerTracking(pluginA),
-    withListenerTracking(pluginB),
-]);
+```ts file=./event_bus_plugin-samples/listener_tracking_chaining.ts
+
 ```
 
 :::danger

@@ -22,24 +22,8 @@ npm install eridu-tech hono @hono/node-server
 
 ### 2. Create the handler
 
-```ts
-// pages/api/[[...route]].ts
-import {
-    HttpRouter,
-    HttpRes,
-    defaultHttpRouterAdapter,
-} from "eridu-tech/http-router";
-import { getRequestListener } from "@hono/node-server";
+```ts file=./nextjs_pages_router-samples/create_handler.ts
 
-const router = new HttpRouter({ router: defaultHttpRouterAdapter });
-
-router.endpoint({
-    url: "/api/hello",
-    method: "GET",
-    handler: async () => HttpRes.text("Hello from Next.js!"),
-});
-
-export default getRequestListener((request: Request) => router.fetch(request));
 ```
 
 **File structure**

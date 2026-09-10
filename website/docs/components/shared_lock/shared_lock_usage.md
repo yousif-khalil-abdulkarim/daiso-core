@@ -18,19 +18,8 @@ The `eridu-tech/shared-lock` component provides a way for managing shared-locks 
 
 To begin using the `SharedLockFactory` class, you'll need to create and configure an instance:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-import { MemorySharedLockAdapter } from "eridu-tech/shared-lock/memory-shared-lock-adapter";
-import { SharedLockFactory } from "eridu-tech/shared-lock";
+```ts file=./shared_lock_usage-samples/shared_lock_factory_initial_config.ts
 
-const sharedLockFactory = new SharedLockFactory({
-    // You can provide default TTL value
-    // If you set it to null it means shared-locks will not expire and most be released manually by default.
-    defaultTtl: TimeSpan.fromSeconds(2),
-
-    // You can choose the adapter to use
-    adapter: new MemorySharedLockAdapter(),
-});
 ```
 
 :::info
@@ -41,73 +30,20 @@ Here is a complete list of settings for the [`SharedLockFactory`](https://eridu-
 
 ### Creating a shared-lock
 
-```ts
-const sharedLock = sharedLockFactory.create("shared-resource", {
-    // You need to define a limit
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_create.ts
+
 ```
 
 ### Acquiring and releasing the shared-lock as reader
 
-```ts
-// 1 slot will be acquired
-if (await sharedLock.acquireReader()) {
-    console.log("Acquired");
-    try {
-        // The concurrent section
-    } finally {
-        await sharedLock.releaseReader();
-    }
-} else {
-    console.log("Unable to acquire");
-}
+```ts file=./shared_lock_usage-samples/shared_lock_acquire_reader.ts
 
-// 2 slots will be acquired
-if (await sharedLock.acquireReader()) {
-    console.log("Acquired");
-    try {
-        // The concurrent section
-    } finally {
-        await sharedLock.releaseReader();
-    }
-} else {
-    console.log("Unable to acquire");
-}
-
-// Will log false because the limit is reached
-console.log(await sharedLock.acquireReader());
 ```
 
 Alternatively you could write it as follows:
 
-```ts
-// 1 slot will be acquired
-try {
-    console.log("Acquired");
-    // This method will throw if the shared-lock limit is reached.
-    await sharedLock.acquireReaderOrFail();
-    // The critical section
-} catch {
-    console.log("Unable to acquire");
-} finally {
-    await sharedLock.releaseReader();
-}
+```ts file=./shared_lock_usage-samples/shared_lock_acquire_reader_or_fail.ts
 
-// 2 slots will be acquired
-try {
-    console.log("Acquired");
-    // This method will throw if the shared-lock limit is reached.
-    await sharedLock.acquireReaderOrFail();
-    // The critical section
-} catch {
-    console.log("Unable to acquire");
-} finally {
-    await sharedLock.releaseReader();
-}
-
-// Will throw because the limit is reached
-await sharedLock.acquireReaderOrFail();
 ```
 
 :::danger
@@ -116,27 +52,14 @@ You need always to wrap the concurrent section with `try-finally` so the shared-
 
 ### Acquiring and releasing the shared-lock as writer
 
-```ts
-const hasAquired = await sharedLock.acquireWriter();
-if (hasAquired) {
-    try {
-        // The critical section
-    } finally {
-        await sharedLock.releaseWriter();
-    }
-}
+```ts file=./shared_lock_usage-samples/shared_lock_acquire_writer.ts
+
 ```
 
 Alternatively you could write it as follows:
 
-```ts
-try {
-    // This method will throw if the shared-lock is not acquired
-    await sharedLock.acquireWriterOrFail();
-    // The critical section
-} finally {
-    await sharedLock.releaseWriter();
-}
+```ts file=./shared_lock_usage-samples/shared_lock_acquire_writer_or_fail.ts
+
 ```
 
 :::danger
@@ -147,56 +70,16 @@ You need always to wrap the critical section with `try-finally` so the shared-lo
 
 You can provide a custom TTL for the shared-lock.
 
-```ts
-const sharedLock = sharedLockFactory.create("shared-resource", {
-    // Default TTL is 5min if not overrided
-    // If you set it to null it means shared-lock will not expire and most be released manually.
-    ttl: TimeSpan.fromSeconds(30),
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_custom_ttl.ts
+
 ```
 
 ### Checking shared-lock state
 
 You can get the shared-lock state by using the `getState` method, it returns [`ISharedLockState`](https://eridu-tech.github.io/eridu-tech-core/types/SharedLock.ISharedLockState.html).
 
-```ts
-import { SHARED_LOCK_STATE } from "eridu-tech/shared-lock/contracts";
+```ts file=./shared_lock_usage-samples/shared_lock_get_state.ts
 
-const sharedLock = sharedLockFactory.create("shared-resource", {
-    limit: 2,
-});
-const state = await sharedLock.getState();
-
-if (state.type === SHARED_LOCK_STATE.EXPIRED) {
-    console.log("The shared-lock doesnt exists");
-}
-
-if (state.type === SHARED_LOCK_STATE.READER_LIMIT_REACHED) {
-    console.log(
-        "The shared-lock is in reader mode and limit have been reached and all slots are unavailable",
-    );
-}
-
-if (state.type === SHARED_LOCK_STATE.READER_ACQUIRED) {
-    console.log("The shared-lock is in reader mode and is acquired");
-}
-
-if (state.type === SHARED_LOCK_STATE.READER_UNACQUIRED) {
-    console.log(
-        "The shared-lock is in reader mode and there are avilable slots but the shared-lock is not acquired",
-    );
-}
-
-if (state.type === SHARED_LOCK_STATE.WRITER_UNAVAILABLE) {
-    console.log(
-        "The shared-lock is in writer mode and is acquired by different owner",
-    );
-}
-
-if (state.type === SHARED_LOCK_STATE.WRITER_ACQUIRED) {
-    console.log("The shared-lock is in writer mode and is acquired");
-}
 ```
 
 ## Patterns
@@ -208,83 +91,21 @@ instead of setting an excessively long TTL initially, you can start with a short
 
 #### As reader
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-    ttl: TimeSpan.fromMinutes(1),
-});
+```ts file=./shared_lock_usage-samples/shared_lock_refresh_reader.ts
 
-async function doWork(): Promise<boolean> {
-    // ... critical section
-}
-
-const hasAcquired = await sharedLock.acquireWriter();
-if (hasAcquired) {
-    try {
-        while (true) {
-            await sharedLock.refreshWriter(TimeSpan.fromMinutes(1));
-            const hasFinished = await doWork();
-            if (hasFinished) {
-                break;
-            }
-            await delay(TimeSpan.fromSeconds(1));
-        }
-    } finally {
-        await sharedLock.releaseWriter();
-    }
-}
 ```
 
 #### As writer
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-    ttl: TimeSpan.fromMinutes(1),
-});
+```ts file=./shared_lock_usage-samples/shared_lock_refresh_writer.ts
 
-async function doWork(): Promise<boolean> {
-    // ... critical section
-}
-
-const hasAcquired = await sharedLock.acquireWriter();
-if (hasAcquired) {
-    try {
-        while (true) {
-            await sharedLock.refreshReader(TimeSpan.fromMinutes(1));
-            const hasFinished = await doWork();
-            if (hasFinished) {
-                break;
-            }
-            await delay(TimeSpan.fromSeconds(1));
-        }
-    } finally {
-        await sharedLock.releaseReader();
-    }
-}
 ```
 
 :::warning
 Note: A shared-lock must have an expiration (a `ttl` value) to be refreshed. You cannot refresh a shared-lock that was created without an expiration (with `ttl: null`)
 
-```ts
-// Create a shared-lock with no expiration (non-refreshable)
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-    ttl: null,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_non_refreshable.ts
 
-// A writer refresh attempt on this shared-ock will fail
-const hasRefreshedWriter = await sharedLock.refreshWriter();
-
-// This will log 'false' because the sharedLock cannot be refreshed
-console.log(hasRefreshedWriter);
-
-// A reader refresh attempt on this shared-ock will fail
-const hasRefreshedReader = await sharedLock.refreshReader();
-
-// This will log 'false' because the sharedLock cannot be refreshed
-console.log(hasRefreshedReader);
 ```
 
 :::
@@ -293,35 +114,21 @@ console.log(hasRefreshedReader);
 
 The `releaseWriterOrFail` method is the same `releaseWriter` method but it throws an error when not enable to release the shared-lock as writer:
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_release_writer_or_fail.ts
 
-await sharedLock.releaseWriterOrFail();
 ```
 
 The `refreshWriterOrFail` method is the same `refreshWriter` method but it throws an error when not enable to refresh the shared-lock as writer:
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_refresh_writer_or_fail.ts
 
-await sharedLock.refreshWriterOrFail();
 ```
 
 The `runWriterOrFail` method automatically manages shared-lock acquisition and release as writer around function execution.
 It calls `acquireWriterOrFail` before invoking the function and calls `releaseWriter` in a finally block, ensuring the shared-lock is always freed, even if an error occurs during execution.
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_run_writer_or_fail.ts
 
-await sharedLock.runWriterOrFail(async () => {
-    // ... critical section
-});
 ```
 
 :::info
@@ -336,35 +143,21 @@ You can provide synchronous Invocable or async/promisable invocable as values fo
 
 The `releaseReaderOrFail` method is the same `releaseReader` method but it throws an error when not enable to release the shared-lock as reader:
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_release_reader_or_fail.ts
 
-await sharedLock.releaseReaderOrFail();
 ```
 
 The `refreshReaderOrFail` method is the same `refreshReader` method but it throws an error when not enable to refresh the shared-lock as reader:
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_refresh_reader_or_fail.ts
 
-await sharedLock.refreshReaderOrFail();
 ```
 
 The `runReaderOrFail` method automatically manages shared-lock acquisition and release as reader around function execution.
 It calls `acquireReaderOrFail` before invoking the function and calls `releaseReader` in a finally block, ensuring the shared-lock is always freed, even if an error occurs during execution.
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_run_reader_or_fail.ts
 
-await sharedLock.runReaderOrFail(async () => {
-    // ... critical section
-});
 ```
 
 :::info
@@ -379,47 +172,24 @@ You can provide synchronous Invocable or async/promisable invocable as values fo
 
 The `forceRelease` method releases the shared-lock regardless it its in reader or writer mode:
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_force_release.ts
 
-await sharedLock.forceRelease();
 ```
 
 ### SharedLock instance variables
 
 The `SharedLock` class exposes instance variables such as:
 
-```ts
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
+```ts file=./shared_lock_usage-samples/shared_lock_instance_variables.ts
 
-// Will return the key of the shared-lock which is "resource"
-console.log(sharedLock.key);
-
-// Will return the id of the shared-lock
-console.log(sharedLock.id);
-
-// Will return the ttl of the shared-lock
-console.log(sharedLock.ttl);
 ```
 
 ### SharedLock id
 
 By default the shared-lock id is autogenerated but it can also manually defined.
 
-```ts
-const sharedLock = sharedLockFactory.create("shared-lock", {
-    lockId: "my-shared-lock-id",
-});
+```ts file=./shared_lock_usage-samples/shared_lock_custom_id.ts
 
-const hasAcquire = await sharedLock.acquireWriter();
-if (hasAcquired) {
-    console.log("Shared resource");
-    await sharedLock.releaseWriter();
-}
 ```
 
 :::info
@@ -432,259 +202,68 @@ In most cases, setting a shared-lock id is unnecessary.
 
 ### Retrying acquiring shared-lock as writer by attempts
 
-To retry acquiring shared-lock as writer you can use the [`retry`](../resilience.md) middleware.
+To retry acquiring shared-lock as writer you can use the [`retry`](../resilience/resilience.md) middleware.
 
 Retrying acquiring shared-lock as writer with `acquireWriterOrFail` method:
 
-```ts
-import { retry } from "eridu-tech/resilience";
-import { FailedAcquireWriterLockError } from "eridu-tech/shared-lock/contracts";
-import { use } from "eridu-tech/middleware";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_writer_acquire_or_fail.ts
 
-const sharedLock = sharedLockFactory.create("shared-lock", {
-    limit: 2,
-});
-
-try {
-    await use(async () => {
-        await sharedLock.acquireWriterOrFail();
-    }, [
-        retry({
-            maxAttempts: 4,
-            errorPolicy: FailedAcquireWriterLockError,
-        }),
-    ])();
-    // The critical section
-} finally {
-    await sharedLock.release();
-}
 ```
 
 Retrying acquiring sharedLock as writer with `acquireWriter` method:
 
-```ts
-import { retry } from "eridu-tech/resilience";
-import { use } from "eridu-tech/middleware";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_writer_acquire.ts
 
-const sharedLock = sharedLockFactory.create("shared-lock", {
-    limit: 2,
-});
-
-const hasAquired = await use(async () => {
-    return await sharedLock.acquireWriter();
-}, [
-    retry({
-        maxAttempts: 4,
-        errorPolicy: {
-            treatFalseAsError: true,
-        },
-    }),
-])();
-
-if (hasAquired) {
-    try {
-        // The critical section
-    } finally {
-        await sharedLock.release();
-    }
-}
 ```
 
 Retrying acquiring shared-lock as writer with `runWriterOrFail` method:
 
-```ts
-import { retry } from "eridu-tech/resilience";
-import { FailedAcquireWriterLockError } from "eridu-tech/shared-lock/contracts";
-import { use } from "eridu-tech/middleware";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_writer_run_or_fail.ts
 
-const sharedLock = sharedLockFactory.create("shared-lock", {
-    limit: 2,
-});
-
-await use(async () => {
-    await sharedLock.runWriterOrFail(async () => {
-        // The critical section
-    });
-}, [
-    retry({
-        maxAttempts: 4,
-        errorPolicy: FailedAcquireWriterLockError,
-    }),
-])();
 ```
 
 ### Retrying acquiring shared-lock as reader by attempts
 
-To retry acquiring shared-lock as reader you can use the [`retry`](../resilience.md) middleware.
+To retry acquiring shared-lock as reader you can use the [`retry`](../resilience/resilience.md) middleware.
 
 Retrying acquiring shared-lock as reader with `acquireReaderOrFail` method:
 
-```ts
-import { retry } from "eridu-tech/resilience";
-import { LimitReachedReaderSemaphoreError } from "eridu-tech/shared-lock/contracts";
-import { use } from "eridu-tech/middleware";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_reader_acquire_or_fail.ts
 
-const sharedLock = sharedLockFactory.create("shared-lock", {
-    limit: 2,
-});
-
-try {
-    await use(async () => {
-        await sharedLock.acquireReaderOrFail();
-    }, [
-        retry({
-            maxAttempts: 4,
-            errorPolicy: LimitReachedReaderSemaphoreError,
-        }),
-    ])();
-    // The critical section
-} finally {
-    await sharedLock.release();
-}
 ```
 
 Retrying acquiring sharedLock as reader with `acquireReader` method:
 
-```ts
-import { retry } from "eridu-tech/resilience";
-import { use } from "eridu-tech/middleware";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_reader_acquire.ts
 
-const sharedLock = sharedLockFactory.create("shared-lock", {
-    limit: 2,
-});
-
-const hasAquired = await use(async () => {
-    return await sharedLock.acquireReader();
-}, [
-    retry({
-        maxAttempts: 4,
-        errorPolicy: {
-            treatFalseAsError: true,
-        },
-    }),
-])();
-
-if (hasAquired) {
-    try {
-        // The critical section
-    } finally {
-        await sharedLock.release();
-    }
-}
 ```
 
 Retrying acquiring shared-lock as reader with `runReaderOrFail` method:
 
-```ts
-import { retry } from "eridu-tech/resilience";
-import { LimitReachedReaderSemaphoreError } from "eridu-tech/shared-lock/contracts";
-import { use } from "eridu-tech/middleware";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_reader_run_or_fail.ts
 
-const sharedLock = sharedLockFactory.create("shared-lock", {
-    limit: 2,
-});
-
-await use(async () => {
-    await sharedLock.runReaderOrFail(async () => {
-        // The critical section
-    });
-}, [
-    retry({
-        maxAttempts: 4,
-        errorPolicy: LimitReachedReaderSemaphoreError,
-    }),
-])();
 ```
 
 ### Retrying acquiring shared-lock as writer by interval
 
-To retry acquiring shared-lockas as writer at regular intervals you can use the [`retryInterval`](../resilience.md) middleware.
+To retry acquiring shared-lockas as writer at regular intervals you can use the [`retryInterval`](../resilience/resilience.md) middleware.
 
 Retrying acquiring shared-lock with `acquireWriterOrFail` method:
 
-```ts
-import { retryInterval } from "eridu-tech/resilience";
-import { FailedAcquireWriterLockError } from "eridu-tech/shared-lock/contracts";
-import { use } from "eridu-tech/middleware";
-import { TimeSpan } from "eridu-tech/time-span";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_interval_writer_acquire_or_fail.ts
 
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
-
-try {
-    await use(async () => {
-        await sharedLock.acquireWriterOrFail();
-    }, [
-        retryInterval({
-            // Time to wait 1 minute
-            time: TimeSpan.fromMinutes(1),
-            // Interval to try acquire the shared-lock
-            interval: TimeSpan.fromSeconds(1),
-            errorPolicy: FailedAcquireWriterLockError,
-        }),
-    ])();
-    // ... critical section
-} finally {
-    await sharedLock.releaseWriter();
-}
 ```
 
 Retrying acquiring shared-lock with `acquireWriter` method:
 
-```ts
-import { retryInterval } from "eridu-tech/resilience";
-import { use } from "eridu-tech/middleware";
-import { TimeSpan } from "eridu-tech/time-span";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_interval_writer_acquire.ts
 
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
-
-const hasAcquired = await use(async () => {
-    return await sharedLock.acquireWriter();
-}, [
-    retryInterval({
-        time: TimeSpan.fromMinutes(1),
-        interval: TimeSpan.fromSeconds(1),
-        errorPolicy: {
-            treatFalseAsError: true,
-        },
-    }),
-])();
-
-if (hasAcquired) {
-    try {
-        // ... critical section
-    } finally {
-        await sharedLock.releaseWriter();
-    }
-}
 ```
 
 Retrying acquiring shared-lock with `runWriterOrFail` method:
 
-```ts
-import { retryInterval } from "eridu-tech/resilience";
-import { FailedAcquireWriterLockError } from "eridu-tech/shared-lock/contracts";
-import { use } from "eridu-tech/middleware";
-import { TimeSpan } from "eridu-tech/time-span";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_interval_writer_run_or_fail.ts
 
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
-
-await use(async () => {
-    await sharedLock.runWriterOrFail(async () => {
-        // ... critical section
-    });
-}, [
-    retryInterval({
-        time: TimeSpan.fromMinutes(1),
-        interval: TimeSpan.fromSeconds(1),
-        errorPolicy: FailedAcquireWriterLockError,
-    }),
-])();
 ```
 
 :::warning
@@ -693,93 +272,24 @@ Note using `retryInterval` middleware with shared-lock acquiring in a HTTP reque
 
 ### Retrying acquiring shared-lock as reader by interval
 
-To retry acquiring shared-lockas as reader at regular intervals you can use the [`retryInterval`](../resilience.md) middleware.
+To retry acquiring shared-lockas as reader at regular intervals you can use the [`retryInterval`](../resilience/resilience.md) middleware.
 
 Retrying acquiring shared-lock with `acquireReaderOrFail` method:
 
-```ts
-import { retryInterval } from "eridu-tech/resilience";
-import { LimitReachedReaderSemaphoreError } from "eridu-tech/shared-lock/contracts";
-import { use } from "eridu-tech/middleware";
-import { TimeSpan } from "eridu-tech/time-span";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_interval_reader_acquire_or_fail.ts
 
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
-
-try {
-    await use(async () => {
-        await sharedLock.acquireReaderOrFail();
-    }, [
-        retryInterval({
-            // Time to wait 1 minute
-            time: TimeSpan.fromMinutes(1),
-            // Interval to try acquire the shared-lock
-            interval: TimeSpan.fromSeconds(1),
-            errorPolicy: LimitReachedReaderSemaphoreError,
-        }),
-    ])();
-    // ... critical section
-} finally {
-    await sharedLock.releaseReader();
-}
 ```
 
 Retrying acquiring shared-lock with `acquireReader` method:
 
-```ts
-import { retryInterval } from "eridu-tech/resilience";
-import { use } from "eridu-tech/middleware";
-import { TimeSpan } from "eridu-tech/time-span";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_interval_reader_acquire.ts
 
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
-
-const hasAcquired = await use(async () => {
-    return await sharedLock.acquireReader();
-}, [
-    retryInterval({
-        time: TimeSpan.fromMinutes(1),
-        interval: TimeSpan.fromSeconds(1),
-        errorPolicy: {
-            treatFalseAsError: true,
-        },
-    }),
-])();
-
-if (hasAcquired) {
-    try {
-        // ... critical section
-    } finally {
-        await sharedLock.releaseReader();
-    }
-}
 ```
 
 Retrying acquiring shared-lock with `runReaderOrFail` method:
 
-```ts
-import { retryInterval } from "eridu-tech/resilience";
-import { LimitReachedReaderSemaphoreError } from "eridu-tech/shared-lock/contracts";
-import { use } from "eridu-tech/middleware";
-import { TimeSpan } from "eridu-tech/time-span";
+```ts file=./shared_lock_usage-samples/shared_lock_retry_interval_reader_run_or_fail.ts
 
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
-
-await use(async () => {
-    await sharedLock.runReaderOrFail(async () => {
-        // ... critical section
-    });
-}, [
-    retryInterval({
-        time: TimeSpan.fromMinutes(1),
-        interval: TimeSpan.fromSeconds(1),
-        errorPolicy: LimitReachedReaderSemaphoreError,
-    }),
-])();
 ```
 
 :::warning
@@ -790,31 +300,12 @@ Note using `retryInterval` middleware with shared-lock acquiring in a HTTP reque
 
 SharedLocks can be serialized, allowing them to be transmitted over the network to another server and later deserialized for reuse.
 This means you can, for example, acquire the shared-lock on the main server, transfer it to a queue worker server, and release it there.
-In order to serialize or deserialize a shared-lock you need pass an object that implements [`ISerderRegister`](../serde.md) contract like the [`Serde`](../serde.md) class to `SharedLockFactory`.
+In order to serialize or deserialize a shared-lock you need pass an object that implements [`ISerderRegister`](../serde/serde.md) contract like the [`Serde`](../serde/serde.md) class to `SharedLockFactory`.
 
 Manually serializing and deserializing the shared-lock:
 
-```ts
-import { RedisSharedLockAdapter } from "eridu-tech/shared-lock/redis-shared-lock-adapter";
-import { SharedLockFactory } from "eridu-tech/shared-lock";
-import { Serde } from "eridu-tech/serde";
-import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
+```ts file=./shared_lock_usage-samples/shared_lock_manual_serialization.ts
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
-
-const redisClient = new Redis("YOUR_REDIS_CONNECTION");
-
-const sharedLockFactory = new SharedLockFactory({
-    // You can laso pass in an array of Serde class instances
-    serde,
-    adapter: new RedisSharedLockAdapter(redisClient),
-});
-
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
-const serializedSharedLock = serde.serialize(sharedLock);
-const deserializedSharedLock = serde.deserialize(sharedLock);
 ```
 
 :::danger
@@ -827,51 +318,8 @@ Note you only need manuall serialization and deserialization when integrating wi
 
 As long you pass the same `Serde` instances with all other components you dont need to serialize and deserialize the shared-lock manually.
 
-```ts
-import { RedisSharedLockAdapter } from "eridu-tech/shared-lock/redis-shared-lock-adapter";
-import type { ISharedLock } from "eridu-tech/shared-lock/contracts";
-import { SharedLockFactory } from "eridu-tech/shared-lock";
-import { RedisPubSubEventBusAdapter } from "eridu-tech/event-bus/redis-pub-sub-event-bus-adapter";
-import { EventBus } from "eridu-tech/event-bus";
-import { Serde } from "eridu-tech/serde";
-import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
+```ts file=./shared_lock_usage-samples/shared_lock_event_bus_serialization.ts
 
-const serde = new Serde(new SuperJsonSerdeAdapter());
-const redis = new Redis("YOUR_REDIS_CONNECTION");
-
-type EventMap = {
-    "sending-shared-lock-over-network": {
-        sharedLock: ISharedLock;
-    };
-};
-const eventBus = new EventBus<EventMap>({
-    adapter: new RedisPubSubEventBusAdapter({
-        client: redis,
-        serde,
-    }),
-});
-
-const sharedLockFactory = new SharedLockFactory({
-    serde,
-    adapter: new RedisSharedLockAdapter(redis),
-});
-const sharedLock = sharedLockFactory.create("resource", {
-    limit: 2,
-});
-
-// We are sending the shared-lock over the network to other servers.
-await eventBus.dispatch("sending-shared-lock-over-network", {
-    sharedLock,
-});
-
-// The other servers will recieve the serialized shared-lock and automattically deserialize it.
-await eventBus.addListener(
-    "sending-shared-lock-over-network",
-    ({ sharedLock }) => {
-        // The shared-lock is deserialized and can be used
-        console.log("SHARED_LOCK:", sharedLock);
-    },
-);
 ```
 
 ### Separating shared-lock creation from manipulation

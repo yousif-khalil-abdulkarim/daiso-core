@@ -1,0 +1,12 @@
+import { lockFactory } from "./lock_factory_initial_config";
+
+const lock = lockFactory.create("resource");
+
+// Will return the key of the lock which is "resource"
+console.log(lock.key);
+
+// Will return the id of the lock
+console.log(lock.id);
+
+// Will return the ttl of the lock
+console.log(lock.ttl);
