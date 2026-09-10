@@ -1,4 +1,5 @@
 ---
+slug: /components/di
 sidebar_position: 1
 sidebar_label: DI Container
 pagination_label: DI Container usage
@@ -20,18 +21,10 @@ The `eridu-tech/di` component provides an Inversion of Control (IoC) container f
 
 ### Initial Configuration
 
-To begin using the DI container, create a `Container` instance and provide an [`IExecutionContext`](./execution_context.md):
+To begin using the DI container, create a `Container` instance and provide an [`IExecutionContext`](../execution_context/execution_context.md):
 
-```ts
-import { Container } from "eridu-tech/di";
-import { AlsExecutionContextAdapter } from "eridu-tech/execution-context/als-execution-context-adapter";
-import { ExecutionContext } from "eridu-tech/execution-context";
+```ts file=./samples/container.ts
 
-const executionContext = new ExecutionContext(new AlsExecutionContextAdapter());
-
-const container = new Container({
-    executionContext,
-});
 ```
 
 ## DI Basics
@@ -74,32 +67,36 @@ A **token** is the key that identifies a service in the container. It is used bo
 
 To create a token using `genericToken()`, pass a string describing the service and an optional phantom type parameter. The phantom type exists purely for static type checking. It holds no runtime value and is used by TypeScript to infer the correct service type upon resolution.
 
+#### Generic token
+
 Example of a generic token created with the `genericToken` method:
 
-```ts
-import { genericToken } from "eridu-tech/di/contracts";
+```ts file=./samples/generic_token.ts
 
-interface IDatabase {
-    query(sql: string, params: Array<unknown>): Promise<unknown>;
-}
-
-// token created with genericToken where
-// `"Database service"` is the description and `IDatabase` is the phantom type.
-const IDATABASE = genericToken<IDatabase>("Database service");
 ```
 
+The `Database` service interface:
+
+```ts file=./samples/idatabase.ts
+
+```
+
+
+
+#### Class constructor token
 Example of a class constructor used as a token:
 
-```ts
-class Database implements IDatabase {
-    query(sql: string, params: Array<unknown>): Promise<unknown> {
-        /* ... */
-    }
-}
+```ts file=./samples/class_constructor_token.ts
 
-// Database's class constructor used as token.
-const DATABASE = Database;
 ```
+
+The `Database` class:
+
+```ts file=./samples/database.ts
+
+```
+
+
 
 ### Lifetime
 
@@ -130,122 +127,60 @@ Use `registerFactory()` to register a **Singleton**, **Scoped**, or **Transient*
 
 - **`deps`** — The dependencies required by the service, defined as a record where each value is a **token** identifying a dependency. Pass an empty object literal `{}` if the service has no dependencies.
 
-- **`factory`** — [`invocable`](utilities/invocable.md) (function or object with `invoke` method) that creates and returns the service instance. It receives a record of resolved dependencies as its first argument and the [`execution context`](./execution_context.md) as its second argument. The factory can also be `async` and return a `Promise`.
+- **`factory`** — [`invocable`](utilities/invocable/invocable.md) (function or object with `invoke` method) that creates and returns the service instance. It receives a record of resolved dependencies as its first argument and the [`execution context`](../execution_context/execution_context.md) as its second argument. The factory can also be `async` and return a `Promise`.
 
 - **`lifetime`** — The lifetime of the service. Must be either `LIFETIME.SINGLETON`, `LIFETIME.TRANSIENT` or `LIFETIME.SCOPED`.
 
+
+
 Here is a simple example of `registerFactory()` with no dependencies:
 
-```ts
-import { LIFETIME, genericToken } from "eridu-tech/di/contracts";
+```ts file=./samples/register_factory_no_dependencies.ts
 
-interface IDatabase {
-    query(sql: string, params: Array<unknown>): Promise<unknown>;
-}
+```
 
-const IDATABASE = genericToken<IDatabase>("IDatabase");
+The `UserProvider` service used below depends on the `Database` service:
 
-class Database implements IDatabase {
-    query(sql: string, params: Array<unknown>): Promise<unknown> {
-        /* ... */
-    }
-}
-// `IDATABASE` service requires no dependency
-container.registerFactory({
-    token: IDATABASE,
-    deps: {}, // No dependencies
-    factory: (deps) => new Database(),
-    lifetime: LIFETIME.SINGLETON,
-});
+```ts file=./samples/user_provider.ts
+
 ```
 
 Here is a simple example of `registerFactory()` with one dependency:
 
-```ts
-interface User {
-    firstName: string;
-    lastName: string;
-    email: string;
-    id: string;
-}
+```ts file=./samples/register_factory_with_dependency.ts
 
-class UserProvider {
-    constructor(private database: IDatabase) {
-        /* ... */
-    }
+```
 
-    getUser(id: string): User {
-        /* ... */
-    }
-}
+The `REQUEST_ID` token:
 
-// `UserProvider` service requires `IDATABASE` dependency
-container.registerFactory({
-    token: UserProvider,
-    deps: { db: IDATABASE },
-    factory: (deps) => new UserProvider(deps.db),
-    lifetime: LIFETIME.SINGLETON,
-});
+```ts file=./samples/request_id.ts
+
 ```
 
 Here is an example of `registerFactory()` that reads a value from the `executionContext`:
 
-```ts
-import { contextToken } from "eridu-tech/execution-context/contracts";
+```ts file=./samples/register_factory_execution_context.ts
 
-// A context token for the current request id
-const REQUEST_ID = contextToken<string>("requestId");
-
-class RequestService {
-    constructor(private requestId: string) {
-        /* ... */
-    }
-}
-
-container.registerFactory({
-    token: RequestService,
-    deps: {},
-    factory: (deps, executionContext) => {
-        // Read a contextual value propagated through the resolution chain
-        const requestId = executionContext.get(REQUEST_ID) ?? "unknown";
-        return new RequestService(requestId);
-    },
-    lifetime: LIFETIME.TRANSIENT,
-});
 ```
 
 Here is an example of a service factory defined as an object with an `invoke` method.
 
-```ts
-const serviceAsObject = {
-    invoke() {
-        return "hello";
-    },
-} satisfies ServiceFactory;
+```ts file=./samples/service_factory_object_invoke.ts
 
-// functionally equivalent to serviceAsFunction
-const serviceAsFunction = (() => "hello") satisfies ServiceFactory;
 ```
 
 #### `registerValue`
 
+The `CONFIG` token:
+
+```ts file=./samples/app_config.ts
+
+```
+
 Use `registerValue()` to register values as singletons.
 
-```ts
-interface AppConfig {
-    apiUrl: string;
-    timeout: number;
-}
+```ts file=./samples/register_value.ts
 
-const CONFIG = genericToken<AppConfig>("AppConfig");
-
-container.registerValue({
-    token: CONFIG,
-    value: {
-        apiUrl: "https://api.example.com",
-        timeout: 5000,
-    },
-});
 ```
 
 #### `registerProvider`
@@ -255,52 +190,14 @@ Use `registerProvider()` to encapsulate a group of related registrations into a 
 - A plain **function** that receives an `IServiceRegister` to register services.
 - A **class** with an `invoke(register: IServiceRegister)` method.
 
-```ts
-import {
-    LIFETIME,
-    type IServiceRegister,
-    type IServiceProvider,
-} from "eridu-tech/di/contracts";
+The `Logger` services:
 
-// As a plain function
-function loggingProvider(register: IServiceRegister): void {
-    register.registerFactory({
-        token: Logger,
-        factory: () => new Logger(),
-        deps: {},
-        lifetime: LIFETIME.SINGLETON,
-    });
+```ts file=./samples/logger.ts
 
-    register.registerFactory({
-        token: FileLogger,
-        factory: () => new FileLogger(),
-        deps: {},
-        lifetime: LIFETIME.SINGLETON,
-    });
-}
+```
 
-// As a class with an invoke(register: IServiceRegister) method
-class DatabaseProvider implements IServiceProvider {
-    invoke(register: IServiceRegister): void {
-        register.registerFactory({
-            token: Database,
-            factory: () => new Database(),
-            deps: {},
-            lifetime: LIFETIME.SINGLETON,
-        });
+```ts file=./samples/register_provider.ts
 
-        register.registerFactory({
-            token: UserRepository,
-            factory: ({ db }) => new UserRepository(db),
-            deps: { db: Database },
-            lifetime: LIFETIME.SCOPED,
-        });
-    }
-}
-
-// Register providers
-container.registerProvider(loggingProvider);
-container.registerProvider(new DatabaseProvider());
 ```
 
 :::tip
@@ -323,39 +220,32 @@ Before resolving any service, the container **must be initialized** by calling a
 
 Returns the service if found, `null` otherwise:
 
-```ts
-const logger = await container.resolve(Logger);
-if (logger) {
-    logger.log("Logger is available");
-}
+```ts file=./samples/resolve.ts
+
 ```
 
 #### `resolveOr`
 
 Returns the service if found, otherwise returns the provided default value:
 
-```ts
-const logger = await container.resolveOr(Logger, new ConsoleLogger());
-logger.log("Always has a logger");
+```ts file=./samples/resolve_or.ts
+
 ```
 
 #### `resolveOrFail`
 
 Returns the service if found, otherwise throws `CanNotResolveServiceDiError`:
 
-```ts
-// Throws CanNotResolveServiceDiError if Logger is not registered
-const logger = await container.resolveOrFail(Logger);
+```ts file=./samples/resolve_or_fail.ts
+
 ```
 
 #### `has`
 
 Returns `true` if the token can be resolved, or `false` otherwise.
 
-```ts
-if (await container.has(Logger)) {
-    console.log("Logger is resolvable");
-}
+```ts file=./samples/has.ts
+
 ```
 
 :::info
@@ -366,108 +256,44 @@ The method `has()` checks whether a service **can be resolved**, not whether it 
 Calling `has()` may invoke service factories as a side effect.
 :::
 
-### Scoped Execution
+### Scoped
 
 The `run()` method creates an isolated scope where scoped services are resolved once and then discarded.
 
-```ts
-import { LIFETIME } from "eridu-tech/di/contracts";
+```ts file=./samples/scoped_execution.ts
 
-class A {
-    // ...
-}
-
-// Register a scoped service
-container.registerFactory({
-    token: A,
-    deps: {},
-    factory: () => new A(),
-    lifetime: LIFETIME.SCOPED,
-});
-
-await container.init();
-await container.run({
-    scope: async () => {
-        // Scoped services are resolved once within this scope
-        const a1 = await container.resolveOrFail(A);
-        const a2 = await container.resolveOrFail(A);
-
-        console.log(a1 === a2); // true
-
-        // A nested scope creates a new scoped registry, so it gets its own
-        // instance of the scoped service
-        await container.run({
-            scope: async () => {
-                const nestedA = await container.resolveOrFail(A);
-                console.log(nestedA === a1); // false
-            },
-        });
-    },
-});
-
-// Outside the scope, scoped services are no longer available
-// A new scope would create new instances
 ```
 
 :::info
 Before calling `run()`, the container **must be initialized** by calling and awaiting `init()`.
 :::
 
-### Dynamic Registration
+### Dynamic
 
 Use `registerDynamic()` when a token's value is not known at registration time and must be provided later at runtime — for example, values derived from an incoming request:
 
-```ts
-const REQUEST_ID = genericToken<string>("RequestId");
+```ts file=./samples/register_dynamic.ts
 
-// Register as dynamic — value will be provided later
-container.registerDynamic(REQUEST_ID);
 ```
 
-Dynamic values are set at runtime using the `IDynamicServiceRegister` interface, inside a scoped [`run()`](#scoped-execution) execution:
+Dynamic values are set at runtime using the `IDynamicServiceRegister` interface, inside a scoped [`run()`](#scoped-execution) execution. 
 
-```ts
-await container.init();
+```ts file=./samples/dynamic_value_set.ts
 
-await container.run({
-    registration: async (register) => {
-        // Set the dynamic value before the scope executes
-        await register.set({
-            token: REQUEST_ID,
-            value: crypto.randomUUID(),
-        });
-    },
-    scope: async () => {
-        const requestId = await container.resolve(REQUEST_ID);
-        console.log(`Handling request: ${requestId}`);
-    },
-});
+```
+
+The `RequestHandler`:
+
+```ts file=./samples/request_handler.ts
+
 ```
 
 `IDynamicServiceRegister` exposes `get()`, `getOrFail()` and `has()` to retrieve values from the execution context, alongside `set` which stores a value in it.
 
 For example, `CORRELATION_ID` is another dynamic token (registered with `registerDynamic()`) whose value may already be present in the execution context:
 
-```ts
-await container.init();
+```ts file=./samples/dynamic_value_callback.ts
 
-await container.run({
-    registration: async (register) => {
-        // Read an existing dynamic value from the execution context, if any.
-        // `get` returns null when no value is available.
-        const correlationId = await register.get(CORRELATION_ID);
-
-        // Store the derived value in the execution context.
-        register.set({
-            token: REQUEST_ID,
-            value: correlationId ?? crypto.randomUUID(),
-        });
-    },
-    scope: async () => {
-        const requestId = await container.resolveOrFail(REQUEST_ID);
-        console.log(`Handling request: ${requestId}`);
-    },
-});
 ```
 
 `IDynamicServiceRegister` also provide following methods: `getOrFail()` throws `CanNotResolveServiceDiError` when no value is available, and `has()` lets you check for a value without reading it.
@@ -505,50 +331,20 @@ A **Dynamic** service cannot depend on others, even on other **Dynamic** service
 
 Example of a valid relationship — a transient service depending on a singleton service:
 
-```ts
-import { LIFETIME } from "eridu-tech/di/contracts";
+```ts file=./samples/valid_relationship_transient_singleton.ts
 
-container.registerFactory({
-    token: Database,
-    factory: () => new Database(),
-    deps: {},
-    lifetime: LIFETIME.SINGLETON,
-});
+```
 
-// ✅ Service is registered as `LIFETIME.TRANSIENT`
-// and its `db` dependency is `LIFETIME.SINGLETON`
-container.registerFactory({
-    token: UserRepository,
-    factory: ({ db }) => new UserRepository(db),
-    deps: { db: Database },
-    lifetime: LIFETIME.TRANSIENT,
-});
+The dependency chain used below:
 
-// container.init() will not throw InvalidGraphDiError
+```ts file=./samples/dependency_chain.ts
+
 ```
 
 Example of an invalid relationship — a singleton service depending on a transient service:
 
-```ts
-import { LIFETIME } from "eridu-tech/di/contracts";
+```ts file=./samples/invalid_relationship_singleton_transient.ts
 
-container.registerFactory({
-    token: TransientService,
-    factory: () => new TransientService(),
-    deps: {},
-    lifetime: LIFETIME.TRANSIENT,
-});
-
-// ❌ Service is registered as `LIFETIME.SINGLETON`
-// and its `transient` dependency is `LIFETIME.TRANSIENT`
-container.registerFactory({
-    token: SingletonService,
-    factory: ({ transient }) => new SingletonService(transient),
-    deps: { transient: TransientService },
-    lifetime: LIFETIME.SINGLETON,
-});
-
-// container.init() will throw InvalidGraphDiError
 ```
 
 ### Container Hooks
@@ -561,26 +357,8 @@ Both callbacks for `onContainerInit()` and `onContainerDeInit()` receive an obje
 Hooks must be registered before `container.init()` is called. Calling `onContainerInit()` or `onContainerDeInit()` after `container.init()` throws [`InvalidMethodCallDiError`](#invalidmethodcalldierror).
 :::
 
-```ts
-container.onContainerInit(async (resolver) => {
-    // Runs when container.init() is called
-    // Use the resolver to resolve services after all registrations are complete
-    const db = await resolver.resolveOrFail(Database);
-    await db.connect();
-    console.log("Container initialized");
-});
+```ts file=./samples/container_hooks.ts
 
-container.onContainerDeInit(async (resolver) => {
-    // Runs when container.deInit() is called
-    const db = await resolver.resolveOrFail(Database);
-    await db.disconnect();
-    console.log("Container deinitialized");
-});
-
-// Trigger the lifecycle
-await container.init();
-// ... application runs ...
-await container.deInit();
 ```
 
 ### Overriding Registrations
@@ -595,22 +373,8 @@ We recommend using overrides only during testing, not in production code. Overri
 Overriding a registration is **forbidden after the container is initialized**. Calling `overrideFactory()` or `overrideValue()` after `container.init()` throws [`InvalidMethodCallDiError`](#invalidmethodcalldierror).
 :::
 
-```ts
-// Override a registered factory service
-container.overrideFactory({
-    token: IDATABASE,
-    factory: async (_deps, _executionContext) => {
-        // Return a mock database for testing
-        return new MockDatabase();
-    },
-    deps: {},
-});
+```ts file=./samples/override_registrations.ts
 
-// Override a registered singleton value
-container.overrideValue({
-    token: CONFIG,
-    value: { apiUrl: "http://localhost:9999", timeout: 100 },
-});
 ```
 
 ### Forking a Container
@@ -625,25 +389,8 @@ We recommend using forking only during testing. It is useful for testing differe
 Forking is forbidden after the container is initialized. Calling `fork()` after `container.init()` throws [`InvalidMethodCallDiError`](#invalidmethodcalldierror).
 :::
 
-```ts
-const childContainer = container.fork();
+```ts file=./samples/fork_container.ts
 
-// Override in the child container — parent is unaffected
-childContainer.overrideValue({
-    token: CONFIG,
-    value: { apiUrl: "http://test.local", timeout: 100 },
-});
-
-// Both containers must be initialized before resolving
-await container.init();
-await childContainer.init();
-
-// Original container still has the original config
-const parentConfig = await container.resolveOrFail(CONFIG);
-const childConfig = await childContainer.resolveOrFail(CONFIG);
-
-console.log(parentConfig.apiUrl); // "https://api.example.com"
-console.log(childConfig.apiUrl); // "http://test.local"
 ```
 
 ### Errors
@@ -670,19 +417,8 @@ Thrown when a service cannot be registered. It has the following flags:
 
 Here is an example where `CanNotRegisterServiceDiError` is thrown.
 
-```ts
-import { CanNotRegisterServiceDiError } from "eridu-tech/di/contracts";
+```ts file=./samples/error_can_not_register_service.ts
 
-container.registerValue({
-    token: CONFIG,
-    value: { apiUrl: "https://api.example.com", timeout: 5000 },
-});
-
-// Throws CanNotRegisterServiceDiError because CONFIG token is already registered
-container.registerValue({
-    token: CONFIG,
-    value: { apiUrl: "https://another.example.com", timeout: 3000 },
-});
 ```
 
 #### `InvalidGraphDiError`
@@ -697,25 +433,8 @@ Thrown when the service graph is invalid. It has the following flags:
 
 Here is an example where `InvalidGraphDiError` is thrown.
 
-```ts
-import { LIFETIME } from "eridu-tech/di/contracts";
+```ts file=./samples/error_invalid_graph.ts
 
-container.registerFactory({
-    token: SingletonService,
-    factory: ({ transient }) => new SingletonService(transient),
-    deps: { transient: TransientService },
-    lifetime: LIFETIME.SINGLETON,
-});
-
-container.registerFactory({
-    token: TransientService,
-    factory: () => new TransientService(),
-    deps: {},
-    lifetime: LIFETIME.TRANSIENT,
-});
-
-// Throws InvalidGraphDiError because a singleton depends on a transient service
-await container.init();
 ```
 
 #### `CanNotResolveServiceDiError`
@@ -732,11 +451,8 @@ Thrown when a service cannot be resolved. It has the following flags:
 | `NO_DYNAMIC_VALUE_SET_FOR_TOKENS`                           | Thrown when a dynamic token has no value set.                                                                             |
 | `DYNAMIC_SERVICE_PROVIDER_NOT_DYNAMIC_TOKEN`                | Thrown when the token provided to a dynamic service provider is not a dynamic token.                                      |
 
-```ts
-import { CanNotResolveServiceDiError } from "eridu-tech/di/contracts";
+```ts file=./samples/error_can_not_resolve_service.ts
 
-// Throws CanNotResolveServiceDiError because Logger is not registered
-await container.resolveOrFail(Logger);
 ```
 
 #### `CanNotOverrideServiceDiError`
@@ -751,15 +467,8 @@ Thrown when a registration cannot be overridden. It has the following flags:
 
 Here is an example where `CanNotOverrideServiceDiError` is thrown.
 
-```ts
-import { CanNotOverrideServiceDiError } from "eridu-tech/di/contracts";
+```ts file=./samples/error_can_not_override_service.ts
 
-// Throws CanNotOverrideServiceDiError because CONFIG token is not registered
-// and hence cannot be overridden
-container.overrideValue({
-    token: CONFIG,
-    value: { apiUrl: "http://localhost:9999", timeout: 100 },
-});
 ```
 
 #### `InvalidMethodCallDiError`
@@ -776,15 +485,8 @@ Thrown when a container method is called at an invalid time or context. It has t
 
 Here is an example where `InvalidMethodCallDiError` is thrown.
 
-```ts
-import { InvalidMethodCallDiError } from "eridu-tech/di/contracts";
-await container.init();
+```ts file=./samples/error_invalid_method_call.ts
 
-// Throws InvalidMethodCallDiError because registration is attempted after init()
-container.registerValue({
-    token: CONFIG,
-    value: { apiUrl: "https://another.example.com", timeout: 3000 },
-});
 ```
 
 ## Patterns
