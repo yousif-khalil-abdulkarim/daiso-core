@@ -22,6 +22,22 @@ import type { EventMapSchema } from "@/event-bus/implementations/derivables/even
 import type { OneOrArray, InvocableFn } from "@/utilities/_module.js";
 
 /**
+ * A helper function to create a typed {@link EventMapSchema}.
+ * This provides type-safety when defining the schema map for your events.
+ *
+ * @param eventMapSchema - The event map schema to define.
+ * @returns The same event map schema with proper type inference.
+ *
+ * IMPORT_PATH: `"eridu-tech/event-bus"`
+ * @group Derivables
+ */
+export function defineEventMapSchema<TEventMap extends BaseEventMap>(
+    eventMapSchema: EventMapSchema<TEventMap>,
+): EventMapSchema<TEventMap> {
+    return eventMapSchema;
+}
+
+/**
  * Base configuration shared by all `EventBus` variants.
  * Supports optional schema-based validation for event maps.
  *

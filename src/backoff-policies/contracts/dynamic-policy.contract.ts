@@ -5,7 +5,7 @@
 import type { Invocable } from "@/utilities/_module.js";
 
 /**
- * IMPORT_PATH: `"eridu-tech/backoff-policies"`
+ * IMPORT_PATH: `"eridu-tech/backoff-policies/contracts"`
  * @group Contracts
  */
 export type DynamicBackoffPolicy<TSettings> =
