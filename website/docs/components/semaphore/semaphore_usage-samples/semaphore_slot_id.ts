@@ -1,4 +1,4 @@
-import { semaphoreFactory } from "./semaphore_factory_initial_config";
+import { semaphoreFactory } from "./semaphore_factory_initial_config.js";
 
 const semaphore = semaphoreFactory.create("semaphore", {
     limit: 2,

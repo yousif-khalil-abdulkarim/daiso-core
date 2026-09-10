@@ -1,4 +1,4 @@
-import { semaphoreFactory } from "./semaphore_factory_initial_config";
+import { semaphoreFactory } from "./semaphore_factory_initial_config.js";
 import { SEMAPHORE_STATE } from "eridu-tech/semaphore/contracts";
 
 const semaphore = semaphoreFactory.create("shared-resource", {

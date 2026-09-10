@@ -1,4 +1,4 @@
-import { semaphoreFactory } from "./semaphore_factory_initial_config";
+import { semaphoreFactory } from "./semaphore_factory_initial_config.js";
 import { retryInterval } from "eridu-tech/resilience";
 import { LimitReachedSemaphoreError } from "eridu-tech/semaphore/contracts";
 import { use } from "eridu-tech/middleware";
