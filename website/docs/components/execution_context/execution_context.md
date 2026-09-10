@@ -1,4 +1,5 @@
 ---
+slug: /components/execution_context
 tags:
     - Utilities
 keywords:
@@ -13,12 +14,7 @@ The `eridu-tech/execution-context` module provides a type-safe, composable, and 
 
 To begin using the execution-context, you'll need to create and configure an instance:
 
-```ts
-import { ExecutionContext, contextToken } from "eridu-tech/execution-context";
-import { AlsExecutionContextAdapter } from "eridu-tech/execution-context/als-execution-context-adapter";
-
-// Create an execution-context instance with an adapter
-const executionContext = new ExecutionContext(new AlsExecutionContextAdapter());
+```ts file=./samples/execution_context_initial_config.ts
 ```
 
 ## ExecutionContext basics
@@ -27,51 +23,14 @@ const executionContext = new ExecutionContext(new AlsExecutionContextAdapter());
 
 You can run code within a context boundary, and all context values will be accessible throughout the call chain:
 
-```ts
-// Define context tokens with type-safe identifiers
-type User = { id: string; name: string };
-const userToken = contextToken<User>("user");
-const requestIdToken = contextToken<string>("requestId");
-
-function logData(): void {
-    // Access context values later in the call chain
-
-    // { id: "123", name: "Alice" }
-    const user = executionContext.get(userToken);
-    // "req-456"
-    const reqId = executionContext.get(requestIdToken);
-
-    console.log("user:", user);
-    console.log("reqId:", reqId);
-}
-
-executionContext.run(() => {
-    executionContext.put(userToken, { id: "123", name: "Alice" });
-    executionContext.put(requestIdToken, "req-456");
-    logData();
-});
+```ts file=./samples/run.ts
 ```
 
 ### Binding functions to context
 
 You can bind a function to the current context, so it always executes with the captured context values:
 
-```ts
-executionContext.run(() => {
-    executionContext.put(userToken, { id: "123", name: "Alice" });
-    executionContext.put(requestIdToken, "req-456");
-
-    const logData = executionContext.bind((msg: string): void => {
-        // Access context values later in the call chain
-        const user = executionContext.get(userToken); // { id: "123", name: "Alice" }
-        const reqId = executionContext.get(requestIdToken); // "req-456"
-        console.log("message:", msg);
-        console.log("user:", user);
-        console.log("reqId:", reqId);
-    });
-
-    logData("hello");
-});
+```ts file=./samples/bind.ts
 ```
 
 ## Patterns
@@ -80,30 +39,21 @@ executionContext.run(() => {
 
 You can enforce compile-time type safety by defining context tokens with specific types:
 
-```ts
-const userToken = contextToken<{ id: string; name: string }>("user");
-executionContext.put(userToken, { id: "123", name: "Alice" });
-// TypeScript will error if you try to put a value of the wrong type.
+```ts file=./samples/type_safety.ts
 ```
 
 ### Immutable and chainable context operations
 
 All context mutation methods return the context instance, allowing for method chaining:
 
-```ts
-executionContext
-    .put(userToken, { id: "123", name: "Alice" })
-    .put(requestIdToken, "req-456");
+```ts file=./samples/chainable.ts
 ```
 
 ### Conditional context updates
 
 You can conditionally update the context:
 
-```ts
-executionContext.when(true, (ctx) =>
-    ctx.put(userToken, { id: "conditional", name: "Bob" }),
-);
+```ts file=./samples/conditional.ts
 ```
 
 ### Adapters
