@@ -1,4 +1,4 @@
-import { circuitBreakerFactory } from "./circuit_breaker_initial_config";
+import { circuitBreakerFactory } from "./circuit_breaker_initial_config.js";
 import { CIRCUIT_BREAKER_TRIGGER } from "eridu-tech/circuit-breaker/contracts";
 
 const circuitBreaker = circuitBreakerFactory.create("resource", {

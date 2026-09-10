@@ -1,6 +1,6 @@
 import { BACKOFFS } from "eridu-tech/backoff-policies";
 import { RedisCircuitBreakerAdapter } from "eridu-tech/circuit-breaker/redis-circuit-breaker-adapter";
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { TimeSpan } from "eridu-tech/time-span";
 
 const database = new Redis("YOUR_REDIS_CONNECTION_STRING");

@@ -4,7 +4,7 @@ import { DatabaseCircuitBreakerAdapter } from "eridu-tech/circuit-breaker/databa
 import { RedisCircuitBreakerAdapter } from "eridu-tech/circuit-breaker/redis-circuit-breaker-adapter";
 import { Serde } from "eridu-tech/serde";
 import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 export const circuitBreakerFactoryResolver = new CircuitBreakerFactoryResolver({

@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { RedisCircuitBreakerAdapter } from "eridu-tech/circuit-breaker/redis-circuit-breaker-adapter";
 import type { ICircuitBreaker } from "eridu-tech/circuit-breaker/contracts";
 import { CircuitBreakerFactory } from "eridu-tech/circuit-breaker";
