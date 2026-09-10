@@ -1,4 +1,4 @@
-import { fileStorage } from "./file_storage_initial_config";
+import { fileStorage } from "./file_storage_initial_config.js";
 import { createReadStream } from "node:fs"
 import { stat } from "node:fs/promises";
 import { FileSize } from "eridu-tech/file-size";

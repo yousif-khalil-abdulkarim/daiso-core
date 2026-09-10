@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { MemoryFileStorageAdapter } from "eridu-tech/file-storage/memory-file-storage-adapter";
 import { SignedFileStorageAdapter } from "eridu-tech/file-storage/signed-file-storage-adapter";
 import type { IFile } from "eridu-tech/file-storage/contracts";
