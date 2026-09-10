@@ -17,7 +17,7 @@ export {
     DEV_TOOLING_ITEMS,
     UPCOMING_ITEMS,
     COMPONENT_RECORD,
-} from "../data/data";
+} from "../data/data.js";
 
-export type { ComponentItemProps } from "../data/types";
+export type { ComponentItemProps } from "../data/types.js";
 

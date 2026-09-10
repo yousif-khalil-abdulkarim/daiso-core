@@ -1,7 +1,7 @@
-import type { ComponentItemProps } from "../../data/types";
+import type { ComponentItemProps } from "../../data/types.js";
 import Link from "@docusaurus/Link";
 import styles from "../roadmap.module.css";
-import { FeatureItem } from "../../components/FeatureItem";
+import { FeatureItem } from "../../components/FeatureItem.js";
 
 export function AvailableCategory({ label, items }: { label: string; items: readonly ComponentItemProps[] }) {
   if (items.length === 0) return null;

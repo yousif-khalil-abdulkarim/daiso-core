@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { FeatureItemProps } from "../data/types";
+import type { FeatureItemProps } from "../data/types.js";
 
 export function FeatureItem({ icon, title, description, badge }: FeatureItemProps & { badge?: ReactNode }) {
     return (
