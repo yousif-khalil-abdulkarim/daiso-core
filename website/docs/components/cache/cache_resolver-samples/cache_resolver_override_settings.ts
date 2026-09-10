@@ -1,5 +1,5 @@
 import { TimeSpan } from "eridu-tech/time-span";
-import { cacheResolver } from "./cache_resolver_initial_config";
+import { cacheResolver } from "./cache_resolver_initial_config.js";
 
 await cacheResolver
     .setDefaultTtl(TimeSpan.fromMinutes(5))

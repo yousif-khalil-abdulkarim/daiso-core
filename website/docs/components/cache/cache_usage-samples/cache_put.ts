@@ -1,4 +1,4 @@
-import { cache } from "./cache_initial_config";
+import { cache } from "./cache_initial_config.js";
 import { TimeSpan } from "eridu-tech/time-span";
 
 await cache.put("a", 2);

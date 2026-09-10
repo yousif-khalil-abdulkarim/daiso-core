@@ -3,7 +3,7 @@ import { MemoryCacheAdapter } from "eridu-tech/cache/memory-cache-adapter";
 import { RedisCacheAdapter } from "eridu-tech/cache/redis-cache-adapter";
 import { Serde } from "eridu-tech/serde";
 import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 export const cacheResolver = new CacheResolver({

@@ -1,3 +1,3 @@
-import { cache } from "./cache_initial_config";
+import { cache } from "./cache_initial_config.js";
 
 await cache.removeOrFail("ab");
