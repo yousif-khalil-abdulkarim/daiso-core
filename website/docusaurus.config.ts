@@ -3,16 +3,64 @@
  */
 
 import { themes as prismThemes } from "prism-react-renderer";
-import type { Config } from "@docusaurus/types";
+import type { Config, PluginModule } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 // @ts-ignore
 import docusaurusPluginLlmsTxt, {
     type PluginOptions,
 } from "@signalwire/docusaurus-plugin-llms-txt";
-import { ogGenerator } from "./utilities/og-generator";
-import { PACKAGE_NAME, PACKAGE_VERSION } from "./utilities/package-json-data";
+import { ogGenerator } from "./utilities/og-generator.js";
+import { PACKAGE_NAME, PACKAGE_VERSION } from "./utilities/package-json-data.js";
 import codeImport from "remark-code-import";
 import path from "path";
+
+/**
+ * Webpack tweaks required because this package is ESM (`"type": "module"`) and
+ * uses fully extensioned, NodeNext-style relative imports.
+ *
+ * 1. `resolve.extensionAlias`
+ *    TypeScript (`moduleResolution: nodenext`) maps a `./foo.js` specifier onto
+ *    `foo.ts`/`foo.tsx`. Webpack does not, so without this alias every `.js`
+ *    specifier fails with "Module not found".
+ *
+ * 2. `module.rules[].type = "javascript/auto"`
+ *    Because `package.json` has `"type": "module"`, Webpack applies its default
+ *    rule `{ test: /\.js$/i, descriptionData: { type: "module" }, type:
+ *    "javascript/esm" }` to every `.js` file in this package. For ESM modules
+ *    Webpack does not run `CommonJsImportsParserPlugin`, so `require.resolveWeak()`
+ *    is left in the bundle as a literal call. Docusaurus generates
+ *    `.docusaurus/registry.js` with exactly that call, and the SSG `require` shim
+ *    (`ssgNodeRequire.ts`) only exposes `.resolve/.cache/.extensions/.main` — so
+ *    the SSG step crashes with "require.resolveWeak is not a function".
+ *    Pinning the generated files back to `javascript/auto` restores the rewrite.
+ *    (`javascript/auto` accepts both `import`/`export` and `require`, so the
+ *    generated `export default` object still parses.)
+ */
+const webpackEsmTweaksPlugin: PluginModule = () => {
+    const docusaurusGeneratedDir = path.resolve(__dirname, ".docusaurus");
+
+    return {
+        name: "webpack-esm-tweaks-plugin",
+        configureWebpack() {
+            return {
+                resolve: {
+                    extensionAlias: {
+                        ".js": [".ts", ".tsx", ".js"],
+                    },
+                },
+                module: {
+                    rules: [
+                        {
+                            test: /\.js$/,
+                            include: [docusaurusGeneratedDir],
+                            type: "javascript/auto",
+                        },
+                    ],
+                },
+            };
+        },
+    };
+};
 
 const title = `${PACKAGE_NAME} ${PACKAGE_VERSION}`;
 const config: Config = {
@@ -49,6 +97,7 @@ const config: Config = {
     },
 
     plugins: [
+        webpackEsmTweaksPlugin,
         [
             docusaurusPluginLlmsTxt,
             {

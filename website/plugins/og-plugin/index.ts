@@ -12,7 +12,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import type { LoadContext, Plugin } from "@docusaurus/types";
 
-import {
+import type {
     OgGenerator,
     OgGeneratorParams,
     PluginOptions,
