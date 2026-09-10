@@ -1,4 +1,5 @@
 ---
+slug: /components/file_size
 tags:
     - Utilities
 keywords:
@@ -13,140 +14,93 @@ The `eridu-tech/file-size` component provides an easy way for defining, manipula
 
 Creating `FileSize` from bytes:
 
-```ts
-import { FileSize } from "eridu-tech/file-size";
-
-const fileSize = FileSize.fromBytes(100);
+```ts file=./samples/creating_from_bytes.ts
 ```
 
 Creating `FileSize` from kilo bytes:
 
-```ts
-import { FileSize } from "eridu-tech/file-size";
-
-const fileSize = FileSize.fromKiloBytes(100);
+```ts file=./samples/creating_from_kilo_bytes.ts
 ```
 
 Creating `FileSize` from mega bytes:
 
-```ts
-import { FileSize } from "eridu-tech/file-size";
-
-const fileSize = FileSize.fromMegaBytes(100);
+```ts file=./samples/creating_from_mega_bytes.ts
 ```
 
 Creating `FileSize` from giga bytes:
 
-```ts
-import { FileSize } from "eridu-tech/file-size";
-
-const fileSize = FileSize.fromGigaBytes(100);
+```ts file=./samples/creating_from_giga_bytes.ts
 ```
 
 Creating `FileSize` from tera bytes:
 
-```ts
-import { FileSize } from "eridu-tech/file-size";
-
-const fileSize = FileSize.fromTeraBytes(1);
+```ts file=./samples/creating_from_tera_bytes.ts
 ```
 
 Creating `FileSize` from peta bytes:
 
-```ts
-import { FileSize } from "eridu-tech/file-size";
-
-const fileSize = FileSize.fromPetaBytes(1);
+```ts file=./samples/creating_from_peta_bytes.ts
 ```
 
 ### Comparing FileSize:s
 
 Equals:
 
-```ts
-// Returns false
-FileSize.fromBytes(20_000).equal(FileSize.fromBytes(40_000));
+```ts file=./samples/comparing_equal.ts
 ```
 
 Greater than:
 
-```ts
-// Returns false
-FileSize.fromBytes(20_000).gt(FileSize.fromBytes(40_000));
+```ts file=./samples/comparing_gt.ts
 ```
 
 Greater than or equals:
 
-```ts
-// Returns false
-FileSize.fromBytes(20_000).gte(FileSize.fromBytes(40_000));
+```ts file=./samples/comparing_gte.ts
 ```
 
 Less than:
 
-```ts
-// Returns true
-FileSize.fromBytes(20_000).lt(FileSize.fromBytes(40_000));
+```ts file=./samples/comparing_lt.ts
 ```
 
 Less than or equals:
 
-```ts
-// Returns true
-FileSize.fromBytes(20_000).lte(FileSize.fromBytes(40_000));
+```ts file=./samples/comparing_lte.ts
 ```
 
 ### Converting a FileSize
 
 You can get amount of bytes contained in the `FileSize`:
 
-```ts
-FileSize.fromKiloBytes(1).toBytes();
+```ts file=./samples/converting_to_bytes.ts
 ```
 
 You can get amount of kilo bytes contained in the `FileSize`:
 
-```ts
-FileSize.fromMegaBytes(1).toKiloBytes();
+```ts file=./samples/converting_to_kilo_bytes.ts
 ```
 
 You can get amount of giga bytes contained in the `FileSize`:
 
-```ts
-FileSize.fromTeraBytes(1).toGigaBytes();
+```ts file=./samples/converting_to_giga_bytes.ts
 ```
 
 You can get amount of tera bytes contained in the `FileSize`:
 
-```ts
-FileSize.fromPetaBytes(1).toTeraBytes();
+```ts file=./samples/converting_to_tera_bytes.ts
 ```
 
 You can get amount of peta bytes contained in the `FileSize`:
 
-```ts
-FileSize.fromPetaBytes(1000).toPetaBytes();
+```ts file=./samples/converting_to_peta_bytes.ts
 ```
 
 ### Serialization and deserialization of FileSize
 
 The `FileSize` class supports serialization and deserialization, allowing you to easily convert instances to and from serialized formats. However, registration is required first:
 
-```ts
-import { Serde } from "eridu-tech/serde";
-import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
-import { FileSize } from "eridu-tech/file-size";
-
-const serde = new Serde(new SuperJsonSerdeAdapter());
-
-serde.registerClass(FileSize);
-
-const fileSize = FileSize.fromBytes(12);
-const serializedFileSize = serde.serialize(fileSize);
-const deserializedFileSize = serde.deserialize(serializedFileSize);
-
-// logs false
-console.log(serializedFileSize === deserializedFileSize);
+```ts file=./samples/serde_serialization.ts
 ```
 
 ## FileSize contract
@@ -164,16 +118,7 @@ Note `FileSize` class implements `IFileSize` contract.
 
 The `IFileSize` contract requires you to implement the `TO_MILLISECONDS` method on the file-size object, which must return the file-size in milliseconds.
 
-```ts
-import { IFileSize, TO_BYTES } from "eridu-tech/file-size/contracts";
-
-export class MyFileSize implements IFileSize {
-    constructor(private readonly fileSizeInBytes: number) {}
-
-    [TO_BYTES](): number {
-        return this.fileSizeInBytes;
-    }
-}
+```ts file=./samples/implementing_ifile_size.ts
 ```
 
 ## Further information
