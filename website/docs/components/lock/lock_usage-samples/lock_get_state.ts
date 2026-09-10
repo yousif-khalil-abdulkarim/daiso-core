@@ -1,4 +1,4 @@
-import { lockFactory } from "./lock_factory_initial_config";
+import { lockFactory } from "./lock_factory_initial_config.js";
 import { LOCK_STATE } from "eridu-tech/lock/contracts";
 
 const lock = lockFactory.create("shared-resource");

@@ -1,4 +1,4 @@
-import { lockFactory } from "./lock_factory_initial_config";
+import { lockFactory } from "./lock_factory_initial_config.js";
 
 const lock = lockFactory.create("lock", {
     lockId: "my-lock-id",

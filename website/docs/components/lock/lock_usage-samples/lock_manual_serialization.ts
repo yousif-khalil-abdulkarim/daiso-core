@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { RedisLockAdapter } from "eridu-tech/lock/redis-lock-adapter";
 import { LockFactory } from "eridu-tech/lock";
 import { Serde } from "eridu-tech/serde";

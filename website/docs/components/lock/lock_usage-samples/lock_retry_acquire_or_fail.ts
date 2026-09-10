@@ -1,4 +1,4 @@
-import { lockFactory } from "./lock_factory_initial_config";
+import { lockFactory } from "./lock_factory_initial_config.js";
 import { retry } from "eridu-tech/resilience";
 import { FailedAcquireLockError } from "eridu-tech/lock/contracts";
 import { use } from "eridu-tech/middleware";

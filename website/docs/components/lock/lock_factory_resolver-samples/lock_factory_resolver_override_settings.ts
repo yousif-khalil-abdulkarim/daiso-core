@@ -1,4 +1,4 @@
-import { lockFactoryResolver } from "./lock_factory_resolver_initial_config";
+import { lockFactoryResolver } from "./lock_factory_resolver_initial_config.js";
 import { TimeSpan } from "eridu-tech/time-span";
 
 await lockFactoryResolver

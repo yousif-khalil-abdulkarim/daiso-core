@@ -1,4 +1,4 @@
-import { lockFactory } from "./lock_factory_initial_config";
+import { lockFactory } from "./lock_factory_initial_config.js";
 import { retryInterval } from "eridu-tech/resilience";
 import { use } from "eridu-tech/middleware";
 import { TimeSpan } from "eridu-tech/time-span";
