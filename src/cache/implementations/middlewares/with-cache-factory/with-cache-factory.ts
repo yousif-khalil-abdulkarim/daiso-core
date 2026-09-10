@@ -26,7 +26,7 @@ export type WithCacheSettings<
      *  A function that produces the cache key from the
      * wrapped function's arguments.
      */
-    key: Invocable<TParameters, string>;
+    key: Invocable<[args: TParameters], string>;
 };
 
 /**
@@ -52,7 +52,7 @@ export function withCacheFactory(cache: Pick<ICache, "getOrAdd">) {
         const { key, ttl } = settings;
         return async ({ next, args }) => {
             return cache.getOrAdd(
-                callInvocable(key, ...args),
+                callInvocable(key, args),
                 next,
                 ttl,
             ) as Promise<TReturn>;

@@ -40,8 +40,8 @@ describe("function: withSharedLockFactory", () => {
                 fn,
                 withSharedLock({
                     ...settings,
-                    key: (value: string) => value,
-                    lockId: (value: string) => value,
+                    key: ([value]) => value,
+                    lockId: ([value]) => value,
                     when: SHARED_LOCK_WHEN.WRITER,
                 }),
             )(argValue);
@@ -59,7 +59,7 @@ describe("function: withSharedLockFactory", () => {
             await use(
                 fn,
                 withSharedLock({
-                    key: (value: string) => value,
+                    key: ([value]) => value,
                     limit,
                     when: SHARED_LOCK_WHEN.WRITER,
                 }),
@@ -86,8 +86,8 @@ describe("function: withSharedLockFactory", () => {
                 fn,
                 withSharedLock({
                     ...settings,
-                    key: (value: string) => value,
-                    lockId: (value: string) => value,
+                    key: ([value]) => value,
+                    lockId: ([value]) => value,
                     when: SHARED_LOCK_WHEN.READER,
                 }),
             )(argValue);
@@ -105,7 +105,7 @@ describe("function: withSharedLockFactory", () => {
             await use(
                 fn,
                 withSharedLock({
-                    key: (value: string) => value,
+                    key: ([value]) => value,
                     limit,
                     when: SHARED_LOCK_WHEN.READER,
                 }),
@@ -123,8 +123,7 @@ describe("function: withSharedLockFactory", () => {
         await use(
             fn,
             withSharedLock({
-                key: (userId: string, postId: string) =>
-                    `user:${userId}:post:${postId}`,
+                key: ([userId, postId]) => `user:${userId}:post:${postId}`,
                 limit: 4,
                 when: SHARED_LOCK_WHEN.WRITER,
             }),
@@ -142,7 +141,7 @@ describe("function: withSharedLockFactory", () => {
         const wrapped = use(
             fn,
             withSharedLock({
-                key: (a: string, b: string) => `${a}:${b}`,
+                key: ([a, b]) => `${a}:${b}`,
                 limit: 4,
                 when: SHARED_LOCK_WHEN.WRITER,
             }),

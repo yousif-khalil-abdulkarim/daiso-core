@@ -23,7 +23,7 @@ describe("function: withInvalidationFactory", () => {
         const wrapped = use(
             innerFn,
             withInvalidation({
-                key: (id: string) => `cache:${id}`,
+                key: ([id]) => `cache:${id}`,
             }),
         );
 
@@ -43,7 +43,7 @@ describe("function: withInvalidationFactory", () => {
         const wrapped = use(
             innerFn,
             withInvalidation({
-                key: (id: string) => `cache:${id}`,
+                key: ([id]) => `cache:${id}`,
             }),
         );
 
@@ -66,8 +66,7 @@ describe("function: withInvalidationFactory", () => {
         const wrapped = use(
             innerFn,
             withInvalidation({
-                key: (userId: string, postId: string) =>
-                    `user:${userId}:post:${postId}`,
+                key: ([userId, postId]) => `user:${userId}:post:${postId}`,
             }),
         );
 
@@ -86,7 +85,7 @@ describe("function: withInvalidationFactory", () => {
         const wrapped = use(
             innerFn,
             withInvalidation({
-                key: (a: string, b: string) => `${a}:${b}`,
+                key: ([a, b]) => `${a}:${b}`,
             }),
         );
 

@@ -27,7 +27,7 @@ export type WithLockSettings<
      * function's arguments. The lock is acquired on this key, ensuring mutual
      * exclusion across processes for the same key.
      */
-    key: Invocable<TParameters, string>;
+    key: Invocable<[args: TParameters], string>;
 
     /**
      *  A function that produces a unique identifier for the
@@ -41,7 +41,7 @@ export type WithLockSettings<
      * () => v4()
      * ```
      */
-    lockId?: Invocable<TParameters, string>;
+    lockId?: Invocable<[args: TParameters], string>;
 
     /**
      * Time-to-live for the lock. If `null` the lock never expires
@@ -72,9 +72,9 @@ export function withLockFactory(lockFactory: ILockFactory) {
         const { key, lockId = () => v4(), ...rest } = settings;
         return ({ next, args }) => {
             return lockFactory
-                .create(callInvocable(key, ...args), {
+                .create(callInvocable(key, args), {
                     ...rest,
-                    lockId: callInvocable(lockId, ...args),
+                    lockId: callInvocable(lockId, args),
                 })
                 .runOrFail(next);
         };

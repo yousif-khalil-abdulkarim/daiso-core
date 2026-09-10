@@ -27,7 +27,7 @@ export type WithSemaphoreSettings<
      * wrapped function's arguments. All consumers using the same key share
      * the same semaphore limit.
      */
-    key: Invocable<TParameters, string>;
+    key: Invocable<[args: TParameters], string>;
 
     /**
      *  A function that produces a unique slot identifier for
@@ -41,7 +41,7 @@ export type WithSemaphoreSettings<
      * () => v4()
      * ```
      */
-    slotId?: Invocable<TParameters, string>;
+    slotId?: Invocable<[args: TParameters], string>;
 
     /**
      * Time-to-live for each acquired slot. If `null` slots never expire
@@ -80,9 +80,9 @@ export function withSemaphoreFactory(semaphoreFactory: ISemaphoreFactory) {
         const { key, slotId = () => v4(), ...rest } = settings;
         return ({ next, args }) => {
             return semaphoreFactory
-                .create(callInvocable(key, ...args), {
+                .create(callInvocable(key, args), {
                     ...rest,
-                    slotId: callInvocable(slotId, ...args),
+                    slotId: callInvocable(slotId, args),
                 })
                 .runOrFail(next);
         };

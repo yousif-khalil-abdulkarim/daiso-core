@@ -35,7 +35,7 @@ describe("function: withRateLimiterFactory", () => {
             fn,
             withRateLimiter({
                 ...settings,
-                key: (value: string) => value,
+                key: ([value]) => value,
             }),
         )(key);
 
@@ -52,7 +52,7 @@ describe("function: withRateLimiterFactory", () => {
         await use(
             fn,
             withRateLimiter({
-                key: (value: string) => value,
+                key: ([value]) => value,
                 limit,
             }),
         )(argValue);
@@ -68,8 +68,7 @@ describe("function: withRateLimiterFactory", () => {
         await use(
             fn,
             withRateLimiter({
-                key: (userId: string, postId: string) =>
-                    `user:${userId}:post:${postId}`,
+                key: ([userId, postId]) => `user:${userId}:post:${postId}`,
                 limit: 4,
             }),
         )("u1", "p2");
@@ -86,7 +85,7 @@ describe("function: withRateLimiterFactory", () => {
         const wrapped = use(
             fn,
             withRateLimiter({
-                key: (a: string, b: string) => `${a}:${b}`,
+                key: ([a, b]) => `${a}:${b}`,
                 limit: 4,
             }),
         );

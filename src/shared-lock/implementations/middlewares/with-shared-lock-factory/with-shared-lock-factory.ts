@@ -48,7 +48,7 @@ export type WithSharedLockFactorySettings<
      * function's arguments. All consumers using the same key share the same
      * lock state.
      */
-    key: Invocable<TParameters, string>;
+    key: Invocable<[args: TParameters], string>;
 
     /**
      *  A function that produces a unique identifier for the
@@ -62,7 +62,7 @@ export type WithSharedLockFactorySettings<
      * () => v4()
      * ```
      */
-    lockId?: Invocable<TParameters, string>;
+    lockId?: Invocable<[args: TParameters], string>;
 
     /**
      * Time-to-live for the lock. If `null` the lock never expires
@@ -112,16 +112,16 @@ export function withSharedLockFactory(sharedLockFactory: ISharedLockFactory) {
         return ({ next, args }) => {
             if (when === SHARED_LOCK_WHEN.READER) {
                 return sharedLockFactory
-                    .create(callInvocable(key, ...args), {
+                    .create(callInvocable(key, args), {
                         ...rest,
-                        lockId: callInvocable(lockId, ...args),
+                        lockId: callInvocable(lockId, args),
                     })
                     .runReaderOrFail(next);
             }
             return sharedLockFactory
-                .create(callInvocable(key, ...args), {
+                .create(callInvocable(key, args), {
                     ...rest,
-                    lockId: callInvocable(lockId, ...args),
+                    lockId: callInvocable(lockId, args),
                 })
                 .runWriterOrFail(next);
         };

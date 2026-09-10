@@ -28,7 +28,7 @@ export type WithCircuitBreakerSettings<
      * circuit from the wrapped function's arguments. Each unique key gets its
      * own circuit state.
      */
-    key: Invocable<TParameters, string>;
+    key: Invocable<[args: TParameters], string>;
 
     /**
      * Optional custom trigger that determines when the circuit should open.
@@ -68,7 +68,7 @@ export function withCircuitBreakerFactory(
         const { key, ...rest } = settings;
         return ({ next, args }) => {
             return circuitBreakerFactory
-                .create(callInvocable(key, ...args), rest)
+                .create(callInvocable(key, args), rest)
                 .runOrFail(next);
         };
     };

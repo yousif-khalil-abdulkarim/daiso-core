@@ -38,7 +38,7 @@ describe("function: withCircuitBreakerFactory", () => {
             fn,
             withCircuitBreaker({
                 ...settings,
-                key: (value: string) => value,
+                key: ([value]) => value,
             }),
         )(key);
 
@@ -56,7 +56,7 @@ describe("function: withCircuitBreakerFactory", () => {
         await use(
             fn,
             withCircuitBreaker({
-                key: (value: string) => value,
+                key: ([value]) => value,
             }),
         )(argValue);
 
@@ -73,8 +73,7 @@ describe("function: withCircuitBreakerFactory", () => {
         await use(
             fn,
             withCircuitBreaker({
-                key: (userId: string, postId: string) =>
-                    `user:${userId}:post:${postId}`,
+                key: ([userId, postId]) => `user:${userId}:post:${postId}`,
             }),
         )("u1", "p2");
 
@@ -92,7 +91,7 @@ describe("function: withCircuitBreakerFactory", () => {
         const wrapped = use(
             fn,
             withCircuitBreaker({
-                key: (a: string, b: string) => `${a}:${b}`,
+                key: ([a, b]) => `${a}:${b}`,
             }),
         );
 
