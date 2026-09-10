@@ -1,4 +1,4 @@
-import { rateLimiter } from "./rate_limiter_create";
+import { rateLimiter } from "./rate_limiter_create.js";
 import { RATE_LIMITER_STATE } from "eridu-tech/rate-limiter/contracts";
 
 const state = await rateLimiter.getState();

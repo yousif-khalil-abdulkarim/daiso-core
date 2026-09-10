@@ -1,4 +1,4 @@
-import { rateLimiterFactory } from "./rate_limiter_factory_initial_config";
+import { rateLimiterFactory } from "./rate_limiter_factory_initial_config.js";
 
 class ErrorA extends Error {}
 

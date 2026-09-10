@@ -2,7 +2,7 @@ import { TimeSpan } from "eridu-tech/time-span";
 import { KyselyRateLimiterStorageAdapter } from "eridu-tech/rate-limiter/kysely-rate-limiter-storage-adapter";
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
-import { serde } from "./serde_instance";
+import { serde } from "./serde_instance.js";
 
 const database = new Pool({
     database: "DATABASE_NAME",
