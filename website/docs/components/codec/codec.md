@@ -1,4 +1,5 @@
 ---
+slug: /components/codec
 tags:
     - Utilities
 keywords:
@@ -11,14 +12,7 @@ The `eridu-tech/codec` component provides seamless way to encode/decode data.
 
 ## Usage
 
-```ts
-import { Base64Codec } from "eridu-tech/codec/base-64-codec";
-
-const codec = new Base64Codec();
-
-const encodedStr = codec.encode("This is base-64 encoded");
-
-const decodedStr = codec.decode(encodedStr);
+```ts file=./samples/usage.ts
 ```
 
 ## Separating encoding and decoding
