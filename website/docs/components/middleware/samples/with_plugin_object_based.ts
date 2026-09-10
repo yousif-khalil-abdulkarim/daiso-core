@@ -4,7 +4,7 @@ import {
     type IPluginObject,
     type MiddlewareFn,
 } from "eridu-tech/middleware/contracts";
-import { UserService } from "./with_plugin_class";
+import { UserService } from "./with_plugin_class.js";
 
 class MetricsClient {
     record(method: string, durationMs: number): void {
