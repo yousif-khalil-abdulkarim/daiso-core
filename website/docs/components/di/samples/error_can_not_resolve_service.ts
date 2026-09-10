@@ -1,6 +1,6 @@
 import { CanNotResolveServiceDiError } from "eridu-tech/di/contracts";
-import { container } from "./container";
-import { Logger } from "./logger";
+import { container } from "./container.js";
+import { Logger } from "./logger.js";
 
 await container.init();
 

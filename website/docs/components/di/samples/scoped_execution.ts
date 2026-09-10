@@ -1,5 +1,5 @@
 import { LIFETIME } from "eridu-tech/di/contracts";
-import { container } from "./container";
+import { container } from "./container.js";
 
 class A {
     // ...

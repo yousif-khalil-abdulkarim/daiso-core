@@ -1,6 +1,6 @@
 import { InvalidGraphDiError, LIFETIME } from "eridu-tech/di/contracts";
-import { container } from "./container";
-import { A, B, C } from "./dependency_chain";
+import { container } from "./container.js";
+import { A, B, C } from "./dependency_chain.js";
 
 container.registerFactory({
     token: A,

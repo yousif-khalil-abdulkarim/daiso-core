@@ -1,6 +1,6 @@
 import { LIFETIME } from "eridu-tech/di/contracts";
-import { container } from "./container";
-import { REQUEST_ID } from "./request_id";
+import { container } from "./container.js";
+import { REQUEST_ID } from "./request_id.js";
 
 class RequestService {
     constructor(private requestId: string) {

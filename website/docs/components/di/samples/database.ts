@@ -1,4 +1,4 @@
-import { IDatabase } from "./idatabase";
+import type { IDatabase } from "./idatabase.js";
 
 export class Database implements IDatabase {
     query(sql: string, params: Array<unknown>): Promise<unknown> {

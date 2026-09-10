@@ -1,5 +1,5 @@
-import { container } from "./container";
-import { ConsoleLogger, Logger } from "./logger";
+import { container } from "./container.js";
+import { ConsoleLogger, Logger } from "./logger.js";
 
 await container.init();
 
