@@ -22,7 +22,7 @@ export type WithInvalidationSettings<
      *  A function that produces the cache key from the
      * wrapped function's arguments.
      */
-    key: Invocable<TParameters, string>;
+    key: Invocable<[args: TParameters], string>;
 
     /**
      * A function that determines whether the cache entry should be
@@ -64,7 +64,7 @@ export function withInvalidationFactory(cache: Pick<ICache, "remove">) {
         return async ({ next, args }) => {
             const value = await next();
             if (callInvocable(shouldInvalidate, args, value)) {
-                await cache.remove(callInvocable(key, ...args));
+                await cache.remove(callInvocable(key, args));
             }
             return value;
         };

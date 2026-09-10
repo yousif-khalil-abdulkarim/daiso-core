@@ -24,7 +24,7 @@ export type WithRateLimiterSettings<
      * wrapped function's arguments. Each unique key gets its own rate-limit
      * counter.
      */
-    key: Invocable<TParameters, string>;
+    key: Invocable<[args: TParameters], string>;
 
     /**
      * When `true`, only failed (errored) invocations count toward the rate
@@ -65,7 +65,7 @@ export function withRateLimiterFactory(
         const { key, ...rest } = settings;
         return ({ next, args }) => {
             return rateLimiterFactory
-                .create(callInvocable(key, ...args), rest)
+                .create(callInvocable(key, args), rest)
                 .runOrFail(next);
         };
     };

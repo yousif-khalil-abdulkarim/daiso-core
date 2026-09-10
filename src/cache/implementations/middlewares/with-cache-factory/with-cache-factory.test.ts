@@ -27,7 +27,7 @@ describe("function: withCacheFactory", () => {
             fn,
             withCache({
                 ttl,
-                key: (value: string) => value,
+                key: ([value]) => value,
             }),
         )(key);
 

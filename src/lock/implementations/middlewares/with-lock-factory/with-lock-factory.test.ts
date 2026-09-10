@@ -34,8 +34,8 @@ describe("function: withLockFactory", () => {
             fn,
             withLock({
                 ...settings,
-                key: (value: string) => value,
-                lockId: (value: string) => value,
+                key: ([value]) => value,
+                lockId: ([value]) => value,
             }),
         )(argValue);
 
@@ -51,7 +51,7 @@ describe("function: withLockFactory", () => {
         await use(
             fn,
             withLock({
-                key: (value: string) => value,
+                key: ([value]) => value,
             }),
         )(argValue);
 
@@ -66,8 +66,7 @@ describe("function: withLockFactory", () => {
         await use(
             fn,
             withLock({
-                key: (userId: string, postId: string) =>
-                    `user:${userId}:post:${postId}`,
+                key: ([userId, postId]) => `user:${userId}:post:${postId}`,
             }),
         )("u1", "p2");
 
@@ -83,7 +82,7 @@ describe("function: withLockFactory", () => {
         const wrapped = use(
             fn,
             withLock({
-                key: (a: string, b: string) => `${a}:${b}`,
+                key: ([a, b]) => `${a}:${b}`,
             }),
         );
 
