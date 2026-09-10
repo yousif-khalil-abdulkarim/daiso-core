@@ -1,4 +1,4 @@
-import { router } from "./http_router_initial_config";
+import { router } from "./http_router_initial_config.js";
 
 router.endpoint({
     url: "/users/:id",

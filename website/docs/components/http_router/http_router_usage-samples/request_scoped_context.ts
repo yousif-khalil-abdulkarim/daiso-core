@@ -1,5 +1,5 @@
 import { contextToken } from "eridu-tech/execution-context/contracts";
-import { router } from "./http_router_initial_config";
+import { router } from "./http_router_initial_config.js";
 
 const REQ_ID = contextToken<string>("REQ_ID");
 const CURRENT_DATE = contextToken<string>("CURRENT_DATE");

@@ -1,5 +1,5 @@
 import { contextToken } from "eridu-tech/execution-context/contracts";
-import { router } from "./http_router_initial_config";
+import { router } from "./http_router_initial_config.js";
 
 type IUser = {
     id: string;

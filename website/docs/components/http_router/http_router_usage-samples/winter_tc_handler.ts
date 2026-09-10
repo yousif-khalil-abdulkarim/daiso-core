@@ -1,5 +1,5 @@
 import { HttpRouter } from "eridu-tech/http-router";
-import { router } from "./http_router_initial_config";
+import { router } from "./http_router_initial_config.js";
 
 // A standard Winter TC handler
 async function healthHandler(request: Request): Promise<Response> {
