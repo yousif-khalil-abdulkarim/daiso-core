@@ -1,4 +1,5 @@
 ---
+slug: /components/time_span
 tags:
     - Utilities
 keywords:
@@ -21,49 +22,37 @@ Note `TimeSpan` cannot be negative.
 
 Creating `TimeSpan` from milliseconds:
 
-```ts
-import { TimeSpan } from "eridu-tech/time-span";
-
-const timeSpan = TimeSpan.fromMilliseconds(100);
+```ts file=./samples/creating_from_milliseconds.ts
 ```
 
 Creating `TimeSpan` from seconds:
 
-```ts
-const timeSpan = TimeSpan.fromSeconds(30);
+```ts file=./samples/creating_from_seconds.ts
 ```
 
 Creating `TimeSpan` from minutes:
 
-```ts
-const timeSpan = TimeSpan.fromMinutes(15);
+```ts file=./samples/creating_from_minutes.ts
 ```
 
 Creating `TimeSpan` from hours:
 
-```ts
-const timeSpan = TimeSpan.fromHours(1);
+```ts file=./samples/creating_from_hours.ts
 ```
 
 Creating `TimeSpan` from days:
 
-```ts
-const timeSpan = TimeSpan.fromDays(1);
+```ts file=./samples/creating_from_days.ts
 ```
 
 Creating `TimeSpan` from date range:
 
-```ts
-const timeSpan = TimeSpan.fromDateRange({
-    start: new Date("2000-01-01"),
-    end: new Date("2010-01-01"),
-});
+```ts file=./samples/creating_from_date_range.ts
 ```
 
 Creating `TimeSpan` from `string`:
 
-```ts
-const timeSpan = TimeSpan.fromStr("5s");
+```ts file=./samples/creating_from_str.ts
 ```
 
 :::info
@@ -75,196 +64,147 @@ Refer to its documentation for a complete list of supported time formats and uni
 
 You can add milliseconds to a `TimeSpan`:
 
-```ts
-timeSpan.addMilliseconds(200);
+```ts file=./samples/adding_milliseconds.ts
 ```
 
 You can add seconds to a `TimeSpan`:`
 
-```ts
-timeSpan.addSeconds(30);
+```ts file=./samples/adding_seconds.ts
 ```
 
 You can add minutes to a `TimeSpan`:
 
-```ts
-timeSpan.addMinutes(20);
+```ts file=./samples/adding_minutes.ts
 ```
 
 You can add hours to a `TimeSpan`:
 
-```ts
-timeSpan.addHours(2);
+```ts file=./samples/adding_hours.ts
 ```
 
 You can add days to a `TimeSpan`:
 
-```ts
-timeSpan.addDays(14);
+```ts file=./samples/adding_days.ts
 ```
 
 You can add 2 `TimeSpan` together:
 
-```ts
-timeSpan.addTimeSpan(TimeSpan.fromDays(14).addHours(20));
+```ts file=./samples/adding_time_span.ts
 ```
 
 ### Subtracting time from TimeSpan
 
 You can subtract milliseconds from a `TimeSpan`:
 
-```ts
-timeSpan.subtractMilliseconds(200);
+```ts file=./samples/subtracting_milliseconds.ts
 ```
 
 You can subtract seconds from a `TimeSpan`:`
 
-```ts
-timeSpan.subtractSeconds(30);
+```ts file=./samples/subtracting_seconds.ts
 ```
 
 You can subtract minutes from a `TimeSpan`:
 
-```ts
-timeSpan.subtractMinutes(20);
+```ts file=./samples/subtracting_minutes.ts
 ```
 
 You can subtract hours from a `TimeSpan`:
 
-```ts
-timeSpan.subtractHours(2);
+```ts file=./samples/subtracting_hours.ts
 ```
 
 You can subtract days from a `TimeSpan`:
 
-```ts
-timeSpan.subtractDays(14);
+```ts file=./samples/subtracting_days.ts
 ```
 
 You can subtract 2 `TimeSpan` together:
 
-```ts
-timeSpan.subtractTimeSpan(TimeSpan.fromDays(14).addHours(20));
+```ts file=./samples/subtracting_time_span.ts
 ```
 
 ### Multiplying and dividing a TimeSpan
 
 Dividing a timespan:
 
-```ts
-// Will be now 100 milliseconds
-TimeSpan.fromMilliseconds(200).divide(2);
+```ts file=./samples/dividing.ts
 ```
 
 Multiplying a timespan:
 
-```ts
-// Will be now 400 milliseconds
-TimeSpan.fromMilliseconds(200).multiply(2);
+```ts file=./samples/multiplying.ts
 ```
 
 ### Comparing TimeSpan:s
 
 Equals:
 
-```ts
-// Returns false
-TimeSpan.fromSeconds(1).equal(TimeSpan.fromSeconds(2));
+```ts file=./samples/comparing_equal.ts
 ```
 
 Greater than:
 
-```ts
-// Returns false
-TimeSpan.fromSeconds(1).gt(TimeSpan.fromSeconds(2));
+```ts file=./samples/comparing_gt.ts
 ```
 
 Greater than or equals:
 
-```ts
-// Returns false
-TimeSpan.fromSeconds(1).gte(TimeSpan.fromSeconds(2));
+```ts file=./samples/comparing_gte.ts
 ```
 
 Less than:
 
-```ts
-// Returns true
-TimeSpan.fromSeconds(1).lt(TimeSpan.fromSeconds(2));
+```ts file=./samples/comparing_lt.ts
 ```
 
 Less than or equals:
 
-```ts
-// Returns true
-TimeSpan.fromSeconds(1).lte(TimeSpan.fromSeconds(2));
+```ts file=./samples/comparing_lte.ts
 ```
 
 ### Converting a TimeSpan
 
 You can get amount of milliseconds contained in the `TimeSpan`:
 
-```ts
-TimeSpan.fromSeconds(1).toMilliseconds();
+```ts file=./samples/converting_to_milliseconds.ts
 ```
 
 You can get amount of seconds contained in the `TimeSpan`:
 
-```ts
-TimeSpan.fromMinutes(1).toSeconds();
+```ts file=./samples/converting_to_seconds.ts
 ```
 
 You can get amount of minutes contained in the `TimeSpan`:
 
-```ts
-TimeSpan.fromHours(1).toMinutes();
+```ts file=./samples/converting_to_minutes.ts
 ```
 
 You can get amount of hours contained in the `TimeSpan`:
 
-```ts
-TimeSpan.fromDays(1).toHours();
+```ts file=./samples/converting_to_hours.ts
 ```
 
 You can get amount of days contained in the `TimeSpan`:
 
-```ts
-TimeSpan.fromHours(48).toDays();
+```ts file=./samples/converting_to_days.ts
 ```
 
 You can get end date relative to a start date:
 
-```ts
-// Will return date of "2002-01-01"
-TimeSpan.fromDays(365).toEndDate(new Date("2001-01-01"));
+```ts file=./samples/converting_to_end_date.ts
 ```
 
 You can get start date relative to a end date:
 
-```ts
-// Will return date of "2000-01-01"
-TimeSpan.fromDays(365).toStartDate(new Date("2001-01-01"));
+```ts file=./samples/converting_to_start_date.ts
 ```
 
 ### Serialization and deserialization of TimeSpan
 
 The `TimeSpan` class supports serialization and deserialization, allowing you to easily convert instances to and from serialized formats. However, registration is required first:
 
-```ts
-import { Serde } from "eridu-tech/serde";
-import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
-import { TimeSpan } from "eridu-tech/time-span";
-
-const serde = new Serde(new SuperJsonSerdeAdapter());
-
-serde.registerClass(TimeSpan);
-
-const timeSpan = TimeSpan.fromSeconds(12);
-const serializedTimeSpan = serde.serialize(timeSpan);
-const deserializedTimeSpan = serde.deserialize(serializedTimeSpan);
-
-// logs false
-console.log(serializedTimeSpan === deserializedTimeSpan);
+```ts file=./samples/serde_serialization.ts
 ```
 
 ## ITimeSpan contract
@@ -282,16 +222,7 @@ Note `TimeSpan` class implements `ITimeSpan` contract.
 
 The `ITimeSpan` contract requires you to implement the `TO_MILLISECONDS` method on the duration object, which must return the duration in milliseconds.
 
-```ts
-import { ITimeSpan, TO_MILLISECONDS } from "eridu-tech/time-span/contracts";
-
-export class Duration implements ITimeSpan {
-    constructor(private readonly timeInMs: number) {}
-
-    [TO_MILLISECONDS](): number {
-        return this.timeInMs;
-    }
-}
+```ts file=./samples/implementing_itimespan.ts
 ```
 
 ## Further information

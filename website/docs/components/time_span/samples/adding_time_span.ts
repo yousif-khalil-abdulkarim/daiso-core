@@ -1,0 +1,4 @@
+import { timeSpan } from "./creating_from_milliseconds";
+import { TimeSpan } from "eridu-tech/time-span";
+
+timeSpan.addTimeSpan(TimeSpan.fromDays(14).addHours(20));
