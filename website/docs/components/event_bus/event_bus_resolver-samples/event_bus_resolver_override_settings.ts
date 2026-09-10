@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eventBusResolver } from "./event_bus_resolver_initial_config";
+import { eventBusResolver } from "./event_bus_resolver_initial_config.js";
 
 await eventBusResolver
     // You can overide the event type by calling setEventMapType or setEventMapSchema method again

@@ -1,4 +1,4 @@
-import { eventBus } from "./event_bus_initial_config";
+import { eventBus } from "./event_bus_initial_config.js";
 
 await eventBus.listenOnce("add", (event) => {
     console.log(event);

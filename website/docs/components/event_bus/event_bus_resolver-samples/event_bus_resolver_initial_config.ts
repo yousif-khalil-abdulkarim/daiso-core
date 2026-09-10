@@ -1,13 +1,13 @@
 import {
     type IEventBusAdapter,
-    BaseEvent,
+    type BaseEvent,
 } from "eridu-tech/event-bus/contracts";
 import { EventBusResolver } from "eridu-tech/event-bus";
 import { RedisPubSubEventBusAdapter } from "eridu-tech/event-bus/redis-pub-sub-event-bus-adapter";
 import { MemoryEventBusAdapter } from "eridu-tech/event-bus/memory-event-bus-adapter";
 import { Serde } from "eridu-tech/serde";
 import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 export const eventBusResolver = new EventBusResolver({

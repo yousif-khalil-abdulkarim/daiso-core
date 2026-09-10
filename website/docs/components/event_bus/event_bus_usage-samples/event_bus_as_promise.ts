@@ -1,4 +1,4 @@
-import { eventBus } from "./event_bus_initial_config";
+import { eventBus } from "./event_bus_initial_config.js";
 import { delay } from "eridu-tech/utilities";
 import { TimeSpan } from "eridu-tech/time-span";
 
