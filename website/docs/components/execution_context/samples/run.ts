@@ -1,4 +1,4 @@
-import { executionContext } from "./execution_context_initial_config";
+import { executionContext } from "./execution_context_initial_config.js";
 import { contextToken } from "eridu-tech/execution-context/contracts";
 
 // Define context tokens with type-safe identifiers

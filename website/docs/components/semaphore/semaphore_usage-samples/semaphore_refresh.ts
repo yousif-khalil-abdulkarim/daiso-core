@@ -1,4 +1,4 @@
-import { semaphoreFactory } from "./semaphore_factory_initial_config";
+import { semaphoreFactory } from "./semaphore_factory_initial_config.js";
 import { delay } from "eridu-tech/utilities";
 import { TimeSpan } from "eridu-tech/time-span";
 

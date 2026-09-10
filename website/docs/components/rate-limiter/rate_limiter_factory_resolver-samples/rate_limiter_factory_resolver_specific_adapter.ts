@@ -1,4 +1,4 @@
-import { rateLimiterFactoryResolver } from "./rate_limiter_factory_resolver_initial_config";
+import { rateLimiterFactoryResolver } from "./rate_limiter_factory_resolver_initial_config.js";
 
 // Will apply rate-limiter logic using the redis adapter
 await rateLimiterFactoryResolver

@@ -3,10 +3,10 @@ import {
     type IServiceRegister,
     type IServiceProvider,
 } from "eridu-tech/di/contracts";
-import { container } from "./container";
-import { Database } from "./database";
-import { FileLogger, Logger } from "./logger";
-import { UserProvider } from "./user_provider";
+import { container } from "./container.js";
+import { Database } from "./database.js";
+import { FileLogger, Logger } from "./logger.js";
+import { UserProvider } from "./user_provider.js";
 
 // As a plain function
 function loggingProvider(register: IServiceRegister): void {

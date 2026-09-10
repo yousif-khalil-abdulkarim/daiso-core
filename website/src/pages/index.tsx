@@ -13,11 +13,11 @@ import {
     COMPARISONS,
     INSTALL_CMD,
     GITHUB_REPO_URL,
-} from "../data/data";
-import type { FeatureItemProps } from "../data/types";
-import { AvailableCategory } from "../roadmap/components/AvailableCategory";
-import { PlannedCardGrid } from "../roadmap/components/PlannedCardGrid";
-import { FeatureItem } from "../components/FeatureItem";
+} from "../data/data.js";
+import type { FeatureItemProps } from "../data/types.js";
+import { AvailableCategory } from "../roadmap/components/AvailableCategory.js";
+import { PlannedCardGrid } from "../roadmap/components/PlannedCardGrid.js";
+import { FeatureItem } from "../components/FeatureItem.js";
 import { ArrowRight, Copy, Check, Star } from "lucide-react";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { type ReactNode, useState, useCallback } from "react";
@@ -26,7 +26,7 @@ import Layout from "@theme/Layout";
 import CodeBlock from "@theme/CodeBlock";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import { COMPONENT_COUNT } from "../../utilities/package-json-data";
+import { COMPONENT_COUNT } from "../../utilities/package-json-data.js";
 
 function InstallCommand() {
     const [copied, setCopied] = useState(false);
@@ -76,10 +76,7 @@ function StatsBar() {
                         label="Officially maintained components"
                     />
                     <StatItem value="45" label="Adapters" />
-                    <StatItem
-                        value="16"
-                        label="Adapter plugins"
-                    />
+                    <StatItem value="16" label="Adapter plugins" />
                     <StatItem value="6" label="AOP-style Middlewares" />
                     <StatItem
                         value="4,640+"
@@ -141,9 +138,7 @@ function CodeShowcase() {
         <section className="padding-vert--xl">
             <div className="container">
                 <div className="daiso-section-header daiso-section-header--split">
-                    <h2 className="daiso-section-title">
-                        Unified foundation
-                    </h2>
+                    <h2 className="daiso-section-title">Unified foundation</h2>
                     <div className="daiso-segmented-control">
                         {codeExamples.map((ex, i) => (
                             <button

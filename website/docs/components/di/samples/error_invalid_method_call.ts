@@ -1,6 +1,6 @@
 import { InvalidMethodCallDiError } from "eridu-tech/di/contracts";
-import { container } from "./container";
-import { CONFIG } from "./app_config";
+import { container } from "./container.js";
+import { CONFIG } from "./app_config.js";
 
 await container.init();
 

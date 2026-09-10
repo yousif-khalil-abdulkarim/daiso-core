@@ -1,4 +1,4 @@
-import { semaphore } from "./semaphore_create";
+import { semaphore } from "./semaphore_create.js";
 
 // 1 slot will be acquired
 if (await semaphore.acquire()) {

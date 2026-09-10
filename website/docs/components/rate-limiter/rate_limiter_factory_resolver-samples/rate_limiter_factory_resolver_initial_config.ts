@@ -4,7 +4,7 @@ import { DatabaseRateLimiterAdapter } from "eridu-tech/rate-limiter/database-rat
 import { RedisRateLimiterAdapter } from "eridu-tech/rate-limiter/redis-rate-limiter-adapter";
 import { Serde } from "eridu-tech/serde";
 import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter";
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 export const rateLimiterFactoryResolver = new RateLimiterFactoryResolver({

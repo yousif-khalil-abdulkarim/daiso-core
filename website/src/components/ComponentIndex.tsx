@@ -1,4 +1,4 @@
-import type { ComponentItemProps } from "../data/types";
+import type { ComponentItemProps } from "../data/types.js";
 import Link from "@docusaurus/Link";
 
 export type ComponentSection = {

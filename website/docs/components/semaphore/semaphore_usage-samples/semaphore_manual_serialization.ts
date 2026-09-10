@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { RedisSemaphoreAdapter } from "eridu-tech/semaphore/redis-semaphore-adapter";
 import { SemaphoreFactory } from "eridu-tech/semaphore";
 import { Serde } from "eridu-tech/serde";

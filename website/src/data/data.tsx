@@ -5,7 +5,7 @@ import type {
     CodeFile,
     CodeExample,
     ComparisonItem,
-} from "./types";
+} from "./types.js";
 import { SiTypescript, SiVitest } from "@icons-pack/react-simple-icons";
 import {
     Box,

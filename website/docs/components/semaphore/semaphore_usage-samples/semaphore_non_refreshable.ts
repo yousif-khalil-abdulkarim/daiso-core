@@ -1,4 +1,4 @@
-import { semaphoreFactory } from "./semaphore_factory_initial_config";
+import { semaphoreFactory } from "./semaphore_factory_initial_config.js";
 
 // Create a semaphore with no expiration (non-refreshable)
 const semaphore = semaphoreFactory.create("resource", {

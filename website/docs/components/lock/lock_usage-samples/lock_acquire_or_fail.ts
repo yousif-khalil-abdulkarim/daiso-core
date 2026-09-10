@@ -1,4 +1,4 @@
-import { lock } from "./lock_create";
+import { lock } from "./lock_create.js";
 
 try {
     // This method will throw if the lock is not acquired

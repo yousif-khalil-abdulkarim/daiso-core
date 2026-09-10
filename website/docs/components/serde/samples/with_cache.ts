@@ -3,8 +3,8 @@ import { SuperJsonSerdeAdapter } from "eridu-tech/serde/super-json-serde-adapter
 import { RedisCacheAdapter } from "eridu-tech/cache/redis-cache-adapter";
 import { Cache } from "eridu-tech/cache";
 import { ListCollection } from "eridu-tech/collection";
-import { ICollection } from "eridu-tech/collection/contracts";
-import Redis from "ioredis";
+import type { ICollection } from "eridu-tech/collection/contracts";
+import { Redis } from "ioredis";
 
 const serde = new Serde(new SuperJsonSerdeAdapter());
 serde.registerClass(ListCollection);

@@ -1,7 +1,7 @@
 import { LIFETIME } from "eridu-tech/di/contracts";
-import { container } from "./container";
-import { Database } from "./database";
-import { IDATABASE } from "./generic_token";
+import { container } from "./container.js";
+import { Database } from "./database.js";
+import { IDATABASE } from "./generic_token.js";
 
 // `IDATABASE` service requires no dependency
 container.registerFactory({

@@ -1,4 +1,4 @@
-import { sharedLockFactory } from "./shared_lock_factory_initial_config";
+import { sharedLockFactory } from "./shared_lock_factory_initial_config.js";
 import { retryInterval } from "eridu-tech/resilience";
 import { FailedAcquireWriterLockError } from "eridu-tech/shared-lock/contracts";
 import { use } from "eridu-tech/middleware";

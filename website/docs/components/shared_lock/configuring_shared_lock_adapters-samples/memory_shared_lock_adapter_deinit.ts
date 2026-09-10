@@ -1,3 +1,3 @@
-import { memorySharedLockAdapter } from "./memory_shared_lock_adapter";
+import { memorySharedLockAdapter } from "./memory_shared_lock_adapter.js";
 
 await memorySharedLockAdapter.deInit();

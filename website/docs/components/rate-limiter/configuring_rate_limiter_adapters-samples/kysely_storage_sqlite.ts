@@ -2,7 +2,7 @@ import { TimeSpan } from "eridu-tech/time-span";
 import { KyselyRateLimiterStorageAdapter } from "eridu-tech/rate-limiter/kysely-rate-limiter-storage-adapter";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
-import { serde } from "./serde_instance";
+import { serde } from "./serde_instance.js";
 
 const database = new Sqlite("DATABASE_NAME.db");
 const kysely = new Kysely<any>({

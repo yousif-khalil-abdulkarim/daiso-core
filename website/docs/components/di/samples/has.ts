@@ -1,5 +1,5 @@
-import { container } from "./container";
-import { Logger } from "./logger";
+import { container } from "./container.js";
+import { Logger } from "./logger.js";
 
 container.registerValue({
     token: Logger,

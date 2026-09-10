@@ -1,4 +1,4 @@
-import { sharedLockFactory } from "./shared_lock_factory_initial_config";
+import { sharedLockFactory } from "./shared_lock_factory_initial_config.js";
 import { TimeSpan } from "eridu-tech/time-span";
 
 const sharedLock = sharedLockFactory.create("shared-resource", {

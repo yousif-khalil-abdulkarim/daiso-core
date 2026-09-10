@@ -1,4 +1,4 @@
-import { IDatabase } from "./idatabase";
+import type { IDatabase } from "./idatabase.js";
 
 export interface User {
     firstName: string;

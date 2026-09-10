@@ -3,7 +3,7 @@ import {
     type HttpHandlerArgs,
     type IHttpRes,
 } from "eridu-tech/http-router/contracts";
-import { router } from "./http_router_initial_config";
+import { router } from "./http_router_initial_config.js";
 
 class GreetingHandler implements IHttpHandlerObject {
     constructor(private readonly greeting: string) {}

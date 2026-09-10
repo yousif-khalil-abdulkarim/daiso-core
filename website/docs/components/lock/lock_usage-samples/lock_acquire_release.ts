@@ -1,4 +1,4 @@
-import { lock } from "./lock_create";
+import { lock } from "./lock_create.js";
 
 const hasAquired = await lock.acquire();
 if (hasAquired) {

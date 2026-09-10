@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { RedisSharedLockAdapter } from "eridu-tech/shared-lock/redis-shared-lock-adapter";
 import type { ISharedLock } from "eridu-tech/shared-lock/contracts";
 import { SharedLockFactory } from "eridu-tech/shared-lock";

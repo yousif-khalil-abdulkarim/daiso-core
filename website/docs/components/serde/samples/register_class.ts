@@ -1,5 +1,5 @@
 import type { ISerializable } from "eridu-tech/serde/contracts";
-import { serde } from "./serde_initial_config";
+import { serde } from "./serde_initial_config.js";
 
 type ISerializedUser = {
     version: "1";

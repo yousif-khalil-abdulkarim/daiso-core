@@ -1,6 +1,6 @@
 import { MongodbCircuitBreakerStorageAdapter } from "eridu-tech/circuit-breaker/mongodb-circuit-breaker-storage-adapter";
 import { MongoClient } from "mongodb";
-import { serde } from "./serde_instance";
+import { serde } from "./serde_instance.js";
 
 const client = await MongoClient.connect("YOUR_MONGODB_CONNECTION_STRING");
 const database = client.db("database");

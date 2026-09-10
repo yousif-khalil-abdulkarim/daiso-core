@@ -1,4 +1,4 @@
-import { circuitBreakerFactoryResolver } from "./database_circuit_breaker_factory_resolver_initial_config";
+import { circuitBreakerFactoryResolver } from "./database_circuit_breaker_factory_resolver_initial_config.js";
 
 // Will apply circuit-breaker logic using the sqlite adapter
 await circuitBreakerFactoryResolver

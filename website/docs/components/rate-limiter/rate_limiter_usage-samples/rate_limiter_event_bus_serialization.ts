@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { RedisRateLimiterAdapter } from "eridu-tech/rate-limiter/redis-rate-limiter-adapter";
 import type { IRateLimiter } from "eridu-tech/rate-limiter/contracts";
 import { RateLimiterFactory } from "eridu-tech/rate-limiter";

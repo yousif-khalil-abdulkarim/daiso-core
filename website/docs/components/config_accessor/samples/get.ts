@@ -1,4 +1,4 @@
-import { accessor } from "./config_accessor_initial_config";
+import { accessor } from "./config_accessor_initial_config.js";
 
 // Return the value of field a
 accessor.get("a");

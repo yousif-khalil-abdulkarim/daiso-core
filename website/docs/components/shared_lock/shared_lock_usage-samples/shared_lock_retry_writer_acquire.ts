@@ -1,4 +1,4 @@
-import { sharedLockFactory } from "./shared_lock_factory_initial_config";
+import { sharedLockFactory } from "./shared_lock_factory_initial_config.js";
 import { retry } from "eridu-tech/resilience";
 import { use } from "eridu-tech/middleware";
 

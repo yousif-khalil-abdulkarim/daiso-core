@@ -1,4 +1,4 @@
-import { circuitBreakerFactoryResolver } from "./circuit_breaker_factory_resolver_initial_config";
+import { circuitBreakerFactoryResolver } from "./circuit_breaker_factory_resolver_initial_config.js";
 
 // Will apply circuit-breaker logic the default adapter which is MemoryCircuitBreakerStorageAdapter
 await circuitBreakerFactoryResolver

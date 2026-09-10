@@ -1,4 +1,4 @@
-import { router } from "./http_router_initial_config";
+import { router } from "./http_router_initial_config.js";
 
 // Matches /static/js/app.js, /static/css/style.css, etc.
 router.endpoint({

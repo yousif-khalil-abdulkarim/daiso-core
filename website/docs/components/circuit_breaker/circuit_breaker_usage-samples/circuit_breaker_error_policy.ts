@@ -1,4 +1,4 @@
-import { circuitBreakerFactory } from "./circuit_breaker_initial_config";
+import { circuitBreakerFactory } from "./circuit_breaker_initial_config.js";
 
 class ErrorA extends Error {}
 

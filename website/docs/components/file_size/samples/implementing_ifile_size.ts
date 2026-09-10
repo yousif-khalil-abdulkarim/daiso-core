@@ -1,4 +1,4 @@
-import { IFileSize, TO_BYTES } from "eridu-tech/file-size/contracts";
+import { type IFileSize, TO_BYTES } from "eridu-tech/file-size/contracts";
 
 export class MyFileSize implements IFileSize {
     constructor(private readonly fileSizeInBytes: number) {}

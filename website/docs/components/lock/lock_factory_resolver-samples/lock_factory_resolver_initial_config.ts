@@ -1,7 +1,7 @@
 import { LockFactoryResolver } from "eridu-tech/lock";
 import { MemoryLockAdapter } from "eridu-tech/lock/memory-lock-adapter";
 import { RedisLockAdapter } from "eridu-tech/lock/redis-lock-adapter";
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
 export const lockFactoryResolver = new LockFactoryResolver({
     adapters: {

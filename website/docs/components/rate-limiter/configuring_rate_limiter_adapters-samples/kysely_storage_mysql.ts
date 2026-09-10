@@ -2,7 +2,7 @@ import { TimeSpan } from "eridu-tech/time-span";
 import { KyselyRateLimiterStorageAdapter } from "eridu-tech/rate-limiter/kysely-rate-limiter-storage-adapter";
 import { createPool } from "mysql2";
 import { Kysely, MysqlDialect } from "kysely";
-import { serde } from "./serde_instance";
+import { serde } from "./serde_instance.js";
 
 const database = createPool({
     host: "DATABASE_HOST",
