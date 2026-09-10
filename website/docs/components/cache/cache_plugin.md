@@ -49,31 +49,19 @@ Methods that do not accept a key (`removeAll`) are unaffected.
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryCacheAdapter } from "eridu-tech/cache/memory-cache-adapter";
-import { withCachePrefix } from "eridu-tech/cache/plugins";
-
-const adapter = new MemoryCacheAdapter();
-
-// Apply the prefix plugin to the adapter
-const prefixedAdapter = withPlugin(adapter, withCachePrefix("tenant-42:"));
+```ts file=./cache_plugin-samples/with_cache_prefix.ts
 ```
 
 ### Before/after behavior
 
 **Before** — Keys are stored as-is:
 
-```ts
-adapter.get("user:123");
-// -> looks up key "user:123"
+```ts file=./cache_plugin-samples/unprefixed_lookup.ts
 ```
 
 **After** — Keys are automatically prefixed:
 
-```ts
-prefixedAdapter.get("user:123");
-// -> looks up key "tenant-42:user:123"
+```ts file=./cache_plugin-samples/prefixed_lookup.ts
 ```
 
 :::danger
@@ -88,9 +76,7 @@ For more information about the `withPlugin` function and applying plugins to ada
 
 The `removeMany` method receives an array of keys. The plugin maps over the array, prefixing each entry:
 
-```ts
-prefixedAdapter.removeMany(["a", "b", "c"]);
-// -> prefixedAdapter.removeMany(["tenant-42:a", "tenant-42:b", "tenant-42:c"])
+```ts file=./cache_plugin-samples/remove_many_prefix.ts
 ```
 
 ## withCacheJitter plugin
@@ -117,15 +103,7 @@ The jitter is calculated as a random percentage of the original TTL. For example
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryCacheAdapter } from "eridu-tech/cache/memory-cache-adapter";
-import { withCacheJitter } from "eridu-tech/cache/plugins";
-
-const adapter = new MemoryCacheAdapter();
-
-// Apply the jitter plugin to the adapter
-const jitteredAdapter = withPlugin(adapter, withCacheJitter());
+```ts file=./cache_plugin-samples/with_cache_jitter.ts
 ```
 
 ### Settings
@@ -141,72 +119,6 @@ Because `withPlugin` uses `enhance` under the hood, the same edge case applies: 
 :::info
 For more information about the `withPlugin` function and applying plugins to adapters, see the [Middleware plugin](/docs/components/middleware#plugin) documentation.
 :::
-
-<!-- ## withCacheSchema plugin
-
-The Cache schema plugin validates cache values against a [standard schema](https://github.com/standard-schema/standard-schema) before storing or retrieving them. On `add`, `put`, and `update` operations, the input value is validated against the provided schema before being stored. Optionally, `get` and `getAndRemove` outputs can also be validated on retrieval to ensure data integrity.
-
-### Use cases
-
-- **Data integrity** — Ensure only valid data conforming to a schema is stored in the cache
-- **Early error detection** — Catch malformed data at write time rather than at read time
-- **Type safety** — Enforce runtime type checks alongside compile-time types
-- **Defensive caching** — Validate data retrieved from shared or untrusted cache stores
-
-### How it works
-
-The `withCacheSchema` function returns a [`PluginFn`](/docs/components/middleware) that calls `enhance` on the `add`, `put`, `update`, `get`, and `getAndRemove` methods. For write operations (`add`, `put`, `update`), the value is validated before being passed to the underlying method. For read operations (`get`, `getAndRemove`), the returned value is validated after retrieval.
-
-| Method         | When validation occurs     | Configurable                         |
-| -------------- | -------------------------- | ------------------------------------ |
-| `add`          | Before storing the value   | Always on                            |
-| `put`          | Before storing the value   | Always on                            |
-| `update`       | Before storing the value   | Always on                            |
-| `get`          | After retrieving the value | Controlled by `shouldValidateOutput` |
-| `getAndRemove` | After retrieving the value | Controlled by `shouldValidateOutput` |
-
-### Usage
-
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryCacheAdapter } from "eridu-tech/cache/memory-cache-adapter";
-import { Cache } from "eridu-tech/cache";
-import { withCacheSchema } from "eridu-tech/cache/plugins";
-import { z } from "zod";
-
-const UserSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    email: z.string().email(),
-});
-
-const adapter = new MemoryCacheAdapter();
-
-// Apply the schema plugin to the adapter
-const validatedAdapter = withPlugin(
-    adapter,
-    withCacheSchema({ schema: UserSchema }),
-);
-
-const cache = new Cache<z.infer<typeof UserSchema>>({
-    adapter: validatedAdapter,
-});
-```
-
-### Settings
-
-| Option                 | Type                  | Default      | Description                                                     |
-| ---------------------- | --------------------- | ------------ | --------------------------------------------------------------- |
-| `schema`               | `StandardSchemaV1<T>` | _(required)_ | A standard-schema compliant schema to validate values against   |
-| `shouldValidateOutput` | `boolean`             | `true`       | Whether to validate values returned by `get` and `getAndRemove` |
-
-:::danger
-Because `withPlugin` uses `enhance` under the hood, the same edge case applies: if one enhanced method internally calls another enhanced method via `this`, the middleware will apply **twice**. Be mindful of inter-method calls when applying plugins that enhance multiple methods on the same instance.
-:::
-
-:::info
-For more information about the `withPlugin` function and applying plugins to adapters, see the [Middleware plugin](/docs/components/middleware#plugin) documentation.
-::: -->
 
 ## withCacheWriteLock plugin
 
@@ -241,17 +153,7 @@ Read-only methods (`get`, `removeAll`, `removeByPrefix`) are unaffected.
 
 ### Usage
 
-```ts
-import { withPlugin } from "eridu-tech/middleware";
-import { MemoryCacheAdapter } from "eridu-tech/cache/memory-cache-adapter";
-import { withCacheWriteLock } from "eridu-tech/cache/plugins";
-import { MemoryLockFactory } from "eridu-tech/lock/memory-lock-factory";
-
-const adapter = new MemoryCacheAdapter();
-const lockFactory = new MemoryLockFactory();
-
-// Apply the write lock plugin to the adapter
-const lockedAdapter = withPlugin(adapter, withCacheWriteLock({ lockFactory }));
+```ts file=./cache_plugin-samples/with_cache_write_lock.ts
 ```
 
 ### Settings
