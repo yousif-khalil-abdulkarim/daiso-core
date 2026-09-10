@@ -76,10 +76,7 @@ function StatsBar() {
                         label="Officially maintained components"
                     />
                     <StatItem value="45" label="Adapters" />
-                    <StatItem
-                        value="16"
-                        label="Adapter plugins"
-                    />
+                    <StatItem value="16" label="Adapter plugins" />
                     <StatItem value="6" label="AOP-style Middlewares" />
                     <StatItem
                         value="4,640+"
@@ -141,9 +138,7 @@ function CodeShowcase() {
         <section className="padding-vert--xl">
             <div className="container">
                 <div className="daiso-section-header daiso-section-header--split">
-                    <h2 className="daiso-section-title">
-                        Unified foundation
-                    </h2>
+                    <h2 className="daiso-section-title">Unified foundation</h2>
                     <div className="daiso-segmented-control">
                         {codeExamples.map((ex, i) => (
                             <button
