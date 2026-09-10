@@ -1,6 +1,7 @@
 {
     "name": "website",
     "private": true,
+    "type": "module",
     "scripts": {
         "docusaurus": "docusaurus",
         "start": "docusaurus start",
