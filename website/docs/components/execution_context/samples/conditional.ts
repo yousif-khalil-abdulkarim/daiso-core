@@ -1,4 +1,4 @@
-import { executionContext } from "./execution_context_initial_config";
+import { executionContext } from "./execution_context_initial_config.js";
 import { contextToken } from "eridu-tech/execution-context/contracts";
 
 const userToken = contextToken<{ id: string; name: string }>("user");
